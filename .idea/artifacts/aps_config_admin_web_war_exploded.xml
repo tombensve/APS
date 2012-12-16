@@ -1,0 +1,19 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="aps-config-admin-web:war exploded">
+    <output-path>$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/target/aps-config-admin-web-0.9.0</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="aps-config-admin-web/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="aps-config-admin-web" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="archive" name="aps-web-tools-0.9.0.jar">
+            <element id="module-output" name="aps-web-tools" />
+          </element>
+          <element id="library" level="project" name="Maven: com.vaadin:vaadin:6.8.1" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

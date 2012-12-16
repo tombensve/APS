@@ -1,0 +1,289 @@
+/* 
+ * 
+ * PROJECT
+ *     Name
+ *         APS JSON Library
+ *     
+ *     Code Version
+ *         1.0.0
+ *     
+ *     Description
+ *         Provides a JSON parser and creator. Please note that this bundle has no dependencies to any
+ *         other APS bundle! It can be used as is without APS in any Java application and OSGi container.
+ *         The reason for this is that I do use it elsewhere and don't want to keep 2 different copies of
+ *         the code. OSGi wise this is a library. All packages are exported and no activator nor services
+ *         are provided.
+ *         
+ * COPYRIGHTS
+ *     Copyright (C) 2012 by Natusoft AB All rights reserved.
+ *     
+ * LICENSE
+ *     Apache 2.0 (Open Source)
+ *     
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *     
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *     
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *     
+ * AUTHORS
+ *     Tommy Svensson (tommy@natusoft.se)
+ *         Changes:
+ *         2012-01-06: Created!
+ *         
+ */
+package se.natusoft.osgi.aps.json.tools;
+
+import se.natusoft.osgi.aps.json.*;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+
+/**
+ * Creates a JavaBean instance and copies data from a JSON value to it.
+ * <p/>
+ * The following mappings are made in addition to the expected ones:
+ * <ul>
+ *     <li>JSONArray only maps to an array property.</li>
+ *     <li>Date properties in bean are mapped from JSONString "yyyy-MM-dd HH:mm:ss"</li>
+ *     <li>Enum properties in bean are mapped from JSONString which have to contain enum constant name.</li>
+ * </ul>
+ */
+public class JSONToJava {
+
+    /**
+     * Returns an instance of a java class populated with data from a json object value read from a stream.
+     *
+     * @param jsonStream The stream to read from.
+     * @param javaClass The java class to instantiate and populate.
+     *
+     * @return A populated instance of javaClass.
+     *
+     * @throws IOException on IO failures.
+     * @throws JSONConvertionException On JSON to Java failures.
+     */
+    public static <T> T convert(InputStream jsonStream, Class<T> javaClass) throws IOException, JSONConvertionException {
+        JSONErrorHandler jsonErrHandler = new JSONErrorHandler() {
+            @Override
+            public void warning(String message) {
+                // We have to ignore warnings here!
+            }
+
+            @Override
+            public void fail(String message, Throwable cause) throws RuntimeException {
+                throw new JSONConvertionException(message, cause);
+            }
+        };
+        JSONObject obj = new JSONObject(jsonErrHandler);
+        obj.readJSON(jsonStream);
+        
+        return convert(obj, javaClass);
+    }
+
+    /**
+     * Returns an instance of a java class populated with data from a json object value read from a String containing JSON.
+     *
+     * @param json The String to read from.
+     * @param javaClass The java class to instantiate and populate.
+     *
+     * @return A populated instance of javaClass.
+     *
+     * @throws IOException on IO failures.
+     * @throws JSONConvertionException On JSON to Java failures.
+     */
+    public static <T> T convert(String json, Class<T> javaClass) throws IOException, JSONConvertionException {
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        try {
+            return convert(bais, javaClass);
+        }
+        finally {
+            try {bais.close();} catch (IOException ioe) {}
+        }
+    }
+    
+    /**
+     * Returns an instance of java class populated with data from json.
+     *
+     *
+     * @param json The json to convert to java.
+     * @param javaClass The class of the java object to convert to.
+     *
+     * @return A converted Java object.
+     *
+     * @throws JSONConvertionException On failure to convert.
+     */
+    public static <T> T convert(JSONValue json, Class<T> javaClass) throws JSONConvertionException {
+        T converted = null;
+
+        if (json instanceof JSONObject) {
+            converted = createAndLoadModel((JSONObject)json, javaClass);
+        }
+        else {
+            converted = convertJSONValue(json, javaClass);
+        }
+
+        return converted;
+    }
+
+    /**
+     * Loads data into a java object wrapped in a ModelInstance from a JSONObject.
+     *
+     * @param bean The bean to load.
+     * @param jsonObject The JSON object to load from.
+     *
+     * @throws JSONConvertionException on failure to load.
+     */
+    private static void load(BeanInstance bean, JSONObject jsonObject) throws JSONConvertionException {
+        // Load bean properties.
+        for (JSONString prop : jsonObject.getPropertyNames()) {
+            JSONValue value = jsonObject.getProperty(prop);
+
+            Object convertedValue = convertJSONValue(value, bean.getPropertyType(prop.toString()));
+            bean.setProperty(prop.toString(), convertedValue);
+        }
+    }
+
+    /**
+     * Creates and loads a model from JSON data.
+     *
+     * @param value The JSON value to load from.
+     * @param beanType The type of the java model to return.
+     *
+     * @return A loaded instance of the java model.
+     *
+     * @throws JSONConvertionException on any failure.
+     */
+    private static <T> T createAndLoadModel(JSONObject value, Class<T> beanType) throws JSONConvertionException {
+        try {
+            BeanInstance bean = new BeanInstance(beanType.newInstance());
+            load(bean, (JSONObject) value);
+
+            return (T)bean.getModelInstance();
+        }
+        catch (InstantiationException ie) {
+            throw new JSONConvertionException(ie.getMessage(), ie);
+        }
+        catch (IllegalAccessException iae) {
+            throw new JSONConvertionException(iae.getMessage(), iae);
+        }
+    }
+    
+    /**
+     * Converts a JSON value to a Java value.
+     *
+     * @param value The JSON value to convert.
+     * @param modelType The type of the java value.
+     *
+     * @return A converted Java instance.
+     *
+     * @throws JSONConvertionException on any failure.
+     */
+    private static <T> T convertJSONValue(JSONValue value, Class<T> modelType) throws JSONConvertionException {
+        T resVal = null;
+
+        if (value instanceof JSONString) {
+            resVal = (T)value.toString();
+        }
+        else if (value instanceof JSONBoolean) {
+            resVal = (T)new Boolean(((JSONBoolean)value).getAsBoolean());
+        }
+        else if (value instanceof JSONNumber) {
+            resVal = (T)((JSONNumber)value).to(modelType);
+        }
+        else if (value instanceof JSONArray) {
+            JSONArray array = (JSONArray)value;
+            List arrayEntries = new ArrayList();
+            for (JSONValue entry : array.getAsList()) {
+                if (entry instanceof JSONObject) {
+                    arrayEntries.add(createAndLoadModel((JSONObject) entry, modelType));
+                }
+                else {
+                    arrayEntries.add(convertJSONValue(entry, modelType));
+                }
+            }
+            resVal = (T)arrayEntries;
+        }
+        else if (value instanceof JSONObject) {
+            JSONObject jsonObject = (JSONObject)value;
+
+            if (Properties.class.isAssignableFrom(modelType)) {
+                Properties props = new Properties();
+                for (JSONString name : jsonObject.getPropertyNames()) {
+                    JSONValue jsonValue = jsonObject.getProperty(name);
+                    props.setProperty(name.toString(), jsonValue.toString());
+                }
+                resVal = (T)props;
+            }
+            else if (Map.class.isAssignableFrom(modelType)) {
+                resVal = (T)jsonObjectToMap(jsonObject);
+            }
+            else {
+                resVal = (T)createAndLoadModel((JSONObject) value, modelType);
+            }
+        }
+        else if (value instanceof JSONNull) {
+            // Do nothing and return null.
+        }
+
+        return resVal;
+    }
+
+    private static Map jsonObjectToMap(JSONObject jsonObject) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        for (JSONString name : jsonObject.getPropertyNames()) {
+            JSONValue jsonValue = jsonObject.getProperty(name);
+
+            if (jsonValue instanceof JSONString) {
+                map.put(name.toString(), jsonValue.toString());
+            }
+            else if (jsonValue instanceof JSONBoolean) {
+                map.put(name.toString(), ((JSONBoolean)jsonValue).getAsBoolean());
+            }
+            else if (jsonValue instanceof JSONNumber) {
+                map.put(name.toString(), ((JSONNumber)jsonValue).toNumber());
+            }
+            else if (jsonValue instanceof JSONObject) {
+                // This is the best we can do since we don't have a type for this object!
+                map.put(name.toString(), jsonObjectToMap((JSONObject) jsonValue));
+            }
+            else if (jsonValue instanceof JSONArray) {
+                map.put(name.toString(), jsonArrayToList((JSONArray)jsonValue));
+            }
+        }
+
+        return map;
+    }
+
+    private static List jsonArrayToList(JSONArray jsonArray) {
+        List list = new ArrayList();
+        for (JSONValue jsonValue : jsonArray.getAsList()) {
+
+            if (jsonValue instanceof JSONString) {
+                list.add(jsonValue.toString());
+            }
+            else if (jsonValue instanceof JSONBoolean) {
+                list.add(((JSONBoolean)jsonValue).getAsBoolean());
+            }
+            else if (jsonValue instanceof JSONNumber) {
+                list.add(((JSONNumber)jsonValue).toNumber());
+            }
+            else if (jsonValue instanceof JSONObject) {
+                // This is the best we can do since we don't have a type for the object!
+                list.add(jsonObjectToMap((JSONObject)jsonValue));
+            }
+            else if (jsonValue instanceof JSONArray) {
+                list.add(jsonArrayToList((JSONArray)jsonValue));
+            }
+        }
+
+        return list;
+    }
+}

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>APS</artifactId>
+        <groupId>se.natusoft.osgi.aps</groupId>
+        <version><!--APSVER-->0.9.0</version>
+        <relativePath>..</relativePath>
+    </parent>
+
+    <artifactId>APS-Webs</artifactId>
+    <packaging>pom</packaging>
+
+    <name>APS Web Applications</name>
+
+    <description>
+        APS Web Applications
+    </description>
+
+    <!--
+        Modules
+    -->
+    <modules>
+        <module>APSAdminWebServiceProvider</module>
+        <module>APSAdminWeb</module>
+        <module>APSConfigAdminWeb</module>
+        <module>APSUserAdminWeb</module>
+    </modules>
+
+    <dependencies>
+    </dependencies>
+
+</project>

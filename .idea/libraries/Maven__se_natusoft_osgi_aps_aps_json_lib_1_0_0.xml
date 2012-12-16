@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Maven: se.natusoft.osgi.aps:aps-json-lib:1.0.0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/se/natusoft/osgi/aps/aps-json-lib/1.0.0/aps-json-lib-1.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/APS-Libraries/APSJSONLib/pom-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/se/natusoft/osgi/aps/aps-json-lib/1.0.0/aps-json-lib-1.0.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/APS-Libraries/APSJSONLib/pom-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/se/natusoft/osgi/aps/aps-json-lib/1.0.0/aps-json-lib-1.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

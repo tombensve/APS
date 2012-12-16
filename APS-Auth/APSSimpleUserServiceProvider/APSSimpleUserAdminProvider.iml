@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="Osmorc" name="OSGi">
+      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-simple-useradmin-provider-1.0.0.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="Activator" bundleSymbolicName="aps-simple-useradmin-provider" bundleVersion="1.0.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
+        <additionalProperties>
+          <property key="Bundle-Vendor" value="Natusoft AB" />
+          <property key="Bundle-DocURL" value="http://www.natusoft.se/" />
+          <property key="Import-Package" value="*" />
+          <property key="Embed-Directory" value="lib" />
+          <property key="Embed-Dependency" value="*;scope=compile" />
+          <property key="Bundle-Name" value="APS aps-simple-useradmin-provider" />
+        </additionalProperties>
+        <additionalJARContents />
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_6" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/../APS-SimpleUserAdminProvider/target/classes" />
+    <output-test url="file://$MODULE_DIR$/../APS-SimpleUserAdminProvider/target/test-classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../APS-SimpleUserAdminProvider">
+      <sourceFolder url="file://$MODULE_DIR$/../APS-SimpleUserAdminProvider/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../APS-SimpleUserAdminProvider/src/test/java" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/../APS-SimpleUserAdminProvider/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="aps-apis" scope="PROVIDED" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: javax.jcr:jcr:2.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.osgi:org.osgi.core:4.2.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.osgi:org.osgi.compendium:4.2.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.8.2" level="project" />
+  </component>
+</module>
+

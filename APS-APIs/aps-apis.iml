@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="Osmorc" name="OSGi">
+      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-apis-0.9.0.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="" bundleSymbolicName="aps-apis" bundleVersion="0.9.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
+        <additionalProperties>
+          <property key="Bundle-Description" value="Provides the APIs for the application platform services." />
+          <property key="Bundle-Vendor" value="Natusoft AB" />
+          <property key="Bundle-DocURL" value="http://www.natusoft.se/" />
+          <property key="Export-Package" value="se.natusoft.osgi.aps.annotations;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.exceptions;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.auth.user;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.auth.user.exceptions;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.auth.user.model;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.core;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.core.platform.service;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.core.platform.model;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.core.advice.service;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.core.config;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.core.config.annotation;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.core.config.event;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.core.config.model;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.core.config.model.admin;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.core.config.service;version=&quot;0.9.0&quot;,se.natusoft.osig.aps.api.core.config.util;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.core.content;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.core.content.service;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.core.filesystem;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.core.filesystem.model;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.core.filesystem.service;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.core.model;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.data.jdbc.model;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.data.jdbc.service;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.data.jpa.service;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.external.extprotocolsvc;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.external.extprotocolsvc.model;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.external.model.type;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.misc.json.service;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.misc.json;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.misc.session;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.model.json;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.net.discovery.model;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.net.discovery.service;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.net.rpc.errors;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.net.rpc.model;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.net.rpc.service;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.api.net.rpc.streamed.service;version=&quot;0.9.0&quot;" />
+          <property key="Import-Package" value="*" />
+          <property key="-exportcontents" value="javax.jcr,javax.jcr.lock,javax.jcr.nodetype,javax.jcr.observation,javax.jcr.query,javax.jcr.query.qom,javax.jcr.retention,javax.jcr.security,javax.jcr.util,javax.jcr.version" />
+          <property key="Embed-Directory" value="lib" />
+          <property key="Embed-Dependency" value="*;scope=compile" />
+          <property key="Bundle-Name" value="APS APIs" />
+          <property key="Bundle-ClassPath" value=".,lib/javax.persistence-2.0.0.jar,lib/jcr-2.0.jar" />
+          <property key="Include-Resource" value="lib/javax.persistence-2.0.0.jar=$MAVEN_REPOSITORY$/org/eclipse/persistence/javax.persistence/2.0.0/javax.persistence-2.0.0.jar,lib/jcr-2.0.jar=$MAVEN_REPOSITORY$/javax/jcr/jcr/2.0/jcr-2.0.jar" />
+          <property key="Embedded-Artifacts" value="lib/javax.persistence-2.0.0.jar;g=&quot;org.eclipse.persistence&quot;;a=&quot;javax.persistence&quot;;v=&quot;2.0.0&quot;,lib/jcr-2.0.jar;g=&quot;javax.jcr&quot;;a=&quot;jcr&quot;;v=&quot;2.0&quot;" />
+        </additionalProperties>
+        <additionalJARContents />
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/target/classes" />
+    <output-test url="file://$MODULE_DIR$/target/test-classes" />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.eclipse.persistence:javax.persistence:2.0.0" level="project" />
+    <orderEntry type="library" name="Maven: javax.jcr:jcr:2.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.osgi:org.osgi.core:4.2.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.osgi:org.osgi.compendium:4.2.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.8.2" level="project" />
+  </component>
+</module>
+

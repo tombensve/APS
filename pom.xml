@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>se.natusoft.osgi.aps</groupId>
+    <artifactId>APS</artifactId>
+    <packaging>pom</packaging>
+    <version><!--APSVER-->0.9.0</version>
+
+    <name>OSGi Application Platform Services</name>
+
+    <url>https://github.com/tombensve/APS</url>
+
+    <!--
+        Common properties
+    -->
+    <properties>
+        <!--
+            This is the import package version specification for APS packages.
+        -->
+        <aps.import.ver>[0.0,1)</aps.import.ver>
+
+        <!--
+            This specifies the packaging type of the produced bundle to deploy. Should be either "jar" or "war",
+            where "jar" is the default. To override this set this property in local pom.
+        -->
+        <server.deploy.artifact.type>jar</server.deploy.artifact.type>
+    </properties>
+
+    <!--
+        Project Information
+    -->
+    <description>
+
+    </description>
+    <organization>
+        <name>Natusoft AB</name>
+        <url>http://www.natusoft.se/</url>
+    </organization>
+    <inceptionYear>2012</inceptionYear>
+    <licenses>
+        <license>
+            <name>Apache 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Tommy Svensson</name>
+            <email>tommy@natusoft.se</email>
+        </developer>
+    </developers>
+    <scm>
+        <connection>https://github.com/tombensve/APS.git</connection>
+        <url/>
+    </scm>
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/tombensve/APS/issues</url>
+    </issueManagement>
+
+    <!--
+        Dependencies
+    -->
+    <dependencies>
+
+        <!--
+            OSGi
+        -->
+        <!--
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>5.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.enterprise</artifactId>
+            <version>5.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <version>4.2.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--
+        <dependency>
+            <groupId></groupId>
+            <artifactId></artifactId>
+            <version></version>
+        </dependency>
+        -->
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!--
+        Modules
+    -->
+    <modules>
+        <module>APS-APIs</module>
+        <module>APS-Core</module>
+        <module>APS-Webs</module>
+        <module>APS-Misc</module>
+        <module>APS-Libraries</module>
+        <module>APS-Network</module>
+        <module>Test</module>
+        <module>APS-Data</module>
+        <module>APS-Auth</module>
+    </modules>
+
+    <!--
+        Building
+    -->
+    <build>
+        <plugins>
+            <!--
+                Setup for java 6.
+            -->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+
+            <!--
+                Provide Javadoc skin. Other javadoc config under <reporting/>.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.8.1</version>
+
+                <executions>
+                    <execution>
+                        <id>jar-javadoc</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                        <configuration>
+                            <attach>true</attach>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>javadoc</id>
+                        <goals>
+                            <goal>javadoc</goal>
+                        </goals>
+                        <phase>site</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--
+                Define project assemblies.
+            -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2.1</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>file:${basedir}/src/assembly/bin-dist.xml</descriptor>
+                    </descriptors>
+                </configuration>
+            </plugin>
+
+            <!--
+                Force checksums when installing to repository.
+
+                I suspect that this might be unneccesarry since I think
+                deploy creates checksums anyhow when deploying to external
+                repository.
+            -->
+            <plugin>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.3.1</version>
+                <configuration>
+                    <createChecksum>true</createChecksum>
+                </configuration>
+            </plugin>
+
+            <!--
+                Copy relevant license files to target on install.
+            -->
+            <plugin>
+                <groupId>se.natusoft.tools.codelicmgr</groupId>
+                <artifactId>CodeLicenseManager-maven-plugin</artifactId>
+                <version>2.0</version>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>se.natusoft.tools.codelicmgr</groupId>
+                        <artifactId>CodeLicenseManager-licenses-common-opensource</artifactId>
+                        <version>2.0</version>
+                    </dependency>
+                </dependencies>
+
+                <executions>
+                    <execution>
+                        <id>install-licence-info</id>
+                        <goals>
+                            <goal>install</goal>
+                        </goals>
+                        <phase>install</phase>
+                        <configuration>
+
+                            <installOptions>
+                                <verbose>true</verbose>
+                                <licenseDir>target/license</licenseDir>
+                                <thirdpartyLicenseDir>target/license/thirdparty</thirdpartyLicenseDir>
+                            </installOptions>
+
+                            <thirdpartyLicenses>
+                                <!--license>
+                                    <type></type>
+                                    <version>2.0</version>
+                                    <licenseProducts>
+                                        <product>
+                                            <name>org.osgi.compendium-4.2.0</name>
+                                            <web>http://www.osgi.org/</web>
+                                        </product>
+                                        <product>
+                                            <name>org.osgi.core-4.2.0</name>
+                                            <web>http://www.osgi.org/</web>
+                                        </product>
+                                    </licenseProducts>
+
+                                </license-->
+                            </thirdpartyLicenses>
+
+                            <createMavenPDFPluginLicenseAPTVersions>true</createMavenPDFPluginLicenseAPTVersions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <!--
+                    Groovy
+                -->
+                <plugin>
+                    <groupId>org.codehaus.groovy.maven</groupId>
+                    <artifactId>gmaven-plugin</artifactId>
+                    <version>1.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+    </build>
+
+    <!--
+        Distribution Management
+    -->
+    <repositories>
+        <repository>
+            <id>maven-natusoft-se</id>
+            <name>
+                Natusofts maven repository
+            </name>
+            <url>http://maven.natusoft.se/</url>
+        </repository>
+
+        <repository>
+            <id>chrel</id>
+            <name>codehaus-releases</name>
+            <url>https://nexus.codehaus.org/content/repositories/releases/</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>maven-natusoft-se</id>
+            <name>
+                Natusoft maven repository.
+            </name>
+            <url>http://maven.natusoft.se/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <!--
+        Profiles
+    -->
+    <profiles>
+        <profile>
+            <id>deploy-bundle</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.6</version>
+                        <configuration>
+                            <target>
+                                <echo message="Deploying ${project.build.finalName} to ${server.deploy.dir}."/>
+                                <copy file="target/${project.build.finalName}.${server.deploy.artifact.type}" todir="${server.deploy.dir}" failonerror="false"/>
+                            </target>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>server-deploy</id>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <phase>install</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>apply-license-info</id>
+            <build>
+                <plugins>
+                    <plugin>
+
+                        <groupId>se.natusoft.tools.codelicmgr</groupId>
+                        <artifactId>CodeLicenseManager-maven-plugin</artifactId>
+                        <version>2.0</version>
+
+                        <dependencies>
+                            <dependency>
+                                <groupId>se.natusoft.tools.codelicmgr</groupId>
+                                <artifactId>CodeLicenseManager-licenses-common-opensource</artifactId>
+                                <version>2.0</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>se.natusoft.tools.codelicmgr</groupId>
+                                <artifactId>CodeLicenseManager-source-updater-slashstar-comment</artifactId>
+                                <version>2.0</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>se.natusoft.tools.codelicmgr</groupId>
+                                <artifactId>CodeLicenseManager-source-updater-html-xml</artifactId>
+                                <version>2.0</version>
+                            </dependency>
+                        </dependencies>
+
+                        <configuration>
+                            <project>
+                                <codeVersion>${project.version}</codeVersion>
+                                <name>${project.name}</name>
+                                <description>${project.description}</description>
+                            </project>
+                            <!-- All options are optional. -->
+                            <codeOptions>
+                                <verbose>true</verbose>
+                                <!-- If not set uses extension on source file to resolve. -->
+                                <codeLanguage><!-- by source extension. -->
+                                </codeLanguage>
+                                <!-- If true updates the license information in source code. -->
+                                <updateLicenseInfo>true</updateLicenseInfo>
+                                <!-- If true updates the copyright information in source code. -->
+                                <updateCopyright>true</updateCopyright>
+                                <!-- If true updates the project information in source code. -->
+                                <updateProject>true</updateProject>
+                                <!-- If true will add authors information to source files that does not have it. This is not always implemented! -->
+                                <addAuthorsBlock>true</addAuthorsBlock>
+                                <!-- The directories to scan for source code to update with project & license information. -->
+                                <sourceCodeDirs>
+                                    src/main/java/**/.*.java,src/test/java/**/.*.java,src/main/resources/**/.*,src/assembly/**/.*.xml,src/main/webapp/**/.*.[cx][sm][sl]
+                                </sourceCodeDirs>
+
+                            </codeOptions>
+
+                            <userData>
+                                <!--name></name>
+                                <value></value-->
+                            </userData>
+
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <id>apply-licence-info</id>
+                                <goals>
+                                    <goal>apply</goal>
+                                </goals>
+                                <phase>generate-sources</phase>
+                            </execution>
+                        </executions>
+
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>update-version</id>
+            <build>
+                <plugins>
+                    <plugin>
+
+                        <groupId>se.natusoft.tools.codelicmgr</groupId>
+                        <artifactId>CodeLicenseManager-maven-plugin</artifactId>
+                        <version>2.0</version>
+                        <configuration>
+                            <codeOptions>
+                                <verbose>true</verbose>
+                            </codeOptions>
+                            <scripts>
+                                <script>
+                                    <fileFilter>pom.xml</fileFilter>
+                                    <code>
+                                        editor.moveToTopOfFile();
+                                        System.out.println("Moved to top of file!");
+                                        if (editor.find("parent")) {
+                                            display("Found parent");
+                                            if (editor.find("version")) {
+                                                display("Found version!");
+                                                editor.replaceCurrentLine("        &lt;version&gt;${project.version}&lt;/version&gt;");
+                                            }
+                                        }
+                                    </code>
+                                </script>
+                            </scripts>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>run-scripts</id>
+                                <goals>
+                                    <goal>script</goal>
+                                </goals>
+                                <phase>generate-sources</phase>
+                                <configuration>
+                                    <codeOptions>
+                                        <verbose>true</verbose>
+                                        <sourceCodeDirs>
+                                            **/pom.xml
+                                        </sourceCodeDirs>
+                                    </codeOptions>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

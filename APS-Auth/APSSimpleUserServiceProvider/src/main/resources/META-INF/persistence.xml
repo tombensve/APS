@@ -1,0 +1,7 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             version="1.0">
+    <persistence-unit name="APSSimpleUserServiceEntities" transaction-type="RESOURCE_LOCAL">
+        <class>se.natusoft.osgi.aps.userservice.entities.RoleEntity</class>
+        <class>se.natusoft.osgi.aps.userservice.entities.UserEntity</class>
+    </persistence-unit>
+</persistence>

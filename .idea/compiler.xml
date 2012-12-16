@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <option name="DEFAULT_COMPILER" value="Javac" />
+    <excludeFromCompile>
+      <directory url="file://$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/Test/APSConfigTest/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/Test/APSConfigTest/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Core/APSLogServiceProvider/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Core/APSLogServiceProvider/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Data/APSDataSource/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Data/APSDataSource/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-APIs/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-APIs/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Core/APSFilesystemServiceProvider/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Core/APSFilesystemServiceProvider/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Misc/APSJSONServiceProvider/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Misc/APSJSONServiceProvider/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Core/APSPlatformServiceProvider/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Core/APSPlatformServiceProvider/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Libraries/APSJSONLib/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Libraries/APSJSONLib/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/Archetypes/APSBundleArchetype/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/Archetypes/APSBundleArchetype/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/Archetypes/APSBundleArchetype/src/main/resources/archetype-resources" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/Archetypes/APSWarBundleArchetype/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/Archetypes/APSWarBundleArchetype/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/Archetypes/APSWarBundleArchetype/src/main/resources/archetype-resources" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/Documentation/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/Documentation/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+    </excludeFromCompile>
+    <resourceExtensions />
+    <wildcardResourcePatterns>
+      <entry name="?*.properties" />
+      <entry name="?*.xml" />
+      <entry name="?*.gif" />
+      <entry name="?*.png" />
+      <entry name="?*.jpeg" />
+      <entry name="?*.jpg" />
+      <entry name="?*.html" />
+      <entry name="?*.dtd" />
+      <entry name="?*.tld" />
+      <entry name="?*.ftl" />
+    </wildcardResourcePatterns>
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="false">
+        <processorPath useClasspath="false" />
+      </profile>
+      <profile default="false" name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="aps-admin-web" />
+        <module name="aps-admin-web-service-provider" />
+        <module name="aps-apis" />
+        <module name="aps-config-admin-web" />
+        <module name="aps-configuration-service-provider" />
+        <module name="aps-datasource" />
+        <module name="aps-discovery-service-provider" />
+        <module name="aps-external-protocol-extender" />
+        <module name="aps-filesystem-service-provider" />
+        <module name="aps-json-lib" />
+        <module name="aps-json-service-provider" />
+        <module name="aps-log-service-provider" />
+        <module name="aps-openjpa-provider" />
+        <module name="aps-platform-service-provider" />
+        <module name="aps-rpc-http-transport-provider" />
+        <module name="aps-session-provider-service" />
+        <module name="aps-simple-user-service-provider" />
+        <module name="aps-streamed-json-rpc-protocol-provider" />
+        <module name="aps-tools-lib" />
+        <module name="aps-user-admin-web" />
+        <module name="aps-web-tools" />
+        <module name="APSBundleArchetype" />
+        <module name="APSConfigTest" />
+        <module name="APSWarBundleArchetype" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="1.7">
+      <module name="APS" target="1.7" />
+      <module name="aps-admin-web" target="1.7" />
+      <module name="aps-admin-web-service-provider" target="1.7" />
+      <module name="aps-apis" target="1.7" />
+      <module name="APS-Auth" target="1.7" />
+      <module name="aps-config-admin-web" target="1.7" />
+      <module name="aps-configuration-service-provider" target="1.7" />
+      <module name="APS-Core" target="1.7" />
+      <module name="APS-Data" target="1.7" />
+      <module name="aps-datasource" target="1.7" />
+      <module name="aps-discovery-service-provider" target="1.7" />
+      <module name="aps-external-protocol-extender" target="1.7" />
+      <module name="aps-filesystem-service-provider" target="1.7" />
+      <module name="aps-json-lib" target="1.7" />
+      <module name="aps-json-service-provider" target="1.7" />
+      <module name="APS-Libraries" target="1.7" />
+      <module name="aps-log-service-provider" target="1.7" />
+      <module name="APS-Misc" target="1.7" />
+      <module name="APS-Network" target="1.7" />
+      <module name="aps-openjpa-provider" target="1.7" />
+      <module name="aps-platform-service-provider" target="1.7" />
+      <module name="aps-rpc-http-transport-provider" target="1.7" />
+      <module name="aps-session-provider-service" target="1.7" />
+      <module name="aps-simple-user-service-provider" target="1.7" />
+      <module name="aps-streamed-json-rpc-protocol-provider" target="1.7" />
+      <module name="aps-tools-lib" target="1.7" />
+      <module name="aps-user-admin-web" target="1.7" />
+      <module name="aps-web-tools" target="1.7" />
+      <module name="APS-Webs" target="1.7" />
+      <module name="APSConfigTest" target="1.7" />
+      <module name="Documentation" target="1.7" />
+      <module name="Test" target="1.7" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
+

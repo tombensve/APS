@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>APS-Webs</artifactId>
+        <groupId>se.natusoft.osgi.aps</groupId>
+        <version><!--APSVER-->0.9.0</version>
+    </parent>
+
+    <artifactId>aps-user-admin-web</artifactId>
+    <packaging>war</packaging>
+
+    <name>APS User Admin Web</name>
+
+    <description>
+        This is an administration web for aps-simple-user-service that allows editing of roles and users.
+    </description>
+
+    <properties>
+        <vaadin.version>6.8.1</vaadin.version>
+
+        <!-- 
+            Bundle properties 
+        -->
+
+        <!-- The synbolic name of the bundle. Defaults to the artifact id, but can be overriden. -->
+        <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
+
+        <!-- The bundle activator class -->
+        <osgi.bundle.activator>se.natusoft.osgi.aps.apsuseradminweb.APSUserAdminActivator</osgi.bundle.activator>
+
+        <!-- The context path of a war bundle (WAB). Setting this enables Web-ContextPath: in MANIFEST.MF. -->
+        <osgi.web.context.path>apsadminweb/user</osgi.web.context.path>
+
+        <!-- The osgi Bundle-ClassPath manifest entry. -->
+        <osgi.bundle.classpath>.,WEB-INF/classes, WEB-INF/lib/vaadin-${vaadin.version}.jar,WEB-INF/lib/aps-web-tools-${project.version}.jar</osgi.bundle.classpath>
+
+        <!-- The bundle packages to export. -->
+        <osgi.export.package>
+        </osgi.export.package>
+
+        <!-- The packages to import for the bundle. -->
+        <osgi.import.package>
+            javax.servlet,
+            javax.servlet.http,
+            javax.xml.namespace,
+            org.w3c.dom,
+            org.osgi.framework;version="[1.5,2)",
+            se.natusoft.osgi.aps.tools;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.tools.tracker;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.tools.models;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.apsadminweb.service;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.apsadminweb.service.model;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.api.auth.user;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.api.auth.user.exceptions;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.api.auth.user.model;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.api.misc.session;version="${aps.import.ver}"
+        </osgi.import.package>
+
+        <!-- The private packages. -->
+        <osgi.private.package>
+        </osgi.private.package>
+
+        <!-- The packages to export from dependent & embeded jars -->
+        <osgi.export.dependency.package>
+        </osgi.export.dependency.package>
+
+        <!-- The resources to include in bundle -->
+        <osgi.include.resource>
+        </osgi.include.resource>
+
+        <!-- The default for embedding dependencies in bundle. -->
+        <osgi.embed.dependency>*;scope=compile</osgi.embed.dependency>
+
+        <!-- The directory whose content should be embeded into the bundle. -->
+        <osgi.embed.directory>WEB-INF/lib</osgi.embed.directory>
+
+        <!--
+            This specifies the package-ing type of the produced bundle to deploy. Should be either "jar" or "war",
+            where "jar" is the default. To override this set this property in local pom.
+        -->
+        <server.deploy.artifact.type>war</server.deploy.artifact.type>
+
+        <!--
+            Other properties
+        -->
+        <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!--
+            APS
+        -->
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-apis</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-tools-lib</artifactId>
+            <version>${project.version}</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-web-tools</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-admin-web-service-provider</artifactId>
+            <version>${project.version}</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--
+            Third party
+        -->
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin</artifactId>
+            <version>${vaadin.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <version>6.0</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <!--
+                Force the jar plugin to use the maven-bundle-plugin generated manifest.
+            -->
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.1.1</version>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+
+            <!--
+                OSGi bundle handling.
+            -->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.5</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <supportedProjectTypes>
+                        <supportedProjectType>jar</supportedProjectType>
+                        <supportedProjectType>bundle</supportedProjectType>
+                        <supportedProjectType>war</supportedProjectType>
+                    </supportedProjectTypes>
+                    <archive>
+                        <manifestEntries>
+                            <Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath>
+                            <Web-ContextPath>${osgi.web.context.path}</Web-ContextPath>
+                        </manifestEntries>
+                    </archive>
+                    <instructions>
+                        <Export-Package>${osgi.export.package}</Export-Package>
+                        <Import-Package>${osgi.import.package}</Import-Package>
+                        <_exportcontents>${osgi.export.dependency.package}</_exportcontents>
+                        <Private-Package>${osgi.private.package}</Private-Package>
+                        <Include-Resource>${osgi.include.resource}</Include-Resource>
+                        <Bundle-SymbolicName>${osgi.bundle.symbolic.name}</Bundle-SymbolicName>
+                        <Bundle-Activator>${osgi.bundle.activator}</Bundle-Activator>
+                        <Embed-Directory>${osgi.embed.directory}</Embed-Directory>
+                        <Embed-Dependency>${osgi.embed.dependency}</Embed-Dependency>
+                    </instructions>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

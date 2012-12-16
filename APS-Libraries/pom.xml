@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>APS</artifactId>
+        <groupId>se.natusoft.osgi.aps</groupId>
+        <version><!--APSVER-->0.9.0</version>
+        <relativePath>..</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>APS-Libraries</artifactId>
+    <packaging>pom</packaging>
+
+    <name>APS Libraries</name>
+
+    <modules>
+        <module>APSToolsLib</module>
+        <module>APSJSONLib</module>
+        <module>APSWebTools</module>
+    </modules>
+</project>
