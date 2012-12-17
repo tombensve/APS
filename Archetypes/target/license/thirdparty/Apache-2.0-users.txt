@@ -1,0 +1,11 @@
+The following products are using the Apache version 2.0 license:
+
+org.osgi.compendium-4.2.0 version null
+http://www.osgi.org/
+
+org.osgi.core-4.2.0 version null
+http://www.osgi.org/
+
+groovy-all-1.8.0 version null
+http://groovy.codehaus.org/
+

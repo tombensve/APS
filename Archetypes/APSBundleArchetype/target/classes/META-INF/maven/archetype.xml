@@ -1,0 +1,9 @@
+<archetype>
+  <id>APSBundleArchetype</id>
+  <sources>
+    <source>src/main/java/Activator.java</source>
+  </sources>
+  <testSources>
+    <source>src/test/java/BundleTest.java</source>
+  </testSources>
+</archetype>
