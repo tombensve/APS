@@ -294,7 +294,7 @@ public class JSONRPC20 implements StreamedRPCProtocol {
      */
     @Override
     public String getRequestContentType() {
-        return "text/json";
+        return "application/json";
     }
 
     /**
@@ -302,7 +302,7 @@ public class JSONRPC20 implements StreamedRPCProtocol {
      */
     @Override
     public String getResponseContentType() {
-        return "text/json";
+        return "application/json";
     }
 
     /**
