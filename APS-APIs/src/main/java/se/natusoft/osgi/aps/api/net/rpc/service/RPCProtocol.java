@@ -41,7 +41,7 @@ import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
 
 /**
  * This represents an RPC protocol provider. This API is not enough in itself, it is a common base
- * for different transports.
+ * for different protocols.
  */
 public interface RPCProtocol {
 
