@@ -37,7 +37,7 @@
         <!-- The osgi Bundle-ClassPath manifest entry. -->
         <osgi.bundle.classpath>
             WEB-INF/classes,
-            WEB-INF/lib/aps-web-tools-1.0.0.jar,
+            WEB-INF/lib/aps-web-tools-${project.version}.jar,
             WEB-INF/lib/commons-codec-20041127.091804.jar
         </osgi.bundle.classpath>
 
