@@ -41,34 +41,34 @@ import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
 
 /**
  * This represents an RPC protocol provider. This API is not enough in itself, it is a common base
- * for different transports.
+ * for different protocols.
  */
 public interface RPCProtocol {
 
     /**
      * @return The name of the provided protocol.
      */
-    public String getServiceProtocolName();
+    String getServiceProtocolName();
     
     /**
      * @return The version of the implemented protocol.
      */
-    public String getServiceProtocolVersion();
+    String getServiceProtocolVersion();
 
     /**
      * @return The expected content type of a request. This should be verified by the transport if it has content type availability.
      */
-    public String getRequestContentType();
+    String getRequestContentType();
 
     /**
      * @return The content type of the response for when such can be provided.
      */
-    public String getResponseContentType();
+    String getResponseContentType();
 
     /**
      * @return A short description of the provided service. This should be in plain text.
      */
-    public String getRPCProtocolDescription();
+    String getRPCProtocolDescription();
 
     /**
      * Factory method to create an error object.
@@ -79,6 +79,6 @@ public interface RPCProtocol {
      *
      * @return An RPCError implementation.
      */
-    public RPCError createRPCError(ErrorType errorType, String message, String optionalData);
+    RPCError createRPCError(ErrorType errorType, String message, String optionalData);
 
 }
