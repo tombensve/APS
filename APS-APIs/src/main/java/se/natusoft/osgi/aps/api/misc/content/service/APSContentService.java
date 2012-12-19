@@ -34,7 +34,7 @@
  *         2011-08-02: Created!
  *         
  */
-package se.natusoft.osgi.aps.api.core.content.service;
+package se.natusoft.osgi.aps.api.misc.content.service;
 
 import javax.jcr.Repository;
 import javax.jcr.Session;

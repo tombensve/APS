@@ -79,7 +79,7 @@ public interface APSConfigService {
      *
      * @throws APSConfigException on bad configClass interface.
      */
-    public void registerConfiguration(Class<? extends APSConfig> configClass, boolean forService) throws APSConfigException;
+    void registerConfiguration(Class<? extends APSConfig> configClass, boolean forService) throws APSConfigException;
 
     /**
      * This tells the APSConfigService that the specified configuration is no longer actively used by anyone and will be
@@ -89,7 +89,7 @@ public interface APSConfigService {
      *
      * @param configClass The config Class for the configuration.
      */
-    public void unregisterConfiguration(Class<? extends APSConfig> configClass);
+    void unregisterConfiguration(Class<? extends APSConfig> configClass);
 
     /**
      * Returns the configuration for the specified configuration Class.
@@ -101,5 +101,5 @@ public interface APSConfigService {
      *
      * @throws APSConfigException on failure to get configuration.
      */
-    public <Config extends APSConfig> Config getConfiguration(Class<Config> configClass) throws APSConfigException;
+    <Config extends APSConfig> Config getConfiguration(Class<Config> configClass) throws APSConfigException;
 }

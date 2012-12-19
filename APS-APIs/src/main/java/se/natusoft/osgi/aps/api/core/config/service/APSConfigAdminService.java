@@ -68,7 +68,7 @@ public interface APSConfigAdminService {
     /**
      * This is a sub API for administering configuration environments.
      */
-    public interface APSConfigEnvAdmin {
+    interface APSConfigEnvAdmin {
 
         /**
          * Adds a new configuration environment, like "test" or "prod" for example. If this is
@@ -79,7 +79,7 @@ public interface APSConfigAdminService {
          *
          * @throws APSConfigException on failure to add environment.
          */
-        public void addConfigEnvironment(String name, String description) throws APSConfigException;
+        void addConfigEnvironment(String name, String description) throws APSConfigException;
 
         /**
          * Removes the specified environment.
@@ -88,7 +88,7 @@ public interface APSConfigAdminService {
          *
          * @throws APSConfigException on failure to remove environment.
          */
-        public void removeConfigEnvironment(APSConfigEnvironment environment) throws APSConfigException;
+        void removeConfigEnvironment(APSConfigEnvironment environment) throws APSConfigException;
 
         /**
          * Returns a config environment by its name.
@@ -97,12 +97,12 @@ public interface APSConfigAdminService {
          *
          * @return The named environment or null if it does not exist.
          */
-        public APSConfigEnvironment getConfigEnvironmentByName(String name);
+        APSConfigEnvironment getConfigEnvironmentByName(String name);
 
         /**
          * Returns the available environments.
          */
-        public List<APSConfigEnvironment> getAvailableConfigEnvironments();
+        List<APSConfigEnvironment> getAvailableConfigEnvironments();
 
         /**
          * Selects a specified environment as the active environment to use for APSConfigService
@@ -113,36 +113,36 @@ public interface APSConfigAdminService {
          * @throws APSConfigException if the specified environment is not among those returned by
          *                                   getAvailableEnvironments().
          */
-        public void selectActiveConfigEnvironment(APSConfigEnvironment environment) throws APSConfigException;
+        void selectActiveConfigEnvironment(APSConfigEnvironment environment) throws APSConfigException;
 
         /**
          * Returns the currently active environment.
          */
-        public APSConfigEnvironment getActiveConfigEnvironment();
+        APSConfigEnvironment getActiveConfigEnvironment();
     }
 
     /**
      * Returns the API for administering configuration environments.
      */
-    public APSConfigEnvAdmin getConfigEnvAdmin();
+    APSConfigEnvAdmin getConfigEnvAdmin();
 
     /**
      * Returns all published configuration instances.
      */
-    public List<APSConfigAdmin> getAllConfigurations();
+    List<APSConfigAdmin> getAllConfigurations();
 
     /**
      * Returns all available (registered but not necessary active) configuration ids for
      * the active configuration environment.
      */
-    public Set<String> getAllConfigurationIds();
+    Set<String> getAllConfigurationIds();
 
     /**
      * Returns all known versions of the specified configuration id for the active configuration environment.
      *
      * @param configId The identifier of the configuration to get the versions for.
      */
-    public List<String> getVersions(String configId);
+    List<String> getVersions(String configId);
 
     /**
      * Returns the admin object for the specified configuration. This object lets you edit the configuration.
@@ -155,7 +155,7 @@ public interface APSConfigAdminService {
      * @param configId The id of the configuration.
      * @param version The version to get the configuration for.
      */
-    public APSConfigAdmin getConfiguration(String configId, String version);
+    APSConfigAdmin getConfiguration(String configId, String version);
 
     /**
      * Updates an existing configuration with the specified one. Please note that configurations are created
@@ -168,7 +168,7 @@ public interface APSConfigAdminService {
      *
      * @throws APSConfigException on any failure to persist the changes.
      */
-    public void updateConfiguration(APSConfigAdmin configuration) throws APSConfigException;
+    void updateConfiguration(APSConfigAdmin configuration) throws APSConfigException;
 
     /**
      * Removes the specified configuration from persistent store. If a client re-registers this configuration
@@ -179,7 +179,7 @@ public interface APSConfigAdminService {
      *
      * @throws APSConfigException on failure to remove.
      */
-    public void removeConfiguration(APSConfigAdmin configuration) throws APSConfigException;
+    void removeConfiguration(APSConfigAdmin configuration) throws APSConfigException;
 
     /**
      * Removes the specified configuration from persistent store. If a client re-registers this configuration
@@ -191,5 +191,5 @@ public interface APSConfigAdminService {
      *
      * @throws APSConfigException on failure to remove.
      */
-    public void removeConfiguration(String configId, String version) throws APSConfigException;
+    void removeConfiguration(String configId, String version) throws APSConfigException;
 }
