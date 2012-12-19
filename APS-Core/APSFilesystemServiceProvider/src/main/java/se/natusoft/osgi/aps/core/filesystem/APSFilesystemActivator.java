@@ -158,7 +158,14 @@ public class APSFilesystemActivator implements BundleActivator {
             props.setProperty(APSFilesystemService.CONF_APS_FILESYSTEM_ROOT, System.getProperty(APSFilesystemService.CONF_APS_FILESYSTEM_ROOT));
         }
         else {
-            props.setProperty(APSFilesystemService.CONF_APS_FILESYSTEM_ROOT, frameworkFileArea.getAbsolutePath());
+            // This is a bad default!
+            //props.setProperty(APSFilesystemService.CONF_APS_FILESYSTEM_ROOT, frameworkFileArea.getAbsolutePath());
+
+            // This is a safer default!
+            props.setProperty(APSFilesystemService.CONF_APS_FILESYSTEM_ROOT, System.getProperty("user.home") +
+                    File.pathSeparator + ".aps" + File.pathSeparator + "apsfs");
+            File fsDir = new File(props.getProperty(APSFilesystemService.CONF_APS_FILESYSTEM_ROOT));
+            fsDir.mkdirs();
         }
         return props;
     }
