@@ -10,6 +10,11 @@
         <url>jar://$MAVEN_REPOSITORY$/org/apache/derby/derbyclient/10.9.1.0/derbyclient-10.9.1.0.jar!/</url>
       </library>
     </libraries>
+    <schema name="DERBY" catalog="" />
+    <schema name="SQLJ" catalog="" />
+    <schema name="SYS" catalog="" />
+    <schema name="SYSCS_UTIL" catalog="" />
+    <schema name="SYSIBM" catalog="" />
     <table name="OPENJPA_SEQUENCE_TABLE" schema="DERBY" catalog="" type="TABLE">
       <column name="ID" sqlType="INTEGER" length="10" precision="0" nullable="false" jdbcType="4" />
       <column name="SEQUENCE_VALUE" sqlType="INTEGER" length="10" precision="0" nullable="true" jdbcType="4" def="TlVMTA==" />
@@ -32,7 +37,8 @@
       <column name="ID" sqlType="VARCHAR" length="50" precision="0" nullable="false" jdbcType="12" />
       <column name="USER_DATA" sqlType="VARCHAR" length="1000" precision="0" nullable="true" jdbcType="12" />
       <column name="AUTH" sqlType="VARCHAR" length="2000" precision="0" nullable="true" jdbcType="12" />
-      <primary-key name="SQL120822204307100" columns="id" />
+      <primary-key name="SQL120822204307100" columns="ID" />
+      <exported-key name="SQL120822231426281" table="USER_ROLE" schema="DERBY" catalog="" columns="USER_ID" />
     </table>
     <table name="USER_ROLE" schema="DERBY" catalog="" type="TABLE">
       <column name="USER_ID" sqlType="VARCHAR" length="50" precision="0" nullable="false" jdbcType="12" />

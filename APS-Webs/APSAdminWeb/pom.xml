@@ -37,7 +37,7 @@
             .,
             WEB-INF/classes,
             WEB-INF/lib/vaadin-6.8.1.jar,
-            WEB-INF/lib/aps-web-tools-1.0.0.jar
+            WEB-INF/lib/aps-web-tools-${project.version}.jar
         </osgi.bundle.classpath>
         
         <!-- The bundle packages to export. -->

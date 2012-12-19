@@ -36,7 +36,7 @@
         
         <!-- The osgi Bundle-ClassPath manifest entry. -->
         <osgi.bundle.classpath>
-            .,WEB-INF/classes,WEB-INF/lib/vaadin-${vaadin-ver}.jar,WEB-INF/lib/aps-web-tools-1.0.0.jar
+            .,WEB-INF/classes,WEB-INF/lib/vaadin-${vaadin-ver}.jar,WEB-INF/lib/aps-web-tools-${project.version}.jar
         </osgi.bundle.classpath>
 
         <!-- The bundle packages to export. -->

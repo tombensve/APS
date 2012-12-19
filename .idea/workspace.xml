@@ -2,15 +2,25 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSFilesystemServiceProvider/src/main/java/se/natusoft/osgi/aps/core/filesystem/APSFilesystemActivator.java" afterPath="$PROJECT_DIR$/APS-Core/APSFilesystemServiceProvider/src/main/java/se/natusoft/osgi/aps/core/filesystem/APSFilesystemActivator.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__net_sf_xob_xob_4_0.xml" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.ids" afterPath="$PROJECT_DIR$/.idea/dataSources.ids" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/src/main/resources/lib/openjpa-all-2.2.0.jar" afterPath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/src/main/resources/lib/openjpa-all-2.2.0.jar" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/src/main/resources/lib/xob-4.0.jar" afterPath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/src/main/resources/lib/xob-4.0.jar" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Documentation/APSUserGuide.md" afterPath="$PROJECT_DIR$/Documentation/APSUserGuide.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/src/main/resources/META-INF/MANIFEST.MF" afterPath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/src/main/resources/META-INF/MANIFEST.MF" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/aps-openjpa-provider.iml" afterPath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/aps-openjpa-provider.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.xml" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/pom.xml" afterPath="$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/pom.xml" afterPath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/pom.xml" afterPath="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/pom.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="a5230742-f30f-451e-b5fc-eabdd2e39ef7" name="Failed commit: aps-20 Default APSEnterpriseAPIs activity." comment="aps-20 Default APSEnterpriseAPIs activity." />
     <list id="93ee55a5-7aeb-46b4-befc-da110c6bd63a" name="Failed commit: Default" comment="Dev commit." />
     <ignored path="OSGiApplicationPlatformServices.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355675515213" ignored="false" />
-    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355935915654" ignored="false" />
+    <file path="/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355943745729" ignored="false" />
+    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355936578913" ignored="false" />
     <file path="/a.dummy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355068225170" ignored="false" />
     <file path="/testclient.sh" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355064160118" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/wip-clones/MarkdownDoc/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355420755980" ignored="false" />
@@ -27,6 +37,8 @@
     <file path="/APSUserGuide.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355676523588" ignored="false" />
     <file path="/RPCProtocol.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355851629208" ignored="false" />
     <file path="/APSFilesystemActivator.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355936384780" ignored="false" />
+    <file path="/MANIFEST.MF" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355942450399" ignored="false" />
+    <file path="/Local Derby" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355944116982" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,6 +60,7 @@
   <component name="DatabaseView">
     <flatten value="false" />
     <groupTables value="false" />
+    <sortChildren value="true" />
   </component>
   <component name="DebuggerManager">
     <breakpoint_rules default_suspend_policy="SuspendAll" default_condition_enabled="true" />
@@ -95,10 +108,118 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="APSFilesystemActivator.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/APS-Core/APSFilesystemServiceProvider/src/main/java/se/natusoft/osgi/aps/core/filesystem/APSFilesystemActivator.java">
+      <file leaf-file-name="APSUserGuide.md" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Documentation/APSUserGuide.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="173" column="24" selection-start="6170" selection-end="6170" vertical-scroll-proportion="1.7051282">
+            <state line="14" column="5" selection-start="786" selection-end="786" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MANIFEST.MF" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/src/main/resources/META-INF/MANIFEST.MF">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="18" column="16" selection-start="506" selection-end="506" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="web.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/src/main/webapp/WEB-INF/web.xml">
+          <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleAssemblyDescriptorReferencesProvider">
+            <state />
+          </provider>
+          <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleAssemblyDescriptorProvider">
+            <state />
+          </provider>
+          <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleGeneralEditorProvider">
+            <state />
+          </provider>
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="28" column="43" selection-start="1174" selection-end="1174" vertical-scroll-proportion="-8.75">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="39" column="55" selection-start="1565" selection-end="1565" vertical-scroll-proportion="-24.375">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="23" column="11" selection-start="850" selection-end="850" vertical-scroll-proportion="-9.375">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="web.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/src/main/webapp/WEB-INF/web.xml">
+          <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleAssemblyDescriptorReferencesProvider">
+            <state />
+          </provider>
+          <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleAssemblyDescriptorProvider">
+            <state />
+          </provider>
+          <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleGeneralEditorProvider">
+            <state />
+          </provider>
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="about-admin-web.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/src/main/resources/html/about-admin-web.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LogoPanel.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/src/main/java/se/natusoft/osgi/aps/apsadminweb/app/gui/vaadin/LogoPanel.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="35" column="3" selection-start="1088" selection-end="1088" vertical-scroll-proportion="0.39137787">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="55" column="68" selection-start="2490" selection-end="2490" vertical-scroll-proportion="-34.375">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.0">
               <folding />
             </state>
           </provider>
@@ -126,22 +247,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/pom.xml" />
-        <option value="$PROJECT_DIR$/APS-Webs/APSAdminWeb/pom.xml" />
-        <option value="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/pom.xml" />
-        <option value="$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/pom.xml" />
-        <option value="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Auth/pom.xml" />
         <option value="$PROJECT_DIR$/APS-APIs/pom.xml" />
         <option value="$PROJECT_DIR$/Test/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/aps-openjpa-provider.iml" />
-        <option value="$PROJECT_DIR$/Documentation/APSUserGuide.md" />
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/service/RPCProtocol.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/versions/JSONRPC20.java" />
         <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/config/service/APSConfigAdminService.java" />
         <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/config/service/APSConfigService.java" />
         <option value="$PROJECT_DIR$/APS-Core/APSFilesystemServiceProvider/src/main/java/se/natusoft/osgi/aps/core/filesystem/APSFilesystemActivator.java" />
+        <option value="$PROJECT_DIR$/Documentation/APSUserGuide.md" />
+        <option value="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/src/main/resources/META-INF/MANIFEST.MF" />
+        <option value="$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/pom.xml" />
+        <option value="$PROJECT_DIR$/APS-Webs/APSAdminWeb/pom.xml" />
+        <option value="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/pom.xml" />
+        <option value="db-console:/777fbdbd/a36f84fc-ebe7-4b04-9280-71c4116b3158/" />
       </list>
     </option>
   </component>
@@ -226,6 +347,11 @@
         <option name="lookForNested" value="true" />
       </MavenImportingSettings>
     </option>
+    <option name="enabledProfiles">
+      <list>
+        <option value="deploy-bundle" />
+      </list>
+    </option>
   </component>
   <component name="MavenProjectNavigator">
     <option name="groupStructurally" value="true" />
@@ -258,7 +384,29 @@
           <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
         </PATH_ELEMENT>
         <PATH_ELEMENT>
-          <option name="myItemId" value="APS APIs" />
+          <option name="myItemId" value="APS Web Applications" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Web Applications" />
           <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
         </PATH_ELEMENT>
       </PATH>
@@ -276,12 +424,300 @@
           <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
         </PATH_ELEMENT>
         <PATH_ELEMENT>
-          <option name="myItemId" value="APS APIs" />
+          <option name="myItemId" value="APS Web Applications" />
           <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
         </PATH_ELEMENT>
         <PATH_ELEMENT>
           <option name="myItemId" value="Lifecycle" />
           <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$LifecycleNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Network" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Network" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS RPC Over HTTP Transport Provider" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Network" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS RPC Over HTTP Transport Provider" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Lifecycle" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$LifecycleNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Network" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Data" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS OpenJPA Provider" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Data" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS OpenJPA Provider" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Lifecycle" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$LifecycleNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Data" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Data" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Core" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Core" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Filesystem Service Provider" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Core" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Filesystem Service Provider" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Lifecycle" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$LifecycleNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Core" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
         </PATH_ELEMENT>
       </PATH>
       <PATH>
@@ -312,6 +748,16 @@
         <PATH_ELEMENT>
           <option name="myItemId" value="" />
           <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Profiles" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProfilesNode" />
         </PATH_ELEMENT>
       </PATH>
     </treeState>
@@ -320,8 +766,8 @@
     <scope name="Tommys" pattern="*" />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="121" />
-    <option name="y" value="45" />
+    <option name="x" value="132" />
+    <option name="y" value="42" />
     <option name="width" value="2071" />
     <option name="height" value="1331" />
   </component>
@@ -439,6 +885,278 @@
               <option name="myItemId" value="APS and modules" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-APIs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-APIs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-APIs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-APIs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="api" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-APIs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="api" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="auth" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="user" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-APIs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="api" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="auth" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="user" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="model" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Webs and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSUserAdminWeb" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Webs and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSConfigAdminWeb" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -464,6 +1182,242 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Webs and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSAdminWeb" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Webs and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSAdminWeb" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="webapp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WEB-INF" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Webs and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSAdminWeb" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="webapp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="VAADIN" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="themes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Webs and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSAdminWeb" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="webapp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="VAADIN" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="themes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="images" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Webs and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSAdminWeb" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="html" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Webs and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSAdminWeb" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="apsadminweb" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gui" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="vaadin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="APS-Network and modules" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
             </PATH_ELEMENT>
@@ -482,7 +1436,223 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="APSRPCHTTPTransportProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Network and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSRPCHTTPTransportProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Network and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSRPCHTTPTransportProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="webapp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WEB-INF" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Network and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSRPCHTTPTransportProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Network and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="APS-Network" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Network and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Network" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSRPCHTTPTransportProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Network and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Network" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSRPCHTTPTransportProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Network and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Network" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSRPCHTTPTransportProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="webapp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WEB-INF" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Network and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Network" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSRPCHTTPTransportProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -531,6 +1701,158 @@
               <option name="myItemId" value="APS-Libraries and modules" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSWebTools" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Libraries and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSWebTools" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Libraries and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSWebTools" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tools" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="web" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Libraries and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSWebTools" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tools" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="web" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="vaadin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Libraries and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -547,6 +1869,232 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="APSOpenJPAProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Data and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSOpenJPAProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="META-INF" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Data and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSOpenJPAProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Data and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSOpenJPAProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jpa" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Data and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSOpenJPAProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jpa" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="xml" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Data and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSOpenJPAProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="jpa" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="service" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -800,6 +2348,682 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="APS-Auth and modules" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSSimpleUserServiceProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSSimpleUserServiceProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSSimpleUserServiceProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="META-INF" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSSimpleUserServiceProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSSimpleUserServiceProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="userservice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSSimpleUserServiceProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="userservice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="util" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSSimpleUserServiceProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="userservice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="service" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSSimpleUserServiceProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="userservice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="entities" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSSimpleUserServiceProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSSimpleUserServiceProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSSimpleUserServiceProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="META-INF" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSSimpleUserServiceProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="resources" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSSimpleUserServiceProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="userservice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSSimpleUserServiceProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="userservice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="util" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSSimpleUserServiceProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="userservice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="service" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Auth" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSSimpleUserServiceProvider" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="userservice" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="entities" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -2057,7 +4281,11 @@
       <created>1355935922036</created>
       <updated>1355935922036</updated>
     </task>
-    <option name="localTasksCounter" value="162" />
+    <task id="LOCAL-00162" summary="~/.aps/apsfs is now the default root for APSFilesystemService if aps.filesystem.root system property is not set.">
+      <created>1355936592731</created>
+      <updated>1355936592732</updated>
+    </task>
+    <option name="localTasksCounter" value="163" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="false" url="http://natusoft.selfip.net:6789/redmine">
@@ -2094,7 +4322,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="121" y="45" width="2071" height="1331" extended-state="0" />
+    <frame x="132" y="42" width="2071" height="1331" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Dilbert" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27497935" sideWeight="0.5" order="17" side_tool="false" content_ui="tabs" />
@@ -2103,7 +4331,7 @@
       <window_info id="Persistence" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32496414" sideWeight="0.21348314" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3261767" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32987654" sideWeight="0.671346" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24964131" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3247934" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
@@ -2116,16 +4344,16 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.328654" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25777778" sideWeight="0.27250206" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39956957" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20197532" sideWeight="0.72502065" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.20197532" sideWeight="0.6242775" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25777778" sideWeight="0.72502065" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25777778" sideWeight="0.671346" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.37572256" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hudson Information" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="PDF_FIND" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Code Consultant" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="JavaDoc Browser" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32916668" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24976122" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3294606" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Database Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.328654" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19061728" sideWeight="0.6752066" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -2175,7 +4403,7 @@
     <option name="MAXIMUM_HISTORY_ROWS" value="1000" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Dev commit." />
+    <option name="LAST_COMMIT_MESSAGE" value="~/.aps/apsfs is now the default root for APSFilesystemService if aps.filesystem.root system property is not set." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -2188,7 +4416,6 @@
     <option name="UPDATE_GROUP_BY_CHANGELIST" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="aps-21 Default APSOpenJPAProvider activity" />
     <MESSAGE value="aps-26 Default APSSimpleUserServiceProvider activity." />
     <MESSAGE value="Fixed bug that didn't reflect config updates for aps-configuration-service-provider." />
     <MESSAGE value="aps-24 Add an optional group name to a configuration to make config admin more structured." />
@@ -2213,6 +4440,7 @@
     <MESSAGE value="Javadoc error fix." />
     <MESSAGE value="changed content type &quot;text/json&quot; to &quot;applicaiton/json&quot;." />
     <MESSAGE value="Dev commit." />
+    <MESSAGE value="~/.aps/apsfs is now the default root for APSFilesystemService if aps.filesystem.root system property is not set." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -2222,104 +4450,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="89" column="19" selection-start="3337" selection-end="3337" vertical-scroll-proportion="0.09404659">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="95" column="39" selection-start="4107" selection-end="4107" vertical-scroll-proportion="0.0811044">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="51" column="76" selection-start="2224" selection-end="2224" vertical-scroll-proportion="0.012942191">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="68" selection-start="1548" selection-end="1548" vertical-scroll-proportion="0.012942191">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Webs/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="58" column="32" selection-start="2334" selection-end="2334" vertical-scroll-proportion="0.013089005">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="81" column="39" selection-start="2965" selection-end="2965" vertical-scroll-proportion="0.057591625">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="68" column="76" selection-start="3415" selection-end="3415" vertical-scroll-proportion="0.013089005">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="55" column="68" selection-start="2490" selection-end="2490" vertical-scroll-proportion="0.013089005">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="253" column="25" selection-start="8298" selection-end="8298" vertical-scroll-proportion="0.63350785">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/config/APSConfig.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="119" column="13" selection-start="5170" selection-end="5170" vertical-scroll-proportion="1.394759">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/config/ManagedConfig.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="13" selection-start="296" selection-end="296" vertical-scroll-proportion="0.101437025">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Documentation/APSUserGuide.md">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="57" column="45" selection-start="4565" selection-end="4565" vertical-scroll-proportion="0.7307692">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/config/service/APSConfigService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="103" column="4" selection-start="4138" selection-end="4138" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/config/service/APSConfigAdminService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="156" column="7" selection-start="5899" selection-end="5899" vertical-scroll-proportion="1.9273034">
@@ -2329,7 +4459,121 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Core/APSFilesystemServiceProvider/src/main/java/se/natusoft/osgi/aps/core/filesystem/APSFilesystemActivator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="173" column="24" selection-start="6170" selection-end="6170" vertical-scroll-proportion="1.7051282">
+        <state line="147" column="53" selection-start="5107" selection-end="5107" vertical-scroll-proportion="0.98717946">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Documentation/APSUserGuide.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="5" selection-start="786" selection-end="786" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/src/main/resources/META-INF/persistence.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/src/main/resources/META-INF/MANIFEST.MF">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="16" selection-start="506" selection-end="506" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/src/main/webapp/WEB-INF/web.xml">
+      <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleAssemblyDescriptorReferencesProvider">
+        <state />
+      </provider>
+      <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleAssemblyDescriptorProvider">
+        <state />
+      </provider>
+      <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleGeneralEditorProvider">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="28" column="43" selection-start="1174" selection-end="1174" vertical-scroll-proportion="-8.75">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="39" column="55" selection-start="1565" selection-end="1565" vertical-scroll-proportion="-24.375">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="55" column="68" selection-start="2490" selection-end="2490" vertical-scroll-proportion="-34.375">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="dbDummy://db-console:/777fbdbd/a36f84fc-ebe7-4b04-9280-71c4116b3158/">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="21" selection-start="21" selection-end="21" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="23" column="11" selection-start="850" selection-end="850" vertical-scroll-proportion="-9.375">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/src/main/webapp/WEB-INF/web.xml">
+      <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleAssemblyDescriptorReferencesProvider">
+        <state />
+      </provider>
+      <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleAssemblyDescriptorProvider">
+        <state />
+      </provider>
+      <provider editor-type-id="com.intellij.javaee.module.view.web.viewlets.WebModuleGeneralEditorProvider">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/src/main/resources/html/about-admin-web.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/src/main/webapp/VAADIN/themes/APS/images/app-platform-services.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/src/main/java/se/natusoft/osgi/aps/apsadminweb/app/gui/vaadin/LogoPanel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="35" column="3" selection-start="1088" selection-end="1088" vertical-scroll-proportion="0.39137787">
           <folding />
         </state>
       </provider>

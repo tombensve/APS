@@ -2,7 +2,7 @@
 
 OSGi Application Platform Services - A "smorgasbord" of OSGi services that focuses on ease of use and good enough functionality for many but wont fit all. It can be seen as osgi-ee-light-and-easy. The services are of platform type: configuration, database, JPA, content, etc. 
 
-All services that require some form of administration have an adming web application for that, that plugs into the general apsadminweb admin application.
+All services that require some form of administration have an admin web application for that, that plugs into the general apsadminweb admin application.
 
 All administrations web applications are WABs and thus require that the OSGi server supports WABs. 
 
@@ -46,6 +46,8 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * Since JBoss is apparently having trouble getting WABs to work (they are still using PAX, but claim that they have solved this in 7.2 that will not build when checked out from GitHub and don't seem to be released anytime soon) I am considering to add support for their WAR->OSGi service bridge though I haven't had much luck in getting that to work either so far. 
 
+* A smart auto dependency resolving bundle deployer.
+
 * Anything else relevant I come up with and consider fun to do :-).
 
 
@@ -55,9 +57,9 @@ The Filesystem service is part of the core and used by other services. It should
 
         aps.filesystem.root=<root>
 
-<!-- Note to self: This has to be easier! -->
-
 How to do this differs between servers. In Glassfish you can supply system properties with its admin gui. 
+
+If this system property is not set the default root will be `.aps/apsfs` in the home directory of the user the server is run as. 
 
 After this path has been setup and the server started, all other configuration can be done in http://…/apsadminweb/. 
 

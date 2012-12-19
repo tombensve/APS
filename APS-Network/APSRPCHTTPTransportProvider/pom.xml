@@ -38,7 +38,7 @@
         <osgi.bundle.classpath>
             WEB-INF/classes,
             WEB-INF/lib/aps-web-tools-1.0.0.jar,
-            WEB-INF/lib/commons-coded-20041127.091804.jar
+            WEB-INF/lib/commons-codec-20041127.091804.jar
         </osgi.bundle.classpath>
 
         <!-- The bundle packages to export. -->
@@ -47,7 +47,7 @@
 
         <!-- The packages to import for the bundle. -->
         <osgi.import.package>
-            se.natusoft.osgi.aps.api.user;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.api.auth.user;version="${aps.import.ver}",
             se.natusoft.osgi.aps.api.auth.user.model;version="${aps.import.ver}",
             se.natusoft.osgi.aps.api.misc.session;version="${aps.import.ver}",
             *
