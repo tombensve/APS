@@ -32,7 +32,7 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * An administration web service to which administration web applications can register themselves with an url and thus be available in the .../apsadminweb admin gui.
 
-* A user service. Provides basic user management including roles/groups. Is accompanied with a admin GUI (plugis into apsadminweb) for administration of users. 
+* A user service. Provides basic user management including roles/groups. Is accompanied with a admin GUI (plugnis into apsadminweb) for administration of users. 
 
 * A far better service tracker that does a better job at handling services coming and going. Supports service availability wait and timeout and can be wrapped as a proxy to the service. 
 
@@ -49,4 +49,16 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 * Anything else relevant I come up with and consider fun to do :-).
 
 
+# Setup
 
+The Filesystem service is part of the core and used by other services. It should preferably have its filesystem root outside of the server installation. The BundleContext.getDataFile(String) returns a path within the deploy cache and is only valid for as long a a bundle is deployed. The point with the FilesystemService is to have a more permanent filesystem outside of the application server installation. To provide the FilesystemService root the following system property have to be set and available in the JVM instance:
+
+        aps.filesystem.root=<root>
+
+<!-- Note to self: This has to be easier! -->
+
+How to do this differs between servers. In Glassfish you can supply system properties with its admin gui. 
+
+After this path has been setup and the server started, all other configuration can be done in http://…/apsadminweb/. 
+
+ 
