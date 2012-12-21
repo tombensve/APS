@@ -68,7 +68,7 @@ public class APSDiscoveryClient implements DiscoveryEventListener {
     private void help() {
         System.out.println("Commands:");
         System.out.println("");
-        System.out.println("    mcast <address> >targetPort>");
+        System.out.println("    mcast <address> <targetPort>");
         System.out.println("    udp-listen <address> <targetPort>");
         System.out.println("    udp-announce <address> <targetPort>");
         System.out.println("");

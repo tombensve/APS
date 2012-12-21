@@ -60,7 +60,7 @@ public class APSDiscoveryServiceConfig extends APSConfig {
     public static ManagedConfig<APSDiscoveryServiceConfig> mc = new ManagedConfig<APSDiscoveryServiceConfig>();
 
 
-    @APSConfigItemDescription(description = "The multicast address to use.", defaultValue = {@APSDefaultValue(value="228.31.32.33")})
+    @APSConfigItemDescription(description = "The multicast address to use.", defaultValue = {@APSDefaultValue(value="224.0.0.1")})
     public APSConfigValue multicastAddress;
 
     @APSConfigItemDescription(description = "The multicast target port to use.", defaultValue = {@APSDefaultValue(value="14000")})
