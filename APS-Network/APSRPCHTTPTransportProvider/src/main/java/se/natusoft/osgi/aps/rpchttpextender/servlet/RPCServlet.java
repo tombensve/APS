@@ -74,6 +74,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -91,6 +92,8 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     //
 
     private static final String BG_COLOR = "bgcolor=\"#f5f5f5\"";
+
+    private static final int AUTH_FAILED = -1;
 
     //
     // Private Members
@@ -326,57 +329,14 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             return;
         }
 
-        String user = null;
-        String password = null;
-        String protocolName = null;
         String version = null;
         String service = null;
-
+        String protocolName = null;
         int part = 0;
-        if (pathParts[0].startsWith("auth:")) {
-            String auth = pathParts[part++];
-            String[] authParts = auth.split(":");
-            if (authParts.length != 3) {
-                resp.setHeader("WWW-Authenticate", "Basic realm=\"aps\"");
-                resp.sendError(401, "Bad authorisation!");
-                return;
-            }
 
-            user = authParts[1];
-            password = authParts[2];
-        }
-        // Check for basic http auth as an alternative.
-        if (user == null) {
-            String auth = req.getHeader("Authorization");
-            if (auth.startsWith("Basic")) {
-                String encoded = auth.substring(6);
-                Base64 base64 = new Base64();
-                byte[] userPwBytes = base64.decodeBase64(encoded.getBytes());
-                String[] userPw = new String(userPwBytes).split(":");
-                if (userPw.length != 2) {
-                    resp.setHeader("WWW-Authenticate", "Basic realm=\"aps\"");
-                    resp.sendError(401, "Bad authorisation!");
-                    return;
-                }
-                user = userPw[0];
-                password = userPw[1];
-            }
-        }
-
-        if (user != null && password != null) {
-            String role = null;
-            if (this.loginHandler.login(user, password, role) != null) {
-                resp.setHeader("WWW-Authenticate", "Basic realm=\"aps\"");
-                resp.sendError(401, "Authorisation failed!");
-                return;
-            }
-        }
-        else {
-            if (RPCServletConfig.mc.get().requireAuthentication.toBoolean()) {
-                resp.setHeader("WWW-Authenticate", "Basic realm=\"aps\"");
-                resp.sendError(401, "Authorisation required!");
-                return;
-            }
+        part = checkAuth(pathParts, part, req, resp);
+        if (part == AUTH_FAILED) {
+            return;
         }
 
         protocolName = pathParts[part++];
@@ -459,6 +419,71 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     }
 
     /**
+     * Handles the authentication part of the request.
+     *
+     * @param pathParts The split parts of the path to potentially extract credentials from.
+     * @param part the current index in the pathParts array.
+     * @param req The http request.
+     * @param resp The http response.
+     *
+     * @return The new current index in the pathParts array.
+     *
+     * @throws IOException On failure to set header or error on response.
+     */
+    private int checkAuth(String[] pathParts, int part, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String user = null;
+        String password = null;
+
+        if (pathParts[0].startsWith("auth:")) {
+            String auth = pathParts[part++];
+            String[] authParts = auth.split(":");
+            if (authParts.length != 3) {
+                resp.setHeader("WWW-Authenticate", "Basic realm=\"aps\"");
+                resp.sendError(401, "Bad authorisation!");
+                return AUTH_FAILED;
+            }
+
+            user = authParts[1];
+            password = authParts[2];
+        }
+        // Check for basic http auth as an alternative.
+        if (user == null) {
+            String auth = req.getHeader("Authorization");
+            if (auth.startsWith("Basic")) {
+                String encoded = auth.substring(6);
+                Base64 base64 = new Base64();
+                byte[] userPwBytes = base64.decodeBase64(encoded.getBytes());
+                String[] userPw = new String(userPwBytes).split(":");
+                if (userPw.length != 2) {
+                    resp.setHeader("WWW-Authenticate", "Basic realm=\"aps\"");
+                    resp.sendError(401, "Bad authorisation!");
+                    return AUTH_FAILED;
+                }
+                user = userPw[0];
+                password = userPw[1];
+            }
+        }
+
+        if (user != null && password != null) {
+            String role = null;
+            if (this.loginHandler.login(user, password, role) != null) {
+                resp.setHeader("WWW-Authenticate", "Basic realm=\"aps\"");
+                resp.sendError(401, "Authorisation failed!");
+                return AUTH_FAILED;
+            }
+        }
+        else {
+            if (RPCServletConfig.mc.get().requireAuthentication.toBoolean()) {
+                resp.setHeader("WWW-Authenticate", "Basic realm=\"aps\"");
+                resp.sendError(401, "Authorisation required!");
+                return AUTH_FAILED;
+            }
+        }
+
+        return part;
+    }
+
+    /**
      * This is an exception used internally to handle errors and write them to the response in the end.
      * This is never thrown outside of a method!
      */
@@ -518,6 +543,9 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             else if (req.getLocalName() != null) {
                 this.serverHost = req.getLocalName();
             }
+            if (this.serverHost.equals("localhost")) {
+                this.serverHost = InetAddress.getLocalHost().getHostName();
+            }
             this.serverPort = req.getServerPort();
             this.rpcBaseUrl = protocol + "://" + this.serverHost + ":" + this.serverPort + "/apsrpc/";
 
@@ -540,7 +568,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
         if (this.rpcBaseUrl != null) {
             for (StreamedRPCProtocol protocol : this.externalProtocolService.getAllStreamedProtocols()) {
                 ServiceDescription serviceDescription = new ServiceDescription();
-                serviceDescription.setDescription("Published by aps-rpc-http-extender.");
+                serviceDescription.setDescription("Published by aps-rpc-http-transport-provider.");
                 serviceDescription.setServiceHost(this.serverHost);
                 serviceDescription.setServicePort(this.serverPort);
                 serviceDescription.setServiceURL(this.rpcBaseUrl + protocol.getServiceProtocolName() + "/" + protocol.getServiceProtocolVersion() +
@@ -569,7 +597,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
         if (this.rpcBaseUrl != null) {
             for (StreamedRPCProtocol protocol : this.externalProtocolService.getAllStreamedProtocols()) {
                 ServiceDescription serviceDescription = new ServiceDescription();
-                serviceDescription.setDescription("Published by aps-rpc-http-extender.");
+                serviceDescription.setDescription("Published by aps-rpc-http-transport-provider.");
                 serviceDescription.setServiceHost(this.serverHost);
                 serviceDescription.setServicePort(this.serverPort);
                 serviceDescription.setServiceURL(this.rpcBaseUrl + protocol.getServiceProtocolName() + "/" + protocol.getServiceProtocolVersion() +

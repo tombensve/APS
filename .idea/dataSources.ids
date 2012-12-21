@@ -2,7 +2,7 @@
   <data-source source="LOCAL" name="Local Derby" product="Apache Derby" version="10.9.1.0 - (1344872)" jdbc-version="4.1" driver-name="Apache Derby Network Client JDBC Driver" driver-version="10.9.1.0 - (1344872)" uuid="a36f84fc-ebe7-4b04-9280-71c4116b3158">
     <identifier-quote-string>"</identifier-quote-string>
     <jdbc-driver>org.apache.derby.jdbc.ClientDriver</jdbc-driver>
-    <jdbc-url>jdbc:derby://localhost:1527/JPATestDB;create=true</jdbc-url>
+    <jdbc-url>jdbc:derby://localhost:1527/dbs/JPATestDB</jdbc-url>
     <user-name>derby</user-name>
     <user-password>dfdadfcbdfd9dfd9</user-password>
     <libraries>
