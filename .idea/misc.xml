@@ -399,6 +399,7 @@
         <option value="$PROJECT_DIR$/APS-Enterprise/APS-Enterprise-APIs/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Enterprise/APSSessionService/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Enterprise/APSUserAdminEntitys/pom.xml" />
+        <option value="$PROJECT_DIR$/APS-Network/APSDataSyncService/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Security/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Webs/APSAdminLoginWeb/pom.xml" />
         <option value="$PROJECT_DIR$/Test/pom.xml" />

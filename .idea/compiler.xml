@@ -106,7 +106,6 @@
         <module name="aps-web-tools" />
         <module name="APSBundleArchetype" />
         <module name="APSConfigTest" />
-        <module name="APSDataSyncService" />
         <module name="APSGroups" />
         <module name="APSNetworkGroups" />
         <module name="APSWarBundleArchetype" />
