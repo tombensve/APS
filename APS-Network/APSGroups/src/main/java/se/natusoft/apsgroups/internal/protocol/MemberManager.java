@@ -2,11 +2,29 @@
  * 
  * PROJECT
  *     Name
- *         APS APSNetworkGroups
+ *         APSGroups
  *     
  *     Code Version
  *         0.9.0
  *     
+ *     Description
+ *         Provides network groups where named groups can be joined as members and then send and
+ *         receive data messages to the group. This is based on multicast and provides a verified
+ *         multicast delivery with acknowledgements of receive to the sender and resends if needed.
+ *         The sender will get an exception if not all members receive all data. Member actuality
+ *         is handled by members announcing themselves relatively often and will be removed when
+ *         an announcement does not come in expected time. So if a member dies unexpectedly
+ *         (network goes down, etc) its membership will resolve rather quickly. Members also
+ *         tries to inform the group when they are doing a controlled exit. Most network aspects
+ *         are configurable.
+ *         
+ *         Note that even though this is an OSGi bundle, the jar produced can also be used as a
+ *         library outside of OSGi. The se.natusoft.apsgroups.APSGroups API should then be used.
+ *         This API has no external dependencies, only this jar is required for that use.
+ *         
+ *         When run with java -jar a for test command line shell will run where you can check
+ *         members, send messages and files and other things.
+ *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
  *     
