@@ -13,6 +13,8 @@
       <module fileurl="file://$PROJECT_DIR$/APS-Webs/APS-Webs.iml" filepath="$PROJECT_DIR$/APS-Webs/APS-Webs.iml" group="APS and modules/APS-Webs and modules" />
       <module fileurl="file://$PROJECT_DIR$/Archetypes/APSBundleArchetype/APSBundleArchetype.iml" filepath="$PROJECT_DIR$/Archetypes/APSBundleArchetype/APSBundleArchetype.iml" group="APS-Archetypes and modules" />
       <module fileurl="file://$PROJECT_DIR$/Test/APSConfigTest/APSConfigTest.iml" filepath="$PROJECT_DIR$/Test/APSConfigTest/APSConfigTest.iml" group="APS and modules/Test and modules" />
+      <module fileurl="file://$PROJECT_DIR$/APS-Network/APSDataSyncService/APSDataSyncService.iml" filepath="$PROJECT_DIR$/APS-Network/APSDataSyncService/APSDataSyncService.iml" group="APS and modules/APS-Network and modules" />
+      <module fileurl="file://$PROJECT_DIR$/APS-Network/APSGroups/APSGroups.iml" filepath="$PROJECT_DIR$/APS-Network/APSGroups/APSGroups.iml" group="APS and modules/APS-Network and modules" />
       <module fileurl="file://$PROJECT_DIR$/Archetypes/APSWarBundleArchetype/APSWarBundleArchetype.iml" filepath="$PROJECT_DIR$/Archetypes/APSWarBundleArchetype/APSWarBundleArchetype.iml" group="APS-Archetypes and modules" />
       <module fileurl="file://$PROJECT_DIR$/Test/Test.iml" filepath="$PROJECT_DIR$/Test/Test.iml" group="APS and modules" />
       <module fileurl="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/aps-admin-web.iml" filepath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/aps-admin-web.iml" group="APS and modules/APS-Webs and modules" />
@@ -31,7 +33,6 @@
       <module fileurl="file://$PROJECT_DIR$/APS-Core/APSPlatformServiceProvider/aps-platform-service-provider.iml" filepath="$PROJECT_DIR$/APS-Core/APSPlatformServiceProvider/aps-platform-service-provider.iml" group="APS and modules/APS-Core and modules" />
       <module fileurl="file://$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/aps-rpc-http-transport-provider.iml" filepath="$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/aps-rpc-http-transport-provider.iml" group="APS and modules/APS-Network and modules" />
       <module fileurl="file://$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider/aps-session-provider-service.iml" filepath="$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider/aps-session-provider-service.iml" group="APS and modules/APS-Misc and modules" />
-      <module fileurl="file://$PROJECT_DIR$/APS-Misc/APSSessionService/aps-session-service.iml" filepath="$PROJECT_DIR$/APS-Misc/APSSessionService/aps-session-service.iml" group="APS and modules/APS-Misc and modules" />
       <module fileurl="file://$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/aps-simple-user-service-provider.iml" filepath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/aps-simple-user-service-provider.iml" group="APS and modules/APS-Auth and modules" />
       <module fileurl="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/aps-streamed-json-rpc-protocol-provider.iml" filepath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/aps-streamed-json-rpc-protocol-provider.iml" group="APS and modules/APS-Network and modules" />
       <module fileurl="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/aps-tools-lib.iml" filepath="$PROJECT_DIR$/APS-Libraries/APSToolsLib/aps-tools-lib.iml" group="APS and modules/APS-Libraries and modules" />

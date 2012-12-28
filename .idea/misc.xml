@@ -350,8 +350,10 @@
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Misc/APSJSONServiceProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider" />
+    <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSDataSyncService" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender" />
+    <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSGroups" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/Test" />

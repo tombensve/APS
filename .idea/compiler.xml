@@ -55,6 +55,11 @@
       <directory url="file://$PROJECT_DIR$/Documentation/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/target/generated-sources/annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Network/APSDataSyncService/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Network/APSDataSyncService/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Network/APSGroups/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Network/APSNetworkGroups/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Network/APSGroups/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
     </excludeFromCompile>
     <resourceExtensions />
     <wildcardResourcePatterns>
@@ -101,6 +106,9 @@
         <module name="aps-web-tools" />
         <module name="APSBundleArchetype" />
         <module name="APSConfigTest" />
+        <module name="APSDataSyncService" />
+        <module name="APSGroups" />
+        <module name="APSNetworkGroups" />
         <module name="APSWarBundleArchetype" />
       </profile>
     </annotationProcessing>
@@ -135,6 +143,9 @@
       <module name="aps-web-tools" target="1.7" />
       <module name="APS-Webs" target="1.7" />
       <module name="APSConfigTest" target="1.7" />
+      <module name="APSDataSyncService" target="1.7" />
+      <module name="APSGroups" target="1.7" />
+      <module name="APSNetworkGroups" target="1.7" />
       <module name="Documentation" target="1.7" />
       <module name="Test" target="1.7" />
     </bytecodeTargetLevel>

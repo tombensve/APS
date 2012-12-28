@@ -20,6 +20,8 @@
         <module>APSRPCHTTPTransportProvider</module>
         <module>APSDiscoveryServiceProvider</module>
         <module>APSStreamedJSONRPCProtocolProvider</module>
+        <module>APSDataSyncService</module>
+        <module>APSGroups</module>
     </modules>
 
 </project>

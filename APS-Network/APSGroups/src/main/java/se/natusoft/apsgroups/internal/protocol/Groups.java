@@ -2,10 +2,10 @@
  * 
  * PROJECT
  *     Name
- *         APS Tools Library
+ *         APS APSNetworkGroups
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
@@ -28,21 +28,41 @@
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
- *         2012-01-04: Created!
+ *         2012-12-28: Created!
  *         
  */
-package se.natusoft.osgi.aps.tools.data;
+package se.natusoft.apsgroups.internal.protocol;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * This should be implemented by data receivers to receive data.
+ * This represents all locally known groups.
  */
-public interface DataReceiver<DataDescription, Data> {
+public class Groups {
+    //
+    // Members
+    //
+
+    /** The known groups. */
+    private static Map<String, Group> groups = new HashMap<>();
+
+    //
+    // Methods
+    //
 
     /**
-     * Receives data.
+     * Returns the named group.
      *
-     * @param dataDescription A description of the received data.
-     * @param data The actual data.
+     * @param name The name of the group to get.
      */
-    public void dataReceived(DataDescription dataDescription, Data data);
+    public synchronized static Group getGroup(String name) {
+        Group group = groups.get(name);
+        if (group == null) {
+            group = new Group(name);
+            groups.put(name, group);
+        }
+
+        return group;
+    }
 }

@@ -43,6 +43,7 @@
             se.natusoft.osgi.aps.api.core.config.event;version="${project.version}",
             se.natusoft.osgi.aps.api.core.config.model;version="${project.version}",
             se.natusoft.osgi.aps.api.core.config.model.admin;version="${project.version}",
+            se.natusoft.osgi.aps.api.core.config.model.test;version="${project.version}",
             se.natusoft.osgi.aps.api.core.config.service;version="${project.version}",
             se.natusoft.osig.aps.api.core.config.util;version="${project.version}",
             se.natusoft.osgi.aps.api.core.content;version="${project.version}",
@@ -66,7 +67,8 @@
             se.natusoft.osgi.aps.api.net.rpc.errors;version="${project.version}",
             se.natusoft.osgi.aps.api.net.rpc.model;version="${project.version}",
             se.natusoft.osgi.aps.api.net.rpc.service;version="${project.version}",
-            se.natusoft.osgi.aps.api.net.rpc.streamed.service;version="${project.version}"
+            se.natusoft.osgi.aps.api.net.rpc.streamed.service;version="${project.version}",
+            se.natusoft.osgi.aps.api.net.groups.service;version="${project.version}"
         </osgi.export.package>
         
         <!-- The packages to import for the bundle. -->

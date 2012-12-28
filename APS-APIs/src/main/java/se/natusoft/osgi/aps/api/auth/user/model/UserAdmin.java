@@ -2,13 +2,13 @@
  * 
  * PROJECT
  *     Name
- *         APS-Enterprise-APIs
+ *         APS APIs
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
- *         This project provides APIs for services of enterprise type.
+ *         Provides the APIs for the application platform services.
  *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.

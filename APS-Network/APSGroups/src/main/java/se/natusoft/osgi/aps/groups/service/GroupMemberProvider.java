@@ -1,0 +1,278 @@
+/* 
+ * 
+ * PROJECT
+ *     Name
+ *         APS APSNetworkGroups
+ *     
+ *     Code Version
+ *         0.9.0
+ *     
+ * COPYRIGHTS
+ *     Copyright (C) 2012 by Natusoft AB All rights reserved.
+ *     
+ * LICENSE
+ *     Apache 2.0 (Open Source)
+ *     
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *     
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *     
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *     
+ * AUTHORS
+ *     Tommy Svensson (tommy@natusoft.se)
+ *         Changes:
+ *         2012-12-28: Created!
+ *         
+ */
+package se.natusoft.osgi.aps.groups.service;
+
+import se.natusoft.apsgroups.codeclarity.Package;
+import se.natusoft.apsgroups.config.APSGroupsConfig;
+import se.natusoft.apsgroups.internal.net.MulticastTransport;
+import se.natusoft.apsgroups.internal.net.Transport;
+import se.natusoft.apsgroups.internal.protocol.DataReceiver;
+import se.natusoft.apsgroups.internal.protocol.Member;
+import se.natusoft.apsgroups.internal.protocol.MessageReceiver;
+import se.natusoft.apsgroups.internal.protocol.MessageSender;
+import se.natusoft.apsgroups.internal.protocol.message.Message;
+import se.natusoft.apsgroups.internal.protocol.message.MessageListener;
+import se.natusoft.apsgroups.internal.protocol.message.MessagePacket;
+import se.natusoft.apsgroups.internal.protocol.message.PacketType;
+import se.natusoft.apsgroups.logging.APSGroupsLogger;
+import se.natusoft.osgi.aps.api.net.groups.service.GroupMember;
+import se.natusoft.osgi.aps.groups.config.APSGroupsConfigRelay;
+
+import java.io.IOException;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
+
+/**
+ * This provides the API for a member.
+ */
+public class GroupMemberProvider implements MessageListener, GroupMember {
+    //
+    // Private Members
+    //
+
+    /** A local member instance. */
+    private Member member = null;
+
+    /** Our logger. */
+    private APSGroupsLogger logger = null;
+
+    /** Client listeners. */
+    private List<se.natusoft.osgi.aps.api.net.groups.service.MessageListener> messageListeners = new LinkedList<>();
+
+    /** The transport to use. */
+    private Transport transport = null;
+
+    /** Receives messages for this member. */
+    private MessageReceiver messageReceiver = null;
+
+    /** Needed to make messageReceiver received messages. */
+    private DataReceiver dataReceiver = null;
+
+    /** Our configuration. */
+    private APSGroupsConfig config = new APSGroupsConfigRelay();
+
+    //
+    // Constructors
+    //
+
+    /**
+     * Creates a new GroupMember.
+     *
+     * @param member The internal member object.
+     * @param dataReceiver For adding and removing MessageReceivers to/from.
+     * @param logger The logger to log to.
+     */
+    @Package
+    GroupMemberProvider(Member member, DataReceiver dataReceiver, APSGroupsLogger logger) {
+        this.member = member;
+        this.dataReceiver = dataReceiver;
+        this.logger = logger;
+        this.transport = new MulticastTransport(this.logger, this.config);
+    }
+
+    //
+    // Methods
+    //
+
+    /**
+     * Makes the group member ready for business.
+     *
+     * @throws IOException
+     */
+    public void open() throws IOException {
+        this.transport.open();
+        Transport ackTransport = new MulticastTransport(this.logger, this.config);
+        ackTransport.open();
+        this.messageReceiver = new MessageReceiver(ackTransport, this.member, this.logger);
+        this.messageReceiver.addMessageListener(this);
+        this.dataReceiver.addMessagePacketListener(this.messageReceiver);
+    }
+
+    /**
+     * Cleans up for the group member.
+     *
+     * @throws IOException
+     */
+    public void close() throws IOException {
+        MessagePacket mp = new MessagePacket(this.member.getGroup(), this.member, UUID.randomUUID(), 0, PacketType.MEMBER_LEAVING);
+        this.transport.send(mp.getPacketBytes());
+        try {Thread.sleep(500);} catch (InterruptedException ie) {
+            this.logger.error("GroupMemberProvider: Thread.sleep() got interrupted on close().");
+        }
+
+        this.transport.close();
+        this.messageListeners.clear();
+        this.dataReceiver.removeMessagePacketListener(this.messageReceiver);
+        this.messageReceiver.getTransport().close();
+        this.messageReceiver.removeMessageListener(this);
+        this.messageReceiver = null;
+    }
+
+    /**
+     * Adds a listener for incoming messages.
+     *
+     * @param listener The listener to add.
+     */
+    @Override
+    public synchronized void addMessageListener(se.natusoft.osgi.aps.api.net.groups.service.MessageListener listener) {
+        this.messageListeners.add(listener);
+    }
+
+    /**
+     * Removes a listener for incoming messages.
+     *
+     * @param listener The listener to remove.
+     */
+    @Override
+    public synchronized void removeMessageListener(se.natusoft.osgi.aps.api.net.groups.service.MessageListener listener) {
+        this.messageListeners.remove(listener);
+    }
+
+    /**
+     * Creates a new Message to send. Use the sendMessage() method when ready to send it.
+     */
+    @Override
+    public se.natusoft.osgi.aps.api.net.groups.service.Message createNewMessage() {
+        return new MessageProvider(this.member.getGroup().createNewMessage(this.member));
+    }
+
+    /**
+     * Sends a previously created message to all current members of the group. If this returns without an exception
+     * then all members have received the message.
+     *
+     * @param message The message to send.
+     *
+     * @throws IOException On failure to reach all members.
+     */
+    @Override
+    public void sendMessage(se.natusoft.osgi.aps.api.net.groups.service.Message message) throws IOException {
+        if (this.member.getGroup().getNumberOfMembers() > 0) {
+            MessageSender sender = new MessageSender(((MessageProvider)message).getRealMessage(), transport, this.config);
+            this.dataReceiver.addMessagePacketListener(sender);
+            try {
+                sender.send();
+            }
+            finally {
+                this.dataReceiver.removeMessagePacketListener(sender);
+            }
+        }
+        else {
+            this.logger.warn("I'm so lonely! I have no one to talk to.");
+        }
+    }
+
+    /**
+     * @return The ID of the member.
+     */
+    @Override
+    public UUID getMemberId() {
+        return this.member.getId();
+    }
+
+    /**
+     * @return The internal member.
+     */
+    public Member getMember() {
+        return this.member;
+    }
+
+    /**
+     * Returns information about members.
+     */
+    @Override
+    public List<String> getMemberInfo() {
+        List<String> memberInfo = new LinkedList<>();
+        for (Member membr : this.member.getGroup().getListOfMembers()) {
+            memberInfo.add(membr.getId().toString()+ ", status:" + (membr.stillKicking(this.config.getMemberAnnounceInterval()) ? "alive" : "dead"));
+        }
+        return memberInfo;
+    }
+
+    /**
+     * @return The current time as net time.
+     */
+    public se.natusoft.osgi.aps.api.net.groups.service.NetTime getNow() {
+        return new NetTimeProvider(this.member.getGroup().getNetTime().getCurrentNetTime());
+    }
+
+    /**
+     * Creates from milliseconds in net time.
+     *
+     * @param netTimeMillis The net time milliseconds to create a NetTime for.
+     */
+    public se.natusoft.osgi.aps.api.net.groups.service.NetTime createFromNetTime(long netTimeMillis) {
+        return new NetTimeProvider(this.member.getGroup().getNetTime().createWithNetTime(netTimeMillis));
+    }
+
+    /**
+     * Creates from a Date in net time.
+     *
+     * @param netTimeDate The Date in net time to create a NetTime for.
+     */
+    public se.natusoft.osgi.aps.api.net.groups.service.NetTime createFromNetTime(Date netTimeDate) {
+        return new NetTimeProvider(this.member.getGroup().getNetTime().createWithNetTime(netTimeDate.getTime()));
+    }
+
+    /**
+     * Creates from milliseconds in local time.
+     *
+     * @param localTimeMillis The local time milliseconds to create a NetTime for.
+     */
+    public se.natusoft.osgi.aps.api.net.groups.service.NetTime createFromLocalTime(long localTimeMillis) {
+        return new NetTimeProvider(this.member.getGroup().getNetTime().createWithLocalTime(localTimeMillis));
+    }
+
+    /**
+     * Creates from a Date in local time.
+     *
+     * @param localTimeDate The Date in local time to create a NetTime for.
+     */
+    public se.natusoft.osgi.aps.api.net.groups.service.NetTime createFromLocalTime(Date localTimeDate) {
+        return new NetTimeProvider(this.member.getGroup().getNetTime().createWithLocalTime(localTimeDate.getTime()));
+    }
+
+    /**
+     * Notification of received message.
+     *
+     * @param message The received message.
+     */
+    @Override
+    public void messageReceived(Message message) {
+        for (se.natusoft.osgi.aps.api.net.groups.service.MessageListener listener : this.messageListeners) {
+            listener.messageReceived(new MessageProvider(message));
+        }
+    }
+}
