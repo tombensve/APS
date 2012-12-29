@@ -16,14 +16,16 @@
  *         an announcement does not come in expected time. So if a member dies unexpectedly
  *         (network goes down, etc) its membership will resolve rather quickly. Members also
  *         tries to inform the group when they are doing a controlled exit. Most network aspects
- *         are configurable.
+ *         are configurable. Please note that this does not support streaming! That would require
+ *         a far more complex protocol. It waits in all packets of a message before delivering
+ *         the message.
  *         
  *         Note that even though this is an OSGi bundle, the jar produced can also be used as a
  *         library outside of OSGi. The se.natusoft.apsgroups.APSGroups API should then be used.
  *         This API has no external dependencies, only this jar is required for that use.
  *         
  *         When run with java -jar a for test command line shell will run where you can check
- *         members, send messages and files and other things.
+ *         members, send messages and files.
  *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.

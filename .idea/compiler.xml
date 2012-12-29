@@ -92,6 +92,7 @@
         <module name="aps-discovery-service-provider" />
         <module name="aps-external-protocol-extender" />
         <module name="aps-filesystem-service-provider" />
+        <module name="aps-groups" />
         <module name="aps-json-lib" />
         <module name="aps-json-service-provider" />
         <module name="aps-log-service-provider" />
@@ -125,6 +126,7 @@
       <module name="aps-discovery-service-provider" target="1.7" />
       <module name="aps-external-protocol-extender" target="1.7" />
       <module name="aps-filesystem-service-provider" target="1.7" />
+      <module name="aps-groups" target="1.7" />
       <module name="aps-json-lib" target="1.7" />
       <module name="aps-json-service-provider" target="1.7" />
       <module name="APS-Libraries" target="1.7" />
