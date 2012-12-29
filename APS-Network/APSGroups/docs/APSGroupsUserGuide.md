@@ -40,18 +40,18 @@ The APSGroupsService API looks like this:
         void leaveGroup(GroupMember groupMember) throws IOException;
     }
  
-**Getting the service**
+### Getting the service
 
 	APSServiceTracker<APSGroupService> apsGroupsServiceTracker = 
 		new APSServiceTracker<APSGroupsService>(bundleContext, APSConfigService.class,
 		APSServiceTracker.LARGE_TIMEOUT);
 	APSGroupsService apsGroupsService = apsGroupsServiceTracker.getWrappedService();
 	
-**Joining a group**
+### Joining a group
 
 	GroupMember groupMember = apsGroupsService.joinGroup(”mygroup”);
 	
-**Sending a message**
+### Sending a message
 
 To send a message you create a message, get its output stream and write whatever you want to send on that
 output stream, close it and then send it. *Note* that since the content of the message is any data you want, 
@@ -72,7 +72,7 @@ and serialize any java object you want.
 	
 Note that the `groupMember.sendMessage(message)` does throw an IOException on failure to deliver the message to all members.
 
-**Receiving a message**
+### Receiving a message
 
 To receive a message you have to register a message listener with the GroupMember object.
 
@@ -88,7 +88,7 @@ and then handle received messages:
 		}
 	}
 
-**Leaving a group**
+### Leaving a group
 
 	apsGroupsService.leaveGroup(groupMember);
 	
@@ -97,7 +97,7 @@ and then handle received messages:
 The bundle jar file can also be used as a library outside of an OSGi server, with an API that has no other dependencies than what
 is in the jar. The API is then slightly different, and resides under the se.natusoft.apsgroups package.
 
-**Setting up**
+### Setting up
 
 	APSGroups apsGroups = new APSGroups(config, logger);
 	apsGroups.connect();
@@ -107,19 +107,19 @@ The config passed as argument to APSGroups will be explained further down under 
 The *logger* is an instance of an implementation of the APSGroupsLogger interface. Either you provide your own
 implementation of that or your use the APSGroupsSystemOutLogger implementation. 
 	
-**Joining a group**
+### Joining a group
 
 	GroupMember groupMember = apsGroups.joinGroup(”mygroup”);
 
-**Sending and receiving messages**
+### Sending and receiving messages
 
 Sending and receiving works exactly like the OSGi examples above. 
 
-**Leaving a group**
+### Leaving a group
 
 	apsGroups.leaveGroup(groupMember);
 
-**Shutting down**
+### Shutting down
 
 	apsGroups.disconnect();
 	
