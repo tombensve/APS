@@ -179,10 +179,11 @@ public class CmdLineTestShell implements MessageListener {
             }
         }
 
+        apsGroups.disconnect();
+
         groupMember.removeMessageListener(msgListener);
         apsGroups.leaveGroup(groupMember);
 
-        apsGroups.disconnect();
     }
 
 }

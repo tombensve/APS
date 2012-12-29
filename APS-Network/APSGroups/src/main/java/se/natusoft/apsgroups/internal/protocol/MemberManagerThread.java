@@ -205,6 +205,7 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
                 this.logger.error("MemberManagerThread: Communication problem!", ioe);
             }
             catch (Exception e) {
+                e.printStackTrace();
                 this.logger.error("MemberManagerThread: Unknown failure!", e);
             }
         }
