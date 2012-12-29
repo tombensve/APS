@@ -29,7 +29,7 @@
         This API has no external dependencies, only this jar is required for that use.
 
         When run with java -jar a for test command line shell will run where you can check
-        members, send messages and files and other things.
+        members, send messages and files.
     </description>
 
     <properties>

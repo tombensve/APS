@@ -2,46 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/APSGroups.iml" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/APSGroups.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/APSGroups.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/APSGroups.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/APSGroupsActivator.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/APSGroupsActivator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/config/APSGroupsConfig.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/config/APSGroupsConfig.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/config/APSGroupsConfigProvider.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/config/APSGroupsConfigProvider.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/config/APSGroupsConfigRelay.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/config/APSGroupsConfigRelay.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/logging/APSGroupsLogger.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/logging/APSGroupsLogger.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/logging/APSGroupsLoggerRelay.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/logging/APSGroupsLoggerRelay.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/config/APSGroupsServiceConfig.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/config/APSGroupsServiceConfig.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/APSGroupsServiceProvider.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/APSGroupsServiceProvider.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/logging/APSGroupsSystemOutLogger.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/logging/APSGroupsSystemOutLogger.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/message/exception/BadProtocolIDException.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/message/exception/BadProtocolIDException.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/CmdLineTestShell.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/CmdLineTestShell.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/DataReceiver.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/DataReceiver.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/DataReceiverThread.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/DataReceiverThread.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/Debug.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/Debug.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/Group.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/Group.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/GroupMember.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/GroupMember.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/GroupMemberProvider.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/GroupMemberProvider.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/APSGroups.iml" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/aps-groups.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/GroupMemberProvider.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/GroupMemberProvider.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/Groups.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/Groups.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/Member.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/Member.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MemberManager.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MemberManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MemberManagerThread.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MemberManagerThread.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/message/Message.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/message/Message.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/message/MessageListener.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/message/MessageListener.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/message/MessagePacket.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/message/MessagePacket.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/message/MessagePacketListener.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/message/MessagePacketListener.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/MessageProvider.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/MessageProvider.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MessageReceiver.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MessageReceiver.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MessageSender.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MessageSender.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/net/MulticastTransport.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/net/MulticastTransport.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/NetTime.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/NetTime.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/NetTimeProvider.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/NetTimeProvider.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/NetTimeThread.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/NetTimeThread.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/codeclarity/Package.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/codeclarity/Package.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/message/PacketType.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/message/PacketType.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/net/Transport.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/net/Transport.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/aps-openjpa-provider.iml" afterPath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/aps-openjpa-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/aps-rpc-http-transport-provider.iml" afterPath="$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/aps-rpc-http-transport-provider.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/aps-user-admin-web.iml" afterPath="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/aps-user-admin-web.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/pom.xml" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/pom.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -50,7 +16,7 @@
     <ignored path="OSGiApplicationPlatformServices.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1356721551958" ignored="false" />
-    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1356720491956" ignored="false" />
+    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1356737704904" ignored="false" />
     <file path="/a.dummy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1356712153252" ignored="false" />
     <file path="/testclient.sh" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355064160118" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/wip-clones/MarkdownDoc/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355420755980" ignored="false" />
@@ -149,6 +115,8 @@
     <sortChildren value="true" />
   </component>
   <component name="DebuggerManager">
+    <line_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true" />
+    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true">
       <breakpoint>
         <option name="NOTIFY_CAUGHT" value="true" />
@@ -183,8 +151,6 @@
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
     </breakpoint_any>
-    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
-    <line_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_rules />
     <ui_properties />
   </component>
@@ -194,10 +160,28 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="pom.xml" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="31" column="54" selection-start="1762" selection-end="1762" vertical-scroll-proportion="0.4005168">
+            <state line="30" column="40" selection-start="1657" selection-end="1657" vertical-scroll-proportion="-18.75">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GroupMemberProvider.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/GroupMemberProvider.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="295" column="0" selection-start="10528" selection-end="10528" vertical-scroll-proportion="3.5196245">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="APSGroupsServiceProvider.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/APSGroupsServiceProvider.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="122" column="27" selection-start="4493" selection-end="4493" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -238,7 +222,6 @@
         <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/groups/service/NetTime.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/NetTimeProvider.java" />
         <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/groups/service/GroupMember.java" />
-        <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/GroupMemberProvider.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/logging/APSGroupsLoggerRelay.java" />
         <option value="$PROJECT_DIR$/APS-APIs/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/APSGroupsActivator.java" />
@@ -246,6 +229,7 @@
         <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/filesystem/model/APSFile.java" />
         <option value="$PROJECT_DIR$/APS-Network/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Network/APSGroups/pom.xml" />
+        <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/GroupMemberProvider.java" />
       </list>
     </option>
   </component>
@@ -2108,7 +2092,57 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="apsgroups" />
+              <option name="myItemId" value="osgi" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="groups" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="service" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Network and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSGroups" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="se" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -2369,8 +2403,8 @@
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth3" value="1100" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth2" value="302" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth1" value="299" />
-    <property name="Database.TableEditor.Splitter" value="0.9" />
     <property name="FileHistory.org.zmlx.hg4idea.provider.HgHistoryProvider_treeOrder0" value="0" />
+    <property name="Database.TableEditor.Splitter" value="0.9" />
     <property name="FileHistory.org.zmlx.hg4idea.provider.HgHistoryProvider_treeOrder1" value="1" />
     <property name="FileHistory.org.zmlx.hg4idea.provider.HgHistoryProvider_treeOrder2" value="2" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -2413,14 +2447,14 @@
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder2" value="2" />
     <property name="JdbcConsole.Extract.OpeningQuote" value="'" />
     <property name="FileHistory.org.zmlx.hg4idea.provider.HgHistoryProvider_flatOrder1" value="1" />
-    <property name="FileHistory.org.zmlx.hg4idea.provider.HgHistoryProvider_flatOrder0" value="0" />
     <property name="DefaultHtmlFileTemplate" value="Html" />
+    <property name="FileHistory.org.zmlx.hg4idea.provider.HgHistoryProvider_flatOrder0" value="0" />
     <property name="FileHistory.org.zmlx.hg4idea.provider.HgHistoryProvider_flatOrder3" value="3" />
     <property name="FileHistory.org.zmlx.hg4idea.provider.HgHistoryProvider_flatOrder2" value="2" />
     <property name="JdbcConsole.Extract.IncludeHeader" value="false" />
     <property name="JdbcConsole.ResultPageSize" value="1000" />
-    <property name="options.searchVisible" value="true" />
     <property name="dynamic.classpath" value="false" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
@@ -2674,13 +2708,6 @@
       <envs />
       <method />
     </configuration>
-    <configuration default="true" type="JavascriptDebugSession" factoryName="Local" singleton="true">
-      <JSDebuggerConfigurationSettings>
-        <option name="engineId" value="embedded" />
-        <option name="fileUrl" />
-      </JSDebuggerConfigurationSettings>
-      <method />
-    </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit">
       <extension name="coverage" enabled="false" merge="false" runner="idea" />
       <module name="" />
@@ -2700,6 +2727,13 @@
       </option>
       <envs />
       <patterns />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugSession" factoryName="Local" singleton="true">
+      <JSDebuggerConfigurationSettings>
+        <option name="engineId" value="embedded" />
+        <option name="fileUrl" />
+      </JSDebuggerConfigurationSettings>
       <method />
     </configuration>
     <configuration default="true" type="com.intellij.persistence.run.ConsoleRunConfigurationType" factoryName="Query Language Console">
@@ -3547,7 +3581,11 @@
       <created>1356720461955</created>
       <updated>1356720461955</updated>
     </task>
-    <option name="localTasksCounter" value="169" />
+    <task id="LOCAL-00169" summary="Dev commit.">
+      <created>1356721788839</created>
+      <updated>1356721788839</updated>
+    </task>
+    <option name="localTasksCounter" value="170" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="false" url="http://natusoft.selfip.net:6789/redmine">
@@ -3585,7 +3623,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="302" y="24" width="2071" height="1331" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Dilbert" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2741536" sideWeight="0.5" order="17" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32116184" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -3606,7 +3644,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39956957" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20197532" sideWeight="0.6281946" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25777778" sideWeight="0.6281946" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25777778" sideWeight="0.6281946" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.37180543" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hudson Information" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="PDF_FIND" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
@@ -3733,13 +3771,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/GroupMemberProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="263" column="117" selection-start="9044" selection-end="9044" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MessageReceiver.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="71" column="6" selection-start="2009" selection-end="2009" vertical-scroll-proportion="0.0">
@@ -3749,9 +3780,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/logging/APSGroupsLoggerRelay.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="65" column="0" selection-start="1643" selection-end="1643" vertical-scroll-proportion="0.35443038">
-          <folding />
-        </state>
+        <state line="65" column="0" selection-start="1643" selection-end="1643" vertical-scroll-proportion="0.35443038" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/APSGroups.java">
@@ -3778,13 +3807,6 @@
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MemberManager.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="38" column="17" selection-start="1083" selection-end="1083" vertical-scroll-proportion="0.48101267">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/APSGroupsServiceProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="122" column="27" selection-start="3768" selection-end="3768" vertical-scroll-proportion="0.87341774">
           <folding />
         </state>
       </provider>
@@ -3819,7 +3841,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="54" selection-start="1762" selection-end="1762" vertical-scroll-proportion="0.4005168">
+        <state line="30" column="40" selection-start="1657" selection-end="1657" vertical-scroll-proportion="-18.75">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/APSGroupsServiceProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="122" column="27" selection-start="4493" selection-end="4493" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/GroupMemberProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="295" column="0" selection-start="10528" selection-end="10528" vertical-scroll-proportion="3.5196245">
           <folding />
         </state>
       </provider>
@@ -3878,7 +3914,7 @@
       </state>
       <state key="ModuleStructureConfigurable.UI">
         <settings>
-          <last-edited>APSGroups|APS-Network and modules|APS and modules</last-edited>
+          <last-edited>aps-groups|APS-Network and modules|APS and modules</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>

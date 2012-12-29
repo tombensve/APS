@@ -242,6 +242,7 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
     /**
      * @return The current time as net time.
      */
+    @Override
     public se.natusoft.osgi.aps.api.net.groups.service.NetTime getNow() {
         return new NetTimeProvider(this.member.getGroup().getNetTime().getCurrentNetTime());
     }
@@ -251,6 +252,7 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
      *
      * @param netTimeMillis The net time milliseconds to create a NetTime for.
      */
+    @Override
     public se.natusoft.osgi.aps.api.net.groups.service.NetTime createFromNetTime(long netTimeMillis) {
         return new NetTimeProvider(this.member.getGroup().getNetTime().createWithNetTime(netTimeMillis));
     }
@@ -260,6 +262,7 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
      *
      * @param netTimeDate The Date in net time to create a NetTime for.
      */
+    @Override
     public se.natusoft.osgi.aps.api.net.groups.service.NetTime createFromNetTime(Date netTimeDate) {
         return new NetTimeProvider(this.member.getGroup().getNetTime().createWithNetTime(netTimeDate.getTime()));
     }
@@ -269,6 +272,7 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
      *
      * @param localTimeMillis The local time milliseconds to create a NetTime for.
      */
+    @Override
     public se.natusoft.osgi.aps.api.net.groups.service.NetTime createFromLocalTime(long localTimeMillis) {
         return new NetTimeProvider(this.member.getGroup().getNetTime().createWithLocalTime(localTimeMillis));
     }
@@ -278,6 +282,7 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
      *
      * @param localTimeDate The Date in local time to create a NetTime for.
      */
+    @Override
     public se.natusoft.osgi.aps.api.net.groups.service.NetTime createFromLocalTime(Date localTimeDate) {
         return new NetTimeProvider(this.member.getGroup().getNetTime().createWithLocalTime(localTimeDate.getTime()));
     }
