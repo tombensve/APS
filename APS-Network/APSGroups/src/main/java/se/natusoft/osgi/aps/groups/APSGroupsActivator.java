@@ -56,12 +56,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import se.natusoft.apsgroups.config.APSGroupsConfig;
-import se.natusoft.apsgroups.internal.net.MulticastTransport;
-import se.natusoft.apsgroups.internal.net.Transport;
-import se.natusoft.apsgroups.internal.protocol.DataReceiverThread;
-import se.natusoft.apsgroups.internal.protocol.MemberManagerThread;
-import se.natusoft.apsgroups.internal.protocol.NetTime;
-import se.natusoft.apsgroups.internal.protocol.NetTimeThread;
 import se.natusoft.apsgroups.logging.APSGroupsLogger;
 import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
 import se.natusoft.osgi.aps.groups.config.APSGroupsConfigRelay;
@@ -69,7 +63,6 @@ import se.natusoft.osgi.aps.groups.logging.APSGroupsLoggerRelay;
 import se.natusoft.osgi.aps.groups.service.APSGroupsServiceProvider;
 import se.natusoft.osgi.aps.tools.APSLogger;
 
-import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Properties;
 
@@ -83,22 +76,13 @@ public class APSGroupsActivator implements BundleActivator {
     
     // Provided Services
     
-    /** The platform service. */
+    /** The service registration. */
     private ServiceRegistration groupsServiceReg = null;
 
+    /** The service provider instance. */
+    private APSGroupsServiceProvider apsGroupsServiceProvider = null;
+
     // Other Members
-
-    /** Manages members. */
-    private MemberManagerThread memberManagerThread = null;
-
-    /** Handles receiving of all network packets. */
-    private DataReceiverThread dataReceiverThread = null;
-
-    /** Manages net time with other groups on possible other hosts. */
-    private NetTimeThread netTimeThread = null;
-
-    /** This instance holds our copy of net time. This gets updated by the NetTimeThread. */
-    private NetTime netTime = null;
 
     /** For logging. */
     private APSGroupsLogger logger = null;
@@ -119,13 +103,12 @@ public class APSGroupsActivator implements BundleActivator {
 
         this.config = new APSGroupsConfigRelay();
 
-        connect();
-
         Dictionary platformServiceProps = new Properties();
         platformServiceProps.put(Constants.SERVICE_PID, APSGroupsServiceProvider.class.getName());
-        APSGroupsServiceProvider groupsServiceProvider =
-                new APSGroupsServiceProvider(memberManagerThread, dataReceiverThread, netTime, logger);
-        this.groupsServiceReg = context.registerService(APSGroupsService.class.getName(), groupsServiceProvider, platformServiceProps);
+        this.apsGroupsServiceProvider =
+                new APSGroupsServiceProvider(this.config, this.logger);
+        this.groupsServiceReg =
+                context.registerService(APSGroupsService.class.getName(), this.apsGroupsServiceProvider, platformServiceProps);
     }
 
     //
@@ -134,6 +117,8 @@ public class APSGroupsActivator implements BundleActivator {
     
     @Override
     public void stop(BundleContext context) throws Exception {
+        this.apsGroupsServiceProvider.disconnect();
+
         if (this.groupsServiceReg != null) {
             try {
                 this.groupsServiceReg.unregister();
@@ -141,72 +126,11 @@ public class APSGroupsActivator implements BundleActivator {
             }
             catch (IllegalStateException ise) { /* This is OK! */ }
         }
-
-        disconnect();
+        this.apsGroupsServiceProvider = null;
 
         if (this.logger != null) {
             ((APSGroupsLoggerRelay)this.logger).getLogger().stop(context);
             this.logger = null;
-        }
-    }
-
-    //
-    // Support
-    //
-
-    /**
-     * Starts upp and connects the groups engine. Nothing will work until this has been called and
-     * should therefore be the first thing called after construction of instance.
-     *
-     * @throws java.io.IOException on failure to connect.
-     */
-    private void connect() throws IOException {
-        Transport transport = new MulticastTransport(this.logger, this.config);
-        transport.open();
-        this.dataReceiverThread = new DataReceiverThread(this.logger, transport);
-        this.dataReceiverThread.start();
-
-        Transport memberTransport = new MulticastTransport(this.logger, this.config);
-        memberTransport.open();
-        this.memberManagerThread = new MemberManagerThread(this.logger, memberTransport, this.config);
-        this.memberManagerThread.start();
-
-        Transport netTimeTransport = new MulticastTransport(this.logger, this.config);
-        netTimeTransport.open();
-        this.netTime = new NetTime();
-        this.netTimeThread = new NetTimeThread(this.netTime, this.logger, netTimeTransport);
-        this.dataReceiverThread.addMessagePacketListener(this.netTimeThread);
-        this.netTimeThread.start();
-
-    }
-
-    /**
-     * Shuts down and disconnects the groups engine. After this call the functionality is dead until
-     * connect() is called again.
-     *
-     * @throws IOException
-     */
-    private void disconnect()  {
-        try {
-            if (this.dataReceiverThread != null) {
-                this.dataReceiverThread.terminate();
-                this.dataReceiverThread.getTransport().close();
-            }
-
-            if (this.memberManagerThread != null) {
-                this.memberManagerThread.terminate();
-                this.memberManagerThread.getTransport().close();
-            }
-
-            if (this.netTimeThread != null) {
-                this.netTimeThread.terminate();
-                this.netTimeThread.getTransport().close();
-            }
-        }
-        catch (IOException ioe) {
-            if (this.logger != null) {
-                this.logger.error("Failed to disconnect!", ioe);
-            }
         }
     }
 

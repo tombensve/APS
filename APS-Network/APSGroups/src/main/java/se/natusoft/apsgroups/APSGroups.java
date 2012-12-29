@@ -132,6 +132,7 @@ public class APSGroups {
         Transport memberTransport = new MulticastTransport(this.logger, this.config);
         memberTransport.open();
         this.memberManagerThread = new MemberManagerThread(this.logger, memberTransport, this.config);
+        this.dataReceiverThread.addMessagePacketListener(this.memberManagerThread);
         this.memberManagerThread.start();
 
         Transport netTimeTransport = new MulticastTransport(this.logger, this.config);
@@ -149,15 +150,21 @@ public class APSGroups {
      *
      * @throws IOException
      */
-    public void disconnect() throws IOException {
+    public void disconnect() {
         this.dataReceiverThread.terminate();
-        this.dataReceiverThread.getTransport().close();
+        try {this.dataReceiverThread.getTransport().close();} catch (IOException ioe) {
+            this.logger.error("Failed to close data receiver transport!", ioe);
+        }
 
         this.memberManagerThread.terminate();
-        this.memberManagerThread.getTransport().close();
+        try {this.memberManagerThread.getTransport().close();} catch (IOException ioe) {
+            this.logger.error("Failed to close member manager transport!", ioe);
+        }
 
         this.netTimeThread.terminate();
-        this.netTimeThread.getTransport().close();
+        try {this.netTimeThread.getTransport().close();} catch (IOException ioe) {
+            this.logger.error("Failed to close net time transport!", ioe);
+        }
     }
 
     /**

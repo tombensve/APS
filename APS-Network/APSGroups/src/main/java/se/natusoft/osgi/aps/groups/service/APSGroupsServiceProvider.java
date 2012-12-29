@@ -51,6 +51,9 @@
  */
 package se.natusoft.osgi.aps.groups.service;
 
+import se.natusoft.apsgroups.config.APSGroupsConfig;
+import se.natusoft.apsgroups.internal.net.MulticastTransport;
+import se.natusoft.apsgroups.internal.net.Transport;
 import se.natusoft.apsgroups.internal.protocol.*;
 import se.natusoft.apsgroups.logging.APSGroupsLogger;
 import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
@@ -66,17 +69,27 @@ public class APSGroupsServiceProvider implements APSGroupsService {
     // Private Members
     //
 
-    /** Our logger. */
+    /** Manages members. */
+    private MemberManagerThread memberManagerThread = null;
+
+    /** Handles receiving of all network packets. */
+    private DataReceiverThread dataReceiverThread = null;
+
+    /** Manages net time with other groups on possible other hosts. */
+    private NetTimeThread netTimeThread = null;
+
+    /** This instance holds our copy of net time. This gets updated by the NetTimeThread. */
+    private NetTime netTime = null;
+
+    /** Will be set to true on first connect. */
+    private boolean connected = false;
+
+
+    /** For logging. */
     private APSGroupsLogger logger = null;
 
-    /** We need to add and remove member to/from this. */
-    private MemberManager memberManager = null;
-
-    /** Needed to setup for incoming messages. */
-    private DataReceiver dataReceiver = null;
-
-    /** For decreasing time differences on network hosts. */
-    private NetTime netTime = null;
+    /** Our config. */
+    private APSGroupsConfig config = null;
 
     //
     // Constructors
@@ -85,21 +98,97 @@ public class APSGroupsServiceProvider implements APSGroupsService {
     /**
      * Creates a new APSNetworkGroupService instance.
      *
-     * @param memberManager For adding and removing members.
-     * @param dataReceiver For setup of incomming messages.
-     * @param netTime For decreasing time differences on network hosts.
+     * @param config The config to use.
      * @param logger For logging to.
      */
-    public APSGroupsServiceProvider(MemberManager memberManager, DataReceiver dataReceiver, NetTime netTime, APSGroupsLogger logger) {
-        this.memberManager = memberManager;
-        this.dataReceiver = dataReceiver;
-        this.netTime = netTime;
+    public APSGroupsServiceProvider(APSGroupsConfig config, APSGroupsLogger logger) {
+        this.config = config;
         this.logger = logger;
     }
 
     //
     // Methods
     //
+
+
+    /**
+     * Starts upp and connects the groups engine. Nothing will work until this has been called and
+     * should therefore be the first thing called after construction of instance.
+     *
+     * @throws java.io.IOException on failure to connect.
+     */
+    private void connect() throws IOException {
+        Transport transport = new MulticastTransport(this.logger, this.config);
+        transport.open();
+        this.dataReceiverThread = new DataReceiverThread(this.logger, transport);
+        this.dataReceiverThread.start();
+
+        Transport memberTransport = new MulticastTransport(this.logger, this.config);
+        memberTransport.open();
+        this.memberManagerThread = new MemberManagerThread(this.logger, memberTransport, this.config);
+        this.dataReceiverThread.addMessagePacketListener(this.memberManagerThread);
+        this.memberManagerThread.start();
+
+        Transport netTimeTransport = new MulticastTransport(this.logger, this.config);
+        netTimeTransport.open();
+        this.netTime = new NetTime();
+        this.netTimeThread = new NetTimeThread(this.netTime, this.logger, netTimeTransport);
+        this.dataReceiverThread.addMessagePacketListener(this.netTimeThread);
+        this.netTimeThread.start();
+
+    }
+
+    /**
+     * Shuts down and disconnects the groups engine. After this call the functionality is dead until
+     * connect() is called again.
+     *
+     * @throws IOException
+     */
+    public void disconnect()  {
+        if (this.dataReceiverThread != null) {
+            this.dataReceiverThread.terminate();
+            try {this.dataReceiverThread.getTransport().close();} catch (IOException ioe) {
+                this.logger.error("Failed to close data receiver transport!", ioe);
+            }
+        }
+
+        if (this.memberManagerThread != null) {
+            this.memberManagerThread.terminate();
+            try {this.memberManagerThread.getTransport().close();} catch (IOException ioe) {
+                this.logger.error("Failed to close member manager transport!", ioe);
+            }
+        }
+
+        if (this.netTimeThread != null) {
+            this.netTimeThread.terminate();
+            try {this.netTimeThread.getTransport().close();} catch (IOException ioe) {
+                this.logger.error("Failed to close net time transport!", ioe);
+            }
+        }
+    }
+
+    /**
+     * Setting up the connection requires reading the config, which is using an APSConfigService configuration
+     * model that is managed by the APSConfigService. Since it is managed by the service the config cannot
+     * be accessed until it *is* managed by the service. This service might start before the config is managed.
+     * Thereby the APSGroupsConfigRelay wrapper calls managed.waitUntilManaged() to make sure it is managed
+     * before accessing the config values. This call cannot be made on construction of this service since
+     * that is called by the bundle activator and would hang in a deadlock. So the safest time to assure
+     * we have a managed config is on first service call. By then the config is almost surely managed, but
+     * if it isn't yet, it is safe to wait for it to become managed.
+     */
+    private void checkConnect() throws IOException {
+        if (!this.connected) {
+            try {
+                connect();
+                this.connected = true;
+            }
+            catch (IOException ioe) {
+                disconnect();
+                throw ioe;
+            }
+        }
+    }
 
     /**
      * Joins a group.
@@ -115,12 +204,15 @@ public class APSGroupsServiceProvider implements APSGroupsService {
         if (name.equals("[net time]")) {
             throw new IOException("The group name '[net time]' is reserved for internal use and cannot be used.");
         }
+
+        checkConnect();
+
         Group group = Groups.getGroup(name);
         group.setNetTime(this.netTime);
         Member member = new Member();
         group.addMember(member);
-        this.memberManager.addMember(member);
-        GroupMemberProvider groupMember = new GroupMemberProvider(member, this.dataReceiver, logger);
+        this.memberManagerThread.addMember(member);
+        GroupMemberProvider groupMember = new GroupMemberProvider(member, this.dataReceiverThread, logger);
         groupMember.open();
 
         return groupMember;
@@ -138,7 +230,7 @@ public class APSGroupsServiceProvider implements APSGroupsService {
         GroupMemberProvider gmp = (GroupMemberProvider)groupMember;
         gmp.close();
         Member member = gmp.getMember();
-        this.memberManager.removeMember(member);
+        this.memberManagerThread.removeMember(member);
         member.getGroup().removeMember(member);
     }
 }
