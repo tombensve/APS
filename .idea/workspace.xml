@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/docs/config.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/docs/APSGroupsUserGuide.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/docs/APSGroupsUserGuide.md" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/docs/APSGroupsUserGuide.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="a5230742-f30f-451e-b5fc-eabdd2e39ef7" name="Failed commit: aps-20 Default APSEnterpriseAPIs activity." comment="aps-20 Default APSEnterpriseAPIs activity." />
@@ -11,7 +10,7 @@
     <ignored path="OSGiApplicationPlatformServices.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1356792277665" ignored="false" />
-    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1356804205370" ignored="false" />
+    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1356804945639" ignored="false" />
     <file path="/a.dummy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1356712153252" ignored="false" />
     <file path="/testclient.sh" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355064160118" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/wip-clones/MarkdownDoc/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355420755980" ignored="false" />
@@ -184,10 +183,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="APSGroupsUserGuide.md" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="APSGroupsUserGuide.md" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/docs/APSGroupsUserGuide.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="190" column="0" selection-start="6787" selection-end="6787" vertical-scroll-proportion="0.0">
+            <state line="229" column="0" selection-start="8006" selection-end="8006" vertical-scroll-proportion="0.89856297">
               <folding />
             </state>
           </provider>
@@ -334,10 +333,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="APSGroups.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="APSGroups.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/APSGroups.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="185" column="39" selection-start="7076" selection-end="7076" vertical-scroll-proportion="2.0777683">
+            <state line="185" column="39" selection-start="7076" selection-end="7076" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -440,8 +439,8 @@
         <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/NetTime.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/NetTimeProvider.java" />
         <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/groups/service/NetTime.java" />
-        <option value="$PROJECT_DIR$/APS-Network/APSGroups/docs/APSGroupsUserGuide.md" />
         <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/config/APSGroupsServiceConfig.java" />
+        <option value="$PROJECT_DIR$/APS-Network/APSGroups/docs/APSGroupsUserGuide.md" />
       </list>
     </option>
   </component>
@@ -3766,7 +3765,11 @@
       <created>1356804220920</created>
       <updated>1356804220921</updated>
     </task>
-    <option name="localTasksCounter" value="176" />
+    <task id="LOCAL-00176" summary="Documented APSGroups.">
+      <created>1356804953398</created>
+      <updated>1356804953398</updated>
+    </task>
+    <option name="localTasksCounter" value="177" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="false" url="http://natusoft.selfip.net:6789/redmine">
@@ -3804,7 +3807,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="269" y="24" width="2071" height="1331" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Dilbert" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2741536" sideWeight="0.5" order="17" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32116184" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -3827,7 +3830,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39956957" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20197532" sideWeight="0.6284063" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25777778" sideWeight="0.6284063" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25777778" sideWeight="0.6284063" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3715937" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hudson Information" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="PDF_FIND" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
@@ -3884,7 +3887,7 @@
     <option name="MAXIMUM_HISTORY_ROWS" value="1000" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Dev commit." />
+    <option name="LAST_COMMIT_MESSAGE" value="Documented APSGroups." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -3897,7 +3900,6 @@
     <option name="UPDATE_GROUP_BY_CHANGELIST" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="Cosmetica." />
     <MESSAGE value="aps-30 Default APSSessionServiceProvider activity" />
     <MESSAGE value="aps-31 Let the config service also work as an extender by automatically registering and unregistering configs listed in &quot;APS-Configs:&quot; manifest entry." />
     <MESSAGE value="Auto managed configurations can now declare a &quot;public static ManagedConfig mc;&quot; in an APSConfig subclass and call isManaged() and waitUntilManaged() on it to ensure it has been populated with config values before using it." />
@@ -3922,6 +3924,7 @@
     <MESSAGE value="Initial version of APSGroups." />
     <MESSAGE value="Moved connect() and disconnect() code from activator to service provider with delayed connect until first &#10;service call due to that connect does things that cannot be done at activation. The previous code created &#10;a server startup deadlock situation where in activation we were waiting for something that would not happen&#10;until activation was done. The server deploys bundles sequentially without activation timeout ..." />
     <MESSAGE value="Dev commit." />
+    <MESSAGE value="Documented APSGroups." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -4024,13 +4027,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/docs/APSGroupsUserGuide.md">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="190" column="0" selection-start="6787" selection-end="6787" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/config/APSGroupsServiceConfig.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="92" column="108" selection-start="4320" selection-end="4320" vertical-scroll-proportion="0.0">
@@ -4040,7 +4036,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/APSGroups.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="185" column="39" selection-start="7076" selection-end="7076" vertical-scroll-proportion="2.0777683">
+        <state line="185" column="39" selection-start="7076" selection-end="7076" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/docs/APSGroupsUserGuide.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="229" column="0" selection-start="8006" selection-end="8006" vertical-scroll-proportion="0.89856297">
           <folding />
         </state>
       </provider>

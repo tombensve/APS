@@ -94,7 +94,8 @@ and then handle received messages:
 	
 ## Library usage
 
-The bundle jar file can also be used as a library outside of an OSGi server, with an API that has no other dependencies than what is in the jar. The API is then slightly different, and resides under the se.natusoft.apsgroups package.
+The bundle jar file can also be used as a library outside of an OSGi server, with an API that has no other dependencies than what
+is in the jar. The API is then slightly different, and resides under the se.natusoft.apsgroups package.
 
 **Setting up**
 
@@ -126,7 +127,13 @@ Sending and receiving works exactly like the OSGi examples above.
 
 All APSGroups instances connected will try to sync their time. I call this synced time ”net time”. 
 
-It works like this: When an APSGroups instance comes up it waits a while for NET_TIME packets. If it gets such a packet then it enters receive mode and takes the time in the received NET_TIME packet and stores a diff to that time and local time. This diff can then be used to translate back and forth between local and net time. If no such packet arrives in expected time it enters send mode and starts sending NET_TIME packets itself using its current net time. If a NET_TIME packet is received when in send mode it directly goes over to listen mode. If in listen mode and no NET_TIME packet comes in reasonable time it goes over to send mode. So among all instances on the network only one is responsible for sending NET_TIME. If that instance leaves then there might be a short fight for succession, but it will resolve itself rather quickly. 
+It works like this: When an APSGroups instance comes up it waits a while for NET_TIME packets. If it gets such a packet then it enters
+receive mode and takes the time in the received NET_TIME packet and stores a diff to that time and local time. This diff can then be
+used to translate back and forth between local and net time. If no such packet arrives in expected time it enters send mode and starts
+sending NET_TIME packets itself using its current net time. If a NET_TIME packet is received when in send mode it directly goes over
+to listen mode. If in listen mode and no NET_TIME packet comes in reasonable time it goes over to send mode. So among all instances
+on the network only one is responsible for sending NET_TIME. If that instance leaves then there might be a short fight for succession,
+but it will resolve itself rather quickly.
 
 The GroupMember contains the following API to support net time:
 
@@ -210,11 +217,15 @@ and the NetTime API looks like this:
 
 ### OSGi service 
 
-The OSGi service provides a configuration model that gets managed by the APSConfigService. It can be configured in the APS adminweb (http://host:port/apsadminweb/). Here is a screenshot of the config admin:
+The OSGi service provides a configuration model that gets managed by the APSConfigService. It can be configured in the APS adminweb
+(http://host:port/apsadminweb/). Here is a screenshot of the config admin:
 
 ![/apsconfigadmin web gui for configuring APSGroups](config.png)
 
 ### Library 
 
-The library wants an implementation of the APSGroupsConfig interface as its first argument to APSGroups(config, logger) constructor. Either you implement your own or use the APSGroupsConfigProvider implementation. This is a plain java bean with both setters and getters for the config values. It comes with quite reasonable default values. It contains exactly the same properties as shown in the picture above.
+The library wants an implementation of the APSGroupsConfig interface as its first argument to APSGroups(config, logger) constructor.
+Either you implement your own or use the APSGroupsConfigProvider implementation. This is a plain java bean with both setters and
+getters for the config values. It comes with quite reasonable default values. It contains exactly the same properties as shown in
+the picture above.
 
