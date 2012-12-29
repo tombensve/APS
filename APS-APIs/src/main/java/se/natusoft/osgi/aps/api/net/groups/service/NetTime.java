@@ -1,5 +1,6 @@
 package se.natusoft.osgi.aps.api.net.groups.service;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -9,7 +10,7 @@ import java.util.Locale;
  * The net time is synchronized between all members. Each receiver of net time diffs it with
  * local time and stores the diff so that they can convert to/from local/net time.
  */
-public interface NetTime {
+public interface NetTime extends Serializable {
 
     /**
      * Returns the number of milliseconds since Januray 1, 1970 in net time.
@@ -27,7 +28,7 @@ public interface NetTime {
     public Calendar getNetTimeCalendar();
 
     /**
-     * Converts the net time to local time and returns as a Calendar.
+     * Returns the net time as a Calendar.
      *
      * @param locale The locale to use.
      */

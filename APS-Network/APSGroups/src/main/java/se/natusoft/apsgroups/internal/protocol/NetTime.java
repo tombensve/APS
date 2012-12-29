@@ -53,6 +53,7 @@
  */
 package se.natusoft.apsgroups.internal.protocol;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -64,7 +65,7 @@ import java.util.Locale;
  *
  * The idea for this is that everybody in the group should most probably be in sync on roughly the same time.
  */
-public class NetTime {
+public class NetTime implements Serializable {
     //
     // Private Members
     //

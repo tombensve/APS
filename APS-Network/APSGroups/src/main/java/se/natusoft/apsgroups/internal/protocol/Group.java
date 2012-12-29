@@ -150,7 +150,7 @@ public class Group {
      */
     public synchronized void removeMember(Member member) {
         this.members.remove(member.getId());
-        member.setGroup(null);
+//        member.setGroup(null); -- This causes problems.
         for (MemberListener memberListener : this.memberListeners) {
             memberListener.memberRemoved(member);
         }

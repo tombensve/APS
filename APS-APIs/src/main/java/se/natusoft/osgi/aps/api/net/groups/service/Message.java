@@ -41,11 +41,8 @@ import java.io.OutputStream;
 import java.util.UUID;
 
 /**
- * Created with IntelliJ IDEA.
- * User: tommy
- * Date: 2012-12-28
- * Time: 16:48
- * To change this template use File | Settings | File Templates.
+ * This represents a complete message containing any data you want to send to the group. You provide the message
+ * with data using the OutputStream, and read message data using the InputStream.
  */
 public interface Message {
     /**

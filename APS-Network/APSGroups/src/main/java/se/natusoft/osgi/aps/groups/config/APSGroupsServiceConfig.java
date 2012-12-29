@@ -64,9 +64,9 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
  * Configuration for the APS discovery service.
  */
 @APSConfigDescription(
-    configId="se.natusoft.osgi.aps.datasync",
+    configId="se.natusoft.osgi.aps.groups",
     group = "network",
-    description="Adresses and ports to use for synchronization.",
+    description="Network specific configuration for APSGroups.",
     version="1.0.0"
 )
 public class APSGroupsServiceConfig extends APSConfig {
@@ -90,7 +90,7 @@ public class APSGroupsServiceConfig extends APSConfig {
             defaultValue = {@APSDefaultValue("5")})
     public APSConfigValue resendInterval;
 
-    @APSConfigItemDescription(description = "The interval in seconds that members announce that they are (sill) members. If a member has " +
+    @APSConfigItemDescription(description = "The interval in seconds that members announce that they are (still) members. If a member has " +
             "not announced itself again within this time other members of the group will drop the member.",
              defaultValue = {@APSDefaultValue("10")})
     public APSConfigValue memberAnnounceInterval;
