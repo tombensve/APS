@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/CmdLineTestShell.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/CmdLineTestShell.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MemberManagerThread.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MemberManagerThread.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/APS-APIs/src/main/javadoc/se/biltmore/osgi/aps/api/external/protocol/doc-files/APSExternalProtocolExtender.png" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="a5230742-f30f-451e-b5fc-eabdd2e39ef7" name="Failed commit: aps-20 Default APSEnterpriseAPIs activity." comment="aps-20 Default APSEnterpriseAPIs activity." />
@@ -11,7 +10,7 @@
     <ignored path="OSGiApplicationPlatformServices.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1356721551958" ignored="false" />
-    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1356789782114" ignored="false" />
+    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1356790780588" ignored="false" />
     <file path="/a.dummy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1356712153252" ignored="false" />
     <file path="/testclient.sh" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355064160118" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/wip-clones/MarkdownDoc/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355420755980" ignored="false" />
@@ -202,10 +201,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CmdLineTestShell.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="CmdLineTestShell.java" pinned="false" current="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/CmdLineTestShell.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="134" column="29" selection-start="5242" selection-end="5242" vertical-scroll-proportion="0.22654268">
+            <state line="152" column="47" selection-start="5917" selection-end="5917" vertical-scroll-proportion="1.8892646">
               <folding />
             </state>
           </provider>
@@ -4026,7 +4025,11 @@
       <created>1356789804324</created>
       <updated>1356789804324</updated>
     </task>
-    <option name="localTasksCounter" value="172" />
+    <task id="LOCAL-00172" summary="Dev commit.">
+      <created>1356790788890</created>
+      <updated>1356790788891</updated>
+    </task>
+    <option name="localTasksCounter" value="173" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="false" url="http://natusoft.selfip.net:6789/redmine">
@@ -4064,7 +4067,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="302" y="24" width="2071" height="1331" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Dilbert" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2741536" sideWeight="0.5" order="17" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32116184" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -4086,7 +4089,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39956957" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20197532" sideWeight="0.6284063" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25777778" sideWeight="0.6284063" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25777778" sideWeight="0.6284063" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3715937" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hudson Information" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="PDF_FIND" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
@@ -4144,7 +4147,7 @@
     <option name="MAXIMUM_HISTORY_ROWS" value="1000" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Moved connect() and disconnect() code from activator to service provider with delayed connect until first &#10;service call due to that connect does things that cannot be done at activation. The previous code created &#10;a server startup deadlock situation where in activation we were waiting for something that would not happen&#10;until activation was done. The server deploys bundles sequentially without activation timeout ..." />
+    <option name="LAST_COMMIT_MESSAGE" value="Dev commit." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -4180,8 +4183,8 @@
     <MESSAGE value="~/.aps/apsfs is now the default root for APSFilesystemService if aps.filesystem.root system property is not set." />
     <MESSAGE value="Changed default multicast address to 224.0.0.1." />
     <MESSAGE value="Initial version of APSGroups." />
-    <MESSAGE value="Dev commit." />
     <MESSAGE value="Moved connect() and disconnect() code from activator to service provider with delayed connect until first &#10;service call due to that connect does things that cannot be done at activation. The previous code created &#10;a server startup deadlock situation where in activation we were waiting for something that would not happen&#10;until activation was done. The server deploys bundles sequentially without activation timeout ..." />
+    <MESSAGE value="Dev commit." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -4191,15 +4194,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/groups/service/GroupMember.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="90" column="7" selection-start="2491" selection-end="2491" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/APS-APIs/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state line="55" column="69" selection-start="3264" selection-end="3264" vertical-scroll-proportion="0.4450262">
@@ -4300,7 +4294,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/CmdLineTestShell.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="134" column="29" selection-start="5242" selection-end="5242" vertical-scroll-proportion="0.22654268">
+        <state line="152" column="47" selection-start="5917" selection-end="5917" vertical-scroll-proportion="1.8892646">
           <folding />
         </state>
       </provider>
