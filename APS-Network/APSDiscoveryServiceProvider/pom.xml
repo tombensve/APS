@@ -16,7 +16,6 @@
 
     <description>
         This is a simple discovery service to discover other services on the network.
-        It supports both multicast and UDP connections.
     </description>
 
     <properties>
@@ -45,10 +44,8 @@
             se.natusoft.osgi.aps.discovery,
             se.natusoft.osgi.aps.discovery.model,
             se.natusoft.osgi.aps.discovery.service,
-            se.natusoft.osgi.aps.discovery.service.event,
-            se.natusoft.osgi.aps.discovery.service.net,
-            se.natusoft.osgi.aps.discovery.service.provider,
-            se.natusoft.osgi.aps.discovery.test
+            se.natusoft.osgi.aps.discovery.service.protocol,
+            se.natusoft.osgi.aps.discovery.service.provider
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->
@@ -87,6 +84,7 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -128,8 +126,6 @@
                     </supportedProjectTypes>
                     <archive>
                         <manifestEntries>
-                            <APS-Externalizable>true</APS-Externalizable>
-                            <APS-Configs>${aps.config.classes}</APS-Configs>
                             <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
                         </manifestEntries>
                     </archive>

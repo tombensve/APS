@@ -5,11 +5,10 @@
  *         APS Discovery Service Provider
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
  *         This is a simple discovery service to discover other services on the network.
- *         It supports both multicast and UDP connections.
  *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
@@ -45,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Holds a set of ServiceDescription object.
+ * Holds a set of ServiceDescriptionProvider object.
  */
 public class ServiceDescriptions {
     //

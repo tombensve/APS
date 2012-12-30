@@ -49,7 +49,7 @@ import se.natusoft.osgi.aps.api.external.model.type.DataTypeDescription;
 import se.natusoft.osgi.aps.api.external.model.type.ParameterDataTypeDescription;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
 import se.natusoft.osgi.aps.api.model.json.JSONValue;
-import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescription;
+import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescriptionProvider;
 import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService;
 import se.natusoft.osgi.aps.api.net.rpc.errors.ErrorType;
 import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
@@ -567,7 +567,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     public void externalServiceAvailable(String service, String version) {
         if (this.rpcBaseUrl != null) {
             for (StreamedRPCProtocol protocol : this.externalProtocolService.getAllStreamedProtocols()) {
-                ServiceDescription serviceDescription = new ServiceDescription();
+                ServiceDescriptionProvider serviceDescription = new ServiceDescriptionProvider();
                 serviceDescription.setDescription("Published by aps-rpc-http-transport-provider.");
                 serviceDescription.setServiceHost(this.serverHost);
                 serviceDescription.setServicePort(this.serverPort);
@@ -578,7 +578,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
 
                 this.discoveryServiceTracker.withAllAvailableServices(new WithService<APSSimpleDiscoveryService>() {
 
-                    public void withService(APSSimpleDiscoveryService discoverySvc, ServiceDescription serviceDescription) throws Exception {
+                    public void withService(APSSimpleDiscoveryService discoverySvc, ServiceDescriptionProvider serviceDescription) throws Exception {
                         discoverySvc.publishService(serviceDescription);//                                    ^
                     }                   //                                                                    |
                                         //                                                                    |
@@ -596,7 +596,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     public void externalServiceLeaving(String service, String version) {
         if (this.rpcBaseUrl != null) {
             for (StreamedRPCProtocol protocol : this.externalProtocolService.getAllStreamedProtocols()) {
-                ServiceDescription serviceDescription = new ServiceDescription();
+                ServiceDescriptionProvider serviceDescription = new ServiceDescriptionProvider();
                 serviceDescription.setDescription("Published by aps-rpc-http-transport-provider.");
                 serviceDescription.setServiceHost(this.serverHost);
                 serviceDescription.setServicePort(this.serverPort);
@@ -614,7 +614,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                      * @throws Exception Implementation can throw any exception. How it is handled depends on the APSServiceTracker method this
                      *                   gets passed to.
                      */
-                    public void withService(APSSimpleDiscoveryService discoverySvc, ServiceDescription serviceDescription) throws Exception {
+                    public void withService(APSSimpleDiscoveryService discoverySvc, ServiceDescriptionProvider serviceDescription) throws Exception {
                         discoverySvc.unpublishService(serviceDescription);
                     }
 
@@ -632,7 +632,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     @Override
     public void protocolAvailable(String protocolName, String protocolVersion) {
         for (String service : this.externalProtocolService.getAvailableServices()) {
-            ServiceDescription serviceDescription = new ServiceDescription();
+            ServiceDescriptionProvider serviceDescription = new ServiceDescriptionProvider();
             serviceDescription.setDescription("Published by aps-rpc-http-extender.");
             serviceDescription.setServiceHost(this.serverHost);
             serviceDescription.setServicePort(this.serverPort);
@@ -650,7 +650,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                  * @throws Exception Implementation can throw any exception. How it is handled depends on the APSServiceTracker method this
                  *                   gets passed to.
                  */
-                public void withService(APSSimpleDiscoveryService discoverySvc, ServiceDescription serviceDescription) throws Exception {
+                public void withService(APSSimpleDiscoveryService discoverySvc, ServiceDescriptionProvider serviceDescription) throws Exception {
                     discoverySvc.publishService(serviceDescription);
                 }
 
@@ -667,7 +667,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     @Override
     public void protocolLeaving(String protocolName, String protocolVersion) {
         for (String service : this.externalProtocolService.getAvailableServices()) {
-            ServiceDescription serviceDescription = new ServiceDescription();
+            ServiceDescriptionProvider serviceDescription = new ServiceDescriptionProvider();
             serviceDescription.setDescription("Published by aps-rpc-http-extender.");
             serviceDescription.setServiceHost(this.serverHost);
             serviceDescription.setServicePort(this.serverPort);
@@ -685,7 +685,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                  * @throws Exception Implementation can throw any exception. How it is handled depends on the APSServiceTracker method this
                  *                   gets passed to.
                  */
-                public void withService(APSSimpleDiscoveryService discoverySvc, ServiceDescription serviceDescription) throws Exception {
+                public void withService(APSSimpleDiscoveryService discoverySvc, ServiceDescriptionProvider serviceDescription) throws Exception {
                     discoverySvc.unpublishService(serviceDescription);
                 }
 
@@ -708,7 +708,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
         if (this.rpcBaseUrl != null) {
             for (StreamedRPCProtocol protocol : this.externalProtocolService.getAllStreamedProtocols()) {
                 for (String service : this.externalProtocolService.getAvailableServices()) {
-                    ServiceDescription serviceDescription = new ServiceDescription();
+                    ServiceDescriptionProvider serviceDescription = new ServiceDescriptionProvider();
                     serviceDescription.setDescription("Published by aps-rpc-http-extender.");
                     serviceDescription.setServiceHost(this.serverHost);
                     serviceDescription.setServicePort(this.serverPort);

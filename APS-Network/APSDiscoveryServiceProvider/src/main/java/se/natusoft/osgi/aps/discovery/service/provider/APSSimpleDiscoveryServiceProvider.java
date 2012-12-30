@@ -5,11 +5,10 @@
  *         APS Discovery Service Provider
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
  *         This is a simple discovery service to discover other services on the network.
- *         It supports both multicast and UDP connections.
  *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
@@ -37,24 +36,31 @@
  */
 package se.natusoft.osgi.aps.discovery.service.provider;
 
-import se.natusoft.osgi.aps.api.core.platform.model.PlatformDescription;
+import se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService;
+import se.natusoft.osgi.aps.api.net.discovery.exception.APSDiscoveryPublishException;
 import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescription;
 import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService;
+import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
+import se.natusoft.osgi.aps.api.net.groups.service.GroupMember;
+import se.natusoft.osgi.aps.api.net.groups.service.Message;
+import se.natusoft.osgi.aps.api.net.groups.service.MessageListener;
 import se.natusoft.osgi.aps.discovery.model.ServiceDescriptions;
-import se.natusoft.osgi.aps.discovery.service.event.DiscoveryEventListener;
-import se.natusoft.osgi.aps.discovery.service.event.DiscoveryEventProvidingBase;
-import se.natusoft.osgi.aps.discovery.service.net.ObjectContainer;
+import se.natusoft.osgi.aps.discovery.service.protocol.DiscoveryProtocol;
+import se.natusoft.osgi.aps.tools.APSLogger;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * The discovery service Implementation.
  */
-public class APSSimpleDiscoveryServiceProvider extends DiscoveryEventProvidingBase implements APSSimpleDiscoveryService, DiscoveryEventListener {
+public class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService, MessageListener {
     //
     // Private Members
     //
+
+    // Local service implementation data.
 
     /** The services published locally by clients of this service. */
     private ServiceDescriptions locallyPublishedServices = null;
@@ -62,8 +68,23 @@ public class APSSimpleDiscoveryServiceProvider extends DiscoveryEventProvidingBa
     /** The services published on other APSSimpleDiscoveryService instances and announced to us. */
     private ServiceDescriptions remotelyPublishedServices = null;
 
-    /** The description of the platform. */
-    private ObjectContainer<PlatformDescription> platformDescription = null;
+    /** This is false until setup() has been done. This is so that setup() will only run once. */
+    private boolean isSetup = false;
+
+
+    // Information we depend on.
+
+    /** Our logger. */
+    private APSLogger logger = null;
+
+    /** This is used sending and receiving discovery messages. */
+    private APSGroupsService groupsService = null;
+
+    /** Our API to the group we join. */
+    private GroupMember groupMember = null;
+
+    /** The platform service. */
+    private APSPlatformService platformService = null;
 
     //
     // Constructors
@@ -72,10 +93,14 @@ public class APSSimpleDiscoveryServiceProvider extends DiscoveryEventProvidingBa
     /**
      * Creates a new APSSimpleDiscoveryServiceProvider instance.
      *
-     * @param platformDescription A description of the platform.
+     * @param groupsService An APSServiceTracker managed API to APSGroupsService.
+     * @param platformService Provides information about the local platform installation.
+     * @param logger To log to.
      */
-    public APSSimpleDiscoveryServiceProvider(ObjectContainer<PlatformDescription> platformDescription) {
-        this.platformDescription = platformDescription;
+    public APSSimpleDiscoveryServiceProvider(APSGroupsService groupsService, APSPlatformService platformService, APSLogger logger) {
+        this.groupsService = groupsService;
+        this.platformService = platformService;
+        this.logger = logger;
     }
 
     //
@@ -83,103 +108,63 @@ public class APSSimpleDiscoveryServiceProvider extends DiscoveryEventProvidingBa
     //
 
     /**
-     * Sets the container of services published locally by clients of this service.
-     *
-     * @param locallyPublishedServices The locally published services container.
+     * Since we cannot do joinGroup() during bundle activation due to potential deadlock we have to do it at first
+     * service call.
      */
-    public void setLocallyPublishedServices(ServiceDescriptions locallyPublishedServices) {
-        this.locallyPublishedServices = locallyPublishedServices;
-    }
-
-    /**
-     * Sets the container or services published on other APSSimpleDiscoveryService instances and announced to us.
-     *
-     * @param remotelyPublishedServices The remotely published services container.
-     */
-    public void setRemotelyPublishedServices(ServiceDescriptions remotelyPublishedServices) {
-        this.remotelyPublishedServices = remotelyPublishedServices;
-    }
-
-    /**
-     * Adds an event listener for local discovery events.
-     *
-     * @param discoveryEventListener The listener to add.
-     */
-    public void addLocalDiscoveryEventListener(DiscoveryEventListener discoveryEventListener) {
-        super.addDiscoveryEventListener(discoveryEventListener);
-    }
-
-    /**
-     * Removes a previously added event listener.
-     *
-     * @param discoveryEventListener The event listener to remove.
-     */
-    public void removeLocalDiscoveryEventListener(DiscoveryEventListener discoveryEventListener) {
-        super.removeDiscoveryEventListener(discoveryEventListener);
-    }
-
-    /**
-     * Unpublishes all local services.
-     */
-    public void unpublishAllLocal() {
-        for (ServiceDescription serviceDescription : this.locallyPublishedServices.getAllServiceDescriptions()) {
-            super.fireLeavingEvent(serviceDescription);
-        }
-    }
-
-    //
-    // DiscoveryEventListener Implementation Methods
-    //
-
-    /**
-     * Announces that a new service is available.
-     *
-     * @param serviceDescription The description of the new service.
-     */
-    @Override
-    public synchronized void serviceAvailable(ServiceDescription serviceDescription) {
-        // We will se our own remotely published services due to multicast.
-        if (!this.locallyPublishedServices.hasServiceDescription(serviceDescription)) {
-            this.remotelyPublishedServices.addServiceDescription(serviceDescription);
+    private void setup() {
+        if (!this.isSetup) {
+            // We need the platform type so that we don't mix up dev-test, system-test, acceptance-test and production
+            // installations. Well, production should be on a separate net of course, but the others might collide
+            // otherwise.
+            String discoveryGroup = "aps-discovery-" + this.platformService.getPlatformDescription().getType();
+            try {
+                this.groupMember = this.groupsService.joinGroup(discoveryGroup);
+                this.isSetup = true;
+                this.logger.info("Joined group '" + discoveryGroup + "'!");
+                this.groupMember.addMessageListener(this);
+            }
+            catch (IOException ioe) {
+                this.logger.error("Failed to join group! Discovery will not work! [" + discoveryGroup + "]", ioe);
+            }
         }
     }
 
     /**
-     * Announces that an old service is leaving.
+     * Used by activator on shutdown.
      *
-     * @param serviceDescription The description of the leaving service.
+     * @throws IOException
      */
-    @Override
-    public synchronized void serviceLeaving(ServiceDescription serviceDescription) {
-        // We will se our own remotely published services due to multicast.
-        if (!this.locallyPublishedServices.hasServiceDescription(serviceDescription)) {
-            this.remotelyPublishedServices.removeServiceDescription(serviceDescription);
+    public void cleanup() throws IOException {
+        if (this.isSetup) {
+            this.groupMember.removeMessageListener(this);
+            this.groupsService.leaveGroup(this.groupMember);
         }
     }
-
-    //
-    // APSSimpleDiscoveryService Implementation Methods
-    //
 
     /**
      * Returns all remotely discovered services.
      */
     @Override
     public List<ServiceDescription> getRemotelyDiscoveredServices() {
+        setup();
         return this.remotelyPublishedServices.getAllServiceDescriptions();
     }
 
     /**
      * Returns the locally registered services.
      */
+    @Override
     public List<ServiceDescription> getLocallyRegisteredServices() {
+        setup();
         return this.locallyPublishedServices.getAllServiceDescriptions();
     }
 
     /**
      * Returns all known services, both locally registered and remotely discovered.
      */
+    @Override
     public List<ServiceDescription> getAllServices() {
+        setup();
         List<ServiceDescription> allServices = new LinkedList<ServiceDescription>();
         allServices.addAll(getRemotelyDiscoveredServices());
         allServices.addAll(getLocallyRegisteredServices());
@@ -194,19 +179,28 @@ public class APSSimpleDiscoveryServiceProvider extends DiscoveryEventProvidingBa
      */
     @Override
     public List<ServiceDescription> getService(String serviceId, String version) {
+        setup();
         return this.remotelyPublishedServices.getServiceDescriptions(serviceId, version);
     }
 
     /**
      * Publishes a local service. This will announce it to other known APSSimpleDiscoveryService instances.
      *
-     * @param serviceDescription The description of the servcie to publish.
+     * @param serviceDescription The description of the service to publish.
      */
     @Override
-    public void publishService(ServiceDescription serviceDescription) {
-        serviceDescription.internalSetPlatformDescription(this.platformDescription.get());
-        this.locallyPublishedServices.addServiceDescription(serviceDescription);
-        super.fireAvailableEvent(serviceDescription);
+    public void publishService(ServiceDescription serviceDescription) throws APSDiscoveryPublishException {
+        setup();
+        try {
+            Message message = this.groupMember.createNewMessage();
+            DiscoveryProtocol.writeDiscoveryAction(message, DiscoveryProtocol.publishAction(serviceDescription));
+            this.groupMember.sendMessage(message);
+            this.locallyPublishedServices.addServiceDescription(serviceDescription);
+        }
+        catch (IOException ioe) {
+            throw new APSDiscoveryPublishException("Failed to publish service description with id '" +
+                    serviceDescription.getServiceId() + "'!", ioe);
+        }
     }
 
     /**
@@ -217,9 +211,35 @@ public class APSSimpleDiscoveryServiceProvider extends DiscoveryEventProvidingBa
      */
     @Override
     public void unpublishService(ServiceDescription serviceDescription) {
-        serviceDescription.internalSetPlatformDescription(this.platformDescription.get());
-        this.locallyPublishedServices.removeServiceDescription(serviceDescription);
-        super.fireLeavingEvent(serviceDescription);
+        setup();
+        try {
+            Message message = this.groupMember.createNewMessage();
+            DiscoveryProtocol.writeDiscoveryAction(message, DiscoveryProtocol.unpublishAction(serviceDescription));
+            this.groupMember.sendMessage(message);
+            this.locallyPublishedServices.removeServiceDescription(serviceDescription);
+        }
+        catch (IOException ioe) {
+            throw new APSDiscoveryPublishException("Failed to unpublish service description with id '" +
+                    serviceDescription.getServiceId() + "'!", ioe);
+        }
     }
 
+    /**
+     * Notification of received message. This implements MessageListener.
+     *
+     * @param message The received message.
+     */
+    @Override
+    public void messageReceived(Message message) {
+        DiscoveryProtocol.DiscoveryAction discoveryAction = DiscoveryProtocol.readDiscoveryAction(message);
+        if (discoveryAction.getAction() == DiscoveryProtocol.DiscoveryAction.PUBLISH) {
+            this.remotelyPublishedServices.addServiceDescription(discoveryAction.getServiceDescription());
+        }
+        else if (discoveryAction.getAction() == DiscoveryProtocol.DiscoveryAction.UNPUBLISH) {
+            this.remotelyPublishedServices.removeServiceDescription(discoveryAction.getServiceDescription());
+        }
+        else {
+            this.logger.error("Unknown discovery action received: " + discoveryAction.getAction());
+        }
+    }
 }

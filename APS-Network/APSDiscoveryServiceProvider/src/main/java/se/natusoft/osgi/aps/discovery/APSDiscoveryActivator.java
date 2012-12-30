@@ -5,11 +5,10 @@
  *         APS Discovery Service Provider
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
  *         This is a simple discovery service to discover other services on the network.
- *         It supports both multicast and UDP connections.
  *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
@@ -39,18 +38,37 @@ package se.natusoft.osgi.aps.discovery;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import se.natusoft.osgi.aps.discovery.service.net.StartupManager;
+import org.osgi.framework.Constants;
+import org.osgi.framework.ServiceRegistration;
+import se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService;
+import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService;
+import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
+import se.natusoft.osgi.aps.discovery.service.provider.APSSimpleDiscoveryServiceProvider;
+import se.natusoft.osgi.aps.tools.APSLogger;
+import se.natusoft.osgi.aps.tools.APSServiceTracker;
+
+import java.util.Dictionary;
+import java.util.Properties;
 
 public class APSDiscoveryActivator implements BundleActivator {
     //
     // Private Members
     //
 
-    /** The bundles context. */
-    private BundleContext context = null;
+    /** The bundle logger. */
+    private APSLogger logger = null;
 
-    /** Starts, refreshes and stops the whole thing. */
-    private StartupManager startupManager = null;
+    /** The service we publish. */
+    private ServiceRegistration discoveryServiceReg = null;
+
+    /** The published discovery service instance. We need to save it so that we can use in to cleanup in stop(). */
+    private APSSimpleDiscoveryServiceProvider discoveryService = null;
+
+    // Services we depend on
+
+    private APSServiceTracker<APSPlatformService> platformServiceTracker = null;
+
+    private APSServiceTracker<APSGroupsService> groupsServiceTracker = null;
 
     //
     // Bundle Start.
@@ -58,13 +76,34 @@ public class APSDiscoveryActivator implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
-        this.context = context;
 
-        // This manages the startup in a separate thread since it has dependencies that need to become available
-        // before it can start. The StartupManager will also adapt to changes in the configuration while running.
-        // It is however only the startup procedure that is running in the thread which dies after startup is done.
-        this.startupManager = new StartupManager(this.context);
-        this.startupManager.startup();
+        // This will log to the OSGi LogService if it is found otherwise it will log to System.out.
+        // Not all OSGi servers provide the LogService.
+        this.logger = new APSLogger(System.out);
+        this.logger.start(context);
+
+        this.platformServiceTracker =
+                new APSServiceTracker<APSPlatformService>(context, APSPlatformService.class, APSServiceTracker.LARGE_TIMEOUT);
+        this.platformServiceTracker.start();
+
+        this.groupsServiceTracker =
+                new APSServiceTracker<APSGroupsService>(context, APSGroupsService.class, APSServiceTracker.LARGE_TIMEOUT);
+        this.platformServiceTracker.start();
+
+        // Register our discovery service as an OSGi service.
+        this.discoveryService =
+                new APSSimpleDiscoveryServiceProvider(
+                        this.groupsServiceTracker.getWrappedService(),
+                        this.platformServiceTracker.getWrappedService(),
+                        this.logger
+                );
+        Dictionary serviceProps = new Properties();
+        serviceProps.put(Constants.SERVICE_PID, APSSimpleDiscoveryServiceProvider.class.getName());
+        this.discoveryServiceReg = context.registerService(
+                APSSimpleDiscoveryService.class.getName(),
+                this.discoveryService,
+                serviceProps
+        );
     }
 
     //
@@ -73,7 +112,24 @@ public class APSDiscoveryActivator implements BundleActivator {
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        this.startupManager.shutdown();
+        if (this.discoveryServiceReg != null) {
+            this.discoveryServiceReg.unregister();
+        }
+
+        if (this.discoveryService != null) {
+            this.discoveryService.cleanup();
+            this.discoveryService = null;
+        }
+
+        if (this.platformServiceTracker != null) {
+            this.platformServiceTracker.stop(context);
+            this.platformServiceTracker = null;
+        }
+
+        if (this.groupsServiceTracker != null) {
+            this.groupsServiceTracker.stop(context);
+            this.groupsServiceTracker = null;
+        }
     }
 
 

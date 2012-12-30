@@ -2,14 +2,13 @@
  * 
  * PROJECT
  *     Name
- *         APS Discovery Service Provider
+ *         APS APIs
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
- *         This is a simple discovery service to discover other services on the network.
- *         It supports both multicast and UDP connections.
+ *         Provides the APIs for the application platform services.
  *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
@@ -32,29 +31,35 @@
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
- *         2011-10-16: Created!
+ *         2012-12-30: Created!
  *         
  */
-package se.natusoft.osgi.aps.discovery.service.event;
+package se.natusoft.osgi.aps.api.net.discovery.exception;
 
-import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescription;
+import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
 
 /**
- * Listends to discovery events.
+ * Thrown on service publish problems.
  */
-public interface DiscoveryEventListener {
+public class APSDiscoveryPublishException extends APSRuntimeException {
 
     /**
-     * Announces that a new service is available.
+     * Creates a new APSRuntimeException instance.
      *
-     * @param serviceDescription The description of the new service.
+     * @param message The exception message.
      */
-    public void serviceAvailable(ServiceDescription serviceDescription);
+    public APSDiscoveryPublishException(String message) {
+        super(message);
+    }
 
     /**
-     * Announces that an old service is leaving.
+     * Creates a new APSRuntimeException instance.
      *
-     * @param serviceDescription The description of the leaving service.
+     * @param message The exception message.
+     * @param cause The cause of this exception.
      */
-    public void serviceLeaving(ServiceDescription serviceDescription);
+    public APSDiscoveryPublishException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

@@ -62,6 +62,7 @@
             se.natusoft.osgi.aps.api.misc.json;version="${project.version}",
             se.natusoft.osgi.aps.api.misc.session;version="${project.version}",
             se.natusoft.osgi.aps.api.model.json;version="${project.version}",
+            se.natusoft.osgi.aps.api.net.discovery.exception;version="${project.version}",
             se.natusoft.osgi.aps.api.net.discovery.model;version="${project.version}",
             se.natusoft.osgi.aps.api.net.discovery.service;version="${project.version}",
             se.natusoft.osgi.aps.api.net.rpc.errors;version="${project.version}",

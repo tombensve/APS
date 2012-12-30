@@ -37,6 +37,7 @@
 package se.natusoft.osgi.aps.api.net.discovery.service;
 
 
+import se.natusoft.osgi.aps.api.net.discovery.exception.APSDiscoveryPublishException;
 import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescription;
 
 import java.util.List;
@@ -73,14 +74,18 @@ public interface APSSimpleDiscoveryService {
      * Publishes a local service. This will announce it to other known APSSimpleDiscoveryService instances.
      *
      * @param service The description of the servcie to publish.
+     *
+     * @throws APSDiscoveryPublishException on problems to publish (note: this is a runtime exception!).
      */
-    public void publishService(ServiceDescription service);
+    public void publishService(ServiceDescription service) throws APSDiscoveryPublishException;
 
     /**
      * Recalls the locally published service, announcing to other known APSSimpleDiscoveryService instances that this
      * service is no longer available.
      *
      * @param service The service to unpublish.
+     *
+     * @throws APSDiscoveryPublishException on problems to publish (note: this is a runtime exception!).
      */
-    public void unpublishService(ServiceDescription service);
+    public void unpublishService(ServiceDescription service) throws APSDiscoveryPublishException;
 }
