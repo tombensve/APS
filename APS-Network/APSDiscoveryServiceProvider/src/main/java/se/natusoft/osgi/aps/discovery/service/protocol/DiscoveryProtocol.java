@@ -37,8 +37,8 @@
 package se.natusoft.osgi.aps.discovery.service.protocol;
 
 import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescription;
+import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescriptionProvider;
 import se.natusoft.osgi.aps.api.net.groups.service.Message;
-import se.natusoft.osgi.aps.discovery.service.provider.ServiceDescriptionProvider;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

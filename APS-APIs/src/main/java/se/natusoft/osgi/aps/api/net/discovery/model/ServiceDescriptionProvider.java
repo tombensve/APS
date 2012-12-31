@@ -2,13 +2,13 @@
  * 
  * PROJECT
  *     Name
- *         APS Discovery Service Provider
+ *         APS APIs
  *     
  *     Code Version
  *         0.9.0
  *     
  *     Description
- *         This is a simple discovery service to discover other services on the network.
+ *         Provides the APIs for the application platform services.
  *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
@@ -34,9 +34,7 @@
  *         2011-10-16: Created!
  *         
  */
-package se.natusoft.osgi.aps.discovery.service.provider;
-
-import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescription;
+package se.natusoft.osgi.aps.api.net.discovery.model;
 
 /**
  * Describes a service.

@@ -5,7 +5,7 @@
  *         APS RPC Over HTTP Transport Provider
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
  *         This uses aps-external-protocol-extender to provide remote procedure calls over HTTP. It makes
@@ -579,10 +579,10 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                 this.discoveryServiceTracker.withAllAvailableServices(new WithService<APSSimpleDiscoveryService>() {
 
                     public void withService(APSSimpleDiscoveryService discoverySvc, ServiceDescriptionProvider serviceDescription) throws Exception {
-                        discoverySvc.publishService(serviceDescription);//                                    ^
-                    }                   //                                                                    |
-                                        //                                                                    |
-                }, serviceDescription); //--------------------------------------------------------------------+
+                        discoverySvc.publishService(serviceDescription);//                                            ^
+                    }                   //                                                                            |
+                                        //                                                                            |
+                }, serviceDescription); //----------------------------------------------------------------------------+
             }
         }
     }
