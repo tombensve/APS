@@ -40,16 +40,19 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A log service with a log viewer GUI. The GUI should support server push and also allow for filtering of logs and configuration of what logs go to what log files.
 
-* A JCR (Java Content Repository) service and a content publishing GUI (following the general APS ambition - reasonable flexibility, ease of use, but wont fit everyone).
+* A JCR (Java Content Repository) service and a content publishing GUI (following the general APS ambition - reasonable functionality and flexibility, ease of use. Will fit many, but not everyone).
 
 * JDBC connection pool service (based on some open source connection pool implementation). Will use the Data source service to create connection pools.
-
-* Since JBoss is apparently having trouble getting WABs to work (they are still using PAX, but claim that they have solved this in 7.2 that will not build when checked out from GitHub and don't seem to be released anytime soon) I am considering to add support for their WAR->OSGi service bridge though I haven't had much luck in getting that to work either so far. 
 
 * A smart auto dependency resolving bundle deployer.
 
 * Anything else relevant I come up with and consider fun to do :-).
 
+### Ideas
+
+* Allowing services to provide information and statistics that are of interest to developers, test and production maintenance.  Nothing even close to a JMX here :-), just simple read-only information. This should have a companion web-app to display the information.
+
+* Since JBoss is apparently having trouble getting WABs to work (they are still using PAX, but claim that they have solved this in 7.2 that will not build when checked out from GitHub and don't seem to be released anytime soon) I am considering to add support for their WAR->OSGi service bridge though I haven't had much luck in getting that to work either so far. 
 
 # Setup
 
