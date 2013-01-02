@@ -353,7 +353,9 @@ public class MessagePacket {
      * @param member The group member to add acknowledgement from.
      */
     public void acknowledgeMember(Member member) {
-        this.packetAcknowledgements.put(member.getId(), member);
+        if (this.group.hasMember(member)) {
+            this.packetAcknowledgements.put(member.getId(), member);
+        }
     }
 
     /**
