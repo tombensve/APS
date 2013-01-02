@@ -52,6 +52,11 @@ import java.util.List;
 public interface StreamedRPCProtocol extends RPCProtocol {
 
     /**
+     * Returns true if the protocol is a REST protocol.
+     */
+    boolean isREST();
+
+    /**
      * Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.
      *
      * @param serviceQName A fully qualified name to the service to call. This can be null if service name is provided on the stream.

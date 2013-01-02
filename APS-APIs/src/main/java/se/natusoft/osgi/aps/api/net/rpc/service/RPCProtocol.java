@@ -81,4 +81,18 @@ public interface RPCProtocol {
      */
     RPCError createRPCError(ErrorType errorType, String message, String optionalData);
 
+    /**
+     * Returns an RPCError for a REST protocol with a http status code.
+     *
+     * @param httpStatusCode The http status code to return.
+     */
+    RPCError createRESTError(int httpStatusCode);
+
+    /**
+     * Returns an RPCError for a REST protocol with a http status code.
+     *
+     * @param httpStatusCode The http status code to return.
+     * @param message An error message.
+     */
+    RPCError createRESTError(int httpStatusCode, String message);
 }

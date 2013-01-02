@@ -70,6 +70,13 @@ public enum ErrorType {
     /**
      * Server related errors.
      */
-    SERVER_ERROR
+    SERVER_ERROR,
+
+    // -- My additions --
+
+    /**
+     * This means the protocol is of REST type and should return a HTTP status code.
+     */
+    REST
 
 }

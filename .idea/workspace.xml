@@ -3,20 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="Added REST support to RPCProtocol.">
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/errors/APSRESTException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/service/protocol/Protocol.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/service/protocol/Publish.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/service/protocol/UnPublish.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/APSDiscoveryActivator.java" afterPath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/APSDiscoveryActivator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/APSGroups.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/APSGroups.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/APSGroupsActivator.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/APSGroupsActivator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/APSGroupsServiceProvider.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/APSGroupsServiceProvider.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/service/provider/APSSimpleDiscoveryServiceProvider.java" afterPath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/service/provider/APSSimpleDiscoveryServiceProvider.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/APSStreamedJSONRPCServiceActivator.java" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/APSStreamedJSONRPCServiceActivator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/DataReceiverThread.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/DataReceiverThread.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/Debug.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/Debug.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/service/protocol/DiscoveryProtocol.java" afterPath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/service/protocol/DiscoveryProtocol.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/errors/ErrorType.java" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/errors/ErrorType.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/Group.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/Group.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/versions/JSONRPC10.java" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/versions/JSONRPC10.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/versions/JSONRPC20.java" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/versions/JSONRPC20.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/errors/JSONRPCError.java" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/errors/JSONRPCError.java" />
@@ -27,19 +15,11 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/errors/JSONRPCParseError.java" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/errors/JSONRPCParseError.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/model/JSONRPCRequest.java" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/model/JSONRPCRequest.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/errors/JSONRPCServerError.java" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/errors/JSONRPCServerError.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/Member.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/Member.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MemberManagerThread.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MemberManagerThread.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/errors/RPCError.java" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/errors/RPCError.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/service/RPCProtocol.java" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/service/RPCProtocol.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/model/RPCProtocolWrapper.java" afterPath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/model/RPCProtocolWrapper.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/src/main/java/se/natusoft/osgi/aps/rpchttpextender/servlet/RPCServlet.java" afterPath="$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/src/main/java/se/natusoft/osgi/aps/rpchttpextender/servlet/RPCServlet.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/model/ServiceDescriptions.java" afterPath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/model/ServiceDescriptions.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/streamed/service/StreamedRPCProtocol.java" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/streamed/service/StreamedRPCProtocol.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/model/StreamedRPCProtocolWrapper.java" afterPath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/model/StreamedRPCProtocolWrapper.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/aps-openjpa-provider.iml" afterPath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/aps-openjpa-provider.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/aps-rpc-http-transport-provider.iml" afterPath="$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/aps-rpc-http-transport-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/aps-user-admin-web.iml" afterPath="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/aps-user-admin-web.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="a5230742-f30f-451e-b5fc-eabdd2e39ef7" name="Failed commit: aps-20 Default APSEnterpriseAPIs activity." comment="aps-20 Default APSEnterpriseAPIs activity." />
@@ -47,7 +27,7 @@
     <ignored path="OSGiApplicationPlatformServices.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1356891925899" ignored="false" />
-    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1357033635242" ignored="false" />
+    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1357133060602" ignored="false" />
     <file path="/a.dummy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1356712153252" ignored="false" />
     <file path="/testclient.sh" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355064160118" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/wip-clones/MarkdownDoc/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355420755980" ignored="false" />
@@ -232,11 +212,11 @@
       <file leaf-file-name="APSSimpleDiscoveryServiceProvider.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/service/provider/APSSimpleDiscoveryServiceProvider.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="140" column="13" selection-start="4440" selection-end="4440" vertical-scroll-proportion="0.2278481">
+            <state line="143" column="13" selection-start="4651" selection-end="4651" vertical-scroll-proportion="0.22823331">
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#7466#7486#0" expanded="true" />
-                <element signature="e#7800#7820#0" expanded="true" />
+                <element signature="e#7677#7697#0" expanded="true" />
+                <element signature="e#8011#8031#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -331,8 +311,10 @@
       <file leaf-file-name="APSDiscoveryActivator.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/APSDiscoveryActivator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="125" column="0" selection-start="4356" selection-end="4356" vertical-scroll-proportion="0.0">
-              <folding />
+            <state line="127" column="0" selection-start="4433" selection-end="4433" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -340,8 +322,10 @@
       <file leaf-file-name="DiscoveryProtocol.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/service/protocol/DiscoveryProtocol.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="98" column="0" selection-start="3243" selection-end="3243" vertical-scroll-proportion="0.0">
-              <folding />
+            <state line="96" column="0" selection-start="3091" selection-end="3091" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -3871,7 +3855,11 @@
       <created>1356956302482</created>
       <updated>1356956302482</updated>
     </task>
-    <option name="localTasksCounter" value="181" />
+    <task id="LOCAL-00181" summary="Modified APSDiscoveryServiceProvider to make use of APSGroups for discovery.">
+      <created>1357133087027</created>
+      <updated>1357133087028</updated>
+    </task>
+    <option name="localTasksCounter" value="182" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="false" url="http://natusoft.selfip.net:6789/redmine">
@@ -3925,6 +3913,7 @@
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25777778" sideWeight="0.37076795" order="4" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32998565" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32700247" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32535094" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23018147" sideWeight="0.40329835" order="5" side_tool="true" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.328654" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25777778" sideWeight="0.27250206" order="1" side_tool="true" content_ui="tabs" />
@@ -3945,7 +3934,6 @@
       <window_info id="IntelliJad Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3294606" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="UML Diagrams" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Code Graph" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32938272" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32535094" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
       <window_info id="Hudson Jobs" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Graphical Navigator" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -3989,7 +3977,7 @@
     <option name="MAXIMUM_HISTORY_ROWS" value="1000" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added REST support to RPCProtocol." />
+    <option name="LAST_COMMIT_MESSAGE" value="Modified APSDiscoveryServiceProvider to make use of APSGroups for discovery." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -4002,7 +3990,6 @@
     <option name="UPDATE_GROUP_BY_CHANGELIST" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="Auto managed configurations can now declare a &quot;public static ManagedConfig mc;&quot; in an APSConfig subclass and call isManaged() and waitUntilManaged() on it to ensure it has been populated with config values before using it." />
     <MESSAGE value="- Added admin and service authentication to aps-rpc-http-transport.&#10;- Changed getObject(name) to retrieveObject(name) in APSSession." />
     <MESSAGE value="Now also updated lastUsed timestamp on saveObject() and retrieveObject()." />
     <MESSAGE value="- Restructured project structure.&#10;  - Removed category APS-Enterprise.&#10;  - Added category APS-Auth and APS-Data.&#10;  - APSSimpleUserService moved to APS-Auth.&#10;  - APSDataSource and APSOpenJPAProvider moved to APS-Data.&#10;- No longer any subcategory APIs. All APIs reside in APS-APIs." />
@@ -4027,6 +4014,7 @@
     <MESSAGE value="Updated APSDiscoveryService to use APSGroups instead. This made it 90% smaller." />
     <MESSAGE value="Dev commit." />
     <MESSAGE value="Added REST support to RPCProtocol." />
+    <MESSAGE value="Modified APSDiscoveryServiceProvider to make use of APSGroups for discovery." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -4052,8 +4040,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/service/protocol/DiscoveryProtocol.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="98" column="0" selection-start="3243" selection-end="3243" vertical-scroll-proportion="0.0">
-          <folding />
+        <state line="96" column="0" selection-start="3091" selection-end="3091" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -4144,18 +4134,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/APSDiscoveryActivator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="125" column="0" selection-start="4356" selection-end="4356" vertical-scroll-proportion="0.0">
-          <folding />
+        <state line="127" column="0" selection-start="4433" selection-end="4433" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/service/provider/APSSimpleDiscoveryServiceProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="140" column="13" selection-start="4440" selection-end="4440" vertical-scroll-proportion="0.2278481">
+        <state line="143" column="13" selection-start="4651" selection-end="4651" vertical-scroll-proportion="0.22823331">
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#7466#7486#0" expanded="true" />
-            <element signature="e#7800#7820#0" expanded="true" />
+            <element signature="e#7677#7697#0" expanded="true" />
+            <element signature="e#8011#8031#0" expanded="true" />
           </folding>
         </state>
       </provider>

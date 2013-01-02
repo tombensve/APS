@@ -47,7 +47,12 @@ public interface RPCError {
     public ErrorType getErrorType();
 
     /**
-     * Returns an error message.
+     * This should return a valid http status code if ErrorType == REST.
+     */
+    public int getRESTHttpStatusCode();
+
+    /**
+     * Returns an error message. This is also optional.
      */
     public String getMessage();
 

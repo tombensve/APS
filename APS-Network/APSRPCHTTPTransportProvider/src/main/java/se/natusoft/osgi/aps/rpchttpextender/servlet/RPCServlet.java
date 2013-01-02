@@ -51,6 +51,7 @@ import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
 import se.natusoft.osgi.aps.api.model.json.JSONValue;
 import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescriptionProvider;
 import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService;
+import se.natusoft.osgi.aps.api.net.rpc.errors.APSRESTException;
 import se.natusoft.osgi.aps.api.net.rpc.errors.ErrorType;
 import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
 import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;
@@ -336,6 +337,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
 
         part = checkAuth(pathParts, part, req, resp);
         if (part == AUTH_FAILED) {
+            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
@@ -384,20 +386,38 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                             try {
                                 result = callable.call();
                             }
+                            catch (APSRESTException are) {
+                                throw new RPCErrorException(protocol.createRESTError(are.getHttpStatusCode(), are.getMessage()));
+                            }
                             catch (APSNoServiceAvailableException nsae) {
-                                throw new RPCErrorException(protocol.createRPCError(ErrorType.SERVER_ERROR,
-                                        "Service '" + service + "' is not available!", null));
+                                if (protocol.isREST()) {
+                                    throw new RPCErrorException(protocol.createRESTError(HttpServletResponse.SC_SERVICE_UNAVAILABLE));
+                                }
+                                else {
+                                    throw new RPCErrorException(protocol.createRPCError(ErrorType.SERVER_ERROR,
+                                            "Service '" + service + "' is not available!", null));
+                                }
                             }
                             catch (Exception e) {
-                                throw new RPCErrorException(protocol.createRPCError(ErrorType.SERVER_ERROR, e.getMessage(), null));
+                                if (protocol.isREST()) {
+                                    throw new RPCErrorException(protocol.createRESTError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+                                }
+                                else {
+                                    throw new RPCErrorException(protocol.createRPCError(ErrorType.SERVER_ERROR, e.getMessage(), null));
+                                }
                             }
 
                             // Write the normal OK response.
                             protocol.writeResponse(result, rpcRequest, resp.getOutputStream());
                         }
                         else {
-                            throw new RPCErrorException(protocol.createRPCError(ErrorType.METHOD_NOT_FOUND, "Method '" +
-                                    rpcRequest.getMethod() + "' is not available!", null));
+                            if (protocol.isREST()) {
+                                throw new RPCErrorException(protocol.createRESTError(HttpServletResponse.SC_BAD_REQUEST));
+                            }
+                            else {
+                                throw new RPCErrorException(protocol.createRPCError(ErrorType.METHOD_NOT_FOUND, "Method '" +
+                                        rpcRequest.getMethod() + "' is not available!", null));
+                            }
                         }
                     }
                     else {
@@ -406,15 +426,28 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                 }
                 // Write error responses.
                 catch (RPCErrorException ree) {
-                    protocol.writeErrorResponse(ree.getError(), rpcRequest, resp.getOutputStream());
+                    if (protocol.isREST()) {
+                        resp.sendError(ree.getError().getRESTHttpStatusCode(), ree.getError().getMessage());
+                    }
+                    else {
+                        protocol.writeErrorResponse(ree.getError(), rpcRequest, resp.getOutputStream());
+                    }
                 }
                 catch (Exception e) {
-                    protocol.writeErrorResponse(protocol.createRPCError(ErrorType.SERVER_ERROR, e.getMessage(), null), rpcRequest, resp.getOutputStream());
+                    if (protocol.isREST()) {
+                       resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                    }
+                    else {
+                        protocol.writeErrorResponse(
+                                protocol.createRPCError(ErrorType.SERVER_ERROR, e.getMessage(), null), rpcRequest, resp.getOutputStream()
+                        );
+                    }
                 }
             }
         }
         else {
-            resp.sendError(404, "No RPC protocol provider found for protocol '" + protocol + "' with version '" + version +"'!");
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No RPC protocol provider found for protocol '" + protocol +
+                    "' with version '" + version +"'!");
         }
     }
 

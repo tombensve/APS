@@ -5,7 +5,7 @@
  *         APS Streamed JSONRPC Protocol Provider
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
  *         Provides JSONRPC implementations for version 1.0 and 2.0.
@@ -121,7 +121,15 @@ public class JSONRPC10 implements StreamedRPCProtocol {
         return true;
     }
 
-   /**
+    /**
+     * Returns true if the protocol is a REST protocol.
+     */
+    @Override
+    public boolean isREST() {
+        return false;
+    }
+
+    /**
      * Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.
      *
      * @param serviceQName A fully qualified name to the service to call. This can be null if service name is provided on the stream.
@@ -329,6 +337,27 @@ public class JSONRPC10 implements StreamedRPCProtocol {
         }
 
         return error;
+    }
+
+    /**
+     * Returns an RPCError for a REST protocol with a http status code.
+     *
+     * @param httpStatusCode The http status code to return.
+     */
+    @Override
+    public RPCError createRESTError(int httpStatusCode) {
+        return null;
+    }
+
+    /**
+     * Returns an RPCError for a REST protocol with a http status code.
+     *
+     * @param httpStatusCode The http status code to return.
+     * @param message        An error message.
+     */
+    @Override
+    public RPCError createRESTError(int httpStatusCode, String message) {
+        return null;
     }
 
     //
