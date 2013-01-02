@@ -95,6 +95,17 @@ public class StreamedRPCProtocolWrapper extends RPCProtocolWrapper implements St
     }
 
     /**
+     * Returns true if the protocol is a REST protocol.
+     */
+    @Override
+    public boolean isREST() {
+        StreamedRPCProtocol protocol = getInstance();
+        boolean rest = protocol.isREST();
+        ungetInstance();
+        return rest;
+    }
+
+    /**
      * Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.
      *
      * @param serviceQName  A fully qualified name to the service to call. This can be null if service name is provided on the stream.

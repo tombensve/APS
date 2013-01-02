@@ -38,10 +38,7 @@ package se.natusoft.osgi.aps.discovery.model;
 
 import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescription;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Holds a set of ServiceDescriptionProvider object.
@@ -51,8 +48,10 @@ public class ServiceDescriptions {
     // Private Members
     //
 
+    public static final long EVICT_AGE = 1000 * 60;
+
     /** Holds all unique entries. */
-    private Map<ServiceDescription, ServiceDescription> allUnique = new HashMap<ServiceDescription, ServiceDescription>();
+    private Map<ServiceDescription, Long> allUnique = new HashMap<ServiceDescription, Long>();
 
     /** Holds entries by their service id. */
     private Map<String, List<ServiceDescription>> byID = new HashMap<String, List<ServiceDescription>>();
@@ -96,7 +95,6 @@ public class ServiceDescriptions {
      */
     public synchronized void addServiceDescription(ServiceDescription serviceDescription) {
         if (!this.allUnique.containsKey(serviceDescription)) {
-            this.allUnique.put(serviceDescription, serviceDescription);
             List<ServiceDescription> descriptions = this.byID.get(serviceDescription.getServiceId() + serviceDescription.getVersion());
             if (descriptions == null) {
                 descriptions = new ArrayList<ServiceDescription>();
@@ -104,6 +102,7 @@ public class ServiceDescriptions {
             }
             descriptions.add(serviceDescription);
         }
+        this.allUnique.put(serviceDescription, new Date().getTime());
     }
 
     /**
@@ -122,11 +121,10 @@ public class ServiceDescriptions {
     /**
      * Returns all held service descriptions.
      */
-    public synchronized List<ServiceDescription> getAllServiceDescriptions() {
-        ArrayList<ServiceDescription> descriptions = new ArrayList<ServiceDescription>();
-        descriptions.addAll(this.allUnique.keySet());
-        return descriptions;
+    public synchronized Set<ServiceDescription> getAllServiceDescriptions() {
+        return this.allUnique.keySet();
     }
+
 
     /**
      * Returns all service descriptions with the specified service id.
@@ -136,5 +134,22 @@ public class ServiceDescriptions {
      */
     public synchronized List<ServiceDescription> getServiceDescriptions(String serviceId, String version) {
         return this.byID.get(serviceId + version);
+    }
+
+    /**
+     * Evicts to old entries.
+     */
+    public synchronized void evictOld() {
+        long now = new Date().getTime();
+        List<ServiceDescription> toEvict = new LinkedList<ServiceDescription>();
+        for (ServiceDescription sd : this.allUnique.keySet()) {
+            long sdTime = this.allUnique.get(sd);
+            if (now > (sdTime + EVICT_AGE)) {
+                toEvict.add(sd);
+            }
+        }
+        for (ServiceDescription sd : toEvict) {
+            removeServiceDescription(sd);
+        }
     }
 }

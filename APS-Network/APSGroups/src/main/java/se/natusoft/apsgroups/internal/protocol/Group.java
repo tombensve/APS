@@ -117,6 +117,13 @@ public class Group {
     }
 
     /**
+     * Returns the current config.
+     */
+    public APSGroupsConfig getConfig() {
+        return this.config;
+    }
+
+    /**
      * Returns the name of the group.
      */
     public String getName() {
@@ -201,6 +208,8 @@ public class Group {
      * Checks all members if they are still kicking and if not they are evicted.
      */
     public synchronized void evictExpiredMembers() {
+        if (this.config == null) return;
+
         List<UUID> removeKeys = new LinkedList<>();
 
         for (UUID key : this.members.keySet()) {

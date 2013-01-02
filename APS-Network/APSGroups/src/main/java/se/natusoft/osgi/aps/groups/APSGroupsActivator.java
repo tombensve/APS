@@ -105,12 +105,15 @@ public class APSGroupsActivator implements BundleActivator {
 
         this.config = new APSGroupsConfigRelay();
 
-        Dictionary platformServiceProps = new Properties();
-        platformServiceProps.put(Constants.SERVICE_PID, APSGroupsServiceProvider.class.getName());
+        Dictionary serviceProps = new Properties();
+        serviceProps.put(Constants.SERVICE_PID, APSGroupsServiceProvider.class.getName());
         this.apsGroupsServiceProvider =
                 new APSGroupsServiceProvider(this.config, this.logger);
-        this.groupsServiceReg =
-                context.registerService(APSGroupsService.class.getName(), this.apsGroupsServiceProvider, platformServiceProps);
+        this.groupsServiceReg = context.registerService(
+                APSGroupsService.class.getName(),
+                this.apsGroupsServiceProvider,
+                serviceProps
+        );
     }
 
     //

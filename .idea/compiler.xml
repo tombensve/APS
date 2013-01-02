@@ -76,7 +76,7 @@
     </wildcardResourcePatterns>
     <annotationProcessing>
       <profile default="true" name="Default" enabled="false">
-        <processorPath useClasspath="false" />
+        <processorPath useClasspath="true" />
       </profile>
       <profile default="false" name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -107,12 +107,10 @@
         <module name="aps-web-tools" />
         <module name="APSBundleArchetype" />
         <module name="APSConfigTest" />
-        <module name="APSGroups" />
-        <module name="APSNetworkGroups" />
         <module name="APSWarBundleArchetype" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.7">
+    <bytecodeTargetLevel>
       <module name="APS" target="1.7" />
       <module name="aps-admin-web" target="1.7" />
       <module name="aps-admin-web-service-provider" target="1.7" />
@@ -144,10 +142,6 @@
       <module name="aps-web-tools" target="1.7" />
       <module name="APS-Webs" target="1.7" />
       <module name="APSConfigTest" target="1.7" />
-      <module name="APSDataSyncService" target="1.7" />
-      <module name="APSGroups" target="1.7" />
-      <module name="APSNetworkGroups" target="1.7" />
-      <module name="Documentation" target="1.7" />
       <module name="Test" target="1.7" />
     </bytecodeTargetLevel>
   </component>

@@ -112,7 +112,7 @@ public class Member {
      *
      * @param group The group to set.
      */
-    public void setGroup(Group group) {
+    public synchronized void setGroup(Group group) {
         this.group = group;
         updateLastHeardFrom();
     }
@@ -120,7 +120,7 @@ public class Member {
     /**
      * Returns the group this member belongs to.
      */
-    public Group getGroup() {
+    public synchronized Group getGroup() {
         return this.group;
     }
 

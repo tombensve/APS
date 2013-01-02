@@ -46,6 +46,9 @@ import se.natusoft.osgi.aps.api.net.groups.service.Message;
 import se.natusoft.osgi.aps.api.net.groups.service.MessageListener;
 import se.natusoft.osgi.aps.discovery.model.ServiceDescriptions;
 import se.natusoft.osgi.aps.discovery.service.protocol.DiscoveryProtocol;
+import se.natusoft.osgi.aps.discovery.service.protocol.Protocol;
+import se.natusoft.osgi.aps.discovery.service.protocol.Publish;
+import se.natusoft.osgi.aps.discovery.service.protocol.UnPublish;
 import se.natusoft.osgi.aps.tools.APSLogger;
 
 import java.io.IOException;
@@ -55,7 +58,7 @@ import java.util.List;
 /**
  * The discovery service Implementation.
  */
-public class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService, MessageListener {
+public class APSSimpleDiscoveryServiceProvider extends Thread implements APSSimpleDiscoveryService, MessageListener {
     //
     // Private Members
     //
@@ -63,13 +66,10 @@ public class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryServ
     // Local service implementation data.
 
     /** The services published locally by clients of this service. */
-    private ServiceDescriptions locallyPublishedServices = null;
+    private ServiceDescriptions locallyPublishedServices = new ServiceDescriptions();
 
     /** The services published on other APSSimpleDiscoveryService instances and announced to us. */
-    private ServiceDescriptions remotelyPublishedServices = null;
-
-    /** This is false until setup() has been done. This is so that setup() will only run once. */
-    private boolean isSetup = false;
+    private ServiceDescriptions remotelyPublishedServices = new ServiceDescriptions();
 
 
     // Information we depend on.
@@ -85,6 +85,8 @@ public class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryServ
 
     /** The platform service. */
     private APSPlatformService platformService = null;
+
+    private boolean running = false;
 
     //
     // Constructors
@@ -108,25 +110,98 @@ public class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryServ
     //
 
     /**
-     * Since we cannot do joinGroup() during bundle activation due to potential deadlock we have to do it at first
-     * service call.
+     * Checks if the thread should continue to run.
      */
-    private void setup() {
-        if (!this.isSetup) {
-            // We need the platform type so that we don't mix up dev-test, system-test, acceptance-test and production
-            // installations. Well, production should be on a separate net of course, but the others might collide
-            // otherwise.
-            String discoveryGroup = "aps-discovery-" + this.platformService.getPlatformDescription().getType();
-            try {
-                this.groupMember = this.groupsService.joinGroup(discoveryGroup);
-                this.isSetup = true;
-                this.logger.info("Joined group '" + discoveryGroup + "'!");
-                this.groupMember.addMessageListener(this);
+    private synchronized boolean keepRunning() {
+        return this.running;
+    }
+
+    /**
+     * Terminate the thread.
+     */
+    public synchronized void terminate() {
+        this.running = false;
+    }
+
+    /**
+     * Connect and then evict non updated service descriptions regularly.
+     */
+    public void run() {
+        connect();
+
+        this.running = true;
+
+        int evictCount = 0;
+        int evictAtCount = 2; // 10 seconds
+        int republishCount = 0;
+        int republishAtCount = 60; // 5 minutes
+
+        while (keepRunning()) {
+            if (republishCount >= republishAtCount) {
+                republishCount = 0;
+                this.logger.info("Republishing!");
+                republish();
             }
-            catch (IOException ioe) {
-                this.logger.error("Failed to join group! Discovery will not work! [" + discoveryGroup + "]", ioe);
+            else {
+                ++republishCount;
+                this.logger.info("republishCount=" + republishAtCount);
+            }
+
+            if (evictCount >= evictAtCount) {
+                evictCount = 0;
+                this.logger.info("Evicting!");
+                this.remotelyPublishedServices.evictOld();
+            }
+            else {
+                ++evictCount;
+                this.logger.info("evictCount=" + evictCount);
+            }
+
+            try {Thread.sleep(5000);} catch (InterruptedException ie) {}
+        }
+
+        disconnect();
+    }
+
+    /**
+     * Republished all local services.
+     */
+    private synchronized void republish() {
+        try {
+            for (ServiceDescription sd : this.locallyPublishedServices.getAllServiceDescriptions()) {
+                Message message = this.groupMember.createNewMessage();
+                Publish publish = new Publish(sd);
+                DiscoveryProtocol.write(message, publish);
+                this.logger.info("Republishing: " + sd);
+                this.groupMember.sendMessage(message);
             }
         }
+        catch (IOException ioe) {
+            this.logger.error("Problems during republish!", ioe);
+        }
+    }
+
+    /**
+     * Since we cannot do joinGroup() during bundle activation in startup thread due to potential deadlock we have to do it
+     * in a separate thread.
+     */
+    private void connect() {
+        this.logger.info("Connecting ...");
+        // We need the platform type so that we don't mix up dev-test, system-test, acceptance-test and production
+        // installations. Well, production should be on a separate net of course, but the others might collide
+        // otherwise.
+        String discoveryGroup = "aps-discovery-" + this.platformService.getPlatformDescription().getType();
+        try {
+            this.groupMember = this.groupsService.joinGroup(discoveryGroup);
+            this.logger.info("Joined group '" + discoveryGroup + "'!");
+            this.groupMember.addMessageListener(this);
+        }
+        catch (IOException ioe) {
+            this.logger.error("Failed to join group! Discovery will not work! [" + discoveryGroup + "]", ioe);
+        }
+        try {Thread.sleep(2000);} catch (InterruptedException ie) {}
+
+        this.logger.info("Connected!");
     }
 
     /**
@@ -134,10 +209,16 @@ public class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryServ
      *
      * @throws IOException
      */
-    public void cleanup() throws IOException {
-        if (this.isSetup) {
-            this.groupMember.removeMessageListener(this);
-            this.groupsService.leaveGroup(this.groupMember);
+    private void disconnect() {
+        try {
+            if (this.groupMember != null) {
+                this.groupMember.removeMessageListener(this);
+                this.groupsService.leaveGroup(this.groupMember);
+            }
+            this.logger.info("Disconnected!");
+        }
+        catch (IOException ioe) {
+            this.logger.error("Failed disconnect!", ioe);
         }
     }
 
@@ -145,9 +226,10 @@ public class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryServ
      * Returns all remotely discovered services.
      */
     @Override
-    public List<ServiceDescription> getRemotelyDiscoveredServices() {
-        setup();
-        return this.remotelyPublishedServices.getAllServiceDescriptions();
+    public synchronized List<ServiceDescription> getRemotelyDiscoveredServices() {
+        List<ServiceDescription> list = new LinkedList<ServiceDescription>();
+        list.addAll(this.remotelyPublishedServices.getAllServiceDescriptions());
+        return list;
     }
 
     /**
@@ -155,16 +237,16 @@ public class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryServ
      */
     @Override
     public List<ServiceDescription> getLocallyRegisteredServices() {
-        setup();
-        return this.locallyPublishedServices.getAllServiceDescriptions();
+        List<ServiceDescription> list = new LinkedList<ServiceDescription>();
+        list.addAll(this.locallyPublishedServices.getAllServiceDescriptions());
+        return list;
     }
 
     /**
      * Returns all known services, both locally registered and remotely discovered.
      */
     @Override
-    public List<ServiceDescription> getAllServices() {
-        setup();
+    public synchronized List<ServiceDescription> getAllServices() {
         List<ServiceDescription> allServices = new LinkedList<ServiceDescription>();
         allServices.addAll(getRemotelyDiscoveredServices());
         allServices.addAll(getLocallyRegisteredServices());
@@ -178,8 +260,7 @@ public class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryServ
      * @param version The version of the service to get.
      */
     @Override
-    public List<ServiceDescription> getService(String serviceId, String version) {
-        setup();
+    public synchronized List<ServiceDescription> getService(String serviceId, String version) {
         return this.remotelyPublishedServices.getServiceDescriptions(serviceId, version);
     }
 
@@ -189,11 +270,11 @@ public class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryServ
      * @param serviceDescription The description of the service to publish.
      */
     @Override
-    public void publishService(ServiceDescription serviceDescription) throws APSDiscoveryPublishException {
-        setup();
+    public synchronized void publishService(ServiceDescription serviceDescription) throws APSDiscoveryPublishException {
         try {
             Message message = this.groupMember.createNewMessage();
-            DiscoveryProtocol.writeDiscoveryAction(message, DiscoveryProtocol.publishAction(serviceDescription));
+            Publish publish = new Publish(serviceDescription);
+            DiscoveryProtocol.write(message, publish);
             this.groupMember.sendMessage(message);
             this.locallyPublishedServices.addServiceDescription(serviceDescription);
         }
@@ -210,11 +291,11 @@ public class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryServ
      * @param serviceDescription The service to unpublish.
      */
     @Override
-    public void unpublishService(ServiceDescription serviceDescription) {
-        setup();
+    public synchronized void unpublishService(ServiceDescription serviceDescription) {
         try {
             Message message = this.groupMember.createNewMessage();
-            DiscoveryProtocol.writeDiscoveryAction(message, DiscoveryProtocol.unpublishAction(serviceDescription));
+            UnPublish unPublish = new UnPublish(serviceDescription);
+            DiscoveryProtocol.write(message, unPublish);
             this.groupMember.sendMessage(message);
             this.locallyPublishedServices.removeServiceDescription(serviceDescription);
         }
@@ -230,16 +311,21 @@ public class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryServ
      * @param message The received message.
      */
     @Override
-    public void messageReceived(Message message) {
-        DiscoveryProtocol.DiscoveryAction discoveryAction = DiscoveryProtocol.readDiscoveryAction(message);
-        if (discoveryAction.getAction() == DiscoveryProtocol.DiscoveryAction.PUBLISH) {
-            this.remotelyPublishedServices.addServiceDescription(discoveryAction.getServiceDescription());
+    public synchronized void messageReceived(Message message) {
+        try {
+            Protocol protocol = DiscoveryProtocol.read(message);
+
+            this.logger.debug("Received message: " + message);
+
+            if (Publish.class.isAssignableFrom(protocol.getClass())) {
+                this.remotelyPublishedServices.addServiceDescription(((Publish)protocol).getServiceDescription());
+            }
+            else if (UnPublish.class.isAssignableFrom(protocol.getClass())) {
+                this.remotelyPublishedServices.removeServiceDescription(((UnPublish)protocol).getServiceDescription());
+            }
         }
-        else if (discoveryAction.getAction() == DiscoveryProtocol.DiscoveryAction.UNPUBLISH) {
-            this.remotelyPublishedServices.removeServiceDescription(discoveryAction.getServiceDescription());
-        }
-        else {
-            this.logger.error("Unknown discovery action received: " + discoveryAction.getAction());
+        catch (IOException ioe) {
+            this.logger.error("Failed to read received message!", ioe);
         }
     }
 }

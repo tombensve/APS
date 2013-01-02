@@ -128,7 +128,7 @@ public class APSGroups {
     public void connect() throws IOException {
         Transport transport = new MulticastTransport(this.logger, this.config);
         transport.open();
-        this.dataReceiverThread = new DataReceiverThread(this.logger, transport);
+        this.dataReceiverThread = new DataReceiverThread(this.logger, transport, this.config);
         this.dataReceiverThread.start();
 
         Transport memberTransport = new MulticastTransport(this.logger, this.config);
@@ -183,8 +183,12 @@ public class APSGroups {
             throw new IOException("The group name '[net time]' is reserved for internal use and cannot be used.");
         }
         Group group = Groups.getGroup(name);
-        group.setNetTime(this.netTime);
-        group.setConfig(this.config);
+        if (group.getNetTime() == null) {
+            group.setNetTime(this.netTime);
+        }
+        if (group.getConfig() == null) {
+            group.setConfig(this.config);
+        }
         Member member = new Member();
         group.addMember(member);
         this.memberManagerThread.addMember(member);

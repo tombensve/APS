@@ -196,11 +196,9 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
                     }
 
                     // Lets also evict old member of the members group.
-                    member.getGroup().evictExpiredMembers();
-                }
-                try {Thread.sleep(1000);} catch (InterruptedException ie) {
-                    this.logger.warn("MemberManagerThread: Thread.sleep() was unexpectedly interrupted! If this happens consecutively " +
-                        "too often it can cause highly increased CPU usage!");
+                    if (member.getGroup() != null) {
+                        member.getGroup().evictExpiredMembers();
+                    }
                 }
             }
             catch (IOException ioe) {
@@ -209,6 +207,11 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
             catch (Exception e) {
                 e.printStackTrace();
                 this.logger.error("MemberManagerThread: Unknown failure!", e);
+            }
+
+            try {Thread.sleep(2000);} catch (InterruptedException ie) {
+                this.logger.warn("MemberManagerThread: Thread.sleep() was unexpectedly interrupted! If this happens consecutively " +
+                        "too often it can cause highly increased CPU usage!");
             }
         }
     }

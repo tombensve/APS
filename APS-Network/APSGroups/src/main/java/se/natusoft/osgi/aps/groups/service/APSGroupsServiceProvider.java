@@ -122,7 +122,7 @@ public class APSGroupsServiceProvider implements APSGroupsService {
     private void connect() throws IOException {
         Transport transport = new MulticastTransport(this.logger, this.config);
         transport.open();
-        this.dataReceiverThread = new DataReceiverThread(this.logger, transport);
+        this.dataReceiverThread = new DataReceiverThread(this.logger, transport, this.config);
         this.dataReceiverThread.start();
 
         Transport memberTransport = new MulticastTransport(this.logger, this.config);

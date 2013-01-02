@@ -36,8 +36,6 @@
  */
 package se.natusoft.osgi.aps.discovery.service.protocol;
 
-import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescription;
-import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescriptionProvider;
 import se.natusoft.osgi.aps.api.net.groups.service.Message;
 
 import java.io.DataInputStream;
@@ -52,116 +50,66 @@ public class DiscoveryProtocol {
 
     private static final int PROTOCOL_VERSION = 1;
 
+    public static final int PUBLISH = 1;
+    public static final int UNPUBLISH = 2;
+    public static final int UPDATE_ME = 3;
+
     /**
-     * Writes a discovery message for sending.
+     * Writes message data.
      *
      * @param message The message to write to.
-     * @param discoveryAction The information to write.
+     * @param protocol The protocol implementation to write.
      *
-     * @throws IOException This can theoretically only happen if we run out of memory since we are writing to a
-     *                     byte array in this case.
+     * @throws IOException
      */
-    public static void writeDiscoveryAction(Message message, DiscoveryAction discoveryAction) throws IOException {
+    public static void write(Message message, Protocol protocol) throws IOException {
         DataOutputStream dataStream = new DataOutputStream(message.getOutputStream());
         dataStream.writeInt(PROTOCOL_VERSION);
-        dataStream.writeInt(discoveryAction.getAction());
-        dataStream.writeUTF(discoveryAction.serviceDescription.getDescription());
-        dataStream.writeUTF(discoveryAction.serviceDescription.getServiceId());
-        dataStream.writeUTF(discoveryAction.serviceDescription.getVersion());
-        dataStream.writeUTF(discoveryAction.serviceDescription.getServiceHost());
-        dataStream.writeInt(discoveryAction.serviceDescription.getServicePort());
-        dataStream.writeUTF(discoveryAction.serviceDescription.getServiceURL());
+        protocol.write(dataStream);
         dataStream.close();
     }
 
     /**
-     * Reads a DiscoveryAction from a received message.
+     * Reads message data.
      *
      * @param message The message to read from.
      *
-     * @return The read instance of DiscoveryAction.
+     * @return A Protocol implementation representing what was read.
+     *
+     * @throws IOException
      */
-    public static DiscoveryAction readDiscoveryAction(Message message) {
-        ServiceDescriptionProvider serviceDescription = new ServiceDescriptionProvider();
-        int action = -1;
-
+    public static Protocol read(Message message) throws IOException {
+        Protocol protocol = null;
         DataInputStream dataStream = new DataInputStream(message.getInputStream());
-        try {
-            int protocolVersion = dataStream.readInt();
-            if (protocolVersion == PROTOCOL_VERSION) {
-                action = dataStream.readInt();
-                serviceDescription.setDescription(dataStream.readUTF());
-                serviceDescription.setServiceId(dataStream.readUTF());
-                serviceDescription.setVersion(dataStream.readUTF());
-                serviceDescription.setServiceHost(dataStream.readUTF());
-                serviceDescription.setServicePort(dataStream.readInt());
-                serviceDescription.setServiceURL(dataStream.readUTF());
+        int protocolVersion = dataStream.readInt();
+        if (protocolVersion == PROTOCOL_VERSION) {
+            int messageType = dataStream.readInt();
+            switch (messageType) {
+                case PUBLISH:
+                    protocol = new Publish(message);
+                    protocol.read(dataStream);
+                    break;
+
+                case UNPUBLISH:
+                    protocol = new UnPublish(message);
+                    protocol.read(dataStream);
+                    break;
+
+                case UPDATE_ME:
+                    protocol = new UpdateMe(message);
+                    protocol.read(dataStream);
+                    break;
+
+                default:
+                    throw new IOException("Unknown message type: " + messageType);
             }
-            else {
-                throw new IOException("Received unknown protocol version: " + protocolVersion);
-            }
         }
-        catch (IOException ioe) {
-            // This cannot happen here since we are reading from a byte array in memory!
-        }
-        finally {
-            try {dataStream.close();} catch (IOException ioe) {/* This cannot fail either for the same reason. */}
+        else {
+            throw new IOException("Received unknown protocol version: " + protocolVersion);
         }
 
-        return new DiscoveryAction(action, serviceDescription);
-    }
+        dataStream.close();
 
-    /**
-     * Creates a DiscoveryAction instance for a publishing action.
-     *
-     * @param serviceDescription The service description to publish.
-     */
-    public static DiscoveryAction publishAction(ServiceDescription serviceDescription) {
-        return new DiscoveryAction(DiscoveryAction.PUBLISH, serviceDescription);
-    }
-
-    /**
-     * Creates a DiscoveryAction instance for an unpublishing action.
-     *
-     * @param serviceDescription The service description to unpublish.
-     */
-    public static DiscoveryAction unpublishAction(ServiceDescription serviceDescription) {
-        return new DiscoveryAction(DiscoveryAction.UNPUBLISH, serviceDescription);
-    }
-
-    /**
-     * Represents an acton to perform and the data to perform it on.
-     */
-    public static class DiscoveryAction {
-        public static final int PUBLISH = 1;
-        public static final int UNPUBLISH = 2;
-
-        private int action = -1;
-        private ServiceDescription serviceDescription;
-
-        /**
-         * Creates a new DiscoveryAction instance.
-         *
-         * @param action The action this instance represents.
-         * @param serviceDescription The service description the action is for.
-         */
-        private DiscoveryAction(int action, ServiceDescription serviceDescription) {
-            this.action = action;
-            this.serviceDescription = serviceDescription;
-        }
-
-        /**
-         * @return The action to perform.
-         */
-        public int getAction() {
-            return this.action;
-        }
-
-        /**
-         * @return The service description to perform the action on.
-         */
-        public ServiceDescription getServiceDescription() {
-            return serviceDescription;
-        }
+        return protocol;
     }
 }

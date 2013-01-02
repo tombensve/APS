@@ -80,6 +80,7 @@ public class APSDiscoveryActivator implements BundleActivator {
         // This will log to the OSGi LogService if it is found otherwise it will log to System.out.
         // Not all OSGi servers provide the LogService.
         this.logger = new APSLogger(System.out);
+        this.logger.setLoggingFor("APSDiscoveryService");
         this.logger.start(context);
 
         this.platformServiceTracker =
@@ -88,7 +89,7 @@ public class APSDiscoveryActivator implements BundleActivator {
 
         this.groupsServiceTracker =
                 new APSServiceTracker<APSGroupsService>(context, APSGroupsService.class, APSServiceTracker.LARGE_TIMEOUT);
-        this.platformServiceTracker.start();
+        this.groupsServiceTracker.start();
 
         // Register our discovery service as an OSGi service.
         this.discoveryService =
@@ -97,6 +98,8 @@ public class APSDiscoveryActivator implements BundleActivator {
                         this.platformServiceTracker.getWrappedService(),
                         this.logger
                 );
+        this.discoveryService.start();
+
         Dictionary serviceProps = new Properties();
         serviceProps.put(Constants.SERVICE_PID, APSSimpleDiscoveryServiceProvider.class.getName());
         this.discoveryServiceReg = context.registerService(
@@ -104,6 +107,10 @@ public class APSDiscoveryActivator implements BundleActivator {
                 this.discoveryService,
                 serviceProps
         );
+
+        this.logger.setServiceReference(this.discoveryServiceReg.getReference());
+
+        this.logger.info("Started!");
     }
 
     //
@@ -117,7 +124,7 @@ public class APSDiscoveryActivator implements BundleActivator {
         }
 
         if (this.discoveryService != null) {
-            this.discoveryService.cleanup();
+            this.discoveryService.terminate();
             this.discoveryService = null;
         }
 

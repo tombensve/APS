@@ -61,7 +61,7 @@ public class Debug {
     public static final int DEBUG_NORMAL = 1;
     public static final int DEBUG_HIGH = 2;
 
-    public static int level = DEBUG_NORMAL;
+    public static int level = DEBUG_NONE;
 
     public static void print(String str) {
         if (level >= DEBUG_NORMAL) System.out.print(str);

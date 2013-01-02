@@ -54,6 +54,7 @@
 package se.natusoft.apsgroups.internal.protocol;
 
 import se.natusoft.apsgroups.Debug;
+import se.natusoft.apsgroups.config.APSGroupsConfig;
 import se.natusoft.apsgroups.internal.net.Transport;
 import se.natusoft.apsgroups.internal.protocol.message.MessagePacket;
 import se.natusoft.apsgroups.internal.protocol.message.MessagePacketListener;
@@ -87,6 +88,9 @@ public class DataReceiverThread extends Thread implements DataReceiver {
     /** The logger to log to. */
     private APSGroupsLogger logger = null;
 
+    /** Our configuration. */
+    private APSGroupsConfig config = null;
+
     //
     // Constructors
     //
@@ -96,10 +100,12 @@ public class DataReceiverThread extends Thread implements DataReceiver {
      *
      * @param logger The logger for the thread to log on.
      * @param transport The transport to use for reading data messages.
+     * @param config Our config.
      */
-    public DataReceiverThread(APSGroupsLogger logger, Transport transport) {
+    public DataReceiverThread(APSGroupsLogger logger, Transport transport, APSGroupsConfig config) {
         this.logger = logger;
         this.transport = transport;
+        this.config = config;
     }
 
     //
@@ -166,6 +172,9 @@ public class DataReceiverThread extends Thread implements DataReceiver {
             try {
                 Transport.Packet packet = transport.receive();
                 MessagePacket messagePacket = new MessagePacket(packet);
+                if (messagePacket.getGroup().getConfig() == null) {
+                    messagePacket.getGroup().setConfig(this.config);
+                }
                 if (messagePacket.getType() != PacketType.MEMBER_ANNOUNCEMENT && Debug.level >= Debug.DEBUG_NORMAL) {
                     Debug.println("Received packet:");
                     Debug.println("    messageId:    " + messagePacket.getMessageId());
