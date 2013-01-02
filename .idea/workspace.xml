@@ -11,7 +11,7 @@
     <ignored path="OSGiApplicationPlatformServices.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1356891925899" ignored="false" />
-    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1357134619655" ignored="false" />
+    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1357137901996" ignored="false" />
     <file path="/a.dummy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1356712153252" ignored="false" />
     <file path="/testclient.sh" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355064160118" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/wip-clones/MarkdownDoc/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355420755980" ignored="false" />
@@ -196,11 +196,11 @@
       <file leaf-file-name="APSSimpleDiscoveryServiceProvider.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/service/provider/APSSimpleDiscoveryServiceProvider.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="164" column="0" selection-start="5226" selection-end="5226" vertical-scroll-proportion="0.8748943">
+            <state line="289" column="13" selection-start="9942" selection-end="9942" vertical-scroll-proportion="0.4945055">
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#7675#7695#0" expanded="true" />
-                <element signature="e#8009#8029#0" expanded="true" />
+                <element signature="e#7388#7408#0" expanded="true" />
+                <element signature="e#7722#7742#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -350,10 +350,10 @@
       <file leaf-file-name="ServiceDescriptions.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/model/ServiceDescriptions.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="50" column="67" selection-start="1451" selection-end="1451" vertical-scroll-proportion="0.0">
+            <state line="51" column="54" selection-start="1509" selection-end="1509" vertical-scroll-proportion="0.0">
               <folding>
-                <element signature="e#1615#1641#0" expanded="true" />
-                <element signature="e#4800#4820#0" expanded="true" />
+                <element signature="e#1614#1640#0" expanded="true" />
+                <element signature="e#4799#4819#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -418,8 +418,8 @@
         <option value="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/APSDiscoveryActivator.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/Group.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/message/MessagePacket.java" />
-        <option value="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/service/provider/APSSimpleDiscoveryServiceProvider.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/model/ServiceDescriptions.java" />
+        <option value="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/service/provider/APSSimpleDiscoveryServiceProvider.java" />
       </list>
     </option>
   </component>
@@ -3952,7 +3952,11 @@
       <created>1357134624081</created>
       <updated>1357134624081</updated>
     </task>
-    <option name="localTasksCounter" value="185" />
+    <task id="LOCAL-00185" summary="Dev commit.">
+      <created>1357137907490</created>
+      <updated>1357137907490</updated>
+    </task>
+    <option name="localTasksCounter" value="186" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="false" url="http://natusoft.selfip.net:6789/redmine">
@@ -3990,7 +3994,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="269" y="24" width="2071" height="1331" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Dilbert" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27287716" sideWeight="0.5" order="17" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32116184" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -4011,9 +4015,9 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.328654" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25777778" sideWeight="0.27250206" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39956957" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20098765" sideWeight="0.67299753" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20098765" sideWeight="0.6300578" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25679013" sideWeight="0.67299753" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25679013" sideWeight="0.6300578" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3699422" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hudson Information" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="PDF_FIND" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
@@ -4070,7 +4074,7 @@
     <option name="MAXIMUM_HISTORY_ROWS" value="1000" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Documentation." />
+    <option name="LAST_COMMIT_MESSAGE" value="Dev commit." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -4103,11 +4107,11 @@
     <MESSAGE value="Moved connect() and disconnect() code from activator to service provider with delayed connect until first &#10;service call due to that connect does things that cannot be done at activation. The previous code created &#10;a server startup deadlock situation where in activation we were waiting for something that would not happen&#10;until activation was done. The server deploys bundles sequentially without activation timeout ..." />
     <MESSAGE value="Documented APSGroups." />
     <MESSAGE value="Updated APSDiscoveryService to use APSGroups instead. This made it 90% smaller." />
-    <MESSAGE value="Dev commit." />
     <MESSAGE value="Modified APSDiscoveryServiceProvider to make use of APSGroups for discovery." />
     <MESSAGE value="Added REST support to RPCProtocol." />
     <MESSAGE value="Bug fix." />
     <MESSAGE value="Documentation." />
+    <MESSAGE value="Dev commit." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -4221,21 +4225,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/model/ServiceDescriptions.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="50" column="67" selection-start="1451" selection-end="1451" vertical-scroll-proportion="0.0">
+        <state line="51" column="54" selection-start="1509" selection-end="1509" vertical-scroll-proportion="0.0">
           <folding>
-            <element signature="e#1615#1641#0" expanded="true" />
-            <element signature="e#4800#4820#0" expanded="true" />
+            <element signature="e#1614#1640#0" expanded="true" />
+            <element signature="e#4799#4819#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/src/main/java/se/natusoft/osgi/aps/discovery/service/provider/APSSimpleDiscoveryServiceProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="164" column="0" selection-start="5226" selection-end="5226" vertical-scroll-proportion="0.8748943">
+        <state line="289" column="13" selection-start="9942" selection-end="9942" vertical-scroll-proportion="0.4945055">
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#7675#7695#0" expanded="true" />
-            <element signature="e#8009#8029#0" expanded="true" />
+            <element signature="e#7388#7408#0" expanded="true" />
+            <element signature="e#7722#7742#0" expanded="true" />
           </folding>
         </state>
       </provider>

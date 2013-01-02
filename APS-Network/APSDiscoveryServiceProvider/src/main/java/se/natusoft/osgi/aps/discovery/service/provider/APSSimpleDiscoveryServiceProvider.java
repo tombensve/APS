@@ -139,22 +139,18 @@ public class APSSimpleDiscoveryServiceProvider extends Thread implements APSSimp
         while (keepRunning()) {
             if (republishCount >= republishAtCount) {
                 republishCount = 0;
-                this.logger.info("Republishing!");
                 republish();
             }
             else {
                 ++republishCount;
-                this.logger.info("republishCount=" + republishCount);
             }
 
             if (evictCount >= evictAtCount) {
                 evictCount = 0;
-                this.logger.info("Evicting!");
                 this.remotelyPublishedServices.evictOld();
             }
             else {
                 ++evictCount;
-                this.logger.info("evictCount=" + evictCount);
             }
 
             try {Thread.sleep(5000);} catch (InterruptedException ie) {}
@@ -172,7 +168,6 @@ public class APSSimpleDiscoveryServiceProvider extends Thread implements APSSimp
                 Message message = this.groupMember.createNewMessage();
                 Publish publish = new Publish(sd);
                 DiscoveryProtocol.write(message, publish);
-                this.logger.info("Republishing: " + sd);
                 this.groupMember.sendMessage(message);
             }
         }
@@ -314,8 +309,6 @@ public class APSSimpleDiscoveryServiceProvider extends Thread implements APSSimp
     public synchronized void messageReceived(Message message) {
         try {
             Protocol protocol = DiscoveryProtocol.read(message);
-
-            this.logger.debug("Received message: " + message);
 
             if (Publish.class.isAssignableFrom(protocol.getClass())) {
                 this.remotelyPublishedServices.addServiceDescription(((Publish)protocol).getServiceDescription());
