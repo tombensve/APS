@@ -48,7 +48,8 @@ public class ServiceDescriptions {
     // Private Members
     //
 
-    public static final long EVICT_AGE = 1000 * 60;
+    /** How old a service description can get before being evicted. */
+    public static final long EVICT_AGE = 1000 * 60 * 10;
 
     /** Holds all unique entries. */
     private Map<ServiceDescription, Long> allUnique = new HashMap<ServiceDescription, Long>();

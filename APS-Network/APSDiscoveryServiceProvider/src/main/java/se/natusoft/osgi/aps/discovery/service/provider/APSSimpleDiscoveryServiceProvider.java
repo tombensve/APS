@@ -144,7 +144,7 @@ public class APSSimpleDiscoveryServiceProvider extends Thread implements APSSimp
             }
             else {
                 ++republishCount;
-                this.logger.info("republishCount=" + republishAtCount);
+                this.logger.info("republishCount=" + republishCount);
             }
 
             if (evictCount >= evictAtCount) {
