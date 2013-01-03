@@ -14,6 +14,11 @@
     <name>APSResolvingBundleDeployer</name>
 
     <description>
+        Deploys bundles resolving dependencies as automatically as possible by accepting a few
+        deploy failures and retrying until it works or a fail threshold has been reached.
+
+        Unless the server deployed on supports WABs using the extender pattern, no war files
+        will deploy correctly.
     </description>
 
     <properties>
