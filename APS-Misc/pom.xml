@@ -19,6 +19,7 @@
     <modules>
         <module>APSJSONServiceProvider</module>
         <module>APSSessionServiceProvider</module>
+        <module>APSResolvingBundleDeployer</module>
     </modules>
 
 </project>
