@@ -63,18 +63,18 @@ import java.util.List;
  * &nbsp;    @APSConfigDescription(version=1, description="My configuration")
  * &nbsp;    public class MyConfig extends APSConfig {
  * &nbsp;
- * &nbsp;    @APSConfigItemDescription(description="The url to the service to call",
- * &nbsp;        defaultValue={ @APSDefaultValue(value="http://userservice.local:1234/login", configEnv="...") })
- * &nbsp;    public <b>APSConfigValue</b> serviceURL;
+ * &nbsp;        @APSConfigItemDescription(description="The url to the service to call",
+ * &nbsp;            defaultValue={ @APSDefaultValue(value="http://userservice.local:1234/login", configEnv="...") })
+ * &nbsp;        public <b>APSConfigValue</b> serviceURL;
  * &nbsp;
- * &nbsp;    @APSConfigItemDescription(description="...")
- * &nbsp;    public <b>APSConfigValueList</b> somethingThatNeedsMany;
+ * &nbsp;        @APSConfigItemDescription(description="...")
+ * &nbsp;        public <b>APSConfigValueList</b> somethingThatNeedsMany;
  * &nbsp;
- * &nbsp;    @APSConfigItemDescription(description="...", environmentSpecific=true)
- * &nbsp;    public <b>MyOtherConfig</b> myOtherConfig;
+ * &nbsp;        @APSConfigItemDescription(description="...", environmentSpecific=true)
+ * &nbsp;        public <b>MyOtherConfig</b> myOtherConfig;
  * &nbsp;
- * &nbsp;    @APSConfigItemDescription(description="...")
- * &nbsp;    public <b>APSConfigList&lt;MyOtherConfig&gt;</b> myOtherConfigs;
+ * &nbsp;        @APSConfigItemDescription(description="...")
+ * &nbsp;        public <b>APSConfigList&lt;MyOtherConfig&gt;</b> myOtherConfigs;
  * &nbsp;
  * &nbsp;        ...
  * &nbsp;    }

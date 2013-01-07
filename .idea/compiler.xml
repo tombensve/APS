@@ -62,6 +62,10 @@
       <directory url="file://$PROJECT_DIR$/APS-Network/APSGroups/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/APS-Misc/APSResolvingBundleDeployer/target/generated-sources/annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/APS-Misc/APSResolvingBundleDeployer/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Webs/APSTomcatWebExtender/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Webs/APSTomcatWebExtender/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Webs/APSJettyWebExtender/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Webs/APSJettyWebExtender/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
     </excludeFromCompile>
     <resourceExtensions />
     <wildcardResourcePatterns>
@@ -111,6 +115,7 @@
         <module name="APSBundleArchetype" />
         <module name="APSConfigTest" />
         <module name="APSResolvingBundleDeployer" />
+        <module name="APSTomcatWebExtender" />
         <module name="APSWarBundleArchetype" />
       </profile>
     </annotationProcessing>
@@ -129,6 +134,7 @@
       <module name="aps-external-protocol-extender" target="1.7" />
       <module name="aps-filesystem-service-provider" target="1.7" />
       <module name="aps-groups" target="1.7" />
+      <module name="aps-jetty-web-extender" target="1.7" />
       <module name="aps-json-lib" target="1.7" />
       <module name="aps-json-service-provider" target="1.7" />
       <module name="APS-Libraries" target="1.7" />
@@ -142,12 +148,14 @@
       <module name="aps-session-provider-service" target="1.7" />
       <module name="aps-simple-user-service-provider" target="1.7" />
       <module name="aps-streamed-json-rpc-protocol-provider" target="1.7" />
+      <module name="aps-tomcat-web-extender" target="1.7" />
       <module name="aps-tools-lib" target="1.7" />
       <module name="aps-user-admin-web" target="1.7" />
       <module name="aps-web-tools" target="1.7" />
       <module name="APS-Webs" target="1.7" />
       <module name="APSConfigTest" target="1.7" />
       <module name="APSResolvingBundleDeployer" target="1.7" />
+      <module name="APSTomcatWebExtender" target="1.7" />
       <module name="Test" target="1.7" />
     </bytecodeTargetLevel>
   </component>

@@ -357,6 +357,8 @@
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSGroups" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider" />
+    <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Webs/APSJettyWebExtender" />
+    <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Webs/APSTomcatWebExtender" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/Test" />
     <file type="web" url="file://$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider" />
     <file type="web" url="file://$PROJECT_DIR$/APS-Webs/APSAdminLoginWeb" />
@@ -403,6 +405,8 @@
         <option value="$PROJECT_DIR$/APS-Network/APSDataSyncService/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Security/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Webs/APSAdminLoginWeb/pom.xml" />
+        <option value="$PROJECT_DIR$/APS-Webs/APSJettyWebExtender/pom.xml" />
+        <option value="$PROJECT_DIR$/APS-Webs/APSTomcatWebExtender/pom.xml" />
         <option value="$PROJECT_DIR$/Test/pom.xml" />
       </set>
     </option>

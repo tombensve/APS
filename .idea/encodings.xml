@@ -29,6 +29,8 @@
     <file url="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/APS-Webs/APSJettyWebExtender" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/APS-Webs/APSTomcatWebExtender" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Webs/APSUserAdminWeb" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Documentation" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Test/APSConfigTest" charset="UTF-8" />
