@@ -44,6 +44,10 @@ import se.natusoft.osgi.aps.api.core.config.APSConfig;
  * <p>
  * Please note that this will always return the configuration for the currently
  * selected environment (which only APSConfigAdminService can change).
+ * <p/>
+ * Please note that if you let your configuration be auto-managed by specifying
+ * the "APS-Configs: fully_qualified_name_to_config_class,..." MANIFEST.MF entry
+ * then this service does not need to be used.
  */
 public interface APSConfigService {
 
