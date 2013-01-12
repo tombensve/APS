@@ -61,7 +61,7 @@ The reason for not using an interface and provide a java.lang.reflect.Proxy impl
 
 All config values are strings! All config values are stored as strings. The __APSConfigValue__ container however have _toBoolean()_, _toDate()_, _toDouble()_, _toFloat()_, _toInt()_, _toLong()_, _toByte()_, _toShort()_, and _toString()_ methods on it. 
 
-The __APSConfigList\<Type\>__  container is an _java.lang.Iterable_ of \<Type\> type objects. The \<Type\> cannot however by anything. When used directly in a config model it must be \<Type extends APSConfig\>. That is, you can only specify other config models extending APSConfig. The only exception to that is __APSConfigValueList__ which is defined as:
+The __APSConfigList\<Type\>__  container is an _java.lang.Iterable_ of \<Type\> type objects. The \<Type\> cannot however be anything. When used directly in a config model it must be \<Type extends APSConfig\>. That is, you can only specify other config models extending APSConfig. The only exception to that is __APSConfigValueList__ which is defined as:
 
 	public interface APSConfigValueList extends APSConfigList<APSConfigValue> {} 
 
@@ -75,10 +75,10 @@ The __APSConfigList\<Type\>__  container is an _java.lang.Iterable_ of \<Type\> 
 The full list of attributes for the annotations are:
 
     @APSConfigDescription(
-    		version="1.0",
-    		configId=”se.natusoft.aps.exmple.myconfig”,
-    		group=”docs.examples”,  
-    		description=”An example configuration model”
+        version="1.0",
+        configId=”se.natusoft.aps.exmple.myconfig”,
+        group=”docs.examples”,
+        description=”An example configuration model”
     )
 
 This is an annotation for a configuration model.
@@ -116,10 +116,10 @@ __validValues__ - This is an array of strings ( {”...”, ..., ”...”} ) co
 It is possible to let the APSConfigService act as an extender and automatically register and setup config instances on bundle deploy by adding the __APS-Configs:__ MANIFEST.MF header and a comma separated list of fully qualified names of config models. Each of these models must also declare a ManagedConfig\<ConfigModelType\> instance. Example:
 
     @APSConfigDescription(
-    		version="1.0",
-    		configId=”se.natusoft.aps.exmple.myconfig”,
-    		group=”examples”,  
-    		description=”An example configuration model”
+        version="1.0",
+        configId=”se.natusoft.aps.exmple.myconfig”,
+        group=”examples”,
+        description=”An example configuration model”
     )
 	public class MyConfig extends APSConfig {
 		
@@ -141,7 +141,9 @@ There is a possibility that code started in a bundle, especially threads might s
 	if (!MyConfig.managed.isManaged()) {
 		MyConfig.managed.waitUntilManaged();
 	}
-	
+
+Do not ever do this during start() of a Bundle activator! That would cause a never ending dead-lock!
+
 To access the managed config do:
 
 	MyConfig.managed.get().simpleValue.toString()/toInt()/toDouble()/...
@@ -170,9 +172,18 @@ _Please note_ that if you are using managed configs (see above) then you never n
 
 The APSconfigAdminService only needs to be used if you implement a configuration editor. APSConfigAdminWeb uses this API for example. See the javadoc for the API.
 
+## A word of advice
+
+It is quite possible to make config structures of great complexity. __DON'T!__ Even if it seems manageable from a code perspective it might not be that from a admin perspective. Keep it simple always apply!
+
 ## APSConfigAdminWeb screenshots
 
 ![Config environment screenshot](config-env.png)
+
+![Config environment help screenshot](config-env-help.png)
+
 ![Config screenshot](config.png)
+
 ![Config list item screenshot](config-list.png)
+
 

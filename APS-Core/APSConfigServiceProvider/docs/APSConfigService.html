@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="generated-by" content="MarkdownDoc"/>
+    <link href="docs.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body>
+    <H1>APSConfigService</H1>
+    <p>
+      This is not the simple standard OSGi service configurations, but more an application config that can also be used for services. It supports structured configurations including lists of items andlists of subconfigurations. Code that uses the configuration provide one or more configuration classes with config items. These are registered with the config service, which makes them editable/publishable though and admin web app. After registration an instance of the config can be gotten containing published or defaul values. Alternatively the config class is specified with a fully qualified name in the <em>APS-Configs:</em> MANIFEST.MF entry. In this case the configuration service acts as an extender and automatically registers and provides an instance of the config for you, without having to call the config service.      
+    </p>
+    <H2>Making a config class</H2>
+    <p>
+      Here is an example:      
+    </p>
+    <pre>
+      <code>
+    @APSConfigDescription(
+            version="1.0",
+            configId=”se.natusoft.aps.exmple.myconfig”,
+            group=”examples”,  
+            description=”An example configuration model”
+    )
+    public class MyConfig extends APSConfig {
+        
+        @APSConfigItemDescription(
+            description=”Example of simple value.”,
+        )
+        public APSConfigValue simpleValue;
+        
+        @APSConfigItemDescription(
+            description=”Example of list value.”
+        )
+        public APSConfigValueList listValue;
+        
+        @APSConfigItemDescription(
+            description=”One instance of MySubConfig model.”
+        )
+        public MySubConfig mySubConfig;
+        
+        @APSConfigItemDescription(
+            description=”Multiple instances of MySubConfig model.”
+        )
+        public APSConfigList&lt;MySubConfig&gt; listOfMySubConfigs;
+        
+        @APSConfigDescription(
+            version=”1.0”,
+            configId=”se.natusoft.aps.example.myconfig.mysubconfig”,
+            description=”Example of a subconfig model. Does not have to be inner class!”
+        )
+        public static class MySubConfig extends APSConfig {
+            
+            @APSConfigItemDescription(
+                description=”Description of values.”
+            )
+            public APSConfigValueList listOfValues;
+            
+            @APSConfigItemDescription(
+                description=”Description of another value.”
+            )
+            public APSConfigValue anotherValue;
+        }
+    }
+      </code>
+    </pre>
+    <H3>The config values </H3>
+    <p>
+      Now you might be wondering, why not an interface, and why <em>public</em> and why <em>APSConfigValue</em>, <em>APSConfigValueList</em>, and <em>APSConfigList</em>?      
+    </p>
+    <p>
+      The reason for not using an interface and provide a java.lang.reflect.Proxy implementation of it is that OSGi has separate class loaders for each bundle. This means a service cannot proxy an interface provided by another bundle. Well, there are ways to go around that, but I did not want to do that unless that was the only option available. In this case it wasn’t. Therefore I use the above listed APS*Value classes as value containers. They are public so that they can be accessed and set by the APSConfigService. When you get the main config class instance back from the service all values will have valid instances. Each APS*Value has an internal reference to its config value in the internal config store.      
+    </p>
+    <p>
+      All config values are strings! All config values are stored as strings. The <strong>APSConfigValue</strong> container however have <em>toBoolean()</em>, <em>toDate()</em>, <em>toDouble()</em>, <em>toFloat()</em>, <em>toInt()</em>, <em>toLong()</em>, <em>toByte()</em>, <em>toShort()</em>, and <em>toString()</em> methods on it.      
+    </p>
+    <p>
+      The <strong>APSConfigList<Type></strong> container is an <em>java.lang.Iterable</em> of &lt;Type&gt; type objects. The &lt;Type&gt; cannot however be anything. When used directly in a config model it must be &lt;Type extends APSConfig&gt;. That is, you can only specify other config models extending APSConfig. The only exception to that is <strong>APSConfigValueList</strong> which is defined as:      
+    </p>
+    <pre>
+      <code>
+    public interface APSConfigValueList extends APSConfigList&lt;APSConfigValue&gt; {} 
+      </code>
+    </pre>
+    <ul>
+      <li>
+        <p>
+          Use <strong>APSConfigValue</strong> for plain values.          
+        </p>
+      </li>
+      <li>
+        <p>
+          Use <strong>APSConfigValueList</strong> for a list of plain values.          
+        </p>
+      </li>
+      <li>
+        <p>
+          Use <strong>MyConfigModel extends APSConfig</strong> for a subconfig model.          
+        </p>
+      </li>
+      <li>
+        <p>
+          Use <strong>APSConfigList<MyConfigModel extends APSConfig></strong> for a list of subconfig models.          
+        </p>
+      </li>
+    </ul>
+    <H3>The config annotations</H3>
+    <p>
+      The full list of attributes for the annotations are:      
+    </p>
+    <pre>
+      <code>
+    @APSConfigDescription(
+        version="1.0",
+        configId=”se.natusoft.aps.exmple.myconfig”,
+        group=”docs.examples”,
+        description=”An example configuration model”
+    )
+      </code>
+    </pre>
+    <p>
+      This is an annotation for a configuration model.      
+    </p>
+    <p>
+      <strong>version</strong> - The version of the config model. This is required.      
+    </p>
+    <p>
+      <strong>configId</strong> - The unique id of the configuration model. Use same approch as for packages. This is required.      
+    </p>
+    <p>
+      <strong>group</strong> - This specifies a group or rather a tree branch that the config belongs under. This is only used by the configuration admin web app to render a tree of configuration models. This is optional.      
+    </p>
+    <p>
+      <strong>description</strong> - This describes the configuration model.      
+    </p>
+    <pre>
+      <code>
+    @APSConfigItemDescription(
+        description=”Example of simple value.”,
+        datePattern=”yyMMdd”,  
+        environmentSpecific=true/false,  
+        isBoolean=true/false,  
+        validValues={”high”, ”medium”, ”low”}, 
+    )
+      </code>
+    </pre>
+    <p>
+      This is an annotation for a configuration item whithin a configuration model.      
+    </p>
+    <p>
+      <strong>description</strong> - This describes the configuration value. The configuration admin web app uses this to explain the configuration value to the person editing the configuration. This is required.      
+    </p>
+    <p>
+      <strong>datePattern</strong> - This is a date pattern that will be passed to SimpleDateFormat to convert the date in the string value to a java.util.Date object and is used by the <em>toDate()</em> method of APSConfigValue. This date format will also be displayed in the configuration admin web app to hint at the date format to the person editing the configuration. The configuration admin web app will also use a calendar field if this is available. The calendar field has a complete calendar popup that lets you choose a date. This is optional.      
+    </p>
+    <p>
+      <strong>environmentSpecific</strong> - This indicates that the config value can have different values depending on which config environment is active. This defaults to false in which case the value will apply to all config environments. This is optional.      
+    </p>
+    <p>
+      <strong>isBoolean</strong> - This indicates that the config value is of boolean type. This is used by the configuration admin web app to turn this into a checkbox rather than a text field. This defaults to false and is this optional.      
+    </p>
+    <p>
+      <strong>validValues</strong> - This is an array of strings ( {”...”, ..., ”...”} ) containing the only valid values for this config value. This is used by the configuration admin web app to provide a dropdown menu of the alternatives rather than a text field. This defaults to {} and is thus optional.      
+    </p>
+    <H3>Auto managed configurations</H3>
+    <p>
+      It is possible to let the APSConfigService act as an extender and automatically register and setup config instances on bundle deploy by adding the <strong>APS-Configs:</strong> MANIFEST.MF header and a comma separated list of fully qualified names of config models. Each of these models must also declare a ManagedConfig&lt;ConfigModelType&gt; instance. Example:      
+    </p>
+    <pre>
+      <code>
+    @APSConfigDescription(
+        version="1.0",
+        configId=”se.natusoft.aps.exmple.myconfig”,
+        group=”examples”,
+        description=”An example configuration model”
+    )
+    public class MyConfig extends APSConfig {
+        
+    —&gt;  public static final ManagedConfig&lt;MyConfig&gt; managed = new ManagedConfig&lt;MyConfig&gt;();  &lt;—
+        
+        @APSConfigItemDescription(
+            description=”Example of simple value.”,
+        )
+        public APSConfigValue simpleValue;
+        
+        @APSConfigItemDescription(
+            description=”Example of list value.”
+        )
+        public APSConfigValueList listValue;
+        ...
+        
+      </code>
+    </pre>
+    <p>
+      There is a possibility that code started in a bundle, especially threads might start running before the config has become managed. In such cases the following will solve that:      
+    </p>
+    <pre>
+      <code>
+    if (!MyConfig.managed.isManaged()) {
+        MyConfig.managed.waitUntilManaged();
+    }
+      </code>
+    </pre>
+    <p>
+      Do not ever do this during start() of a Bundle activator! That would cause a never ending dead-lock!      
+    </p>
+    <p>
+      To access the managed config do:      
+    </p>
+    <pre>
+      <code>
+    MyConfig.managed.get().simpleValue.toString()/toInt()/toDouble()/...
+    
+      </code>
+    </pre>
+    <H2>API Usages</H2>
+    <H3>The configuration service usage</H3>
+    <p>
+      The APSConfigService API looks like this:      
+    </p>
+    <pre>
+      <code>
+    public interface APSConfigService {
+        void registerConfiguration(Class&lt;? extends APSConfig&gt; configClass, boolean forService) throws APSConfigException;
+        void unregisterConfiguration(Class&lt;? extends APSConfig&gt; configClass);
+        &lt;Config extends APSConfig&gt; Config getConfiguration(Class&lt;Config&gt; configClass) throws APSConfigException;
+    }
+      </code>
+    </pre>
+    <p>
+      On bundle start you register the configuration. On bundle stop you unregister it. Inbetween you access it. It is a good idea to call getConfiguration(...) after register on bundle start and the pass this instance to your services, etc.      
+    </p>
+    <p>
+      If the <em>forServices</em> flag is <em>true</em> then this configuration will also be registered in the standard OSGi configuration service. Please be warned however that APSConfigService stores its configuration values in properties files, but with rather complex keys. For non structured, flat configurations it might make some sense to register it with the standard osgi service also, but in most cases there is no point in doing this. I’m not even sure why I have this option!      
+    </p>
+    <p>
+      <em>Please note</em> that if you are using managed configs (see above) then you never need to call this service API, not even lookup/track the APSConfigService!      
+    </p>
+    <H3>The configuration admin service usage</H3>
+    <p>
+      The APSconfigAdminService only needs to be used if you implement a configuration editor. APSConfigAdminWeb uses this API for example. See the javadoc for the API.      
+    </p>
+    <H2>A word of advice</H2>
+    <p>
+      It is quite possible to make config structures of great complexity. <strong>DON'T!</strong> Even if it seems manageable from a code perspective it might not be that from a admin perspective. Keep it simple always apply!      
+    </p>
+    <H2>APSConfigAdminWeb screenshots</H2>
+    <p>
+            <img src='config-env.png' title='' alt='Config environment screenshot'/>      
+    </p>
+    <p>
+            <img src='config-env-help.png' title='' alt='Config environment help screenshot'/>      
+    </p>
+    <p>
+            <img src='config.png' title='' alt='Config screenshot'/>      
+    </p>
+    <p>
+            <img src='config-list.png' title='' alt='Config list item screenshot'/>      
+    </p>
+  </body>
+</html>
