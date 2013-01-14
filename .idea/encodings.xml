@@ -22,9 +22,9 @@
     <file url="file://$PROJECT_DIR$/APS-Misc/APSResolvingBundleDeployer" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Network/APSGroups" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider" charset="UTF-8" />

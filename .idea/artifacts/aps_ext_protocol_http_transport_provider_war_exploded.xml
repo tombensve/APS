@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact type="exploded-war" name="aps-rpc-http-transport-provider:war exploded">
-    <output-path>$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/target/aps-rpc-http-transport-provider-0.9.0</output-path>
+  <artifact type="exploded-war" name="aps-ext-protocol-http-transport-provider:war exploded">
+    <output-path>$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/target/aps-ext-protocol-http-transport-provider-0.9.0</output-path>
     <root id="root">
       <element id="javaee-facet-resources" facet="aps-ext-protocol-http-transport-provider/web/Web" />
       <element id="directory" name="WEB-INF">

@@ -360,7 +360,7 @@
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Webs/APSJettyWebExtender" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Webs/APSTomcatWebExtender" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/Test" />
-    <file type="web" url="file://$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider" />
+    <file type="web" url="file://$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider" />
     <file type="web" url="file://$PROJECT_DIR$/APS-Webs/APSAdminLoginWeb" />
     <file type="web" url="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb" />
     <file type="web" url="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb" />

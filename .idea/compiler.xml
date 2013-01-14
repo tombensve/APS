@@ -13,7 +13,7 @@
       <directory url="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/APS-Core/APSLogServiceProvider/target/generated-sources/annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/APS-Core/APSLogServiceProvider/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
-      <directory url="file://$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/target/generated-sources/annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/target/generated-sources/annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider/target/generated-sources/annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
@@ -66,6 +66,7 @@
       <directory url="file://$PROJECT_DIR$/APS-Webs/APSTomcatWebExtender/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/APS-Webs/APSJettyWebExtender/target/generated-sources/annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/APS-Webs/APSJettyWebExtender/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
     </excludeFromCompile>
     <resourceExtensions />
     <wildcardResourcePatterns>
@@ -96,6 +97,7 @@
         <module name="aps-configuration-service-provider" />
         <module name="aps-datasource" />
         <module name="aps-discovery-service-provider" />
+        <module name="aps-ext-protocol-http-transport-provider" />
         <module name="aps-external-protocol-extender" />
         <module name="aps-filesystem-service-provider" />
         <module name="aps-groups" />
@@ -131,6 +133,7 @@
       <module name="APS-Data" target="1.7" />
       <module name="aps-datasource" target="1.7" />
       <module name="aps-discovery-service-provider" target="1.7" />
+      <module name="aps-ext-protocol-http-transport-provider" target="1.7" />
       <module name="aps-external-protocol-extender" target="1.7" />
       <module name="aps-filesystem-service-provider" target="1.7" />
       <module name="aps-groups" target="1.7" />
