@@ -39,26 +39,32 @@ package se.natusoft.osgi.aps.api.core.model;
 /**
  * This class represents a language.
  */
-public class Language {
+public enum Language {
     //
     // Constants
     //
     
     // Codes from http://www.loc.gov/standards/iso639-2/php/code_list.php
     // Language names from: http://translate.google.com/
-    
-    public static final Language EN = new Language("English", "en"); 
-    public static final Language DE = new Language("Deutsch", "de");
-    public static final Language FR = new Language("Française", "fr");
-    public static final Language IT = new Language("Italiano", "it");
-    public static final Language NL = new Language("Nederlandse", "nl");
-    public static final Language JA = new Language("日本", "ja");
-    public static final Language ZH = new Language("中文", "zh");
+
+    // Yes, this list is currently a bit short!
+
+    // European
+    EN("English", "en"),
+    DE("Deutsch", "de"),
+    FR("Française", "fr"),
+    IT("Italiano", "it"),
+    NL("Nederlandse", "nl"),
     // Being Swedish I ofcourse also include the nordic languages :-)
-    public static final Language SV = new Language("Svenska", "sv");
-    public static final Language FI = new Language("Suomalainen", "fi");
-    public static final Language DA = new Language("Dansk", "da");
-    
+    SV("Svenska", "sv"),
+    FI("Suomalainen", "fi"),
+    DA("Dansk", "da"),
+
+    // Asian
+    JA("日本", "ja"),
+    ZH("中文", "zh");
+
+
     //
     // private Members
     //
@@ -79,7 +85,7 @@ public class Language {
      * @param name The name of the languge (the language of the name is unspecified!).
      * @param langCode The 2 character language code.
      */
-    public Language(String name, String langCode) {
+    Language(String name, String langCode) {
         this.name = name;
         this.langCode = langCode;
     }
@@ -102,30 +108,6 @@ public class Language {
         return this.name;
     }
 
-    /**
-     * Returns a hashcode of this object.
-     */
-    @Override
-    public int hashCode() {
-        int hash = 3;
-        hash = 59 * hash + (this.langCode != null ? this.langCode.hashCode() : 0);
-        return hash;
-    }
-    
-    /**
-     * Compare this object with another for equality.
-     * 
-     * @param obj The object to compare to.
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Language)) {
-            return false;
-        }
-        Language lang = (Language)obj;
-        return this.langCode.equals(lang.langCode);
-    }
-    
     /**
      * Returns a string representation of this object.
      */
