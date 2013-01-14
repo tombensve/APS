@@ -7,7 +7,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.log.LogService;
-import org.osgi.util.tracker.ServiceTracker;
+import se.natusoft.osgi.aps.tools.APSServiceTracker;
 import se.natusoft.osgi.aps.tools.APSLogger;
 
 public class Activator implements BundleActivator {

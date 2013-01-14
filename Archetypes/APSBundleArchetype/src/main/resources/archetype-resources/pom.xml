@@ -12,7 +12,7 @@
     <version>${version}</version>
     <packaging>bundle</packaging>
 
-    <name>APS ${artifactId}</name>
+    <name>${artifactId}</name>
 
     <description>
     </description>
@@ -65,7 +65,13 @@
         -->
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-apis</artifactId>
+            <artifactId>aps-core-apis</artifactId>
+            <version>${version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-tools-lib</artifactId>
             <version>${version}</version>
             <scope>provided</scope>
         </dependency>
@@ -110,6 +116,7 @@
                     </supportedProjectTypes>
                     <archive>
                         <manifestEntries>
+                            <!--APS-Configs></APS-Configs-->
                             <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
                         </manifestEntries>                        
                     </archive>
