@@ -36,8 +36,8 @@
  */
 package se.natusoft.osgi.aps.jsonrpc.model;
 
+import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
-import se.natusoft.osgi.aps.api.model.json.JSONValue;
 import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
 import se.natusoft.osgi.aps.api.net.rpc.model.AbstractRPCRequest;
 import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;

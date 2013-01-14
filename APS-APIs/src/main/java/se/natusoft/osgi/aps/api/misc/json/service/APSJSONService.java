@@ -37,8 +37,8 @@
 package se.natusoft.osgi.aps.api.misc.json.service;
 
 import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
-import se.natusoft.osgi.aps.api.model.json.JSONValue;
-import se.natusoft.osgi.aps.api.model.json.JSONValueFactory;
+import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
+import se.natusoft.osgi.aps.api.misc.json.model.JSONValueFactory;
 
 import java.io.IOException;
 import java.io.InputStream;

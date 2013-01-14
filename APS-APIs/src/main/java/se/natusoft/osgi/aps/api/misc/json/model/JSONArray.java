@@ -34,31 +34,45 @@
  *         2012-01-17: Created!
  *         
  */
-package se.natusoft.osgi.aps.api.model.json;
+package se.natusoft.osgi.aps.api.misc.json.model;
+
+import java.util.List;
 
 /**
  * This class is based on the structure defined on http://www.json.org/.
- * <p/>
- * This represents a JSON null value.
+ * <p>
+ * This represents the "array" diagram on the above mentioned web page:
  * <pre>
- *                                                   Subclasses
- *                                                   ----------
- * |________________ (STRING) ________________|      JSONString
- * |  |_____________ (NUMBER) _____________|  |      JSONNumber
- *    |_____________ (OBJECT) _____________|         JSONObject
- *    |_____________ (ARRAY)  _____________|         JSONArray
- *    |_____________ (true)   _____________|     \__ JSONBoolean
- *    |_____________ (false)  _____________|     /
- *    \_____________ (null)   _____________/         <b>JSONNull</b>
- *
+ *               _______________________
+ *              /                       \
+ *              |                       |
+ * |_____ ([) __/_______ (value) _______\__ (]) _____|
+ * |              /                   \              |
+ *                |                   |
+ *                \_______ (,) _______/
  * </pre>
- *
  * @author Tommy Svensson
  */
-public interface JSONNull extends JSONValue {
+public interface JSONArray extends JSONValue {
 
     /**
-     * @return this JSONNull as a String value.
+     * Adds a value to the array.
+     *
+     * @param value The value to add.
      */
-    public String toString();
+    public void addValue(JSONValue value);
+
+    /**
+     * Returns the array values as a List.
+     */
+    public List<JSONValue> getAsList();
+
+    /**
+     * Returns the array values as a list of a specific type.
+     *
+     * @param type The class of the type to return values as a list of.
+     * @param <T> One of the JSONValue subclasses.
+     * @return A list of specified type if type is the same as in the list.
+     */
+    public <T extends JSONValue> List<T> getAsList(Class<T> type);
 }

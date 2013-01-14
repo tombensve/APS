@@ -38,7 +38,7 @@
 package se.natusoft.osgi.aps.json.model;
 
 
-import se.natusoft.osgi.aps.api.model.json.JSONValue;
+import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
 
 /**
  * Converts between service models and aps-json-lib models.

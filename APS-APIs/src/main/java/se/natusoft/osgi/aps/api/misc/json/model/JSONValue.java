@@ -34,31 +34,27 @@
  *         2012-01-17: Created!
  *         
  */
-package se.natusoft.osgi.aps.api.model.json;
+package se.natusoft.osgi.aps.api.misc.json.model;
 
 /**
- * This class is based on the structure defined on http://www.json.org/.
+ * This API is based on the structure defined on http://www.json.org/.
  * <p/>
- * This represents a boolean JSON value.
+ * This is a base class for all other JSON* APIs. It represents the "value" diagram on the above mentioned web page:
  * <pre>
- *                                                   Subclasses
- *                                                   ----------
+ *                                                   Subinterfaces
+ *                                                   -------------
  * |________________ (STRING) ________________|      JSONString
  * |  |_____________ (NUMBER) _____________|  |      JSONNumber
  *    |_____________ (OBJECT) _____________|         JSONObject
  *    |_____________ (ARRAY)  _____________|         JSONArray
- *    |_____________ (true)   _____________|     \__ <b>JSONBoolean</b>
+ *    |_____________ (true)   _____________|     \__ JSONBoolean
  *    |_____________ (false)  _____________|     /
  *    \_____________ (null)   _____________/         JSONNull
  *
  * </pre>
  *
- * @author Tommy Svensson
  */
-public interface JSONBoolean extends JSONValue {
-
-    /**
-     * @return this JSONBoolean as a Java boolean.
-     */
-    public Boolean toBoolean();
+public interface JSONValue {
+    // This does not provide any functionality it just allows any JSON* subinterface
+    // to be treated as a generic JSONValue.
 }

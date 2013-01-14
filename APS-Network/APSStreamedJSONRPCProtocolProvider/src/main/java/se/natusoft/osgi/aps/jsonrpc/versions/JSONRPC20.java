@@ -37,11 +37,11 @@
 package se.natusoft.osgi.aps.jsonrpc.versions;
 
 import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
+import se.natusoft.osgi.aps.api.misc.json.model.JSONArray;
+import se.natusoft.osgi.aps.api.misc.json.model.JSONObject;
+import se.natusoft.osgi.aps.api.misc.json.model.JSONString;
+import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
-import se.natusoft.osgi.aps.api.model.json.JSONArray;
-import se.natusoft.osgi.aps.api.model.json.JSONObject;
-import se.natusoft.osgi.aps.api.model.json.JSONString;
-import se.natusoft.osgi.aps.api.model.json.JSONValue;
 import se.natusoft.osgi.aps.api.net.rpc.errors.ErrorType;
 import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
 import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;

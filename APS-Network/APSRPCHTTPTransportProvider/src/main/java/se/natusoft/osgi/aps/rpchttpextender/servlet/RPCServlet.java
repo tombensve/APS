@@ -47,8 +47,8 @@ import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternallyCalla
 import se.natusoft.osgi.aps.api.external.model.type.DataType;
 import se.natusoft.osgi.aps.api.external.model.type.DataTypeDescription;
 import se.natusoft.osgi.aps.api.external.model.type.ParameterDataTypeDescription;
+import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
-import se.natusoft.osgi.aps.api.model.json.JSONValue;
 import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescriptionProvider;
 import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService;
 import se.natusoft.osgi.aps.api.net.rpc.errors.APSRESTException;

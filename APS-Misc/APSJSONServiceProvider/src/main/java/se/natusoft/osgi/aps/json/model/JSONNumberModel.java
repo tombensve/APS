@@ -37,7 +37,7 @@
  */
 package se.natusoft.osgi.aps.json.model;
 
-import se.natusoft.osgi.aps.api.model.json.JSONNumber;
+import se.natusoft.osgi.aps.api.misc.json.model.JSONNumber;
 
 /**
  * This class is based on the structure defined on http://www.json.org/.

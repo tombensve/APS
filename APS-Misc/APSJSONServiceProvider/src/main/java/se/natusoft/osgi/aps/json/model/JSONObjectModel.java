@@ -38,9 +38,9 @@
 package se.natusoft.osgi.aps.json.model;
 
 
-import se.natusoft.osgi.aps.api.model.json.JSONObject;
-import se.natusoft.osgi.aps.api.model.json.JSONString;
-import se.natusoft.osgi.aps.api.model.json.JSONValue;
+import se.natusoft.osgi.aps.api.misc.json.model.JSONObject;
+import se.natusoft.osgi.aps.api.misc.json.model.JSONString;
+import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
 
 import java.util.HashSet;
 import java.util.Set;

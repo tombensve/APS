@@ -38,8 +38,8 @@
 package se.natusoft.osgi.aps.json.service;
 
 import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
+import se.natusoft.osgi.aps.api.misc.json.model.*;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
-import se.natusoft.osgi.aps.api.model.json.*;
 import se.natusoft.osgi.aps.json.JSON;
 import se.natusoft.osgi.aps.json.model.*;
 import se.natusoft.osgi.aps.json.tools.JSONToJava;

@@ -34,7 +34,7 @@
  *         2012-01-17: Created!
  *         
  */
-package se.natusoft.osgi.aps.api.model.json;
+package se.natusoft.osgi.aps.api.misc.json.model;
 
 import java.util.Set;
 
