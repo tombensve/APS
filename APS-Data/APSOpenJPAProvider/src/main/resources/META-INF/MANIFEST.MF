@@ -49,13 +49,13 @@ Import-Package: javax.activation,
  org.xml.sax.helpers,
  org.osgi.framework;version="[1.5,2)",
  org.osgi.service.jpa,
+ javax.persistence,
+ javax.persistence.criteria,
+ javax.persistence.metamodel,
  se.natusoft.osgi.aps.api.data.jpa.service;version="[0.0,1)",
  se.natusoft.osgi.aps.tools;version="[0.0,1)",
  se.natusoft.osgi.aps.exceptions;version="[0.0,1)"
 Export-Package: se.natusoft.osgi.aps.jpa.persistence.api,
- javax.persistence;version="2.2.0",
- javax.persistence.criteria;version="2.2.0",
- javax.persistence.metamodel;version="2.2.0",
  org.apache.openjpa.enhance;version="2.2.0",
  org.apache.openjpa.util;version="2.2.0"
 Embed-Dependency: *;scope=compile

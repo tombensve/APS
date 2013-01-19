@@ -69,20 +69,6 @@
         <!--
             OSGi
         -->
-        <!--
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>5.0.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.enterprise</artifactId>
-            <version>5.0.0</version>
-            <scope>provided</scope>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
@@ -96,14 +82,6 @@
             <version>4.2.0</version>
             <scope>provided</scope>
         </dependency>
-
-        <!--
-        <dependency>
-            <groupId></groupId>
-            <artifactId></artifactId>
-            <version></version>
-        </dependency>
-        -->
 
         <dependency>
             <groupId>junit</groupId>
