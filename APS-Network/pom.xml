@@ -17,7 +17,7 @@
 
     <modules>
         <module>APSExternalProtocolExtender</module>
-        <module>APSRPCHTTPTransportProvider</module>
+        <module>APSExtProtocolHTTPTransportProvider</module>
         <module>APSDiscoveryServiceProvider</module>
         <module>APSStreamedJSONRPCProtocolProvider</module>
         <module>APSGroups</module>

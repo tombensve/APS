@@ -52,7 +52,6 @@ public class DiscoveryProtocol {
 
     public static final int PUBLISH = 1;
     public static final int UNPUBLISH = 2;
-    public static final int UPDATE_ME = 3;
 
     /**
      * Writes message data.
@@ -92,11 +91,6 @@ public class DiscoveryProtocol {
 
                 case UNPUBLISH:
                     protocol = new UnPublish(message);
-                    protocol.read(dataStream);
-                    break;
-
-                case UPDATE_ME:
-                    protocol = new UpdateMe(message);
                     protocol.read(dataStream);
                     break;
 

@@ -2,13 +2,19 @@
 <project version="4">
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
     <file url="file://$PROJECT_DIR$/APS-APIs" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAPI" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/APS-Core/APS-Core-APIs" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Core/APSFilesystemServiceProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Core/APSLogServiceProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Core/APSPlatformServiceProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Data/APSDataSource" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/APS-Data/APSDataSourceDefinitionServiceAPI" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/APS-Data/APSDataSourceDefinitionServiceProvider" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/APS-Data/APSJPAServiceAPI" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Data/APSOpenJPAProvider" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/APS-Data/APSOpenJPAServiceProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Libraries/APSJSONLib" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSLoginHandler.java" charset="UTF-8" />
@@ -29,8 +35,6 @@
     <file url="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/APS-Webs/APSJettyWebExtender" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/APS-Webs/APSTomcatWebExtender" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Webs/APSUserAdminWeb" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Documentation" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Test/APSConfigTest" charset="UTF-8" />
