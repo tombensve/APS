@@ -52,9 +52,8 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
         description =
                 "This provides a general APS configuration for setting up JDBC data sources. This is " +
                 "provided by the aps-datasource.jar bundle which also provides an implementation of " +
-                "APSDataSourceDefService (api provided by aps-enterprise-apis.jar bundle) for looking " +
-                "up a configuration by its name. This can be used by other bundles that provide " +
-                "connection pools, JPA, etc.",
+                "APSDataSourceDefService for looking up a configuration by its name. This can be used " +
+                "by other bundles that provide connection pools, JPA, etc.",
         version = "1.0.0"
 )
 public class APSDataSourcesConfig extends APSConfig {
