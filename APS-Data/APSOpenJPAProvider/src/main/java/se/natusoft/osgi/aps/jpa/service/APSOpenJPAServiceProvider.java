@@ -41,6 +41,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
+import org.osgi.service.jpa.EntityManagerFactoryBuilder;
 import se.natusoft.osgi.aps.api.data.jpa.service.APSJPAService;
 import se.natusoft.osgi.aps.exceptions.APSResourceNotFoundException;
 import se.natusoft.osgi.aps.jpa.xml.Persistence;
@@ -63,7 +64,7 @@ import java.util.Map;
 /**
  * This provides an implementation of APSJPAService using OpenJPA.
  */
-public class APSOpenJPAServiceProvider implements BundleListener, APSJPAService {
+public class APSOpenJPAServiceProvider implements BundleListener, APSJPAService, EntityManagerFactoryBuilder {
 
     //
     // Private Members
@@ -240,7 +241,7 @@ public class APSOpenJPAServiceProvider implements BundleListener, APSJPAService 
         Map<String, PersistenceReg> persistenceUnits = this.persistentBundles.get(bundleContext.getBundle().getBundleId());
         PersistenceReg persistenceReg = persistenceUnits.get(persistenceUnitName);
         if (persistenceReg == null) {
-            throw new APSResourceNotFoundException("Persistence unit '" + persistenceUnitName + "' ws not found!");
+            throw new APSResourceNotFoundException("Persistence unit '" + persistenceUnitName + "' was not found!");
         }
 
         String factoryKey = factoryKey(persistenceUnitName, bundleContext.getBundle().getBundleId());
@@ -290,6 +291,69 @@ public class APSOpenJPAServiceProvider implements BundleListener, APSJPAService 
         }
 
         this.openFactories = null;
+    }
+
+    /**
+     * Please note that this provides the org.osgi.service.jpa.EntityManagerFactoryBuilder implementation. For
+     * this API persistence unit names must be unique withing the whole server. With the APS API the persistence
+     * unit names only have to be unique within a bundle. This does not handle service restart/redeploy either.
+     * If that happens the use of the returned EntityManagerFactory will throw an unknown exception!
+     * <p/>
+     * Also note that this implementation will ignore the "osgi.unit.provider" and "osgi.unit.version" properties!
+     * This bundle provides OpenJPA and nothing else.
+     * _________________________________________________________________________________________________________
+     * Return an EntityManagerFactory instance configured according to the properties
+     * defined in the corresponding persistence descriptor, as well as the properties
+     * passed into the method.
+     *
+     * @param props Properties to be used, in addition to those in the persistence descriptor,
+     *              for configuring the EntityManagerFactory for the persistence unit.
+     * @return An EntityManagerFactory for the persistence unit associated with this service. Must not be null.
+     */
+    @Override
+    public EntityManagerFactory createEntityManagerFactory(Map<String, Object> props) {
+        String persistenceUnitName = (String) props.get(EntityManagerFactoryBuilder.JPA_UNIT_NAME);
+        if (persistenceUnitName == null) {
+            throw new APSResourceNotFoundException("Property 'osgi.unit.name' was not specified in properties!");
+        }
+
+        PersistenceReg persistenceReg = null;
+        long persistenceBundleId = -1;
+        for (long bundleId : this.persistentBundles.keySet()) {
+            Map<String, PersistenceReg> persistenceUnits = this.persistentBundles.get(bundleId);
+            persistenceReg = persistenceUnits.get(persistenceUnitName);
+            if (persistenceReg != null) {
+                persistenceBundleId = bundleId;
+                break;
+            }
+        }
+        if (persistenceReg == null) {
+            throw new APSResourceNotFoundException("Persistence unit '" + persistenceUnitName + "' was not found!");
+        }
+
+        String factoryKey = factoryKey(persistenceUnitName, persistenceBundleId);
+
+        APSJPAEntityManagerProviderImpl emp = this.openFactories.remove(factoryKey);
+        if (emp != null) {
+            EntityManagerFactory emf = emp.removeEntityManagerFactory();
+            if (emf.isOpen()) emf.close();
+        }
+
+        ClassLoader origContextClassLoader = Thread.currentThread().getContextClassLoader();
+        EntityManagerFactory cemf = null;
+        try {
+            Thread.currentThread().setContextClassLoader(persistenceReg.getContextClassloader());
+
+            EntityManagerFactory emf = persistenceReg.getPersistenceProvider().createEntityManagerFactory(persistenceUnitName, props);
+            cemf = new ContextEntityManagerFactory(persistenceReg.contextClassloader, emf);
+            emp = new APSJPAEntityManagerProviderImpl(cemf);
+            this.openFactories.put(factoryKey, emp);
+        }
+        finally {
+            Thread.currentThread().setContextClassLoader(origContextClassLoader);
+        }
+
+        return cemf;
     }
 
     //

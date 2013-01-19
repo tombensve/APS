@@ -45,7 +45,6 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.eclipse.persistence:javax.persistence:2.0.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.jcr:jcr:2.0" level="project" />
     <orderEntry type="module" module-name="aps-tools-lib" scope="PROVIDED" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.openjpa:openjpa-all:2.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.derby:derbyclient:10.9.1.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.osgi:org.osgi.core:4.2.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.osgi:org.osgi.compendium:4.2.0" level="project" />

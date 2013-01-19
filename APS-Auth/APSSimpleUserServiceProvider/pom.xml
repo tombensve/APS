@@ -32,6 +32,12 @@
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->
+        <!--
+            This will include import of 2 Open JPA packages needed because we compile-time enhance the entities
+            using the Open JPA enhancer below! The alternative would be to add a java-agent to the JVM at
+            server startup. The provided APSJPAService implementation uses OpenJPA which is why the OpenJPA
+            enhancer needs to be run.
+        -->
         <osgi.import.package>
             *
         </osgi.import.package>
@@ -90,13 +96,6 @@
         <!--
             We get the javax.persistence package from here compile time.
         -->
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-all</artifactId>
-            <version>2.2.0</version>
-            <scope>provided</scope>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derbyclient</artifactId>
