@@ -40,12 +40,12 @@ package se.natusoft.osgi.aps.core.config;
 
 import org.osgi.framework.*;
 import org.osgi.service.cm.ConfigurationAdmin;
-import se.natusoft.osgi.aps.api.core.config.ManagedConfig;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
 import se.natusoft.osgi.aps.core.config.service.APSConfigAdminServiceProvider;
+import se.natusoft.osgi.aps.core.config.service.APSConfigServiceExtender;
 import se.natusoft.osgi.aps.core.config.service.APSConfigServiceProvider;
 import se.natusoft.osgi.aps.core.config.store.APSConfigEnvStore;
 import se.natusoft.osgi.aps.core.config.store.APSConfigMemoryStore;
@@ -57,12 +57,10 @@ import se.natusoft.osgi.aps.tools.tracker.OnServiceAvailable;
 import se.natusoft.osgi.aps.tools.tracker.OnServiceLeaving;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.Dictionary;
 import java.util.Properties;
 
-public class APSConfigServiceActivator implements BundleActivator, BundleListener {
+public class APSConfigServiceActivator implements BundleActivator {
     //
     // Provided services
     //
@@ -101,6 +99,9 @@ public class APSConfigServiceActivator implements BundleActivator, BundleListene
 
     /** This is needed for the extender handling. */
     private APSConfigServiceProvider configServiceProvider = null;
+
+    /** The auto config extender. */
+    private APSConfigServiceExtender configServiceExtender = null;
 
     //
     // Bundle Management
@@ -177,10 +178,11 @@ public class APSConfigServiceActivator implements BundleActivator, BundleListene
 
         this.configured = true;
 
-        this.context.addBundleListener(this);
+        this.configServiceExtender = new APSConfigServiceExtender(this.configServiceProvider, this.configLogger);
+        this.context.addBundleListener(this.configServiceExtender);
         // Check already started bundles that we might have missed.
         for (Bundle bundle : this.context.getBundles()) {
-            handleBundleStart(bundle);
+            this.configServiceExtender.handleBundleStart(bundle);
         }
     }
 
@@ -190,7 +192,10 @@ public class APSConfigServiceActivator implements BundleActivator, BundleListene
     }
 
     private  void takedownServices(BundleContext context) {
-        this.context.removeBundleListener(this);
+        if (this.configServiceExtender != null) {
+            this.context.removeBundleListener(this.configServiceExtender);
+            this.configServiceExtender = null;
+        }
 
         if (this.configured) {
             if (this.configAdminService != null) {this.configAdminService.unregister();}
@@ -213,123 +218,6 @@ public class APSConfigServiceActivator implements BundleActivator, BundleListene
             this.configurationAdminTracker = null;
             this.configAdminLogger = null;
             this.configLogger = null;
-        }
-    }
-
-    //
-    // Extender handling
-    //
-
-    /**
-     * Receives notification that a bundle has had a lifecycle change.
-     *
-     * @param event The <code>BundleEvent</code>.
-     */
-    @Override
-    public void bundleChanged(BundleEvent event) {
-        if (event.getType() == BundleEvent.STARTED) {
-            handleBundleStart(event.getBundle());
-        }
-        else if (event.getType() == BundleEvent.STOPPED) {
-            handleBundleStop(event.getBundle());
-        }
-    }
-
-    /**
-     * Handles config registration and injection for bundle config classes.
-     *
-     * @param bundle The bundle to handle.
-     */
-    private void handleBundleStart(Bundle bundle) {
-        Dictionary<String, String> headers = bundle.getHeaders();
-        String configClasses = headers.get("APS-Configs");
-        if (configClasses != null) {
-            for (String configClass : configClasses.split(",")) {
-                configClass = configClass.trim();
-
-                try {
-                    Class cfgClass = bundle.loadClass(configClass);
-                    this.configServiceProvider.registerConfiguration(cfgClass, false);
-                    this.configLogger.info("Registered configuration class '" + configClass + "' for bundle '" +
-                            bundle.getSymbolicName() + "'.");
-
-                    // Lets find the first public static instance of the configuration in the class.
-                    Field confInstField = null;
-                    Field managedConfigField = null;
-                    for (Field field : cfgClass.getDeclaredFields()) {
-                        if (Modifier.isPublic(field.getModifiers()) && Modifier.isStatic(field.getModifiers())) {
-                            if (field.getType().equals(cfgClass)) {
-                                confInstField = field;
-                            }
-                            else if (field.getType().equals(ManagedConfig.class)) {
-                                managedConfigField = field;
-                            }
-                        }
-                    }
-
-                    try {
-                        if (confInstField != null) {
-                            confInstField.set(null, this.configServiceProvider.getConfiguration(cfgClass));
-                            this.configLogger.info(
-                                    "Injected configuration instance '" + configClass + "' into '" +
-                                            confInstField.getName() + "' for bundle '" + bundle.getSymbolicName() + "'."
-                            );
-                        }
-                        if (managedConfigField != null) {
-                            ManagedConfig managedConfig = (ManagedConfig)managedConfigField.get(null);
-                            if (managedConfig != null) {
-                                managedConfig.serviceProviderAPI.setConfigInstance(this.configServiceProvider.getConfiguration(cfgClass));
-                                managedConfig.serviceProviderAPI.setManaged();
-                            }
-                        }
-
-                    } catch (IllegalAccessException iae) {
-                        // This should theoretically never happen since we have already determined
-                        // that the field is both public and static.
-                        this.configLogger.error(
-                                "Failed to set configuration instance of type '" + configClass + "' in " +
-                                        "bundle '" + bundle.getSymbolicName() + "' of name '" + confInstField.getName() + "'!",
-                                iae
-                        );
-                    }
-
-
-                } catch (ClassNotFoundException cnfe) {
-                    this.configLogger.error(
-                            "Bundle '" + bundle.getSymbolicName() + "' has defined '" + configClass + "' " +
-                            "as an APS configuration class, but it cannot be loaded from the bundle!",
-                            cnfe
-                    );
-                }
-
-            }
-        }
-    }
-
-    /**
-     * Handles config deregistration for bundle config classes.
-     * @param bundle
-     */
-    private void handleBundleStop(Bundle bundle) {
-        Dictionary<String, String> headers = bundle.getHeaders();
-        String configClasses = headers.get("APS-Configs");
-        if (configClasses != null) {
-            for (String configClass : configClasses.split(",")) {
-                configClass = configClass.trim();
-
-                try {
-                    Class cfgClass = bundle.loadClass(configClass);
-                    this.configServiceProvider.unregisterConfiguration(cfgClass);
-                    this.configLogger.info(
-                            "Unregistered configuration '" + configClass + "' for bundle '" +
-                            bundle.getSymbolicName() + "'!"
-                    );
-
-                } catch (ClassNotFoundException cnfe) {
-                    // This should already have happened at start of bundle and been logged then.
-                    // so we keep quiet now.
-                }
-            }
         }
     }
 }
