@@ -99,6 +99,10 @@ public class APSConfigServiceExtender implements BundleListener {
                             if (managedConfig != null) {
                                 managedConfig.serviceProviderAPI.setConfigInstance(this.configService.getConfiguration(cfgClass));
                                 managedConfig.serviceProviderAPI.setManaged();
+                                this.logger.info(
+                                        "Injected managed configuration instance '" + configClass + "' into '" +
+                                                managedConfigField.getName() + "' for bundle '" + bundle.getSymbolicName() + "'."
+                                );
                             }
                         }
 
