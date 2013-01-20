@@ -69,7 +69,7 @@ public interface APSDirectory extends APSFile {
     APSDirectory createDir(String name, String duplicateMessage) throws IOException;
 
     /**
-     * Creates a new file in the directory represented by the current APSFile.
+     * Creates a new file in the directory represented by the current APSDirectory.
      *
      * @param name The name of the file to create.
      *
