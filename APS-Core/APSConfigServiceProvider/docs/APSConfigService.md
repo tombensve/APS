@@ -1,6 +1,10 @@
 # APSConfigService
 
-This is not the simple standard OSGi service configurations, but more an application config that can also be used for services. It supports structured configurations including lists of items andlists of subconfigurations. Code that uses the configuration provide one or more configuration classes with config items. These are registered with the config service, which makes them editable/publishable though and admin web app. After registration an instance of the config can be gotten containing published or defaul values. Alternatively the config class is specified with a fully qualified name in the _APS-Configs:_ MANIFEST.MF entry. In this case the configuration service acts as an extender and automatically registers and provides an instance of the config for you, without having to call the config service.
+This is not the simple standard OSGi service configurations, but more an application config that can also be used for services. It supports structured configurations including lists of items and lists of subconfigurations. Code that uses the configuration provide one or more configuration classes with config items. These are registered with the config service, which makes them editable/publishable though and admin web app. After registration an instance of the config can be gotten containing published or defaul values. Alternatively the config class is specified with a fully qualified name in the _APS-Configs:_ MANIFEST.MF entry. In this case the configuration service acts as an extender and automatically registers and provides an instance of the config for you, without having to call the config service.
+
+## Configuration Environments
+
+The APSConfigService supports different configuration environments. The idea is to define one config environment per installation. Configuration values can either be configuration environment specific or the same for all environments. See @ConfigItemDescription below for more information on specifying configuration environment specific values. 
 
 ## Making a config class
 
@@ -57,7 +61,7 @@ Here is an example:
 
 Now you might be wondering, why not an interface, and why _public_ and why _APSConfigValue_, _APSConfigValueList_, and _APSConfigList_?
 
-The reason for not using an interface and provide a java.lang.reflect.Proxy implementation of it is that OSGi has separate class loaders for each bundle. This means a service cannot proxy an interface provided by another bundle. Well, there are ways to go around that, but I did not want to do that unless that was the only option available. In this case it wasn’t. Therefore I use the above listed APS\*Value classes as value containers. They are public so that they can be accessed and set by the APSConfigService. When you get the main config class instance back from the service all values will have valid instances. Each APS\*Value has an internal reference to its config value in the internal config store. 
+The reason for not using an interface and provide a java.lang.reflect.Proxy implementation of it is that OSGi has separate class loaders for each bundle. This means a service cannot proxy an interface provided by another bundle. Well, there are ways to go around that, but I did not want to do that unless that was the only option available. In this case it wasn’t. Therefore I use the above listed APS\*Value classes as value containers. They are public so that they can be accessed and set by the APSConfigService. When you get the main config class instance back from the service all values will have valid instances. Each APS\*Value has an internal reference to its config value in the internal config store. So if the value is updated this will be immediately reflected since it is referencing the one and only instance of it in the config store.
 
 All config values are strings! All config values are stored as strings. The __APSConfigValue__ container however have _toBoolean()_, _toDate()_, _toDouble()_, _toFloat()_, _toInt()_, _toLong()_, _toByte()_, _toShort()_, and _toString()_ methods on it. 
 
@@ -72,7 +76,9 @@ The __APSConfigList\<Type\>__  container is an _java.lang.Iterable_ of \<Type\> 
 
 ### The config annotations
 
-The full list of attributes for the annotations are:
+The following 3 annotations are available for use on configuration models.
+
+#### @APSConfigDescription
 
     @APSConfigDescription(
         version="1.0",
@@ -90,6 +96,8 @@ __configId__ - The unique id of the configuration model. Use same approch as for
 __group__ - This specifies a group or rather a tree branch that the config belongs under. This is only used by the configuration admin web app to render a tree of configuration models. This is optional.
 
 __description__ - This describes the configuration model.  
+
+#### @APSConfigItemDescription
 
 	@APSConfigItemDescription(
 		description=”Example of simple value.”,
@@ -111,9 +119,59 @@ __isBoolean__ - This indicates that the config value is of boolean type. This is
 
 __validValues__ - This is an array of strings ( {”...”, ..., ”...”} ) containing the only valid values for this config value. This is used by the configuration admin web app to provide a dropdown menu of the alternatives rather than a text field. This defaults to {} and is thus optional.
 
+__defaultValue__ - This is an array of @APSDefaultValue annotations. Se the description of this annotation below. This allows not only for providing a default value, but for providing a default value per config environment (which is why there is an array of @APSDefaultValue annotations!). Thus you can deliver pre configured configuration for all configuration environments. If a config environment is not specified for a default value then it applies for all configuration environments. Some configuration values are better off without default values, like hosts and ports for other remote services. The application/server maintenance people responsible for an installation in general knows this information better than the developers.  
+
+#### @APSDefaultValue
+
+	@APSDefaultValue {
+		configEnv=”production”,
+		value=”15”
+	}
+
+__configEnv__ - This specifies the configuration environment this default value applies to. ”default” means all/any configuration environment and is the default value if not specified. 
+
+__value__ - This is the default value of the configuration value for the configuration environment specified by configEnv.
+
 ### Auto managed configurations
 
-It is possible to let the APSConfigService act as an extender and automatically register and setup config instances on bundle deploy by adding the __APS-Configs:__ MANIFEST.MF header and a comma separated list of fully qualified names of config models. Each of these models must also declare a ManagedConfig\<ConfigModelType\> instance. Example:
+It is possible to let the APSConfigService act as an extender and automatically register and setup config instances on bundle deploy by adding the __APS-Configs:__ MANIFEST.MF header and a comma separated list of fully qualified names of config models. There are two variants of how to define the auto managed instance.
+
+__Warning__: Auto managed configurations cannot ever be accessed during bundle activation in default activation thread! If the activation code starts a new thread then it is OK to access auto managed configuration in that thread, but only with variant 2! (the thread have to put itself to sleep until the configuration becomes managed. This is described below). 
+
+#### Variant 1: A simple non instantiated static member of config model type
+
+Example:
+
+    @APSConfigDescription(
+        version="1.0",
+        configId=”se.natusoft.aps.exmple.myconfig”,
+        group=”examples”,
+        description=”An example configuration model”
+    )
+	public class MyConfig extends APSConfig {
+		
+	—>  public static MyConfig myConfig;  <—
+		
+		@APSConfigItemDescription(
+			description=”Example of simple value.”,
+		)
+		public APSConfigValue simpleValue;
+		
+		@APSConfigItemDescription(
+			description=”Example of list value.”
+		)
+		public APSConfigValueList listValue;
+		...
+		
+To access this variant of managed config do:
+
+	MyConfig.myConfig.simpleValue.toString()/toInt()/toDouble()/...
+	
+__A warning__: This variant does not provide any support for determining if the configuration has become managaged yet. If you access it to early it will be null. Therefore you should only use this variant if you know it will become managed before it is referenced. The other variant allows you to check and wait for a config to become managed.
+		
+#### Variant 2: A static instantiated ManagedConfig&lt;ConfigModel&gt; member. 
+
+Example:
 
     @APSConfigDescription(
         version="1.0",
@@ -144,12 +202,10 @@ There is a possibility that code started in a bundle, especially threads might s
 
 Do not ever do this during start() of a Bundle activator! That would cause a never ending dead-lock!
 
-To access the managed config do:
+To access this variant of managed config do:
 
 	MyConfig.managed.get().simpleValue.toString()/toInt()/toDouble()/...
 	
-
-
 ## API Usages
 
 ### The configuration service usage

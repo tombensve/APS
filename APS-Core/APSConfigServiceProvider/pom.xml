@@ -165,7 +165,7 @@
                         <goals>
                             <goal>doc</goal>
                         </goals>
-                        <phase>install</phase>
+                        <phase>package</phase>
                         <configuration>
 
                             <generatorOptions>
@@ -194,7 +194,7 @@
                         <goals>
                             <goal>doc</goal>
                         </goals>
-                        <phase>install</phase>
+                        <phase>package</phase>
                         <configuration>
 
                             <generatorOptions>
