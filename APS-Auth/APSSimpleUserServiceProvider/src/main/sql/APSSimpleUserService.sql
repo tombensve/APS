@@ -29,3 +29,12 @@ create table role_role (
   foreign key (master_role_id) references role (id),
   foreign key (role_id) references role (id)
 );
+
+/* The following adds the admin user */
+insert into role VALUES ('apsadmin', 'Default admin for APS', 1);
+insert into svcuser VALUES ('apsadmin', 'admin', '');
+insert into user_role VALUES ('apsadmin', 'apsadmin');
+
+/* This adds a role for non admin users. */
+insert into role VALUES ('user', 'Plain user', 1);
+
