@@ -58,7 +58,7 @@ import java.util.List;
  * to work. Also note that you can have different published values for different versions of the definition.
  * <p>
  * Here is an example of a configuration class:
- * <div style="border:2px solid; border-radius:8px; width:99%;background-color:#feffd6;color:black">
+ * <div style="border:2px solid; border-radius:8px; width:99%;background-color:#eeeeee;color:black">
  * <pre>
  * &nbsp;    @APSConfigDescription(version=1, description="My configuration")
  * &nbsp;    public class MyConfig extends APSConfig {
@@ -92,7 +92,7 @@ import java.util.List;
  * Please note that the 2 list classes: APSConfigValueList and APSConfigList both implement Iterable and can thereby be
  * used in for loops like this:
  * <pre>
- * <div style="border:2px solid; border-radius:8px; width:99%;background-color:#feffd6;;color:black">
+ * <div style="border:2px solid; border-radius:8px; width:99%;background-color:#eeeeee;color:black">
  *
  * &nbsp;    @APSConfigDescription(version=2, description="Web services config")
  * &nbsp;    public class ExtConfig extends APSConfig {
@@ -104,7 +104,7 @@ import java.util.List;
  * &nbsp;
  * &nbsp;    }
  * </div>
- * <div style="border:2px solid; border-radius:8px; width:99%;background-color:#feffd6;;color:black">
+ * <div style="border:2px solid; border-radius:8px; width:99%;background-color:#eeeeee;color:black">
  *
  * &nbsp;        for (APSConfigValue endpoint : extConfig.endpoints) {
  * &nbsp;            ...
