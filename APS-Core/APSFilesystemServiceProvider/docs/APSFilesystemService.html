@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="generated-by" content="MarkdownDoc"/>
+    <link href="docs.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body>
+    <H1>APSFilesystemService</H1>
+    <p>
+      This provides a filesystem for writing and reading files. This filesystem resides outside of the OSGi server and is for longterm storage, which differs from BundleContext.getDataFile() which resides within bundle deployment. The APSFilesystemService also does not return a File object! It priovides a file area for each unique owner name that is accessed through an API that cannot navigate nor access any files outside of this area. The ”owner” name should be either an application name or a bundle name if it is only used by one bundle.      
+    </p>
+    <p>
+      The APSConfigService uses the APSFilesystemService to store its configurations.      
+    </p>
+    <H2>Setup</H2>
+    <p>
+      The <em>aps.filesystem.root</em> system property must be set to point to a root where this service provides its file areas. This is either passed to the JVM at server startup or configured withing the server. Glassfish allows you to configure properties within its admin gui. Virgo does not. If this is not provided the service will use BundleContext.getDataFile(".") as the root, which will work for testing and playing around, but should not be used for more serious purposes since this is not a path with a long term availability.      
+    </p>
+    <H2>The service</H2>
+    <p>
+      The service allows you to create or get an APSFilesystem object. From that object you can create/read/delete directories (represented by APSDirectory) and files (represented by APSFile). You can get readers, writers, input streams and output streams from files. All paths are relative to the file area represented by the APSFilesystem object.      
+    </p>
+    <p>
+      See the <a src='http://apidoc.natusoft.se/APS/APSFilesystemService' title=''>javadoc</a>      
+    </p>
+    <H2>The APIs for this service</H2>
+    <p>
+      public <em>interface</em> <strong>APSDirectory </strong> extends  APSFile    [se.natusoft.osgi.aps.api.core.filesystem.model] {      
+    </p>
+    <blockquote>
+      <p>
+         This represents a directory in an APSFilesystem.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        Use this to create or get directories and files and list contents of directories.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        Personal comment: I do prefer the term "folder" over "directory" since I think that is less ambigous, but since Java uses the term "directory" I decided to stick with that name.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSDirectory createDir(String name) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns a newly created directory with the specified name.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the directory to create.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on any failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSDirectory createDir(String name, String duplicateMessage) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns a newly created directory with the specified name.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the directory to create.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>duplicateMessage</em> - The exception message if directory already exists.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on any failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSFile createFile(String name) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new file in the directory represented by the current APSDirectory.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the file to create.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSDirectory getDir(String dirname) throws FileNotFoundException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the specified directory.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>dirname</em> - The name of the directory to enter.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>FileNotFoundException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSFile getFile(String name)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the named file in this directory.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the file to get.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void recursiveDelete() throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Performs a recursive delete of the directory represented by this APSDirectory and all subdirectories and files.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on any failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>String[] list()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.list()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSFile[] listFiles()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.listFiles()        
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>APSFile </strong>   [se.natusoft.osgi.aps.api.core.filesystem.model] {      
+    </p>
+    <blockquote>
+      <p>
+         This represents a file in an APSFilesystemService provided filsystem. It provides most of the API of java.io.File but is not a File! It never discloses the full path in the host filesystem, only paths relative to its APSFilesystem root.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        Use the createInputStream/OutputStream/Reader/Writer to read and write the file.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>InputStream createInputStream() throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new InputStream to this file.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>OutputStream createOutputStream() throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new OutputStream to this file.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>Reader createReader() throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new Reader to this file.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>Writer createWriter() throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new Writer to this file.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>Properties loadProperties() throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         If this file denotes a properties file it is loaded and returned.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on failure or if it is not a properties file.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void saveProperties(Properties properties) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         If this file denotes a properties file it is written with the specified properties.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>properties</em> - The properties to save.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on failure or if it is not a properties file.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSDirectory toDirectory()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         If this APSFile represents a directory an APSDirectory instance will be returned. Otherwise null will be returned.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSFile getAbsoluteFile()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.getAbsoluteFile()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getAbsolutePath()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the absolute path relative to filesystem root.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSFile getCanonicalFile() throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.getCanonicalFile()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getCanonicalPath() throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.getCanonicalPath()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getParent()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.getParent()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSDirectory getParentFile()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.getParentFile()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getPath()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                  
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.getPath()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean renameTo(APSFile dest)</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.renameTo(File)        
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getName()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.getName()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean canRead()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.canRead()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean canWrite()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.canWrite()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean exists()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.exists()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean isDirectory()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.isDirectory()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean isFile()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.isFile()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean isHidden()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.isHidden()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>long lastModified()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.lastModified()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>long length()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.length()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean createNewFile() throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.createNewFile()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean delete()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.delete()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>void deleteOnExit()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.deleteOnExit()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>String toString()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns a string representation of this APSFileImpl.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>APSFilesystem </strong>   [se.natusoft.osgi.aps.api.core.filesystem.model] {      
+    </p>
+    <blockquote>
+      <p>
+         This represents an APSFilesystemService filesytem.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSDirectory getDirectory(String path) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns a folder at the specified path.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>path</em> - The path of the folder to get.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on any failure, specifically if the specified path is not a folder or doesn't exist.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSFile getFile(String path)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the file or folder of the specifeid path.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>path</em> - The path of the file.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSDirectory getRootDirectory()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the root directory.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>APSFilesystemService </strong>   [se.natusoft.osgi.aps.api.core.filesystem.service] {      
+    </p>
+    <blockquote>
+      <p>
+         This provides a filesystem for use by services/applications. Each filesystem has its own root that cannot be navigated outside of.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        Services or application using this should do something like this in their activators:         
+      </p>
+    </blockquote>
+    <pre>
+      <code>
+    APSFilesystemService fss;
+    APSFilesystemImpl fs;
+
+    if (fss.hasFilesystem("my.file.system")) {
+        fs = fss.getFilsystem("my.file.system");
+    }
+    else {
+        fs = fss.createFilesystem("my.file.system");
+    }
+      </code>
+    </pre>
+    <blockquote>
+      <p>
+                
+      </p>
+    </blockquote>
+    <p>
+      <strong>static final String CONF_APS_FILESYSTEM_ROOT = "aps.filesystem.root"</strong>      
+    </p>
+    <blockquote>
+      <p>
+         The configuration key of the filesystem root catalog.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSFilesystem createFilesystem(String owner) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new filesystem for use by an application or service. Where on disk this filesystem resides is irellevant. It is accessed using the "owner", and will exist until it is removed.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>owner</em> - The owner of the filesystem or rather a unique identifier of it. Concider using application or service package.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on any failure. An already existing filesystem for the "owner" will cause this exception.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean hasFilesystem(String owner)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns true if the specified owner has a fileystem.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>owner</em> - The owner of the fileystem or rather a unique identifier of it.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSFilesystem getFilesystem(String owner) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the filesystem for the specified owner.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>owner</em> - The owner of the filesystem or rahter a unique identifier of it.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on any failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void deleteFilesystem(String owner) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Removes the filesystem and all files in it.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>owner</em> - The owner of the filesystem to delete.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on any failure.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>APSFilesystemServiceProvider </strong> implements  APSFilesystemService    [se.natusoft.osgi.aps.core.filesystem.service] {      
+    </p>
+    <blockquote>
+      <p>
+         Provides an implementation of APSFilesystemService.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>private APSLogger logger = null</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Our logger.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>private String apsFSRoot = null</strong>      
+    </p>
+    <blockquote>
+      <p>
+         The filesystema root catalog.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public APSFilesystemServiceProvider(String apsFSRoot, APSLogger logger)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new APSFilesystemServiceProvider instance.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public APSFilesystemImpl createFilesystem(String owner) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new filesystem for use by an application or service. Where on disk this filesystem resides is irellevant. It is accessed using the "owner", and will exist until it is removed.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>owner</em> - The owner of the filesystem or rather a unique identifier of it. Concider using application or service package.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on any failure. An already existing filesystem for the "owner" will cause this exception.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public boolean hasFilesystem(String owner)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns true if the specified owner has a fileystem.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>owner</em> - The owner of the fileystem or rather a unique identifier of it.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public APSFilesystemImpl getFilesystem(String owner) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the filesystem for the specified owner.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>owner</em> - The owner of the filesystem or rahter a unique identifier of it.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on any failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void deleteFilesystem(String owner) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Removes the filesystem and all files in it.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>owner</em> - The owner of the filesystem to delete.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on any failure.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <p>
+                
+    </p>
+  </body>
+</html>

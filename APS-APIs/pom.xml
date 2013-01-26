@@ -144,7 +144,7 @@
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                     </archive> 
                 </configuration>
-            </plugin>  
+            </plugin>
 
             <!--
                 OSGi bundle handling.
@@ -187,7 +187,45 @@
                     </instructions>
                 </configuration>
             </plugin>
-            
+
+            <!--
+                Deploy plugins
+            -->
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>gendocs</id>
+                        <goals>
+                            <goal>javadoc</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>se.natusoft.maven.plugin</groupId>
+                <artifactId>ftp-maven-plugin</artifactId>
+                <version>${ftpPlugin.ver}</version>
+                <executions>
+                    <execution>
+                        <id>upload</id>
+                        <goals>
+                            <goal>upload</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                        <configuration>
+                            <files>**/.*</files>
+                            <targetHost>${maven.repo.upload}</targetHost>
+                            <targetPort>21</targetPort>
+                            <userName>${web.server.user}</userName>
+                            <password>${web.server.pw}</password>
+                            <targetPath>/apidoc.natusoft.se/public_html/APS</targetPath>
+                            <baseDir>${basedir}/target/site/apidocs</baseDir>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         
     </build>

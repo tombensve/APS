@@ -64,6 +64,7 @@
             Other properties
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
     </properties>
 
     <!--
@@ -106,13 +107,13 @@
             <plugin>
                 <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
                 <artifactId>markdowndoc-maven-plugin</artifactId>
-                <version>1.0.1</version>
+                <version>${markdownDoc.ver}</version>
 
                 <dependencies>
                     <dependency>
                         <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
                         <artifactId>markdown-doc-lib</artifactId>
-                        <version>1.0.1</version>
+                        <version>${markdownDoc.ver}</version>
                     </dependency>
                 </dependencies>
 
@@ -128,7 +129,8 @@
                             <generatorOptions>
                                 <generator>pdf</generator>
                                 <inputPaths>
-                                    APS-Core/APSFilesystemServiceProvider/docs/.*.md
+                                    APS-Core/APSFilesystemServiceProvider/docs/.*.md,
+                                    APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/filesystem/**/.*.java
                                 </inputPaths>
                             </generatorOptions>
 
@@ -157,7 +159,8 @@
                             <generatorOptions>
                                 <generator>html</generator>
                                 <inputPaths>
-                                    APS-Core/APSFilesystemServiceProvider/docs/.*.md
+                                    APS-Core/APSFilesystemServiceProvider/docs/.*.md,
+                                    APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/filesystem/**/.*.java
                                 </inputPaths>
                             </generatorOptions>
 

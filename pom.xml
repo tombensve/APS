@@ -27,14 +27,21 @@
             where "jar" is the default. To override this set this property in local pom.
         -->
         <server.deploy.artifact.type>jar</server.deploy.artifact.type>
+
+        <!--
+            Dependency versions
+        -->
+        <markdownDoc.ver>1.1.0</markdownDoc.ver>
+        <ftpPlugin.ver>1.0</ftpPlugin.ver>
     </properties>
 
     <!--
         Project Information
     -->
     <description>
-
+        APS (Application Platform Services) - A smörgåsbord of OSGi platform type services.
     </description>
+
     <organization>
         <name>Natusoft AB</name>
         <url>http://www.natusoft.se/</url>
@@ -61,14 +68,8 @@
         <url>https://github.com/tombensve/APS/issues</url>
     </issueManagement>
 
-    <!--
-        Dependencies
-    -->
     <dependencies>
 
-        <!--
-            OSGi
-        -->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
@@ -91,9 +92,6 @@
         </dependency>
     </dependencies>
 
-    <!--
-        Modules
-    -->
     <modules>
         <module>APS-APIs</module>
         <module>APS-Core</module>
@@ -106,10 +104,23 @@
         <module>APS-Auth</module>
     </modules>
 
-    <!--
-        Building
-    -->
+    <distributionManagement>
+        <repository>
+            <id>maven-repository-upload</id>
+            <url>ftp://${maven.repo.upload}/maven.natusoft.se/public_html</url>
+        </repository>
+    </distributionManagement>
+
     <build>
+        <extensions>
+            <!-- Enabling the use of FTP -->
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ftp</artifactId>
+                <version>2.3</version>
+            </extension>
+        </extensions>
+
         <plugins>
             <!--
                 Setup for java 6.

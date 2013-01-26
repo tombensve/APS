@@ -54,7 +54,7 @@ public interface APSDirectory extends APSFile {
      *
      * @param name The name of the directory to create.
      *
-     * @throws IOException on any failurel.
+     * @throws IOException on any failure.
      */
     APSDirectory createDir(String name) throws IOException;
 
@@ -64,7 +64,7 @@ public interface APSDirectory extends APSFile {
      * @param name The name of the directory to create.
      * @param duplicateMessage The exception message if directory already exists.
      *
-     * @throws IOException on any failurel.
+     * @throws IOException on any failure.
      */
     APSDirectory createDir(String name, String duplicateMessage) throws IOException;
 
@@ -104,7 +104,7 @@ public interface APSDirectory extends APSFile {
     /**
      * @see java.io.File#list()
      */
-    public String[] list();
+    String[] list();
 
     /**
      * @see java.io.File#listFiles()

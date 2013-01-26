@@ -64,7 +64,7 @@ public interface APSFilesystemService {
     //
         
     /** The configuration key of the filesystem root catalog. */
-    public static final String CONF_APS_FILESYSTEM_ROOT = "aps.filesystem.root";
+    static final String CONF_APS_FILESYSTEM_ROOT = "aps.filesystem.root";
     
     //
     // Methods
@@ -78,14 +78,14 @@ public interface APSFilesystemService {
      * 
      * @throws IOException on any failure. An already existing filesystem for the "owner" will cause this exception.
      */
-    public APSFilesystem createFilesystem(String owner) throws IOException;
+    APSFilesystem createFilesystem(String owner) throws IOException;
         
     /**
      * Returns true if the specified owner has a fileystem.
      * 
      * @param owner The owner of the fileystem or rather a unique identifier of it.
      */
-    public boolean hasFilesystem(String owner);
+    boolean hasFilesystem(String owner);
     
     /**
      * Returns the filesystem for the specified owner.
@@ -94,7 +94,7 @@ public interface APSFilesystemService {
      * 
      * @throws IOException on any failure.
      */
-    public APSFilesystem getFilesystem(String owner) throws IOException;
+    APSFilesystem getFilesystem(String owner) throws IOException;
         
     /**
      * Removes the filesystem and all files in it.
@@ -103,5 +103,5 @@ public interface APSFilesystemService {
      * 
      * @throws IOException on any failure.
      */
-    public void deleteFilesystem(String owner) throws IOException;
+    void deleteFilesystem(String owner) throws IOException;
 }
