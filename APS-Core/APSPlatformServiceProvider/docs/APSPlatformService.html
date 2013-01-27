@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="generated-by" content="MarkdownDoc"/>
+    <link href="docs.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body>
+    <H1>APSPlatformService</H1>
+    <p>
+      This is a trivial little service that just returns meta data about the specific platform installation.      
+    </p>
+    <p>
+      The returned information is configured in the <em>/apsadminweb</em>.      
+    </p>
+    <H2>APIs</H2>
+    <p>
+      public <em>class</em> <strong>PlatformDescription </strong>   [se.natusoft.osgi.aps.api.core.platform.model] {      
+    </p>
+    <blockquote>
+      <p>
+         This model provides information about a platform installation.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public PlatformDescription(String identifier, String type, String description)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new PlatformDescription.  Creates a new PlatformDescription.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>identifier</em> - An identifying name for the platform.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>type</em> - The type of the platform, for example "Development", "SystemTest".         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>description</em> - A short description of the platform instance.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getIdentifier()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the platform identifier.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getType()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the type of the platform.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getDescription()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the description of the platform.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>APSPlatformService </strong>   [se.natusoft.osgi.aps.api.core.platform.service] {      
+    </p>
+    <blockquote>
+      <p>
+         Provides information about the platform instance.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public PlatformDescription getPlatformDescription()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns a description of the platform instance / installation.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <p>
+                
+    </p>
+  </body>
+</html>

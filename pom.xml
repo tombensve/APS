@@ -31,7 +31,7 @@
         <!--
             Dependency versions
         -->
-        <markdownDoc.ver>1.1.0</markdownDoc.ver>
+        <markdownDoc.ver>1.1.1</markdownDoc.ver>
         <ftpPlugin.ver>1.0</ftpPlugin.ver>
 
     </properties>
