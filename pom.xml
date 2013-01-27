@@ -34,10 +34,6 @@
         <markdownDoc.ver>1.1.0</markdownDoc.ver>
         <ftpPlugin.ver>1.0</ftpPlugin.ver>
 
-        <!--
-            Collected properties
-        -->
-        <doc.inputss>hej</doc.inputss>
     </properties>
 
     <!--
