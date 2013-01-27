@@ -17,7 +17,7 @@
     <description>
         Provides access to a service/application private filesystem that remains until the
         service/application specifically deletes it. This is independent of the OSGi server
-        it is running in. 
+        it is running in (if configured).
     </description>
 
     <properties>
@@ -65,6 +65,9 @@
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <doc.inputs>
+            APS-Core/APSFilesystemServiceProvider/docs/filesets/doc-files.fs
+        </doc.inputs>
     </properties>
 
     <!--
@@ -129,8 +132,7 @@
                             <generatorOptions>
                                 <generator>pdf</generator>
                                 <inputPaths>
-                                    APS-Core/APSFilesystemServiceProvider/docs/.*.md,
-                                    APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/filesystem/**/.*.java
+                                    ${doc.inputs}
                                 </inputPaths>
                             </generatorOptions>
 
@@ -159,8 +161,7 @@
                             <generatorOptions>
                                 <generator>html</generator>
                                 <inputPaths>
-                                    APS-Core/APSFilesystemServiceProvider/docs/.*.md,
-                                    APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/filesystem/**/.*.java
+                                    ${doc.inputs}
                                 </inputPaths>
                             </generatorOptions>
 
