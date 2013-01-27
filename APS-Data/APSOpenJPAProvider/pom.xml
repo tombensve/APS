@@ -93,6 +93,77 @@
             </plugin>
 
             <!--
+                Documentation
+            -->
+            <plugin>
+                <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
+                <artifactId>markdowndoc-maven-plugin</artifactId>
+                <version>${markdownDoc.ver}</version>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
+                        <artifactId>markdown-doc-lib</artifactId>
+                        <version>${markdownDoc.ver}</version>
+                    </dependency>
+                </dependencies>
+
+                <executions>
+                    <execution>
+                        <id>generate-pdf-docs</id>
+                        <goals>
+                            <goal>doc</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+
+                            <generatorOptions>
+                                <generator>pdf</generator>
+                                <inputPaths>
+                                    APS-Data/APSOpenJPAProvider/docs/filesets/doc-files.fs
+                                </inputPaths>
+                            </generatorOptions>
+
+                            <pdfGeneratorOptions>
+                                <resultFile>APS-Data/APSOpenJPAProvider/docs/APSJPAService.pdf</resultFile>
+                                <pageSize>A4</pageSize>
+                                <title>APSJPAService</title>
+                                <subject>User Guide</subject>
+                                <version>${project.version}</version>
+                                <author>Tommy Svensson</author>
+                                <copyright>Copyright © 2013 Natusoft AB</copyright>
+                                <generateTitlePage>true</generateTitlePage>
+                                <generateTOC>true</generateTOC>
+                            </pdfGeneratorOptions>
+
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-html-docs</id>
+                        <goals>
+                            <goal>doc</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+
+                            <generatorOptions>
+                                <generator>html</generator>
+                                <inputPaths>
+                                    APS-Data/APSOpenJPAProvider/docs/filesets/doc-files.fs
+                                </inputPaths>
+                            </generatorOptions>
+
+                            <htmlGeneratorOptions>
+                                <resultFile>APS-Data/APSOpenJPAProvider/docs/APSJPAService.html</resultFile>
+                                <css>docs.css</css>
+                            </htmlGeneratorOptions>
+
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--
                 OSGi bundle handling.
             -->
             <!--

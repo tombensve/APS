@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="generated-by" content="MarkdownDoc"/>
+    <link href="docs.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body>
+    <H1>APSJPAService</H1>
+    <p>
+      This provides JPA to services and applications. It has a slightly more OSGi friendly API than the org.osgi.service.jpa.EntityManagerFactoryBuilder. The APSOpenJPAProvider however returns an APSJPAService instance that also implements EntityManagerFactoryBuilder. For some reason I haven’t figured out yet, it cannot be registered as a service with the EntityManagerFactoryBuilder interface! The bundle fails to deploy if that is done.      
+    </p>
+    <p>
+      The provided service is using OpenJPA. The service works partly as an extender inspecting deployed bundles for a META-INF/persistence.xml file. When found this is read and some setup is done already there. The persistenceUnitName from the persistence.xml file is used to connect the client later with its configuration. When a JPA using bundle is shut down its JPA setup is automatically cleaned.      
+    </p>
+    <p>
+      Here is an example of usage:      
+    </p>
+    <pre>
+      <code>
+        private APSJPAEntityManagerProvider emp = null;
+        ...
+        private APSJPAEntityManagerProvider getEMP() {
+            if (this.emp == null || !this.emp.isValid()) {
+                DataSourceDef dsDef = this.dataSourceDefService.lookupByName(”MyDS");
+                if (dsDef == null) {
+                    throw new SomeException("Could not find an ’MyDs’ in 'persistence/datasources' configuration!");
+                }
+                Map&lt;String, String&gt; props = new HashMap&lt;String, String&gt;();
+                props.put("javax.persistence.jdbc.user", dsDef.getConnectionUserName());
+                props.put("javax.persistence.jdbc.password", dsDef.getConnectionPassword());
+                props.put("javax.persistence.jdbc.url", dsDef.getConnectionURL());
+                props.put("javax.persistence.jdbc.driver", dsDef.getConnectionDriveName());
+                this.emp = this.jpaService.initialize(this.bundleContext, ”myPersistenceUnitName”, props);
+            }
+            return this.emp;
+        }
+        ...
+        EntityManager em = getEMP().createEntityManager();
+        em.getTransaction().begin();
+    
+        try {
+            RoleEntity role = new RoleEntity(id);
+            role.setDescription(description);
+            em.persist(role);
+            em.getTransaction().commit();
+        }
+        catch (RuntimeException re) {
+            em.getTransaction().rollback();
+            throw re;
+        }
+        finally {
+            em.close();
+        }
+            
+      </code>
+    </pre>
+    <p>
+      This code example handles the APSJPAService having been restared or redeployed. When <code>emp.isValid()</code> returns false then all you need to do is to call <code>jpaService.initialize(...)</code> again. The rest is just POJPA (Plain Old JPA :-)).      
+    </p>
+    <H2>APIs</H2>
+    <p>
+      The complete APS javadoc can be found at <a href='http://apidoc.natusoft.se/APS/' title=''>http://apidoc.natusoft.se/APS/</a>.      
+    </p>
+    <p>
+      public <em>interface</em> <strong>APSJPAService </strong>   [se.natusoft.osgi.aps.api.data.jpa.service] {      
+    </p>
+    <blockquote>
+      <p>
+         This service allows an JPA EntityManager to be gotten for a persistent unit name.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        So why is this done this way ? Why is not an EntityManagerFactory returned?         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        The answer to that is that the EntityManagerFactory is internal to the service who is responsible for creating it and for closing it at sometime (stopping of bundle). The client only needs an EntityManager for which the client is responsible after its creation.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        The creation of the EntityManagerFactory is delayed until the call to initialize(...). Creating the EMF along with the persistence provider at persistence bundle discovery would limit database connection properties to the persistence.xml file which is less than optimal to put it mildly. The whole point with the APS project is to provide a configured platform into which you can drop applications and they adapt to their surrounding. Not unlike what JEE does, but does it milder and more flexibly being OSGi and also provides application and service specific configuration with a web gui for editing configuration. Thereby providing database connection properties from clients allows clients more flexibility in how they want to handle that. The APSDataSourceDef service can for example be used to lookup a JDBC connection definition. The default provider implementation of this service uses OpenJPA which provides its own connection pooling.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSJPAEntityManagerProvider initialize(BundleContext bundleContext, String persistenceUnitName, Map<String, String> props) throws APSResourceNotFoundException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Initializes and returns a provider from the specified properties.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A configured EntityManager.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>bundleContext</em> - The context of the client bundle. It is used to locate its persistence provider.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>persistenceUnitName</em> - The name of the persistent unit defined in persistence.xml.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>props</em> - Custom properties to configure database, etc.         
+      </p>
+    </blockquote>
+    <p>
+      public <strong>static </strong> <em>interface</em> APSJPAEntityManagerProvider    [se.natusoft.osgi.aps.api.data.jpa.service] {      
+    </p>
+    <blockquote>
+      <p>
+         Once you get this it is valid until the APSJPAService is stopped (which will happen if the service is redeployed!).         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public boolean isValid()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns true if this instance is valid. If not call APSJPAService.initialize(...) again to get a new instance. It will be invalid if the APSJPAService provider have been restarted.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>EntityManager createEntityManager()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new EntityManager. You are responsible for closing it!         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        Please note that the EntityManager caches all referenced entities. If you keep and reuse it for a longer time it can use more memory. For example at &lt;a href='http://docs.jboss.org/ejb3/app-server/tutorial/extended_pc/extended.html' http://docs.jboss.org/ejb3/app-server/tutorial/extended_pc/extended.html a it says that "Usually, an EntityManager in JBoss EJB 3.0 lives and dies within a JTA transaction". This indicates how long-lived the EntityManager should preferably be.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A configured EntityManager.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>EntityManagerFactory getEntityManagerFactory()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the underlaying entity manager factory. This will return null if isValid() return false!         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <p>
+                
+    </p>
+  </body>
+</html>

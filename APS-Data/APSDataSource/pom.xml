@@ -101,6 +101,9 @@
                 </configuration>
             </plugin>
 
+            <!--
+                Documentation
+            -->
             <plugin>
                 <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
                 <artifactId>markdowndoc-maven-plugin</artifactId>
