@@ -149,13 +149,13 @@
             <plugin>
                 <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
                 <artifactId>markdowndoc-maven-plugin</artifactId>
-                <version>1.0.1</version>
+                <version>${markdownDoc.ver}</version>
 
                 <dependencies>
                     <dependency>
                         <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
                         <artifactId>markdown-doc-lib</artifactId>
-                        <version>1.0.1</version>
+                        <version>${markdownDoc.ver}</version>
                     </dependency>
                 </dependencies>
 
@@ -171,7 +171,7 @@
                             <generatorOptions>
                                 <generator>pdf</generator>
                                 <inputPaths>
-                                    APS-Core/APSConfigServiceProvider/docs/.*.md
+                                    APS-Core/APSConfigServiceProvider/docs/filesets/doc-files.fs
                                 </inputPaths>
                             </generatorOptions>
 
@@ -200,7 +200,7 @@
                             <generatorOptions>
                                 <generator>html</generator>
                                 <inputPaths>
-                                    APS-Core/APSConfigServiceProvider/docs/.*.md
+                                    APS-Core/APSConfigServiceProvider/docs/filesets/doc-files.fs
                                 </inputPaths>
                             </generatorOptions>
 
