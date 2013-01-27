@@ -228,6 +228,10 @@ _Please note_ that if you are using managed configs (see above) then you never n
 
 The APSconfigAdminService only needs to be used if you implement a configuration editor. APSConfigAdminWeb uses this API for example. See the javadoc for the API.
 
+## The complete APS API
+
+The complete APS javadoc can be found at [http://apidoc.natusoft.se/APS/](http://apidoc.natusoft.se/APS/).
+
 ## A word of advice
 
 It is quite possible to make config structures of great complexity. __DON'T!__ Even if it seems manageable from a code perspective it might not be that from a admin perspective. Keep it simple always apply!

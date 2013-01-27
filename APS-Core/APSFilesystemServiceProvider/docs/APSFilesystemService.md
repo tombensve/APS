@@ -16,3 +16,4 @@ See the [javadoc](http://apidoc.natusoft.se/APS/APSFilesystemService)
 
 ## The APIs for this service
 
+The complete APS javadoc can be found at [http://apidoc.natusoft.se/APS/](http://apidoc.natusoft.se/APS/).
