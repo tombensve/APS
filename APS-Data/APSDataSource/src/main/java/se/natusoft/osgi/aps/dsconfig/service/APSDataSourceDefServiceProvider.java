@@ -2,10 +2,10 @@
  * 
  * PROJECT
  *     Name
- *         APSDataSource
+ *         APS Data Source
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
  *         This bundle provides data source definitions configuration and a service to lookup
