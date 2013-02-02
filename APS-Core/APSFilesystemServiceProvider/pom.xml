@@ -1,4 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    
+    PROJECT
+        Name
+            APS Filesystem Service Provider
+        
+        Code Version
+            0.9.0
+        
+        Description
+            Provides access to a service/application private filesystem that remains until the
+            service/application specifically deletes it. This is independent of the OSGi server
+            it is running in (if configured).
+        
+    COPYRIGHTS
+        Copyright (C) 2012 by Natusoft AB All rights reserved.
+        
+    LICENSE
+        Apache 2.0 (Open Source)
+        
+        Licensed under the Apache License, Version 2.0 (the "License");
+        you may not use this file except in compliance with the License.
+        You may obtain a copy of the License at
+        
+          http://www.apache.org/licenses/LICENSE-2.0
+        
+        Unless required by applicable law or agreed to in writing, software
+        distributed under the License is distributed on an "AS IS" BASIS,
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        See the License for the specific language governing permissions and
+        limitations under the License.
+        
+    AUTHORS
+        Tommy Svensson (tommy@natusoft.se)
+            Changes:
+            2013-02-02: Created!
+            
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -61,6 +99,11 @@
         </osgi.include.resource>
 
         <!--
+            Trigger tiles.
+        -->
+        <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
+
+        <!--
             Other properties
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -102,77 +145,6 @@
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                     </archive> 
                 </configuration>
-            </plugin>
-
-            <!--
-                Documentation plugin.
-            -->
-            <plugin>
-                <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
-                <artifactId>markdowndoc-maven-plugin</artifactId>
-                <version>${markdownDoc.ver}</version>
-
-                <dependencies>
-                    <dependency>
-                        <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
-                        <artifactId>markdown-doc-lib</artifactId>
-                        <version>${markdownDoc.ver}</version>
-                    </dependency>
-                </dependencies>
-
-                <executions>
-                    <execution>
-                        <id>generate-pdf-docs</id>
-                        <goals>
-                            <goal>doc</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-
-                            <generatorOptions>
-                                <generator>pdf</generator>
-                                <inputPaths>
-                                    ${doc.inputs}
-                                </inputPaths>
-                            </generatorOptions>
-
-                            <pdfGeneratorOptions>
-                                <resultFile>APS-Core/APSFilesystemServiceProvider/docs/APSFilesystemService.pdf</resultFile>
-                                <pageSize>A4</pageSize>
-                                <title>APSFilesystemService</title>
-                                <subject>User Guide</subject>
-                                <version>${project.version}</version>
-                                <author>Tommy Svensson</author>
-                                <copyright>Copyright © 2013 Natusoft AB</copyright>
-                                <generateTitlePage>true</generateTitlePage>
-                                <generateTOC>true</generateTOC>
-                            </pdfGeneratorOptions>
-
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>generate-html-docs</id>
-                        <goals>
-                            <goal>doc</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-
-                            <generatorOptions>
-                                <generator>html</generator>
-                                <inputPaths>
-                                    ${doc.inputs}
-                                </inputPaths>
-                            </generatorOptions>
-
-                            <htmlGeneratorOptions>
-                                <resultFile>APS-Core/APSFilesystemServiceProvider/docs/APSFilesystemService.html</resultFile>
-                                <css>docs.css</css>
-                            </htmlGeneratorOptions>
-
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
 
             <!--

@@ -5,12 +5,12 @@
  *         APS Filesystem Service Provider
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
  *         Provides access to a service/application private filesystem that remains until the
  *         service/application specifically deletes it. This is independent of the OSGi server
- *         it is running in.
+ *         it is running in (if configured).
  *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
