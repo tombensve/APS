@@ -79,7 +79,7 @@
       All config values are strings! All config values are stored as strings. The <strong>APSConfigValue</strong> container however have <em>toBoolean()</em>, <em>toDate()</em>, <em>toDouble()</em>, <em>toFloat()</em>, <em>toInt()</em>, <em>toLong()</em>, <em>toByte()</em>, <em>toShort()</em>, and <em>toString()</em> methods on it.      
     </p>
     <p>
-      The <strong>APSConfigList<Type></strong> container is an <em>java.lang.Iterable</em> of &lt;Type&gt; type objects. The &lt;Type&gt; cannot however be anything. When used directly in a config model it must be &lt;Type extends APSConfig&gt;. That is, you can only specify other config models extending APSConfig. The only exception to that is <strong>APSConfigValueList</strong> which is defined as:      
+      The <strong>APSConfigList&lt;Type&gt;</strong> container is an <em>java.lang.Iterable</em> of &lt;Type&gt; type objects. The &lt;Type&gt; cannot however be anything. When used directly in a config model it must be &lt;Type extends APSConfig&gt;. That is, you can only specify other config models extending APSConfig. The only exception to that is <strong>APSConfigValueList</strong> which is defined as:      
     </p>
     <pre>
       <code>
@@ -104,7 +104,7 @@
       </li>
       <li>
         <p>
-          Use <strong>APSConfigList<MyConfigModel extends APSConfig></strong> for a list of subconfig models.          
+          Use <strong>APSConfigList&lt;MyConfigModel extends APSConfig&gt;</strong> for a list of subconfig models.          
         </p>
       </li>
     </ul>
@@ -234,7 +234,7 @@
     <p>
       <strong>A warning</strong>: This variant does not provide any support for determining if the configuration has become managaged yet. If you access it to early it will be null. Therefore you should only use this variant if you know it will become managed before it is referenced. The other variant allows you to check and wait for a config to become managed.      
     </p>
-    <H4>Variant 2: A static instantiated ManagedConfig&lt;ConfigModel&gt; member. </H4>
+    <H4>Variant 2: A static instantiated ManagedConfig&amp;lt;ConfigModel&amp;gt; member. </H4>
     <p>
       Example:      
     </p>
@@ -311,6 +311,10 @@
     <H3>The configuration admin service usage</H3>
     <p>
       The APSconfigAdminService only needs to be used if you implement a configuration editor. APSConfigAdminWeb uses this API for example. See the javadoc for the API.      
+    </p>
+    <H2>The complete APS API</H2>
+    <p>
+      The complete APS javadoc can be found at <a href='http://apidoc.natusoft.se/APS/' title=''>http://apidoc.natusoft.se/APS/</a>.      
     </p>
     <H2>A word of advice</H2>
     <p>

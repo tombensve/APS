@@ -4,7 +4,7 @@
  *         APS Configuration Service Provider
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
  *         A more advanced configuration service that uses annotated interfaces to
