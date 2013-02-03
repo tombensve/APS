@@ -37,7 +37,9 @@
 package se.natusoft.osgi.aps.api.auth.user;
 
 import se.natusoft.osgi.aps.api.auth.user.model.Role;
+import se.natusoft.osgi.aps.api.auth.user.model.RoleAdmin;
 import se.natusoft.osgi.aps.api.auth.user.model.User;
+import se.natusoft.osgi.aps.api.auth.user.model.UserAdmin;
 
 import java.util.List;
 
@@ -54,7 +56,7 @@ public interface APSSimpleUserServiceAdmin extends APSSimpleUserService {
      *
      * @return a new Role object representing the role.
      */
-    public Role createRole(String name, String description);
+    public RoleAdmin createRole(String name, String description);
 
     /**
      * Updates a role.
@@ -73,7 +75,7 @@ public interface APSSimpleUserServiceAdmin extends APSSimpleUserService {
     /**
      * Returns all available roles.
      */
-    public List<Role> getRoles();
+    public List<RoleAdmin> getRoles();
 
     /**
      * Creates a new user. Please note that you get an empty user back. You probably want to
@@ -83,7 +85,7 @@ public interface APSSimpleUserServiceAdmin extends APSSimpleUserService {
      *
      * @return A User object representing the new user.
      */
-    public User createUser(String id);
+    public UserAdmin createUser(String id);
 
     /**
      * Updates a user.
@@ -102,7 +104,7 @@ public interface APSSimpleUserServiceAdmin extends APSSimpleUserService {
     /**
      * Returns all users.
      */
-    public List<User> getUsers();
+    public List<UserAdmin> getUsers();
 
     /**
      * Sets authentication for the user.
