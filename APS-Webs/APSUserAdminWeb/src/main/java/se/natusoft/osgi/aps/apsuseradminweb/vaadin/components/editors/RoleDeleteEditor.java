@@ -5,7 +5,7 @@
  *         APS User Admin Web
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
  *         This is an administration web for aps-simple-user-service that allows editing of roles and users.
@@ -150,14 +150,14 @@ public class RoleDeleteEditor extends EditorPanel implements EditorIdentifier {
      *
      * @param role The role to work on.
      */
-    public void setRole(Role role) {
+    public void setRole(RoleAdmin role) {
         this.role = role;
         this.idLabel.setValue(this.role.getId() + (role.isMasterRole() ? " (master)" : ""));
         this.descriptionLabel.setValue(this.role.getDescription());
 
         StringBuilder sb = new StringBuilder();
         String comma = "";
-        for (Role subRole : ((RoleAdmin)role).getRoles()) {
+        for (Role subRole : role.getRoles()) {
             sb.append(comma);
             sb.append(subRole.getId());
             comma = ", ";

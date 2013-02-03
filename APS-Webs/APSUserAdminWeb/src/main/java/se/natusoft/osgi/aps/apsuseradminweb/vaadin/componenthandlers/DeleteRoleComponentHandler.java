@@ -5,7 +5,7 @@
  *         APS User Admin Web
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
  *         This is an administration web for aps-simple-user-service that allows editing of roles and users.
@@ -37,7 +37,7 @@
 package se.natusoft.osgi.aps.apsuseradminweb.vaadin.componenthandlers;
 
 import com.vaadin.ui.AbstractComponent;
-import se.natusoft.osgi.aps.api.auth.user.model.Role;
+import se.natusoft.osgi.aps.api.auth.user.model.RoleAdmin;
 import se.natusoft.osgi.aps.apsuseradminweb.vaadin.components.editors.RoleDeleteEditor;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.handlerapi.ComponentHandler;
 
@@ -53,7 +53,7 @@ public class DeleteRoleComponentHandler implements ComponentHandler {
     private RoleDeleteEditor roleDeleteEditor = null;
 
     /** The role to edit for this instance. */
-    private Role role = null;
+    private RoleAdmin role = null;
 
     //
     // Constructors
@@ -65,7 +65,7 @@ public class DeleteRoleComponentHandler implements ComponentHandler {
      * @param roleDeleteEditor The component to use for deleting a role.
      * @param role The role managed by this component handler.
      */
-    public DeleteRoleComponentHandler(RoleDeleteEditor roleDeleteEditor, Role role) {
+    public DeleteRoleComponentHandler(RoleDeleteEditor roleDeleteEditor, RoleAdmin role) {
         this.roleDeleteEditor = roleDeleteEditor;
         this.role = role;
     }

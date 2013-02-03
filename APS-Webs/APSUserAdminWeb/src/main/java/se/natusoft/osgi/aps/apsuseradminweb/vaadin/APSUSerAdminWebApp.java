@@ -5,7 +5,7 @@
  *         APS User Admin Web
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
  *         This is an administration web for aps-simple-user-service that allows editing of roles and users.
@@ -96,9 +96,6 @@ public class APSUSerAdminWebApp extends APSVaadinOSGiApplication implements Menu
     /** The main window. */
     private Window main = null;
 
-    /** The window to show when an authorized user is not available. */
-    private Window notAuthWindow = null;
-
     /** A login handler. */
     private APSAdminWebLoginHandler loginHandler = null;
 
@@ -116,7 +113,7 @@ public class APSUSerAdminWebApp extends APSVaadinOSGiApplication implements Menu
         this.logger = new APSLogger(System.out);
         this.logger.start(clientContext.getBundleContext());
 
-        this.userServiceTracker = new APSServiceTracker<APSSimpleUserServiceAdmin>(
+        this.userServiceTracker = new APSServiceTracker<>(
                 clientContext.getBundleContext(),
                 APSSimpleUserServiceAdmin.class,
                 APSServiceTracker.LARGE_TIMEOUT
@@ -198,14 +195,15 @@ public class APSUSerAdminWebApp extends APSVaadinOSGiApplication implements Menu
         this.layout.setCenter(Description.DESCRIPTION_VIEW);
         this.layout.doLayout(); // This is required after contents have been set.
 
-        this.notAuthWindow = new Window("Application Platform Services Administration App");
-        this.notAuthWindow.setSizeFull();
+        /* The window to show when an authorized user is not available. */
+        Window notAuthWindow = new Window("Application Platform Services Administration App");
+        notAuthWindow.setSizeFull();
         VerticalLayout nawvl = new VerticalLayout();
         Label loginMessage = new Label("<font size='+2'>Please login!</font>", Label.CONTENT_XHTML);
         nawvl.addComponent(loginMessage);
-        this.notAuthWindow.setContent(nawvl);
+        notAuthWindow.setContent(nawvl);
 
-        setMainWindow(this.notAuthWindow);
+        setMainWindow(notAuthWindow);
 
     }
 

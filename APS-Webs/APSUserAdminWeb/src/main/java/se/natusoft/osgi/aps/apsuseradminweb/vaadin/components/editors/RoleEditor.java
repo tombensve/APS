@@ -5,7 +5,7 @@
  *         APS User Admin Web
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
  *         This is an administration web for aps-simple-user-service that allows editing of roles and users.
@@ -52,6 +52,8 @@ import se.natusoft.osgi.aps.apsuseradminweb.vaadin.components.EditorPanel;
 import se.natusoft.osgi.aps.apsuseradminweb.vaadin.components.HelpText;
 import se.natusoft.osgi.aps.apsuseradminweb.vaadin.css.CSS;
 
+import java.util.List;
+
 /**
  * Edits a role. This component is reusable within a session. The role to edit is passed in setRole() by
  * EditRoleComponentHandler.
@@ -75,7 +77,7 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
     private APSSimpleUserServiceAdmin userServiceAdmin = null;
 
     /** The role being edited. */
-    private Role role = null;
+    private RoleAdmin role = null;
 
     /** The role id */
     private TextField idTextField = null;
@@ -97,9 +99,6 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
      * 'availableRoles' table to remove a role from the user.
      */
     private Table selectedRoles = null;
-
-    /** Help text for the role tables. */
-    private HelpText roleHelptext = null;
 
 
     //
@@ -207,11 +206,12 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
 
             verticalLayout.addComponent(rolesLayout);
 
-            this.roleHelptext = new HelpText(
+            /* Help text for the role tables. */
+            HelpText roleHelptext = new HelpText(
                     "Drag and drop roles back and forth to set or remove a role. Also note that it is fully possible to " +
-                    "create circular role dependencies. Don't!"
+                            "create circular role dependencies. Don't!"
             );
-            verticalLayout.addComponent(this.roleHelptext);
+            verticalLayout.addComponent(roleHelptext);
         }
 
         // Save / Cancel
@@ -253,17 +253,17 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
      */
     private void save() {
         try {
-            String successMessage1 = null;
-            String successMessage2 = null;
+            String successMessage1;
+            String successMessage2;
             if (this.role == null) {
                 this.role = this.userServiceAdmin.createRole(this.idTextField.getValue().toString(),
                         this.descriptionTextArea.getValue().toString());
-                ((RoleAdmin)this.role).setMasterRole((Boolean)this.masterRole.getValue());
+                this.role.setMasterRole((Boolean) this.masterRole.getValue());
                 successMessage1 = "New role created.";
                 successMessage2 = "Role '" + this.role.getId() + "' was created!";
             }
             else {
-                ((RoleAdmin)this.role).setDescription(this.descriptionTextArea.getValue().toString());
+                this.role.setDescription(this.descriptionTextArea.getValue().toString());
                 successMessage1 = "Role updated.";
                 successMessage2 = "Role '" + role.getId() + "' was updated!";
             }
@@ -276,11 +276,13 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
 
                 if (!this.role.hasRole(roleId)) {
                     Role role = this.userServiceAdmin.getRole(roleId);
-                    ((RoleAdmin) this.role).addRole(role);
+                    this.role.addRole(role);
                 }
             }
-            if (((RoleAdmin) this.role).getRoles() != null) {
-                for (Role role : ((RoleAdmin) this.role).getRoles()) {
+            List<Role> roles = this.role.getRoles();
+            if (roles != null) {
+                // TODO: We get a ConcurrentModificationException here when there are no selected roles!
+                for (Role role : roles) {
                     boolean roleStillValid = false;
                     for (Object itemId : rolesContainer.getItemIds()) {
                         Item item = rolesContainer.getItem(itemId);
@@ -292,7 +294,7 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
                     }
 
                     if (!roleStillValid) {
-                        ((RoleAdmin) this.role).removeRole(role);
+                        this.role.removeRole(role);
                     }
                 }
             }
@@ -323,7 +325,7 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
      *
      * @param role The role to edit.
      */
-    public void setRole(Role role) {
+    public void setRole(RoleAdmin role) {
         this.role = role;
         if (role != null) {
             setCaption("Editing role '" + role.getId() + "'");
@@ -415,7 +417,7 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
      *
      * @return The created container.
      */
-    private IndexedContainer createAvailableRolesContainer(Role role) {
+    private IndexedContainer createAvailableRolesContainer(RoleAdmin role) {
         IndexedContainer availRolesContainer = new IndexedContainer();
         availRolesContainer.addContainerProperty(ROLE_ID, String.class, "");
         availRolesContainer.addContainerProperty(ROLE_DESC, String.class, "");
@@ -429,7 +431,7 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
 
         // Remove the sub roles already set on the role.
         if (role != null) {
-            for (Role subrole : ((RoleAdmin)role).getRoles()) {
+            for (Role subrole : role.getRoles()) {
                 availRolesContainer.removeItem(subrole.getId());
             }
         }
@@ -447,13 +449,13 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
      *
      * @return The created container.
      */
-    private IndexedContainer createSubRolesContainer(Role role) {
+    private IndexedContainer createSubRolesContainer(RoleAdmin role) {
         IndexedContainer userRolesContainer = new IndexedContainer();
         userRolesContainer.addContainerProperty(ROLE_ID, String.class, "");
         userRolesContainer.addContainerProperty(ROLE_DESC, String.class, "");
 
         if (role != null) {
-            for (Role subrole : ((RoleAdmin)role).getRoles()) {
+            for (Role subrole : role.getRoles()) {
                 Item item = userRolesContainer.addItem(subrole.getId());
                 item.getItemProperty(ROLE_ID).setValue(subrole.getId());
                 item.getItemProperty(ROLE_DESC).setValue(subrole.getDescription());

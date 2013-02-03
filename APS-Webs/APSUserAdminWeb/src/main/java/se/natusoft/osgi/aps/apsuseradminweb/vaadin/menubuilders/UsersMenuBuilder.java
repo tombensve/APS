@@ -5,7 +5,7 @@
  *         APS User Admin Web
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
  *         This is an administration web for aps-simple-user-service that allows editing of roles and users.
@@ -39,6 +39,7 @@ package se.natusoft.osgi.aps.apsuseradminweb.vaadin.menubuilders;
 import com.vaadin.event.Action;
 import se.natusoft.osgi.aps.api.auth.user.APSSimpleUserServiceAdmin;
 import se.natusoft.osgi.aps.api.auth.user.model.User;
+import se.natusoft.osgi.aps.api.auth.user.model.UserAdmin;
 import se.natusoft.osgi.aps.apsuseradminweb.vaadin.componenthandlers.DeleteUserComponentHandler;
 import se.natusoft.osgi.aps.apsuseradminweb.vaadin.componenthandlers.EditUserComponentHandler;
 import se.natusoft.osgi.aps.apsuseradminweb.vaadin.components.Description;
@@ -149,13 +150,13 @@ public class UsersMenuBuilder implements MenuBuilder<User>, RefreshableSupport, 
 
         // Setup root node.
         {
-            MenuItemData<User> itemData = new MenuItemData<User>();
+            MenuItemData<User> itemData = new MenuItemData<>();
 
             itemData.setActions(USER_ROOT_ACTIONS);
             itemData.setSelectComponentHandler(Description.DESCRIPTION_VIEW);
             itemData.setToolTipText("Right click to add a new user!");
 
-            Map<Action, MenuActionProvider> actionComponentHandlerMap = new HashMap<Action, MenuActionProvider>();
+            Map<Action, MenuActionProvider> actionComponentHandlerMap = new HashMap<>();
             actionComponentHandlerMap.put(ACTION_NEW_USER,
                     new EditUserComponentHandler(this.userEditor, null));
             itemData.setActionComponentHandlers(actionComponentHandlerMap);
@@ -165,14 +166,14 @@ public class UsersMenuBuilder implements MenuBuilder<User>, RefreshableSupport, 
 
         // Setup user nodes
         {
-            Map<String, Set<User>> usersByStartLetter = new HashMap<String, Set<User>>();
-            Set<String> startLetters = new TreeSet<String>();
+            Map<String, Set<UserAdmin>> usersByStartLetter = new HashMap<>();
+            Set<String> startLetters = new TreeSet<>();
 
-            for (User user : this.userServiceAdmin.getUsers()) {
+            for (UserAdmin user : this.userServiceAdmin.getUsers()) {
                 String startLetter = user.getId().substring(0,1).toUpperCase();
-                Set<User> userSet = usersByStartLetter.get(startLetter);
+                Set<UserAdmin> userSet = usersByStartLetter.get(startLetter);
                 if (userSet == null) {
-                    userSet = new TreeSet<User>();
+                    userSet = new TreeSet<>();
                     usersByStartLetter.put(startLetter, userSet);
                 }
                 userSet.add(user);
@@ -182,26 +183,26 @@ public class UsersMenuBuilder implements MenuBuilder<User>, RefreshableSupport, 
             ID letterNodeId;
 
             for (String startLetter : startLetters) {
-                Map<Action, MenuActionProvider> actionComponentHandlerMap = new HashMap<Action, MenuActionProvider>();
+                Map<Action, MenuActionProvider> actionComponentHandlerMap = new HashMap<>();
 
-                MenuItemData<User> letterItemData = new MenuItemData<User>();
+                MenuItemData<User> letterItemData = new MenuItemData<>();
                 letterItemData.setActionComponentHandlers(actionComponentHandlerMap);
                 letterItemData.setSelectComponentHandler(Description.DESCRIPTION_VIEW);
 
                 letterNodeId = menuModel.addItem(userNodeId, letterItemData, startLetter);
 
-                for (User user : usersByStartLetter.get(startLetter)) {
+                for (UserAdmin user : usersByStartLetter.get(startLetter)) {
 
 
 
-                    MenuItemData<User> userItemData = new MenuItemData<User>();
+                    MenuItemData<User> userItemData = new MenuItemData<>();
                     userItemData.setItemRepresentative(user);
                     userItemData.setToolTipText(user.getUserProperties().getProperty(User.USER_NAME));
 
                     userItemData.setActions(USER_ITEM_ACTIONS);
                     userItemData.setSelectComponentHandler(new EditUserComponentHandler(this.userEditor, user));
 
-                    actionComponentHandlerMap = new HashMap<Action, MenuActionProvider>();
+                    actionComponentHandlerMap = new HashMap<>();
                     actionComponentHandlerMap.put(ACTION_DELETE_USER,
                             new DeleteUserComponentHandler(this.userEditor, user));
                     userItemData.setActionComponentHandlers(actionComponentHandlerMap);

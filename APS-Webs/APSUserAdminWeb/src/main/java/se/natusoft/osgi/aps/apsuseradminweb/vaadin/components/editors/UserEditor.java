@@ -5,7 +5,7 @@
  *         APS User Admin Web
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
  *         This is an administration web for aps-simple-user-service that allows editing of roles and users.
@@ -87,7 +87,7 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
     private APSSimpleUserServiceAdmin userServiceAdmin = null;
 
     /** The currently edited user. */
-    private User user = null;
+    private UserAdmin user = null;
 
     /** Id provider for propertiesEditor data container. */
     private int propId = 0;
@@ -486,6 +486,7 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
                 notifyError("User already exists!", "The user with id '" + this.userId.getValue().toString() + "' already exists!");
                 // In this case we want the admin user to be able to correct his/her mistake and try saving again.
                 // We should therefore not call 'refreshDependentComponents()'!
+                return;
             }
             else {
                 if (
@@ -500,89 +501,89 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
                 else {
                     notifyError("User not created!", "Password was not specified for user or the two entered passwords " +
                         "did not match!");
+                    return;
                 }
 
             }
         }
 
-        if (this.user != null) {
-            // Properties
-            Properties props = new Properties();
-            IndexedContainer propsContainer = (IndexedContainer)this.propertiesEditor.getContainerDataSource();
-            for (Object itemId : propsContainer.getItemIds()) {
-                Item item = propsContainer.getItem(itemId);
+        // Properties
+        Properties props = new Properties();
+        IndexedContainer propsContainer = (IndexedContainer)this.propertiesEditor.getContainerDataSource();
+        for (Object itemId : propsContainer.getItemIds()) {
+            Item item = propsContainer.getItem(itemId);
 
-                String propKey = item.getItemProperty(USER_PROPS_KEY).getValue().toString();
-                String propValue = item.getItemProperty(USER_PROPS_VALUE).getValue().toString();
+            String propKey = item.getItemProperty(USER_PROPS_KEY).getValue().toString();
+            String propValue = item.getItemProperty(USER_PROPS_VALUE).getValue().toString();
 
-                if (propKey.trim().length() > 0 && propValue.trim().length() > 0) {
-                    props.put(propKey, propValue);
-                }
+            if (propKey.trim().length() > 0 && propValue.trim().length() > 0) {
+                props.put(propKey, propValue);
             }
-            ((UserAdmin)this.user).setUserProperties(props);
-            // Refresh the properties editor since empty lines can have been filtered.
-            this.propertiesEditor.setContainerDataSource(createUserPropertiesContainer(this.user));
+        }
+        this.user.setUserProperties(props);
+        // Refresh the properties editor since empty lines can have been filtered.
+        this.propertiesEditor.setContainerDataSource(createUserPropertiesContainer(this.user));
 
-            // Roles
-            IndexedContainer rolesContainer = (IndexedContainer)this.selectedRoles.getContainerDataSource();
-            for (Object itemId : rolesContainer.getItemIds()) {
-                Item item = rolesContainer.getItem(itemId);
-                String roleId = item.getItemProperty(ROLE_ID).getValue().toString();
+        // Roles
+        IndexedContainer rolesContainer = (IndexedContainer)this.selectedRoles.getContainerDataSource();
+        for (Object itemId : rolesContainer.getItemIds()) {
+            Item item = rolesContainer.getItem(itemId);
+            String roleId = item.getItemProperty(ROLE_ID).getValue().toString();
 
-                if (!this.user.hasRole(roleId)) {
-                    Role role = this.userServiceAdmin.getRole(roleId);
-                    ((UserAdmin) this.user).addRole(role);
-                }
+            if (!this.user.hasRole(roleId)) {
+                Role role = this.userServiceAdmin.getRole(roleId);
+                this.user.addRole(role);
             }
-            if (((UserAdmin) this.user).getRoles() != null) {
-                for (Role role : ((UserAdmin) this.user).getRoles()) {
-                    boolean roleStillValid = false;
-                    for (Object itemId : rolesContainer.getItemIds()) {
-                        Item item = rolesContainer.getItem(itemId);
-                        String roleId = item.getItemProperty(ROLE_ID).getValue().toString();
-                        if (roleId.equals(role.getId())) {
-                            roleStillValid = true;
-                            break;
-                        }
-                    }
-
-                    if (!roleStillValid) {
-                        ((UserAdmin) this.user).removeRole(role);
+        }
+        if (this.user.getRoles() != null) {
+            for (Role role : this.user.getRoles()) {
+                boolean roleStillValid = false;
+                for (Object itemId : rolesContainer.getItemIds()) {
+                    Item item = rolesContainer.getItem(itemId);
+                    String roleId = item.getItemProperty(ROLE_ID).getValue().toString();
+                    if (roleId.equals(role.getId())) {
+                        roleStillValid = true;
+                        break;
                     }
                 }
-            }
 
-            this.userServiceAdmin.updateUser(this.user);
-
-            if (newUser) {
-                notifySuccess("User created!", "Created new user '" + this.user.getId() + "'!");
+                if (!roleStillValid) {
+                    this.user.removeRole(role);
+                }
             }
-            else {
-                if (this.authNewOne.getValue().toString().length() > 0) {
-                    if (this.userServiceAdmin.authenticateUser(this.user, this.authCurrent.getValue(), APSSimpleUserService.AUTH_METHOD_PASSWORD)) {
-                        if (this.authNewOne.getValue().equals(this.authNewTwo.getValue())) {
-                            this.userServiceAdmin.setUserAuthentication(this.user, this.authNewOne.getValue().toString());
-                        }
-                        else {
-                            notifyError("User partly saved!", "User data saved, but failed to change auth due to the two entered new values " +
-                                    "did not match!");
-                        }
+        }
+
+        this.userServiceAdmin.updateUser(this.user);
+
+        if (newUser) {
+            notifySuccess("User created!", "Created new user '" + this.user.getId() + "'!");
+        }
+        else {
+            if (this.authNewOne.getValue().toString().length() > 0) {
+                if (this.userServiceAdmin.authenticateUser(this.user, this.authCurrent.getValue(), APSSimpleUserService.AUTH_METHOD_PASSWORD)) {
+                    if (this.authNewOne.getValue().equals(this.authNewTwo.getValue())) {
+                        this.userServiceAdmin.setUserAuthentication(this.user, this.authNewOne.getValue().toString());
                     }
                     else {
-                        notifyError("User partly saved!", "User data saved, but failed to change auth due to entered current auth was " +
-                                "incorrect!");
+                        notifyError("User partly saved!", "User data saved, but failed to change auth due to the two entered new values " +
+                                "did not match!");
                     }
                 }
                 else {
-                    notifySuccess("User change saved!", "User change " + (this.user != null ? "for '" + this.user.getId() + "' " : "") + "saved!");
+                    notifyError("User partly saved!", "User data saved, but failed to change auth due to entered current auth was " +
+                            "incorrect!");
                 }
             }
-
-            // Note that we only do refreshDependendComponents() here, not clearCenter()! This however does not matter.
-            // The notify above pulls focus from the selected menu entry which triggers the menu selection action with a null
-            // selection (unselect) which restores the description page. I currently see no workaround to this problem!
-            refreshDependentComponents();
+            else {
+                notifySuccess("User change saved!", "User change " + (this.user != null ? "for '" + this.user.getId() + "' " : "") + "saved!");
+            }
         }
+
+        // Note that we only do refreshDependendComponents() here, not clearCenter()! This however does not matter.
+        // The notify above pulls focus from the selected menu entry which triggers the menu selection action with a null
+        // selection (unselect) which restores the description page. I currently see no workaround to this problem!
+        refreshDependentComponents();
+
     }
 
     /**
@@ -613,7 +614,7 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
      *
      * @param user The user to work on.
      */
-    public void setUser(User user) {
+    public void setUser(UserAdmin user) {
         this.user = user;
         enableComponents(!this.forDelete);
         configureComponents();

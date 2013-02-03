@@ -5,7 +5,7 @@
  *         APS User Admin Web
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
  *         This is an administration web for aps-simple-user-service that allows editing of roles and users.
@@ -39,6 +39,7 @@ package se.natusoft.osgi.aps.apsuseradminweb.vaadin.menubuilders;
 import com.vaadin.event.Action;
 import se.natusoft.osgi.aps.api.auth.user.APSSimpleUserServiceAdmin;
 import se.natusoft.osgi.aps.api.auth.user.model.Role;
+import se.natusoft.osgi.aps.api.auth.user.model.RoleAdmin;
 import se.natusoft.osgi.aps.apsuseradminweb.vaadin.componenthandlers.DeleteRoleComponentHandler;
 import se.natusoft.osgi.aps.apsuseradminweb.vaadin.componenthandlers.EditRoleComponentHandler;
 import se.natusoft.osgi.aps.apsuseradminweb.vaadin.components.Description;
@@ -162,7 +163,7 @@ public class RolesMenuBuilder implements MenuBuilder<Role>, RefreshableSupport, 
             itemData.setSelectComponentHandler(Description.DESCRIPTION_VIEW);
             itemData.setToolTipText("Right click to add a new role!");
 
-            Map<Action, MenuActionProvider> actionComponentHandlerMap = new HashMap<Action, MenuActionProvider>();
+            Map<Action, MenuActionProvider> actionComponentHandlerMap = new HashMap<>();
             actionComponentHandlerMap.put(ACTION_NEW_ROLE,
                     new EditRoleComponentHandler(this.roleEditor, null));
             itemData.setActionComponentHandlers(actionComponentHandlerMap);
@@ -190,16 +191,16 @@ public class RolesMenuBuilder implements MenuBuilder<Role>, RefreshableSupport, 
 
         // Setup user nodes
         {
-            for (Role role : this.userServiceAdmin.getRoles()) {
+            for (RoleAdmin role : this.userServiceAdmin.getRoles()) {
 
-                MenuItemData<Role> roleItemData = new MenuItemData<Role>();
+                MenuItemData<Role> roleItemData = new MenuItemData<>();
                 roleItemData.setItemRepresentative(role);
                 roleItemData.setToolTipText(role.getDescription());
 
                 roleItemData.setActions(ROLE_ITEM_ACTIONS);
                 roleItemData.setSelectComponentHandler(new EditRoleComponentHandler(this.roleEditor, role));
 
-                Map<Action, MenuActionProvider> actionComponentHandlerMap = new HashMap<Action, MenuActionProvider>();
+                Map<Action, MenuActionProvider> actionComponentHandlerMap = new HashMap<>();
                 actionComponentHandlerMap.put(ACTION_DELETE_ROLE,
                         new DeleteRoleComponentHandler(this.roleDeleteEditor, role));
                 roleItemData.setActionComponentHandlers(actionComponentHandlerMap);
