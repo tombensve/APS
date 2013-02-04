@@ -2,10 +2,10 @@
  * 
  * PROJECT
  *     Name
- *         APSSimpleUserServiceProvider
+ *         APS Simple User Service Provider
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
@@ -150,7 +150,7 @@ public class APSSimpleUserServiceProvider implements APSSimpleUserServiceAdmin {
      * @return a new Role object representing the role.
      */
     @Override
-    public Role createRole(String id, String description) {
+    public RoleAdmin createRole(String id, String description) {
         EntityManager em = getEMP().createEntityManager();
         em.getTransaction().begin();
 
@@ -226,12 +226,12 @@ public class APSSimpleUserServiceProvider implements APSSimpleUserServiceAdmin {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public List<Role> getRoles() {
+    public List<RoleAdmin> getRoles() {
         EntityManager em = getEMP().createEntityManager();
 
         try {
             Query q = em.createQuery("SELECT role FROM Role role");
-            return (List<Role>)q.getResultList();
+            return (List<RoleAdmin>)q.getResultList();
         }
         finally {
             em.close();
@@ -247,7 +247,7 @@ public class APSSimpleUserServiceProvider implements APSSimpleUserServiceAdmin {
      * @return A User object representing the new user.
      */
     @Override
-    public User createUser(String id) {
+    public UserAdmin createUser(String id) {
         EntityManager em = getEMP().createEntityManager();
         em.getTransaction().begin();
 
@@ -321,12 +321,12 @@ public class APSSimpleUserServiceProvider implements APSSimpleUserServiceAdmin {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public List<User> getUsers() {
+    public List<UserAdmin> getUsers() {
         EntityManager em = getEMP().createEntityManager();
 
         try {
             Query q = em.createQuery("SELECT user FROM SvcUser user");
-            return (List<User>)q.getResultList();
+            return (List<UserAdmin>)q.getResultList();
         }
         finally {
             em.close();
