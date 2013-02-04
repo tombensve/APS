@@ -2,13 +2,13 @@
  * 
  * PROJECT
  *     Name
- *         APS RPC Over HTTP Transport Provider
+ *         APS External Protocol HTTP Transport Provider
  *     
  *     Code Version
  *         0.9.0
  *     
  *     Description
- *         This uses aps-external-protocol-extender to provide remote procedure calls over HTTP. It makes
+ *         This uses aps-external-protocol-extender to provide remote calls over HTTP. It makes
  *         any published service implementing se.natusoft.osgi.aps.net.rpc.streamed.service.StreamedRPCProtocolService
  *         available for calling services over HTTP.
  *         

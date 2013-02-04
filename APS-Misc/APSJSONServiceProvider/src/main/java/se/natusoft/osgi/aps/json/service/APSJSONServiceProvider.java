@@ -5,7 +5,7 @@
  *         APS JSON Service Provider
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
  *         Provides an implementation of aps-apis:se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService

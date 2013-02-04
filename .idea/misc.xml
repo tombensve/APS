@@ -407,6 +407,7 @@
         <option value="$PROJECT_DIR$/APS-Webs/APSAdminLoginWeb/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Webs/APSJettyWebExtender/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Webs/APSTomcatWebExtender/pom.xml" />
+        <option value="$PROJECT_DIR$/BuildTiles/OSGiTile/pom.xml" />
         <option value="$PROJECT_DIR$/Test/pom.xml" />
       </set>
     </option>

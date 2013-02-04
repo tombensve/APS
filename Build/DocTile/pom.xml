@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    PROJECT
+        Name
+            DocTile
+        
+        Code Version
+            0.9.0
+        
+        Description
+            This provides a build tile for generating documentation in PDF and HTML format.
+        
+    COPYRIGHTS
+        Copyright (C) 2012 by Natusoft AB All rights reserved.
+        
+    LICENSE
+        Apache 2.0 (Open Source)
+        
+        Licensed under the Apache License, Version 2.0 (the "License");
+        you may not use this file except in compliance with the License.
+        You may obtain a copy of the License at
+        
+          http://www.apache.org/licenses/LICENSE-2.0
+        
+        Unless required by applicable law or agreed to in writing, software
+        distributed under the License is distributed on an "AS IS" BASIS,
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        See the License for the specific language governing permissions and
+        limitations under the License.
+        
+    AUTHORS
+        Tommy Svensson (tommy@natusoft.se)
+            Changes:
+            2013-01-31: Created!
+    ___________________________________________________________________________________________________________
+
+    This tile generates PDF and HTML documents from markdown using MarkdownDoc.
+    As input it expects the following file (relative to project):
+
+        docs/**/.*.fs
+
+    where ** = any subdirectory and .* =  any filename. There has to be at least one for any documentation
+    to be generated.
+
+    The .fs file should contain a list of files to supply for input and should be any type of files
+    supported by MarkdownDoc (like .md and .java (extracts javadoc)).
+
+    The file list in the .fs should be comma separated and can contain /**/ to indicate any subdirectories and
+    regular expression in file name.
+
+    All matching files will be passed to MarkdownDoc and both PDF and HTML files will be generated. There will
+    be only one document of each containing the information in all inputs. The generated document will be put
+    in the docs directory and be called ${project.artifactId}.pdf and ${project.artifactId}.html.
+
+    To trigger this tile you need the following property:
+
+        <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
+
+    in the pom.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>Build</artifactId>
+        <groupId>se.natusoft.osgi.aps</groupId>
+        <version>0.9.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>DocTile</artifactId>
+
+    <description>
+        This provides a build tile for generating documentation in PDF and HTML format.
+    </description>
+
+    <build>
+        <plugins>
+            <!--
+                Generate Documentation
+            -->
+            <plugin>
+                <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
+                <artifactId>markdowndoc-maven-plugin</artifactId>
+                <version>1.1.2</version>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
+                        <artifactId>markdown-doc-lib</artifactId>
+                        <version>1.1.2</version>
+                    </dependency>
+                </dependencies>
+
+                <executions>
+                    <execution>
+                        <id>generate-pdf-docs</id>
+                        <goals>
+                            <goal>doc</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+
+                            <generatorOptions>
+                                <generator>pdf</generator>
+                                <inputPaths>${project.basedir}/docs/**/.*.fs</inputPaths>
+                            </generatorOptions>
+
+                            <pdfGeneratorOptions>
+                                <resultFile>${project.basedir}/docs/${project.artifactId}.pdf</resultFile>
+                                <pageSize>A4</pageSize>
+                                <title>${project.name}</title>
+                                <subject>User Guide</subject>
+                                <version>${project.version}</version>
+                                <author>Tommy Svensson</author>
+                                <copyright>Copyright © 2013 ${project.organization.name}</copyright>
+                                <generateTitlePage>true</generateTitlePage>
+                                <generateTOC>true</generateTOC>
+                            </pdfGeneratorOptions>
+
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-html-docs</id>
+                        <goals>
+                            <goal>doc</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+
+                            <generatorOptions>
+                                <generator>html</generator>
+                                <inputPaths>${project.basedir}/docs/**/.*.fs</inputPaths>
+                            </generatorOptions>
+
+                            <htmlGeneratorOptions>
+                                <resultFile>${project.basedir}/docs/${project.artifactId}.html</resultFile>
+                                <css>docs.css</css>
+                            </htmlGeneratorOptions>
+
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+</project>

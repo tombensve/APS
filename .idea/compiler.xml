@@ -124,10 +124,11 @@
         <module name="aps-user-admin-web" />
         <module name="aps-web-tools" />
         <module name="APSBundleArchetype" />
-        <module name="APSConfigTest" />
         <module name="APSResolvingBundleDeployer" />
         <module name="APSTomcatWebExtender" />
         <module name="APSWarBundleArchetype" />
+        <module name="DocTile" />
+        <module name="OSGiTile" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.7">
@@ -163,6 +164,10 @@
       <module name="aps-web-tools" target="1.7" />
       <module name="APS-Webs" target="1.7" />
       <module name="APSConfigTest" target="1.7" />
+      <module name="Build" target="1.7" />
+      <module name="BuildTiles" target="1.7" />
+      <module name="DocTile" target="1.7" />
+      <module name="OSGiTile" target="1.7" />
       <module name="Test" target="1.7" />
     </bytecodeTargetLevel>
   </component>

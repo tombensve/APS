@@ -5,7 +5,7 @@
  *         APS Administration Web Registration Service
  *     
  *     Code Version
- *         1.0.0
+ *         0.9.0
  *     
  *     Description
  *         The service for registering admin webs with aps-admin-web.

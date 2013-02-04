@@ -1,4 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    
+    PROJECT
+        Name
+            OSGi Application Platform Services
+        
+        Code Version
+            0.9.0
+        
+        Description
+            APS (Application Platform Services) - A smörgåsbord of OSGi platform type services.
+        
+    COPYRIGHTS
+        Copyright (C) 2012 by Natusoft AB All rights reserved.
+        
+    LICENSE
+        Apache 2.0 (Open Source)
+        
+        Licensed under the Apache License, Version 2.0 (the "License");
+        you may not use this file except in compliance with the License.
+        You may obtain a copy of the License at
+        
+          http://www.apache.org/licenses/LICENSE-2.0
+        
+        Unless required by applicable law or agreed to in writing, software
+        distributed under the License is distributed on an "AS IS" BASIS,
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        See the License for the specific language governing permissions and
+        limitations under the License.
+        
+    AUTHORS
+        Tommy Svensson (tommy@natusoft.se)
+            Changes:
+            2013-02-03: Created!
+            
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
@@ -100,9 +136,10 @@
         <module>APS-Misc</module>
         <module>APS-Libraries</module>
         <module>APS-Network</module>
-        <module>Test</module>
         <module>APS-Data</module>
         <module>APS-Auth</module>
+        <module>Build</module>
+        <!--<module>Test</module>-->
     </modules>
 
     <distributionManagement>
@@ -123,8 +160,26 @@
         </extensions>
 
         <plugins>
+
             <!--
-                Setup for java 6.
+                This requires something like:
+
+                <properties>
+                   ...
+                   <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
+                </properties>
+
+                to trigger a tile. All tiles are put under /BuildTiles.
+            -->
+            <plugin>
+                <groupId>it.session.maven.plugins</groupId>
+                <artifactId>tiles-maven-plugin</artifactId>
+                <version>0.8-beta-6</version>
+                <extensions>true</extensions>
+            </plugin>
+
+            <!--
+                Setup for java 7.
             -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -133,35 +188,6 @@
                     <source>1.7</source>
                     <target>1.7</target>
                 </configuration>
-            </plugin>
-
-            <!--
-                Provide Javadoc skin. Other javadoc config under <reporting/>.
-            -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.8.1</version>
-
-                <executions>
-                    <execution>
-                        <id>jar-javadoc</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <phase>deploy</phase>
-                        <configuration>
-                            <attach>true</attach>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>javadoc</id>
-                        <goals>
-                            <goal>javadoc</goal>
-                        </goals>
-                        <phase>site</phase>
-                    </execution>
-                </executions>
             </plugin>
 
             <!--
@@ -375,7 +401,16 @@
                                 <addAuthorsBlock>true</addAuthorsBlock>
                                 <!-- The directories to scan for source code to update with project & license information. -->
                                 <sourceCodeDirs>
-                                    src/main/java/**/.*.java,src/test/java/**/.*.java,src/main/resources/**/.*,src/assembly/**/.*.xml,src/main/webapp/**/.*.[cx][sm][sl]
+                                    src/main/java/**/.*.java,
+                                    src/test/java/**/.*.java,
+                                    src/main/resources/**/.*.properties,
+                                    src/main/resources/**/.*.xml,
+                                    src/main/resources/**/.*.png,
+                                    src/main/resources/**/.*.jpg,
+                                    src/main/resources/**/.*.gif,
+                                    src/assembly/**/.*.xml,
+                                    src/main/webapp/**/.*.[cx][sm][sl],
+                                    pom.xml
                                 </sourceCodeDirs>
 
                             </codeOptions>
