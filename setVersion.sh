@@ -14,7 +14,7 @@ version=$1
 for pom in `find . -name 'pom.xml' -print`
 do
     echo "Updating ${pom} ..."
-    cat ${pom} | sed 's%<version><!--APSVER-->.*</version>%<version><!--APSVER-->'${version}'</version>%g' > ${pom}.new
+    cat ${pom} | sed 's%><!--APSVER-->.*<%><!--APSVER-->'${version}'<%g' > ${pom}.new
     mv ${pom} ${pom}.old
     mv ${pom}.new ${pom}
     rm ${pom}.old
