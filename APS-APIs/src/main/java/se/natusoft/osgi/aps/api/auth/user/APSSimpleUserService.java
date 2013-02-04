@@ -40,7 +40,7 @@ import se.natusoft.osgi.aps.api.auth.user.model.Role;
 import se.natusoft.osgi.aps.api.auth.user.model.User;
 
 /**
- * This is the API of a simple user service that provide basic under
+ * This is the API of a simple user service that provide basic user
  * handling that will probably be enough in many cases, but not all.
  * <P/>
  * Please note that this API does not declare any exceptions! In the
