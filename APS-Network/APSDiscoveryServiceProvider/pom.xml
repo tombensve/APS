@@ -99,7 +99,13 @@
         <osgi.embed.directory>lib</osgi.embed.directory>
 
         <!--
-            Other properties
+             Trigger tiles.
+         -->
+        <tile.deploy>${project.groupId}:DeployBundleTile:${project.version}</tile.deploy>
+        <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
+
+        <!--
+            Misc properties
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

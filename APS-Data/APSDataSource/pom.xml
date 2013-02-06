@@ -109,6 +109,7 @@
         <!--
             Trigger tiles.
         -->
+        <tile.deploy>${project.groupId}:DeployBundleTile:${project.version}</tile.deploy>
         <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
 
         <!--
@@ -193,5 +194,15 @@
 
         </plugins>
     </build>
+
+    <!-- Currently causes an NPE in tiles-maven-plugin.
+    -->
+    <profiles>
+        <profile>
+            <id>deploy-bundle</id>
+            <properties>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>

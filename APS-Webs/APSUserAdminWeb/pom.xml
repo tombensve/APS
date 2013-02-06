@@ -119,10 +119,16 @@
         <server.deploy.artifact.type>war</server.deploy.artifact.type>
 
         <!--
-            Other properties
+            Misc properties
         -->
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!--
+             Trigger tiles.
+         -->
+        <tile.deploy>${project.groupId}:DeployWABBundleTile:${project.version}</tile.deploy>
+        <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
     </properties>
 
     <dependencies>

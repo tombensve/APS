@@ -61,18 +61,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>Build</artifactId>
-        <groupId>se.natusoft.osgi.aps</groupId>
-        <version>0.9.0</version>
-    </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>se.natusoft.osgi.aps</groupId>
     <artifactId>DocTile</artifactId>
-
-    <description>
-        This provides a build tile for generating documentation in PDF and HTML format.
-    </description>
+    <version><!--APSVER-->0.9.0</version>
+    <packaging>pom</packaging>
 
     <build>
         <plugins>
@@ -83,14 +77,6 @@
                 <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
                 <artifactId>markdowndoc-maven-plugin</artifactId>
                 <version>1.1.2</version>
-
-                <dependencies>
-                    <dependency>
-                        <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
-                        <artifactId>markdown-doc-lib</artifactId>
-                        <version>1.1.2</version>
-                    </dependency>
-                </dependencies>
 
                 <executions>
                     <execution>

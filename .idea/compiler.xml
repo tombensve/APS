@@ -127,8 +127,10 @@
         <module name="APSResolvingBundleDeployer" />
         <module name="APSTomcatWebExtender" />
         <module name="APSWarBundleArchetype" />
-        <module name="DocTile" />
+        <module name="DeployWABBundleTile" />
         <module name="OSGiTile" />
+        <module name="ServerDeployPlugin" />
+        <module name="ServerDeployPlugin (1)" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.7">
@@ -166,8 +168,12 @@
       <module name="APSConfigTest" target="1.7" />
       <module name="Build" target="1.7" />
       <module name="BuildTiles" target="1.7" />
+      <module name="DeployBundleTile" target="1.7" />
+      <module name="DeployWABBundleTile" target="1.7" />
       <module name="DocTile" target="1.7" />
       <module name="OSGiTile" target="1.7" />
+      <module name="ServerDeployPlugin" target="1.7" />
+      <module name="ServerDeployPlugin (1)" target="1.7" />
       <module name="Test" target="1.7" />
     </bytecodeTargetLevel>
   </component>

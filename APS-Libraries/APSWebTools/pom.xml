@@ -60,6 +60,14 @@
         This provides some utility classes for web applications.
     </description>
 
+    <properties>
+        <!--
+            Trigger tiles.
+        -->
+        <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
+
+    </properties>
+
     <dependencies>
         <!--
             APS

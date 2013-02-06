@@ -64,7 +64,7 @@
     <artifactId>aps-groups</artifactId>
     <packaging>bundle</packaging>
 
-    <name>APSGroups</name>
+    <name>APS Groups</name>
 
     <description>
         Provides network groups where named groups can be joined as members and then send and
@@ -146,6 +146,13 @@
         -->
         <!-- We register our configuration for auto registration and management. -->
         <aps.config.classes>se.natusoft.osgi.aps.groups.config.APSGroupsServiceConfig</aps.config.classes>
+
+        <!--
+             Trigger tiles.
+         -->
+        <tile.deploy>${project.groupId}:DeployBundleTile:${project.version}</tile.deploy>
+        <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
+
     </properties>
 
     <dependencies>

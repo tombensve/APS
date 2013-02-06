@@ -4,14 +4,11 @@
     <facet type="Osmorc" name="OSGi">
       <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-groups-0.9.0.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.groups.APSGroupsActivator" bundleSymbolicName="aps-groups" bundleVersion="0.9.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
-          <property key="Bundle-Description" value="Provides network groups where named groups can be joined as members and then send andreceive data messages to the group. This is based on multicast and provides a verifiedmulticast delivery with acknowledgements of receive to the sender and resends if needed.The sender will get an exception if not all members receive all data. Member actualityis handled by members announcing themselves relatively often and will be removed whenan announcement does not come in expected time. So if a member dies unexpectedly(network goes down, etc) its membership will resolve rather quickly. Members alsotries to inform the group when they are doing a controlled exit. Most network aspectsare configurable. Please note that this does not support streaming! That would requirea far more complex protocol. It waits in all packets of a message before deliveringthe message.Note that even though this is an OSGi bundle, the jar produced can also be used as alibrary outside of OSGi. The se.natusoft.apsgroups.APSGroups API should then be used.This API has no external dependencies, only this jar is required for that use.When run with java -jar a for test command line shell will run where you can checkmembers, send messages and files." />
-          <property key="Bundle-Vendor" value="Natusoft AB" />
-          <property key="Bundle-DocURL" value="http://www.natusoft.se/" />
           <property key="Import-Package" value="*" />
           <property key="Private-Package" value="se.natusoft.apsgroups,se.natusoft.apsgroups.codeclarity,se.natusoft.apsgroups.config,se.natusoft.apsgroups.internal,se.natusoft.apsgroups.internal.net,se.natusoft.apsgroups.internal.protocol,se.natusoft.apsgroups.internal.protocol.message,se.natusoft.apsgroups.internal.protocol.message.exception,se.natusoft.apsgroups.logging,se.natusoft.osgi.aps.groups,se.natusoft.osgi.aps.groups.config,se.natusoft.osgi.aps.groups.logging,se.natusoft.osgi.aps.groups.service" />
           <property key="Embed-Directory" value="lib" />
           <property key="Embed-Dependency" value="*;scope=compile" />
-          <property key="Bundle-Name" value="APSGroups" />
+          <property key="Bundle-Name" value="APS Groups" />
         </additionalProperties>
         <additionalJARContents />
       </configuration>

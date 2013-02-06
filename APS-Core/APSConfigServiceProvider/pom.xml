@@ -103,6 +103,7 @@
             Trigger tiles.
         -->
         <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
+        <tile.deploy>${project.groupId}:DeployBundleTile:${project.version}</tile.deploy>
 
         <!--
             Other properties

@@ -397,20 +397,6 @@
         <option value="$PROJECT_DIR$/APS-Core/APSLogServiceProvider/pom.xml" />
       </list>
     </option>
-    <option name="ignoredFiles">
-      <set>
-        <option value="$PROJECT_DIR$/APS-Enterprise/APS-Enterprise-APIs/pom.xml" />
-        <option value="$PROJECT_DIR$/APS-Enterprise/APSSessionService/pom.xml" />
-        <option value="$PROJECT_DIR$/APS-Enterprise/APSUserAdminEntitys/pom.xml" />
-        <option value="$PROJECT_DIR$/APS-Network/APSDataSyncService/pom.xml" />
-        <option value="$PROJECT_DIR$/APS-Security/pom.xml" />
-        <option value="$PROJECT_DIR$/APS-Webs/APSAdminLoginWeb/pom.xml" />
-        <option value="$PROJECT_DIR$/APS-Webs/APSJettyWebExtender/pom.xml" />
-        <option value="$PROJECT_DIR$/APS-Webs/APSTomcatWebExtender/pom.xml" />
-        <option value="$PROJECT_DIR$/BuildTiles/OSGiTile/pom.xml" />
-        <option value="$PROJECT_DIR$/Test/pom.xml" />
-      </set>
-    </option>
   </component>
   <component name="ModuleEditorState">
     <option name="LAST_EDITED_MODULE_NAME" />
