@@ -12,8 +12,6 @@ The _aps.filesystem.root_ system property must be set to point to a root where t
 
 The service allows you to create or get an APSFilesystem object. From that object you can create/read/delete directories (represented by APSDirectory) and files (represented by APSFile). You can get readers, writers, input streams and output streams from files. All paths are relative to the file area represented by the APSFilesystem object. 
 
-See the [javadoc](http://apidoc.natusoft.se/APS/APSFilesystemService)
+The javadoc for the [APSFilesystemService](http://apidoc.natusoft.se/APS/se/natusoft/osgi/aps/api/core/filesystem/service/APSFilesystemService.html).
 
 ## The APIs for this service
-
-The complete APS javadoc can be found at [http://apidoc.natusoft.se/APS/](http://apidoc.natusoft.se/APS/).
