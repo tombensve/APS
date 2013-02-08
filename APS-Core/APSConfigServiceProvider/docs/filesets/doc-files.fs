@@ -1,3 +1,3 @@
 # The documentation files for APSConfigService
 
-APS-Core/APSConfigServiceProvider/docs/.*.md
+APS-Core/APSConfigServiceProvider/docs/src/.*.md
