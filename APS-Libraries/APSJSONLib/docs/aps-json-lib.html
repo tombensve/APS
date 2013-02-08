@@ -1,0 +1,2443 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="generated-by" content="MarkdownDoc"/>
+    <link href="docs.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body>
+    <H1>APSJSONLib</H1>
+    <p>
+      This is a library (exports all its packages and provides no service) for reading and writing JSON. It can also write a JavaBean object as JSON and take a JSON value or inputstream containing JSON and produce a JavaBean.      
+    </p>
+    <p>
+      This basically provides a class representing each JSON type: JSONObject, JSONString, JSONNumber, JSONBoolean, JSONArray, JSONNull, and a JSONValue class that is the common base class for all the other. Each class knows how to read and write the JSON type it represents. Then there is a JavaToJSON and a JSONToJava class with static methods for converting back and forth. This mapping is very primitive. There has to be one to one between the JSON and the Java objects.      
+    </p>
+    <p>
+      This does not try to be an alternative to Jackson! This is used internally by other services.      
+    </p>
+    <H1>APIs</H1>
+    <p>
+      public <em>class</em> <strong>JSON </strong>   [se.natusoft.osgi.aps.json] {      
+    </p>
+    <blockquote>
+      <p>
+         This is the official API for reading and writing JSON values.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static JSONValue read(InputStream jsonIn, JSONErrorHandler errorHandler) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Reads any JSON object from the specified InputStream.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A JSONValue subclass. Which depends on what was found on the stream.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>jsonIn</em> - The InputStream to read from.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>errorHandler</em> - An implementation of this interface should be supplied by the user to handle any errors during JSON parsing.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on any IO failures.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static void write(OutputStream jsonOut, JSONValue value) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Writes a JSONValue to an OutputStream. This will write compact output by default.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>jsonOut</em> - The OutputStream to write to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>value</em> - The value to write.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static void write(OutputStream jsonOut, JSONValue value, boolean compact) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Writes a JSONValue to an OutputStream.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>jsonOut</em> - The OutputStream to write to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>value</em> - The value to write.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>compact</em> - If true the written JSON is made very compact and hard to read but produce less data.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>JSONArray </strong> extends  JSONValue  [se.natusoft.osgi.aps.json] {      
+    </p>
+    <blockquote>
+      <p>
+         This class is based on the structure defined on http://www.json.org/.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        This represents the "array" diagram on the above mentioned web page:         
+      </p>
+    </blockquote>
+    <pre>
+      <code>
+              _______________________
+             /                       \
+             |                       |
+|_____ ([) __/_______ (value) _______\__ (]) _____|
+|              /                   \              |
+               |                   |
+               \_______ (,) _______/
+      </code>
+    </pre>
+    <blockquote>
+      <p>
+         @author Tommy Svensson         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public JSONArray()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new JSONArray for wrinting JSON output.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public JSONArray(JSONErrorHandler errorHandler)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new JSONArray for reading JSON input and writing JSON output.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>errorHandler</em>        
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public void addValue(JSONValue value)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Adds a value to the array.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>value</em> - The value to add.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public List&lt;JSONValue&gt; getAsList()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the array values as a List.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public &lt;T extends JSONValue&gt; List&lt;T&gt; getAsList(Class&lt;T&gt; type)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the array values as a list of a specific type.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A list of specified type if type is the same as in the list.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>type</em> - The class of the type to return values as a list of.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>&lt;T&gt;</em> - One of the JSONValue subclasses.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void readJSON(char c, JSONReader reader) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Loads this JSONArray model with data from the specified input stream.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>c</em> - A preread character from the input stream.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>reader</em> - The JSONReader to read from.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void writeJSON(JSONWriter writer, boolean compact) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Writes the JSONArray content in JSON format on the specified output stream.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>writer</em> - The writer to write to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>compact</em> - Write json in compact format.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>JSONBoolean </strong> extends  JSONValue    [se.natusoft.osgi.aps.json] {      
+    </p>
+    <blockquote>
+      <p>
+         This class is based on the structure defined on http://www.json.org/.   @author Tommy Svensson         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public JSONBoolean(boolean value)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new JSONBoolean instance for writing JSON output.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>value</em> - The value for this boolean.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public JSONBoolean(JSONErrorHandler errorHandler)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new JSONBoolean instance for reading JSON input or writing JSON output.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>errorHandler</em>        
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public void setBooleanValue(boolean value)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Sets the value of this boolean.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>value</em> - The value to set.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public boolean getAsBoolean()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the value of this boolean.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String toString()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the value of this boolean as a String.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void readJSON(char c, JSONReader reader) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Loads the contents of this JSONBoolean model from the specified input stream.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>c</em> - A preread character from the input stream.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>reader</em> - The JSONReader to read from.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void writeJSON(JSONWriter writer, boolean compact) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Writes the contents of this JSONBoolean to the specified output stream in JSON format.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>writer</em> - The JSONWriter to write to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>compact</em> - Write json in compact format.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>JSONErrorHandler </strong>   [se.natusoft.osgi.aps.json] {      
+    </p>
+    <blockquote>
+      <p>
+         This is called on warnings or failures.   @author Tommy Svensson         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void warning(String message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Warns about something.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The warning message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void fail(String message, Throwable cause) throws RuntimeException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Indicate failure.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The failure message.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>cause</em> - The cause of the failure. Can be null!         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>RuntimeException</em> - This method must throw a RuntimeException.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>JSONNull </strong> extends  JSONValue    [se.natusoft.osgi.aps.json] {      
+    </p>
+    <blockquote>
+      <p>
+         This class is based on the structure defined on http://www.json.org/.   @author Tommy Svensson         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public JSONNull()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new JSONNull instance for writing JSON output.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public JSONNull(JSONErrorHandler errorHandler)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new JSONNull instance for reading JSON input or writing JSON output.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>errorHandler</em>        
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public String toString()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        as String.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void readJSON(char c, JSONReader reader) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Reads the content of the JSONNull model from the specified input stream.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>c</em> - A preread character from the input stream.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>reader</em> - The JSONReader to read from.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void writeJSON(JSONWriter writer, boolean compact) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Writes the content of this JSONNull model to the specified output stream in JSON format.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>writer</em> - The JSONWriter to write to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>compact</em> - Write json in compact format.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>JSONNumber </strong> extends  JSONValue    [se.natusoft.osgi.aps.json] {      
+    </p>
+    <blockquote>
+      <p>
+         This class is based on the structure defined on http://www.json.org/.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        This represents the "number" diagram on the above mentioned web page:         
+      </p>
+    </blockquote>
+    <pre>
+      <code>
+                                      ______________________
+                                     /                      \
+                                     |                      |
+|_|______________ (0) _______________/__ (.) ___ (digit) ___\_________________________|_|
+| | \       /  \                    /         /           \  \                      / | |
+    |       |  |                   /          \___________/  |                      |
+    \_ (-) _/  \_ (digit 1-9) ____/_______                   |                      |
+                               /          \                  |                      |
+                               \_ (digit) /           _ (e) _|                      |
+                                                     |_ (E) _|           ___________|
+                                                     |        _ (+) _   /           |
+                                                     \_______/_______\__\_ (digit) _/
+                                                             \_ (-) _/
+      </code>
+    </pre>
+    <blockquote>
+      <p>
+         @author Tommy Svesson         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public JSONNumber(Number value)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new JSONNumber instance for writing JSON output.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>value</em> - The numeric value.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public JSONNumber(JSONErrorHandler errorHandler)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new JSONNumber instance for reading JSON input or writing JSON output.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>errorHandler</em> - The error handle to use.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public Number toNumber()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the number as a Number.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public double toDouble()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the number as a double value.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public float toFloat()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the number as a float value.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public int toInt()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the number as an int value.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public long toLong()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the number as a long value.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public short toShort()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the number as a short value.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public byte toByte()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the number as a byte value.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String toString()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        number as String.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Object to(Class type)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the number as a value of the type specified by the type parameter.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>type</em> - The type of the returned number.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void readJSON(char c, JSONReader reader) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Loads the content of this JSONNumber model from the specified input stream.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>c</em> - A preread character from the input stream.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>reader</em> - The JSONReader to read from.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void writeJSON(JSONWriter writer, boolean compact) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Writes the contents of this JSONNumber to the specified output stream in JSON format.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>writer</em> - The JSONWriter to write to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>compact</em> - Write json in compact format.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>JSONObject </strong> extends  JSONValue    [se.natusoft.osgi.aps.json] {      
+    </p>
+    <blockquote>
+      <p>
+         This class is based on the structure defined on http://www.json.org/.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        It represents the "object" diagram on the above mentioned web page:         
+      </p>
+    </blockquote>
+    <pre>
+      <code>
+             ________________________________________
+            /                                        \
+|___ ({) __/_____ (string) ____ (:) ____ (value) _____\___ (}) ____|
+|           /                                        \             |
+            \__________________ (,) _________________/
+
+      </code>
+    </pre>
+    <blockquote>
+      <p>
+        This is also the starting point.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        To write JSON, create a new JSONObject (new JSONObject()) and call addProperty(name, value) for children. Then do jsonObj.writeJSON(outputStream).         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        To read JSON, create a new JSONObject (new JSONObject(jsonErrorHandler)) and then do jsonObj.readJSON(inputStream). Then use getProperty(name) to extract children.    @author Tommy Svensson         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public JSONObject(JSONErrorHandler errorHandler)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a JSONObject instance for writing JSON output.  Creates a new JSONObject instance for reading JSON input or writing JSON output.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>errorHandler</em>        
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public Set&lt;JSONString&gt; getPropertyNames()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the names of the available properties.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public JSONValue getProperty(JSONString name)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the named property.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the property to get.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public JSONValue getProperty(String name)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the named property.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the property to get.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void addProperty(JSONString name, JSONValue value)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Adds a property to this JSONObject instance.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the property.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>value</em> - The property value.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void addProperty(String name, JSONValue value)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Adds a property to this JSONObject instance.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the property.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>value</em> - The property value.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void readJSON(char c, JSONReader reader) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Loads this JSONObject model from the specified input stream.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>c</em> - A pre-read character from the input stream.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>reader</em> - The JSONReader to read from.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void writeJSON(JSONWriter writer, boolean compact) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Writes the contents of this JSONObject model to the specified output stream in JSON format.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>writer</em> - The JSONWriter to write to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>compact</em> - Write json in compact format.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>JSONString </strong> extends  JSONValue    [se.natusoft.osgi.aps.json] {      
+    </p>
+    <blockquote>
+      <p>
+         This class is based on the structure defined on http://www.json.org/.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        This represents the "string" diagram on the above mentioned web page:         
+      </p>
+    </blockquote>
+    <pre>
+      <code>
+           __________________________________________________________________________
+          /    ___________________________________________________________________   \
+          |   /                                                                   \  |
+|___ (") _|___|___ (Any UNICODE character except " or \ or control character) ____|__|_ (") ___|
+|           \                                                                  /               |
+             |                                                                 |
+             \__ (\) ___ (") (quotation mark) _________________________________|
+                     |__ (\) (reverse solidus) ________________________________|
+                     |__ (/) (solidus) ________________________________________|
+                     |__ (b) (backspace) ______________________________________|
+                     |__ (f) (formfeed) _______________________________________|
+                     |__ (n) (newline) ________________________________________|
+                     |__ (r) (carriage return) ________________________________|
+                     |__ (t) (orizontal tab) __________________________________|
+                     \__ (u) (4 hexadecimal digits) ___________________________/
+      </code>
+    </pre>
+    <blockquote>
+      <p>
+          @author Tommy Svensson         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public JSONString(String value)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new JSONString for writing JSON output.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>value</em> - The value of this JSONString.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public JSONString(JSONErrorHandler errorHandler)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new JSONString for reading JSON input and writing JSON output.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>errorHandler</em>        
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>protected void readJSON(char c, JSONReader reader) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Loads this JSONString model from the specified input stream.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>c</em> - A preread character from the input stream.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>reader</em> - The JSONReader to read from.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void writeJSON(JSONWriter writer, boolean compact) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Writes the contents of this JSONString to the specified output stream in JSON format.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>writer</em> - The JSONWriter to write to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>compact</em> - If true write compact.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String toString()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Converts this to a String.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public int hashCode()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the hash code of this instance.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public boolean equals(Object obj)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Compares this object with another for equality.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>obj</em> - The object to compare to.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>abstract</em> <em>class</em> <strong>JSONValue </strong>   [se.natusoft.osgi.aps.json] {      
+    </p>
+    <blockquote>
+      <p>
+         This class is based on the structure defined on http://www.json.org/.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        This is a base class for all other JSON* classes. It represents the "value" diagram on the above mentioned web page:         
+      </p>
+    </blockquote>
+    <pre>
+      <code>
+                                                  Subclasses
+                                                  ----------
+|________________ (STRING) ________________|      JSONString
+|  |_____________ (NUMBER) _____________|  |      JSONNumber
+   |_____________ (OBJECT) _____________|         JSONObject
+   |_____________ (ARRAY)  _____________|         JSONArray
+   |_____________ (true)   _____________|     \__ JSONBoolean
+   |_____________ (false)  _____________|     /
+   \_____________ (null)   _____________/         JSONNull
+
+      </code>
+    </pre>
+    <blockquote>
+      <p>
+           @author Tommy Svensson         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>protected JSONValue(JSONErrorHandler errorHandler)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new JSONValue.  Creates a new JSONValue         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected abstract void readJSON(char c, JSONReader reader) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         This will read the vale from an input stream.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        the last character read.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>c</em> - The first character already read from the input stream.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>reader</em> - The reader to read from.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on IO failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected abstract void writeJSON(JSONWriter writer, boolean compact) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         This will write the data held by this JSON value in JSON format on the specified stream.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>writer</em> - A JSONWriter instance to write with.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>compact</em> - If true write the JSON as compact as possible. false means readable, indented.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - On IO failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected JSONErrorHandler getErrorHandler()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The user supplied error handler.        
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>protected void warn(String message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Provide a warning.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The warning message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void fail(String message, Throwable cause)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Fails the job.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The failure message.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>cause</em> - An eventual cause of the failure. Can be null.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void fail(String message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Fails the job.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The failure message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void readJSON(InputStream is) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         This will read the value from an input stream.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>is</em> - The input stream to read from.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on IO failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void writeJSON(OutputStream os) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         This writes JSON to the specified OutputStream.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>os</em> - The outoutStream to write to.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on IO failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void writeJSON(OutputStream os, boolean compact) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         This writes JSON to the specified OutputStream.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>os</em> - The outoutStream to write to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>compact</em> - If true write JSON as compact as possible. If false write it readable with indents.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on IO failure.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>protected JSONReader(PushbackReader reader, JSONErrorHandler errorHandler)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new JSONReader instance.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>reader</em> - The PushbackReader to read from.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>errorHandler</em> - The handler for errors.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected char getChar() throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the next character on the specified input stream, setting EOF state checkable with isEOF().          
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on IO problems.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected char getChar(boolean handleEscapes) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the next character on the specified input stream, setting EOF state checkable with isEOF().          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>handleEscapes</em> - If true then \* escape character are handled.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on IO problems.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void ungetChar(char c) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Unreads the specified character so that the next call to getNextChar() will return it again.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>c</em> - The character to unget.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected char skipWhitespace(char c) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Skips whitespace returning the first non whitespace character. This also sets the EOF flag.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>c</em> - The first char already read from the input stream.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected char skipWhitespace() throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Skips whitespace returning the first non whitespace character. This also sets the EOF flag.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>protected char readUntil(String until, char c, StringBuilder sb, boolean handleEscapes) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Reads until any of a specified set of characters occur.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+                
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>until</em> - The characters to stop reading at. The stopping character will be returned unless EOF.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>c</em> - The first preread character.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>sb</em> - If not null read characters are added to this. The stopping character will not be included.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>handleEscapes</em> - True if we are reading a string that should handle escape characters.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected char readUntil(String until, StringBuilder sb, boolean string) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Reads until any of a specified set of characters occur.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>until</em> - The characters to stop reading at. The stopping character will be returned unless EOF.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>sb</em> - If not null read characters are added to this. The stopping character will not be included.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>string</em> - True if we are rading a string that should be escaped.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected char readUntil(String until, StringBuilder sb) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Reads until any of a specified set of characters occur.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>until</em> - The characters to stop reading at. The stopping character will be returned unless EOF.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>sb</em> - If not null read characters are added to this. The stopping character will not be included.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected boolean checkValidChar(char c, String validChars)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns true if c is one of the characters in validChars.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>c</em> - The character to check.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>validChars</em> - The valid characters.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void assertChar(char a, char e, String message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Asserts that char a equals expected char c.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>a</em> - The char to assert.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>e</em> - The expected value.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>message</em> - Failure message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void assertChar(char a, String expected, String message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Asserts that char a equals expected char c.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>a</em> - The char to assert.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>expected</em> - String of valid characters.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>message</em> - Failure message.         
+      </p>
+    </blockquote>
+    <p>
+      protected <em>static</em> <em>class</em> <strong>JSONWriter </strong>   [se.natusoft.osgi.aps.json] {      
+    </p>
+    <blockquote>
+      <p>
+         For subclasses to use in writeJSON(JSONWriter writer).         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>protected JSONWriter(Writer writer)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new JSONWriter instance.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>writer</em> - The writer to write to.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void write(String json) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Writes JSON output.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>json</em> - The JSON output to write.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on IO failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void writeln(String json) throws  IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Writes JSON output plus a newline.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>json</em> - The JSON output to write.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>BeanInstance </strong>   [se.natusoft.osgi.aps.json.tools] {      
+    </p>
+    <blockquote>
+      <p>
+         This wraps a Java Bean instance allowing it to be populated with data using setProperty(String, Object) methods handling all reflection calls.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public BeanInstance(Object modelInstance)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new ModelInstance.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>modelInstance</em> - The model instance to wrap.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Object getModelInstance()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the test model instance held by this object.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public List&lt;String&gt; getSettableProperties()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns a list of settable properties.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public List&lt;String&gt; getGettableProperties()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns a list of gettable properties.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void setProperty(String property, Object value) throws JSONConvertionException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Sets a property          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>property</em> - The name of the property to set.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>value</em> - The value to set with.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>JSONConvertionException</em> - on any failure to set the property.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Object getProperty(String property) throws JSONConvertionException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the value of the specified property.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The property value.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>property</em> - The property to return value of.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>JSONConvertionException</em> - on failure (probably bad property name!).         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public Class getPropertyType(String property) throws JSONConvertionException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the type of the specified property.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The class representing the property type.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>property</em> - The property to get the type for.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>JSONConvertionException</em> - if property does not exist.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>JavaToJSON </strong>   [se.natusoft.osgi.aps.json.tools] {      
+    </p>
+    <blockquote>
+      <p>
+         Takes a JavaBean and produces a JSONObject.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static JSONObject convertObject(Object javaBean) throws JSONConvertionException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Converts a JavaBean object into a JSONObject.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A JSONObject containing all values from the JavaBean.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>javaBean</em> - The JavaBean object to convert.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>JSONConvertionException</em> - on converting failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static JSONObject convertObject(JSONObject jsonObject, Object javaBean) throws JSONConvertionException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Converts a JavaBean object into a JSONObject.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A JSONObject containing all values from the JavaBean.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>jsonObject</em> - The jsonObject to convert the bean into or null for a new JSONObject.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>javaBean</em> - The JavaBean object to convert.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>JSONConvertionException</em> - on converting failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static JSONValue convertValue(Object value)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Converts a value from a java value to a JSONValue.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The converted JSONValue.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>value</em> - The java value to convert. It can be one of String, Number, Boolean, null, JavaBean, or an array of those.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>JSONConvertionException </strong> extends  RuntimeException    [se.natusoft.osgi.aps.json.tools] {      
+    </p>
+    <blockquote>
+      <p>
+         This exception is thrown on failure to convert from JSON to Java or Java to JSON.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        Almost all exceptions within the APS services and libraries extend either APSException or APSRuntimeException. I decided to just extend RuntimeException here to avoid any other dependencies for this library since it can be useful outside of APS and can be used as any jar if not deployed in OSGi container.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public JSONConvertionException(final String message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new JSONConvertionException.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The exception message         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public JSONConvertionException(final String message, final Throwable cause)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new JSONConvertionException.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The exception message         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>cause</em> - The cause of this exception.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>JSONToJava </strong>   [se.natusoft.osgi.aps.json.tools] {      
+    </p>
+    <blockquote>
+      <p>
+         Creates a JavaBean instance and copies data from a JSON value to it.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        The following mappings are made in addition to the expected ones: &lt;ul  &lt;li JSONArray only maps to an array property. li  &lt;li Date properties in bean are mapped from JSONString "yyyy-MM-dd HH:mm:ss" li  &lt;li Enum properties in bean are mapped from JSONString which have to contain enum constant name. li  ul         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static &lt;T&gt; T convert(InputStream jsonStream, Class&lt;T&gt; javaClass) throws IOException, JSONConvertionException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns an instance of a java class populated with data from a json object value read from a stream.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A populated instance of javaClass.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>jsonStream</em> - The stream to read from.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>javaClass</em> - The java class to instantiate and populate.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on IO failures.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>JSONConvertionException</em> - On JSON to Java failures.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static &lt;T&gt; T convert(String json, Class&lt;T&gt; javaClass) throws IOException, JSONConvertionException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns an instance of a java class populated with data from a json object value read from a String containing JSON.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A populated instance of javaClass.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>json</em> - The String to read from.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>javaClass</em> - The java class to instantiate and populate.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on IO failures.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>JSONConvertionException</em> - On JSON to Java failures.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static &lt;T&gt; T convert(JSONValue json, Class&lt;T&gt; javaClass) throws JSONConvertionException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns an instance of java class populated with data from json.           
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A converted Java object.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>json</em> - The json to convert to java.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>javaClass</em> - The class of the java object to convert to.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>JSONConvertionException</em> - On failure to convert.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>SystemOutErrorHandler </strong> implements  JSONErrorHandler    [se.natusoft.osgi.aps.json.tools] {      
+    </p>
+    <blockquote>
+      <p>
+         A simple implementation of JSONErrorHandler that simply displays messages on System.out and throws a RuntimeException on fail. This is used by the tests. In a non test case another implementation is probably preferred.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void warning(String message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Warns about something.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The warning message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void fail(String message, Throwable cause) throws RuntimeException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Indicate failure.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The failure message.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>cause</em> - The cause of the failure. Can be null!         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>RuntimeException</em> - This method must throw a RuntimeException.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+  </body>
+</html>
