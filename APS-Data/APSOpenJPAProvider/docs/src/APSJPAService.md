@@ -45,5 +45,3 @@ This code example handles the APSJPAService having been restared or redeployed. 
 
 ## APIs
 
-The complete APS javadoc can be found at [http://apidoc.natusoft.se/APS/](http://apidoc.natusoft.se/APS/).
-
