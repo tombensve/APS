@@ -7,6 +7,9 @@
  *     Code Version
  *         0.9.0
  *     
+ *     Description
+ *         Provides a library of utilities, among them APSServiceTracker used by all other APS bundles.
+ *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
  *     
