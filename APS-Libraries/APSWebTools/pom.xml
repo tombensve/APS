@@ -107,7 +107,51 @@
 
     <build>
         <plugins>
-
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>gendocs</id>
+                        <goals>
+                            <goal>javadoc</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                    </execution>
+                    <execution>
+                        <id>jar-javadoc</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                        <configuration>
+                            <attach>true</attach>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>se.natusoft.maven.plugin</groupId>
+                <artifactId>ftp-maven-plugin</artifactId>
+                <version>${ftpPlugin.ver}</version>
+                <executions>
+                    <execution>
+                        <id>upload</id>
+                        <goals>
+                            <goal>upload</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                        <configuration>
+                            <files>**/.*</files>
+                            <targetHost>${javadoc.upload}</targetHost>
+                            <targetPort>21</targetPort>
+                            <userName>${web.server.user}</userName>
+                            <password>${web.server.pw}</password>
+                            <targetPath>${javadoc.base.path}/APSWebTools</targetPath>
+                            <baseDir>${basedir}/target/site/apidocs</baseDir>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

@@ -1,0 +1,2229 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="generated-by" content="MarkdownDoc"/>
+    <link href="docs.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body>
+    <H1>APSWebTools</H1>
+    <p>
+      This is not an OSGi bundle! This is a plain jar containing utilities for web applications. Specifically APS administration web applications. This jar has to be included in each web application that wants to use it.      
+    </p>
+    <p>
+      Among other things it provides support for being part of the APS administration web login (APSAdminWebLoginHandler). Since the APS administration web is built using Vaadin it has Vaadin support classes. APSVaadinOSGiApplication is a base class used by all APS administration webs.      
+    </p>
+    <H2>APIs</H2>
+    <p>
+      public <em>class</em> <strong>APSAdminWebLoginHandler </strong> extends  APSLoginHandler  implements  APSLoginHandler.HandlerInfo    [se.natusoft.osgi.aps.tools.web] {      
+    </p>
+    <blockquote>
+      <p>
+         This is a login handler to use by any admin web registering with the APSAdminWeb to validate that there is a valid login available.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public APSAdminWebLoginHandler(BundleContext context)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new APSAdminWebLoginHandler.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>context</em> - The bundle context.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void setSessionIdFromRequestCookie(HttpServletRequest request)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Sets the session id from a cookie in the specified request.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>request</em> - The request to get the session id cookie from.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void saveSessionIdOnResponse(HttpServletResponse response)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Saves the current session id on the specified response.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>response</em> - The response to save the session id cookie on.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getSessionId()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        An id to an APSSessionService session.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void setSessionId(String sessionId)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Sets a new session id.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>sessionId</em> - The session id to set.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getUserSessionName()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The name of the session data containing the logged in user if any.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getRequiredRole()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The required role of the user for it to be considered logged in.        
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>APSLoginHandler </strong> implements  LoginHandler    [se.natusoft.osgi.aps.tools.web] {      
+    </p>
+    <blockquote>
+      <p>
+         This class validates if there is a valid logged in user and also provides a simple login if no valid logged in user exists.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        This utility makes use of APSSimpleUserService to login auth and APSSessionService for session handling. Trackers for these services are created internally which requires the shutdown() method to be called when no longer used to cleanup.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        The bundle needs to import the following packages for this class to work:         
+      </p>
+    </blockquote>
+    <pre>
+      <code>
+    &lt;code&gt;
+       se.natusoft.osgi.aps.api.auth.user;version="[0.9,2)",
+       se.natusoft.osgi.aps.api.auth.user.model;version="[0.9,2)",
+       se.natusoft.osgi.aps.api.misc.session;version="[0.9,2)"
+    &lt;/code&gt;
+      </code>
+    </pre>
+    <blockquote>
+      <p>
+                
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public APSLoginHandler(BundleContext context, HandlerInfo handlerInfo)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new VaadinLoginDialogHandler.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>context</em> - The bundles BundleContext.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected void setHandlerInfo(HandlerInfo handlerInfo)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Sets the handler info when not provided in constructor.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>handlerInfo</em> - The handler info to set.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void shutdown()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Since this class internally creates and starts service trackers this method needs to be called on shutdown to cleanup!         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public User getLoggedInUser()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         This returns the currently logged in user or null if none are logged in.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public boolean hasValidLogin()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns true if this handler sits on a valid login.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public boolean login(String userId, String pw)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Logs in with a userid and a password.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if successfully logged in, false otherwise.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>userId</em> - The id of the user to login.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>pw</em> - The password of the user to login.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public User login(String userId, String pw, String requiredRole)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Logs in with a userid and a password.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        This method does not use or modify any internal state of this object! It only uses the APSUserService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the APSUserService when this object is already available due to the code also being an APSAdminWeb member. It is basically a convenience.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        a valid User object on success or null on failure.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>userId</em> - The id of the user to login.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>pw</em> - The password of the user to login.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>requiredRole</em> - If non null the user is required to have this role for a successful login. If it doesn't null will         
+      </p>
+    </blockquote>
+    <p>
+      public <em>static</em> <em>interface</em> <strong>HandlerInfo </strong>   [se.natusoft.osgi.aps.tools.web] {      
+    </p>
+    <blockquote>
+      <p>
+         Config values for the login handler.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getSessionId()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        An id to an APSSessionService session.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>void setSessionId(String sessionId)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Sets a new session id.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>sessionId</em> - The session id to set.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getUserSessionName()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The name of the session data containing the logged in user if any.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getRequiredRole()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The required role of the user for it to be considered logged in.        
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>ClientContext </strong>   [se.natusoft.osgi.aps.tools.web] {      
+    </p>
+    <blockquote>
+      <p>
+         A context to pass to client code for use in calling services.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public ClientContext(UserMessager userMessager, OSGiBundleContextProvider bundleContextProvider)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new ClientContext instance.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>userMessager</em> - Used to send messages to the user.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>bundleContextProvider</em> - Provides the OSGi BundleContext.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public BundleContext getBundleContext()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the OSGi BundeContext.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public UserMessager getMessager()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Use for producing messages to the user.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public &lt;Service&gt; void addService(Class&lt;Service&gt; serviceInterface, Service serviceImpl)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Adds a service to the context.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>serviceInterface</em> - The interface of the service to add.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>serviceImpl</em> - The implementation to the service.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public &lt;Service&gt; Service getService(Class&lt;Service&gt; serviceClass)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the service of the specified service interface.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The service.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>&lt;Service&gt;</em> - The service type.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>serviceClass</em> - The service type class.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>CookieTool </strong>   [se.natusoft.osgi.aps.tools.web] {      
+    </p>
+    <blockquote>
+      <p>
+         Provides simple static cookie tools.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static String getCookie(Cookie[] cookies, String name)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the cookie having the specified name or null if none is found.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>cookies</em> - The complete set of cookies from the request.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static void setCookie( HttpServletResponse resp, String name, String value, int maxAge, String path)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Sets a cookie on the specified response.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>resp</em> - The servlet response to set the cookie on.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the cookie.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>value</em> - The value of the cookie.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>maxAge</em> - The max age of the cookie.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void deleteCookie(String name, HttpServletResponse resp)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Removes a cookie.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the cookie to remove.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>resp</em> - The servlet response to remove the cookie on.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>LoginHandler </strong>   [se.natusoft.osgi.aps.tools.web] {      
+    </p>
+    <blockquote>
+      <p>
+         This is a simple API for doing a login.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public boolean hasValidLogin()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns true if this handler sits on a valid login.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean login(String userId, String pw)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Logs in with a userid and a password.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if successfully logged in, false otherwise.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>userId</em> - The id of the user to login.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>pw</em> - The password of the user to login.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void shutdown()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         If the handler creates service trackers or other things that needs to be shutdown when no longer used this methods needs to be called when the handles is no longer needed.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>OSGiBundleContextProvider </strong>   [se.natusoft.osgi.aps.tools.web] {      
+    </p>
+    <blockquote>
+      <p>
+         Gives access to the OSGi BundleContext.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public BundleContext getBundleContext()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the context for this deployed bundle.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>UserMessager </strong>   [se.natusoft.osgi.aps.tools.web] {      
+    </p>
+    <blockquote>
+      <p>
+         Handles presenting user with messages.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        Different GUI choices needs different implementations of this. The basic idea behind this is to make message handling less dependent on GUI. Unit tests can also supply own implementation of this.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void error(String caption, String message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Shows an error message on the window.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>caption</em> - The message caption.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>message</em> - The message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void warning(String caption, String message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Shows a warning message on the window.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>caption</em> - The message caption.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>message</em> - The message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void info(String caption, String message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Shows an info message on the window.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>caption</em> - The message caption.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>message</em> - The message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void tray(String caption, String message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Shows a tray message on the window.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>caption</em> - The message caption.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>message</em> - The message.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>APSSessionListener </strong> implements  HttpSessionListener  [se.natusoft.osgi.aps.tools.web.vaadin] {      
+    </p>
+    <blockquote>
+      <p>
+         This is registered in web.xml and installs itself in the session on session create using its class name as key. Web applications can then get this from the session and register themselves as "destroyed" listeners on this to be called when sessionDestroyed() is called on this.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        The main reason for this is to be able to shutdown and release any service trackers that were started on session startup.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public void addDestroyedListener(APSSessionDestroyedListener destroyedListener)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Adds a session destroyed listener to forward session destroyed events to.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>destroyedListener</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void sessionCreated(HttpSessionEvent httpSessionEvent)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Gets called when a session is created.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>httpSessionEvent</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void sessionDestroyed(HttpSessionEvent httpSessionEvent)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Gets called when a session is destroyed.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>httpSessionEvent</em>        
+      </p>
+    </blockquote>
+    <p>
+      public <em>static</em> <em>interface</em> <strong>APSSessionDestroyedListener </strong>   [se.natusoft.osgi.aps.tools.web.vaadin] {      
+    </p>
+    <blockquote>
+      <p>
+         This should be implemented by class wanting to receive the sessionDestroyed event.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void sessionDestroyed()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Gets called when the session is destroyed.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>APSTheme </strong>   [se.natusoft.osgi.aps.tools.web.vaadin] {      
+    </p>
+    <blockquote>
+      <p>
+         The only purpose of this class is to define the vaadin theme used.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public BundleContext getBundleContext()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         This will return this war bundles BundleContext. This is only available if this war is deployed in an R4.2+ compliant OSGi container.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The OSGi bundle context.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void init()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Initializes the vaadin application.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void setMainWindow(Window mainWindow)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Initializes the gui part of the applicaiton.  Initializes the service setup.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>clientContext</em> - The client context for accessing services.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>clientContext</em> - The client cntext for accessing services.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>mainWindow</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public ClientContext getClientContext()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The client context.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void sessionDestroyed()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Called when session is destroyed.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>HorizontalLine </strong> extends  Label    [se.natusoft.osgi.aps.tools.web.vaadin.components] {      
+    </p>
+    <blockquote>
+      <p>
+         This is a component that draws a horizontal line.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public HorizontalLine()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new HorizontalLine.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>HTMLFileLabel </strong> extends  Label    [se.natusoft.osgi.aps.tools.web.vaadin.components] {      
+    </p>
+    <blockquote>
+      <p>
+         This is a Label that takes a classpath relative path to an html file and loads it as label content. Please note that it required XHTML!         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        Any comment blocks in the html are skipped when loading.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public HTMLFileLabel(String htmlFilePath, String themeName, ClassLoader classLoader)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new HTMLFileLabel.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>htmlFilePath</em> - The label content html file.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>themeName</em> - The name of the theme used. Any {vaadin-theme} in loaded html will be         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>classLoader</em> - The class loader to use for finding the html file path.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>MenuBuilder&lt;MenuItemRepresentative&gt; </strong>   [se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.builderapi] {      
+    </p>
+    <blockquote>
+      <p>
+         This must be implemented by a provider of menu entries.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void buildMenuEntries(HierarchicalModel&lt;MenuItemData&lt;MenuItemRepresentative&gt;&gt; menuModel)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         This should add menu entries to the received menu model.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>menuModel</em> - The model to add menu entries to.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>MenuItemData&lt;ItemRepresentative&gt; </strong>   [se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.builderapi] {      
+    </p>
+    <blockquote>
+      <p>
+         Holds item related information that is associated with a model item by its item id.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public ItemRepresentative getItemRepresentative()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new MenuTreeItemData instance.  This represents one specific configuration.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getToolTipText()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         The tooltip text for the item.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Action[] getActions()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         The actions for the item.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public ComponentHandler getSelectComponentHandler()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         The component hander for when this item is selected.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Map&lt;Action, MenuActionProvider&gt; getActionComponentHandlers()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         The menu action handlers per action.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>ComponentHandler </strong> extends  MenuActionProvider    [se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.handlerapi] {      
+    </p>
+    <blockquote>
+      <p>
+         Implementations of this combines possibly a singleton instance of a GUI component with item specific data and then returns the component.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public AbstractComponent getComponent()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The component that should handle the item.        
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>MenuActionExecutor </strong> extends  MenuActionProvider    [se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.handlerapi] {      
+    </p>
+    <blockquote>
+      <p>
+         This is an alternative to ComponentHandler for when there is not need to display a component, just perform some action.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void executeMenuAction()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Executes the menu action.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>MenuTree </strong> extends  Tree  implements  Action.Handler,  ItemDescriptionGenerator,  Refreshable    [se.natusoft.osgi.aps.tools.web.vaadin.components.menutree] {      
+    </p>
+    <blockquote>
+      <p>
+         This is a semi advanced menu tree component.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        You add 'MenuBuilder's to provide the menu contents. The builders also provide actions for when a menu entry is accessed.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static final Action[] NO_ACTIONS = new Action[0]</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Indicates no actions.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public MenuTree()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new MenuTree component.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void addMenuBuilder(MenuBuilder menuBuilder)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Adds a MenuBuilder to the menu tree.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>menuBuilder</em> - The menu builder to add.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String generateDescription(Component source, Object itemId, Object propertyId)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Called by Table when a cell (and row) is painted or a item is painted in Tree.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The description or "tooltip" of the item.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>source</em> - The source of the generator, the Tree or Table the         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>itemId</em> - The itemId of the painted cell         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>propertyId</em> - The propertyId of the cell, null when getting row         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void refresh()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Reloads the contents of the menu. This is never done automatically!!         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public MenuItemData getItemData(IntID itemId)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns a data object associated with a menu item by its item id.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The associated data or null.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>itemId</em> - The item id of the item whose associated data to get.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void setActionHandler(MenuActionHandler actionHandler)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Sets the action handler for forward actions to.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>actionHandler</em> - The action handler to set.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public void expandHierarchicalModel()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Expands all nodes in the hierarchical model.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Action[] getActions(Object target, Object sender)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Gets the list of actions applicable to this handler.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        the list of Action        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>target</em> - the target handler to list actions for. For item         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>sender</em> - the party that would be sending the actions. Most of this         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void handleAction(Action action, Object sender, Object target)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Handles an action for the given target. The handler method may just discard the action if it's not suitable.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>action</em> - the action to be handled.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>sender</em> - the sender of the action. This is most often the action         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>target</em> - the target of the action. For item containers this is the         
+      </p>
+    </blockquote>
+    <p>
+      public <em>static</em> <em>interface</em> <strong>MenuActionHandler </strong>   [se.natusoft.osgi.aps.tools.web.vaadin.components.menutree] {      
+    </p>
+    <blockquote>
+      <p>
+         This provides half of the Action.Handler API since we provide the first part our self.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void handleAction(Action action, Object sender, Object target)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Handles an action for the given target. The handler method may just discard the action if it's not suitable.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>action</em> - the action to be handled.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>sender</em> - the sender of the action. This is most often the action         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>target</em> - the target of the action. For item containers this is the         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>SidesAndCenterLayout </strong> extends  HorizontalLayout    [se.natusoft.osgi.aps.tools.web.vaadin.components] {      
+    </p>
+    <blockquote>
+      <p>
+         This is a layout that only accepts 5 components at 5 positions: left, top, center, bottom, right.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        The layout looks like this:         
+      </p>
+    </blockquote>
+    <pre>
+      <code>
+    +------+----------------+------+
+    |      |                |      |
+    |      +----------------+      |
+    |      |                |      |
+    |      |                |      |
+    |      |                |      |
+    |      +----------------+      |
+    |      |                |      |
+    +------+----------------+------+
+      </code>
+    </pre>
+    <blockquote>
+      <p>
+        You set the different components with "setLeft(...), setTop(...), ...". All positions are optional, and you don't have to set any, but that would be pointless.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        When you have set all your components the doLayout() method must be called, and it cannot be called before that. If you fail to call doLayout() there will be an exception when rendering.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public SidesAndCenterLayout()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new SidesAndCenterLayout.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void setLeft(Component left)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Sets the component for the left side.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>left</em> - The component to set.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Component getLeft()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The left component or null if none.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void setTop(Component top)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Sets the component for the top.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>top</em> - The component to set.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Component getTop()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The top component or null if none.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void setCenter(Component center)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Sets the component for the center.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>center</em> - The component to set.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Component getCenter()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The center component or null if none.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void setBottom(Component bottom)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Sets the component for the bottom.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>bottom</em> - The component to set.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Component getBottom()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The bottom component or null if none.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void setRight(Component right)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Sets the component for the right side.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>right</em> - The component to set.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Component getRight()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The right component or null if none.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void doLayout()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Does the actual layout adding the provided component to the layout. This must be called after the components have been set.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        It starts by removing all components so if this has already been setup and this method called, it can be called again with new components added or components replaced with other components.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void paintContent(PaintTarget target) throws PaintException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         This is only here to validate that doLayout() have been called before painting is done.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>target</em>        
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>PaintException</em>        
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>HierarchicalModel&lt;Data&gt; </strong>   [se.natusoft.osgi.aps.tools.web.vaadin.models] {      
+    </p>
+    <blockquote>
+      <p>
+         This is a wrapping of Vaadins HierarchicalContainer.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        The reason for this is that I want to be able to associate a set of specific data with each item. For a Tree you can use item properties, but that is more of a side-effect than intentional usage. It will work less well with a Table. So this wrapper will build a HierarchicalContainer, generate item ids, which will also be used to associate a data object with each item in a separate map. Once the HierarchicalModel is built the HierarchicalContainer can be gotten from it and the data object for any item can be looked up by its id.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        This does currently not support default values!          
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public HierarchicalModel(ID idProvider, String... captionProperties)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new HierarchicalModel.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>idProvider</em> - An ID implementation providing IDs.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>captionProperties</em> - container captions.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public HierarchicalModel(ID idProvider)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new HierarchicalModel.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>idProvider</em> - An ID implementation providing IDs.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static String getDefaultCaption()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         If the no arg constructor is used the caption property is made up, and this will return it.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The made up caption property.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public ID addItem(ID parent, Data data, String... captions)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Adds an item to the model.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The item id of the added item.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>parent</em> - If non null this should be the item id of the parent of the item added.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>data</em> - The data to associate with the item.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>captions</em> - Caption values for the caption properties.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public ID addItem(Data data, String... captions)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Adds an item to the model.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The item id of the added item.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>data</em> - The data to associate with the item.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>captions</em> - Caption values for the caption properties.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Data getData(ID itemId)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the associated data for an item.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The associated data.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>itemId</em> - The id of the item to get associated data for.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public ID getCurrentItemId()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The current item id, which is also always the last/highest item id.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public HierarchicalContainer getHierarchicalContainer()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the HierarchicalContainer that we have built so far.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        Please note that it is the internal instance that is returned, not a copy of it! Thereby any changes made after the call to this method will still affect the returned object!         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>Refreshable </strong>   [se.natusoft.osgi.aps.tools.web.vaadin.tools] {      
+    </p>
+    <blockquote>
+      <p>
+         This is a way to provide components that needs to be refreshed to other components without creating dependencies to the whole component.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void refresh()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Refreshes its content.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>Refreshables </strong> implements  Iterable&lt;Refreshable&gt;    [se.natusoft.osgi.aps.tools.web.vaadin.tools] {      
+    </p>
+    <blockquote>
+      <p>
+         Manages a set of Refreshable objects.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public void addRefreshable(Refreshable refreshable)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new Refreshables instance.  Adds a refreshable to the refreshables.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>refreshable</em> - The refreshable to add.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Iterator&lt;Refreshable&gt; iterator()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns an iterator over a set of elements of type T.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        an Iterator.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void refresh()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Calls on the managed refreshables to do refresh.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>RefreshableSupport </strong>   [se.natusoft.osgi.aps.tools.web.vaadin.tools] {      
+    </p>
+    <blockquote>
+      <p>
+         This can be implemented by classes that supports adding Refreshables.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void addRefreshable(Refreshable refreshable)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Adds a refreshable to be passed to editors on menu entry selection.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>refreshable</em> - The refreshable to add.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>VaadinLoginDialogHandler </strong>   [se.natusoft.osgi.aps.tools.web.vaadin] {      
+    </p>
+    <blockquote>
+      <p>
+         This is a Vaadin based login dialog.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public VaadinLoginDialogHandler(Window appWindow, LoginHandler loginHandler)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new VaadinLoginDialogHandler.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>appWindow</em> - The Vaadin application window to add the popup login dialog to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>loginHandler</em> - A handler for doing the login from the login dialog input.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void setLoginDialogTitle(String loginDialogTitle)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Sets the title of the login dialog window.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>loginDialogTitle</em> - The title to set.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void doLoginDialog()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         This will popup the login dialog if it is not already showing. Any previously entered user and password are ofcourse cleared!         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>VaadinUserMessager </strong> implements  UserMessager    [se.natusoft.osgi.aps.tools.web.vaadin] {      
+    </p>
+    <blockquote>
+      <p>
+         Implementation of UserMessager for Vaadin applications using a Vaadin Window to do showNotification(...) on.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public VaadinUserMessager()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new VaadinUserMessager instance.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void setMessageWindow(Window messageWindow)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Sets the message window.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>messageWindow</em> - The message window to set.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void error(String caption, String message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Shows an error message on the window.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>caption</em> - The message caption.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>message</em> - The message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void warning(String caption, String message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Shows a warning message on the window.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>caption</em> - The message caption.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>message</em> - The message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void info(String caption, String message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Shows an info message on the window.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>caption</em> - The message caption.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>message</em> - The message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void tray(String caption, String message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Shows a tray message on the window.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>caption</em> - The message caption.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>message</em> - The message.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+  </body>
+</html>
