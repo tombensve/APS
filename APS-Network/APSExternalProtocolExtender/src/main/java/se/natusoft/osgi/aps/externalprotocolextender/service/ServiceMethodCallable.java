@@ -57,7 +57,7 @@ import org.osgi.framework.ServiceReference;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternallyCallable;
 import se.natusoft.osgi.aps.api.external.model.type.DataTypeDescription;
 import se.natusoft.osgi.aps.api.external.model.type.ParameterDataTypeDescription;
-import se.natusoft.osgi.aps.exceptions.APSNoServiceAvailableException;
+import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -193,7 +193,7 @@ public class ServiceMethodCallable implements APSExternallyCallable {
      *
      * @return computed result
      *
-     * @throws se.natusoft.osgi.aps.exceptions.APSNoServiceAvailableException
+     * @throws se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException
      *                   This is thrown if the service represented by this object
      *                   have gone away between the time you got this instance and
      *                   the call to this method. This is a runtime exception!
