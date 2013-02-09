@@ -76,8 +76,8 @@ public abstract class APSVaadinOSGiApplication
     private static final String NON_OSGI_DEPLOYMENT_SHORT_MESSAGE = "Application wrongly deployed!";
 
     /** The long message for non OSGi deployment. */
-    private static final String NON_OSGI_DEPLOYMENT_LONG_MESSAGE = "This application is an OSGi bundle and must be deployed as such in an OSGi container " +
-                                                                   "for it to be able to do its work!";
+    private static final String NON_OSGI_DEPLOYMENT_LONG_MESSAGE = "This application is an OSGi bundle and must be deployed as such in " +
+            "an OSGi container for it to be able to do its work!";
     
     //
     // Private Members
