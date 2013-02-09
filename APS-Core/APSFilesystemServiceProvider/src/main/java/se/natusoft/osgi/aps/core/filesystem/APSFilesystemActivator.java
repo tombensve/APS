@@ -46,9 +46,9 @@ import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
 import se.natusoft.osgi.aps.core.filesystem.service.APSFilesystemServiceProvider;
-import se.natusoft.osgi.aps.exceptions.APSNoServiceAvailableException;
 import se.natusoft.osgi.aps.tools.APSLogger;
 import se.natusoft.osgi.aps.tools.APSServiceTracker;
+import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException;
 
 import java.io.File;
 import java.util.Dictionary;

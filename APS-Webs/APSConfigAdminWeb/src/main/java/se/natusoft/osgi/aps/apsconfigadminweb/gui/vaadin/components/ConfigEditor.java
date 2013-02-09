@@ -54,8 +54,8 @@ import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.NodeSelector.NodeSelectionListener;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.css.CSS;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.editor.ConfigNode;
-import se.natusoft.osgi.aps.exceptions.APSNoServiceAvailableException;
 import se.natusoft.osgi.aps.tools.APSLogger;
+import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.HorizontalLine;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.handlerapi.ComponentHandler;
 import se.natusoft.osgi.aps.tools.web.vaadin.tools.Refreshable;

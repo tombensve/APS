@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="BSFConsole">
+    <option name="searchOptions">
+      <BSFConsoleSearchOptions />
+    </option>
+  </component>
   <component name="DBNavigator.Project.ConnectionManager">
     <connections />
   </component>

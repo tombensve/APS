@@ -54,7 +54,7 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * Since JBoss is apparently having trouble getting WABs to work (they are still using PAX, but claim that they have solved this in 7.2 that will not build when checked out from GitHub and don't seem to be released anytime soon) I am considering to add support for their WAR->OSGi service bridge though I haven't had much luck in getting that to work either so far. 
 
-# Setup
+# Pre Setup
 
 The Filesystem service is part of the core and used by other services. It should preferably have its filesystem root outside of the server installation. The BundleContext.getDataFile(String) returns a path within the deploy cache and is only valid for as long a a bundle is deployed. The point with the FilesystemService is to have a more permanent filesystem outside of the application server installation. To provide the FilesystemService root the following system property have to be set and available in the JVM instance:
 
@@ -62,8 +62,11 @@ The Filesystem service is part of the core and used by other services. It should
 
 How to do this differs between servers. In Glassfish you can supply system properties with its admin gui. 
 
-If this system property is not set the default root will be `.aps/apsfs` in the home directory of the user the server is run as. 
+If this system property is not set the default root will be BundleContext.getFile(). This will work but is not optimal!
 
 After this path has been setup and the server started, all other configuration can be done in http://…/apsadminweb/. 
 
- 
+# Javadoc
+
+The complete javadoc for all services can be found at [http://apidoc.natusoft.se/APS](http://apidoc.natusoft.se/APS).
+

@@ -51,8 +51,8 @@ import se.natusoft.osgi.aps.core.config.store.APSConfigEnvStore;
 import se.natusoft.osgi.aps.core.config.store.APSConfigMemoryStore;
 import se.natusoft.osgi.aps.core.config.store.APSConfigMemoryStore.ConfigUpdateListener;
 import se.natusoft.osgi.aps.core.config.store.APSConfigPersistentStore;
-import se.natusoft.osgi.aps.exceptions.APSNoServiceAvailableException;
 import se.natusoft.osgi.aps.tools.APSLogger;
+import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException;
 
 import java.io.IOException;
 import java.util.HashMap;
