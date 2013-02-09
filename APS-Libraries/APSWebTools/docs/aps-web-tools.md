@@ -6,6 +6,10 @@ Among other things it provides support for being part of the APS administration 
 
 ## APIs
 
+The javadoc for these can be found at [http://apidoc.natusoft.se/APSWebTools](http://apidoc.natusoft.se/APSWebTools).
+
+----
+
 public _class_ __APSAdminWebLoginHandler__ extends  APSLoginHandler  implements  APSLoginHandler.HandlerInfo    [se.natusoft.osgi.aps.tools.web] {
 
 >  This is a login handler to use by any admin web registering with the APSAdminWeb to validate that there is a valid login available. 
