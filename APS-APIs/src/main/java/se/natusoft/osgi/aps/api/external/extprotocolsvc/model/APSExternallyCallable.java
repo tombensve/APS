@@ -84,10 +84,7 @@ public interface APSExternallyCallable<ReturnType> extends Callable<ReturnType> 
      * Computes a result, or throws an exception if unable to do so.
      *
      * @return computed result
-     * @throws se.natusoft.osgi.aps.exceptions.APSNoServiceAvailableException This is thrown if the service represented by this object
-     *                                                                        have gone away between the time you got this instance and
-     *                                                                        the call to this method. This is a runtime exception!
-     * @throws Exception if unable to compute a result. 
+     * @throws Exception if unable to compute a result.
      */
     @Override ReturnType call() throws Exception;
 

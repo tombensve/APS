@@ -40,7 +40,6 @@ import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternalProtoco
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternallyCallable;
 import se.natusoft.osgi.aps.api.net.rpc.service.RPCProtocol;
 import se.natusoft.osgi.aps.api.net.rpc.streamed.service.StreamedRPCProtocol;
-import se.natusoft.osgi.aps.exceptions.APSNoServiceAvailableException;
 
 import java.util.List;
 import java.util.Set;
@@ -70,9 +69,9 @@ public interface APSExternalProtocolService {
      *
      * @param serviceName The name of the service to get callables for.
      *
-     * @throws APSNoServiceAvailableException If the service is not available.
+     * @throws RuntimeException If the service is not available.
      */
-    public List<APSExternallyCallable> getCallable(String serviceName) throws APSNoServiceAvailableException;
+    public List<APSExternallyCallable> getCallable(String serviceName) throws RuntimeException;
 
     /**
      * Returns all available functions of the specified service.
