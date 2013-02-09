@@ -4,7 +4,9 @@
     <facet type="Osmorc" name="OSGi">
       <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-tools-lib-0.9.0.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="" bundleSymbolicName="aps-tools-lib" bundleVersion="0.9.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
-          <property key="Export-Package" value="se.natusoft.osgi.aps.tools;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.tools.tracker;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.tools.models;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.tools.data;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.tools.annotation;version=&quot;0.9.0&quot;" />
+          <property key="Bundle-Vendor" value="Natusoft AB" />
+          <property key="Bundle-DocURL" value="http://www.natusoft.se/" />
+          <property key="Export-Package" value="se.natusoft.osgi.aps.tools;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.tools.tracker;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.tools.models;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.tools.data;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.tools.annotation;version=&quot;0.9.0&quot;,se.natusoft.osgi.aps.tools.exceptions;version=&quot;0.9.0&quot;" />
           <property key="Import-Package" value="*" />
           <property key="Embed-Directory" value="lib" />
           <property key="Embed-Dependency" value="*;scope=compile" />
@@ -26,9 +28,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="aps-apis" scope="PROVIDED" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.eclipse.persistence:javax.persistence:2.0.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: javax.jcr:jcr:2.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.osgi:org.osgi.core:4.2.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.osgi:org.osgi.compendium:4.2.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.8.2" level="project" />

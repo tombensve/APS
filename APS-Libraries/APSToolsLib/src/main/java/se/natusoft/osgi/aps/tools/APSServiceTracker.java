@@ -34,8 +34,7 @@
 package se.natusoft.osgi.aps.tools;
 
 import org.osgi.framework.*;
-import se.natusoft.osgi.aps.exceptions.APSNoServiceAvailableException;
-import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
+import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException;
 import se.natusoft.osgi.aps.tools.tracker.OnServiceAvailable;
 import se.natusoft.osgi.aps.tools.tracker.OnServiceLeaving;
 import se.natusoft.osgi.aps.tools.tracker.WithService;
@@ -111,7 +110,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     private int timeout = -1;
 
     /** If set to true timeout will be ignored if used from a BundleActivator! */
-    private boolean smartTimeout = false;
+    private boolean smartTimeout = false; // TODO: Remove this!
 
     /** The service class to track. */
     private Class<Service> serviceClass = null;
@@ -229,24 +228,6 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     //
 
     /**
-     * Sets the smart timeout mode. If true then no timeouts will apply when called from a bundle activator start or stop method.
-     * <p/>
-     * <b>Be warned:</b> It only checks for "start" or "stop" method names in the current stack trace. If you have methods called
-     * that, that aren't BundleActivator methods it is not smart enough to be aware of that!
-     * <p/>
-     * The point of this flag is to be able to create a tracker with a medium or long timeout to be passed to a service, but that
-     * can still also be called from within an activator start method, and when that happens the timeout gets turned off for that
-     * call, but will be on when the service uses the tracker. BundleActivator start (and stop) methods should run through fast
-     * and not hang waiting for anything! The alternative to this is to have different trackers for use within an activator method
-     * and for use within a service, with different timeouts (the first with no timeout).
-     *
-     * @param smartTimeout
-     */
-    public void setSmartTimeout(boolean smartTimeout) {
-        this.smartTimeout = smartTimeout;
-    }
-
-    /**
      * Sets the timeout as an int.
      *
      * @param timeout The timeout to set.
@@ -307,7 +288,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
             this.context.addServiceListener(this, filter);
         } catch (InvalidSyntaxException e) {
             // Since we are using an actuall class object and not a string as input this should not be able to happen.
-            throw new APSRuntimeException("Failed to add ServiceListener!", e);
+            throw new RuntimeException("Failed to add ServiceListener!", e);
         }
     }
 
@@ -488,10 +469,9 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * Runs the specified callback providing it with a service to use.
      * <p/>
      * This will wait for a service to become available if a timeout has been provided for
-     * the tracker. If the timeout is set to "forever" it will wait for a service no matter
-     * how long it takes for the service to become available.
+     * the tracker.
      * <p/>
-     * Dont use this in an activate start() method! onActiveServiceAvailable() and onActiveServiceLeaving()
+     * Don't use this in an activator start() method! onActiveServiceAvailable() and onActiveServiceLeaving()
      * are safe in a start() method, this is not!
      *
      * @param withService The callback to run and provide service to.
@@ -517,7 +497,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
             withService.withService(service);
         }
         catch (Exception e) {
-            throw new WithServiceException("withService() threw exception. Get original exception with getCause()!", e);
+            throw new WithServiceException(e.getMessage() , e);
         }
         finally {
             this.active.releaseActiveService();
@@ -539,11 +519,18 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * @throws WithServiceException Wraps any exception thrown by the callback.
      */
     public void withServiceIfAvailable(WithService withService, Object... args) throws WithServiceException {
-        try {
-            withService(withService, args);
-        }
-        catch (APSNoServiceAvailableException nsae) {
-            // Do nothing.
+        Object service = this.active.allocateActiveService();
+        if (service != null) {
+            try {
+                withService.withService(service, args);
+                withService.withService(service);
+            }
+            catch (Exception e) {
+                throw new WithServiceException(e.getMessage() , e);
+            }
+            finally {
+                this.active.releaseActiveService();
+            }
         }
     }
 
@@ -806,7 +793,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
         private Service activeService = null;
 
         /** Lock for synchronizing active. */
-        private Object activeLock = new Object();
+        private final Object activeLock = new Object();
 
         /**
          * This gets called when the first service becomes available and when the activly used
@@ -859,6 +846,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          *
          * @param active The service reference to set as active.
          */
+        @SuppressWarnings("unchecked")
         public void setActive(ServiceReference active) {
             ServiceReference oldActive = this.active;
 
@@ -867,7 +855,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
                 if (this.active != null && APSServiceTracker.this.cacheActiveService) {
                     this.activeService = (Service)APSServiceTracker.this.context.getService(this.active);
                     if (this.activeService == null) {
-                        throw new APSRuntimeException("Failed to get service from service reference: " + this.active);
+                        throw new RuntimeException("Failed to get service from service reference: " + this.active);
                     }
                 }
                 else {
@@ -880,8 +868,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
                     try {
                         APSServiceTracker.this.context.ungetService(oldActive); // It might be too late for this, but what the heck.
                     }
-                    catch (IllegalArgumentException iae) {}
-                    catch (IllegalStateException ise) {}
+                    catch (IllegalArgumentException | IllegalStateException ie) {}
                 }
                 if (this.onActiveServiceLeaving != null) {
                     OnServiceRunnerThread osrt = new OnServiceRunnerThread(oldActive, this.onActiveServiceLeaving);
@@ -902,7 +889,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
                     osrt.start();
                 }
                 if (APSServiceTracker.this.debugLogger != null) {
-                    APSServiceTracker.this.debugLogger.debug("Set active: " + active.toString());
+                    APSServiceTracker.this.debugLogger.debug("Set active: " + this.active.toString());
                 }
             }
         }
@@ -921,6 +908,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          *
          * @return The allocated active service instance.
          */
+        @SuppressWarnings("unchecked")
         public Service allocateActiveService() {
             return APSServiceTracker.this.cacheActiveService ? this.activeService : (Service)APSServiceTracker.this.context.getService(this.active);
         }
@@ -967,7 +955,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
                 try {
                     this.wait(timeout);
                 } catch (InterruptedException e) {
-                    // This is OK.
+                    // A new service becoming available will trigger a notify which will interrupt this wait.
                 }
             }
         }

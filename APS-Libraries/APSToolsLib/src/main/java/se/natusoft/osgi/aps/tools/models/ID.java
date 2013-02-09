@@ -34,7 +34,7 @@
 package se.natusoft.osgi.aps.tools.models;
 
 /**
- * This is a generic interface for representing IDs. 
+ * This is a generic interface for representing IDs.
  */
 public interface ID extends Comparable<ID> {
 

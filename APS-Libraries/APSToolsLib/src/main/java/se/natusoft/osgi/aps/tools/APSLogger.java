@@ -65,7 +65,7 @@ public class APSLogger {
     private LogService logService = null;
     
     /** The stream to write to when log service is not available. */
-    private PrintStream outStream = null;
+    private PrintStream outStream = System.out;
 
     //
     // Constructors
@@ -155,7 +155,7 @@ public class APSLogger {
      * @param cause An optional Throwable that is the cause of the log.
      */
     protected void log(int level, String message, Throwable cause) {
-        if (this.logServiceTracker != null) {
+        if (this.logService != null) {
             try {
                     logToService(this.logService, level, message, cause);
             }

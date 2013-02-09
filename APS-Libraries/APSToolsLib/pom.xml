@@ -68,7 +68,8 @@
             se.natusoft.osgi.aps.tools.tracker;version="${project.version}",
             se.natusoft.osgi.aps.tools.models;version="${project.version}",
             se.natusoft.osgi.aps.tools.data;version="${project.version}",
-            se.natusoft.osgi.aps.tools.annotation;version="${project.version}"
+            se.natusoft.osgi.aps.tools.annotation;version="${project.version}",
+            se.natusoft.osgi.aps.tools.exceptions;version="${project.version}"
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->
@@ -105,15 +106,6 @@
     </properties>
 
     <dependencies>
-        <!--
-            APS
-        -->
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-apis</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 
     <build>

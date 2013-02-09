@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="generated-by" content="MarkdownDoc"/>
+    <link href="docs.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body>
+    <H1>APSToolsLib</H1>
+    <p>
+      This is a library of utilities including a service tracker that beats the (beep) out of the default one including exception rather than null response, timeout specification, getting a proxied service implementation that automatically uses the tracker, allocating a service, calling it, and deallocating it again. This makes it trivially easy to handle a service being restarted or redeployed. It also includes a logger utility that will lookup the standard log service and log to that if found.      
+    </p>
+    <p>
+      This bundle provides no services. It just makes all its packages public. Every bundle included in APS makes use of APSToolsLib so it must be deployed for things to work.      
+    </p>
+    <p>
+      Please note that this bundle has no dependencies! That is, it can be used as is without requireing any other APS bundle.      
+    </p>
+    <H2>APSServiceTracker</H2>
+    <p>
+      This does the same thing as the standard service tracker included with OSGi, but does it better with more options and flexibility. One of the differences between this tracker and the OSGi one is that this throws an <em>APSNoServiceAvailableException</em> if the service is not available. Personally I think this is easier to work with than having to check for a null result.      
+    </p>
+    <p>
+      There are several variants of constructors, but here is an example of one of the most used ones within the APS services:      
+    </p>
+    <pre>
+      <code>
+    APSServiceTracker&lt;Service&gt; tracker = new APSServiceTracker&lt;Service&gt;(context, Service.class, ”20 seconds”);
+    tracker.start();
+    
+      </code>
+    </pre>
+    <p>
+      Note that the third argument, which is a timeout can also be specified as an int in which case it is always in miliseconds. The string variant supports the a second word of ”sec<a href='' title=''>onds</a>” and ”min<a href='' title=''>utes</a>” which indicates the type of the first numeric value. ”forever” means just that and requires just one word. Any other second words than those will be treated as milliseconds. The APSServiceTracker also has a set of constants for the timeout string value:      
+    </p>
+    <pre>
+      <code>
+    public static final String SHORT_TIMEOUT = "3 seconds";
+    public static final String MEDIUM_TIMEOUT = "30 seconds";
+    public static final String LARGE_TIMEOUT = "2 minutes";
+    public static final String VERY_LARGE_TIMEOUT = "5 minutes";
+    public static final String HUGE_LARGE_TIMEOUT = "10 minutes";
+    public static final String NO_TIMEOUT = "forever";
+      </code>
+    </pre>
+    <p>
+      On bundle stop you should do:      
+    </p>
+    <pre>
+      <code>
+    tracker.stop(context);
+    
+      </code>
+    </pre>
+    <p>
+      So that the tracker unregisters itself from receiving bundle/service events.      
+    </p>
+    <H3>Services and active service</H3>
+    <p>
+      The tracker tracks all instances of the service being tracked. It however have the notion of an active service. The active service is the service instance that will be returned by allocateService() (which is internally used by all other access methods also). On startup it will be the first service instance received. It will keep tracking other instances comming in, but as long as the active service does not go away it will be the one used. If the active service goes away then the the one that is at the beginning of the list of the other tracked instances will become active. If that list is empty there will be no active, which will trigger a wait for a service to become available again if allocateService() is called.      
+    </p>
+    <H3>Providing a logger</H3>
+    <p>
+      You can provide an APSLogger (see further down about APSLogger) to the tracker:      
+    </p>
+    <pre>
+      <code>
+    tracker.setLogger(apsLogger);
+    
+      </code>
+    </pre>
+    <p>
+      When available the tracker will log to this.      
+    </p>
+    <H3>Tracker as a wrapped service</H3>
+    <p>
+      The tracker can be used as a wrapped service:      
+    </p>
+    <pre>
+      <code>
+    Service service = tracker.getWrappedService();
+    
+      </code>
+    </pre>
+    <p>
+      This gives you a proxied <em>service</em> instance that that gets the real service, calls it, releases it and return the result. This handles transparently if a service has been restarted or one instance of the service has gone away and another came available. It will wait for the specified timeout for a service to become available and if that does not happen the <em>APSNoServiceAvailableException</em> will be thrown. This is of course a runtime exception which makes the service wrapping possible without loosing the possibility to handle the case where the service is not available.      
+    </p>
+    <H3>Using the tracker in a similar way to the OSGi standard tracker</H3>
+    <p>
+      To get a service instance you do:      
+    </p>
+    <pre>
+      <code>
+    Service service = tracker.allocateService();
+    
+      </code>
+    </pre>
+    <p>
+      Note that if the tracker has a timeout set then this call will wait for the service to become available if it is currently not available until an instance becomes available or the timeout time is reached. It will throw <em>APSNoServiceAvailableException</em> on failure in any case.      
+    </p>
+    <p>
+      When done with the service do:      
+    </p>
+    <pre>
+      <code>
+    tracker.releaseService();
+      </code>
+    </pre>
+    <H3>Accessing a service by tracker callback</H3>
+    <p>
+      There are a few variants to get a service instance by callback. When the callbacks are used the actual service instance will only be allocated during the callback and then released again.      
+    </p>
+    <H4>onServiceAvailable</H4>
+    <p>
+      This will result in a callback when any instance of the service becomes available. If there is more than one service instance published then there will be a callback for each.      
+    </p>
+    <pre>
+      <code>
+        tracker.onServiceAvailable(new OnServiceAvailable&lt;Service&gt;() {
+            @Override
+            public void onServiceAvailable(Service service, ServiceReference serviceReference) throws Exception {
+                // Do something.
+            }
+        });
+      </code>
+    </pre>
+    <H4>onServiceLeaving</H4>
+    <p>
+      This will result in a callback when any instance of the service goes away. If there is more than one service instance published the there will be a callback for each instance leaving.      
+    </p>
+    <pre>
+      <code>
+        onServiceLeaving(new OnServiceLeaving&lt;Service&gt;() {
+    
+            @Override
+            public void onServiceLeaving(ServiceReference service, Class serviceAPI) throws Exception {
+                // Handle the service leaving.
+            }
+        });
+      </code>
+    </pre>
+    <p>
+      Note that since the service is already gone by this time you don’t get the service instance, only its reference and the class representing its API. In most cases both of these parameters are irellevant.      
+    </p>
+    <H4>onActiveServiceAvailable</H4>
+    <p>
+      This does the same thing as onServiceAvailable() but only for the active service. It uses the same <em>OnServiceAvailable</em> interface.      
+    </p>
+    <H4>onActiveServiceLeaving</H4>
+    <p>
+      This does the same thing as onServiceLeaving() but for the active service. It uses the same <em>OnServiceLeaving</em> interface.      
+    </p>
+    <H4>withService</H4>
+    <p>
+      Runs the specified callback providing it with a service to use. This will wait for a service to become available if a timeout has been provided for the tracker.      
+    </p>
+    <p>
+      Don't use this in an activator start() method! onActiveServiceAvailable() and onActiveServiceLeaving() are safe in a start() method, this is not!      
+    </p>
+    <pre>
+      <code>
+        tracker.withService(new WithService&lt;Service&gt;() {
+            @Override
+            public void withService(Service service, Object... args) throws Exception {
+                // do something here.
+            }
+        }, arg1, arg2);
+      </code>
+    </pre>
+    <p>
+      If you don’t have any arguments this will also work:      
+    </p>
+    <pre>
+      <code>
+        tracker.withService(new WithService&lt;Service&gt;() {
+            @Override
+            public void withService(Service service) throws Exception {
+                // do something here
+            }
+        });
+      </code>
+    </pre>
+    <H4>withServiceIfAvailable</H4>
+    <p>
+      This does the same as withService(...) but without waiting for a service to become available. If the service is not available at the time of the call the callback will not be called. No exception is thrown by this!      
+    </p>
+    <H4>withAllAvailableServices</H4>
+    <p>
+      This is used exactly the same way as withService(...), but the callback will be done for each tracked service instance, not only the active.      
+    </p>
+    <H2>APSLogger</H2>
+    <p>
+      This provides logging functionality. The no args constructor will log to System.out by default. The OutputStream constructor will logg to the specified output stream by default.      
+    </p>
+    <p>
+      The APSLogger can be used by just creating an instance and then start using the info(...), error(...), etc methods. But in that case it will only log to System.out or the provided OutputStream. If you however do this:      
+    </p>
+    <pre>
+      <code>
+    APSLogger logger = new APSLogger();
+    logger.start(context);
+    
+      </code>
+    </pre>
+    <p>
+      then the logger will try to get hold of the standard OSGi LogService and if that is available log to that. If the log service is not available it will fallback to the OutputStream.      
+    </p>
+    <p>
+      If you call the <code>setServiceRefrence(serviceRef);</code> method on the logger then information about that service will be provied with each log.      
+    </p>
+    <H2>APSContextWrapper</H2>
+    <p>
+      This provides a static wrap(...) method:      
+    </p>
+    <pre>
+      <code>
+    Service providedService = APSContextWrapper.wrap(serviceProvider, Service.class);
+    
+      </code>
+    </pre>
+    <p>
+      where <em>serviceProvider</em> is an instance of a class that implements <em>Service</em>. The resulting instance is a java.lang.reflect.Proxy implementation of <em>Service</em> that ensures that the <em>serviceProvider</em> ClassLoader is the context class loader during each call to all service methods that are annotated with @APSRunInBundlesContext annotation in <em>Service</em>. The wrapped instance can then be registered as the OSGi service provider.      
+    </p>
+    <p>
+      Normally the threads context class loader is the original service callers context class loader. For a web application it would be the web containers context class loader. If a service needs its own bundles class loader during its execution then this wrapper can be used.      
+    </p>
+    <H2>ID generators</H2>
+    <p>
+      There is one interface:      
+    </p>
+    <pre>
+      <code>
+    /**
+     * This is a generic interface for representing IDs. 
+     */
+    public interface ID extends Comparable&lt;ID&gt; {
+    
+        /**
+         * Creates a new unique ID.
+         *
+         * @return A newly created ID.
+         */
+        public ID newID();
+    
+        /**
+         * Tests for equality.
+         *
+         * @param obj The object to compare with.
+         *
+         * @return true if equal, false otherwise.
+         */
+        @Override
+        public boolean equals(Object obj);
+    
+        /**
+         * @return The hash code.
+         */
+        @Override
+        public int hashCode();
+    
+    }
+      </code>
+    </pre>
+    <p>
+      that have 2 implementations:      
+    </p>
+    <ul>
+      <li>
+        <p>
+          IntID - Produces int ids.          
+        </p>
+      </li>
+      <li>
+        <p>
+          UUID - Produces java.util.UUID Ids.          
+        </p>
+      </li>
+    </ul>
+  </body>
+</html>

@@ -2,14 +2,11 @@
  * 
  * PROJECT
  *     Name
- *         APS APIs
+ *         APS Tools Library
  *     
  *     Code Version
  *         0.9.0
  *     
- *     Description
- *         Provides the APIs for the application platform services.
- *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
  *     
@@ -34,13 +31,13 @@
  *         2011-08-03: Created!
  *         
  */
-package se.natusoft.osgi.aps.exceptions;
+package se.natusoft.osgi.aps.tools.exceptions;
 
 /**
  * This exception is thrown by a tracker facade when no service is available and
  * the options to throw exceptions is specified.
  */
-public class APSNoServiceAvailableException extends APSRuntimeException {
+public class APSNoServiceAvailableException extends RuntimeException {
     
     /**
      * Creates a new APSNoServiceAvailableException.

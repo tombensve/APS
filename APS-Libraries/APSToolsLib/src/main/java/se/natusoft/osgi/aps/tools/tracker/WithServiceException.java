@@ -33,13 +33,11 @@
  */
 package se.natusoft.osgi.aps.tools.tracker;
 
-import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
-
 /**
  * This is thrown by withService() on any exception. The real exception
  * is available with getCause().
  */
-public class WithServiceException extends APSRuntimeException {
+public class WithServiceException extends RuntimeException {
 
     /**
      * Creates a new WithException.

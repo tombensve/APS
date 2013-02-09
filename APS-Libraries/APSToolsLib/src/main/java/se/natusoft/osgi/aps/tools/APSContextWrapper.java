@@ -105,7 +105,7 @@ public class APSContextWrapper {
         }
 
         /**
-         * This is called for each method called. This provides the functionallity.
+         * This is called for each method called. This provides the functionality.
          *
          * @param o The object the method was invoked on. This is ignored.
          * @param method The method called. The same method in the service provider instance will be called.
