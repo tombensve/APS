@@ -2,7 +2,7 @@
  * 
  * PROJECT
  *     Name
- *         APSResolvingBundleDeployer
+ *         APS Resolving Bundle Deployer
  *     
  *     Code Version
  *         0.9.0
@@ -119,7 +119,7 @@ public class BundleDeployerThread extends Thread implements BundleDeployer {
     public void run() {
         this.running = true;
 
-        this.logger.info("BundleDeployedThread started!");
+        this.logger.info("BundleDeployerThread started!");
 
         waitForConfig();
 

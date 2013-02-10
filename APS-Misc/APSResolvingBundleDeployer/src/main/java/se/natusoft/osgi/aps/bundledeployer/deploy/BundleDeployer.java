@@ -2,7 +2,7 @@
  * 
  * PROJECT
  *     Name
- *         APSResolvingBundleDeployer
+ *         APS Resolving Bundle Deployer
  *     
  *     Code Version
  *         0.9.0

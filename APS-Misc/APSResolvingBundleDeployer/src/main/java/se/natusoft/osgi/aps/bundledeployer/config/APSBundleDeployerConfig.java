@@ -2,7 +2,7 @@
  * 
  * PROJECT
  *     Name
- *         APSResolvingBundleDeployer
+ *         APS Resolving Bundle Deployer
  *     
  *     Code Version
  *         0.9.0
@@ -62,7 +62,7 @@ public class APSBundleDeployerConfig extends APSConfig {
     public static ManagedConfig<APSBundleDeployerConfig> managed = new ManagedConfig<>();
 
     @APSConfigItemDescription(
-            description = "The directory to deploy bundles from. All bundles in this directory will be attempted to deploy."
+            description = "The directory to deploy bundles from. All bundles in this directory will be attempted to be deployed."
     )
     public APSConfigValue deployDirectory;
 
