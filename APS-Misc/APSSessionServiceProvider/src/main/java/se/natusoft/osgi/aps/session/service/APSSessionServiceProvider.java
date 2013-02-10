@@ -90,6 +90,24 @@ public class APSSessionServiceProvider implements APSSessionService {
     }
 
     /**
+     * Creates a new session.
+     * <p/>
+     * The idea behind this variant is to support distributed sessions. The implementation must use a session id
+     * that is unique enough to support this. The APS implementation uses java.util.UUID.
+     *
+     * @param sessionId The id of the session to create.
+     * @param timeoutInMinutes The timeout in minutes.
+     */
+    @Override
+    public APSSession createSession(String sessionId, int timeoutInMinutes) {
+        UUID sessId = UUID.fromString(sessionId);
+        APSSessionImpl session = new APSSessionImpl(sessId, timeoutInMinutes);
+        this.sessions.put(sessId, session);
+
+        return session;
+    }
+
+    /**
      * Looks up an existing session by its id.
      *
      * @param sessionId The id of the session to lookup.
