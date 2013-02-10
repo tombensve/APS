@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="generated-by" content="MarkdownDoc"/>
+    <link href="docs.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body>
+    <H1>APSSessionService</H1>
+    <p>
+      This service provides session storage functionality. You can create a session, get an existing session by its id, and close a session. Each session can hold any number of named objects.      
+    </p>
+    <p>
+      Why a session service ? To begin with, this is not an HttpSession! That said, it was created to handle a single session among several web applications. This for the APS administration web which are made up of several web applications working toghether. This is explained in detail in the APSAdminWeb documentation.      
+    </p>
+    <H2>APIs</H2>
+    <p>
+      public <em>interface</em> <strong>APSSession </strong>   [se.natusoft.osgi.aps.api.misc.session] {      
+    </p>
+    <blockquote>
+      <p>
+         This represents an active session.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getId()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The id of this session.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean isValid()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if this session is still valid.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>void saveObject(String name, Object object)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Saves an object in the session. Will do nothing if the session is no longer valid.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name to store the object under.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>object</em> - An object to store in the session.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>Object retrieveObject(String name)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns a object stored under the specified name or null if no object is stored under that name.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        If isValid() returns false then this will always return null.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the object to get.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>APSSessionService </strong>   [se.natusoft.osgi.aps.api.misc.session] {      
+    </p>
+    <blockquote>
+      <p>
+         This is not a http session! It is a simple session that can be used by any code running in the same OSGi server.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static int NO_TIMEOUT = 0</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Specifies no timeout.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static int DEFAULT_TIMEOUT = -1</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Specifies the default timeout.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static int SHORT_TIMEOUT = 5</strong>      
+    </p>
+    <blockquote>
+      <p>
+         A relatively short timeout.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static int MEDIUM_TIMEOUT = 10</strong>      
+    </p>
+    <blockquote>
+      <p>
+         A medium timeout.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static int LONG_TIMEOUT = 20</strong>      
+    </p>
+    <blockquote>
+      <p>
+         A relatively long timeout.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSSession createSession(int timeoutInMinutes)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new session.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>timeoutInMinutes</em> - The timeout in minutes.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public APSSession createSession(String sessionId, int timeoutInMinutes)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new session.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        The idea behind this variant is to support distributed sessions. The implementation must use a session id that is unique enough to support this. The APS implementation uses java.util.UUID.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>sessionId</em> - The id of the session to create.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>timeoutInMinutes</em> - The timeout in minutes.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSSession getSession(String sessionId)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Looks up an existing session by its id.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A valid session having the specified id or null.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>sessionId</em> - The id of the session to lookup.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void closeSession(String sessionId)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Closes the session represented by the specified id. After this call APSSession.isValid() on an APSSession representing this session will return false.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>sessionId</em> - The id of the session to close.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+  </body>
+</html>
