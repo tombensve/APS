@@ -268,11 +268,11 @@
                         <phase>deploy</phase>
                         <configuration>
                             <files>**/.*</files>
-                            <targetHost>${maven.repo.upload}</targetHost>
+                            <targetHost>${javadoc.upload}</targetHost>
                             <targetPort>21</targetPort>
                             <userName>${web.server.user}</userName>
                             <password>${web.server.pw}</password>
-                            <targetPath>/apidoc.natusoft.se/public_html/APS</targetPath>
+                            <targetPath>${javadoc.base.path}/APS</targetPath>
                             <baseDir>${basedir}/target/site/apidocs</baseDir>
                         </configuration>
                     </execution>
