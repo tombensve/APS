@@ -191,31 +191,4 @@ public class RPCProtocolWrapper implements RPCProtocol {
             ungetInstance();
         }
     }
-
-    /**
-     * Returns an RPCError for a REST protocol with a http status code.
-     *
-     * @param httpStatusCode The http status code to return.
-     */
-    @Override
-    public RPCError createRESTError(int httpStatusCode) {
-        RPCProtocol protocol = getInstance();
-        RPCError error = protocol.createRESTError(httpStatusCode);
-        ungetInstance();
-        return error;
-    }
-
-    /**
-     * Returns an RPCError for a REST protocol with a http status code.
-     *
-     * @param httpStatusCode The http status code to return.
-     * @param message        An error message.
-     */
-    @Override
-    public RPCError createRESTError(int httpStatusCode, String message) {
-        RPCProtocol protocol = getInstance();
-        RPCError error = protocol.createRESTError(httpStatusCode, message);
-        ungetInstance();
-        return error;
-    }
 }

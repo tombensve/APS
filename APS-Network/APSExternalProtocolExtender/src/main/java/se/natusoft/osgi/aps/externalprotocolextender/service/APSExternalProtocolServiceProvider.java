@@ -56,7 +56,7 @@ import se.natusoft.osgi.aps.api.external.extprotocolsvc.APSExternalProtocolServi
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternalProtocolListener;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternallyCallable;
 import se.natusoft.osgi.aps.api.net.rpc.service.RPCProtocol;
-import se.natusoft.osgi.aps.api.net.rpc.streamed.service.StreamedRPCProtocol;
+import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 import se.natusoft.osgi.aps.externalprotocolextender.model.ProtocolEvent;
 import se.natusoft.osgi.aps.externalprotocolextender.model.ServiceDataReason;
 import se.natusoft.osgi.aps.externalprotocolextender.model.ServiceRepresentation;
@@ -130,13 +130,13 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
      *          If the service is not available.
      */
     @Override
-    public List<APSExternallyCallable> getCallable(String serviceName) throws APSNoServiceAvailableException {
+    public List<APSExternallyCallable> getCallables(String serviceName) throws APSNoServiceAvailableException {
         List<APSExternallyCallable> serviceMethods = new LinkedList<APSExternallyCallable>();
         
         ServiceRepresentation serviceRep = this.services.get(serviceName);
         if (serviceRep != null) {
             for (String methodName : serviceRep.getMethodNames()) {
-                serviceMethods.add(serviceRep.getMethodCallable(methodName));
+                serviceMethods.add(new ServiceMethodCallable(serviceRep.getMethodCallable(methodName)));
             }
         }
 
@@ -149,7 +149,7 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
      * @param serviceName The service to get functions for.
      */
     @Override
-    public Set<String> getAvailableServiceFunctions(String serviceName) {
+    public Set<String> getAvailableServiceFunctionNames(String serviceName) {
         ServiceRepresentation serviceRep = this.services.get(serviceName);
         if (serviceRep != null) {
             return serviceRep.getMethodNames();
@@ -172,7 +172,7 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
         APSExternallyCallable callable = null;
 
         if (serviceRep != null) {
-            callable = serviceRep.getMethodCallable(serviceFunctionName);
+            callable = new ServiceMethodCallable(serviceRep.getMethodCallable(serviceFunctionName));
         }
 
         return callable;

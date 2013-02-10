@@ -55,7 +55,7 @@ import org.osgi.framework.*;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.APSExternalProtocolService;
 import se.natusoft.osgi.aps.api.net.rpc.service.RPCProtocol;
-import se.natusoft.osgi.aps.api.net.rpc.streamed.service.StreamedRPCProtocol;
+import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 import se.natusoft.osgi.aps.externalprotocolextender.model.ServiceDataReason;
 import se.natusoft.osgi.aps.externalprotocolextender.pub.config.APSExternalProtocolConfig;
 import se.natusoft.osgi.aps.externalprotocolextender.service.APSExternalProtocolServiceProvider;

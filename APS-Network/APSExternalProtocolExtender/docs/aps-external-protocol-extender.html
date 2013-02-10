@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="generated-by" content="MarkdownDoc"/>
+    <link href="docs.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body>
+    <H1>APSExternalProtocolExtender</H1>
+    <p>
+      This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles <em>MANIFEST.MF</em> contains ”APS-Externalizable: true” the service is made externally available. If the <em>MANIFEST.MF</em> contains ”APS-Externalizable: false” however making the service externally available is forbidden.      
+    </p>
+    <p>
+      The exernal protocol extender also provides a configuration where services can be specified with their fully qualified name to be made externally available. If a bundle however have specifically specified false for the above manifest entry then the config entry will be ignored.      
+    </p>
+    <p>
+      So, what is meant by ”made externally available” ? Well what this bundle does is to analyze with reflection all services that are in one way or the other specified as being externalizable (manifest or config) and for all callable methods of the service an <em>APSExternallyCallable</em> object will be created and saved locally with the service name. <em>APSExternallyCallable</em> extends <em>java.util.concurrent.Callable</em>, and adds the possibility to add parameters to calls and also provides meta data for the service method, and the bundle it belongs to.      
+    </p>
+    <H2>The overall structure</H2>
+    <p>
+      The complete picture for making services externally callable looks like this:      
+    </p>
+    <pre>
+      <code>
+    Transport --&gt; APSExternalProtocolService --+--&gt; Callable services and service methods. &lt;--+
+                                               |                                              |
+                                               +--&gt; Communication protocols ------------------+
+      </code>
+    </pre>
+    <p>
+      This bundle provides the glue between the services and the protocols. Transports and protocols have to be provided by other bundles.      
+    </p>
+    <H2>APSExternalProtocolService</H2>
+    <p>
+      This bundle registers an <em>APSExternalProtocolService</em> that will provide all <em>APSExternallyCallable</em> instances (or rather copies of them since you can modify the one you get back by providing arguments). This service also provides getters for available remote protocols and you can register with it to receive information about chages for services and protocols.      
+    </p>
+    <H3>Protocols</H3>
+    <p>
+      There is a base API for protocols: RPCProtocol. APIs for different types of protocols should extend this. There is currently only one type of protocol available: <em>StreamedRPCProtocol</em>. The protocol type APIs are service APIs and services implementing them must be provided by other bundles. This bundle looks for and keeps track of all such service providers.      
+    </p>
+    <p>
+      The <em>StreamedRPCProtocol</em> provides a method for parsing a request from an InputStream returning an RPCRequest object. This request object contains the name of the service, the method, and the parameters. This is enough for using <em>APSExternalProtocolService</em> to do a call to the service. The request object is also used to write the call response on an OutputStream. There is also a method to write an error response.      
+    </p>
+    <p>
+      It is the responsibility of the transport provider to use a protocol to read and write requests and responses and to use the request information to call a service method.      
+    </p>
+    <H3>Getting information about services and protocols.</H3>
+    <p>
+      A transport provider can register themselves with the <em>APSExternalProtocolService</em> by implementing the <em>APSExternalProtocolListener</em> interface. They will then be notified when a new externalizable service becomes available or is leaving and when a protocol becomes available or is leaving.      
+    </p>
+    <H2>See also</H2>
+    <p>
+      <em>APSExtProtocolHTTPTransportProvider</em> - Provides a HTTP transport.      
+    </p>
+    <p>
+      <em>APSStreamedJSONRPCProtocolProvider</em> - Provides version 1.0 and 2.0 of JSONRPC.      
+    </p>
+    <H2>APIs</H2>
+    <p>
+      public <em>interface</em> <strong>APSExternalProtocolService </strong>   [se.natusoft.osgi.aps.api.external.extprotocolsvc] {      
+    </p>
+    <blockquote>
+      <p>
+         This service makes the currently available externalizable services available for calling. It should be used by a bundle providing an externally available way of calling a service (JSON over http for example) to translate and forward calls to the local service. The locally called service is not required to be aware that it is called externally.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        Never cache any result of this service! Always make a new call to get the current state. Also note that it is possible that the service represented by an APSExternallyCallable have gone away after it was returned, but before you do call() on it! In that case an APSNoServiceAvailableException will be thrown. Note that you can register as an APSExternalProtocolListener to receive notifications about externalizable services coming and going, and also protocols coming and going to keep up to date with the current state of things.          
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Set&lt;String&gt; getAvailableServices()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns all currently available services.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public List&lt;APSExternallyCallable&gt; getCallables(String serviceName) throws RuntimeException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns all APSExternallyCallable for the named service object.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>serviceName</em> - The name of the service to get callables for.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>RuntimeException</em> - If the service is not available.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Set&lt;String&gt; getAvailableServiceFunctionNames(String serviceName)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the names of all available functions of the specified service.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>serviceName</em> - The service to get functions for.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public APSExternallyCallable getCallable(String serviceName, String serviceFunctionName)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Gets an APSExternallyCallable for a specified service name and service function name.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        An APSExternallyCallable instance or null if the combination of service and serviceFunction is not available.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>serviceName</em> - The name of the service object to get callable for.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>serviceFunctionName</em> - The name of the service function of the service object to get callable for.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public List&lt;RPCProtocol&gt; getAllProtocols()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        All currently deployed providers of RPCProtocol.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public RPCProtocol getProtocolByNameAndVersion(String name, String version)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns an RPCProtocol provider by protocol name and version.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        Any matching protocol or null if nothing matches.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the protocol to get.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>version</em> - The version of the protocol to get.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public List&lt;StreamedRPCProtocol&gt; getAllStreamedProtocols()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        All currently deployed providers of StreamedRPCProtocol.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public StreamedRPCProtocol getStreamedProtocolByNameAndVersion(String name, String version)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns a StreamedRPCProtocol provider by protocol name and version.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        Any matching protocol or null if nothing matches.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the streamed protocol to get.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>version</em> - The version of the streamed protocol to get.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void addExternalProtocolListener(APSExternalProtocolListener externalServiceListener)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Add a listener for externally available services.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>externalServiceListener</em> - The listener to add.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void removeExternalProtocolListener(APSExternalProtocolListener externalServiceListener)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Removes a listener for externally available services.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>externalServiceListener</em> - The listener to remove.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>APSExternallyCallable&lt;ReturnType&gt; </strong> extends  Callable&lt;ReturnType&gt;    [se.natusoft.osgi.aps.api.external.extprotocolsvc.model] {      
+    </p>
+    <blockquote>
+      <p>
+         This API represents one callable service method.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getServiceName()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The name of the service this callable is part of.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getServiceFunctionName()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The name of the service function this callable represents.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public DataTypeDescription getReturnDataDescription()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A description of the return type.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public List&lt;ParameterDataTypeDescription&gt; getParameterDataDescriptions()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A description of each parameter type.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Bundle getServiceBundle()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The bundle the service belongs to.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void setArguments(Object... value)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Provides parameters to the callable using a varags list of parameter values.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>value</em> - A parameter value.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>ReturnType call() throws Exception</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Calls the service method represented by this APSExternallyCallable.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The return value of the method call if any or null otherwise.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>Exception</em> - Any exception the called service method threw.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>APSExternalProtocolListener </strong>   [se.natusoft.osgi.aps.api.external.extprotocolsvc.model] {      
+    </p>
+    <blockquote>
+      <p>
+         A listener for externally available services. Please note that this means that the service is available for potential external protocol exposure! For it to be truly available there also has to be a protocol and transport available. It is probably only transports that are interested in this information!         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void externalServiceAvailable(String service, String version)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         This gets called when a new externally available service becomes available.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>service</em> - The fully qualified name of the newly available service.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>version</em> - The version of the service.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void externalServiceLeaving(String service, String version)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         This gets called when an externally available service no longer is available.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>service</em> - The fully qualified name of the service leaving.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>version</em> - The version of the service.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void protocolAvailable(String protocolName, String protocolVersion)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         This gets called when a new protocol becomes available.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>protocolName</em> - The name of the protocol.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>protocolVersion</em> - The version of the protocol.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void protocolLeaving(String protocolName, String protocolVersion)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         This gets called when a new protocol is leaving.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>protocolName</em> - The name of the protocol.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>protocolVersion</em> - The version of the protocol.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>APSRESTException </strong> extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.rpc.errors] {      
+    </p>
+    <blockquote>
+      <p>
+         This is a special exception that services can throw if they are intended to be available as REST services through the APSExternalProtocolExtender+APSRPCHTTPTransportProvider. This allows for better control over status codes returned by the service call.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public APSRESTException(int httpStatusCode)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new APSRESTException.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>httpStatusCode</em> - The http status code to return.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public APSRESTException(int httpStatusCode, String message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new APSRESTException.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>httpStatusCode</em> - The http status code to return.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>message</em> - An error message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public int getHttpStatusCode()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the http status code.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>enum</em> <strong>ErrorType </strong>   [se.natusoft.osgi.aps.api.net.rpc.errors] {      
+    </p>
+    <blockquote>
+      <p>
+         This defines what I think is a rather well though through set of error types applicable for an RPC call. No they are not mine, they come from Matt Morley in his JSONRPC 2.0 specification at http://jsonrpc.org/spec.html.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>PARSE_ERROR</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Invalid input was received by the server. An error occurred on the server while parsing request data.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>INVALID_REQUEST</strong>      
+    </p>
+    <blockquote>
+      <p>
+         The request data sent is not a valid.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>METHOD_NOT_FOUND</strong>      
+    </p>
+    <blockquote>
+      <p>
+         The called method does not exist / is not available.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>INVALID_PARAMS</strong>      
+    </p>
+    <blockquote>
+      <p>
+         The parameters to the method are invalid.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>INTERNAL_ERROR</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Internal protocol error.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>SERVER_ERROR</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Server related errors.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>REST</strong>      
+    </p>
+    <blockquote>
+      <p>
+         This means the protocol is of REST type and should return a HTTP status code.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>RPCError </strong>   [se.natusoft.osgi.aps.api.net.rpc.errors] {      
+    </p>
+    <blockquote>
+      <p>
+         This represents an error in servicing an RPC request.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public ErrorType getErrorType()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         The type of the error.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public int getRESTHttpStatusCode()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         This should return a valid http status code if ErrorType == REST.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getMessage()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns an error message. This is also optional.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public boolean hasOptionalData()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         True if there is optional data available. An example of optional data would be a stack trace for example.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getOptionalData()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         The optional data.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>abstract</em> <em>class</em> <strong>AbstractRPCRequest </strong> implements  RPCRequest    [se.natusoft.osgi.aps.api.net.rpc.model] {      
+    </p>
+    <blockquote>
+      <p>
+         This contains a parsed JSONRPC request.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public AbstractRPCRequest(String method)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new AbstractRPCRequest.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>method</em> - The method to call.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public AbstractRPCRequest(RPCError error)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new AbstractRPCRequest.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>error</em> - An RPCError indicating a request problem, most probably of ErrorType.PARSE_ERROR type.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public AbstractRPCRequest(String method, Object callId)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new AbstractRPCRequest.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>method</em> - The method to call.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>callId</em> - The callId of the call.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected Map&lt;String, Object&gt; getNamedParameters()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The named parameters.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected List&lt;Object&gt; getParameters()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The sequential parameters.        
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public void setServiceQName(String serviceQName)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Sets the fully qualified name of the service to call. This is optional since not all protocol delivers a service name this way.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>serviceQName</em> - The service name to set.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>RPCRequest </strong>   [se.natusoft.osgi.aps.api.net.rpc.model] {      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean isValid()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns true if this request is valid. If this returns false all information except getError() is invalid, and getError() should return a valid RPCError object.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>RPCError getError()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns an RPCError object if isValid() == false, null otherwise.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getServiceQName()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns a fully qualified name of service to call. This will be null for protocols where service name is not provided this way. So this cannot be taken for given!         
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getMethod()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The method to call        
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean hasCallId()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns true if there is a call id available in the request.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>Object getCallId()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the method call call Id.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void addParameter(Object parameter)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Adds a parameter. This is mutually exclusive with addParameter(name, parameter)!          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>parameter</em> - The parameter to add.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void addNamedParameter(String name, Object parameter)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Adds a named parameter. This is mutually exclusive with addParameter(parameter)!          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the parameter.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>parameter</em> - The parameter to add.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>int getNumberOfParameters()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The number of parameters available.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>&lt;T&gt; T getParameter(int index, Class&lt;T&gt; paramClass)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the parameter at the specified index.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The parameter object.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>index</em> - The index of the parameter to get.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>paramClass</em> - The expected class of the parameter.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean hasNamedParameters()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if there are named parameters available. If false the plain parameter list should be used.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>Set&lt;String&gt; getParameterNames()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The available parameter names.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>&lt;T&gt; T getNamedParameter(String name, Class&lt;T&gt; paramClass)</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A named parameter.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the parameter to get.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>paramClass</em> - The expected class of the parameter.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>RPCProtocol </strong>   [se.natusoft.osgi.aps.api.net.rpc.service] {      
+    </p>
+    <blockquote>
+      <p>
+         This represents an RPC protocol provider. This API is not enough in itself, it is a common base for different protocols.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getServiceProtocolName()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The name of the provided protocol.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getServiceProtocolVersion()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The version of the implemented protocol.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getRequestContentType()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The expected content type of a request. This should be verified by the transport if it has content type availability.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getResponseContentType()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The content type of the response for when such can be provided.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getRPCProtocolDescription()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A short description of the provided service. This should be in plain text.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>RPCError createRPCError(ErrorType errorType, String message, String optionalData)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Factory method to create an error object.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        An RPCError implementation.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>errorType</em> - The type of the error.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>message</em> - An error message.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>optionalData</em> - Whatever optional data you want to pass along or null.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>StreamedRPCProtocol </strong> extends  RPCProtocol    [se.natusoft.osgi.aps.api.net.rpc.service] {      
+    </p>
+    <blockquote>
+      <p>
+         This represents an RPC protocol provider that provide client/service calls with requests read from an InputStream and responses written to an OutputStream.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean isREST()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns true if the protocol is a REST protocol.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>List&lt;RPCRequest&gt; parseRequests(String serviceQName, InputStream requestStream) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The parsed requests.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>serviceQName</em> - A fully qualified name to the service to call. This can be null if service name is provided on the stream.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>requestStream</em> - The stream to parse request from.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on IO failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void writeResponse(Object result, RPCRequest request, OutputStream responseStream) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Writes a successful response to the specified OutputStream.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>result</em> - The resulting object of the RPC call or null if void return. If is possible a non void method also returns null!         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>request</em> - The request this is a response to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>responseStream</em> - The OutputStream to write the response to.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on IO failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void writeErrorResponse(RPCError error, RPCRequest request, OutputStream responseStream) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Writes an error response.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>error</em> - The error to pass back.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>request</em> - The request that this is a response to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>responseStream</em> - The OutputStream to write the response to.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on IO failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>RPCError createRESTError(int httpStatusCode)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns an RPCError for a REST protocol with a http status code.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>httpStatusCode</em> - The http status code to return.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>RPCError createRESTError(int httpStatusCode, String message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns an RPCError for a REST protocol with a http status code.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>httpStatusCode</em> - The http status code to return.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>message</em> - An error message.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+  </body>
+</html>

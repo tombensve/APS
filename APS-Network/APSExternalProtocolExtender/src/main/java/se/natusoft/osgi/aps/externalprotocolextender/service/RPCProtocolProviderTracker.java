@@ -54,7 +54,7 @@ package se.natusoft.osgi.aps.externalprotocolextender.service;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import se.natusoft.osgi.aps.api.net.rpc.service.RPCProtocol;
-import se.natusoft.osgi.aps.api.net.rpc.streamed.service.StreamedRPCProtocol;
+import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
 import se.natusoft.osgi.aps.externalprotocolextender.model.ProtocolEvent;
 import se.natusoft.osgi.aps.externalprotocolextender.model.RPCProtocolWrapper;

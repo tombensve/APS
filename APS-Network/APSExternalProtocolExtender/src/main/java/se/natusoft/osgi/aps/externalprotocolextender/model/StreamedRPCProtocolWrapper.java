@@ -55,7 +55,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
 import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;
-import se.natusoft.osgi.aps.api.net.rpc.streamed.service.StreamedRPCProtocol;
+import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -99,9 +99,13 @@ public class StreamedRPCProtocolWrapper extends RPCProtocolWrapper implements St
      */
     @Override
     public boolean isREST() {
-        StreamedRPCProtocol protocol = getInstance();
-        boolean rest = protocol.isREST();
-        ungetInstance();
+        boolean rest = false;
+        try {
+            rest = getInstance().isREST();
+        }
+        finally {
+            ungetInstance();
+        }
         return rest;
     }
 
@@ -161,5 +165,40 @@ public class StreamedRPCProtocolWrapper extends RPCProtocolWrapper implements St
         finally {
             ungetInstance();
         }
+    }
+
+    /**
+     * Returns an RPCError for a REST protocol with a http status code.
+     *
+     * @param httpStatusCode The http status code to return.
+     */
+    @Override
+    public RPCError createRESTError(int httpStatusCode) {
+        RPCError error = null;
+        try {
+            error = getInstance().createRESTError(httpStatusCode);
+        }
+        finally {
+            ungetInstance();
+        }
+        return error;
+    }
+
+    /**
+     * Returns an RPCError for a REST protocol with a http status code.
+     *
+     * @param httpStatusCode The http status code to return.
+     * @param message        An error message.
+     */
+    @Override
+    public RPCError createRESTError(int httpStatusCode, String message) {
+        RPCError error = null;
+        try {
+            error = getInstance().createRESTError(httpStatusCode, message);
+        }
+        finally {
+            ungetInstance();
+        }
+        return error;
     }
 }
