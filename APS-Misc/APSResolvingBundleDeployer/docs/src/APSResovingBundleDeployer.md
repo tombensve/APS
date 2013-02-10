@@ -1,4 +1,4 @@
-# aps-resolving-bunde-deployer
+# APSResolvingBundleDeployer
 
 This is a bundle deployer that is intended as an alternative to the server provided deployer. 
 
