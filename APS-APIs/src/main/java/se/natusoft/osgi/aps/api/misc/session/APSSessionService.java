@@ -64,6 +64,17 @@ public interface APSSessionService {
     APSSession createSession(int timeoutInMinutes);
 
     /**
+     * Creates a new session.
+     * <p/>
+     * The idea behind this variant is to support distributed sessions. The implementation must use a session id
+     * that is unique enough to support this. The APS implementation uses java.util.UUID.
+     *
+     * @param sessionId The id of the session to create.
+     * @param timeoutInMinutes The timeout in minutes.
+     */
+    public APSSession createSession(String sessionId, int timeoutInMinutes);
+
+    /**
      * Looks up an existing session by its id.
      *
      * @param sessionId The id of the session to lookup.
