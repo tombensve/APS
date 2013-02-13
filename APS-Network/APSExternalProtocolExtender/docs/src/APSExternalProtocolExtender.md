@@ -10,11 +10,18 @@ So, what is meant by ”made externally available” ? Well what this bundle doe
 
 The complete picture for making services externally callable looks like this:
 
-	Transport --> APSExternalProtocolService --+--> Callable services and service methods. <--+
-	                                           |                                              |
-	                                           +--> Communication protocols ------------------+
+![EPERelations.png](EPERelations.png)
 
-This bundle provides the glue between the services and the protocols. Transports and protocols have to be provided by other bundles.
+This bundle provides the glue between the services and the protocols. Transports and protocols have to be provided by other bundles. 
+
+The flow is like this:
+
+1. Transport gets some request and an InputStream. 
+2. Transport gets some user selected protocol (The APSExtProtocolHTTPTransportProvider allows specification of both protocol, protocol version, and service to call in the URL).
+3. Transport calls APSExternalProtocolService to get requested protocol. 
+4. Transport calls protocol to parse InputStream and it returns an RPCRequest.
+5. Transport uses the information in the RPCRequest to call a service using APSExternalProtocolService.
+6. Transport takes the result from the call and passes to the protocol along with an OutputStream to write response on.
 
 ## APSExternalProtocolService
 

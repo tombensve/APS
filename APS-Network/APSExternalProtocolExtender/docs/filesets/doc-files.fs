@@ -4,4 +4,3 @@
 APS-Network/APSExternalProtocolExtender/docs/src/**/.*.md,
 APS-APIs/src/main/java/se/natusoft/osgi/aps/api/external/extprotocolsvc/**/.*.java,
 APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/**/.*.java
-

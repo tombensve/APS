@@ -20,16 +20,47 @@
     <p>
       The complete picture for making services externally callable looks like this:      
     </p>
-    <pre>
-      <code>
-    Transport --&gt; APSExternalProtocolService --+--&gt; Callable services and service methods. &lt;--+
-                                               |                                              |
-                                               +--&gt; Communication protocols ------------------+
-      </code>
-    </pre>
+    <p>
+            <img src='EPERelations.png' title='' alt='EPERelations.png'/>      
+    </p>
     <p>
       This bundle provides the glue between the services and the protocols. Transports and protocols have to be provided by other bundles.      
     </p>
+    <p>
+      The flow is like this:      
+    </p>
+    <ol>
+      <li>
+        <p>
+          Transport gets some request and an InputStream.          
+        </p>
+      </li>
+      <li>
+        <p>
+          Transport gets some user selected protocol (The APSExtProtocolHTTPTransportProvider allows specification of both protocol, protocol version, and service to call in the URL).          
+        </p>
+      </li>
+      <li>
+        <p>
+          Transport calls APSExternalProtocolService to get requested protocol.          
+        </p>
+      </li>
+      <li>
+        <p>
+          Transport calls protocol to parse InputStream and it returns an RPCRequest.          
+        </p>
+      </li>
+      <li>
+        <p>
+          Transport uses the information in the RPCRequest to call a service using APSExternalProtocolService.          
+        </p>
+      </li>
+      <li>
+        <p>
+          Transport takes the result from the call and passes to the protocol along with an OutputStream to write response on.          
+        </p>
+      </li>
+    </ol>
     <H2>APSExternalProtocolService</H2>
     <p>
       This bundle registers an <em>APSExternalProtocolService</em> that will provide all <em>APSExternallyCallable</em> instances (or rather copies of them since you can modify the one you get back by providing arguments). This service also provides getters for available remote protocols and you can register with it to receive information about chages for services and protocols.      
