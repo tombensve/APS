@@ -105,7 +105,6 @@
             se.natusoft.osgi.aps.api.net.rpc.errors;version="${project.version}",
             se.natusoft.osgi.aps.api.net.rpc.model;version="${project.version}",
             se.natusoft.osgi.aps.api.net.rpc.service;version="${project.version}",
-            se.natusoft.osgi.aps.api.net.rpc.streamed.service;version="${project.version}",
             se.natusoft.osgi.aps.api.net.groups.service;version="${project.version}"
         </osgi.export.package>
         

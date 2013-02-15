@@ -34,11 +34,10 @@
  *         2012-01-08: Created!
  *         
  */
-package se.natusoft.osgi.aps.api.net.rpc.streamed.service;
+package se.natusoft.osgi.aps.api.net.rpc.service;
 
 import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
 import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;
-import se.natusoft.osgi.aps.api.net.rpc.service.RPCProtocol;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,7 +65,7 @@ public interface StreamedRPCProtocol extends RPCProtocol {
      *
      * @throws IOException on IO failure.
      */
-    public List<RPCRequest> parseRequests(String serviceQName, InputStream requestStream) throws IOException;
+    List<RPCRequest> parseRequests(String serviceQName, InputStream requestStream) throws IOException;
 
     /**
      * Writes a successful response to the specified OutputStream.
@@ -77,7 +76,7 @@ public interface StreamedRPCProtocol extends RPCProtocol {
      *                       
      * @throws IOException on IO failure.
      */
-    public void writeResponse(Object result, RPCRequest request, OutputStream responseStream) throws IOException ;
+    void writeResponse(Object result, RPCRequest request, OutputStream responseStream) throws IOException ;
 
     /**
      * Writes an error response.
@@ -88,6 +87,20 @@ public interface StreamedRPCProtocol extends RPCProtocol {
      *
      * @throws IOException on IO failure.
      */
-    public void writeErrorResponse(RPCError error, RPCRequest request, OutputStream responseStream) throws IOException;
+    void writeErrorResponse(RPCError error, RPCRequest request, OutputStream responseStream) throws IOException;
 
+    /**
+     * Returns an RPCError for a REST protocol with a http status code.
+     *
+     * @param httpStatusCode The http status code to return.
+     */
+    RPCError createRESTError(int httpStatusCode);
+
+    /**
+     * Returns an RPCError for a REST protocol with a http status code.
+     *
+     * @param httpStatusCode The http status code to return.
+     * @param message An error message.
+     */
+    RPCError createRESTError(int httpStatusCode, String message);
 }

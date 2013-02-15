@@ -39,9 +39,8 @@ package se.natusoft.osgi.aps.api.external.extprotocolsvc.model;
 /**
  * A listener for externally available services. Please note that this means that the service
  * is available for potential external protocol exposure! For it to be truly available there
- * also has to be a protocol and transport available. For example aps-streamed-json-rpc-protocol
- * provides a protocol when deployed, and aps-rpc-http-transport-extender provides a transport
- * when deployed. It is probably only transports that are interested listeners for this!
+ * also has to be a protocol and transport available. It is probably only transports that are
+ * interested in this information!
  */
 public interface APSExternalProtocolListener {
 

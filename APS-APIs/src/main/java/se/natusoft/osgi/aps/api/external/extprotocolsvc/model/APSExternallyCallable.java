@@ -81,11 +81,12 @@ public interface APSExternallyCallable<ReturnType> extends Callable<ReturnType> 
     public void setArguments(Object... value);
 
     /**
-     * Computes a result, or throws an exception if unable to do so.
+     * Calls the service method represented by this APSExternallyCallable.
      *
-     * @return computed result
-     * @throws Exception if unable to compute a result.
+     * @return The return value of the method call if any or null otherwise.
+     * @throws Exception Any exception the called service method threw.
      */
-    @Override ReturnType call() throws Exception;
+    @Override
+    ReturnType call() throws Exception;
 
 }

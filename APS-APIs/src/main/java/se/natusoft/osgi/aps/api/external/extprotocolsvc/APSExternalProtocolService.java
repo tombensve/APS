@@ -39,7 +39,7 @@ package se.natusoft.osgi.aps.api.external.extprotocolsvc;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternalProtocolListener;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternallyCallable;
 import se.natusoft.osgi.aps.api.net.rpc.service.RPCProtocol;
-import se.natusoft.osgi.aps.api.net.rpc.streamed.service.StreamedRPCProtocol;
+import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 
 import java.util.List;
 import java.util.Set;
@@ -52,9 +52,9 @@ import java.util.Set;
  * <p/>
  * Never cache any result of this service! Always make a new call to get the current state. Also note that it is
  * possible that the service represented by an APSExternallyCallable have gone away after it was returned, but
- * before you do call() on it! In that case an APSNoServiceAvailableException will be thrown.
- * <p/>
- * <img src="doc-files/APSExternalProtocolExtender.png" width="800" height="400"/>
+ * before you do call() on it! In that case an APSNoServiceAvailableException will be thrown. Note that you can
+ * register as an APSExternalProtocolListener to receive notifications about externalizable services coming and
+ * going, and also protocols coming and going to keep up to date with the current state of things.
  *
  */
 public interface APSExternalProtocolService {
@@ -65,20 +65,20 @@ public interface APSExternalProtocolService {
     public Set<String> getAvailableServices();
     
     /**
-     * Returns all APSExternallyCallable for the names service object.
+     * Returns all APSExternallyCallable for the named service object.
      *
      * @param serviceName The name of the service to get callables for.
      *
      * @throws RuntimeException If the service is not available.
      */
-    public List<APSExternallyCallable> getCallable(String serviceName) throws RuntimeException;
+    public List<APSExternallyCallable> getCallables(String serviceName) throws RuntimeException;
 
     /**
-     * Returns all available functions of the specified service.
+     * Returns the names of all available functions of the specified service.
      *
      * @param serviceName The service to get functions for.
      */
-    public Set<String> getAvailableServiceFunctions(String serviceName);
+    public Set<String> getAvailableServiceFunctionNames(String serviceName);
     
     /**
      * Gets an APSExternallyCallable for a specified service name and service function name.
@@ -91,12 +91,12 @@ public interface APSExternalProtocolService {
     public APSExternallyCallable getCallable(String serviceName, String serviceFunctionName);
 
     /**
-     * @return All currently deployed providers of RPCProtocolService.
+     * @return All currently deployed providers of RPCProtocol.
      */
     public List<RPCProtocol> getAllProtocols();
 
     /**
-     * Returns an RPCProtocolService provider by protocol name and version.
+     * Returns an RPCProtocol provider by protocol name and version.
      *
      * @param name The name of the protocol to get.
      * @param version The version of the protocol to get.
@@ -106,12 +106,12 @@ public interface APSExternalProtocolService {
     public RPCProtocol getProtocolByNameAndVersion(String name, String version);
 
     /**
-     * @return All currently deployed providers of StreamedRPCProtocolService.
+     * @return All currently deployed providers of StreamedRPCProtocol.
      */
     public List<StreamedRPCProtocol> getAllStreamedProtocols();
 
     /**
-     * Returns a StreamedRPCProtocolService provider by protocol name and version.
+     * Returns a StreamedRPCProtocol provider by protocol name and version.
      *
      * @param name The name of the streamed protocol to get.
      * @param version The version of the streamed protocol to get.
