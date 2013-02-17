@@ -55,7 +55,7 @@ import se.natusoft.osgi.aps.api.net.rpc.errors.APSRESTException;
 import se.natusoft.osgi.aps.api.net.rpc.errors.ErrorType;
 import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
 import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;
-import se.natusoft.osgi.aps.api.net.rpc.streamed.service.StreamedRPCProtocol;
+import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 import se.natusoft.osgi.aps.exceptions.APSException;
 import se.natusoft.osgi.aps.rpchttpextender.config.RPCServletConfig;
 import se.natusoft.osgi.aps.tools.APSLogger;
@@ -232,11 +232,11 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     //
 
     /**
-     * Handles a put request. This is the only HTTP method on which RPC services are served!
+     * Handles a get/put/post request.
      * <p/>
      * The format of requests are:
      * <code>
-     *     http://host:post/apsrpc/<i>protocol</i>/<i>version</i>[/<i>service</i>]
+     *     http://host:port/apsrpc/<i>protocol</i>/<i>version</i>[/<i>service</i>]
      * </code>
      * <p/>
      * <i>protocol</i> - This is the name of the protocol to use. For example JSONRPC. For this to work there must be
@@ -252,6 +252,9 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
      * on the PUT stream. This case is when it is specified on the URL. The service always have to be a fully qualified
      * name to the service.
      * <p/>
+     * <i>method</i> - Depending on the RPC protocol implementation a method can be specified on the URL. When specified
+     * on the URL that will override any method passed in the request.
+     * <p/>
      * The rest of the request data is read from the input stream, which should be passed on to the matching
      * StreamedRPCProtocolService.
      *
@@ -261,7 +264,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
      * @throws ServletException on servlet related failures.
      * @throws java.io.IOException on IO failure.
      */
-    protected void doGetPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doReq(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         this.loginHandler.setSessionIdFromRequestCookie(req);
 
         String pathInfo = req.getPathInfo();
@@ -279,10 +282,15 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                     RPCServletConfig.mc.waitUtilManaged();
                 }
                 if (this.loginHandler.hasValidLogin()) {
-                    doHelp(req, resp);
+                    if (RPCServletConfig.mc.get().enableHelpWeb.toBoolean()) {
+                        doHelp(req, resp);
+                    }
+                    else {
+                        resp.sendError(HttpServletResponse.SC_FORBIDDEN, "The help web has been disabled!");
+                    }
                 }
                 else {
-                    resp.sendError(401, "Authentication is required! Please login.");
+                    resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication is required! Please login.");
                 }
             }
         }
@@ -293,17 +301,17 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doGetPut(req, resp);
+        doReq(req, resp);
     }
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doGetPut(req, resp);
+        doReq(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doGetPut(req, resp);
+        doReq(req, resp);
     }
 
     /**
@@ -332,20 +340,25 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
 
         String version = null;
         String service = null;
+        String method = null;
         String protocolName = null;
         int part = 0;
 
-        part = checkAuth(pathParts, part, req, resp);
-        if (part == AUTH_FAILED) {
-            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
+        if (RPCServletConfig.mc.get().requireAuthentication.toBoolean()) {
+            part = checkAuth(pathParts, part, req, resp);
+            if (part == AUTH_FAILED) {
+                resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
         }
 
         protocolName = pathParts[part++];
         version = pathParts[part++];
-        service = null;
         if (pathParts.length > part) {
-            service = pathParts[part];
+            service = pathParts[part++];
+        }
+        if (pathParts.length > part) {
+            method = pathParts[part++];
         }
 
         StreamedRPCProtocol protocol = this.externalProtocolService.getStreamedProtocolByNameAndVersion(protocolName, version);
@@ -356,7 +369,10 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
 
                 try {
                     if (rpcRequest.isValid()) {
-                        APSExternallyCallable<Object> callable = this.externalProtocolService.getCallable(service, rpcRequest.getMethod());
+                        if (method == null) {
+                            method = rpcRequest.getMethod();
+                        }
+                        APSExternallyCallable<Object> callable = this.externalProtocolService.getCallable(service, method);
 
                         if (callable != null) {
                             // Handle parameters
@@ -412,11 +428,12 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                         }
                         else {
                             if (protocol.isREST()) {
-                                throw new RPCErrorException(protocol.createRESTError(HttpServletResponse.SC_BAD_REQUEST));
+                                throw new RPCErrorException(protocol.createRESTError(HttpServletResponse.SC_BAD_REQUEST, "Method '" +
+                                        method + "' is not available!"));
                             }
                             else {
                                 throw new RPCErrorException(protocol.createRPCError(ErrorType.METHOD_NOT_FOUND, "Method '" +
-                                        rpcRequest.getMethod() + "' is not available!", null));
+                                        method + "' is not available!", null));
                             }
                         }
                     }
@@ -482,18 +499,20 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
         // Check for basic http auth as an alternative.
         if (user == null) {
             String auth = req.getHeader("Authorization");
-            if (auth.startsWith("Basic")) {
-                String encoded = auth.substring(6);
-                Base64 base64 = new Base64();
-                byte[] userPwBytes = base64.decodeBase64(encoded.getBytes());
-                String[] userPw = new String(userPwBytes).split(":");
-                if (userPw.length != 2) {
-                    resp.setHeader("WWW-Authenticate", "Basic realm=\"aps\"");
-                    resp.sendError(401, "Bad authorisation!");
-                    return AUTH_FAILED;
+            if (auth != null) {
+                if (auth.startsWith("Basic")) {
+                    String encoded = auth.substring(6);
+                    Base64 base64 = new Base64();
+                    byte[] userPwBytes = base64.decodeBase64(encoded.getBytes());
+                    String[] userPw = new String(userPwBytes).split(":");
+                    if (userPw.length != 2) {
+                        resp.setHeader("WWW-Authenticate", "Basic realm=\"aps\"");
+                        resp.sendError(401, "Bad authorisation!");
+                        return AUTH_FAILED;
+                    }
+                    user = userPw[0];
+                    password = userPw[1];
                 }
-                user = userPw[0];
-                password = userPw[1];
             }
         }
 
@@ -671,7 +690,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             serviceDescription.setServicePort(this.serverPort);
             serviceDescription.setServiceURL(this.rpcBaseUrl + protocolName + "/" + protocolVersion +
                     "/" + service);
-            serviceDescription.setVersion(this.externalProtocolService.getCallable(service).get(0).getServiceBundle().getVersion().toString());
+            serviceDescription.setVersion(this.externalProtocolService.getCallables(service).get(0).getServiceBundle().getVersion().toString());
             serviceDescription.setServiceId(service);
 
             this.discoveryServiceTracker.withAllAvailableServices(new WithService<APSSimpleDiscoveryService>() {
@@ -706,7 +725,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             serviceDescription.setServicePort(this.serverPort);
             serviceDescription.setServiceURL(this.rpcBaseUrl + protocolName + "/" + protocolVersion +
                     "/" + service);
-            serviceDescription.setVersion(this.externalProtocolService.getCallable(service).get(0).getServiceBundle().getVersion().toString());
+            serviceDescription.setVersion(this.externalProtocolService.getCallables(service).get(0).getServiceBundle().getVersion().toString());
             serviceDescription.setServiceId(service);
 
             this.discoveryServiceTracker.withAllAvailableServices(new WithService<APSSimpleDiscoveryService>() {
@@ -747,7 +766,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                     serviceDescription.setServicePort(this.serverPort);
                     serviceDescription.setServiceURL(this.rpcBaseUrl + protocol.getServiceProtocolName() + "/" + protocol.getServiceProtocolVersion() +
                             "/" + service);
-                    serviceDescription.setVersion(this.externalProtocolService.getCallable(service).get(0).getServiceBundle().getVersion().toString());
+                    serviceDescription.setVersion(this.externalProtocolService.getCallables(service).get(0).getServiceBundle().getVersion().toString());
                     serviceDescription.setServiceId(service);
                     discoverySvc.publishService(serviceDescription);
                 }
@@ -811,23 +830,25 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             {
                 html.tagc("h1", "ApplicationPlatformServices (APS) Remote service call over HTTP transport provider");
                 html.tagc("p",
-                        "This provides simple remote requests to OSGi services that have the \"APS-Externalizable: true\" in their META-INF/MANIFEST.MF. " +
+                        "This provides an http transport for simple remote requests to OSGi services that have the \"APS-Externalizable: true\" in their META-INF/MANIFEST.MF. " +
                         "This follows the OSGi extender pattern and makes any registered OSGi services of bundles having the above manifest entry " +
-                        "available for remote calls over HTTP. This extender makes use of the aps-external-protocol-extender which exposes services " +
-                        "with the above mentioned manifest entry with each service method available as a se.natusoft.osgi.aps.api.external.extprotocolsvc." +
-                        "The aps-rpc-http-transport acts as a mediator between the protocol implementation and aps-external-protocol-extender " +
-                        "model.APSExternallyCallable for requests over HTTP."
+                        "available for remote calls over HTTP. This transport makes use of the aps-external-protocol-extender which exposes services " +
+                        "with the above mentioned manifest entry with each service method available as an APSExternallyCallable." +
+                        "The aps-ext-protocol-http-transport acts as a mediator between the protocol implementations and aps-external-protocol-extender " +
+                        "for requests over HTTP."
                 );
                 html.tagc("p", "<b>Please note</b> that depending on protocol not every service method will be callable. It depends on its arguments " +
-                        "and return value. It mostly depends on how well the protocol handles types and can convert between the caller and the service.");
+                        "and return value. It mostly depends on how well the protocol handles types and can convert between the caller and the service. " +
+                        "Also note that bundles can specify \"APS-Externalizable: false\" in their META-INF/MANIFEST.MF. In that case none of the " +
+                        "bundles services will be callable this way!");
                 html.tagc("p",
                         "This does not provide any protocol, only transport! For services " +
                                 "to be able to be called at least one protocol is needed. Protocols are provided by providing an implementation of " +
-                                "se.natusoft.osgi.aps.api.net.rpc.streamed.service.StreamedRPCProtocolService and registering it as an OSGi service." +
+                                "se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocolService and registering it as an OSGi service." +
                                 "The StreamedRPCProtocolService API provides a protocol name and protocol version getter which is used to identify it. " +
                                 "A call to an RPC service looks like this:"
                 );
-                html.text("<ul><code>http://host:port/apsrpc/<i>protocol</i>/<i>version</i>[/<i>service</i>]</code></ul>");
+                html.text("<ul><code>http://host:port/apsrpc/<i>protocol</i>/<i>version</i>[/<i>service</i>][/<i>method</i>]</code></ul>");
                 html.text(
                         "<ul>" +
                             "<i>protocol</i>" +
@@ -855,10 +876,20 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                                 "</ul>" +
                                 "</ul>"
                 );
+                html.text(
+                        "<ul>" +
+                                "<i>method</i>" +
+                                "<ul>" +
+                                "This is a method of the service to call. The requirement for this also depends on the protocol. " +
+                                "The JSONRPC protocols does not need this since they provide the method in the request. A REST " +
+                                "protocol however would need this." +
+                                "</ul>" +
+                                "</ul>"
+                );
 
                 html.tagc("h2", "Security");
                 html.tagc("p",
-                        "This page always requires authentication! This is because it register itself with the APSAdminWeb and " +
+                        "This help page always require authentication. This is because it register itself with the APSAdminWeb and " +
                         "is available as a tab there and thereby joins in the admin web authentication. For service calls however " +
                         "authentication is only required if you enable it in the configuration (network/rpc-http-transport). " +
                         "There are 2 variants of authentication for services:" +
@@ -917,7 +948,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
      * @throws IOException
      */
     private void handleServicePage(HTMLWriter html, String service, HttpServletRequest req) throws IOException {
-        Set<String> methodNames = this.externalProtocolService.getAvailableServiceFunctions(service);
+        Set<String> methodNames = this.externalProtocolService.getAvailableServiceFunctionNames(service);
         
         html.tag("html");
         {

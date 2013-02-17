@@ -69,4 +69,14 @@ public class RPCServletConfig extends APSConfig {
     )
     public APSConfigValue requireAuthentication;
 
+    @APSConfigItemDescription(
+            description = "When this is selected then the http://.../apsrpc/_help page will be available, where all remote " +
+                          "protocols and callable services are listed. In addition to that those services can be called for " +
+                          "testing directly from the web page. Thereby this should be disabled in production environments.",
+            isBoolean = true,
+            environmentSpecific = true,
+            defaultValue = @APSDefaultValue(configEnv = "default", value="true")
+    )
+    public APSConfigValue enableHelpWeb;
+
 }

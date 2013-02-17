@@ -43,6 +43,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import se.natusoft.osgi.aps.apsadminweb.service.APSAdminWebService;
 import se.natusoft.osgi.aps.apsadminweb.service.model.AdminWebReg;
+import se.natusoft.osgi.aps.rpchttpextender.config.RPCServletConfig;
 import se.natusoft.osgi.aps.tools.APSServiceTracker;
 import se.natusoft.osgi.aps.tools.tracker.OnServiceAvailable;
 
@@ -83,7 +84,12 @@ public class Activator implements BundleActivator {
         this.adminWebSvcTracker.onServiceAvailable(new OnServiceAvailable<APSAdminWebService>() {
             @Override
             public void onServiceAvailable(APSAdminWebService adminWebService, ServiceReference serviceReference) throws Exception {
-                adminWebService.registerAdminWeb(Activator.this.awr);
+                if (!RPCServletConfig.mc.isManaged()) {
+                    RPCServletConfig.mc.waitUtilManaged();
+                }
+                if (RPCServletConfig.mc.get().enableHelpWeb.toBoolean()) {
+                    adminWebService.registerAdminWeb(Activator.this.awr);
+                }
             }
         });
     }
