@@ -53,6 +53,7 @@ package se.natusoft.osgi.aps.externalprotocolextender.model;
 
 import org.osgi.framework.ServiceReference;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternallyCallable;
+import se.natusoft.osgi.aps.api.external.model.type.ParameterDataTypeDescription;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -73,7 +74,10 @@ public class ServiceRepresentation {
     private ServiceReference serviceReference;
 
     /** The callable methods of the service. */
-    private Map<String, APSExternallyCallable> methods = new HashMap<String, APSExternallyCallable>();
+    private Map<String, APSExternallyCallable> methods = new HashMap<>();
+
+    /** The uniquely callable methods with arg types. */
+    private Map<String, APSExternallyCallable> methodsUnique = new HashMap<>();
     
     //
     // Constructors
@@ -112,7 +116,7 @@ public class ServiceRepresentation {
      * Returns the names of the avalable methods. 
      */
     public Set<String> getMethodNames() {
-        return this.methods.keySet();
+        return this.methodsUnique.keySet();
     }
 
     /**
@@ -121,7 +125,12 @@ public class ServiceRepresentation {
      * @param method The method to get callable for.
      */
     public APSExternallyCallable getMethodCallable(String method) {
-        return this.methods.get(method);
+        APSExternallyCallable callable = this.methodsUnique.get(method);
+        if (callable == null) {
+            callable = this.methods.get(method);
+        }
+
+        return callable;
     }
 
     /**
@@ -130,7 +139,18 @@ public class ServiceRepresentation {
      * @param method The name of the method to add callable for.
      * @param callable The callable for the named method.
      */
-    public void addMethodCallable(String method, APSExternallyCallable callable) {
+    public void addMethodCallable(String method, APSExternallyCallable<Object> callable) {
         this.methods.put(method, callable);
+
+        StringBuilder methodName = new StringBuilder(method);
+        methodName.append('(');
+        String comma = "";
+        for (ParameterDataTypeDescription param : callable.getParameterDataDescriptions()) {
+            methodName.append(comma);
+            methodName.append(param.getDataType().getTypeName());
+            comma = ",";
+        }
+        methodName.append(')');
+        this.methodsUnique.put(methodName.toString(), callable);
     }
 }

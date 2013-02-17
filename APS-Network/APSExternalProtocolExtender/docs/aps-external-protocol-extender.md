@@ -496,11 +496,11 @@ __String getServiceQName()__
 
 __String getMethod()__
 
->  
+>  REST protocol where it will be part of the URL. 
 
 _Returns_
 
-> The method to call
+> The method to call. This can return null if the method is provided by other means, for example a
 
 __boolean hasCallId()__
 
