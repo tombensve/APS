@@ -43,6 +43,7 @@
     <groupId>se.natusoft.osgi.aps</groupId>
     <artifactId>DeployWABBundleTile</artifactId>
     <version><!--APSVER-->0.9.0</version>
+    <packaging>pom</packaging>
 
     <build>
         <plugins>
@@ -58,7 +59,7 @@
                         </goals>
                         <phase>install</phase>
                         <configuration>
-                            <sourceFile>target/${project.build.finalName}.jar</sourceFile>
+                            <sourceFile>${project.build.directory}/${project.build.finalName}.war</sourceFile>
                             <destFile>/Users/tommy/Development/servers/virgo/pickup/${project.build.finalName}.war</destFile>
                         </configuration>
                     </execution>

@@ -59,7 +59,7 @@
                         </goals>
                         <phase>install</phase>
                         <configuration>
-                            <sourceFile>target/${project.build.finalName}.jar</sourceFile>
+                            <sourceFile>${project.build.directory}/${project.build.finalName}.jar</sourceFile>
                             <destFile>${server.deploy.dir}/${project.build.finalName}.jar</destFile>
                         </configuration>
                     </execution>
