@@ -77,69 +77,17 @@
       </p>
     </blockquote>
     <p>
-      <strong>public String getSessionId()</strong>      
+            
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
-      <em>Returns</em>      
+            
     </p>
-    <blockquote>
-      <p>
-        An id to an APSSessionService session.        
-      </p>
-    </blockquote>
     <p>
-      <strong>public void setSessionId(String sessionId)</strong>      
+            
     </p>
-    <blockquote>
-      <p>
-         Sets a new session id.          
-      </p>
-    </blockquote>
     <p>
-      <em>Parameters</em>      
+            
     </p>
-    <blockquote>
-      <p>
-        <em>sessionId</em> - The session id to set.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>public String getUserSessionName()</strong>      
-    </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
-    <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-        The name of the session data containing the logged in user if any.        
-      </p>
-    </blockquote>
-    <p>
-      <strong>public String getRequiredRole()</strong>      
-    </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
-    <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-        The required role of the user for it to be considered logged in.        
-      </p>
-    </blockquote>
     <p>
       }      
     </p>
@@ -813,37 +761,11 @@
       </p>
     </blockquote>
     <p>
-      <strong>public void sessionCreated(HttpSessionEvent httpSessionEvent)</strong>      
+            
     </p>
-    <blockquote>
-      <p>
-         Gets called when a session is created.          
-      </p>
-    </blockquote>
     <p>
-      <em>Parameters</em>      
+            
     </p>
-    <blockquote>
-      <p>
-        <em>httpSessionEvent</em>        
-      </p>
-    </blockquote>
-    <p>
-      <strong>public void sessionDestroyed(HttpSessionEvent httpSessionEvent)</strong>      
-    </p>
-    <blockquote>
-      <p>
-         Gets called when a session is destroyed.          
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>httpSessionEvent</em>        
-      </p>
-    </blockquote>
     <p>
       public <em>static</em> <em>interface</em> <strong>APSSessionDestroyedListener </strong>   [se.natusoft.osgi.aps.tools.web.vaadin] {      
     </p>
@@ -881,36 +803,33 @@
                 
     </p>
     <p>
-            
-    </p>
-    <p>
-            
-    </p>
-    <p>
-            
-    </p>
-    <p>
-            
-    </p>
-    <p>
-            
-    </p>
-    <p>
-      <strong>public BundleContext getBundleContext()</strong>      
+      public <em>abstract</em> <em>class</em> <strong>APSVaadinOSGiApplication </strong> extends  com.vaadin.Application  implements  OSGiBundleContextProvider,  APSSessionListener.APSSessionDestroyedListener    [se.natusoft.osgi.aps.tools.web.vaadin] {      
     </p>
     <blockquote>
       <p>
-         This will return this war bundles BundleContext. This is only available if this war is deployed in an R4.2+ compliant OSGi container.          
+         APS base class for Vaadin application providing OSGi support.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        This does the following: &lt;ul  &lt;li Looks up the bundle context in the servlet context and informs the user that it must be  deployed in an OSGi server to function if not found. li   &lt;li Creates a ClientContext containing the BundleContext, but can also be used to store  services in. li   &lt;li Calls overridable initServices(ClientContext), initGUI() in that order to setup. li   &lt;li Registers a session listener and calls overridable cleanupServices() when the session dies. li   &lt;li provides getters for both the BundleContext and the ClientContext. li  ul         
       </p>
     </blockquote>
     <p>
-      <em>Returns</em>      
+            
     </p>
-    <blockquote>
-      <p>
-        The OSGi bundle context.        
-      </p>
-    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
     <p>
       <strong>public void init()</strong>      
     </p>
@@ -920,29 +839,11 @@
       </p>
     </blockquote>
     <p>
-      <strong>public void setMainWindow(Window mainWindow)</strong>      
+      <strong>protected void initGUI()  }  /** * Initializes the service setup. * * clientContext The client context for accessing services. */ protected void initServices(ClientContext clientContext)  }  /** * Called when the session is about to die to cleanup anything setup in initServices(). * &lt;p/&gt; * This method should be overriden by subclasses who need cleanup. * * clientContext The client cntext for accessing services. */ protected void cleanupServices(ClientContext clientContext)  }  /** * Intercepts setMainWindow() and supplies it to the VaadinUserMessager created in init() and used to * display user messages. * * mainWindow */ public void setMainWindow(Window mainWindow)</strong>      
     </p>
     <blockquote>
       <p>
-         Initializes the gui part of the applicaiton.  Initializes the service setup.          
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>clientContext</em> - The client context for accessing services.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>clientContext</em> - The client cntext for accessing services.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>mainWindow</em>        
+         Initializes the gui part of the applicaiton.         
       </p>
     </blockquote>
     <p>
@@ -962,13 +863,8 @@
       </p>
     </blockquote>
     <p>
-      <strong>public void sessionDestroyed()</strong>      
+            
     </p>
-    <blockquote>
-      <p>
-         Called when session is destroyed.         
-      </p>
-    </blockquote>
     <p>
       }      
     </p>
@@ -1099,11 +995,11 @@
             
     </p>
     <p>
-      <strong>public ItemRepresentative getItemRepresentative()</strong>      
+      <strong>public MenuItemData()  }  // // Methods //  /** This represents one specific configuration. */ public ItemRepresentative getItemRepresentative()</strong>      
     </p>
     <blockquote>
       <p>
-         Creates a new MenuTreeItemData instance.  This represents one specific configuration.         
+         Creates a new MenuTreeItemData instance.         
       </p>
     </blockquote>
     <p>
@@ -1257,39 +1153,8 @@
       </p>
     </blockquote>
     <p>
-      <strong>public String generateDescription(Component source, Object itemId, Object propertyId)</strong>      
+            
     </p>
-    <blockquote>
-      <p>
-         Called by Table when a cell (and row) is painted or a item is painted in Tree.          
-      </p>
-    </blockquote>
-    <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-        The description or "tooltip" of the item.        
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>source</em> - The source of the generator, the Tree or Table the         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>itemId</em> - The itemId of the painted cell         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>propertyId</em> - The propertyId of the cell, null when getting row         
-      </p>
-    </blockquote>
     <p>
       <strong>public void refresh()</strong>      
     </p>
@@ -1350,60 +1215,11 @@
       </p>
     </blockquote>
     <p>
-      <strong>public Action[] getActions(Object target, Object sender)</strong>      
+            
     </p>
-    <blockquote>
-      <p>
-         Gets the list of actions applicable to this handler.          
-      </p>
-    </blockquote>
     <p>
-      <em>Returns</em>      
+            
     </p>
-    <blockquote>
-      <p>
-        the list of Action        
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>target</em> - the target handler to list actions for. For item         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>sender</em> - the party that would be sending the actions. Most of this         
-      </p>
-    </blockquote>
-    <p>
-      <strong>public void handleAction(Action action, Object sender, Object target)</strong>      
-    </p>
-    <blockquote>
-      <p>
-         Handles an action for the given target. The handler method may just discard the action if it's not suitable.          
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>action</em> - the action to be handled.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>sender</em> - the sender of the action. This is most often the action         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>target</em> - the target of the action. For item containers this is the         
-      </p>
-    </blockquote>
     <p>
       public <em>static</em> <em>interface</em> <strong>MenuActionHandler </strong>   [se.natusoft.osgi.aps.tools.web.vaadin.components.menutree] {      
     </p>
@@ -1680,29 +1496,8 @@
       </p>
     </blockquote>
     <p>
-      <strong>public void paintContent(PaintTarget target) throws PaintException</strong>      
+            
     </p>
-    <blockquote>
-      <p>
-         This is only here to validate that doLayout() have been called before painting is done.          
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>target</em>        
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>PaintException</em>        
-      </p>
-    </blockquote>
     <p>
       }      
     </p>
@@ -1948,37 +1743,16 @@
             
     </p>
     <p>
-      <strong>public void addRefreshable(Refreshable refreshable)</strong>      
+      <strong>public Refreshables()  }  // // Methods //  /** * Adds a refreshable to the refreshables. * * refreshable The refreshable to add. */ public void addRefreshable(Refreshable refreshable)</strong>      
     </p>
     <blockquote>
       <p>
-         Creates a new Refreshables instance.  Adds a refreshable to the refreshables.          
+         Creates a new Refreshables instance.         
       </p>
     </blockquote>
     <p>
-      <em>Parameters</em>      
+            
     </p>
-    <blockquote>
-      <p>
-        <em>refreshable</em> - The refreshable to add.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>public Iterator&lt;Refreshable&gt; iterator()</strong>      
-    </p>
-    <blockquote>
-      <p>
-         Returns an iterator over a set of elements of type T.          
-      </p>
-    </blockquote>
-    <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-        an Iterator.        
-      </p>
-    </blockquote>
     <p>
       <strong>public void refresh()</strong>      
     </p>

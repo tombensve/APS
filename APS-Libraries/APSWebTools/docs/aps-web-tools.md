@@ -40,37 +40,13 @@ _Parameters_
 
 > _response_ - The response to save the session id cookie on. 
 
-__public String getSessionId()__
 
->  
 
-_Returns_
 
-> An id to an APSSessionService session.
 
-__public void setSessionId(String sessionId)__
 
->  Sets a new session id.  
 
-_Parameters_
 
-> _sessionId_ - The session id to set. 
-
-__public String getUserSessionName()__
-
->  
-
-_Returns_
-
-> The name of the session data containing the logged in user if any.
-
-__public String getRequiredRole()__
-
->  
-
-_Returns_
-
-> The required role of the user for it to be considered logged in.
 
 }
 
@@ -426,21 +402,9 @@ _Parameters_
 
 > _destroyedListener_
 
-__public void sessionCreated(HttpSessionEvent httpSessionEvent)__
 
->  Gets called when a session is created.  
 
-_Parameters_
 
-> _httpSessionEvent_
-
-__public void sessionDestroyed(HttpSessionEvent httpSessionEvent)__
-
->  Gets called when a session is destroyed.  
-
-_Parameters_
-
-> _httpSessionEvent_
 
 public _static_ _interface_ __APSSessionDestroyedListener__   [se.natusoft.osgi.aps.tools.web.vaadin] {
 
@@ -466,6 +430,11 @@ public _class_ __APSTheme__   [se.natusoft.osgi.aps.tools.web.vaadin] {
 
     
 
+public _abstract_ _class_ __APSVaadinOSGiApplication__ extends  com.vaadin.Application  implements  OSGiBundleContextProvider,  APSSessionListener.APSSessionDestroyedListener    [se.natusoft.osgi.aps.tools.web.vaadin] {
+
+>  APS base class for Vaadin application providing OSGi support. 
+
+> This does the following: <ul  <li Looks up the bundle context in the servlet context and informs the user that it must be  deployed in an OSGi server to function if not found. li   <li Creates a ClientContext containing the BundleContext, but can also be used to store  services in. li   <li Calls overridable initServices(ClientContext), initGUI() in that order to setup. li   <li Registers a session listener and calls overridable cleanupServices() when the session dies. li   <li provides getters for both the BundleContext and the ClientContext. li  ul 
 
 
 
@@ -476,29 +445,14 @@ public _class_ __APSTheme__   [se.natusoft.osgi.aps.tools.web.vaadin] {
 
 
 
-__public BundleContext getBundleContext()__
-
->  This will return this war bundles BundleContext. This is only available if this war is deployed in an R4.2+ compliant OSGi container.  
-
-_Returns_
-
-> The OSGi bundle context.
 
 __public void init()__
 
 >  Initializes the vaadin application. 
 
-__public void setMainWindow(Window mainWindow)__
+__protected void initGUI()  }  /** * Initializes the service setup. * * clientContext The client context for accessing services. */ protected void initServices(ClientContext clientContext)  }  /** * Called when the session is about to die to cleanup anything setup in initServices(). * <p/> * This method should be overriden by subclasses who need cleanup. * * clientContext The client cntext for accessing services. */ protected void cleanupServices(ClientContext clientContext)  }  /** * Intercepts setMainWindow() and supplies it to the VaadinUserMessager created in init() and used to * display user messages. * * mainWindow */ public void setMainWindow(Window mainWindow)__
 
->  Initializes the gui part of the applicaiton.  Initializes the service setup.  
-
-_Parameters_
-
-> _clientContext_ - The client context for accessing services. 
-
-> _clientContext_ - The client cntext for accessing services. 
-
-> _mainWindow_
+>  Initializes the gui part of the applicaiton. 
 
 __public ClientContext getClientContext()__
 
@@ -508,9 +462,7 @@ _Returns_
 
 > The client context.
 
-__public void sessionDestroyed()__
 
->  Called when session is destroyed. 
 
 }
 
@@ -590,9 +542,9 @@ public _class_ __MenuItemData<ItemRepresentative>__   [se.natusoft.osgi.aps.tool
 
 
 
-__public ItemRepresentative getItemRepresentative()__
+__public MenuItemData()  }  // // Methods //  /** This represents one specific configuration. */ public ItemRepresentative getItemRepresentative()__
 
->  Creates a new MenuTreeItemData instance.  This represents one specific configuration. 
+>  Creates a new MenuTreeItemData instance. 
 
 __public String getToolTipText()__
 
@@ -682,21 +634,7 @@ _Parameters_
 
 > _menuBuilder_ - The menu builder to add. 
 
-__public String generateDescription(Component source, Object itemId, Object propertyId)__
 
->  Called by Table when a cell (and row) is painted or a item is painted in Tree.  
-
-_Returns_
-
-> The description or "tooltip" of the item.
-
-_Parameters_
-
-> _source_ - The source of the generator, the Tree or Table the 
-
-> _itemId_ - The itemId of the painted cell 
-
-> _propertyId_ - The propertyId of the cell, null when getting row 
 
 __public void refresh()__
 
@@ -728,31 +666,9 @@ __public void expandHierarchicalModel()__
 
 >  Expands all nodes in the hierarchical model. 
 
-__public Action[] getActions(Object target, Object sender)__
 
->  Gets the list of actions applicable to this handler.  
 
-_Returns_
 
-> the list of Action
-
-_Parameters_
-
-> _target_ - the target handler to list actions for. For item 
-
-> _sender_ - the party that would be sending the actions. Most of this 
-
-__public void handleAction(Action action, Object sender, Object target)__
-
->  Handles an action for the given target. The handler method may just discard the action if it's not suitable.  
-
-_Parameters_
-
-> _action_ - the action to be handled. 
-
-> _sender_ - the sender of the action. This is most often the action 
-
-> _target_ - the target of the action. For item containers this is the 
 
 public _static_ _interface_ __MenuActionHandler__   [se.natusoft.osgi.aps.tools.web.vaadin.components.menutree] {
 
@@ -898,17 +814,7 @@ __public void doLayout()__
 
 > It starts by removing all components so if this has already been setup and this method called, it can be called again with new components added or components replaced with other components. 
 
-__public void paintContent(PaintTarget target) throws PaintException__
 
->  This is only here to validate that doLayout() have been called before painting is done.  
-
-_Parameters_
-
-> _target_
-
-_Throws_
-
-> _PaintException_
 
 }
 
@@ -1040,21 +946,11 @@ public _class_ __Refreshables__ implements  Iterable<Refreshable>    [se.natusof
 
 
 
-__public void addRefreshable(Refreshable refreshable)__
+__public Refreshables()  }  // // Methods //  /** * Adds a refreshable to the refreshables. * * refreshable The refreshable to add. */ public void addRefreshable(Refreshable refreshable)__
 
->  Creates a new Refreshables instance.  Adds a refreshable to the refreshables.  
+>  Creates a new Refreshables instance. 
 
-_Parameters_
 
-> _refreshable_ - The refreshable to add. 
-
-__public Iterator<Refreshable> iterator()__
-
->  Returns an iterator over a set of elements of type T.  
-
-_Returns_
-
-> an Iterator.
 
 __public void refresh()__
 

@@ -77,9 +77,11 @@ public class APSAdminWebLoginHandler extends APSLoginHandler implements APSLogin
      * @param request The request to get the session id cookie from.
      */
     public void setSessionIdFromRequestCookie(HttpServletRequest request) {
-        String sessId = CookieTool.getCookie(request.getCookies(), "aps-adminweb-session-id");
-        if (sessId != null) {
-            this.sessionId = sessId;
+        if (request.getCookies() != null) {
+            String sessId = CookieTool.getCookie(request.getCookies(), "aps-adminweb-session-id");
+            if (sessId != null) {
+                this.sessionId = sessId;
+            }
         }
     }
 
