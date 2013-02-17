@@ -65,7 +65,7 @@ public class RPCServletConfig extends APSConfig {
                           "using basic http authentication as described on 'http://en.wikipedia.org/wiki/Basic_access_authentication'.",
             isBoolean = true,
             environmentSpecific = true,
-            defaultValue = @APSDefaultValue(configEnv = "default", value="false")
+            defaultValue = {@APSDefaultValue(configEnv="default", value="false"), @APSDefaultValue(configEnv="production", value="true")}
     )
     public APSConfigValue requireAuthentication;
 
@@ -75,7 +75,7 @@ public class RPCServletConfig extends APSConfig {
                           "testing directly from the web page. Thereby this should be disabled in production environments.",
             isBoolean = true,
             environmentSpecific = true,
-            defaultValue = @APSDefaultValue(configEnv = "default", value="true")
+            defaultValue = {@APSDefaultValue(configEnv="default", value="true"), @APSDefaultValue(configEnv="production", value="false")}
     )
     public APSConfigValue enableHelpWeb;
 
