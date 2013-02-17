@@ -139,13 +139,14 @@
         <module>APS-Data</module>
         <module>APS-Auth</module>
         <module>Build</module>
+        <module>APS-Docs</module>
         <!--<module>Test</module>-->
     </modules>
 
     <distributionManagement>
         <repository>
             <id>maven-repository-upload</id>
-            <url>ftp://${maven.repo.upload}/maven.natusoft.se/public_html</url>
+            <url>ftp://${maven.repo.upload}/${maven.base.path}</url>
         </repository>
     </distributionManagement>
 

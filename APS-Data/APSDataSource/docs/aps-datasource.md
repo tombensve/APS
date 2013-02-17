@@ -13,7 +13,7 @@ The actual data source definitions are configured in the _/apsadminweb_ under co
 
 The complete APS javadoc can be found at [http://apidoc.natusoft.se/APS/](http://apidoc.natusoft.se/APS/).
 
-public _interface_ __DataSourceDef __   [se.natusoft.osgi.aps.api.data.jdbc.model] {
+public _interface_ __DataSourceDef__   [se.natusoft.osgi.aps.api.data.jdbc.model] {
 
 >  This represents information required for setting upp a JDBC data source. 
 
@@ -59,9 +59,11 @@ _Returns_
 
 }
 
+----
+
     
 
-public _interface_ __APSDataSourceDefService __   [se.natusoft.osgi.aps.api.data.jdbc.service] {
+public _interface_ __APSDataSourceDefService__   [se.natusoft.osgi.aps.api.data.jdbc.service] {
 
 >  This service provides lookup of configured data source definitions. These can be used to setup connection pools, JPA, ... 
 
@@ -86,6 +88,8 @@ _Returns_
 > All available definitions.
 
 }
+
+----
 
     
 

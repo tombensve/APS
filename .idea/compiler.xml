@@ -45,12 +45,12 @@
       <directory url="file://$PROJECT_DIR$/APS-Libraries/APSJSONLib/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/Archetypes/APSBundleArchetype/target/generated-sources/annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/Archetypes/APSBundleArchetype/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
-      <directory url="file://$PROJECT_DIR$/Archetypes/APSBundleArchetype/src/main/resources/archetype-resources" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Archetypes/APSBundleArchetype/src/main/resources/archetype-resources" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/target/generated-sources/annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/Archetypes/APSWarBundleArchetype/target/generated-sources/annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/Archetypes/APSWarBundleArchetype/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
-      <directory url="file://$PROJECT_DIR$/Archetypes/APSWarBundleArchetype/src/main/resources/archetype-resources" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/APS-Archetypes/APSWarBundleArchetype/src/main/resources/archetype-resources" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/Documentation/target/generated-sources/annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/Documentation/target/generated-test-sources/test-annotations" includeSubdirectories="true" />
       <directory url="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/target/generated-sources/annotations" includeSubdirectories="true" />
@@ -106,6 +106,7 @@
         <module name="aps-configuration-service-provider" />
         <module name="aps-datasource" />
         <module name="aps-discovery-service-provider" />
+        <module name="APS-Docs" />
         <module name="aps-ext-protocol-http-transport-provider" />
         <module name="aps-external-protocol-extender" />
         <module name="aps-filesystem-service-provider" />
@@ -118,16 +119,14 @@
         <module name="aps-resolving-bundle-deployer" />
         <module name="aps-rpc-http-transport-provider" />
         <module name="aps-session-provider-service" />
+        <module name="aps-session-service-provider" />
         <module name="aps-simple-user-service-provider" />
         <module name="aps-streamed-json-rpc-protocol-provider" />
         <module name="aps-tools-lib" />
         <module name="aps-user-admin-web" />
         <module name="aps-web-tools" />
-        <module name="APSBundleArchetype" />
         <module name="APSResolvingBundleDeployer" />
         <module name="APSTomcatWebExtender" />
-        <module name="APSWarBundleArchetype" />
-        <module name="DeployWABBundleTile" />
         <module name="OSGiTile" />
         <module name="ServerDeployPlugin" />
         <module name="ServerDeployPlugin (1)" />
@@ -145,6 +144,7 @@
       <module name="APS-Data" target="1.7" />
       <module name="aps-datasource" target="1.7" />
       <module name="aps-discovery-service-provider" target="1.7" />
+      <module name="APS-Docs" target="1.7" />
       <module name="aps-ext-protocol-http-transport-provider" target="1.7" />
       <module name="aps-external-protocol-extender" target="1.7" />
       <module name="aps-filesystem-service-provider" target="1.7" />
@@ -159,6 +159,7 @@
       <module name="aps-platform-service-provider" target="1.7" />
       <module name="aps-resolving-bundle-deployer" target="1.7" />
       <module name="aps-session-provider-service" target="1.7" />
+      <module name="aps-session-service-provider" target="1.7" />
       <module name="aps-simple-user-service-provider" target="1.7" />
       <module name="aps-streamed-json-rpc-protocol-provider" target="1.7" />
       <module name="aps-tools-lib" target="1.7" />

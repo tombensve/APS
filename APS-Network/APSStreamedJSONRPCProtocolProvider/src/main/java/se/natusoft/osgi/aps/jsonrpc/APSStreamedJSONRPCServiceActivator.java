@@ -41,7 +41,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
-import se.natusoft.osgi.aps.api.net.rpc.streamed.service.StreamedRPCProtocol;
+import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 import se.natusoft.osgi.aps.jsonrpc.versions.JSONRPC10;
 import se.natusoft.osgi.aps.jsonrpc.versions.JSONRPC20;
 import se.natusoft.osgi.aps.tools.APSLogger;

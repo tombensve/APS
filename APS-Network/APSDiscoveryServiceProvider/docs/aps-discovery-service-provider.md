@@ -84,9 +84,9 @@ public _class_ __ServiceDescriptionProvider__ implements  ServiceDescription    
 
 
 
-__public String toString()__
+__public ServiceDescriptionProvider()  }  // // Methods //  /** * Returns a string representation of this object. */ public String toString()__
 
->  Creates a new ServiceDescirption.  Returns a string representation of this object. 
+>  Creates a new ServiceDescirption. 
 
 __public String getDescription()__
 
@@ -100,9 +100,7 @@ _Parameters_
 
 > _description_ - The description to set. 
 
-__public String getServiceId()__
 
->  An id/name of the service. 
 
 __public void setServiceId(String serviceId)__
 
@@ -112,9 +110,7 @@ _Parameters_
 
 > _serviceId_ - The service id to set. 
 
-__public String getVersion()__
 
->  The version of the service. 
 
 __public void setVersion(String version)__
 
@@ -124,9 +120,7 @@ _Parameters_
 
 > _version_ - The version to set. 
 
-__public String getServiceHost()__
 
->  The targetHost of the service. 
 
 __public void setServiceHost(String serviceHost)__
 
@@ -136,9 +130,7 @@ _Parameters_
 
 > _serviceHost_ - The service targetHost to set. 
 
-__public int getServicePort()__
 
->  The targetPort of the service. 
 
 __public void setServicePort(int servicePort)__
 
@@ -148,11 +140,9 @@ _Parameters_
 
 > _servicePort_ - The service targetPort to set. 
 
-__public String getServiceURL()__
 
->  An optional URL to the service. 
 
-__public void setServiceURL(String serviceURL)__
+____
 
 >  Sets an url to the service.  
 
@@ -160,21 +150,9 @@ _Parameters_
 
 > _serviceURL_ - The servcie url to set. 
 
-__public int hashCode()__
 
->  
 
-_Returns_
 
-> The hash code of this ServiceDescriptionProvider.
-
-__public boolean equals(Object o)__
-
->  Compares with other object for equality.  
-
-_Parameters_
-
-> _o_ - The object to compare to. 
 
 }
 

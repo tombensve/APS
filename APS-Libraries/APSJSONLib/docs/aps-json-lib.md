@@ -126,33 +126,9 @@ _Parameters_
 
 > _<T>_ - One of the JSONValue subclasses. 
 
-__protected void readJSON(char c, JSONReader reader) throws IOException__
 
->  Loads this JSONArray model with data from the specified input stream.  
 
-_Parameters_
 
-> _c_ - A preread character from the input stream. 
-
-> _reader_ - The JSONReader to read from. 
-
-_Throws_
-
-> _IOException_
-
-__protected void writeJSON(JSONWriter writer, boolean compact) throws IOException__
-
->  Writes the JSONArray content in JSON format on the specified output stream.  
-
-_Parameters_
-
-> _writer_ - The writer to write to. 
-
-> _compact_ - Write json in compact format. 
-
-_Throws_
-
-> _IOException_
 
 }
 
@@ -200,33 +176,9 @@ __public String toString()__
 
 >  Returns the value of this boolean as a String. 
 
-__protected void readJSON(char c, JSONReader reader) throws IOException__
 
->  Loads the contents of this JSONBoolean model from the specified input stream.  
 
-_Parameters_
 
-> _c_ - A preread character from the input stream. 
-
-> _reader_ - The JSONReader to read from. 
-
-_Throws_
-
-> _IOException_
-
-__protected void writeJSON(JSONWriter writer, boolean compact) throws IOException__
-
->  Writes the contents of this JSONBoolean to the specified output stream in JSON format.  
-
-_Parameters_
-
-> _writer_ - The JSONWriter to write to. 
-
-> _compact_ - Write json in compact format. 
-
-_Throws_
-
-> _IOException_
 
 }
 
@@ -292,33 +244,9 @@ _Returns_
 
 > as String.
 
-__protected void readJSON(char c, JSONReader reader) throws IOException__
 
->  Reads the content of the JSONNull model from the specified input stream.  
 
-_Parameters_
 
-> _c_ - A preread character from the input stream. 
-
-> _reader_ - The JSONReader to read from. 
-
-_Throws_
-
-> _IOException_
-
-__protected void writeJSON(JSONWriter writer, boolean compact) throws IOException__
-
->  Writes the content of this JSONNull model to the specified output stream in JSON format.  
-
-_Parameters_
-
-> _writer_ - The JSONWriter to write to. 
-
-> _compact_ - Write json in compact format. 
-
-_Throws_
-
-> _IOException_
 
 }
 
@@ -412,33 +340,9 @@ _Parameters_
 
 > _type_ - The type of the returned number. 
 
-__protected void readJSON(char c, JSONReader reader) throws IOException__
 
->  Loads the content of this JSONNumber model from the specified input stream.  
 
-_Parameters_
 
-> _c_ - A preread character from the input stream. 
-
-> _reader_ - The JSONReader to read from. 
-
-_Throws_
-
-> _IOException_
-
-__protected void writeJSON(JSONWriter writer, boolean compact) throws IOException__
-
->  Writes the contents of this JSONNumber to the specified output stream in JSON format.  
-
-_Parameters_
-
-> _writer_ - The JSONWriter to write to. 
-
-> _compact_ - Write json in compact format. 
-
-_Throws_
-
-> _IOException_
 
 }
 
@@ -467,13 +371,9 @@ public _class_ __JSONObject__ extends  JSONValue    [se.natusoft.osgi.aps.json] 
 
 
 
-__public JSONObject(JSONErrorHandler errorHandler)__
+__public JSONObject()  }  /** * Creates a new JSONObject instance for reading JSON input or writing JSON output. * * errorHandler */ public JSONObject(JSONErrorHandler errorHandler)__
 
->  Creates a JSONObject instance for writing JSON output.  Creates a new JSONObject instance for reading JSON input or writing JSON output.  
-
-_Parameters_
-
-> _errorHandler_
+>  Creates a JSONObject instance for writing JSON output. 
 
 
 
@@ -519,33 +419,9 @@ _Parameters_
 
 > _value_ - The property value. 
 
-__protected void readJSON(char c, JSONReader reader) throws IOException__
 
->  Loads this JSONObject model from the specified input stream.  
 
-_Parameters_
 
-> _c_ - A pre-read character from the input stream. 
-
-> _reader_ - The JSONReader to read from. 
-
-_Throws_
-
-> _IOException_
-
-__protected void writeJSON(JSONWriter writer, boolean compact) throws IOException__
-
->  Writes the contents of this JSONObject model to the specified output stream in JSON format.  
-
-_Parameters_
-
-> _writer_ - The JSONWriter to write to. 
-
-> _compact_ - Write json in compact format. 
-
-_Throws_
-
-> _IOException_
 
 }
 
@@ -599,49 +475,15 @@ _Parameters_
 
 
 
-__protected void readJSON(char c, JSONReader reader) throws IOException__
 
->  Loads this JSONString model from the specified input stream.  
 
-_Parameters_
 
-> _c_ - A preread character from the input stream. 
 
-> _reader_ - The JSONReader to read from. 
 
-_Throws_
 
-> _IOException_
 
-__protected void writeJSON(JSONWriter writer, boolean compact) throws IOException__
 
->  Writes the contents of this JSONString to the specified output stream in JSON format.  
 
-_Parameters_
-
-> _writer_ - The JSONWriter to write to. 
-
-> _compact_ - If true write compact. 
-
-_Throws_
-
-> _IOException_
-
-__public String toString()__
-
->  Converts this to a String. 
-
-__public int hashCode()__
-
->  Returns the hash code of this instance. 
-
-__public boolean equals(Object obj)__
-
->  Compares this object with another for equality.  
-
-_Parameters_
-
-> _obj_ - The object to compare to. 
 
 }
 
@@ -672,9 +514,9 @@ public _abstract_ _class_ __JSONValue__   [se.natusoft.osgi.aps.json] {
 
 
 
-__protected JSONValue(JSONErrorHandler errorHandler)__
+__protected JSONValue()  }  /** * Creates a new JSONValue */ protected JSONValue(JSONErrorHandler errorHandler)__
 
->  Creates a new JSONValue.  Creates a new JSONValue 
+>  Creates a new JSONValue. 
 
 __protected abstract void readJSON(char c, JSONReader reader) throws IOException__
 
@@ -1242,27 +1084,9 @@ public _class_ __SystemOutErrorHandler__ implements  JSONErrorHandler    [se.nat
 
 >  A simple implementation of JSONErrorHandler that simply displays messages on System.out and throws a RuntimeException on fail. This is used by the tests. In a non test case another implementation is probably preferred. 
 
-__public void warning(String message)__
 
->  Warns about something.  
 
-_Parameters_
 
-> _message_ - The warning message. 
-
-__public void fail(String message, Throwable cause) throws RuntimeException__
-
->  Indicate failure.  
-
-_Parameters_
-
-> _message_ - The failure message. 
-
-> _cause_ - The cause of the failure. Can be null! 
-
-_Throws_
-
-> _RuntimeException_ - This method must throw a RuntimeException. 
 
 }
 

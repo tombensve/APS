@@ -76,7 +76,7 @@ __public static int LONG_TIMEOUT = 20__
 
 >  A relatively long timeout. 
 
-__APSSession createSession(int timeoutInMinutes)__
+__public APSSession createSession(int timeoutInMinutes)__
 
 >  Creates a new session.  
 

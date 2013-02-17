@@ -392,9 +392,7 @@ public _interface_ __APSFilesystemService__   [se.natusoft.osgi.aps.api.core.fil
 
 > 
 
-__static final String CONF_APS_FILESYSTEM_ROOT = "aps.filesystem.root"__
 
->  The configuration key of the filesystem root catalog. 
 
 __APSFilesystem createFilesystem(String owner) throws IOException__
 

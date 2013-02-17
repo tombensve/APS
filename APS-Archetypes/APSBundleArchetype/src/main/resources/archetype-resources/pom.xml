@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>APS</artifactId>
+        <groupId>se.natusoft.osgi.aps</groupId>
+        <version>1.0</version>
+    </parent>
+
+    <groupId>${groupId}</groupId>
+    <artifactId>${artifactId}</artifactId>
+    <version>${version}</version>
+    <packaging>bundle</packaging>
+
+    <name>${artifactId}</name>
+
+    <description>
+    </description>
+
+    <properties>
+        <!-- 
+            Bundle properties 
+        -->
+        
+        <!-- The symbolic name of the bundle. Defaults to the artifact id, but can be overriden. -->
+        <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
+        
+        <!-- The bundle activator class -->
+        <osgi.bundle.activator>Activator</osgi.bundle.activator>
+        
+        <!-- The bundle packages to export. -->
+        <osgi.export.package>
+        </osgi.export.package>
+        
+        <!-- The packages to import for the bundle. -->
+        <osgi.import.package>*</osgi.import.package>
+                
+        <!-- The private packages. -->
+        <osgi.private.package>
+        </osgi.private.package>
+        
+        <!-- The packages to export from dependent & embeded jars -->
+        <osgi.export.dependency.package>    
+        </osgi.export.dependency.package>
+
+        <!-- The resources to include in the bundle -->
+        <osgi.include.resource>
+        </osgi.include.resource>
+
+        <!-- The default for embedding dependencies in bundle. -->
+        <osgi.embed.dependency>*;scope=compile</osgi.embed.dependency>
+        
+        <!-- The directory whose content should be embeded into the bundle jar. -->
+        <osgi.embed.directory>lib</osgi.embed.directory>
+        
+        <!--
+            Other properties
+        -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!--
+            APS
+        -->
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-core-apis</artifactId>
+            <version>${version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-tools-lib</artifactId>
+            <version>${version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            
+            <!--
+                Force the jar plugin to use the maven-bundle-plugin generated manifest.
+            -->
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive> 
+                </configuration>
+            </plugin>  
+
+            <!--
+                OSGi bundle handling.
+            -->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.5</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <supportedProjectTypes>
+                        <supportedProjectType>jar</supportedProjectType>
+                        <supportedProjectType>bundle</supportedProjectType>
+                    </supportedProjectTypes>
+                    <archive>
+                        <manifestEntries>
+                            <!--APS-Configs></APS-Configs-->
+                            <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
+                        </manifestEntries>                        
+                    </archive>
+                    <instructions>
+                        <Export-Package>${osgi.export.package}</Export-Package>
+                        <Import-Package>${osgi.import.package}</Import-Package>
+                        <_exportcontents>${osgi.export.dependency.package}</_exportcontents>
+                        <Private-Package>${osgi.private.package}</Private-Package>
+                        <Include-Resource>${osgi.include.resource}</Include-Resource>
+                        <Bundle-SymbolicName>${osgi.bundle.symbolic.name}</Bundle-SymbolicName>
+                        <Bundle-Activator>${osgi.bundle.activator}</Bundle-Activator>
+                        <Embed-Directory>${osgi.embed.directory}</Embed-Directory>
+                        <Embed-Dependency>${osgi.embed.dependency}</Embed-Dependency>
+                    </instructions>
+                </configuration>
+            </plugin>
+            
+        </plugins>
+    </build>
+    
+</project>

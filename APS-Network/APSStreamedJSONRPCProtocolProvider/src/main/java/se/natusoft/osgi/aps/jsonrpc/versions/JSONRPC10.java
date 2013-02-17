@@ -45,7 +45,7 @@ import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
 import se.natusoft.osgi.aps.api.net.rpc.errors.ErrorType;
 import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
 import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;
-import se.natusoft.osgi.aps.api.net.rpc.streamed.service.StreamedRPCProtocol;
+import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
 import se.natusoft.osgi.aps.jsonrpc.errors.*;
 import se.natusoft.osgi.aps.jsonrpc.model.JSONRPCRequest;
