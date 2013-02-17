@@ -42,19 +42,19 @@ package se.natusoft.osgi.aps.api.misc.session;
 public interface APSSessionService {
 
     /** Specifies no timeout. */
-    public static int NO_TIMEOUT = 0;
+    static int NO_TIMEOUT = 0;
 
     /** Specifies the default timeout. */
-    public static int DEFAULT_TIMEOUT = -1;
+    static int DEFAULT_TIMEOUT = -1;
 
     /** A relatively short timeout. */
-    public static int SHORT_TIMEOUT = 5;
+    static int SHORT_TIMEOUT = 5;
 
     /** A medium timeout. */
-    public static int MEDIUM_TIMEOUT = 10;
+    static int MEDIUM_TIMEOUT = 10;
 
     /** A relatively long timeout. */
-    public static int LONG_TIMEOUT = 20;
+    static int LONG_TIMEOUT = 20;
 
     /**
      * Creates a new session.
@@ -72,7 +72,7 @@ public interface APSSessionService {
      * @param sessionId The id of the session to create.
      * @param timeoutInMinutes The timeout in minutes.
      */
-    public APSSession createSession(String sessionId, int timeoutInMinutes);
+    APSSession createSession(String sessionId, int timeoutInMinutes);
 
     /**
      * Looks up an existing session by its id.

@@ -61,7 +61,8 @@ public interface RPCRequest {
     String getServiceQName();
     
     /**
-     * @return The method to call
+     * @return The method to call. This can return null if the method is provided by other means, for example a
+     * REST protocol where it will be part of the URL.
      */
     String getMethod();
 
