@@ -6,7 +6,7 @@ Please note that depending on protocol not every service method will be callable
 
 This does not provide any protocol, only transport! For services to be able to be called at least one protocol is needed. Protocols are provided by providing an implementation of se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocolService and registering it as an OSGi service.The StreamedRPCProtocolService API provides a protocol name and protocol version getter which is used to identify it. A call to an RPC service looks like this:
 
-&nbsp; &nbsp; &nbsp; &nbsp;http://host:port/apsrpc/protocol/version[/service][/method]
+&nbsp; &nbsp; &nbsp; &nbsp;http://host:port/apsrpc/_protocol_/_version_[/_service_][/_method_]
 
 _protocol_ - This is the name of the protocol to use. An implementation of that protocol must of course be available for this to work. If it isn't you will get a 404 back! The protocol service (RPCProtocol<-StreamedRPCProtocol) provides a name for each protocol. It is this name that is referenced.
 
