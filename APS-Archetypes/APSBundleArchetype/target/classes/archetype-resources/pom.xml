@@ -4,12 +4,10 @@
     <parent>
         <artifactId>APS</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version>1.0</version>
+        <version><!--APSVER-->${version}</version>
     </parent>
 
-    <groupId>${groupId}</groupId>
     <artifactId>${artifactId}</artifactId>
-    <version>${version}</version>
     <packaging>bundle</packaging>
 
     <name>${artifactId}</name>
@@ -52,7 +50,13 @@
         
         <!-- The directory whose content should be embeded into the bundle jar. -->
         <osgi.embed.directory>lib</osgi.embed.directory>
-        
+
+        <!--
+             Trigger tiles.
+         -->
+        <tile.deploy>${project.groupId}:DeployBundleTile:${project.version}</tile.deploy>
+        <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
+
         <!--
             Other properties
         -->
@@ -66,13 +70,13 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-core-apis</artifactId>
-            <version>${version}</version>
+            <version><!--APSVER-->${version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tools-lib</artifactId>
-            <version>${version}</version>
+            <version><!--APSVER-->${version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
