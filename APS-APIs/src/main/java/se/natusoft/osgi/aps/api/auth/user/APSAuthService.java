@@ -74,8 +74,7 @@ public interface APSAuthService<Credential> {
      * @param userId The id of the user to authenticate.
      * @param credentials What this is depends on the value of AuthMethod. It is up to the service implementation to resolve this.
      * @param authMethod This hints at how to interpret the credentials.
-     * @param role The specified user must have this role for authentication to succeed. Please note that the APS admin webs
-     *             will pass "apsadmin" for the role. The implementation might need to translate this to another role.
+     * @param role The specified user must have this role for authentication to succeed. Please note that the APS admin webs will pass "apsadmin" for the role. The implementation might need to translate this to another role.
      *
      * @return User properties on success, null on failure.
      *
