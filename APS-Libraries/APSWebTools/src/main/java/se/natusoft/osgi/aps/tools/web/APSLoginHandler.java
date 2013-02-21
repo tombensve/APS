@@ -37,11 +37,12 @@
 package se.natusoft.osgi.aps.tools.web;
 
 import org.osgi.framework.BundleContext;
-import se.natusoft.osgi.aps.api.auth.user.APSSimpleUserService;
-import se.natusoft.osgi.aps.api.auth.user.model.User;
+import se.natusoft.osgi.aps.api.auth.user.APSAuthService;
 import se.natusoft.osgi.aps.api.misc.session.APSSession;
 import se.natusoft.osgi.aps.api.misc.session.APSSessionService;
 import se.natusoft.osgi.aps.tools.APSServiceTracker;
+
+import java.util.Properties;
 
 /**
  * This class validates if there is a valid logged in user and also provides a simple login if no valid
@@ -66,7 +67,7 @@ public class APSLoginHandler implements LoginHandler {
     //
 
     /** The currently logged in user. */
-    private User loggedInUser = null;
+    private String loggedInUser = null;
 
     // In data
 
@@ -78,11 +79,11 @@ public class APSLoginHandler implements LoginHandler {
 
     // Used services
 
-    /** A service tracker for APSSimpleUserService. */
-    private APSServiceTracker<APSSimpleUserService> userServiceTracker = null;
+    /** A service tracker for APSAuthService. */
+    private APSServiceTracker<APSAuthService> authServiceTracker = null;
 
-    /** A tracker wrapped instance of the APSSimpleUserService. */
-    private APSSimpleUserService userService = null;
+    /** A tracker wrapped instance of the APSAuthService. */
+    private APSAuthService authService = null;
 
     /** A service tracker for APSSessionService. */
     private APSServiceTracker<APSSessionService> sessionServiceTracker = null;
@@ -104,10 +105,10 @@ public class APSLoginHandler implements LoginHandler {
         this.handlerInfo = handlerInfo;
 
         // Setup trackers for our used services.
-        this.userServiceTracker =
-                new APSServiceTracker<APSSimpleUserService>(this.context, APSSimpleUserService.class, APSServiceTracker.LARGE_TIMEOUT);
-        this.userServiceTracker.start();
-        this.userService = this.userServiceTracker.getWrappedService();
+        this.authServiceTracker =
+                new APSServiceTracker<APSAuthService>(this.context, APSAuthService.class, APSServiceTracker.LARGE_TIMEOUT);
+        this.authServiceTracker.start();
+        this.authService = this.authServiceTracker.getWrappedService();
 
         this.sessionServiceTracker =
                 new APSServiceTracker<APSSessionService>(this.context, APSSessionService.class, APSServiceTracker.LARGE_TIMEOUT);
@@ -133,10 +134,10 @@ public class APSLoginHandler implements LoginHandler {
      * to cleanup!
      */
     public void shutdown() {
-        if (this.userServiceTracker != null) {
-            this.userServiceTracker.stop(this.context);
-            this.userServiceTracker = null;
-            this.userService = null;
+        if (this.authServiceTracker != null) {
+            this.authServiceTracker.stop(this.context);
+            this.authServiceTracker = null;
+            this.authService = null;
         }
 
         if (this.sessionServiceTracker != null) {
@@ -149,7 +150,7 @@ public class APSLoginHandler implements LoginHandler {
     /**
      * This returns the currently logged in user or null if none are logged in.
      */
-    public User getLoggedInUser() {
+    public String getLoggedInUser() {
         return this.loggedInUser;
     }
 
@@ -174,9 +175,9 @@ public class APSLoginHandler implements LoginHandler {
      */
     public boolean hasValidLogin() {
         APSSession session = getOrCreateSession();
-        this.loggedInUser = (User)session.retrieveObject(this.handlerInfo.getUserSessionName());
+        this.loggedInUser = (String)session.retrieveObject(this.handlerInfo.getUserSessionName());
 
-        if (this.loggedInUser == null || !this.loggedInUser.isAuthenticated()) {
+        if (this.loggedInUser == null) {
             this.loggedInUser = null;
             return false;
         }
@@ -195,11 +196,10 @@ public class APSLoginHandler implements LoginHandler {
     public boolean login(String userId, String pw) {
         boolean loggedIn = false;
 
-        User user = login(userId, pw, this.handlerInfo.getRequiredRole());
-        if (user != null) {
-            this.loggedInUser = user;
+        if (login(userId, pw, this.handlerInfo.getRequiredRole())) {
+            this.loggedInUser = userId;
             APSSession apsSession = getOrCreateSession();
-            apsSession.saveObject(this.handlerInfo.getUserSessionName(), user);
+            apsSession.saveObject(this.handlerInfo.getUserSessionName(), userId);
             loggedIn = true;
         }
 
@@ -221,26 +221,25 @@ public class APSLoginHandler implements LoginHandler {
      *
      * @return a valid User object on success or null on failure.
      */
-    public User login(String userId, String pw, String requiredRole) {
-        User user = null;
+    public boolean login(String userId, String pw, String requiredRole) {
+        boolean authenticated = false;
 
         if (userId != null && pw != null) {
-            User _user = this.userService.getUser(userId);
-            if (_user != null) {
-                if (this.userService.authenticateUser(_user, pw, APSSimpleUserService.AUTH_METHOD_PASSWORD)) {
-                    if (requiredRole != null) {
-                        if (_user.hasRole(requiredRole)) {
-                            user = _user;
-                        }
-                    }
-                    else {
-                        user = _user;
-                    }
-                }
+            Properties userProps = null;
+
+            if (requiredRole != null) {
+                userProps = this.authService.authUser(userId, pw, APSAuthService.AuthMethod.PASSWORD, requiredRole);
+            }
+            else {
+                userProps = this.authService.authUser(userId, pw, APSAuthService.AuthMethod.PASSWORD);
+            }
+
+            if (userProps != null) {
+                authenticated = true;
             }
         }
 
-        return user;
+        return authenticated;
     }
 
     //

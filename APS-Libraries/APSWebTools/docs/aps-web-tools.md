@@ -104,7 +104,7 @@ __public void shutdown()__
 
 >  Since this class internally creates and starts service trackers this method needs to be called on shutdown to cleanup! 
 
-__public User getLoggedInUser()__
+__public String getLoggedInUser()__
 
 >  This returns the currently logged in user or null if none are logged in. 
 
@@ -128,7 +128,7 @@ _Parameters_
 
 > _pw_ - The password of the user to login. 
 
-__public User login(String userId, String pw, String requiredRole)__
+__public boolean login(String userId, String pw, String requiredRole)__
 
 >  Logs in with a userid and a password. 
 
