@@ -55,14 +55,15 @@ public interface APSAuthService<Credential> {
     /**
      * This authenticates a user. A Properties object is returned on successful authentication. null is returned
      * on failure. The Properties object returned contains misc information about the user. It can contain anything
-     * or nothing at all. There can be no assumptions about its contents! If the specified AuthMethod is not
-     * supported by the service implementation it should simply fail the auth by returning null.
+     * or nothing at all. There can be no assumptions about its contents!
      *
      * @param userId The id of the user to authenticate.
      * @param credentials What this is depends on the value of AuthMethod. It is up to the service implementation to resolve this.
      * @param authMethod This hints at how to interpret the credentials.
      *
      * @return User properties on success, null on failure.
+     *
+     * @throws APSAuthMethodNotSupportedException If the specified authMethod is not supported by the implementation.
      */
     Properties authUser(String userId, Credential credentials, AuthMethod authMethod) throws APSAuthMethodNotSupportedException;
 
