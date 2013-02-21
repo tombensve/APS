@@ -518,7 +518,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
 
         if (user != null && password != null) {
             String role = null;
-            if (this.loginHandler.login(user, password, role) != null) {
+            if (!this.loginHandler.login(user, password, role)) {
                 resp.setHeader("WWW-Authenticate", "Basic realm=\"aps\"");
                 resp.sendError(401, "Authorisation failed!");
                 return AUTH_FAILED;

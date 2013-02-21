@@ -2,6 +2,9 @@
 <project version="4">
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
     <file url="file://$PROJECT_DIR$/APS-APIs" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/APS-Archetypes/APSBundleArchetype/src/main/resources/archetype-resources/src/docs/docs.css" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/APS-Archetypes/APSWarBundleArchetype/src/main/resources/archetype-resources/src/docs/docs.css" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Core/APSFilesystemServiceProvider" charset="UTF-8" />

@@ -126,6 +126,7 @@
         <module name="aps-user-admin-web" />
         <module name="aps-web-tools" />
         <module name="APSResolvingBundleDeployer" />
+        <module name="APSSimpleUserServiceAuthServiceProvider" />
         <module name="APSTomcatWebExtender" />
         <module name="OSGiTile" />
         <module name="ServerDeployPlugin" />
@@ -167,6 +168,7 @@
       <module name="aps-web-tools" target="1.7" />
       <module name="APS-Webs" target="1.7" />
       <module name="APSConfigTest" target="1.7" />
+      <module name="APSSimpleUserServiceAuthServiceProvider" target="1.7" />
       <module name="Build" target="1.7" />
       <module name="BuildTiles" target="1.7" />
       <module name="DeployBundleTile" target="1.7" />

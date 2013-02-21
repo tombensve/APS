@@ -11,6 +11,7 @@
       <module fileurl="file://$PROJECT_DIR$/APS-Misc/APS-Misc.iml" filepath="$PROJECT_DIR$/APS-Misc/APS-Misc.iml" group="APS and modules/APS-Misc and modules" />
       <module fileurl="file://$PROJECT_DIR$/APS-Network/APS-Network.iml" filepath="$PROJECT_DIR$/APS-Network/APS-Network.iml" group="APS and modules/APS-Network and modules" />
       <module fileurl="file://$PROJECT_DIR$/APS-Webs/APS-Webs.iml" filepath="$PROJECT_DIR$/APS-Webs/APS-Webs.iml" group="APS and modules/APS-Webs and modules" />
+      <module fileurl="file://$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/APSSimpleUserServiceAuthServiceProvider.iml" filepath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/APSSimpleUserServiceAuthServiceProvider.iml" group="APS and modules/APS-Auth and modules" />
       <module fileurl="file://$PROJECT_DIR$/Build/Build.iml" filepath="$PROJECT_DIR$/Build/Build.iml" group="APS and modules/Build and modules" />
       <module fileurl="file://$PROJECT_DIR$/Build/DeployBundleTile/DeployBundleTile.iml" filepath="$PROJECT_DIR$/Build/DeployBundleTile/DeployBundleTile.iml" group="APS and modules/Build and modules" />
       <module fileurl="file://$PROJECT_DIR$/Build/DeployWABBundleTile/DeployWABBundleTile.iml" filepath="$PROJECT_DIR$/Build/DeployWABBundleTile/DeployWABBundleTile.iml" group="APS and modules/Build and modules" />

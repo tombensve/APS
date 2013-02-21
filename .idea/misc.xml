@@ -342,6 +342,7 @@
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="gwt" url="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-APIs" />
+    <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Core/APSFilesystemServiceProvider" />

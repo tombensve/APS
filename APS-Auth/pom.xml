@@ -53,6 +53,7 @@
 
     <modules>
         <module>APSSimpleUserServiceProvider</module>
+        <module>APSSimpleUserServiceAuthServiceProvider</module>
     </modules>
 
 </project>
