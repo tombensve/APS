@@ -98,6 +98,42 @@ public class APSSimpleUserServiceAuthServiceProvider implements APSAuthService<S
     }
 
     /**
+     * This authenticates a user. A Properties object is returned on successful authentication. null is returned
+     * on failure. The Properties object returned contains misc information about the user. It can contain anything
+     * or nothing at all. There can be no assumptions about its contents!
+     *
+     * @param userId      The id of the user to authenticate.
+     * @param credentials What this is depends on the value of AuthMethod. It is up to the service implementation to resolve this.
+     * @param authMethod  This hints at how to interpret the credentials.
+     * @param role        The specified user must have this role for authentication to succeed. Please note that the APS admin webs
+     *                    will pass "apsadmin" for the role. The implementation might need to translate this to another role.
+     * @return User properties on success, null on failure.
+     * @throws se.natusoft.osgi.aps.api.auth.user.exceptions.APSAuthMethodNotSupportedException
+     *          If the specified authMethod is not supported by the implementation.
+     */
+    @Override
+    public Properties authUser(String userId, String credentials, AuthMethod authMethod,
+                               String role) throws APSAuthMethodNotSupportedException {
+
+        if (authMethod != AuthMethod.PASSWORD) {
+            throw new APSAuthMethodNotSupportedException("This APSAuthService provider only supports password authentication!");
+        }
+
+        Properties userProps = null;
+        User user = this.userService.getUser(userId);
+        if (user != null) {
+            if (this.userService.authenticateUser(user, credentials, APSSimpleUserService.AUTH_METHOD_PASSWORD)) {
+                if (user.hasRole(role)) {
+                    userProps = new Properties(user.getUserProperties());
+                    userProps.setProperty("userid", user.getId());
+                }
+            }
+        }
+
+        return userProps;
+    }
+
+    /**
      * Returns an array of the AuthMethods supported by the implementation.
      */
     @Override

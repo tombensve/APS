@@ -42,6 +42,28 @@ _Throws_
 
 > _APSAuthMethodNotSupportedException_ - If the specified authMethod is not supported by the implementation. 
 
+__Properties authUser(String userId, Credential credentials, AuthMethod authMethod, String role) throws APSAuthMethodNotSupportedException__
+
+>  This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!  
+
+_Returns_
+
+> User properties on success, null on failure.
+
+_Parameters_
+
+> _userId_ - The id of the user to authenticate. 
+
+> _credentials_ - What this is depends on the value of AuthMethod. It is up to the service implementation to resolve this. 
+
+> _authMethod_ - This hints at how to interpret the credentials. 
+
+> _role_ - The specified user must have this role for authentication to succeed. Please note that the APS admin webs will pass "apsadmin" for the role. The implementation might need to translate this to another role. 
+
+_Throws_
+
+> _APSAuthMethodNotSupportedException_ - If the specified authMethod is not supported by the implementation. 
+
 __AuthMethod[] getSupportedAuthMethods()__
 
 >  Returns an array of the AuthMethods supported by the implementation. 
