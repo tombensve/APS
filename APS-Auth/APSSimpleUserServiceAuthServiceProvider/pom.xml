@@ -41,7 +41,7 @@
         <version><!--APSVER-->0.9.0</version>
     </parent>
 
-    <artifactId>APSSimpleUserServiceAuthServiceProvider</artifactId>
+    <artifactId>aps-simple-user-service-auth-service-provider</artifactId>
     <packaging>bundle</packaging>
 
     <name>APSSimpleUserServiceAuthServiceProvider</name>
