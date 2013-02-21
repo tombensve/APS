@@ -37,6 +37,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
+import se.natusoft.osgi.aps.api.auth.user.APSAuthService;
 import se.natusoft.osgi.aps.api.auth.user.APSSimpleUserService;
 import se.natusoft.osgi.aps.auth.service.APSSimpleUserServiceAuthServiceProvider;
 import se.natusoft.osgi.aps.tools.APSServiceTracker;
@@ -78,9 +79,9 @@ public class Activator implements BundleActivator {
 
         Dictionary platformServiceProps = new Properties();
         platformServiceProps.put(Constants.SERVICE_PID, APSSimpleUserServiceAuthServiceProvider.class.getName());
-        APSSimpleUserServiceAuthServiceProvider myServiceProvider = new APSSimpleUserServiceAuthServiceProvider(simpleUserService);
-        this.serviceReg = context.registerService(APSSimpleUserServiceAuthServiceProvider.class.getName(),
-                myServiceProvider, platformServiceProps);
+        APSSimpleUserServiceAuthServiceProvider serviceProvider = new APSSimpleUserServiceAuthServiceProvider(simpleUserService);
+        this.serviceReg = context.registerService(APSAuthService.class.getName(),
+                serviceProvider, platformServiceProps);
     }
 
     //
