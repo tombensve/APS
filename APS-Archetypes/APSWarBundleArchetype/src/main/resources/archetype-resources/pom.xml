@@ -70,8 +70,14 @@
         
         <!-- The directory whose content should be embeded into the bundle. -->
         <osgi.embed.directory>WEB-INF/lib</osgi.embed.directory>
-        
-        
+
+
+        <!--
+             Trigger tiles.
+         -->
+        <tile.deploy>${project.groupId}:DeployWABBundleTile:${project.version}</tile.deploy>
+        <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
+
         <!--
             Other properties
         -->

@@ -16,9 +16,9 @@ public class Activator implements BundleActivator {
     //
     
     // Required Services
-    
-    /** The OSGi Log service. */
-    private ServiceTracker logServiceTracker = null;
+
+    /** The  service. */
+    private APSServiceTracker<Svc> svcServiceTracker = null;
     
     
     // Provided Services
@@ -37,11 +37,9 @@ public class Activator implements BundleActivator {
     
     @Override
     public void start(BundleContext context) throws Exception {
-        this.logServiceTracker = new ServiceTracker(context, LogService.class.getName(), null);
-        this.logServiceTracker.open();
-        this.logger = new APSLogger(this.logServiceTracker);
-        
-        
+        this.logger = new APSLogger(System.out);
+        this.logger.start(context);
+
         Dictionary platformServiceProps = new Properties();
         platformServiceProps.put(Constants.SERVICE_PID, MyServiceProvider.class.getName());                        
         MyServiceProvider myServiceProvider = new MyServiceProvider();

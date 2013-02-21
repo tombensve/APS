@@ -45,7 +45,7 @@ public class Activator implements BundleActivator {
                 Svc.class,
                 APSServiceTracker.LARGE_TIMEOUT
         );
-        this.configServiceTracker.start();
+        this.svcServiceTracker.start();
         
         Dictionary platformServiceProps = new Properties();
         platformServiceProps.put(Constants.SERVICE_PID, MyServiceProvider.class.getName());                        
