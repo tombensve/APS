@@ -74,7 +74,7 @@ public interface APSSimpleUserService {
      * Authenticates a user using its user id and user provided authentication.
      *
      * @param user The User object representing the user to authenticate.
-     * @param authentication The user provided authentication data. For example if authMethod is AUTH_METHOD_PASSWORD
+     * @param authentication The user provided authentication data. For example if AuthMethod is AUTH_METHOD_PASSWORD
      *                       then this is a String with a password.
      * @param authMethod Specifies what authentication method is wanted.
      *

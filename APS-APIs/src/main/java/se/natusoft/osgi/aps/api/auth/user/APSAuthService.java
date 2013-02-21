@@ -36,6 +36,8 @@
  */
 package se.natusoft.osgi.aps.api.auth.user;
 
+import se.natusoft.osgi.aps.api.auth.user.exceptions.APSAuthMethodNotSupportedException;
+
 import java.util.Properties;
 
 /**
@@ -47,22 +49,27 @@ import java.util.Properties;
  * APS supplies an APSSimpleUserServiceAuthServiceProvider that uses the
  * APSSimpleUserService to authenticate. It is provided in its own bundle.
  */
-public interface APSAuthService<Credentials> {
+public interface APSAuthService<Credential> {
 
 
     /**
      * This authenticates a user. A Properties object is returned on successful authentication. null is returned
      * on failure. The Properties object returned contains misc information about the user. It can contain anything
-     * or nothing at all. There can be no assumptions about its contents! If the specified credentialType is not
+     * or nothing at all. There can be no assumptions about its contents! If the specified AuthMethod is not
      * supported by the service implementation it should simply fail the auth by returning null.
      *
      * @param userId The id of the user to authenticate.
-     * @param credentials What this is depends on the value of credentialType. It is up to the service implementation to resolve this.
-     * @param credentialType This hints at how to interpret the credentials.
+     * @param credentials What this is depends on the value of AuthMethod. It is up to the service implementation to resolve this.
+     * @param authMethod This hints at how to interpret the credentials.
      *
      * @return User properties on success, null on failure.
      */
-    Properties authUser(String userId, Credentials credentials, CredentialType credentialType);
+    Properties authUser(String userId, Credential credentials, AuthMethod authMethod) throws APSAuthMethodNotSupportedException;
+
+    /**
+     * Returns an array of the AuthMethods supported by the implementation.
+     */
+    AuthMethod[] getSupportedAuthMethods();
 
     //
     // Inner Classes
@@ -71,11 +78,23 @@ public interface APSAuthService<Credentials> {
     /**
      * This hints at how to use the credentials.
      */
-    public static enum CredentialType {
+    public static enum AuthMethod {
+        /** Only userid is required. */
         NONE,
+
+        /** toString() on the credentials object should return a password. */
         PASSWORD,
+
+        /** The credential object is a key of some sort. */
         KEY,
+
+        /** The credential object is a certificate of some sort. */
         CERTIFICATE,
+
+        /** The credential object is a digest password. */
+        DIGEST,
+
+        /** The credential object contains information for participating in a single sign on. */
         SSO
     }
 }
