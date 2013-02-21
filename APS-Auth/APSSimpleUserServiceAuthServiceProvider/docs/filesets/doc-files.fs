@@ -1,1 +1,2 @@
-APS-Auth/APSSimpleUserServiceAuthServiceProvider/docs/**/.*.md
+APS-Auth/APSSimpleUserServiceAuthServiceProvider/docs/src/**/.*.md,
+APS-APIs/src/main/java/**/APSAuthService.java
