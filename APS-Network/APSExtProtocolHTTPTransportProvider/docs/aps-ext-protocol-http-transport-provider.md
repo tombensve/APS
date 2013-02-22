@@ -1,10 +1,10 @@
 # APSExtProtocolHTTPTransportProvider
 
-This provides an http transport for simple remote requests to OSGi services that have the "APS-Externalizable: true" in their META-INF/MANIFEST.MF. This follows the OSGi extender pattern and makes any registered OSGi services of bundles having the above manifest entry available for remote calls over HTTP. This transport makes use of the aps-external-protocol-extender which exposes services with the above mentioned manifest entry with each service method available as an APSExternallyCallable.The aps-ext-protocol-http-transport acts as a mediator between the protocol implementations and aps-external-protocol-extender for requests over HTTP.
+This provides an http transport for simple remote requests to OSGi services that have "APS-Externalizable: true" in their META-INF/MANIFEST.MF. This follows the OSGi extender pattern and makes any registered OSGi services of bundles having the above manifest entry available for remote calls over HTTP. This transport makes use of the aps-external-protocol-extender which exposes services with the above mentioned manifest entry with each service method available as an APSExternallyCallable.The aps-ext-protocol-http-transport-provider for example acts as a mediator between the protocol implementations and aps-external-protocol-extender for requests over HTTP.
 
-Please note that depending on protocol not every service method will be callable. It depends on its arguments and return value. It mostly depends on how well the protocol handles types and can convert between the caller and the service. Also note that bundles can specify "APS-Externalizable: false" in their META-INF/MANIFEST.MF. In that case none of the bundles services will be callable this way!
+Please note that depending on protocol not every service method will be callable. It depends on its arguments and return value. It mostly depends on how well the protocol handles types and can convert between the caller and the service.
 
-This does not provide any protocol, only transport! For services to be able to be called at least one protocol is needed. Protocols are provided by providing an implementation of se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocolService and registering it as an OSGi service.The StreamedRPCProtocolService API provides a protocol name and protocol version getter which is used to identify it. A call to an RPC service looks like this:
+This does not provide any protocol, only transport! For services to be able to be called at least one protocol is needed. Protocols are provided by providing an implementation of se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocolService and registering it as an OSGi service. The StreamedRPCProtocolService API provides a protocol name and protocol version getter which is used to identify it. A call to an RPC service looks like this:
 
 &nbsp; &nbsp; &nbsp; &nbsp;http://host:port/apsrpc/_protocol_/_version_[/_service_][/_method_]
 
@@ -46,7 +46,7 @@ The APSPlatformService is a plain OSGi service that provides data with JavaBean 
 
 ## Authentication
 
-Authentication for services are provided in 2 ways. Both require a userid and a password and both validate the user using the APSSimpleUserService.
+Authentication for services are provided in 2 ways. Both require a userid and a password and both validate the user using the APSAuthService.
 
 The 2 alternatives are:
 
@@ -61,4 +61,8 @@ One of these will be required if the _requireAuthentication_ configuration have 
 Opening the _http://.../apsrpc/_help/_ URL will give you a web page that provides a lot of information. This page requires authentication since it register itself with the APSAdminWeb (/apsadminweb) as ”Remote Services” and appears there as a tab, and thus joins in with the APSAdminWeb authentication.
 
 In addition to much of the same information as in this documentation it also lists all protocols tracked by the _APSExternalProtocolExtender_ with their name, version, description, and other properties. Next it lists all services that _APSExternalProtocolExtender_ provides as callable. Each of these services are a link that can be clicked. Clicking on a service will show all the methods of the service and then list the call url for each method per protocol. Each method listed is also a link, and clicking that link will give you a page where you can provide arguments and then press execute to call the service. The result will be displayed as JSON on the same page. This is very useful for testing and debugging services.
+
+## See Also
+
+Also look at the documentation for APSExternalProtocolExtender.
 
