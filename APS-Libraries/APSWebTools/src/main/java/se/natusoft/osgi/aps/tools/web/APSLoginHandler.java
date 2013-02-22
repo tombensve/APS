@@ -54,11 +54,8 @@ import java.util.Properties;
  * <p/>
  * The bundle needs to import the following packages for this class to work:
  * <pre>
- *     <code>
- *        se.natusoft.osgi.aps.api.auth.user;version="[0.9,2)",
- *        se.natusoft.osgi.aps.api.auth.user.model;version="[0.9,2)",
- *        se.natusoft.osgi.aps.api.misc.session;version="[0.9,2)"
- *     </code>
+ *    se.natusoft.osgi.aps.api.auth.user;version="[0.9,2)",
+ *    se.natusoft.osgi.aps.api.misc.session;version="[0.9,2)"
  * </pre>
  */
 public class APSLoginHandler implements LoginHandler {
