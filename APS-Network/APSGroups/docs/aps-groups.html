@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="generated-by" content="MarkdownDoc"/>
+    <link href="docs.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body>
+    <H1>APSGroups</H1>
+    <p>
+      Provides network groups where named groups can be joined as members and then send and receive data messages to the group. This is based on multicast and provides a verified multicast delivery with acknowledgements of receive to the sender and resends if needed. The sender will get an exception if not all members receive all data. Member actuality is handled by members announcing themselves relatively often and will be removed when an announcement does not come in expected time. So if a member dies unexpectedly (network goes down, etc) its membership will resolve rather quickly. Members also tries to inform the group when they are doing a controlled exit.      
+    </p>
+    <p>
+      Please note that this does not support streaming! That would require a far more complex protocol. APSGroups waits in all packets of a message before delivering the message.      
+    </p>
+    <H2>OSGi service usage</H2>
+    <p>
+      The APSGroupsService can be used as an OSGi service and as a standalone library. This section describes the service.      
+    </p>
+    <H3>Getting the service</H3>
+    <pre>
+      <code>
+    APSServiceTracker&lt;APSGroupService&gt; apsGroupsServiceTracker = 
+        new APSServiceTracker&lt;APSGroupsService&gt;(bundleContext, APSConfigService.class,
+        APSServiceTracker.LARGE_TIMEOUT);
+    APSGroupsService apsGroupsService = apsGroupsServiceTracker.getWrappedService();
+    
+      </code>
+    </pre>
+    <H3>Joining a group</H3>
+    <pre>
+      <code>
+    GroupMember groupMember = apsGroupsService.joinGroup(”mygroup”);
+    
+      </code>
+    </pre>
+    <H3>Sending a message</H3>
+    <p>
+      To send a message you create a message, get its output stream and write whatever you want to send on that output stream, close it and then send it. <em>Note</em> that since the content of the message is any data you want, all members of the groups must know how the data sent looks like. In other words, you have to define your own message protocol for your messages. Note that you can wrap the OutputStream in an ObjectOutputStream and serialize any java object you want.      
+    </p>
+    <pre>
+      <code>
+    Message message = groupMember.createNewMessage();
+    OutputStream msgDataStream = message.getOutputStream();
+    try {
+        ...
+        msgDataStream.close();
+        groupMember.sendMessage(message);
+    }
+    catch (IOException ioe) {
+        ...
+    }
+    
+      </code>
+    </pre>
+    <p>
+      Note that the <code>groupMember.sendMessage(message)</code> does throw an IOException on failure to deliver the message to all members.      
+    </p>
+    <H3>Receiving a message</H3>
+    <p>
+      To receive a message you have to register a message listener with the GroupMember object.      
+    </p>
+    <pre>
+      <code>
+    MessageListener msgListener = new MyMsgListener();
+    groupMember.addMessageListener(myMsgListener); 
+      </code>
+    </pre>
+    <p>
+      and then handle received messages:      
+    </p>
+    <pre>
+      <code>
+    public class MyMsgListener implements MessageListener {
+        public void messageReceived(Message message) {
+            InputStream msgDataStream = message.getInputStream();
+            ...
+        }
+    }
+      </code>
+    </pre>
+    <H3>Leaving a group</H3>
+    <pre>
+      <code>
+    apsGroupsService.leaveGroup(groupMember);
+    
+      </code>
+    </pre>
+    <H2>Library usage</H2>
+    <p>
+      The bundle jar file can also be used as a library outside of an OSGi server, with an API that has no other dependencies than what is in the jar. The API is then slightly different, and resides under the se.natusoft.apsgroups package.      
+    </p>
+    <H3>Setting up</H3>
+    <pre>
+      <code>
+    APSGroups apsGroups = new APSGroups(config, logger);
+    apsGroups.connect();
+    
+      </code>
+    </pre>
+    <p>
+      The config passed as argument to APSGroups will be explained further down under ”Configuration”.      
+    </p>
+    <p>
+      The <em>logger</em> is an instance of an implementation of the APSGroupsLogger interface. Either you provide your own implementation of that or your use the APSGroupsSystemOutLogger implementation.      
+    </p>
+    <H3>Joining a group</H3>
+    <pre>
+      <code>
+    GroupMember groupMember = apsGroups.joinGroup(”mygroup”);
+      </code>
+    </pre>
+    <H3>Sending and receiving messages</H3>
+    <p>
+      Sending and receiving works exactly like the OSGi examples above.      
+    </p>
+    <H3>Leaving a group</H3>
+    <pre>
+      <code>
+    apsGroups.leaveGroup(groupMember);
+      </code>
+    </pre>
+    <H3>Shutting down</H3>
+    <pre>
+      <code>
+    apsGroups.disconnect();
+    
+      </code>
+    </pre>
+    <H2>Net time</H2>
+    <p>
+      All APSGroups instances connected will try to sync their time. I call this synced time ”net time”.      
+    </p>
+    <p>
+      It works like this: When an APSGroups instance comes up it waits a while for NET_TIME packets. If it gets such a packet then it enters receive mode and takes the time in the received NET_TIME packet and stores a diff to that time and local time. This diff can then be used to translate back and forth between local and net time. If no such packet arrives in expected time it enters send mode and starts sending NET_TIME packets itself using its current net time. If a NET_TIME packet is received when in send mode it directly goes over to listen mode. If in listen mode and no NET_TIME packet comes in reasonable time it goes over to send mode. So among all instances on the network only one is responsible for sending NET_TIME. If that instance leaves then there might be a short fight for succession, but it will resolve itself rather quickly.      
+    </p>
+    <p>
+      The GroupMember contains a few <em>create*</em> methods to produce a <em>NetTime</em> object instance. See the API further down for more information on these.      
+    </p>
+    <H2>Configuration</H2>
+    <H3>OSGi service </H3>
+    <p>
+      The OSGi service provides a configuration model that gets managed by the APSConfigService. It can be configured in the APS adminweb (http://host:port/apsadminweb/). Here is a screenshot of the config admin:      
+    </p>
+    <p>
+            <img src='config.png' title='' alt='/apsconfigadmin web gui for configuring APSGroups'/>      
+    </p>
+    <H3>Library </H3>
+    <p>
+      The library wants an implementation of the APSGroupsConfig interface as its first argument to APSGroups(config, logger) constructor. Either you implement your own or use the APSGroupsConfigProvider implementation. This is a plain java bean with both setters and getters for the config values. It comes with quite reasonable default values. It contains exactly the same properties as shown in the picture above.      
+    </p>
+    <H2>APIs</H2>
+    <p>
+      public <em>interface</em> <strong>APSGroupsService </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
+    </p>
+    <blockquote>
+      <p>
+         A service that lets clients send data reliable to all members of a group on any host. There is no limit on the size of the data sent, but that said I wouldn't send MB:s of data!         
+      </p>
+    </blockquote>
+    <p>
+      <strong>GroupMember joinGroup(String name) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Joins a group.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A GroupMember that provides the API for sending and receiving data in the group.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the group to join.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>java.io.IOException</em> - The unavoidable one!         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void leaveGroup(GroupMember groupMember) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Leaves as member of group.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>groupMember</em> - The GroupMember returned when joined.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>java.io.IOException</em> - The unavoidable one!         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>GroupMember </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
+    </p>
+    <blockquote>
+      <p>
+         This is the API for APSGroupsService members received when they join a group. It is used to send and receive data messages to/from the group.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void addMessageListener(MessageListener listener)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Adds a listener for incoming messages.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>listener</em> - The listener to add.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void removeMessageListener(MessageListener listener)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Removes a listener for incoming messages.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>listener</em> - The listener to remove.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>Message createNewMessage()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new Message to send. Use the sendMessage() method when ready to send it.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void sendMessage(Message message) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Sends a previously created message to all current members of the group. If this returns without an exception then all members have received the message.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The message to send.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>java.io.IOException</em> - On failure to reach all members.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>UUID getMemberId()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The ID of the member.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>List&lt;String&gt; getMemberInfo()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns information about members.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>NetTime getNow()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The current time as net time.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>NetTime createFromNetTime(long netTimeMillis)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates from milliseconds in net time.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>netTimeMillis</em> - The net time milliseconds to create a NetTime for.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>NetTime createFromNetTime(Date netTimeDate)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates from a Date in net time.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>netTimeDate</em> - The Date in net time to create a NetTime for.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>NetTime createFromLocalTime(long localTimeMillis)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates from milliseconds in local time.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>localTimeMillis</em> - The local time milliseconds to create a NetTime for.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>NetTime createFromLocalTime(Date localTimeDate)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates from a Date in local time.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>localTimeDate</em> - The Date in local time to create a NetTime for.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>Message </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
+    </p>
+    <blockquote>
+      <p>
+         This represents a complete message containing any data you want to send to the group. You provide the message with data using the OutputStream, and read message data using the InputStream.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>OutputStream getOutputStream()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns an OutputStream to write message on. Multiple calls to this will return the same OutputStream!         
+      </p>
+    </blockquote>
+    <p>
+      <strong>InputStream getInputStream()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns an InputStream for reading the message. Multiple calls to this will return new InputStream:s starting from the beginning!         
+      </p>
+    </blockquote>
+    <p>
+      <strong>UUID getId()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the id of this message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getMemberId()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        id of member as a string.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getGroupName()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The name of the group this message belongs to.        
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>MessageListener </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
+    </p>
+    <blockquote>
+      <p>
+         For listening on messages from the group.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void messageReceived(Message message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Notification of received message.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The received message.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>NetTime </strong> extends  Serializable    [se.natusoft.osgi.aps.api.net.groups.service] {      
+    </p>
+    <blockquote>
+      <p>
+         This represents a common network time between members for handling date and time data. The net time is synchronized between all members. Each receiver of net time diffs it with local time and stores the diff so that they can convert to/from local/net time.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public long getNetTime()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the number of milliseconds since Januray 1, 1970 in net time.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Date getNetTimeDate()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the net time as a Date.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Calendar getNetTimeCalendar()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the net time as a Calendar.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Calendar getNetTimeCalendar(Locale locale)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns the net time as a Calendar.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>locale</em> - The locale to use.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Date getLocalTimeDate()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Converts the net time to local time and returns as a Date.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Calendar getLocalTimeCalendar()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Converts the net time to local time and returns as a Calendar.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public Calendar getLocalTimeCalendar(Locale locale)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Converts the net time to local time and returns as a Calendar.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>locale</em> - The locale to use.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+  </body>
+</html>

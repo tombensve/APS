@@ -2,7 +2,7 @@
  *
  * PROJECT
  *     Name
- *         APSGroups
+ *         APS Groups
  *     
  *     Code Version
  *         0.9.0
