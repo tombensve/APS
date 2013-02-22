@@ -48,7 +48,7 @@ import java.util.Properties;
  * This class validates if there is a valid logged in user and also provides a simple login if no valid
  * logged in user exists.
  * <p/>
- * This utility makes use of APSSimpleUserService to login auth and APSSessionService for session handling.
+ * This utility makes use of APSAuthService to login auth and APSSessionService for session handling.
  * Trackers for these services are created internally which requires the shutdown() method to be called
  * when no longer used to cleanup.
  * <p/>
