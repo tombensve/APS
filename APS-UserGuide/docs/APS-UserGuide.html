@@ -90,17 +90,7 @@
       </li>
       <li>
         <p>
-          A JCR (Java Content Repository) service and a content publishing GUI (following the general APS ambition - reasonable functionality and flexibility, ease of use. Will fit many, but not everyone).          
-        </p>
-      </li>
-      <li>
-        <p>
-          JDBC connection pool service (based on some open source connection pool implementation). Will use the Data source service to create connection pools.          
-        </p>
-      </li>
-      <li>
-        <p>
-          A smart auto dependency resolving bundle deployer.          
+          A REST/JSON protocol for use with aps-external-protocol-extender.          
         </p>
       </li>
       <li>
@@ -113,12 +103,17 @@
     <ul>
       <li>
         <p>
-          Allowing services to provide information and statistics that are of interest to developers, test and production maintenance. Nothing even close to a JMX here :-), just simple read-only information. This should have a companion web-app to display the information.          
+          JDBC connection pool service (based on some open source connection pool implementation). Will use the Data source service to create connection pools.          
         </p>
       </li>
       <li>
         <p>
           Since JBoss is apparently having trouble getting WABs to work (they are still using PAX, but claim that they have solved this in 7.2 that will not build when checked out from GitHub and don't seem to be released anytime soon) I am considering to add support for their WAR-&gt;OSGi service bridge though I haven't had much luck in getting that to work either so far.          
+        </p>
+      </li>
+      <li>
+        <p>
+          A JCR (Java Content Repository) service and a content publishing GUI (following the general APS ambition - reasonable functionality and flexibility, ease of use. Will fit many, but not everyone).          
         </p>
       </li>
     </ul>
@@ -1346,11 +1341,37 @@
             
     </p>
     <p>
-      <strong>public PlatformDescription()  }  /** * Creates a new PlatformDescription. * * identifier An identifying name for the platform. * type The type of the platform, for example "Development", "SystemTest". * description A short description of the platform instance. */ public PlatformDescription(String identifier, String type, String description)</strong>      
+      <strong>public PlatformDescription()</strong>      
     </p>
     <blockquote>
       <p>
          Creates a new PlatformDescription.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public PlatformDescription(String identifier, String type, String description)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new PlatformDescription.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>identifier</em> - An identifying name for the platform.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>type</em> - The type of the platform, for example "Development", "SystemTest".         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>description</em> - A short description of the platform instance.         
       </p>
     </blockquote>
     <p>
