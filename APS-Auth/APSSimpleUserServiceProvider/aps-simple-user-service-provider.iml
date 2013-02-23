@@ -17,7 +17,7 @@
           <property key="JPA-PersistenceUnits" value="UserAdmin" />
           <property key="Import-Package" value="*" />
           <property key="Private-Package" value="se.natusoft.osgi.aps.userservice,se.natusoft.osgi.aps.userservice.entities,se.natusoft.osgi.aps.userservice.util,se.natusoft.osgi.aps.userservice.service" />
-          <property key="Include-Resource" value="lib/derbyclient-10.9.1.0.jar=$MAVEN_REPOSITORY$/org/apache/derby/derbyclient/10.9.1.0/derbyclient-10.9.1.0.jar,META-INF/persistence.xml=$MODULE_DIR$/src/main/resources/META-INF/persistence.xml,META-INF/persistence.xml=target/classes/META-INF/persistence.xml" />
+          <property key="Include-Resource" value="lib/derbyclient-10.9.1.0.jar=$MAVEN_REPOSITORY$/org/apache/derby/derbyclient/10.9.1.0/derbyclient-10.9.1.0.jar,META-INF/persistence.xml=$MODULE_DIR$/src/main/resources/META-INF/persistence.xml,META-INF/persistence.xml=$MODULE_DIR$/target/classes/META-INF/persistence.xml" />
           <property key="Embed-Directory" value="lib" />
           <property key="Embed-Dependency" value="*;scope=compile" />
           <property key="Bundle-Name" value="APS Simple User Service Provider" />

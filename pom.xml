@@ -139,7 +139,7 @@
         <module>APS-Data</module>
         <module>APS-Auth</module>
         <module>Build</module>
-        <module>APS-Docs</module>
+        <module>APS-UserGuide</module>
         <!--<module>Test</module>-->
     </modules>
 

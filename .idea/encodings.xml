@@ -12,7 +12,6 @@
     <file url="file://$PROJECT_DIR$/APS-Core/APSPlatformServiceProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Data/APSDataSource" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Data/APSOpenJPAProvider" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/APS-Docs/docs/src/APSUserGuide.md" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Libraries/APSJSONLib" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/docs/docs.css" charset="UTF-8" />
@@ -32,6 +31,8 @@
     <file url="file://$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Network/APSGroups" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/APS-UserGuide/docs/docs.css" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/APS-UserGuide/docs/src/APSUserGuide.md" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb" charset="UTF-8" />

@@ -165,6 +165,7 @@
       <module name="aps-streamed-json-rpc-protocol-provider" target="1.7" />
       <module name="aps-tools-lib" target="1.7" />
       <module name="aps-user-admin-web" target="1.7" />
+      <module name="APS-UserGuide" target="1.7" />
       <module name="aps-web-tools" target="1.7" />
       <module name="APS-Webs" target="1.7" />
       <module name="APSConfigTest" target="1.7" />

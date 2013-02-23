@@ -56,27 +56,17 @@ public _interface_ __APSSessionService__   [se.natusoft.osgi.aps.api.misc.sessio
 
 >  This is not a http session! It is a simple session that can be used by any code running in the same OSGi server. 
 
-__public static int NO_TIMEOUT = 0__
 
->  Specifies no timeout. 
 
-__public static int DEFAULT_TIMEOUT = -1__
 
->  Specifies the default timeout. 
 
-__public static int SHORT_TIMEOUT = 5__
 
->  A relatively short timeout. 
 
-__public static int MEDIUM_TIMEOUT = 10__
 
->  A medium timeout. 
 
-__public static int LONG_TIMEOUT = 20__
 
->  A relatively long timeout. 
 
-__public APSSession createSession(int timeoutInMinutes)__
+__APSSession createSession(int timeoutInMinutes)__
 
 >  Creates a new session.  
 
@@ -84,7 +74,7 @@ _Parameters_
 
 > _timeoutInMinutes_ - The timeout in minutes. 
 
-__public APSSession createSession(String sessionId, int timeoutInMinutes)__
+__APSSession createSession(String sessionId, int timeoutInMinutes)__
 
 >  Creates a new session. 
 
