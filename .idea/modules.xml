@@ -17,7 +17,6 @@
       <module fileurl="file://$PROJECT_DIR$/Build/DeployWABBundleTile/DeployWABBundleTile.iml" filepath="$PROJECT_DIR$/Build/DeployWABBundleTile/DeployWABBundleTile.iml" group="APS and modules/Build and modules" />
       <module fileurl="file://$PROJECT_DIR$/Build/DocTile/DocTile.iml" filepath="$PROJECT_DIR$/Build/DocTile/DocTile.iml" group="APS and modules/Build and modules" />
       <module fileurl="file://$PROJECT_DIR$/Build/ServerDeployPlugin/ServerDeployPlugin.iml" filepath="$PROJECT_DIR$/Build/ServerDeployPlugin/ServerDeployPlugin.iml" group="APS and modules/Build and modules" />
-      <module fileurl="file://$PROJECT_DIR$/Build/ServerDeployPlugin/ServerDeployPlugin.iml" filepath="$PROJECT_DIR$/Build/ServerDeployPlugin/ServerDeployPlugin.iml" group="APS and modules/Build and modules" />
       <module fileurl="file://$PROJECT_DIR$/Test/Test.iml" filepath="$PROJECT_DIR$/Test/Test.iml" group="APS and modules" />
       <module fileurl="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/aps-admin-web.iml" filepath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/aps-admin-web.iml" group="APS and modules/APS-Webs and modules" />
       <module fileurl="file://$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider/aps-admin-web-service-provider.iml" filepath="$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider/aps-admin-web-service-provider.iml" group="APS and modules/APS-Webs and modules" />
