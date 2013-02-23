@@ -1,4 +1,4 @@
-# Introduction
+# Application Platform Services (APS)
 
 OSGi Application Platform Services - A "smorgasbord" of OSGi services that focuses on ease of use and good enough functionality for many but wont fit all. It can be seen as osgi-ee-light-and-easy. The services are of platform type: configuration, database, JPA, content, etc. 
 
@@ -40,21 +40,19 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A log service with a log viewer GUI. The GUI should support server push and also allow for filtering of logs and configuration of what logs go to what log files.
 
-* A JCR (Java Content Repository) service and a content publishing GUI (following the general APS ambition - reasonable functionality and flexibility, ease of use. Will fit many, but not everyone).
-
-* JDBC connection pool service (based on some open source connection pool implementation). Will use the Data source service to create connection pools.
-
-* A smart auto dependency resolving bundle deployer.
+* A REST/JSON protocol for use with aps-external-protocol-extender.
 
 * Anything else relevant I come up with and consider fun to do :-).
 
 ### Ideas
 
-* Allowing services to provide information and statistics that are of interest to developers, test and production maintenance.  Nothing even close to a JMX here :-), just simple read-only information. This should have a companion web-app to display the information.
+* JDBC connection pool service (based on some open source connection pool implementation). Will use the Data source service to create connection pools.
 
 * Since JBoss is apparently having trouble getting WABs to work (they are still using PAX, but claim that they have solved this in 7.2 that will not build when checked out from GitHub and don't seem to be released anytime soon) I am considering to add support for their WAR->OSGi service bridge though I haven't had much luck in getting that to work either so far. 
 
-# Pre Setup
+* A JCR (Java Content Repository) service and a content publishing GUI (following the general APS ambition - reasonable functionality and flexibility, ease of use. Will fit many, but not everyone).
+
+## Pre Setup
 
 The Filesystem service is part of the core and used by other services. It should preferably have its filesystem root outside of the server installation. The BundleContext.getDataFile(String) returns a path within the deploy cache and is only valid for as long a a bundle is deployed. The point with the FilesystemService is to have a more permanent filesystem outside of the application server installation. To provide the FilesystemService root the following system property have to be set and available in the JVM instance:
 
@@ -66,7 +64,7 @@ If this system property is not set the default root will be BundleContext.getFil
 
 After this path has been setup and the server started, all other configuration can be done in http://…/apsadminweb/. 
 
-# Javadoc
+## Javadoc
 
 The complete javadoc for all services can be found at [http://apidoc.natusoft.se/APS](http://apidoc.natusoft.se/APS).
 
