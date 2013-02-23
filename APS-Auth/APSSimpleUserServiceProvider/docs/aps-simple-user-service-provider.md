@@ -134,11 +134,99 @@ The above empty lines are required due to a bug in iText used to render the PDF.
 -->
 After the tables have been created you need to configure a datasource for it in /apsadminweb configuration tab:
 
-![Picture of datasource config gui.](DataSourceConfig.png)
+![Picture of datasource config gui.](file:images/../images/DataSourceConfig.png)
 
 Please note that the above picture is just an example. The data source name __APSSimpleUserServiceDS__ is however important. The service will be looking up the entry with that name! The rest of the entry depends on your database and where it is running. Also note that the ”(default)” after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.
 
 ## APIs
+
+public _interface_ __APSAuthService<Credential>__   [se.natusoft.osgi.aps.api.auth.user] {
+
+>  This is intended to be used as a wrapper to other means of authentication. Things in APS that needs authentication uses this service. 
+
+> Implementations can lookup the user in an LDAP for example, or use some other user service. 
+
+> APS supplies an APSSimpleUserServiceAuthServiceProvider that uses the APSSimpleUserService to authenticate. It is provided in its own bundle. 
+
+__Properties authUser(String userId, Credential credentials, AuthMethod authMethod) throws APSAuthMethodNotSupportedException__
+
+>  This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!  
+
+_Returns_
+
+> User properties on success, null on failure.
+
+_Parameters_
+
+> _userId_ - The id of the user to authenticate. 
+
+> _credentials_ - What this is depends on the value of AuthMethod. It is up to the service implementation to resolve this. 
+
+> _authMethod_ - This hints at how to interpret the credentials. 
+
+_Throws_
+
+> _APSAuthMethodNotSupportedException_ - If the specified authMethod is not supported by the implementation. 
+
+__Properties authUser(String userId, Credential credentials, AuthMethod authMethod, String role) throws APSAuthMethodNotSupportedException__
+
+>  This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!  
+
+_Returns_
+
+> User properties on success, null on failure.
+
+_Parameters_
+
+> _userId_ - The id of the user to authenticate. 
+
+> _credentials_ - What this is depends on the value of AuthMethod. It is up to the service implementation to resolve this. 
+
+> _authMethod_ - This hints at how to interpret the credentials. 
+
+> _role_ - The specified user must have this role for authentication to succeed. Please note that the APS admin webs will pass "apsadmin" for the role. The implementation might need to translate this to another role. 
+
+_Throws_
+
+> _APSAuthMethodNotSupportedException_ - If the specified authMethod is not supported by the implementation. 
+
+__AuthMethod[] getSupportedAuthMethods()__
+
+>  Returns an array of the AuthMethods supported by the implementation. 
+
+public _static_ _enum_ __AuthMethod__   [se.natusoft.osgi.aps.api.auth.user] {
+
+>  This hints at how to use the credentials. 
+
+__NONE__
+
+>  Only userid is required. 
+
+__PASSWORD__
+
+>  toString() on the credentials object should return a password. 
+
+__KEY__
+
+>  The credential object is a key of some sort. 
+
+__CERTIFICATE__
+
+>  The credential object is a certificate of some sort. 
+
+__DIGEST__
+
+>  The credential object is a digest password. 
+
+__SSO__
+
+>  The credential object contains information for participating in a single sign on. 
+
+}
+
+----
+
+    
 
 public _interface_ __APSSimpleUserService__   [se.natusoft.osgi.aps.api.auth.user] {
 
@@ -186,7 +274,7 @@ _Parameters_
 
 > _user_ - The User object representing the user to authenticate. 
 
-> _authentication_ - The user provided authentication data. For example if authMethod is AUTH_METHOD_PASSWORD 
+> _authentication_ - The user provided authentication data. For example if AuthMethod is AUTH_METHOD_PASSWORD 
 
 > _authMethod_ - Specifies what authentication method is wanted. 
 
@@ -275,6 +363,34 @@ _Parameters_
 > _user_ - The user to set authentication for. 
 
 > _authentication_ - The authentication to set. 
+
+}
+
+----
+
+    
+
+public _class_ __APSAuthMethodNotSupportedException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.auth.user.exceptions] {
+
+>  This is thrown by APSAuthService when the implementation does not support the selected auth method. 
+
+__public APSAuthMethodNotSupportedException(String message)__
+
+>  Creates a new APSAuthMethodNotSupportedException instance.  
+
+_Parameters_
+
+> _message_ - The exception message. 
+
+__public APSAuthMethodNotSupportedException(String message, Throwable cause)__
+
+>  Creates a new APSAuthMethodNotSupportedException instance.  
+
+_Parameters_
+
+> _message_ - The exception message. 
+
+> _cause_ - The exception that is the cause of this one. 
 
 }
 
