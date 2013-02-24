@@ -40,6 +40,9 @@
     <p>
       The APSAdminWeb requires a login to be accessed. A userid and a password will be asked for. The entered information will be validated by the APSAuthService. The <em>aps-simple-user-service-auth-service-provider.jar</em> bundle provides an implementation of this service that uses the <em>APSSimpleUserService</em> service. The APSAuthService is however simple enough to implement yourself to provide login to whatever you want/need.      
     </p>
+    <p>
+            <img src='file:images/../images/APSAdminWeb-login.png' title='' alt='APSAdminWeb login screenshot'/>      
+    </p>
     <H2>Making an admin web participating in the APSAdminWeb login.</H2>
     <p>
       There is an APSSessionService that was made just for handling this. It is not a HTTP session, just a service hanling sessions. It is provided by the <em>aps-session-service-provider.jar</em> bundle. When a session is created you get a session id (an UUID) that needs to be passed along to the other admin webs through a cookie. <em>APSWebTools</em> (<em>aps-web-tools.jar</em> (not a bundle!)) provides the APSAdminWebLoginHandler class implementing the LoginHandler interface and handles all this for you.      
