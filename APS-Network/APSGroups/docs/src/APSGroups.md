@@ -105,7 +105,7 @@ The GroupMember contains a few _create\*_ methods to produce a _NetTime_ object 
 
 The OSGi service provides a configuration model that gets managed by the APSConfigService. It can be configured in the APS adminweb (http://host:port/apsadminweb/). Here is a screenshot of the config admin:
 
-![/apsconfigadmin web gui for configuring APSGroups](../images/config.png)
+![/apsconfigadmin web gui for configuring APSGroups](http://download.natusoft.se/Images/APS/APS-Network/APSGroups/docs/images/config.png)
 
 ### Library 
 

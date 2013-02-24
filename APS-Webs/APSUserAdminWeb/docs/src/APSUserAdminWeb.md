@@ -1,6 +1,6 @@
 # APSUserAdminWeb
 
-![APSUserAdminWeb screenshot](../images/APSUserAdminWeb.png)
+![APSUserAdminWeb screenshot](http://download.natusoft.se/Images/APS/APS-Webs/APSUserAdminWeb/docs/images/APSUserAdminWeb.png)
 
 APSUserAdminWeb provides user and group administration for the _APSSimpleUserService_. 
 

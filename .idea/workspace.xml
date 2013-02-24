@@ -2,10 +2,27 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="">
+      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/APSSimpleUserServiceAuthServiceProvider.iml" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/aps-simple-user-service-auth-service-provider.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-UserGuide/docs/APS-UserGuide.md" afterPath="$PROJECT_DIR$/APS-UserGuide/docs/APS-UserGuide.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-UserGuide/docs/APS-UserGuide.pdf" afterPath="$PROJECT_DIR$/APS-UserGuide/docs/APS-UserGuide.pdf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/docs/src/APSAdminWeb.md" afterPath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/docs/src/APSAdminWeb.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/docs/src/APSConfigAdminWeb.md" afterPath="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/docs/src/APSConfigAdminWeb.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/docs/src/APSConfigService.md" afterPath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/docs/src/APSConfigService.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/docs/src/APSExternalProtocolExtender.md" afterPath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/docs/src/APSExternalProtocolExtender.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/docs/src/APSGroups.md" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/docs/src/APSGroups.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/docs/src/APSSimpleUserService.md" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/docs/src/APSSimpleUserService.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/docs/src/APSUserAdminWeb.md" afterPath="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/docs/src/APSUserAdminWeb.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-UserGuide/docs/APS-UserGuide.html" afterPath="$PROJECT_DIR$/APS-UserGuide/docs/APS-UserGuide.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/platform/model/PlatformDescription.java" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/platform/model/PlatformDescription.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSDataSource/aps-datasource.iml" afterPath="$PROJECT_DIR$/APS-Data/APSDataSource/aps-datasource.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/aps-discovery-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/aps-discovery-service-provider.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSFilesystemServiceProvider/aps-filesystem-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Core/APSFilesystemServiceProvider/aps-filesystem-service-provider.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/aps-groups.iml" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/aps-groups.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/APSJSONServiceProvider/aps-json-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Misc/APSJSONServiceProvider/aps-json-service-provider.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/aps-simple-user-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/aps-simple-user-service-provider.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-UserGuide/pom.xml" afterPath="$PROJECT_DIR$/APS-UserGuide/pom.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="a5230742-f30f-451e-b5fc-eabdd2e39ef7" name="Failed commit: aps-20 Default APSEnterpriseAPIs activity." comment="aps-20 Default APSEnterpriseAPIs activity." />
@@ -13,8 +30,8 @@
     <list id="aede4119-21eb-41ae-93c6-8e287ab9c03e" name="aps-32 Main dev activity." comment="aps-32 APSResolvingBundleDeployer Dev Activity." />
     <ignored path="OSGiApplicationPlatformServices.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646440181" ignored="false" />
-    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646806150" ignored="false" />
+    <file path="/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361729462770" ignored="false" />
+    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361730558598" ignored="false" />
     <file path="/a.dummy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361642800678" ignored="false" />
     <file path="/testclient.sh" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355064160118" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/wip-clones/MarkdownDoc/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355420755980" ignored="false" />
@@ -26,7 +43,7 @@
     <file path="/README.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359041457304" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/.idea/workspace.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1358079495698" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/CodeLicenseManager/CodeLicenseManager-manager/src/main/java/se/natusoft/tools/codelicmgr/SourcePath.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355662171936" ignored="false" />
-    <file path="/SourcePath.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359285489718" ignored="false" />
+    <file path="/SourcePath.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361729841908" ignored="false" />
     <file path="/setVersion.sh" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361103052984" ignored="false" />
     <file path="/APSUserGuide.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360342925771" ignored="false" />
     <file path="/RPCProtocol.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1356960209120" ignored="false" />
@@ -131,21 +148,21 @@
     <file path="/ConfigModelTest.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1357670422521" ignored="false" />
     <file path="/APSConfigList.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1357672808190" ignored="false" />
     <file path="/APSConfigService.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359298391467" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/PDFGenerator.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269957" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/PDFGenerator.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549397" ignored="false" />
     <file path="/PDFGenerator.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361645822497" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Docs/licenses.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360172570981" ignored="false" />
-    <file path="/a.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359223291933" ignored="false" />
+    <file path="/a.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361728374782" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361635421312" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361635421312" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/CommandLine/CommandLine.iml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1358078076266" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/CommandLine/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361635421312" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/MavenPlugin/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361624729631" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Docs/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361624729631" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Doc.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269958" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/DocItem.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269958" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/HTMLGenerator.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269957" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/parser/MarkdownParser.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269957" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/api/Parser.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269958" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Doc.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/DocItem.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/HTMLGenerator.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549397" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/parser/MarkdownParser.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549397" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/api/Parser.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Docs/Apache-2.0.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1357999347966" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Docs/GNUAGPL-v3.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1357999347966" ignored="false" />
     <file path="/Language.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1358164655012" ignored="false" />
@@ -236,7 +253,7 @@
     <file path="/DataSourceDefinitionImpl.java" changelist="e3f376df-27fa-4c1a-93b0-3fcd8a01d6e3" time="1358277753501" ignored="false" />
     <file path="/APSOpenJPAServiceProvider.java" changelist="91927f7a-4f3a-4496-922f-d3c5fd7305de" time="1358612138395" ignored="false" />
     <file path="/APSOpenJPAProviderActivator.java" changelist="91927f7a-4f3a-4496-922f-d3c5fd7305de" time="1358617562902" ignored="false" />
-    <file path="/settings.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360435838290" ignored="false" />
+    <file path="/settings.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361729418643" ignored="false" />
     <file path="/APSDataSourcesConfig.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1358691022031" ignored="false" />
     <file path="/APSSimpleUserService.sql" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359913395923" ignored="false" />
     <file path="/APSConfigServiceExtender.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1358693149978" ignored="false" />
@@ -248,10 +265,10 @@
     <file path="/docs.css" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1358798664711" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/FTPMavenPlugin/src/main/java/FTPMavenPlugin/FTPMojo.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1358965461893" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/FTPMavenPlugin/src/main/java/se/natusoft/maven/plugin/FTPMojo.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1358965501121" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/FTPMavenPlugin/src/main/java/se/natusoft/maven/plugin/ftp/FTPMojo.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359047259927" ignored="false" />
-    <file path="/FTPMojo.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359047012212" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/FTPMavenPlugin/src/main/java/se/natusoft/maven/plugin/ftp/FTPMojo.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361730551941" ignored="false" />
+    <file path="/FTPMojo.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361729807954" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/FTPMavenPlugin/src/main/java/se/natusoft/maven/plugin/ftp/SourcePaths.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1358970875953" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/FTPMavenPlugin/src/main/java/se/natusoft/maven/plugin/ftp/SourcePath.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1358970875953" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/FTPMavenPlugin/src/main/java/se/natusoft/maven/plugin/ftp/SourcePath.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361730551941" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/FTPMavenPlugin/.idea/workspace.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359047352697" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/FTPMavenPlugin/Docs/Apache-2.0.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1358971206260" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/FTPMavenPlugin/Docs/licenses.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359041276679" ignored="false" />
@@ -259,29 +276,29 @@
     <file path="$PROJECT_DIR$/../../Tools/FTPMavenPlugin/Docs/UserGuide.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359041267548" ignored="false" />
     <file path="/UserGuide.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359825106511" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/FTPMavenPlugin/README.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359041457304" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/FTPMavenPlugin/Docs/UserGuide.html" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359047301823" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/FTPMavenPlugin/Docs/UserGuide.html" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361730569456" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/FTPMavenPlugin/.idea/vcs.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359039810378" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/test/resources/test.html" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359049938423" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/test/resources/test.html" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549397" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/docs/MarkdownDoc-Library.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360171113114" ignored="false" />
     <file path="/Parser.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359208418190" ignored="false" />
     <file path="/MarkdownParser.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361620861743" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/parser/ParserFactory.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359138767596" ignored="false" />
     <file path="/ParserFactory.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359139373041" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/parser/ParserProvider.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269957" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/parser/ParserProvider.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
     <file path="/ParserProvider.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359385326374" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/MavenPlugin/src/main/java/se/natusoft/doc/markdowndoc/MarkdownDocMavenPlugin.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269957" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/MavenPlugin/src/main/java/se/natusoft/doc/markdowndoc/MarkdownDocMavenPlugin.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549397" ignored="false" />
     <file path="/MarkdownDocMavenPlugin.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360169119094" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/options/GeneratorOptions.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269957" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/options/GeneratorOptions.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549397" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/CommandLine/src/main/java/se/natusoft/doc/markdowndoc/Main.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269959" ignored="false" />
     <file path="/Main.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359387725157" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/parser/JavadocParser.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269957" ignored="false" />
-    <file path="/JavadocParser.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361621513184" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/parser/JavadocParser.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549397" ignored="false" />
+    <file path="/JavadocParser.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361708882878" ignored="false" />
     <file path="/APSFilesystemService.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359201341638" ignored="false" />
     <file path="/APSFilesystemService.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360342468487" ignored="false" />
     <file path="/APSFilesystemServiceProvider.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359215581335" ignored="false" />
     <file path="/MarkdownDoc-Library.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359220357361" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Docs/MarkdownDoc.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359288494909" ignored="false" />
-    <file path="/a.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359223310786" ignored="false" />
+    <file path="/a.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361728388124" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/PropertiesCollectorMavenPlugin/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359231919864" ignored="false" />
     <file path="$MAVEN_REPOSITORY$/se/natusoft/tools/doc/markdowndoc/markdowndoc-maven-plugin/1.1.0/markdowndoc-maven-plugin-1.1.0.jar!/META-INF/maven/plugin.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359225460100" ignored="false" />
     <file path="$MAVEN_REPOSITORY$/se/natusoft/maven/plugin/ftp-maven-plugin/1.0/ftp-maven-plugin-1.0.jar!/META-INF/maven/plugin.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359225460100" ignored="false" />
@@ -293,8 +310,8 @@
     <file path="$PROJECT_DIR$/../../Tools/PropertiesCollectorMavenPlugin/src/main/java/se/natusoft/maven/plugin/properties/PropertySet.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359229550273" ignored="false" />
     <file path="/PropertySet.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359228098581" ignored="false" />
     <file path="$MAVEN_REPOSITORY$/se/natusoft/maven/plugin/properties-collector-maven-plugin/1.0.0/properties-collector-maven-plugin-1.0.0.jar!/META-INF/maven/plugin.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359229504512" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/MavenPlugin/src/main/java/se/natusoft/doc/markdowndoc/SourcePath.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269957" ignored="false" />
-    <file path="/doc-files.fs" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361644379956" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/MavenPlugin/src/main/java/se/natusoft/doc/markdowndoc/SourcePath.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549397" ignored="false" />
+    <file path="/doc-files.fs" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361725356179" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/CommandLine/src/main/java/se/natusoft/doc/markdowndoc/SourcePath.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361627730075" ignored="false" />
     <file path="/MarkdownDoc.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359288494909" ignored="false" />
     <file path="/APSPlatformService.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359294049806" ignored="false" />
@@ -303,15 +320,15 @@
     <file path="/HTMLGenerator.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361638444694" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/resources/META-INF/services/se.natusoft.doc.markdown.api.Parser" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359385752684" ignored="false" />
     <file path="/se.natusoft.doc.markdown.api.Parser" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359385516583" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/api/Generator.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269958" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/api/Generator.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
     <file path="/Generator.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359385918520" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/GeneratorProvider.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269957" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/GeneratorProvider.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549397" ignored="false" />
     <file path="/GeneratorProvider.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359386358429" ignored="false" />
     <file path="/se.natusoft.doc.markdown.api.Generator" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360168749787" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/resources/META-INF/services/se.natusoft.doc.markdown.api.Generator" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360168749787" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/MavenPlugin/src/main/java/se/natusoft/doc/markdowndoc/SourcePaths.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269957" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/MavenPlugin/src/main/java/se/natusoft/doc/markdowndoc/SourcePaths.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549397" ignored="false" />
     <file path="/SourcePaths.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361563193862" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/api/Options.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269958" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/api/Options.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
     <file path="/Options.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359651649818" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/PropertiesMavenPlugin/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359749167412" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/PropertiesMavenPlugin/src/main/java/PropertiesMavenPlugin/MyMojo.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359748053593" ignored="false" />
@@ -321,11 +338,11 @@
     <file path="$PROJECT_DIR$/../../Tools/CodeLicenseManager/CodeLicenseManager-source-updater-html-xml/src/main/resources/codelicmgr/sourcecodeupdaters/htmlxml/updateLicenseInfo.bsh" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359824574510" ignored="false" />
     <file path="/updateLicenseInfo.bsh" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359824492412" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/CodeLicenseManager/CodeLicenseManager-documentation/docs/UserGuide.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359825281205" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/exception/DocException.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269958" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/exception/ParseException.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361640479276" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/exception/GenerateException.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269958" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/options/HTMLGeneratorOptions.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269957" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/options/PDFGeneratorOptions.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269957" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/exception/DocException.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361708914456" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/exception/ParseException.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/exception/GenerateException.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361708914456" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/options/HTMLGeneratorOptions.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549397" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/options/PDFGeneratorOptions.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549397" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/CommandLine/src/main/java/se/natusoft/doc/markdowndoc/SourcePaths.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361627730075" ignored="false" />
     <file path="$MAVEN_REPOSITORY$/se/natusoft/tools/doc/markdowndoc/markdowndoc-maven-plugin/1.1.2/markdowndoc-maven-plugin-1.1.2.jar!/META-INF/maven/plugin.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360169242985" ignored="false" />
     <file path="/APSSimpleUserService.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1359981215063" ignored="false" />
@@ -353,32 +370,32 @@
     <file path="$PROJECT_DIR$/../../ThirdParty/maven-tiles/.idea/compiler.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360073258389" ignored="false" />
     <file path="$PROJECT_DIR$/../../ThirdParty/maven-tiles/.idea/misc.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360073258389" ignored="false" />
     <file path="$MAVEN_REPOSITORY$/se/natusoft/osgi/aps/ServerDeployPlugin/0.9.0/ServerDeployPlugin-0.9.0.jar!/META-INF/maven/plugin.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361108067654" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/MarkdownGenerator.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269957" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/MarkdownGenerator.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549397" ignored="false" />
     <file path="/MarkdownGenerator.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361637986151" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/options/HTMLGeneratorOptions.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360166661527" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/options/MarkdownGeneratorOptions.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269959" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/options/MarkdownGeneratorOptions.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
     <file path="/MarkdownGeneratorOptions.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360166700056" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/MavenPlugin/docs/MarkdownDoc-Maven-Plugin.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360171362186" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/CommandLine/docs/MarkdownDoc-CommandLine.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360171497154" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/setVersion.sh" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361635409268" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/AutoLink.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269957" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/BlockQuote.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269958" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Code.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269958" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/CodeBlock.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269958" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Comment.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269958" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Emphasis.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269958" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Header.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269958" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Image.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269958" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Link.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269958" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/List.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269959" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Paragraph.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269959" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/PlainText.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269959" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Strong.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269959" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/io/Line.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361635074827" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/HorizontalRule.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269958" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/ListItem.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269959" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/AutoLink.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/BlockQuote.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Code.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/CodeBlock.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Comment.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Emphasis.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Header.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Image.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Link.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/List.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Paragraph.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/PlainText.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Strong.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/io/Line.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549397" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/HorizontalRule.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/ListItem.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
     <file path="/APSJSONLib.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360345922387" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/DocFormat.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361642124025" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/DocFormat.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549398" ignored="false" />
     <file path="/APSServiceTracker.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360419157634" ignored="false" />
     <file path="/APSLogger.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360419808842" ignored="false" />
     <file path="/APSExternalProtocolService.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360513244616" ignored="false" />
@@ -397,18 +414,17 @@
     <file path="/APSSessionServiceProvider.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360498695855" ignored="false" />
     <file path="/ServiceMethodCallable.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360505408759" ignored="false" />
     <file path="/APSExternalProtocolServiceProvider.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360511807973" ignored="false" />
-    <file path="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/config/APSConfig.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360511984994" ignored="false" />
     <file path="/APSExternalProtocolListener.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360513966672" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/parser/markdown/model/MDImage.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361627730076" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/parser/markdown/model/MDLink.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361627730076" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/parser/markdown/io/MDLine.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361627730076" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/parser/markdown/io/MDLineReader.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361627730076" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/parser/markdown/model/MDList.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361627730076" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/pdfgenerator/PDFColor.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269957" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/io/LineReader.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361627730076" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/io/NullOutputStream.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269957" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/parser/markdown/model/MDImage.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549397" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/parser/markdown/model/MDLink.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549397" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/parser/markdown/io/MDLine.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361708914758" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/parser/markdown/io/MDLineReader.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361708914758" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/parser/markdown/model/MDList.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361708914758" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/pdfgenerator/PDFColor.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361708914758" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/io/LineReader.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361708914456" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/io/NullOutputStream.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361708914456" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/HorizontalRule.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361101823034" ignored="false" />
-    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Space.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361646269957" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/model/Space.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549397" ignored="false" />
     <file path="/Space.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361103807126" ignored="false" />
     <file path="/DocFormat.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361102142794" ignored="false" />
     <file path="/RPCRequest.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361110308119" ignored="false" />
@@ -426,6 +442,11 @@
     <file path="/GeneratorTools.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361622904460" ignored="false" />
     <file path="/HTMLGeneratorOptions.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361632959693" ignored="false" />
     <file path="$MAVEN_REPOSITORY$/se/natusoft/tools/doc/markdowndoc/markdowndoc-maven-plugin/1.2.4/markdowndoc-maven-plugin-1.2.4.jar!/META-INF/maven/plugin.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361643798050" ignored="false" />
+    <file path="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/src/main/java/se/natusoft/osgi/aps/apsconfigadminweb/gui/vaadin/components/ConfigEditor.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361722753807" ignored="false" />
+    <file path="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/src/main/java/se/natusoft/osgi/aps/apsconfigadminweb/gui/vaadin/components/ConfigEnvEditor.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361722753807" ignored="false" />
+    <file path="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/src/main/java/se/natusoft/osgi/aps/apsconfigadminweb/APSConfigAdminWebActivator.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361722753807" ignored="false" />
+    <file path="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/src/main/webapp/WEB-INF/web.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361722753808" ignored="false" />
+    <file path="$PROJECT_DIR$/../../Tools/FTPMavenPlugin/.idea/misc.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361730573882" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -498,19 +519,44 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="APSPlatformService.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/platform/service/APSPlatformService.java">
+      <file leaf-file-name="APSUserAdminWeb.png" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/docs/images/APSUserAdminWeb.png">
+          <provider selected="true" editor-type-id="images">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="doc-files.fs" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/docs/filesets/doc-files.fs">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="43" column="17" selection-start="1249" selection-end="1249" vertical-scroll-proportion="0.0">
+            <state line="1" column="0" selection-start="43" selection-end="43" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PlatformDescription.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/platform/model/PlatformDescription.java">
+      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-APIs/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="71" column="44" selection-start="1828" selection-end="1828" vertical-scroll-proportion="0.3279797">
+            <state line="264" column="45" selection-start="11725" selection-end="11725" vertical-scroll-proportion="-33.708332">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/APS-UserGuide/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="110" column="0" selection-start="4342" selection-end="4342" vertical-scroll-proportion="0.22519413">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="settings.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$USER_HOME$/.m2/settings.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="47" column="11" selection-start="1864" selection-end="1864" vertical-scroll-proportion="-29.375">
               <folding />
             </state>
           </provider>
@@ -543,12 +589,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/pom.xml" />
-        <option value="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/src/main/java/se/natusoft/osgi/aps/auth/Activator.java" />
-        <option value="$PROJECT_DIR$/APS-Libraries/APSWebTools/docs/filesets/doc-files.fs" />
-        <option value="$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSLoginHandler.java" />
-        <option value="$PROJECT_DIR$/APS-Network/APSGroups/docs/filesets/doc-files.fs" />
-        <option value="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/docs/filesets/doc-files.fs" />
         <option value="$PROJECT_DIR$/APS-Docs/docs/filesets/doc-files.fs" />
         <option value="$PROJECT_DIR$/APS-Docs/docs/APS-Docs.html" />
         <option value="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/docs/aps-configuration-service-provider.html" />
@@ -557,8 +597,14 @@
         <option value="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/pom.xml" />
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/APS-UserGuide/docs/filesets/doc-files.fs" />
-        <option value="$PROJECT_DIR$/APS-UserGuide/pom.xml" />
         <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/platform/model/PlatformDescription.java" />
+        <option value="$PROJECT_DIR$/APS-Webs/APSAdminWeb/docs/filesets/doc-files.fs" />
+        <option value="$PROJECT_DIR$/APS-Webs/APSAdminWeb/src/main/java/se/natusoft/osgi/aps/apsadminweb/app/gui/vaadin/APSAdminWebApp.java" />
+        <option value="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/docs/filesets/doc-files.fs" />
+        <option value="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/docs/filesets/doc-files.fs" />
+        <option value="$PROJECT_DIR$/APS-APIs/pom.xml" />
+        <option value="$USER_HOME$/.m2/settings.xml" />
+        <option value="$PROJECT_DIR$/APS-UserGuide/pom.xml" />
       </list>
     </option>
   </component>
@@ -903,84 +949,6 @@
           <option name="myItemId" value="APS Network" />
           <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
         </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="Modules" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
-        </PATH_ELEMENT>
-      </PATH>
-      <PATH>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="OSGi Application Platform Services" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="Modules" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="APS Network" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="Modules" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="APS Groups" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
-        </PATH_ELEMENT>
-      </PATH>
-      <PATH>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="OSGi Application Platform Services" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="Modules" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="APS Network" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="Modules" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="APS Groups" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="Lifecycle" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$LifecycleNode" />
-        </PATH_ELEMENT>
-      </PATH>
-      <PATH>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="OSGi Application Platform Services" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="Modules" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
-        </PATH_ELEMENT>
-        <PATH_ELEMENT>
-          <option name="myItemId" value="APS Network" />
-          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
-        </PATH_ELEMENT>
       </PATH>
       <PATH>
         <PATH_ELEMENT>
@@ -1069,7 +1037,7 @@
     <scope name="Tommys2" pattern="src[group:APS and modules]:*..*||test[group:APS and modules]:*..*" />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="179" />
+    <option name="x" value="301" />
     <option name="y" value="22" />
     <option name="width" value="2064" />
     <option name="height" value="1331" />
@@ -1082,7 +1050,22 @@
             <id />
           </State>
           <State>
+            <id>Class structure</id>
+          </State>
+          <State>
             <id>DOM issuesJavaScript</id>
+          </State>
+          <State>
+            <id>Declaration redundancy</id>
+          </State>
+          <State>
+            <id>Error handling</id>
+          </State>
+          <State>
+            <id>Google Web Toolkit issues</id>
+          </State>
+          <State>
+            <id>Inheritance issues</id>
           </State>
           <State>
             <id>Java EE issues</id>
@@ -1091,7 +1074,13 @@
             <id>JavaScript</id>
           </State>
           <State>
+            <id>Javadoc issues</id>
+          </State>
+          <State>
             <id>Portability issues</id>
+          </State>
+          <State>
+            <id>TestNG</id>
           </State>
         </expanded-state>
         <selected-state>
@@ -1113,7 +1102,7 @@
     <ConfirmationsSetting value="2" id="Remove" />
   </component>
   <component name="ProjectReloadState">
-    <option name="STATE" value="0" />
+    <option name="STATE" value="2" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
@@ -1502,20 +1491,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="OSGiApplicationPlatformServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="OSGiApplicationPlatformServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="APS-UserGuide" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -1548,7 +1523,65 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="APS-UserGuide" />
+              <option name="myItemId" value="APS-APIs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Webs and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSUserAdminWeb" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Webs and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSUserAdminWeb" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="docs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Webs and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSUserAdminWeb" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -1570,422 +1603,8 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="APS-UserGuide" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="docs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="filesets" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="OSGiApplicationPlatformServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS and modules" />
+              <option name="myItemId" value="APS-Webs and modules" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS-APIs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="OSGiApplicationPlatformServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS-APIs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="OSGiApplicationPlatformServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS-APIs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="se" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="natusoft" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osgi" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="aps" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="OSGiApplicationPlatformServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS-APIs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="se" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="natusoft" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osgi" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="aps" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="api" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="OSGiApplicationPlatformServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS-APIs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="se" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="natusoft" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osgi" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="aps" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="api" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="core" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="platform" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="service" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APSPlatformService" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="OSGiApplicationPlatformServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS-APIs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="se" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="natusoft" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osgi" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="aps" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="api" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="core" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="platform" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="model" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="PlatformDescription" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="OSGiApplicationPlatformServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS-APIs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="se" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="natusoft" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="osgi" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="aps" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="api" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="core" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="OSGiApplicationPlatformServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Build and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="OSGiApplicationPlatformServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS-Network and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="OSGiApplicationPlatformServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS-Libraries and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="OSGiApplicationPlatformServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS-Libraries and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APSJSONLib" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="OSGiApplicationPlatformServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS-Libraries and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APSJSONLib" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="docs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="OSGiApplicationPlatformServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS-Libraries and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APSJSONLib" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="docs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -2059,7 +1678,7 @@
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="JdbcConsole.EnableParameterPattern" value="false" />
     <property name="JdbcConsole.ParameterPattern" value="(\?\d*|\:\w+|\@\w+|\$\{[^$\{\}]*\}|\$\w+\$|\#\w+\#)" />
-    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.last.edited" value="Project" />
     <property name="JdbcConsole.Extract.Separator" value="'" />
     <property name="OverrideImplement.combined" value="true" />
     <property name="project.structure.proportion" value="0.09832841" />
@@ -2101,11 +1720,11 @@
       <recent name="sun.tools.native2ascii" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/docs/images" />
+      <recent name="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/docs/images" />
+      <recent name="$PROJECT_DIR$/APS-Webs/APSAdminWeb/docs/images" />
+      <recent name="$PROJECT_DIR$/APS-Webs/APSAdminWeb/docs" />
       <recent name="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/docs/images" />
-      <recent name="$PROJECT_DIR$/APS-Docs/docs" />
-      <recent name="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/docs/src" />
-      <recent name="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/docs/src" />
-      <recent name="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/docs" />
     </key>
     <key name="ExtractSuperBase.RECENT_KEYS">
       <recent name="se.natusoft.osgi.aps.bundledeployer.deploy" />
@@ -2115,11 +1734,11 @@
       <recent name="se.natusoft.osgi.aps.networkgroups.protocol" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/docs/images" />
+      <recent name="$PROJECT_DIR$/APS-Webs/APSAdminWeb/docs/images" />
       <recent name="$PROJECT_DIR$/APS-Network/APSGroups/docs/images" />
       <recent name="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/docs/images" />
       <recent name="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/docs/images" />
-      <recent name="$PROJECT_DIR$/APS-Network/APSGroups/docs/src" />
-      <recent name="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/docs" />
     </key>
   </component>
   <component name="RunManager" selected="Application.APSSimpleUserServiceAuthServiceProvider">
@@ -3737,7 +3356,47 @@
       <created>1361646825132</created>
       <updated>1361646825132</updated>
     </task>
-    <option name="localTasksCounter" value="294" />
+    <task id="LOCAL-00294" summary="Documentation.">
+      <created>1361647287909</created>
+      <updated>1361647287910</updated>
+    </task>
+    <task id="LOCAL-00295" summary="Documentation.">
+      <created>1361647454560</created>
+      <updated>1361647454561</updated>
+    </task>
+    <task id="LOCAL-00296" summary="Documentation.">
+      <created>1361711946455</created>
+      <updated>1361711946456</updated>
+    </task>
+    <task id="LOCAL-00297" summary="Documentation.">
+      <created>1361720341718</created>
+      <updated>1361720341719</updated>
+    </task>
+    <task id="LOCAL-00298" summary="Documentation.">
+      <created>1361721489263</created>
+      <updated>1361721489264</updated>
+    </task>
+    <task id="LOCAL-00299" summary="Documentation.">
+      <created>1361724249496</created>
+      <updated>1361724249496</updated>
+    </task>
+    <task id="LOCAL-00300" summary="Documentation.">
+      <created>1361726143493</created>
+      <updated>1361726143493</updated>
+    </task>
+    <task id="LOCAL-00301" summary="Documentation.">
+      <created>1361726591673</created>
+      <updated>1361726591674</updated>
+    </task>
+    <task id="LOCAL-00302" summary="Documentation.">
+      <created>1361728082869</created>
+      <updated>1361728082869</updated>
+    </task>
+    <task id="LOCAL-00303" summary="Documentation.">
+      <created>1361728289455</created>
+      <updated>1361728289456</updated>
+    </task>
+    <option name="localTasksCounter" value="304" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="false" url="http://natusoft.selfip.net:6789/redmine">
@@ -3774,7 +3433,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="179" y="22" width="2064" height="1331" extended-state="0" />
+    <frame x="301" y="22" width="2064" height="1331" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Dilbert" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27250206" sideWeight="0.5" order="19" side_tool="false" content_ui="tabs" />
@@ -3791,15 +3450,14 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3261767" sideWeight="0.5" order="15" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32998565" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32700247" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32535094" sideWeight="0.5" order="17" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23018147" sideWeight="0.40329835" order="5" side_tool="true" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32700247" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25777778" sideWeight="0.27250206" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39956957" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20763132" sideWeight="0.49463254" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20763132" sideWeight="0.4954583" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25768086" sideWeight="0.49463254" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.50536746" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25768086" sideWeight="0.4954583" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5045417" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hudson Information" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="PDF_FIND" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Code Consultant" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -3815,6 +3473,7 @@
       <window_info id="UML Diagrams" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Kotlin" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32987654" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Code Graph" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32938272" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32535094" sideWeight="0.5" order="17" side_tool="false" content_ui="tabs" />
       <window_info id="Hudson Jobs" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Graphical Navigator" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -3963,110 +3622,92 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/docs/docs.css">
+    <entry file="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/docs/filesets/doc-files.fs">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="31" selection-start="630" selection-end="630" vertical-scroll-proportion="0.0">
+        <state line="3" column="0" selection-start="188" selection-end="188" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/LoginHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="10" selection-start="960" selection-end="960" vertical-scroll-proportion="0.38038886" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/vaadin/VaadinLoginDialogHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="78" column="59" selection-start="2235" selection-end="2235" vertical-scroll-proportion="0.44209635" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/src/main/java/se/natusoft/osgi/aps/apsadminweb/app/gui/vaadin/APSAdminWebApp.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="116" column="86" selection-start="4702" selection-end="4702" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/versions/JSONRPC10.java">
+    <entry file="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSLoginHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="58" column="95" selection-start="2101" selection-end="2139" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="99" column="11" selection-start="3076" selection-end="3076" vertical-scroll-proportion="0.28233305" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/versions/JSONRPC20.java">
+    <entry file="file://$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="36" column="42" selection-start="1139" selection-end="1139" vertical-scroll-proportion="0.0">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-1.2519413" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSAdminWebLoginHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="77" column="5" selection-start="2069" selection-end="2069" vertical-scroll-proportion="0.32037193" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/src/main/java/se/natusoft/osgi/aps/apsconfigadminweb/gui/vaadin/APSConfigAdminWebApp.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="307" column="13" selection-start="11120" selection-end="11120" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/docs/images/APSConfigWeb-structured.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/docs/filesets/doc-files.fs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1" column="0" selection-start="45" selection-end="45" vertical-scroll-proportion="0.012679628" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/docs/images/APSConfigWeb-simple.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/docs/images/APSUserAdminWeb.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/docs/filesets/doc-files.fs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1" column="0" selection-start="43" selection-end="43" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-APIs/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="157" column="0" selection-start="7295" selection-end="7514" vertical-scroll-proportion="0.025884382">
+        <state line="264" column="45" selection-start="11725" selection-end="11725" vertical-scroll-proportion="-33.708332">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/docs/filesets/doc-files.fs">
+    <entry file="file://$USER_HOME$/.m2/settings.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="65" selection-end="65" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-UserGuide/docs/docs.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="38" selection-start="1167" selection-end="1167" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/docs/aps-configuration-service-provider.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="302" column="242" selection-start="14915" selection-end="14915" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="50" column="10" selection-start="1670" selection-end="1670" vertical-scroll-proportion="0.012942191">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="140" column="29" selection-start="4258" selection-end="4258" vertical-scroll-proportion="0.6212252">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Build/DocTile/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="106" column="40" selection-start="4420" selection-end="4420" vertical-scroll-proportion="-13.916667">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-UserGuide/docs/filesets/doc-files.fs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="0" selection-start="193" selection-end="193" vertical-scroll-proportion="0.12679628">
+        <state line="47" column="11" selection-start="1864" selection-end="1864" vertical-scroll-proportion="-29.375">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-UserGuide/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="66" column="49" selection-start="2158" selection-end="2158" vertical-scroll-proportion="0.8541846">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/docs/images/config.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/docs/images/config-list.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/platform/service/APSPlatformService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="17" selection-start="1249" selection-end="1249" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/platform/model/PlatformDescription.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="71" column="44" selection-start="1828" selection-end="1828" vertical-scroll-proportion="0.3279797">
+        <state line="110" column="0" selection-start="4342" selection-end="4342" vertical-scroll-proportion="0.22519413">
           <folding />
         </state>
       </provider>
@@ -4125,11 +3766,12 @@
       </state>
       <state key="ModuleStructureConfigurable.UI">
         <settings>
-          <last-edited>APS-UserGuide|APS and modules</last-edited>
+          <last-edited>aps-apis|APS and modules</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
                 <option value="0.27312773" />
+                <option value="0.5" />
               </list>
             </option>
           </splitter-proportions>

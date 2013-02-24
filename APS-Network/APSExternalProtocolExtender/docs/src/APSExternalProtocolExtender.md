@@ -10,7 +10,7 @@ So, what is meant by ”made externally available” ? Well what this bundle doe
 
 The complete picture for making services externally callable looks like this:
 
-![EPERelations.png](../images/EPERelations.png)
+![EPERelations.png](http://download.natusoft.se/Images/APS/APS-Network/APSExternalProtocolExtender/docs/images/EPERelations.png)
 
 This bundle provides the glue between the services and the protocols. Transports and protocols have to be provided by other bundles. 
 

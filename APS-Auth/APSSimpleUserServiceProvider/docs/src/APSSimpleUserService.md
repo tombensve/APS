@@ -132,7 +132,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
 
 After the tables have been created you need to configure a datasource for it in /apsadminweb configuration tab:
 
-![Picture of datasource config gui.](../images/DataSourceConfig.png)
+![Picture of datasource config gui.](http://download.natusoft.se/Images/APS/APS-Auth/APSSimpleUserServiceProvider/docs/images/DataSourceConfig.png)
 
 Please note that the above picture is just an example. The data source name  __APSSimpleUserServiceDS__ is however important. The service will be looking up the entry with that name! The rest of the entry depends on your database and where it is running. Also note that the ”(default)” after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.
 

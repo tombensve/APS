@@ -120,6 +120,7 @@
         <module name="aps-rpc-http-transport-provider" />
         <module name="aps-session-provider-service" />
         <module name="aps-session-service-provider" />
+        <module name="aps-simple-user-service-auth-service-provider" />
         <module name="aps-simple-user-service-provider" />
         <module name="aps-streamed-json-rpc-protocol-provider" />
         <module name="aps-tools-lib" />
@@ -161,6 +162,7 @@
       <module name="aps-resolving-bundle-deployer" target="1.7" />
       <module name="aps-session-provider-service" target="1.7" />
       <module name="aps-session-service-provider" target="1.7" />
+      <module name="aps-simple-user-service-auth-service-provider" target="1.7" />
       <module name="aps-simple-user-service-provider" target="1.7" />
       <module name="aps-streamed-json-rpc-protocol-provider" target="1.7" />
       <module name="aps-tools-lib" target="1.7" />

@@ -238,12 +238,12 @@ It is quite possible to make config structures of great complexity. __DON'T!__ E
 
 ## APSConfigAdminWeb screenshots
 
-![Config environment screenshot](../images/config-env.png)
+![Config environment screenshot](http://download.natusoft.se/Images/APS/APS-Core/APSConfigServiceProvider/docs/images/config-env.png)
 
-![Config environment help screenshot](../images/config-env-help.png)
+![Config environment help screenshot](http://download.natusoft.se/Images/APS/APS-Core/APSConfigServiceProvider/docs/images/config-env-help.png)
 
-![Config screenshot](../images/config.png)
+![Config screenshot](http://download.natusoft.se/Images/APS/APS-Core/APSConfigServiceProvider/docs/images/config.png)
 
-![Config list item screenshot](../images/config-list.png)
+![Config list item screenshot](http://download.natusoft.se/Images/APS/APS-Core/APSConfigServiceProvider/docs/images/config-list.png)
 
 

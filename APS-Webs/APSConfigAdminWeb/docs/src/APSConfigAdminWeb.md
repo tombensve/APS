@@ -1,7 +1,7 @@
 # APSConfigAdminWeb
 
-![APSConfigAdminWeb screenshot](../images/APSConfigWeb-simple-small.png)
-![APSConfigAdminWeb screenshot](../images/APSConfigWeb-structured-small.png)
+![APSConfigAdminWeb screenshot](http://download.natusoft.se/Images/APS/APS-Webs/APSConfigAdminWeb/docs/images/APSConfigWeb-simple-small.png)
+![APSConfigAdminWeb screenshot](http://download.natusoft.se/Images/APS/APS-Webs/APSConfigAdminWeb/docs/images/APSConfigWeb-structured-small.png)
 
 This allows editing configurations registered with the _APSConfigService_. Configurations are only available in the APSConfigAdminWeb while the bundle providing the configuration model are deployed. The actual saved configurations live on disk and remains after a bundle is stopped. It will be available again when the bundle is started again. But the bundle have to be running and regisitering its configuration with the _APSConfigService_ for them to be editable in this admin app! 
 

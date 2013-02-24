@@ -134,6 +134,30 @@
                 </executions>
             </plugin>
 
+            <plugin>
+                <groupId>se.natusoft.maven.plugin</groupId>
+                <artifactId>ftp-maven-plugin</artifactId>
+                <version>${ftpPlugin.ver}</version>
+                <executions>
+                    <execution>
+                        <id>upload</id>
+                        <goals>
+                            <goal>upload</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                        <configuration>
+                            <files>**/.*.png</files>
+                            <targetHost>${download.upload}</targetHost>
+                            <targetPort>21</targetPort>
+                            <userName>${web.server.user}</userName>
+                            <password>${web.server.pw}</password>
+                            <targetPath>${download.base.path}/Images/APS</targetPath>
+                            <baseDir>${basedir}/..</baseDir>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 

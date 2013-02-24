@@ -315,13 +315,13 @@ It is quite possible to make config structures of great complexity. __DON'T!__ E
 
 ## APSConfigAdminWeb screenshots
 
-![Config environment screenshot](file:../../APS-Core/APSConfigServiceProvider/docs/src/../images/config-env.png)
+![Config environment screenshot](http://download.natusoft.se/Images/APS/APS-Core/APSConfigServiceProvider/docs/images/config-env.png)
 
-![Config environment help screenshot](file:../../APS-Core/APSConfigServiceProvider/docs/src/../images/config-env-help.png)
+![Config environment help screenshot](http://download.natusoft.se/Images/APS/APS-Core/APSConfigServiceProvider/docs/images/config-env-help.png)
 
-![Config screenshot](file:../../APS-Core/APSConfigServiceProvider/docs/src/../images/config.png)
+![Config screenshot](http://download.natusoft.se/Images/APS/APS-Core/APSConfigServiceProvider/docs/images/config.png)
 
-![Config list item screenshot](file:../../APS-Core/APSConfigServiceProvider/docs/src/../images/config-list.png)
+![Config list item screenshot](http://download.natusoft.se/Images/APS/APS-Core/APSConfigServiceProvider/docs/images/config-list.png)
 
 # APSFilesystemService
 
@@ -2603,7 +2603,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
 -->
 After the tables have been created you need to configure a datasource for it in /apsadminweb configuration tab:
 
-![Picture of datasource config gui.](file:../../APS-Auth/APSSimpleUserServiceProvider/docs/src/../images/DataSourceConfig.png)
+![Picture of datasource config gui.](http://download.natusoft.se/Images/APS/APS-Auth/APSSimpleUserServiceProvider/docs/images/DataSourceConfig.png)
 
 Please note that the above picture is just an example. The data source name __APSSimpleUserServiceDS__ is however important. The service will be looking up the entry with that name! The rest of the entry depends on your database and where it is running. Also note that the ”(default)” after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.
 
@@ -3662,7 +3662,7 @@ So, what is meant by ”made externally available” ? Well what this bundle doe
 
 The complete picture for making services externally callable looks like this:
 
-![EPERelations.png](file:../../APS-Network/APSExternalProtocolExtender/docs/src/../images/EPERelations.png)
+![EPERelations.png](http://download.natusoft.se/Images/APS/APS-Network/APSExternalProtocolExtender/docs/images/EPERelations.png)
 
 This bundle provides the glue between the services and the protocols. Transports and protocols have to be provided by other bundles.
 
@@ -4565,7 +4565,7 @@ The GroupMember contains a few _create*_ methods to produce a _NetTime_ object i
 
 The OSGi service provides a configuration model that gets managed by the APSConfigService. It can be configured in the APS adminweb (http://host:port/apsadminweb/). Here is a screenshot of the config admin:
 
-![/apsconfigadmin web gui for configuring APSGroups](file:../../APS-Network/APSGroups/docs/src/../images/config.png)
+![/apsconfigadmin web gui for configuring APSGroups](http://download.natusoft.se/Images/APS/APS-Network/APSGroups/docs/images/config.png)
 
 ### Library 
 
@@ -4823,7 +4823,7 @@ Se the documentation for _APSExternalProtocolExtender_ for a description of how 
 
 # APSAdminWeb
 
-![APSAdminWeb screenshot](file:../../APS-Webs/APSAdminWeb/docs/src/../images/APSAdminWeb.png)
+![APSAdminWeb screenshot](http://download.natusoft.se/Images/APS/APS-Webs/APSAdminWeb/docs/images/APSAdminWeb.png)
 
 This is a web app for administration of APS. It is really only a shell for different administraion webs. It relys on the _aps-admin-web-service-provider_ bundle which publishes the _APSAdminWebService_. Other bundles providing administration web apps register themselves with this service and for each registration APSAdminWeb creates a tab in its gui. Se _APIs_ further down for the APSAdminService API. Clicking on ”Refresh” will make APSAdminWeb reload the admin webs registered in _APSAdminWebService_.
 
@@ -4841,7 +4841,7 @@ The following APS bundles provides a tab in APSAdminWeb:
 
 The APSAdminWeb requires a login to be accessed. A userid and a password will be asked for. The entered information will be validated by the APSAuthService. The _aps-simple-user-service-auth-service-provider.jar_ bundle provides an implementation of this service that uses the _APSSimpleUserService_ service. The APSAuthService is however simple enough to implement yourself to provide login to whatever you want/need.
 
-![APSAdminWeb login screenshot](file:../../APS-Webs/APSAdminWeb/docs/src/../images/APSAdminWeb-login.png)
+![APSAdminWeb login screenshot](http://download.natusoft.se/Images/APS/APS-Webs/APSAdminWeb/docs/images/APSAdminWeb-login.png)
 
 ## Making an admin web participating in the APSAdminWeb login.
 
@@ -4974,7 +4974,7 @@ _Returns_
 
 # APSConfigAdminWeb
 
-![APSConfigAdminWeb screenshot](file:../../APS-Webs/APSConfigAdminWeb/docs/src/../images/APSConfigWeb-simple-small.png) ![APSConfigAdminWeb screenshot](file:../../APS-Webs/APSConfigAdminWeb/docs/src/../images/APSConfigWeb-structured-small.png)
+![APSConfigAdminWeb screenshot](http://download.natusoft.se/Images/APS/APS-Webs/APSConfigAdminWeb/docs/images/APSConfigWeb-simple-small.png) ![APSConfigAdminWeb screenshot](http://download.natusoft.se/Images/APS/APS-Webs/APSConfigAdminWeb/docs/images/APSConfigWeb-structured-small.png)
 
 This allows editing configurations registered with the _APSConfigService_. Configurations are only available in the APSConfigAdminWeb while the bundle providing the configuration model are deployed. The actual saved configurations live on disk and remains after a bundle is stopped. It will be available again when the bundle is started again. But the bundle have to be running and regisitering its configuration with the _APSConfigService_ for them to be editable in this admin app!
 
@@ -5002,7 +5002,7 @@ Also se the APSConfigService documentation.
 
 # APSUserAdminWeb
 
-![APSUserAdminWeb screenshot](file:../../APS-Webs/APSUserAdminWeb/docs/src/../images/APSUserAdminWeb.png)
+![APSUserAdminWeb screenshot](http://download.natusoft.se/Images/APS/APS-Webs/APSUserAdminWeb/docs/images/APSUserAdminWeb.png)
 
 APSUserAdminWeb provides user and group administration for the _APSSimpleUserService_.
 
