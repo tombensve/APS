@@ -103,7 +103,7 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
         // that uses the service tracker to get the service and forwards calls to it. It handles services coming and going. If a
         // service is not available it will wait for the specified timeout before failing with an APSNoServiceAvailableException
         // which is a runtime exception. This is a convenient use of the APSServiceTracker if you don't need more control over
-        // service management your self.
+        // service management yourself.
         clientContext.addService(APSAdminWebService.class, this.adminWebServiceTracker.getWrappedService());
 
         this.loginHandler = new APSAdminWebLoginHandler(clientContext.getBundleContext()) {

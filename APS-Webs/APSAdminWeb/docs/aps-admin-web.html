@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="generated-by" content="MarkdownDoc"/>
+    <link href="docs.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body>
+    <H1>APSAdminWeb</H1>
+    <p>
+            <img src='file:images/../images/APSAdminWeb.png' title='' alt='APSAdminWeb screenshot'/>      
+    </p>
+    <p>
+      This is a web app for administration of APS. It is really only a shell for different administraion webs. It relys on the <em>aps-admin-web-service-provider</em> bundle which publishes the <em>APSAdminWebService</em>. Other bundles providing administration web apps register themselves with this service and for each registration APSAdminWeb creates a tab in its gui. Se <em>APIs</em> further down for the APSAdminService API. Clicking on ”Refresh” will make APSAdminWeb reload the admin webs registered in <em>APSAdminWebService</em>.      
+    </p>
+    <p>
+      The APSAdminWeb is accessed at <strong>http://host:port/apsadminweb</strong>. What you see there depends on what other admin webs are deployed. Anybody can make an admin web and register it with the <em>APSAdminWebService</em>. The admin webs delivered with APS are mainly done using Vaadin. This is in no way a requirement for an admin web. An admin web app can be made in any way what so ever. A side effect of this is that different tabs might have different look and feel. But I offer that for flexibility.      
+    </p>
+    <p>
+      The following APS bundles provides a tab in APSAdminWeb:      
+    </p>
+    <ul>
+      <li>
+        <p>
+          <em>aps-config-admin-web.war</em> - Allows advanced configuration of bundles/services using APSConfigService.          
+        </p>
+      </li>
+      <li>
+        <p>
+          <em>aps-user-admin-web-war</em> - Administration of users and groups for APSSimpleUserService.          
+        </p>
+      </li>
+      <li>
+        <p>
+          <em>aps-ext-protocol-http-transport-provider.war</em> - Provides a web gui with help for setting up and calling services remotely, and also shows all available services and allows calling them from the web gui for testing/debugging purposes.          
+        </p>
+      </li>
+    </ul>
+    <H2>Authentication</H2>
+    <p>
+      The APSAdminWeb requires a login to be accessed. A userid and a password will be asked for. The entered information will be validated by the APSAuthService. The <em>aps-simple-user-service-auth-service-provider.jar</em> bundle provides an implementation of this service that uses the <em>APSSimpleUserService</em> service. The APSAuthService is however simple enough to implement yourself to provide login to whatever you want/need.      
+    </p>
+    <H2>Making an admin web participating in the APSAdminWeb login.</H2>
+    <p>
+      There is an APSSessionService that was made just for handling this. It is not a HTTP session, just a service hanling sessions. It is provided by the <em>aps-session-service-provider.jar</em> bundle. When a session is created you get a session id (an UUID) that needs to be passed along to the other admin webs through a cookie. <em>APSWebTools</em> (<em>aps-web-tools.jar</em> (not a bundle!)) provides the APSAdminWebLoginHandler class implementing the LoginHandler interface and handles all this for you.      
+    </p>
+    <p>
+      You need to provide it with a BundleContext on creation since it will be calling both the <em>APSAuthService</em> and <em>APSSessionService</em>:      
+    </p>
+    <pre>
+      <code>
+    this.loginHandler = new APSAdminWebLoginHandler(bundleContext);
+    
+      </code>
+    </pre>
+    <p>
+      Then to validate that there is a valid login do:      
+    </p>
+    <pre>
+      <code>
+    this.loginHandler.setSessionIdFromRequestCookie(request);
+    if (this.loginHandler.hasValidLogin()) {
+        ...
+    }
+    else {
+        ...
+    }
+      </code>
+    </pre>
+    <H2>APSAdminWebService APIs</H2>
+    <p>
+      public <em>interface</em> <strong>APSAdminWebService </strong>   [se.natusoft.osgi.aps.apsadminweb.service] {      
+    </p>
+    <blockquote>
+      <p>
+         This service registers other specific administration web applications to make them available under a common administration gui.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void registerAdminWeb(AdminWebReg adminWebReg) throws IllegalArgumentException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Registers an admin web application.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>adminWebReg</em> - Registration information for the admin web.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IllegalArgumentException</em> - if the admin web has already been registered or if it is using the         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void unregisterAdminWeb(AdminWebReg adminWebReg)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Unregisters a previously registered admin web. This is failsafe. If it has not been registered nothing happens.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>adminWebReg</em> - Registration information for the admin web. Use the same as registered with.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public List&lt;AdminWebReg&gt; getRegisteredAdminWebs()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        All currently registered admin webs.        
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>AdminWebReg </strong>   [se.natusoft.osgi.aps.apsadminweb.service.model] {      
+    </p>
+    <blockquote>
+      <p>
+         This model holds information about a registered admin web application.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public AdminWebReg(String name, String version, String description, String url)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new AdminWebReg instance.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - A (short) name of the admin web.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>version</em> - The version of the admin web.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>description</em> - A longer description of the admin web.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>url</em> - The deployment url of the admin web.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getName()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The (short) name of the admin web.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getVersion()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The version of the admin web.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getDescription()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The description of the admin web.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getUrl()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The deployment url of the admin web.        
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+  </body>
+</html>
