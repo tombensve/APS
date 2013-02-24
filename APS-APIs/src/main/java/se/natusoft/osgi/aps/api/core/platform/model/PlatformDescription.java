@@ -61,9 +61,7 @@ public class PlatformDescription {
     /**
      * Creates a new PlatformDescription.
      */
-    public PlatformDescription() {
-
-    }
+    public PlatformDescription() {}
 
     /**
      * Creates a new PlatformDescription.
