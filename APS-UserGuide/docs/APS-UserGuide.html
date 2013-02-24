@@ -8,7 +8,7 @@
   <body>
     <H1>Application Platform Services (APS)</H1>
     <p>
-      OSGi Application Platform Services - A "smorgasbord" of OSGi services that focuses on ease of use and good enough functionality for many but wont fit all. It can be seen as osgi-ee-light-and-easy. The services are of platform type: configuration, database, JPA, content, etc.      
+      OSGi Application Platform Services - A "smorgasbord" of OSGi services that focuses on ease of use and good enough functionality for many but wont fit all. It can be seen as osgi-ee-light-and-easy. The services are of platform type: configuration, database, JPA, etc.      
     </p>
     <p>
       All services that require some form of administration have an admin web application for that, that plugs into the general apsadminweb admin application.      
@@ -72,7 +72,7 @@
       </li>
       <li>
         <p>
-          A user service. Provides basic user management including roles/groups. Is accompanied with a admin GUI (plugnis into apsadminweb) for administration of users.          
+          A user service. Provides basic user management including roles/groups. Is accompanied with a admin GUI (plugnis into apsadminweb) for administration of users. (org.osgi.service.useradmin.UserAdmin felt uncomplete. It did not provide what I wanted).          
         </p>
       </li>
       <li>
@@ -130,7 +130,7 @@
       How to do this differs between servers. In Glassfish you can supply system properties with its admin gui.      
     </p>
     <p>
-      If this system property is not set the default root will be BundleContext.getFile(). This will work but is not optimal!      
+      If this system property is not set the default root will be BundleContext.getFile(). This can work for development setup, but not for more serious installations!      
     </p>
     <p>
       After this path has been setup and the server started, all other configuration can be done in http://…/apsadminweb/.      
@@ -2105,11 +2105,27 @@
             
     </p>
     <p>
-      <strong>public JSONObject()  }  /** * Creates a new JSONObject instance for reading JSON input or writing JSON output. * * errorHandler */ public JSONObject(JSONErrorHandler errorHandler)</strong>      
+      <strong>public JSONObject()</strong>      
     </p>
     <blockquote>
       <p>
          Creates a JSONObject instance for writing JSON output.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public JSONObject(JSONErrorHandler errorHandler)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new JSONObject instance for reading JSON input or writing JSON output.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>errorHandler</em>        
       </p>
     </blockquote>
     <p>
@@ -2350,11 +2366,19 @@
             
     </p>
     <p>
-      <strong>protected JSONValue()  }  /** * Creates a new JSONValue */ protected JSONValue(JSONErrorHandler errorHandler)</strong>      
+      <strong>protected JSONValue()</strong>      
     </p>
     <blockquote>
       <p>
          Creates a new JSONValue.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected JSONValue(JSONErrorHandler errorHandler)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new JSONValue         
       </p>
     </blockquote>
     <p>
@@ -6136,11 +6160,19 @@ The above empty lines are required due to a bug in iText used to render the PDF.
             
     </p>
     <p>
-      <strong>public ServiceDescriptionProvider()  }  // // Methods //  /** * Returns a string representation of this object. */ public String toString()</strong>      
+      <strong>public ServiceDescriptionProvider()</strong>      
     </p>
     <blockquote>
       <p>
          Creates a new ServiceDescirption.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String toString()</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns a string representation of this object.         
       </p>
     </blockquote>
     <p>
@@ -8480,6 +8512,327 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <p>
       Se the documentation for <em>APSExternalProtocolExtender</em> for a description of how services are made available and what services it provides for transport providers.      
+    </p>
+    <H1>APSAdminWeb</H1>
+    <p>
+            <img src='file:../../APS-Webs/APSAdminWeb/docs/src/../images/APSAdminWeb.png' title='' alt='APSAdminWeb screenshot'/>      
+    </p>
+    <p>
+      This is a web app for administration of APS. It is really only a shell for different administraion webs. It relys on the <em>aps-admin-web-service-provider</em> bundle which publishes the <em>APSAdminWebService</em>. Other bundles providing administration web apps register themselves with this service and for each registration APSAdminWeb creates a tab in its gui. Se <em>APIs</em> further down for the APSAdminService API. Clicking on ”Refresh” will make APSAdminWeb reload the admin webs registered in <em>APSAdminWebService</em>.      
+    </p>
+    <p>
+      The APSAdminWeb is accessed at <strong>http://host:port/apsadminweb</strong>. What you see there depends on what other admin webs are deployed. Anybody can make an admin web and register it with the <em>APSAdminWebService</em>. The admin webs delivered with APS are mainly done using Vaadin. This is in no way a requirement for an admin web. An admin web app can be made in any way what so ever. A side effect of this is that different tabs might have different look and feel. But I offer that for flexibility.      
+    </p>
+    <p>
+      The following APS bundles provides a tab in APSAdminWeb:      
+    </p>
+    <ul>
+      <li>
+        <p>
+          <em>aps-config-admin-web.war</em> - Allows advanced configuration of bundles/services using APSConfigService.          
+        </p>
+      </li>
+      <li>
+        <p>
+          <em>aps-user-admin-web-war</em> - Administration of users and groups for APSSimpleUserService.          
+        </p>
+      </li>
+      <li>
+        <p>
+          <em>aps-ext-protocol-http-transport-provider.war</em> - Provides a web gui with help for setting up and calling services remotely, and also shows all available services and allows calling them from the web gui for testing/debugging purposes.          
+        </p>
+      </li>
+    </ul>
+    <H2>Authentication</H2>
+    <p>
+      The APSAdminWeb requires a login to be accessed. A userid and a password will be asked for. The entered information will be validated by the APSAuthService. The <em>aps-simple-user-service-auth-service-provider.jar</em> bundle provides an implementation of this service that uses the <em>APSSimpleUserService</em> service. The APSAuthService is however simple enough to implement yourself to provide login to whatever you want/need.      
+    </p>
+    <p>
+            <img src='file:../../APS-Webs/APSAdminWeb/docs/src/../images/APSAdminWeb-login.png' title='' alt='APSAdminWeb login screenshot'/>      
+    </p>
+    <H2>Making an admin web participating in the APSAdminWeb login.</H2>
+    <p>
+      There is an APSSessionService that was made just for handling this. It is not a HTTP session, just a service hanling sessions. It is provided by the <em>aps-session-service-provider.jar</em> bundle. When a session is created you get a session id (an UUID) that needs to be passed along to the other admin webs through a cookie. <em>APSWebTools</em> (<em>aps-web-tools.jar</em> (not a bundle!)) provides the APSAdminWebLoginHandler class implementing the LoginHandler interface and handles all this for you.      
+    </p>
+    <p>
+      You need to provide it with a BundleContext on creation since it will be calling both the <em>APSAuthService</em> and <em>APSSessionService</em>:      
+    </p>
+    <pre>
+      <code>
+    this.loginHandler = new APSAdminWebLoginHandler(bundleContext);
+    
+      </code>
+    </pre>
+    <p>
+      Then to validate that there is a valid login do:      
+    </p>
+    <pre>
+      <code>
+    this.loginHandler.setSessionIdFromRequestCookie(request);
+    if (this.loginHandler.hasValidLogin()) {
+        ...
+    }
+    else {
+        ...
+    }
+      </code>
+    </pre>
+    <H2>APSAdminWebService APIs</H2>
+    <p>
+      public <em>interface</em> <strong>APSAdminWebService </strong>   [se.natusoft.osgi.aps.apsadminweb.service] {      
+    </p>
+    <blockquote>
+      <p>
+         This service registers other specific administration web applications to make them available under a common administration gui.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void registerAdminWeb(AdminWebReg adminWebReg) throws IllegalArgumentException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Registers an admin web application.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>adminWebReg</em> - Registration information for the admin web.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IllegalArgumentException</em> - if the admin web has already been registered or if it is using the         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void unregisterAdminWeb(AdminWebReg adminWebReg)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Unregisters a previously registered admin web. This is failsafe. If it has not been registered nothing happens.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>adminWebReg</em> - Registration information for the admin web. Use the same as registered with.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public List&lt;AdminWebReg&gt; getRegisteredAdminWebs()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        All currently registered admin webs.        
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>AdminWebReg </strong>   [se.natusoft.osgi.aps.apsadminweb.service.model] {      
+    </p>
+    <blockquote>
+      <p>
+         This model holds information about a registered admin web application.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public AdminWebReg(String name, String version, String description, String url)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new AdminWebReg instance.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - A (short) name of the admin web.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>version</em> - The version of the admin web.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>description</em> - A longer description of the admin web.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>url</em> - The deployment url of the admin web.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getName()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The (short) name of the admin web.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getVersion()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The version of the admin web.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getDescription()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The description of the admin web.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String getUrl()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The deployment url of the admin web.        
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <H1>APSConfigAdminWeb</H1>
+    <p>
+            <img src='file:../../APS-Webs/APSConfigAdminWeb/docs/src/../images/APSConfigWeb-simple-small.png' title='' alt='APSConfigAdminWeb screenshot'/>       <img src='file:../../APS-Webs/APSConfigAdminWeb/docs/src/../images/APSConfigWeb-structured-small.png' title='' alt='APSConfigAdminWeb screenshot'/>      
+    </p>
+    <p>
+      This allows editing configurations registered with the <em>APSConfigService</em>. Configurations are only available in the APSConfigAdminWeb while the bundle providing the configuration model are deployed. The actual saved configurations live on disk and remains after a bundle is stopped. It will be available again when the bundle is started again. But the bundle have to be running and regisitering its configuration with the <em>APSConfigService</em> for them to be editable in this admin app!      
+    </p>
+    <p>
+      As can be seen in the screenshots above it provides a simpler gui for simple configs, and a more advanced gui for structured configurations containing list of other configuration models.      
+    </p>
+    <H2>Config Environments</H2>
+    <p>
+      Under this node all available configuration environments are listed. Right clicking on the node will drop down a menu alternative to create a new configuration environment. Right clicking on a configuration environment pops up a menu that allows it to be set as active configuration environment or to delete the configuration environment. Just clicking on a configuration environment allows it to be edited on the right side. The active configuration environment cannot however be edited, only viewed.      
+    </p>
+    <H2>Configurations</H2>
+    <p>
+      This tree cannot be edited. What is here is the configurations registered by bundles. They can be selected to edit the selected configuration to the right. The screenshots above shows 2 examples of such. Please note that the screenshots were taken on a Mac with Mountain Lion and thus does not show scrollbars unless scrolling. The right side of the second screenshot where things are slightly cutoff at the bottom are scrollable!      
+    </p>
+    <p>
+      On top of the right side box there is a dropdown menu that shows/selects the configuration environment you are editing configuration values for. Only configuration values that are marked in the configuration model as being configuration environment specific will get different values per configuration environement. Those values that are configuration environment specific are identified by having the configuration environment in parentesis after the configuration value key. If you switch the configuration environment in the top dropdown menu you will se that these values change.      
+    </p>
+    <p>
+      Boolean configuration values will be shown as checkboxes. Date configuration values will have a date field where the user can write a date or click the button on the end to bring upp a calendar to select from. Date configuration values can also specify the date format (as described <a href='http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html' title=''>here</a>) in the configuration model. This is used to display the date in the field and parse any entered date. So different date fields can have different formats!      
+    </p>
+    <p>
+      The configuration models are annotated and provide descriptions of the values which are shown in the gui to make it easy for the person doing the configuration to know what the configuration is about.      
+    </p>
+    <p>
+      As soon as the configuration changes are saved they become active. The code using the configurations doesn’t need to do anything. The next reference to a configuration value will return the new value.      
+    </p>
+    <H2>See also</H2>
+    <p>
+      Also se the APSConfigService documentation.      
+    </p>
+    <H1>APSUserAdminWeb</H1>
+    <p>
+            <img src='file:../../APS-Webs/APSUserAdminWeb/docs/src/../images/APSUserAdminWeb.png' title='' alt='APSUserAdminWeb screenshot'/>      
+    </p>
+    <p>
+      APSUserAdminWeb provides user and group administration for the <em>APSSimpleUserService</em>.      
+    </p>
+    <p>
+      Users are splitt into groups of the first character in the userid to make them a little bit easier to find if there are many. So all userids starting with ’a’ or ’A’ will be under Users/A and so on.      
+    </p>
+    <p>
+      Right click on the <em>Users</em> node to create a new user.      
+    </p>
+    <p>
+      Right click on the <em>Roles</em> node to create a new role.      
+    </p>
+    <p>
+      <strong>Warning:</strong> For the roles it is fully possible to create circular dependencies! <strong>Dont!</strong> (There is room for improvement on this point!)      
+    </p>
+    <p>
+      There is not anything more to say about this. It should be seflexplanatory!      
     </p>
   </body>
 </html>

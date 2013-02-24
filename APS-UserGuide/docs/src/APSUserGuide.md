@@ -1,6 +1,6 @@
 # Application Platform Services (APS)
 
-OSGi Application Platform Services - A "smorgasbord" of OSGi services that focuses on ease of use and good enough functionality for many but wont fit all. It can be seen as osgi-ee-light-and-easy. The services are of platform type: configuration, database, JPA, content, etc. 
+OSGi Application Platform Services - A "smorgasbord" of OSGi services that focuses on ease of use and good enough functionality for many but wont fit all. It can be seen as osgi-ee-light-and-easy. The services are of platform type: configuration, database, JPA, etc. 
 
 All services that require some form of administration have an admin web application for that, that plugs into the general apsadminweb admin application.
 
@@ -32,7 +32,7 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * An administration web service to which administration web applications can register themselves with an url and thus be available in the .../apsadminweb admin gui.
 
-* A user service. Provides basic user management including roles/groups. Is accompanied with a admin GUI (plugnis into apsadminweb) for administration of users. 
+* A user service. Provides basic user management including roles/groups. Is accompanied with a admin GUI (plugnis into apsadminweb) for administration of users. (org.osgi.service.useradmin.UserAdmin felt uncomplete. It did not provide what I wanted).
 
 * A far better service tracker that does a better job at handling services coming and going. Supports service availability wait and timeout and can be wrapped as a proxy to the service. 
 
@@ -60,7 +60,7 @@ The Filesystem service is part of the core and used by other services. It should
 
 How to do this differs between servers. In Glassfish you can supply system properties with its admin gui. 
 
-If this system property is not set the default root will be BundleContext.getFile(). This will work but is not optimal!
+If this system property is not set the default root will be BundleContext.getFile(). This can work for development setup, but not for more serious installations!
 
 After this path has been setup and the server started, all other configuration can be done in http://…/apsadminweb/. 
 
