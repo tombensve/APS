@@ -8,7 +8,7 @@
   <body>
     <H1>APSAdminWeb</H1>
     <p>
-            <img src='file:images/../images/APSAdminWeb.png' title='' alt='APSAdminWeb screenshot'/>      
+            <img src='http://download.natusoft.se/Images/APS/APS-Webs/APSAdminWeb/docs/images/APSAdminWeb.png' title='' alt='APSAdminWeb screenshot'/>      
     </p>
     <p>
       This is a web app for administration of APS. It is really only a shell for different administraion webs. It relys on the <em>aps-admin-web-service-provider</em> bundle which publishes the <em>APSAdminWebService</em>. Other bundles providing administration web apps register themselves with this service and for each registration APSAdminWeb creates a tab in its gui. Se <em>APIs</em> further down for the APSAdminService API. Clicking on ”Refresh” will make APSAdminWeb reload the admin webs registered in <em>APSAdminWebService</em>.      
@@ -41,7 +41,7 @@
       The APSAdminWeb requires a login to be accessed. A userid and a password will be asked for. The entered information will be validated by the APSAuthService. The <em>aps-simple-user-service-auth-service-provider.jar</em> bundle provides an implementation of this service that uses the <em>APSSimpleUserService</em> service. The APSAuthService is however simple enough to implement yourself to provide login to whatever you want/need.      
     </p>
     <p>
-            <img src='file:images/../images/APSAdminWeb-login.png' title='' alt='APSAdminWeb login screenshot'/>      
+            <img src='http://download.natusoft.se/Images/APS/APS-Webs/APSAdminWeb/docs/images/APSAdminWeb-login.png' title='' alt='APSAdminWeb login screenshot'/>      
     </p>
     <H2>Making an admin web participating in the APSAdminWeb login.</H2>
     <p>

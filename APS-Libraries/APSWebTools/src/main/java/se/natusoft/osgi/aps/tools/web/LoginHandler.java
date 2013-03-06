@@ -58,7 +58,7 @@ public interface LoginHandler {
 
     /**
      * If the handler creates service trackers or other things that needs to be shutdown
-     * when no longer used this methods needs to be called when the handles is no longer
+     * when no longer used this method needs to be called when the handler is no longer
      * needed.
      */
     public void shutdown();

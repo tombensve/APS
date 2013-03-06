@@ -16,9 +16,21 @@ public _class_ __PlatformDescription__   [se.natusoft.osgi.aps.api.core.platform
 
 
 
-__public PlatformDescription()  }  /** * Creates a new PlatformDescription. * * identifier An identifying name for the platform. * type The type of the platform, for example "Development", "SystemTest". * description A short description of the platform instance. */ public PlatformDescription(String identifier, String type, String description)__
+__public PlatformDescription()__
 
 >  Creates a new PlatformDescription. 
+
+__public PlatformDescription(String identifier, String type, String description)__
+
+>  Creates a new PlatformDescription.  
+
+_Parameters_
+
+> _identifier_ - An identifying name for the platform. 
+
+> _type_ - The type of the platform, for example "Development", "SystemTest". 
+
+> _description_ - A short description of the platform instance. 
 
 __public String getIdentifier()__
 

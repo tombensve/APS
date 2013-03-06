@@ -242,13 +242,13 @@
             <plugin>
                 <groupId>se.natusoft.tools.codelicmgr</groupId>
                 <artifactId>CodeLicenseManager-maven-plugin</artifactId>
-                <version>2.0</version>
+                <version>2.1</version>
 
                 <dependencies>
                     <dependency>
                         <groupId>se.natusoft.tools.codelicmgr</groupId>
                         <artifactId>CodeLicenseManager-licenses-common-opensource</artifactId>
-                        <version>2.0</version>
+                        <version>2.1</version>
                     </dependency>
                 </dependencies>
 
@@ -268,8 +268,8 @@
                             </installOptions>
 
                             <thirdpartyLicenses>
-                                <!--license>
-                                    <type></type>
+                                <license>
+                                    <type>OSGi</type>
                                     <version>2.0</version>
                                     <licenseProducts>
                                         <product>
@@ -281,11 +281,13 @@
                                             <web>http://www.osgi.org/</web>
                                         </product>
                                     </licenseProducts>
-
-                                </license-->
+                                </license>
                             </thirdpartyLicenses>
 
-                            <createMavenPDFPluginLicenseAPTVersions>true</createMavenPDFPluginLicenseAPTVersions>
+                            <createLicensesMarkdown>true</createLicensesMarkdown>
+                            <markdownTargetSubdir>lics</markdownTargetSubdir>
+                            <markdownLinkPrefix>https://github.com/tombensve/APS/blob/master/lics/</markdownLinkPrefix>
+
                         </configuration>
                     </execution>
                 </executions>
@@ -293,18 +295,18 @@
 
         </plugins>
 
-        <pluginManagement>
-            <plugins>
-                <!--
-                    Groovy
-                -->
-                <plugin>
-                    <groupId>org.codehaus.groovy.maven</groupId>
-                    <artifactId>gmaven-plugin</artifactId>
-                    <version>1.0</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
+        <!--<pluginManagement>-->
+            <!--<plugins>-->
+                <!--&lt;!&ndash;-->
+                    <!--Groovy-->
+                <!--&ndash;&gt;-->
+                <!--<plugin>-->
+                    <!--<groupId>org.codehaus.groovy.maven</groupId>-->
+                    <!--<artifactId>gmaven-plugin</artifactId>-->
+                    <!--<version>1.0</version>-->
+                <!--</plugin>-->
+            <!--</plugins>-->
+        <!--</pluginManagement>-->
 
     </build>
 

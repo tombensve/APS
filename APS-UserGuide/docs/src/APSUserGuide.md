@@ -24,7 +24,7 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A data source service. Only provides connection information, no pooling (OpenJPA provides its own pooling)!
 
-* External protocol extender that allows more or less any OSGi service to be called remotely using any deployed protocol service and transport. Currently provides JSONRPC 1.0 and 2.0 protocols, and an http transport. Protocols have two defined service APIs whose implementations can just be dropped in to make them available. The http transport can make use of any deployed protocol.
+* External protocol extender that allows more or less any OSGi service to be called remotely using any deployed protocol service and transport. Currently provides JSONRPC 1.0 and 2.0 protocols, and an http transport. Protocols have a defined service API whose implementations can just be dropped in to make them available. Transport providers can make use of any deployed protocol.
 
 * A multicast discovery service.
 

@@ -12,4 +12,4 @@ Right click on the _Roles_ node to create a new role.
 
 __Warning:__ For the roles it is fully possible to create circular dependencies! __Dont!__ (There is room for improvement on this point!)
 
-There is not anything more to say about this. It should be seflexplanatory!  
+There is not anything more to say about this. It should be selfexplanatory!  

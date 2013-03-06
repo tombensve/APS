@@ -184,6 +184,11 @@ public class APSLoginHandler implements LoginHandler {
 
     /**
      * Logs in with a userid and a password.
+     * <p/>
+     * This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on.
+     * This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own
+     * service tracker for the APSAuthService when this object is already available due to the code also being an APSAdminWeb member.
+     * It is basically a convenience.
      *
      * @param userId The id of the user to login.
      * @param pw The password of the user to login.
@@ -204,11 +209,11 @@ public class APSLoginHandler implements LoginHandler {
     }
 
     /**
-     * Logs in with a userid and a password.
+     * Logs in with a userid and a password, and a required role.
      * <p/>
-     * This method does not use or modify any internal state of this object! It only uses the APSUserService that this object sits on.
+     * This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on.
      * This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own
-     * service tracker for the APSUserService when this object is already available due to the code also being an APSAdminWeb member.
+     * service tracker for the APSAuthService when this object is already available due to the code also being an APSAdminWeb member.
      * It is basically a convenience.
      *
      * @param userId The id of the user to login.

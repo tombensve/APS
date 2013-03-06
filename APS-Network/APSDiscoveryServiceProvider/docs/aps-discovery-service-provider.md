@@ -84,9 +84,13 @@ public _class_ __ServiceDescriptionProvider__ implements  ServiceDescription    
 
 
 
-__public ServiceDescriptionProvider()  }  // // Methods //  /** * Returns a string representation of this object. */ public String toString()__
+__public ServiceDescriptionProvider()__
 
 >  Creates a new ServiceDescirption. 
+
+__public String toString()__
+
+>  Returns a string representation of this object. 
 
 __public String getDescription()__
 

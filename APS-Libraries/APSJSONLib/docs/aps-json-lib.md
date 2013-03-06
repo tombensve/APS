@@ -6,7 +6,7 @@ This basically provides a class representing each JSON type: JSONObject, JSONStr
 
 This does not try to be an alternative to Jackson! This is used internally by other services.
 
-# APIs
+## APIs
 
 public _class_ __JSON__   [se.natusoft.osgi.aps.json] {
 
@@ -371,9 +371,17 @@ public _class_ __JSONObject__ extends  JSONValue    [se.natusoft.osgi.aps.json] 
 
 
 
-__public JSONObject()  }  /** * Creates a new JSONObject instance for reading JSON input or writing JSON output. * * errorHandler */ public JSONObject(JSONErrorHandler errorHandler)__
+__public JSONObject()__
 
 >  Creates a JSONObject instance for writing JSON output. 
+
+__public JSONObject(JSONErrorHandler errorHandler)__
+
+>  Creates a new JSONObject instance for reading JSON input or writing JSON output.  
+
+_Parameters_
+
+> _errorHandler_
 
 
 
@@ -514,9 +522,13 @@ public _abstract_ _class_ __JSONValue__   [se.natusoft.osgi.aps.json] {
 
 
 
-__protected JSONValue()  }  /** * Creates a new JSONValue */ protected JSONValue(JSONErrorHandler errorHandler)__
+__protected JSONValue()__
 
 >  Creates a new JSONValue. 
+
+__protected JSONValue(JSONErrorHandler errorHandler)__
+
+>  Creates a new JSONValue 
 
 __protected abstract void readJSON(char c, JSONReader reader) throws IOException__
 
