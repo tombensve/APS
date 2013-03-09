@@ -156,6 +156,22 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       Please note that the above picture is just an example. The data source name <strong>APSSimpleUserServiceDS</strong> is however important. The service will be looking up the entry with that name! The rest of the entry depends on your database and where it is running. Also note that the ”(default)” after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.      
     </p>
+    <p>
+      When the datasource is configured and saved then you can go to <em>”Configuration tab</em>,<em> Configurations/aps/adminweb”</em> and enable the ”requireauthentication” config. If you do this before setting up the datasource and you have choosen to use the provided implementation of APSAuthService that uses APSSimpleUserService to login then you will be completely locked out.      
+    </p>
+    <H2>Troubleshooting</H2>
+    <p>
+      If you have managed to lock yourself out of /apsadminweb as described above then I suggest editing the <em>APSFilesystemService root</em>/filesystems/se.natusoft.osgi.aps.core.config.service.APSConfigServiceProvider/apsconfig-se.natusoft.aps.adminweb-1.0.properties file and changeing the following line:      
+    </p>
+    <pre>
+      <code>
+    se.natusoft.aps.adminweb_1.0_requireauthentication=true
+    
+      </code>
+    </pre>
+    <p>
+      to <em>false</em> instead. Then restart the server. Also se the APSFilesystemService documentation for more information. The APSConfigService is using that service to store its configurations.      
+    </p>
     <H2>APIs</H2>
     <p>
       public <em>interface</em> <strong>APSSimpleUserService </strong>   [se.natusoft.osgi.aps.api.auth.user] {      

@@ -136,4 +136,14 @@ After the tables have been created you need to configure a datasource for it in 
 
 Please note that the above picture is just an example. The data source name  __APSSimpleUserServiceDS__ is however important. The service will be looking up the entry with that name! The rest of the entry depends on your database and where it is running. Also note that the ”(default)” after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.
 
+When the datasource is configured and saved then you can go to _”Configuration tab, Configurations/aps/adminweb”_ and enable the ”requireauthentication” config. If you do this before setting up the datasource and you have choosen to use the provided implementation of APSAuthService that uses APSSimpleUserService to login then you will be completely locked out. 
+
+## Troubleshooting
+
+If you have managed to lock yourself out of /apsadminweb as described above then I suggest editing the _APSFilesystemService root_/filesystems/se.natusoft.osgi.aps.core.config.service.APSConfigServiceProvider/apsconfig-se.natusoft.aps.adminweb-1.0.properties file and changeing the following line:
+
+	se.natusoft.aps.adminweb_1.0_requireauthentication=true
+	
+to _false_ instead. Then restart the server. Also se the APSFilesystemService documentation for more information. The APSConfigService is using that service to store its configurations.
+
 ## APIs

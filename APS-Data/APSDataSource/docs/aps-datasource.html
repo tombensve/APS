@@ -13,7 +13,7 @@
     -->
     <H1>APSDataSource</H1>
     <p>
-      This is a service that provides named data source definitions. It does <strong>not</strong> provided pooled <em>javax.sql.DataSource</em> instances!! It only provides definitions with connection url, driver name, user and password. This service can be used by other services that provide DataSource pooling for example. The APSSimpleUserServiceProvider makes use of this service by looking up ”APSSimpleUserServiceDS” passing the information on to the APSJPAService in its properties. Not everything can make use of an <em>javax.sql.DataSource</em>, but everything can make use of the information provided by this service.      
+      This is a service that provides named data source definitions. It does <strong>not</strong> provide pooled <em>javax.sql.DataSource</em> instances! It only provides definitions with connection url, driver name, user and password. This service can be used by other services that provide DataSource pooling for example. The APSSimpleUserServiceProvider makes use of this service by looking up ”APSSimpleUserServiceDS” passing the information on to the APSJPAService in its properties. Not everything can make use of an <em>javax.sql.DataSource</em>, but everything can make use of the information provided by this service.      
     </p>
     <p>
       The actual data source definitions are configured in the <em>/apsadminweb</em> under configuration group ”persistence”.      

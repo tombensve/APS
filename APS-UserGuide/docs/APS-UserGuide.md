@@ -68,6 +68,8 @@ If this system property is not set the default root will be BundleContext.getFil
 
 After this path has been setup and the server started, all other configuration can be done in http://…/apsadminweb/.
 
+__Please note__ that the /apsadminweb by default require no login! This so that _”Configurations tab_,_Configurations/persistence/datasources”_ can be used to setup a datasource called ”APSSimpleUserServiceDS” needed by APSSimpleUserService. If you use the provided APSAuthService implementation that uses APSSimpleUserService then you need to configure this datasource before APSSimpleUserService can be used. See the documentation for APSSimpleUserService further down in this document for more information on the datasource configuration. After that is setup go to _”Configurations tab_,_Configurations/aps/adminweb”_ and enable the ”requireauthentication” config. After having enabled this and saved, do a browser refresh and then provide userid and password when prompted.
+
 ## Javadoc
 
 The complete javadoc for all services can be found at [http://apidoc.natusoft.se/APS](http://apidoc.natusoft.se/APS).
@@ -2617,6 +2619,17 @@ After the tables have been created you need to configure a datasource for it in 
 
 Please note that the above picture is just an example. The data source name __APSSimpleUserServiceDS__ is however important. The service will be looking up the entry with that name! The rest of the entry depends on your database and where it is running. Also note that the ”(default)” after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.
 
+When the datasource is configured and saved then you can go to _”Configuration tab_,_Configurations/aps/adminweb”_ and enable the ”requireauthentication” config. If you do this before setting up the datasource and you have choosen to use the provided implementation of APSAuthService that uses APSSimpleUserService to login then you will be completely locked out.
+
+## Troubleshooting
+
+If you have managed to lock yourself out of /apsadminweb as described above then I suggest editing the _APSFilesystemService root_/filesystems/se.natusoft.osgi.aps.core.config.service.APSConfigServiceProvider/apsconfig-se.natusoft.aps.adminweb-1.0.properties file and changeing the following line:
+
+        se.natusoft.aps.adminweb_1.0_requireauthentication=true
+        
+
+to _false_ instead. Then restart the server. Also se the APSFilesystemService documentation for more information. The APSConfigService is using that service to store its configurations.
+
 ## APIs
 
 public _interface_ __APSSimpleUserService__   [se.natusoft.osgi.aps.api.auth.user] {
@@ -3022,7 +3035,7 @@ _Parameters_
 -->
 # APSDataSource
 
-This is a service that provides named data source definitions. It does __not__ provided pooled _javax.sql.DataSource_ instances!! It only provides definitions with connection url, driver name, user and password. This service can be used by other services that provide DataSource pooling for example. The APSSimpleUserServiceProvider makes use of this service by looking up ”APSSimpleUserServiceDS” passing the information on to the APSJPAService in its properties. Not everything can make use of an _javax.sql.DataSource_, but everything can make use of the information provided by this service.
+This is a service that provides named data source definitions. It does __not__ provide pooled _javax.sql.DataSource_ instances! It only provides definitions with connection url, driver name, user and password. This service can be used by other services that provide DataSource pooling for example. The APSSimpleUserServiceProvider makes use of this service by looking up ”APSSimpleUserServiceDS” passing the information on to the APSJPAService in its properties. Not everything can make use of an _javax.sql.DataSource_, but everything can make use of the information provided by this service.
 
 The actual data source definitions are configured in the _/apsadminweb_ under configuration group ”persistence”.
 
@@ -4749,7 +4762,7 @@ Se the documentation for _APSExternalProtocolExtender_ for a description of how 
 
 This is a web app for administration of APS. It is really only a shell for different administraion webs. It relys on the _aps-admin-web-service-provider_ bundle which publishes the _APSAdminWebService_. Other bundles providing administration web apps register themselves with this service and for each registration APSAdminWeb creates a tab in its gui. Se _APIs_ further down for the APSAdminService API. Clicking on ”Refresh” will make APSAdminWeb reload the admin webs registered in _APSAdminWebService_.
 
-The APSAdminWeb is accessed at __http://host:port/apsadminweb__. What you see there depends on what other admin webs are deployed. Anybody can make an admin web and register it with the _APSAdminWebService_. The admin webs delivered with APS are mainly done using Vaadin. This is in no way a requirement for an admin web. An admin web app can be made in any way what so ever. A side effect of this is that different tabs might have different look and feel. But I offer that for flexibility.
+The APSAdminWeb is accessed at __http://host:port/apsadminweb__. What you see there depends on what other admin webs are deployed. Anybody can make an admin web and register it with the _APSAdminWebService_. The admin webs delivered with APS are mainly done using Vaadin. This is in no way a requirement for an admin web. An admin web app can be made in any way what so ever. A side effect of this is that different tabs might have different look and feel. But I choose flexibility over beauty!
 
 The following APS bundles provides a tab in APSAdminWeb:
 
@@ -4761,7 +4774,7 @@ The following APS bundles provides a tab in APSAdminWeb:
 
 ## Authentication
 
-The APSAdminWeb requires a login to be accessed. A userid and a password will be asked for. The entered information will be validated by the APSAuthService. The _aps-simple-user-service-auth-service-provider.jar_ bundle provides an implementation of this service that uses the _APSSimpleUserService_ service. The APSAuthService is however simple enough to implement yourself to provide login to whatever you want/need.
+If _”Configuration tab_,_Configurations/aps/adminweb/requireauthentication”_ property is enabled then the APSAdminWeb requires a login to be accessed. A userid and a password will be asked for. The entered information will be validated by the APSAuthService. The _aps-simple-user-service-auth-service-provider.jar_ bundle provides an implementation of this service that uses the _APSSimpleUserService_ service. The APSAuthService is however simple enough to implement yourself to provide login to whatever you want/need.
 
 ![APSAdminWeb login screenshot](http://download.natusoft.se/Images/APS/APS-Webs/APSAdminWeb/docs/images/APSAdminWeb-login.png)
 

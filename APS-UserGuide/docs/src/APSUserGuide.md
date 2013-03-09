@@ -68,6 +68,8 @@ If this system property is not set the default root will be BundleContext.getFil
 
 After this path has been setup and the server started, all other configuration can be done in http://…/apsadminweb/. 
 
+__Please note__ that the /apsadminweb by default require no login! This so that _”Configurations tab, Configurations/persistence/datasources”_ can be used to setup a datasource called ”APSSimpleUserServiceDS” needed by APSSimpleUserService. If you use the provided APSAuthService implementation that uses APSSimpleUserService then you need to configure this datasource before APSSimpleUserService can be used. See the documentation for APSSimpleUserService further down in this document for more information on the datasource configuration. After that is setup go to _”Configurations tab, Configurations/aps/adminweb”_ and enable the ”requireauthentication” config. After having enabled this and saved, do a browser refresh and then provide userid and password when prompted.
+
 ## Javadoc
 
 The complete javadoc for all services can be found at [http://apidoc.natusoft.se/APS](http://apidoc.natusoft.se/APS).

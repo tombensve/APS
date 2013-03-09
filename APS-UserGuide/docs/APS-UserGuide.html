@@ -139,6 +139,9 @@
     <p>
       After this path has been setup and the server started, all other configuration can be done in http://…/apsadminweb/.      
     </p>
+    <p>
+      <strong>Please note</strong> that the /apsadminweb by default require no login! This so that <em>”Configurations tab</em>,<em> Configurations/persistence/datasources”</em> can be used to setup a datasource called ”APSSimpleUserServiceDS” needed by APSSimpleUserService. If you use the provided APSAuthService implementation that uses APSSimpleUserService then you need to configure this datasource before APSSimpleUserService can be used. See the documentation for APSSimpleUserService further down in this document for more information on the datasource configuration. After that is setup go to <em>”Configurations tab</em>,<em> Configurations/aps/adminweb”</em> and enable the ”requireauthentication” config. After having enabled this and saved, do a browser refresh and then provide userid and password when prompted.      
+    </p>
     <H2>Javadoc</H2>
     <p>
       The complete javadoc for all services can be found at <a href='http://apidoc.natusoft.se/APS' title=''>http://apidoc.natusoft.se/APS</a>.      
@@ -4533,6 +4536,22 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       Please note that the above picture is just an example. The data source name <strong>APSSimpleUserServiceDS</strong> is however important. The service will be looking up the entry with that name! The rest of the entry depends on your database and where it is running. Also note that the ”(default)” after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.      
     </p>
+    <p>
+      When the datasource is configured and saved then you can go to <em>”Configuration tab</em>,<em> Configurations/aps/adminweb”</em> and enable the ”requireauthentication” config. If you do this before setting up the datasource and you have choosen to use the provided implementation of APSAuthService that uses APSSimpleUserService to login then you will be completely locked out.      
+    </p>
+    <H2>Troubleshooting</H2>
+    <p>
+      If you have managed to lock yourself out of /apsadminweb as described above then I suggest editing the <em>APSFilesystemService root</em>/filesystems/se.natusoft.osgi.aps.core.config.service.APSConfigServiceProvider/apsconfig-se.natusoft.aps.adminweb-1.0.properties file and changeing the following line:      
+    </p>
+    <pre>
+      <code>
+    se.natusoft.aps.adminweb_1.0_requireauthentication=true
+    
+      </code>
+    </pre>
+    <p>
+      to <em>false</em> instead. Then restart the server. Also se the APSFilesystemService documentation for more information. The APSConfigService is using that service to store its configurations.      
+    </p>
     <H2>APIs</H2>
     <p>
       public <em>interface</em> <strong>APSSimpleUserService </strong>   [se.natusoft.osgi.aps.api.auth.user] {      
@@ -5295,7 +5314,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     -->
     <H1>APSDataSource</H1>
     <p>
-      This is a service that provides named data source definitions. It does <strong>not</strong> provided pooled <em>javax.sql.DataSource</em> instances!! It only provides definitions with connection url, driver name, user and password. This service can be used by other services that provide DataSource pooling for example. The APSSimpleUserServiceProvider makes use of this service by looking up ”APSSimpleUserServiceDS” passing the information on to the APSJPAService in its properties. Not everything can make use of an <em>javax.sql.DataSource</em>, but everything can make use of the information provided by this service.      
+      This is a service that provides named data source definitions. It does <strong>not</strong> provide pooled <em>javax.sql.DataSource</em> instances! It only provides definitions with connection url, driver name, user and password. This service can be used by other services that provide DataSource pooling for example. The APSSimpleUserServiceProvider makes use of this service by looking up ”APSSimpleUserServiceDS” passing the information on to the APSJPAService in its properties. Not everything can make use of an <em>javax.sql.DataSource</em>, but everything can make use of the information provided by this service.      
     </p>
     <p>
       The actual data source definitions are configured in the <em>/apsadminweb</em> under configuration group ”persistence”.      
@@ -8359,7 +8378,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       This is a web app for administration of APS. It is really only a shell for different administraion webs. It relys on the <em>aps-admin-web-service-provider</em> bundle which publishes the <em>APSAdminWebService</em>. Other bundles providing administration web apps register themselves with this service and for each registration APSAdminWeb creates a tab in its gui. Se <em>APIs</em> further down for the APSAdminService API. Clicking on ”Refresh” will make APSAdminWeb reload the admin webs registered in <em>APSAdminWebService</em>.      
     </p>
     <p>
-      The APSAdminWeb is accessed at <strong>http://host:port/apsadminweb</strong>. What you see there depends on what other admin webs are deployed. Anybody can make an admin web and register it with the <em>APSAdminWebService</em>. The admin webs delivered with APS are mainly done using Vaadin. This is in no way a requirement for an admin web. An admin web app can be made in any way what so ever. A side effect of this is that different tabs might have different look and feel. But I offer that for flexibility.      
+      The APSAdminWeb is accessed at <strong>http://host:port/apsadminweb</strong>. What you see there depends on what other admin webs are deployed. Anybody can make an admin web and register it with the <em>APSAdminWebService</em>. The admin webs delivered with APS are mainly done using Vaadin. This is in no way a requirement for an admin web. An admin web app can be made in any way what so ever. A side effect of this is that different tabs might have different look and feel. But I choose flexibility over beauty!      
     </p>
     <p>
       The following APS bundles provides a tab in APSAdminWeb:      
@@ -8383,7 +8402,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </ul>
     <H2>Authentication</H2>
     <p>
-      The APSAdminWeb requires a login to be accessed. A userid and a password will be asked for. The entered information will be validated by the APSAuthService. The <em>aps-simple-user-service-auth-service-provider.jar</em> bundle provides an implementation of this service that uses the <em>APSSimpleUserService</em> service. The APSAuthService is however simple enough to implement yourself to provide login to whatever you want/need.      
+      If <em>”Configuration tab</em>,<em> Configurations/aps/adminweb/requireauthentication”</em> property is enabled then the APSAdminWeb requires a login to be accessed. A userid and a password will be asked for. The entered information will be validated by the APSAuthService. The <em>aps-simple-user-service-auth-service-provider.jar</em> bundle provides an implementation of this service that uses the <em>APSSimpleUserService</em> service. The APSAuthService is however simple enough to implement yourself to provide login to whatever you want/need.      
     </p>
     <p>
             <img src='http://download.natusoft.se/Images/APS/APS-Webs/APSAdminWeb/docs/images/APSAdminWeb-login.png' title='' alt='APSAdminWeb login screenshot'/>      
