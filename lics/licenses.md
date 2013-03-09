@@ -12,16 +12,16 @@ The following third party products are using this license:
 * [org.osgi.compendium-4.2.0-null](http://www.osgi.org/)
 * [org.osgi.core-4.2.0-null](http://www.osgi.org/)
 
-__[Eclipse Public License - v version 1.0](http://www.eclipse.org/legal/epl-v10.html)__
+__[Apache Software License version 2.0](http://www.apache.org/licenses/LICENSE-2.0)__
 
 The following third party products are using this license:
 
-* [javax.persistence-2.0.0](http://www.eclipse.org/eclipselink)
+* [vaadin-6.8.1](http://vaadin.com)
 
-__[Day Specification version License](http://www.day.com/dam/day/downloads/jsr283/day-spec-license.htm)__
+__[CDDL + GPLv2 with classpath version exception](https://glassfish.dev.java.net/nonav/public/CDDL+GPL.html)__
 
 The following third party products are using this license:
 
-* [jcr-2.0](http://www.day.com)
+* [javaee-web-api-6.0](http://java.sun.com/javaee/6/docs/api/index.html)
 
 <!-- CLM -->

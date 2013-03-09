@@ -37,14 +37,16 @@
 package se.natusoft.osgi.aps.apsadminweb.app.gui.vaadin;
 
 import com.vaadin.terminal.ExternalResource;
-import com.vaadin.ui.*;
+import com.vaadin.ui.Embedded;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.VerticalLayout;
 import se.natusoft.osgi.aps.apsadminweb.service.APSAdminWebService;
 import se.natusoft.osgi.aps.apsadminweb.service.model.AdminWebReg;
 import se.natusoft.osgi.aps.tools.web.ClientContext;
 import se.natusoft.osgi.aps.tools.web.vaadin.APSTheme;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.HTMLFileLabel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -84,57 +86,31 @@ public class TabPanel extends TabSheet {
     //
 
     /**
-     * Updates tabs according to registered admin webs. Old are removed, new are added, still remaining are not touched.
+     * Recreates all tabs.
      */
     public void refreshTabs() {
         List<AdminWebReg> currentAdminWebs = this.clientContext.getService(APSAdminWebService.class).getRegisteredAdminWebs();
 
         // Remove old
-        int noTabs = getComponentCount() - 1;
-        for (int tabi = 1; tabi <= noTabs; tabi++) {
-            TabSheet.Tab tab = getTab(tabi);
-            AbstractComponent dataComp = (AbstractComponent)tab.getComponent();
-            AdminWebReg adminWebReg = (AdminWebReg)dataComp.getData();
-            if (!currentAdminWebs.contains(adminWebReg)) {
-                removeTab(tab);
-            }
-        }
+        removeAllComponents();
 
-        // Find new
-        List<AdminWebReg> newAdminWebs = new ArrayList<AdminWebReg>();
+        VerticalLayout aboutTabLayout = new VerticalLayout();
+        aboutTabLayout.setStyleName("aps-tabsheet-tab");
+        aboutTabLayout.setMargin(true);
+        aboutTabLayout.setSizeFull();
+        Label aboutText = new HTMLFileLabel("/html/about-admin-web.html", APSTheme.THEME, getClass().getClassLoader());
+        aboutTabLayout.addComponent(aboutText);
+        addTab(aboutTabLayout, "About", null).setDescription("Information about APS Admin Web tool.");
 
-        for (AdminWebReg adminWeb : currentAdminWebs) {
-            boolean found = false;
-            noTabs = getComponentCount();
-            for (int tabi = 1; tabi < noTabs; tabi++) {
-                TabSheet.Tab tab = getTab(tabi);
-
-                if (((AbstractComponent)tab.getComponent()).getData().equals(adminWeb)) {
-                    // Lets update the tab info
-                    VerticalLayout tabLayout = (VerticalLayout)tab.getComponent();
-                    AdminWebReg oldAdminWebReg = (AdminWebReg)tabLayout.getData();
-                    tabLayout.setData(adminWeb);
-                    if (!oldAdminWebReg.getUrl().equals(adminWeb.getUrl())) {
-                        ((Embedded)tabLayout.getComponent(0)).setSource(new ExternalResource(adminWeb.getUrl()));
-                    }
-
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                newAdminWebs.add(adminWeb);
-            }
-        }
 
         // Add new
-        for (AdminWebReg adminWebReg : newAdminWebs) {
+        for (AdminWebReg adminWebReg : currentAdminWebs) {
             VerticalLayout tabLayout = new VerticalLayout();
             tabLayout.setStyleName("aps-tabsheet-tab");
             tabLayout.setSizeFull();
             tabLayout.setMargin(false);
             tabLayout.setSpacing(false);
-            Embedded adminWeb = new Embedded("", new ExternalResource(adminWebReg.getUrl()));
+            Embedded adminWeb = new Embedded("", new ExternalResource(adminWebReg.getUrl() + "?adminRefresh"));
             adminWeb.setType(Embedded.TYPE_BROWSER);
             adminWeb.setSizeFull();
             tabLayout.addComponent(adminWeb);
