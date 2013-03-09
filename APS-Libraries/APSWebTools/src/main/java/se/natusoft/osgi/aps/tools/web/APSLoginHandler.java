@@ -38,8 +38,10 @@ package se.natusoft.osgi.aps.tools.web;
 
 import org.osgi.framework.BundleContext;
 import se.natusoft.osgi.aps.api.auth.user.APSAuthService;
+import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
 import se.natusoft.osgi.aps.api.misc.session.APSSession;
 import se.natusoft.osgi.aps.api.misc.session.APSSessionService;
+import se.natusoft.osgi.aps.api.web.config.APSAdminConfig;
 import se.natusoft.osgi.aps.tools.APSServiceTracker;
 
 import java.util.Properties;
@@ -88,6 +90,12 @@ public class APSLoginHandler implements LoginHandler {
     /** A tracker wrapped instance of the APSSessionService. */
     private APSSessionService sessionService = null;
 
+    /** A tracker for APSConfigService. */
+    private APSServiceTracker<APSConfigService> configServiceTracker = null;
+
+    /** A tracker wrapped instance of APSConfigService. */
+    private APSConfigService configService = null;
+
     //
     // Constructors
     //
@@ -111,6 +119,11 @@ public class APSLoginHandler implements LoginHandler {
                 new APSServiceTracker<APSSessionService>(this.context, APSSessionService.class, APSServiceTracker.LARGE_TIMEOUT);
         this.sessionServiceTracker.start();
         this.sessionService = this.sessionServiceTracker.getWrappedService();
+
+        this.configServiceTracker =
+                new APSServiceTracker<APSConfigService>(this.context, APSConfigService.class, APSServiceTracker.LARGE_TIMEOUT);
+        this.configServiceTracker.start();
+        this.configService = this.configServiceTracker.getWrappedService();
     }
 
     //
@@ -171,12 +184,15 @@ public class APSLoginHandler implements LoginHandler {
      * Returns true if this handler sits on a valid login.
      */
     public boolean hasValidLogin() {
-        APSSession session = getOrCreateSession();
-        this.loggedInUser = (String)session.retrieveObject(this.handlerInfo.getUserSessionName());
+        APSAdminConfig adminConfig = this.configService.getConfiguration(APSAdminConfig.class);
 
-        if (this.loggedInUser == null) {
-            this.loggedInUser = null;
-            return false;
+        if (adminConfig != null && adminConfig.requireAuthentication.toBoolean()) {
+            APSSession session = getOrCreateSession();
+            this.loggedInUser = (String)session.retrieveObject(this.handlerInfo.getUserSessionName());
+
+            if (this.loggedInUser == null) {
+                return false;
+            }
         }
 
         return true;
@@ -226,19 +242,25 @@ public class APSLoginHandler implements LoginHandler {
     public boolean login(String userId, String pw, String requiredRole) {
         boolean authenticated = false;
 
-        if (userId != null && pw != null) {
-            Properties userProps = null;
+        APSAdminConfig adminConfig = this.configService.getConfiguration(APSAdminConfig.class);
+        if (adminConfig != null && adminConfig.requireAuthentication.toBoolean()) {
+            if (userId != null && pw != null) {
+                Properties userProps = null;
 
-            if (requiredRole != null) {
-                userProps = this.authService.authUser(userId, pw, APSAuthService.AuthMethod.PASSWORD, requiredRole);
-            }
-            else {
-                userProps = this.authService.authUser(userId, pw, APSAuthService.AuthMethod.PASSWORD);
-            }
+                if (requiredRole != null) {
+                    userProps = this.authService.authUser(userId, pw, APSAuthService.AuthMethod.PASSWORD, requiredRole);
+                }
+                else {
+                    userProps = this.authService.authUser(userId, pw, APSAuthService.AuthMethod.PASSWORD);
+                }
 
-            if (userProps != null) {
-                authenticated = true;
+                if (userProps != null) {
+                    authenticated = true;
+                }
             }
+        }
+        else {
+            authenticated = true;
         }
 
         return authenticated;
