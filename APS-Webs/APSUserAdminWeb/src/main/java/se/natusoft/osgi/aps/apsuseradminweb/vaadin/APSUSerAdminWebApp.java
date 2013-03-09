@@ -290,6 +290,10 @@ public class APSUSerAdminWebApp extends APSVaadinOSGiApplication implements Menu
                 }
             }
         }
+
+        if (request.getParameter("adminRefresh") != null) {
+            close();
+        }
     }
 
     /**

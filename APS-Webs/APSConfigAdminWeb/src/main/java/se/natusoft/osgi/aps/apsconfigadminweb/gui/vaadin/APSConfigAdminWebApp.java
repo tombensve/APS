@@ -297,6 +297,10 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
 
             setMainWindow(show);
         }
+
+        if (request.getParameter("adminRefresh") != null) {
+            close();
+        }
     }
 
     /**
