@@ -103,7 +103,8 @@
             se.natusoft.osgi.aps.api.core.config.model.admin;version="${project.version}",
             se.natusoft.osgi.aps.api.auth.user;version="${project.version}",
             se.natusoft.osgi.aps.api.auth.user.model;version="${project.version}",
-            se.natusoft.osgi.aps.api.misc.session;version="${project.version}"
+            se.natusoft.osgi.aps.api.misc.session;version="${project.version}",
+            se.natusoft.osgi.aps.api.web.config;version="${aps.import.ver}"
         </osgi.import.package>
                 
         <!-- The private packages. -->

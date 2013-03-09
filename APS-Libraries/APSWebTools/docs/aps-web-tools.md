@@ -81,6 +81,10 @@ public _class_ __APSLoginHandler__ implements  LoginHandler    [se.natusoft.osgi
 
 
 
+
+
+
+
 __public APSLoginHandler(BundleContext context, HandlerInfo handlerInfo)__
 
 >  Creates a new VaadinLoginDialogHandler.  
@@ -113,7 +117,9 @@ __public boolean hasValidLogin()__
 
 __public boolean login(String userId, String pw)__
 
->  Logs in with a userid and a password.  
+>  Logs in with a userid and a password. 
+
+> This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the APSAuthService when this object is already available due to the code also being an APSAdminWeb member. It is basically a convenience.  
 
 _Returns_
 
@@ -127,9 +133,9 @@ _Parameters_
 
 __public boolean login(String userId, String pw, String requiredRole)__
 
->  Logs in with a userid and a password. 
+>  Logs in with a userid and a password, and a required role. 
 
-> This method does not use or modify any internal state of this object! It only uses the APSUserService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the APSUserService when this object is already available due to the code also being an APSAdminWeb member. It is basically a convenience.  
+> This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the APSAuthService when this object is already available due to the code also being an APSAdminWeb member. It is basically a convenience.  
 
 _Returns_
 
@@ -209,7 +215,7 @@ _Parameters_
 
 __public void shutdown()__
 
->  If the handler creates service trackers or other things that needs to be shutdown when no longer used this methods needs to be called when the handles is no longer needed. 
+>  If the handler creates service trackers or other things that needs to be shutdown when no longer used this method needs to be called when the handler is no longer needed. 
 
 }
 

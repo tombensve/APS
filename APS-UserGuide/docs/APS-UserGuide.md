@@ -1,6 +1,6 @@
 # Application Platform Services (APS)
 
-OSGi Application Platform Services - A "smorgasbord" of OSGi services that focuses on ease of use and good enough functionality for many but wont fit all. It can be seen as osgi-ee-light-and-easy. The services are of platform type: configuration, database, JPA, etc.
+OSGi Application Platform Services - A "smorgasbord" of OSGi services that focuses on ease of use and good enough functionality for many but wont fit all. It can be seen as osgi-ee-light-and-easy. The services are of platform type: configuration, database, JPA, etc, with companion web applications for administration.
 
 All services that require some form of administration have an admin web application for that, that plugs into the general apsadminweb admin application.
 
@@ -8,7 +8,7 @@ All administrations web applications are WABs and thus require that the OSGi ser
 
 Another point of APS is to be OSGi server independent.
 
-APS is made using basic OSGi functionality and is not using blueprint and other fancy stuff (of which I'm not a believer, I like to be in full controll :-)).
+APS is made using basic OSGi functionality and is not using blueprint and other fancy stuff!
 
 ## Features
 
@@ -24,7 +24,7 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A data source service. Only provides connection information, no pooling (OpenJPA provides its own pooling)!
 
-* External protocol extender that allows more or less any OSGi service to be called remotely using any deployed protocol service and transport. Currently provides JSONRPC 1.0 and 2.0 protocols, and an http transport. Protocols have two defined service APIs whose implementations can just be dropped in to make them available. The http transport can make use of any deployed protocol.
+* External protocol extender that allows more or less any OSGi service to be called remotely using any deployed protocol service and transport. Currently provides JSONRPC 1.0 and 2.0 protocols, and an http transport. Protocols have a defined service API whose implementations can just be dropped in to make them available. Transport providers can make use of any deployed protocol.
 
 * A multicast discovery service.
 
@@ -51,6 +51,10 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 * Since JBoss is apparently having trouble getting WABs to work (they are still using PAX, but claim that they have solved this in 7.2 that will not build when checked out from GitHub and don't seem to be released anytime soon) I am considering to add support for their WAR->OSGi service bridge though I haven't had much luck in getting that to work either so far.
 
 * A JCR (Java Content Repository) service and a content publishing GUI (following the general APS ambition - reasonable functionality and flexibility, ease of use. Will fit many, but not everyone).
+
+## Do you also burn for OSGi, like what I have done, and like to join me in this project ? 
+
+I would welcome more people to join me. I’m sure there are more useful ideas that I haven’t though of. I used my company as namespace (se.natusoft.aps....) for now, but I’m open to changeing that if more people are interested in joining me. It is also possible to move the code to a project specific github account.
 
 ## Pre Setup
 
@@ -1961,7 +1965,7 @@ There are several variants of constructors, but here is an example of one of the
         tracker.start();
         
 
-Note that the third argument, which is a timeout can also be specified as an int in which case it is always in miliseconds. The string variant supports the a second word of ”sec[onds]()” and ”min[utes]()” which indicates the type of the first numeric value. ”forever” means just that and requires just one word. Any other second words than those will be treated as milliseconds. The APSServiceTracker also has a set of constants for the timeout string value:
+Note that the third argument, which is a timeout can also be specified as an int in which case it is always in miliseconds. The string variant supports the a second word of ”sec[onds]” and ”min[utes]” which indicates the type of the first numeric value. ”forever” means just that and requires just one word. Any other second words than those will be treated as milliseconds. The APSServiceTracker also has a set of constants for the timeout string value:
 
         public static final String SHORT_TIMEOUT = "3 seconds";
         public static final String MEDIUM_TIMEOUT = "30 seconds";
@@ -1997,7 +2001,7 @@ The tracker can be used as a wrapped service:
         Service service = tracker.getWrappedService();
         
 
-This gives you a proxied _service_ instance that that gets the real service, calls it, releases it and return the result. This handles transparently if a service has been restarted or one instance of the service has gone away and another came available. It will wait for the specified timeout for a service to become available and if that does not happen the _APSNoServiceAvailableException_ will be thrown. This is of course a runtime exception which makes the service wrapping possible without loosing the possibility to handle the case where the service is not available.
+This gives you a proxied _service_ instance that gets the real service, calls it, releases it and return the result. This handles transparently if a service has been restarted or one instance of the service has gone away and another came available. It will wait for the specified timeout for a service to become available and if that does not happen the _APSNoServiceAvailableException_ will be thrown. This is of course a runtime exception which makes the service wrapping possible without loosing the possibility to handle the case where the service is not available.
 
 ### Using the tracker in a similar way to the OSGi standard tracker
 
@@ -2227,6 +2231,10 @@ public _class_ __APSLoginHandler__ implements  LoginHandler    [se.natusoft.osgi
 
 
 
+
+
+
+
 __public APSLoginHandler(BundleContext context, HandlerInfo handlerInfo)__
 
 >  Creates a new VaadinLoginDialogHandler.  
@@ -2259,7 +2267,9 @@ __public boolean hasValidLogin()__
 
 __public boolean login(String userId, String pw)__
 
->  Logs in with a userid and a password.  
+>  Logs in with a userid and a password. 
+
+> This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the APSAuthService when this object is already available due to the code also being an APSAdminWeb member. It is basically a convenience.  
 
 _Returns_
 
@@ -2273,9 +2283,9 @@ _Parameters_
 
 __public boolean login(String userId, String pw, String requiredRole)__
 
->  Logs in with a userid and a password. 
+>  Logs in with a userid and a password, and a required role. 
 
-> This method does not use or modify any internal state of this object! It only uses the APSUserService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the APSUserService when this object is already available due to the code also being an APSAdminWeb member. It is basically a convenience.  
+> This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the APSAuthService when this object is already available due to the code also being an APSAdminWeb member. It is basically a convenience.  
 
 _Returns_
 
@@ -2355,7 +2365,7 @@ _Parameters_
 
 __public void shutdown()__
 
->  If the handler creates service trackers or other things that needs to be shutdown when no longer used this methods needs to be called when the handles is no longer needed. 
+>  If the handler creates service trackers or other things that needs to be shutdown when no longer used this method needs to be called when the handler is no longer needed. 
 
 }
 
@@ -2367,9 +2377,9 @@ __public void shutdown()__
 
 This is a very simple little service that only does authentication of users. This service is currently used by the APS administration web (/apsadminweb) and APSExtProtocolHTTPTransportProvider for remote calls to services over http.
 
-The idea behing this service is that it should be easy to provide an implementation of this that uses whatever authentication scheme you want/need. If you have an LDAP server you want to authenticate against for example, provide an implementation that looks up and authenticates the user agains the LDAP server.
+The idea behind this service is that it should be easy to provide an implementation of this that uses whatever authentication scheme you want/need. If you have an LDAP server you want to authenticate against for example, provide an implementation that looks up and authenticates the user against the LDAP server.
 
-See this a little bit lika an authentication plugin.
+See this a little bit like an authentication plugin.
 
 The APS web applications that use this only uses password authentication.
 
@@ -2471,7 +2481,7 @@ __SSO__
 
 This is an simple, easy to use service for handling logged in users. It provides two services: APSSimpleUserService and APSSimpleUserServiceAdmin. The latter handles all creation, editing, and deletion of roles and users. This service in itself does not require any authentication to use! Thereby you have to trust all code in the server! The APSUserAdminWeb WAB bundle however does require a user with role ’apsadmin’ to be logged in or it will simply repsond with a 401 (UNAUTHORIZED).
 
-So why this and not org.osgi.service.useradmin ? Well, maybe I’m just stupid, but _useradmin_ does not make sense to me. It seems to be missing things, specially for creating. You can create a role, but you cannot create a user. There is no obvious authentication of users. Maybee that should be done via the credentials Dictionary, but what are the expected keys in there ?
+So why this and not org.osgi.service.useradmin ? Well, maybe I’m just stupid, but _useradmin_ does not make sense to me. It seems to be missing things, specially for creating. You can create a role, but you cannot create a user. There is no obvious authentication of users. Maybee that should be done via the credentials Dictionary, but what are the expected keys in there ? This service is intended to make user and role handling simple and clear.
 
 ## Basic example
 
@@ -2608,94 +2618,6 @@ After the tables have been created you need to configure a datasource for it in 
 Please note that the above picture is just an example. The data source name __APSSimpleUserServiceDS__ is however important. The service will be looking up the entry with that name! The rest of the entry depends on your database and where it is running. Also note that the ”(default)” after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.
 
 ## APIs
-
-public _interface_ __APSAuthService<Credential>__   [se.natusoft.osgi.aps.api.auth.user] {
-
->  This is intended to be used as a wrapper to other means of authentication. Things in APS that needs authentication uses this service. 
-
-> Implementations can lookup the user in an LDAP for example, or use some other user service. 
-
-> APS supplies an APSSimpleUserServiceAuthServiceProvider that uses the APSSimpleUserService to authenticate. It is provided in its own bundle. 
-
-__Properties authUser(String userId, Credential credentials, AuthMethod authMethod) throws APSAuthMethodNotSupportedException__
-
->  This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!  
-
-_Returns_
-
-> User properties on success, null on failure.
-
-_Parameters_
-
-> _userId_ - The id of the user to authenticate. 
-
-> _credentials_ - What this is depends on the value of AuthMethod. It is up to the service implementation to resolve this. 
-
-> _authMethod_ - This hints at how to interpret the credentials. 
-
-_Throws_
-
-> _APSAuthMethodNotSupportedException_ - If the specified authMethod is not supported by the implementation. 
-
-__Properties authUser(String userId, Credential credentials, AuthMethod authMethod, String role) throws APSAuthMethodNotSupportedException__
-
->  This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!  
-
-_Returns_
-
-> User properties on success, null on failure.
-
-_Parameters_
-
-> _userId_ - The id of the user to authenticate. 
-
-> _credentials_ - What this is depends on the value of AuthMethod. It is up to the service implementation to resolve this. 
-
-> _authMethod_ - This hints at how to interpret the credentials. 
-
-> _role_ - The specified user must have this role for authentication to succeed. Please note that the APS admin webs will pass "apsadmin" for the role. The implementation might need to translate this to another role. 
-
-_Throws_
-
-> _APSAuthMethodNotSupportedException_ - If the specified authMethod is not supported by the implementation. 
-
-__AuthMethod[] getSupportedAuthMethods()__
-
->  Returns an array of the AuthMethods supported by the implementation. 
-
-public _static_ _enum_ __AuthMethod__   [se.natusoft.osgi.aps.api.auth.user] {
-
->  This hints at how to use the credentials. 
-
-__NONE__
-
->  Only userid is required. 
-
-__PASSWORD__
-
->  toString() on the credentials object should return a password. 
-
-__KEY__
-
->  The credential object is a key of some sort. 
-
-__CERTIFICATE__
-
->  The credential object is a certificate of some sort. 
-
-__DIGEST__
-
->  The credential object is a digest password. 
-
-__SSO__
-
->  The credential object contains information for participating in a single sign on. 
-
-}
-
-----
-
-    
 
 public _interface_ __APSSimpleUserService__   [se.natusoft.osgi.aps.api.auth.user] {
 
@@ -3292,7 +3214,7 @@ __EntityManagerFactory getEntityManagerFactory()__
 
 # APSJSONService
 
-This provides exactly the same functionallity as APSJSONLib. It actually wraps the library as a service. The reason for that is that I wanted to be able to redeploy the library without forcing a redeploy of the Bunde using it. A redeploy of the library will force a redeploy of this service, but not the user of this service. The APS users of this service uses APSServiceTracker wrapped as a service and thus handles this service leaving and returning without having to care about it.
+This provides exactly the same functionallity as APSJSONLib. It actually wraps the library as a service. The reason for that is that I wanted to be able to redeploy the library without forcing a redeploy of the Bunde using it. A redeploy of the library will force a redeploy of this service, but not the client of this service. The APS clients of this service uses APSServiceTracker wrapped as a service and thus handles this service leaving and returning without having to care about it.
 
 This service and the library existrs for internal use. It is here and can be used by anyone, but in most cases like serializing java beans back and forth to JSON (which this can do) Jacksson would still be a better choice and offers more flexibility. In the long run I’m going to see if I can replace the internal use of this with Jacksson as well.
 
@@ -3300,7 +3222,7 @@ This service and the library existrs for internal use. It is here and can be use
 
 This is a bundle deployer that is intended as an alternative to the server provided deployer.
 
-This bundle deployer will try to automatically resolve deploy dependencies. It does this by having a fail threshold. If the deploy of a bundle fails it just keeps quite and put the bundle at the end of the list of bundles to deploy. It updates the try count for the bundle however. Next time the bundle is up for deploy it might have the dependencies it needs and will deploy. If not it goes back to the end of the list again and its retry count is incremented again. This repeats until the retry count reaches the threshold value in which case an error is logged and the bundle will not be attempted to be deployed again unless it gets a new timestamp on disk.
+This bundle deployer will try to automatically resolve deploy dependencies. It does this by having a fail threshold. If the deploy of a bundle fails it just keeps quiet and put the bundle at the end of the list of bundles to deploy. It updates the try count for the bundle however. Next time the bundle is up for deploy it might have the dependencies it needs and will deploy. If not it goes back to the end of the list again and its retry count is incremented again. This repeats until the retry count reaches the threshold value in which case an error is logged and the bundle will not be attempted to be deployed again unless it gets a new timestamp on disk.
 
 Glassfish does something similar, but Virgo fails completely unless bundles are deployed in the correct order. You have to provide a par file for Virgo to deploy correctly.
 
@@ -5014,7 +4936,7 @@ Right click on the _Roles_ node to create a new role.
 
 __Warning:__ For the roles it is fully possible to create circular dependencies! __Dont!__ (There is room for improvement on this point!)
 
-There is not anything more to say about this. It should be seflexplanatory!
+There is not anything more to say about this. It should be selfexplanatory!
 
 # Licenses
 

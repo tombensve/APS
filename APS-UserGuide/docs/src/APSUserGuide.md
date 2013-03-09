@@ -1,6 +1,6 @@
 # Application Platform Services (APS)
 
-OSGi Application Platform Services - A "smorgasbord" of OSGi services that focuses on ease of use and good enough functionality for many but wont fit all. It can be seen as osgi-ee-light-and-easy. The services are of platform type: configuration, database, JPA, etc. 
+OSGi Application Platform Services - A "smorgasbord" of OSGi services that focuses on ease of use and good enough functionality for many but wont fit all. It can be seen as osgi-ee-light-and-easy. The services are of platform type: configuration, database, JPA, etc, with companion web applications for administration.
 
 All services that require some form of administration have an admin web application for that, that plugs into the general apsadminweb admin application.
 
@@ -8,7 +8,7 @@ All administrations web applications are WABs and thus require that the OSGi ser
 
 Another point of APS is to be OSGi server independent. 
 
-APS is made using basic OSGi functionality and is not using blueprint and other fancy stuff (of which I'm not a believer, I like to be in full controll :-)).   
+APS is made using basic OSGi functionality and is not using blueprint and other fancy stuff!   
 
 ## Features
 
@@ -51,6 +51,10 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 * Since JBoss is apparently having trouble getting WABs to work (they are still using PAX, but claim that they have solved this in 7.2 that will not build when checked out from GitHub and don't seem to be released anytime soon) I am considering to add support for their WAR->OSGi service bridge though I haven't had much luck in getting that to work either so far. 
 
 * A JCR (Java Content Repository) service and a content publishing GUI (following the general APS ambition - reasonable functionality and flexibility, ease of use. Will fit many, but not everyone).
+
+## Do you also burn for OSGi, like what I have done, and like to join me in this project ? 
+
+I would welcome more people to join me. I’m sure there are more useful ideas that I haven’t though of. I  used my company as namespace (se.natusoft.aps....) for now, but I’m open to changeing that if more people are interested in joining me. It is also possible to move the code to a project specific github account. 
 
 ## Pre Setup
 

@@ -2,7 +2,7 @@
 
 This is an simple, easy to use service for handling logged in users. It provides two services: APSSimpleUserService and APSSimpleUserServiceAdmin. The latter handles all creation, editing, and deletion of roles and users. This service in itself does not require any authentication to use! Thereby you have to trust all code in the server! The APSUserAdminWeb WAB bundle however does require a user with role ’apsadmin’ to be logged in or it will simply repsond with a 401 (UNAUTHORIZED).
 
-So why this and not org.osgi.service.useradmin ? Well, maybe I’m just stupid, but _useradmin_ does not make sense to me. It seems to be missing things, specially for creating. You can create a role, but you cannot create a user. There is no obvious authentication of users. Maybee that should be done via the credentials Dictionary, but what are the expected keys in there ?
+So why this and not org.osgi.service.useradmin ? Well, maybe I’m just stupid, but _useradmin_ does not make sense to me. It seems to be missing things, specially for creating. You can create a role, but you cannot create a user. There is no obvious authentication of users. Maybee that should be done via the credentials Dictionary, but what are the expected keys in there ? This service is intended to make user and role handling simple and clear.
 
 ## Basic example
 
@@ -139,94 +139,6 @@ After the tables have been created you need to configure a datasource for it in 
 Please note that the above picture is just an example. The data source name __APSSimpleUserServiceDS__ is however important. The service will be looking up the entry with that name! The rest of the entry depends on your database and where it is running. Also note that the ”(default)” after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.
 
 ## APIs
-
-public _interface_ __APSAuthService<Credential>__   [se.natusoft.osgi.aps.api.auth.user] {
-
->  This is intended to be used as a wrapper to other means of authentication. Things in APS that needs authentication uses this service. 
-
-> Implementations can lookup the user in an LDAP for example, or use some other user service. 
-
-> APS supplies an APSSimpleUserServiceAuthServiceProvider that uses the APSSimpleUserService to authenticate. It is provided in its own bundle. 
-
-__Properties authUser(String userId, Credential credentials, AuthMethod authMethod) throws APSAuthMethodNotSupportedException__
-
->  This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!  
-
-_Returns_
-
-> User properties on success, null on failure.
-
-_Parameters_
-
-> _userId_ - The id of the user to authenticate. 
-
-> _credentials_ - What this is depends on the value of AuthMethod. It is up to the service implementation to resolve this. 
-
-> _authMethod_ - This hints at how to interpret the credentials. 
-
-_Throws_
-
-> _APSAuthMethodNotSupportedException_ - If the specified authMethod is not supported by the implementation. 
-
-__Properties authUser(String userId, Credential credentials, AuthMethod authMethod, String role) throws APSAuthMethodNotSupportedException__
-
->  This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!  
-
-_Returns_
-
-> User properties on success, null on failure.
-
-_Parameters_
-
-> _userId_ - The id of the user to authenticate. 
-
-> _credentials_ - What this is depends on the value of AuthMethod. It is up to the service implementation to resolve this. 
-
-> _authMethod_ - This hints at how to interpret the credentials. 
-
-> _role_ - The specified user must have this role for authentication to succeed. Please note that the APS admin webs will pass "apsadmin" for the role. The implementation might need to translate this to another role. 
-
-_Throws_
-
-> _APSAuthMethodNotSupportedException_ - If the specified authMethod is not supported by the implementation. 
-
-__AuthMethod[] getSupportedAuthMethods()__
-
->  Returns an array of the AuthMethods supported by the implementation. 
-
-public _static_ _enum_ __AuthMethod__   [se.natusoft.osgi.aps.api.auth.user] {
-
->  This hints at how to use the credentials. 
-
-__NONE__
-
->  Only userid is required. 
-
-__PASSWORD__
-
->  toString() on the credentials object should return a password. 
-
-__KEY__
-
->  The credential object is a key of some sort. 
-
-__CERTIFICATE__
-
->  The credential object is a certificate of some sort. 
-
-__DIGEST__
-
->  The credential object is a digest password. 
-
-__SSO__
-
->  The credential object contains information for participating in a single sign on. 
-
-}
-
-----
-
-    
 
 public _interface_ __APSSimpleUserService__   [se.natusoft.osgi.aps.api.auth.user] {
 

@@ -91,7 +91,10 @@
             se.natusoft.osgi.aps.api.auth.user;version="${aps.import.ver}",
             se.natusoft.osgi.aps.api.auth.user.exceptions;version="${aps.import.ver}",
             se.natusoft.osgi.aps.api.auth.user.model;version="${aps.import.ver}",
-            se.natusoft.osgi.aps.api.misc.session;version="${aps.import.ver}"
+            se.natusoft.osgi.aps.api.misc.session;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.api.web.config;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.api.core.config.service;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.api.core.config.model;version="${aps.import.ver}"
         </osgi.import.package>
 
         <!-- The private packages. -->

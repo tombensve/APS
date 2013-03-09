@@ -8,7 +8,7 @@
   <body>
     <H1>Application Platform Services (APS)</H1>
     <p>
-      OSGi Application Platform Services - A "smorgasbord" of OSGi services that focuses on ease of use and good enough functionality for many but wont fit all. It can be seen as osgi-ee-light-and-easy. The services are of platform type: configuration, database, JPA, etc.      
+      OSGi Application Platform Services - A "smorgasbord" of OSGi services that focuses on ease of use and good enough functionality for many but wont fit all. It can be seen as osgi-ee-light-and-easy. The services are of platform type: configuration, database, JPA, etc, with companion web applications for administration.      
     </p>
     <p>
       All services that require some form of administration have an admin web application for that, that plugs into the general apsadminweb admin application.      
@@ -20,7 +20,7 @@
       Another point of APS is to be OSGi server independent.      
     </p>
     <p>
-      APS is made using basic OSGi functionality and is not using blueprint and other fancy stuff (of which I'm not a believer, I like to be in full controll :-)).      
+      APS is made using basic OSGi functionality and is not using blueprint and other fancy stuff!      
     </p>
     <H2>Features</H2>
     <H3>Current</H3>
@@ -52,7 +52,7 @@
       </li>
       <li>
         <p>
-          External protocol extender that allows more or less any OSGi service to be called remotely using any deployed protocol service and transport. Currently provides JSONRPC 1.0 and 2.0 protocols, and an http transport. Protocols have two defined service APIs whose implementations can just be dropped in to make them available. The http transport can make use of any deployed protocol.          
+          External protocol extender that allows more or less any OSGi service to be called remotely using any deployed protocol service and transport. Currently provides JSONRPC 1.0 and 2.0 protocols, and an http transport. Protocols have a defined service API whose implementations can just be dropped in to make them available. Transport providers can make use of any deployed protocol.          
         </p>
       </li>
       <li>
@@ -117,6 +117,10 @@
         </p>
       </li>
     </ul>
+    <H2>Do you also burn for OSGi, like what I have done, and like to join me in this project ? </H2>
+    <p>
+      I would welcome more people to join me. I’m sure there are more useful ideas that I haven’t though of. I used my company as namespace (se.natusoft.aps....) for now, but I’m open to changeing that if more people are interested in joining me. It is also possible to move the code to a project specific github account.      
+    </p>
     <H2>Pre Setup</H2>
     <p>
       The Filesystem service is part of the core and used by other services. It should preferably have its filesystem root outside of the server installation. The BundleContext.getDataFile(String) returns a path within the deploy cache and is only valid for as long a a bundle is deployed. The point with the FilesystemService is to have a more permanent filesystem outside of the application server installation. To provide the FilesystemService root the following system property have to be set and available in the JVM instance:      
@@ -3526,7 +3530,7 @@
       </code>
     </pre>
     <p>
-      Note that the third argument, which is a timeout can also be specified as an int in which case it is always in miliseconds. The string variant supports the a second word of ”sec<a href='' title=''>onds</a>” and ”min<a href='' title=''>utes</a>” which indicates the type of the first numeric value. ”forever” means just that and requires just one word. Any other second words than those will be treated as milliseconds. The APSServiceTracker also has a set of constants for the timeout string value:      
+      Note that the third argument, which is a timeout can also be specified as an int in which case it is always in miliseconds. The string variant supports the a second word of ”sec[onds]” and ”min[utes]” which indicates the type of the first numeric value. ”forever” means just that and requires just one word. Any other second words than those will be treated as milliseconds. The APSServiceTracker also has a set of constants for the timeout string value:      
     </p>
     <pre>
       <code>
@@ -3578,7 +3582,7 @@
       </code>
     </pre>
     <p>
-      This gives you a proxied <em>service</em> instance that that gets the real service, calls it, releases it and return the result. This handles transparently if a service has been restarted or one instance of the service has gone away and another came available. It will wait for the specified timeout for a service to become available and if that does not happen the <em>APSNoServiceAvailableException</em> will be thrown. This is of course a runtime exception which makes the service wrapping possible without loosing the possibility to handle the case where the service is not available.      
+      This gives you a proxied <em>service</em> instance that gets the real service, calls it, releases it and return the result. This handles transparently if a service has been restarted or one instance of the service has gone away and another came available. It will wait for the specified timeout for a service to become available and if that does not happen the <em>APSNoServiceAvailableException</em> will be thrown. This is of course a runtime exception which makes the service wrapping possible without loosing the possibility to handle the case where the service is not available.      
     </p>
     <H3>Using the tracker in a similar way to the OSGi standard tracker</H3>
     <p>
@@ -3910,6 +3914,12 @@
             
     </p>
     <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
       <strong>public APSLoginHandler(BundleContext context, HandlerInfo handlerInfo)</strong>      
     </p>
     <blockquote>
@@ -3973,7 +3983,12 @@
     </p>
     <blockquote>
       <p>
-         Logs in with a userid and a password.          
+         Logs in with a userid and a password.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the APSAuthService when this object is already available due to the code also being an APSAdminWeb member. It is basically a convenience.          
       </p>
     </blockquote>
     <p>
@@ -4002,12 +4017,12 @@
     </p>
     <blockquote>
       <p>
-         Logs in with a userid and a password.         
+         Logs in with a userid and a password, and a required role.         
       </p>
     </blockquote>
     <blockquote>
       <p>
-        This method does not use or modify any internal state of this object! It only uses the APSUserService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the APSUserService when this object is already available due to the code also being an APSAdminWeb member. It is basically a convenience.          
+        This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the APSAuthService when this object is already available due to the code also being an APSAdminWeb member. It is basically a convenience.          
       </p>
     </blockquote>
     <p>
@@ -4164,7 +4179,7 @@
     </p>
     <blockquote>
       <p>
-         If the handler creates service trackers or other things that needs to be shutdown when no longer used this methods needs to be called when the handles is no longer needed.         
+         If the handler creates service trackers or other things that needs to be shutdown when no longer used this method needs to be called when the handler is no longer needed.         
       </p>
     </blockquote>
     <p>
@@ -4178,10 +4193,10 @@
       This is a very simple little service that only does authentication of users. This service is currently used by the APS administration web (/apsadminweb) and APSExtProtocolHTTPTransportProvider for remote calls to services over http.      
     </p>
     <p>
-      The idea behing this service is that it should be easy to provide an implementation of this that uses whatever authentication scheme you want/need. If you have an LDAP server you want to authenticate against for example, provide an implementation that looks up and authenticates the user agains the LDAP server.      
+      The idea behind this service is that it should be easy to provide an implementation of this that uses whatever authentication scheme you want/need. If you have an LDAP server you want to authenticate against for example, provide an implementation that looks up and authenticates the user against the LDAP server.      
     </p>
     <p>
-      See this a little bit lika an authentication plugin.      
+      See this a little bit like an authentication plugin.      
     </p>
     <p>
       The APS web applications that use this only uses password authentication.      
@@ -4373,7 +4388,7 @@
       This is an simple, easy to use service for handling logged in users. It provides two services: APSSimpleUserService and APSSimpleUserServiceAdmin. The latter handles all creation, editing, and deletion of roles and users. This service in itself does not require any authentication to use! Thereby you have to trust all code in the server! The APSUserAdminWeb WAB bundle however does require a user with role ’apsadmin’ to be logged in or it will simply repsond with a 401 (UNAUTHORIZED).      
     </p>
     <p>
-      So why this and not org.osgi.service.useradmin ? Well, maybe I’m just stupid, but <em>useradmin</em> does not make sense to me. It seems to be missing things, specially for creating. You can create a role, but you cannot create a user. There is no obvious authentication of users. Maybee that should be done via the credentials Dictionary, but what are the expected keys in there ?      
+      So why this and not org.osgi.service.useradmin ? Well, maybe I’m just stupid, but <em>useradmin</em> does not make sense to me. It seems to be missing things, specially for creating. You can create a role, but you cannot create a user. There is no obvious authentication of users. Maybee that should be done via the credentials Dictionary, but what are the expected keys in there ? This service is intended to make user and role handling simple and clear.      
     </p>
     <H2>Basic example</H2>
     <p>
@@ -4519,183 +4534,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       Please note that the above picture is just an example. The data source name <strong>APSSimpleUserServiceDS</strong> is however important. The service will be looking up the entry with that name! The rest of the entry depends on your database and where it is running. Also note that the ”(default)” after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.      
     </p>
     <H2>APIs</H2>
-    <p>
-      public <em>interface</em> <strong>APSAuthService&lt;Credential&gt; </strong>   [se.natusoft.osgi.aps.api.auth.user] {      
-    </p>
-    <blockquote>
-      <p>
-         This is intended to be used as a wrapper to other means of authentication. Things in APS that needs authentication uses this service.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        Implementations can lookup the user in an LDAP for example, or use some other user service.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        APS supplies an APSSimpleUserServiceAuthServiceProvider that uses the APSSimpleUserService to authenticate. It is provided in its own bundle.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>Properties authUser(String userId, Credential credentials, AuthMethod authMethod) throws APSAuthMethodNotSupportedException</strong>      
-    </p>
-    <blockquote>
-      <p>
-         This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!          
-      </p>
-    </blockquote>
-    <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-        User properties on success, null on failure.        
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>userId</em> - The id of the user to authenticate.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>credentials</em> - What this is depends on the value of AuthMethod. It is up to the service implementation to resolve this.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>authMethod</em> - This hints at how to interpret the credentials.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>APSAuthMethodNotSupportedException</em> - If the specified authMethod is not supported by the implementation.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>Properties authUser(String userId, Credential credentials, AuthMethod authMethod, String role) throws APSAuthMethodNotSupportedException</strong>      
-    </p>
-    <blockquote>
-      <p>
-         This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!          
-      </p>
-    </blockquote>
-    <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-        User properties on success, null on failure.        
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>userId</em> - The id of the user to authenticate.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>credentials</em> - What this is depends on the value of AuthMethod. It is up to the service implementation to resolve this.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>authMethod</em> - This hints at how to interpret the credentials.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>role</em> - The specified user must have this role for authentication to succeed. Please note that the APS admin webs will pass "apsadmin" for the role. The implementation might need to translate this to another role.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>APSAuthMethodNotSupportedException</em> - If the specified authMethod is not supported by the implementation.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>AuthMethod[] getSupportedAuthMethods()</strong>      
-    </p>
-    <blockquote>
-      <p>
-         Returns an array of the AuthMethods supported by the implementation.         
-      </p>
-    </blockquote>
-    <p>
-      public <em>static</em> <em>enum</em> <strong>AuthMethod </strong>   [se.natusoft.osgi.aps.api.auth.user] {      
-    </p>
-    <blockquote>
-      <p>
-         This hints at how to use the credentials.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>NONE</strong>      
-    </p>
-    <blockquote>
-      <p>
-         Only userid is required.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>PASSWORD</strong>      
-    </p>
-    <blockquote>
-      <p>
-         toString() on the credentials object should return a password.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>KEY</strong>      
-    </p>
-    <blockquote>
-      <p>
-         The credential object is a key of some sort.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>CERTIFICATE</strong>      
-    </p>
-    <blockquote>
-      <p>
-         The credential object is a certificate of some sort.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>DIGEST</strong>      
-    </p>
-    <blockquote>
-      <p>
-         The credential object is a digest password.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>SSO</strong>      
-    </p>
-    <blockquote>
-      <p>
-         The credential object contains information for participating in a single sign on.         
-      </p>
-    </blockquote>
-    <p>
-      }      
-    </p>
-    <hr/>    <p>
-                
-    </p>
     <p>
       public <em>interface</em> <strong>APSSimpleUserService </strong>   [se.natusoft.osgi.aps.api.auth.user] {      
     </p>
@@ -5777,7 +5615,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <H1>APSJSONService</H1>
     <p>
-      This provides exactly the same functionallity as APSJSONLib. It actually wraps the library as a service. The reason for that is that I wanted to be able to redeploy the library without forcing a redeploy of the Bunde using it. A redeploy of the library will force a redeploy of this service, but not the user of this service. The APS users of this service uses APSServiceTracker wrapped as a service and thus handles this service leaving and returning without having to care about it.      
+      This provides exactly the same functionallity as APSJSONLib. It actually wraps the library as a service. The reason for that is that I wanted to be able to redeploy the library without forcing a redeploy of the Bunde using it. A redeploy of the library will force a redeploy of this service, but not the client of this service. The APS clients of this service uses APSServiceTracker wrapped as a service and thus handles this service leaving and returning without having to care about it.      
     </p>
     <p>
       This service and the library existrs for internal use. It is here and can be used by anyone, but in most cases like serializing java beans back and forth to JSON (which this can do) Jacksson would still be a better choice and offers more flexibility. In the long run I’m going to see if I can replace the internal use of this with Jacksson as well.      
@@ -5787,7 +5625,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       This is a bundle deployer that is intended as an alternative to the server provided deployer.      
     </p>
     <p>
-      This bundle deployer will try to automatically resolve deploy dependencies. It does this by having a fail threshold. If the deploy of a bundle fails it just keeps quite and put the bundle at the end of the list of bundles to deploy. It updates the try count for the bundle however. Next time the bundle is up for deploy it might have the dependencies it needs and will deploy. If not it goes back to the end of the list again and its retry count is incremented again. This repeats until the retry count reaches the threshold value in which case an error is logged and the bundle will not be attempted to be deployed again unless it gets a new timestamp on disk.      
+      This bundle deployer will try to automatically resolve deploy dependencies. It does this by having a fail threshold. If the deploy of a bundle fails it just keeps quiet and put the bundle at the end of the list of bundles to deploy. It updates the try count for the bundle however. Next time the bundle is up for deploy it might have the dependencies it needs and will deploy. If not it goes back to the end of the list again and its retry count is incremented again. This repeats until the retry count reaches the threshold value in which case an error is logged and the bundle will not be attempted to be deployed again unless it gets a new timestamp on disk.      
     </p>
     <p>
       Glassfish does something similar, but Virgo fails completely unless bundles are deployed in the correct order. You have to provide a par file for Virgo to deploy correctly.      
@@ -8832,7 +8670,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       <strong>Warning:</strong> For the roles it is fully possible to create circular dependencies! <strong>Dont!</strong> (There is room for improvement on this point!)      
     </p>
     <p>
-      There is not anything more to say about this. It should be seflexplanatory!      
+      There is not anything more to say about this. It should be selfexplanatory!      
     </p>
     <H1>Licenses</H1>
     <!--
