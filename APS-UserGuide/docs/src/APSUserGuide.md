@@ -52,9 +52,11 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A JCR (Java Content Repository) service and a content publishing GUI (following the general APS ambition - reasonable functionality and flexibility, ease of use. Will fit many, but not everyone).
 
-## Do you also burn for OSGi, like what I have done, and like to join me in this project ? 
+* Support for being able to redeploy a web application live without loosing session nor user transactions. With OSGi it should be teoretically possible. For a limited number of redeployments at least. It is very easy to run into the ”perm gen space” problem, but according to Frank Kieviet ([Classloader leaks: The dreaded permgen space](http://frankkieviet.blogspot.se/2006/10/classloader-leaks-dreaded-permgen-space.html)) it is caused by bad code and can be avoided. 
 
-I would welcome more people to join me. I’m sure there are more useful ideas that I haven’t though of. I  used my company as namespace (se.natusoft.aps....) for now, but I’m open to changeing that if more people are interested in joining me. It is also possible to move the code to a project specific github account. 
+## Requirements
+
+The administration web application(s) are currently WABs and thus require a server supporting WAB deployments. I have developed/tested this on Glassfish and Virgo. I am however considering seeing if it is possible to also support both Glassfish and JBoss JEE WAR to OSGi bridges. They are unfortunately very server specific since there are no such standard. Other than that all services are basic OSGi services and should theoretically run in any R4 compatible OSGi server. 
 
 ## Pre Setup
 

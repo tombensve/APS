@@ -2,17 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__net_sf_xob_xob_4_0.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-UserGuide/docs/APS-UserGuide.md" afterPath="$PROJECT_DIR$/APS-UserGuide/docs/APS-UserGuide.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-UserGuide/docs/APS-UserGuide.pdf" afterPath="$PROJECT_DIR$/APS-UserGuide/docs/APS-UserGuide.pdf" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/docs/src/APSAdminWeb.md" afterPath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/docs/src/APSAdminWeb.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSDataSource/docs/src/APSDataSource.md" afterPath="$PROJECT_DIR$/APS-Data/APSDataSource/docs/src/APSDataSource.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/docs/src/APSSimpleUserService.md" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/docs/src/APSSimpleUserService.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-UserGuide/docs/src/APSUserGuide.md" afterPath="$PROJECT_DIR$/APS-UserGuide/docs/src/APSUserGuide.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/docs/aps-admin-web.md" afterPath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/docs/aps-admin-web.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/docs/aps-admin-web.pdf" afterPath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/docs/aps-admin-web.pdf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/docs/aps-config-admin-web.pdf" afterPath="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/docs/aps-config-admin-web.pdf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/docs/aps-configuration-service-provider.pdf" afterPath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/docs/aps-configuration-service-provider.pdf" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSDataSource/docs/aps-datasource.md" afterPath="$PROJECT_DIR$/APS-Data/APSDataSource/docs/aps-datasource.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSDataSource/docs/aps-datasource.pdf" afterPath="$PROJECT_DIR$/APS-Data/APSDataSource/docs/aps-datasource.pdf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/docs/aps-discovery-service-provider.pdf" afterPath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/docs/aps-discovery-service-provider.pdf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/docs/aps-ext-protocol-http-transport-provider.pdf" afterPath="$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/docs/aps-ext-protocol-http-transport-provider.pdf" />
@@ -26,17 +22,24 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/APSResolvingBundleDeployer/docs/aps-resolving-bundle-deployer.pdf" afterPath="$PROJECT_DIR$/APS-Misc/APSResolvingBundleDeployer/docs/aps-resolving-bundle-deployer.pdf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider/docs/aps-session-service-provider.pdf" afterPath="$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider/docs/aps-session-service-provider.pdf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/docs/aps-simple-user-service-auth-service-provider.pdf" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/docs/aps-simple-user-service-auth-service-provider.pdf" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/docs/aps-simple-user-service-provider.md" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/docs/aps-simple-user-service-provider.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/docs/aps-simple-user-service-provider.pdf" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/docs/aps-simple-user-service-provider.pdf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/docs/aps-streamed-json-rpc-protocol-provider.pdf" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/docs/aps-streamed-json-rpc-protocol-provider.pdf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSToolsLib/docs/aps-tools-lib.pdf" afterPath="$PROJECT_DIR$/APS-Libraries/APSToolsLib/docs/aps-tools-lib.pdf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/docs/aps-user-admin-web.pdf" afterPath="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/docs/aps-user-admin-web.pdf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSWebTools/docs/aps-web-tools.pdf" afterPath="$PROJECT_DIR$/APS-Libraries/APSWebTools/docs/aps-web-tools.pdf" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lics/licenses.md" afterPath="$PROJECT_DIR$/lics/licenses.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APS-Auth.iml" afterPath="$PROJECT_DIR$/APS-Auth/APS-Auth.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-UserGuide/docs/APS-UserGuide.html" afterPath="$PROJECT_DIR$/APS-UserGuide/docs/APS-UserGuide.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/docs/aps-admin-web.html" afterPath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/docs/aps-admin-web.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSDataSource/docs/aps-datasource.html" afterPath="$PROJECT_DIR$/APS-Data/APSDataSource/docs/aps-datasource.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/docs/aps-simple-user-service-provider.html" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/docs/aps-simple-user-service-provider.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/aps-discovery-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/aps-discovery-service-provider.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/aps-ext-protocol-http-transport-provider.iml" afterPath="$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/aps-ext-protocol-http-transport-provider.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSLogServiceProvider/aps-log-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Core/APSLogServiceProvider/aps-log-service-provider.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/aps-openjpa-provider.iml" afterPath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/aps-openjpa-provider.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/APSResolvingBundleDeployer/aps-resolving-bundle-deployer.iml" afterPath="$PROJECT_DIR$/APS-Misc/APSResolvingBundleDeployer/aps-resolving-bundle-deployer.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/aps-user-admin-web.iml" afterPath="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/aps-user-admin-web.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/pom.xml" afterPath="$PROJECT_DIR$/APS-APIs/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Build/DeployBundleTile/pom.xml" afterPath="$PROJECT_DIR$/Build/DeployBundleTile/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Build/DeployWABBundleTile/pom.xml" afterPath="$PROJECT_DIR$/Build/DeployWABBundleTile/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Build/DocTile/pom.xml" afterPath="$PROJECT_DIR$/Build/DocTile/pom.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="a5230742-f30f-451e-b5fc-eabdd2e39ef7" name="Failed commit: aps-20 Default APSEnterpriseAPIs activity." comment="aps-20 Default APSEnterpriseAPIs activity." />
@@ -44,8 +47,8 @@
     <list id="aede4119-21eb-41ae-93c6-8e287ab9c03e" name="aps-32 Main dev activity." comment="aps-32 APSResolvingBundleDeployer Dev Activity." />
     <ignored path="OSGiApplicationPlatformServices.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1362845701175" ignored="false" />
-    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1362851895464" ignored="false" />
+    <file path="/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1362914304809" ignored="false" />
+    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1362855748850" ignored="false" />
     <file path="/a.dummy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1362321543975" ignored="false" />
     <file path="/testclient.sh" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355064160118" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/wip-clones/MarkdownDoc/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355420755980" ignored="false" />
@@ -383,7 +386,7 @@
     <file path="$PROJECT_DIR$/../../ThirdParty/maven-tiles/.idea/encodings.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360073258389" ignored="false" />
     <file path="$PROJECT_DIR$/../../ThirdParty/maven-tiles/.idea/compiler.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360073258389" ignored="false" />
     <file path="$PROJECT_DIR$/../../ThirdParty/maven-tiles/.idea/misc.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360073258389" ignored="false" />
-    <file path="$MAVEN_REPOSITORY$/se/natusoft/osgi/aps/ServerDeployPlugin/0.9.0/ServerDeployPlugin-0.9.0.jar!/META-INF/maven/plugin.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361108067654" ignored="false" />
+    <file path="$MAVEN_REPOSITORY$/se/natusoft/osgi/aps/ServerDeployPlugin/0.9.0/ServerDeployPlugin-0.9.0.jar!/META-INF/maven/plugin.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1362913961971" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/MarkdownGenerator.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361711549397" ignored="false" />
     <file path="/MarkdownGenerator.groovy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361637986151" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/Library/src/main/groovy/se/natusoft/doc/markdown/generator/options/HTMLGeneratorOptions.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360166661527" ignored="false" />
@@ -721,10 +724,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="APSUSerAdminWebApp.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="APSUSerAdminWebApp.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/src/main/java/se/natusoft/osgi/aps/apsuseradminweb/vaadin/APSUSerAdminWebApp.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="69" column="0" selection-start="2929" selection-end="2929" vertical-scroll-proportion="0.50085616">
+            <state line="28" column="37" selection-start="987" selection-end="987" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -751,16 +754,43 @@
       <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-APIs/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="108" column="76" selection-start="5814" selection-end="5814" vertical-scroll-proportion="0.0">
+            <state line="287" column="0" selection-start="12743" selection-end="12743" vertical-scroll-proportion="-41.958332">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="396" column="14" selection-start="14655" selection-end="14655" vertical-scroll-proportion="5.2145357">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
       <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pom.xml">
+        <entry file="file://$PROJECT_DIR$/Build/DocTile/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="58" column="24" selection-start="1882" selection-end="1882" vertical-scroll-proportion="0.0">
+            <state line="86" column="38" selection-start="3308" selection-end="3308" vertical-scroll-proportion="-27.583334">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Build/DeployBundleTile/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="66" column="0" selection-start="2276" selection-end="2276" vertical-scroll-proportion="-34.458332">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Build/DeployWABBundleTile/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="66" column="0" selection-start="2289" selection-end="2289" vertical-scroll-proportion="-40.708332">
               <folding />
             </state>
           </provider>
@@ -793,14 +823,9 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/misc/content/service/APSContentService.java" />
-        <option value="$PROJECT_DIR$/APS-UserGuide/docs/src/LicensesH1.mdpart" />
-        <option value="$PROJECT_DIR$/APS-UserGuide/docs/filesets/doc-files.fs" />
         <option value="$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/LoginHandler.java" />
         <option value="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/docs/filesets/doc-files.fs" />
-        <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Webs/APSAdminWeb/src/main/java/se/natusoft/osgi/aps/apsadminweb/config/APSAdminConfig.java" />
-        <option value="$PROJECT_DIR$/APS-APIs/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSLoginHandler.java" />
         <option value="$PROJECT_DIR$/APS-Webs/APSAdminWeb/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/pom.xml" />
@@ -809,6 +834,11 @@
         <option value="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/src/main/java/se/natusoft/osgi/aps/apsconfigadminweb/gui/vaadin/APSConfigAdminWebApp.java" />
         <option value="$PROJECT_DIR$/APS-Webs/APSAdminWeb/src/main/java/se/natusoft/osgi/aps/apsadminweb/app/gui/vaadin/TabPanel.java" />
         <option value="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/src/main/java/se/natusoft/osgi/aps/apsuseradminweb/vaadin/APSUSerAdminWebApp.java" />
+        <option value="$PROJECT_DIR$/APS-APIs/pom.xml" />
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/Build/DeployBundleTile/pom.xml" />
+        <option value="$PROJECT_DIR$/Build/DeployWABBundleTile/pom.xml" />
+        <option value="$PROJECT_DIR$/Build/DocTile/pom.xml" />
       </list>
     </option>
   </component>
@@ -897,6 +927,7 @@
       <list>
         <option value="deploy-bundle" />
         <option value="deploy-setup" />
+        <option value="intellij-javadoc-fix" />
       </list>
     </option>
   </component>
@@ -1932,8 +1963,76 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="APS-APIs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="Build and modules" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Build and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DocTile" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Build and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DeployWABBundleTile" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Build and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="DeployBundleTile" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -2825,7 +2924,7 @@
     <property name="FileHistory.org.zmlx.hg4idea.provider.HgHistoryProvider_flatWidth2" value="238" />
     <property name="FileHistory.org.zmlx.hg4idea.provider.HgHistoryProvider_flatWidth1" value="236" />
     <property name="FileHistory.org.zmlx.hg4idea.provider.HgHistoryProvider_flatWidth0" value="231" />
-    <property name="options.lastSelected" value="editor.preferences.tabs" />
+    <property name="options.lastSelected" value="preferences.pathVariables" />
     <property name="project.structure.side.proportion" value="0.27312773" />
     <property name="JdbcConsole.Extract.ClosingQuote" value="'" />
     <property name="MemberChooser.copyJavadoc" value="false" />
@@ -4565,7 +4664,11 @@
       <created>1362850980915</created>
       <updated>1362850980915</updated>
     </task>
-    <option name="localTasksCounter" value="308" />
+    <task id="LOCAL-00308" summary="Documentation.">
+      <created>1362855762097</created>
+      <updated>1362855762097</updated>
+    </task>
+    <option name="localTasksCounter" value="309" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="false" url="http://natusoft.selfip.net:6789/redmine">
@@ -4603,9 +4706,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="248" y="22" width="2105" height="1314" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
-      <window_info id="Dilbert" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27173913" sideWeight="0.5" order="19" side_tool="false" content_ui="tabs" />
+      <window_info id="Dilbert" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2713568" sideWeight="0.5" order="19" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32039636" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32999045" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Persistence" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32496414" sideWeight="0.21348314" order="2" side_tool="true" content_ui="tabs" />
@@ -4619,14 +4722,15 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3261767" sideWeight="0.5" order="15" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32998565" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32700247" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32535094" sideWeight="0.5" order="17" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23018147" sideWeight="0.40329835" order="5" side_tool="true" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32700247" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25777778" sideWeight="0.27250206" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39956957" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20738222" sideWeight="0.49665552" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20738222" sideWeight="0.49748743" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2574065" sideWeight="0.49665552" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5033445" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2574065" sideWeight="0.49748743" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5025126" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hudson Information" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="PDF_FIND" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Code Consultant" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -4642,7 +4746,6 @@
       <window_info id="Kotlin" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32987654" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="UML Diagrams" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Code Graph" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32938272" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32535094" sideWeight="0.5" order="17" side_tool="false" content_ui="tabs" />
       <window_info id="Hudson Jobs" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Graphical Navigator" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -4686,7 +4789,7 @@
     <option name="MAXIMUM_HISTORY_ROWS" value="1000" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated TabPanel.refreshTabs() to do a more clean refresh." />
+    <option name="LAST_COMMIT_MESSAGE" value="Documentation." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -4722,8 +4825,8 @@
     <MESSAGE value="Forgot to change artifact name before building, deploying, and generating documentation which resulted in wrong name for the docs and depoyment even though cosmetics." />
     <MESSAGE value="Oops! Registered the service with a wrong name!" />
     <MESSAGE value="Cosmetic fix of documentation." />
-    <MESSAGE value="Documentation." />
     <MESSAGE value="Updated TabPanel.refreshTabs() to do a more clean refresh." />
+    <MESSAGE value="Documentation." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -4795,21 +4898,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/service/RPCProtocol.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="17" selection-start="1385" selection-end="1385" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/model/RPCRequest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="44" column="17" selection-start="1221" selection-end="1221" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/service/StreamedRPCProtocol.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="60" column="44" selection-start="1822" selection-end="1822" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSAdminWebLoginHandler.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="47" column="54" selection-start="1448" selection-end="1448" vertical-scroll-proportion="0.0">
@@ -4820,20 +4908,6 @@
     <entry file="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSLoginHandler.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="61" column="3" selection-start="2157" selection-end="2157" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-APIs/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="108" column="76" selection-start="5814" selection-end="5814" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="58" column="24" selection-start="1882" selection-end="1882" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -4896,7 +4970,42 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/src/main/java/se/natusoft/osgi/aps/apsuseradminweb/vaadin/APSUSerAdminWebApp.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="0" selection-start="2929" selection-end="2929" vertical-scroll-proportion="0.50085616">
+        <state line="28" column="37" selection-start="987" selection-end="987" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-APIs/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="287" column="0" selection-start="12743" selection-end="12743" vertical-scroll-proportion="-41.958332">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Build/DeployWABBundleTile/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="66" column="0" selection-start="2289" selection-end="2289" vertical-scroll-proportion="-40.708332">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Build/DeployBundleTile/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="66" column="0" selection-start="2276" selection-end="2276" vertical-scroll-proportion="-34.458332">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Build/DocTile/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="86" column="38" selection-start="3308" selection-end="3308" vertical-scroll-proportion="-27.583334">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="396" column="14" selection-start="14655" selection-end="14655" vertical-scroll-proportion="5.2145357">
           <folding />
         </state>
       </provider>
@@ -4943,7 +5052,7 @@
       </state>
       <state key="JdkListConfigurable.UI">
         <settings>
-          <last-edited>1.7</last-edited>
+          <last-edited>1.7 (1)</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>

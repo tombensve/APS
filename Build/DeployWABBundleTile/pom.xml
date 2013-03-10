@@ -45,7 +45,26 @@
     <version><!--APSVER-->0.9.0</version>
     <packaging>pom</packaging>
 
+    <!--
+        This is needed for it to compile during a deploy phase.
+    -->
+    <distributionManagement>
+        <repository>
+            <id>maven-repository-upload</id>
+            <url>ftp://${maven.repo.upload}/${maven.base.path}</url>
+        </repository>
+    </distributionManagement>
+
     <build>
+        <extensions>
+            <!-- Enabling the use of FTP -->
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ftp</artifactId>
+                <version>2.3</version>
+            </extension>
+        </extensions>
+
         <plugins>
             <plugin>
                 <groupId>se.natusoft.osgi.aps</groupId>

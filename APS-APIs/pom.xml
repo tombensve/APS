@@ -231,7 +231,15 @@
             -->
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
                 <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                    </execution>
                     <execution>
                         <id>gendocs</id>
                         <goals>
