@@ -5,7 +5,7 @@
  *         APS External Protocol Extender
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         This does two things:
@@ -133,39 +133,47 @@ public class ServiceReferenceToServiceRepresentationConverter implements Trivial
         }
         else if (clazz == Boolean.class || clazz == boolean.class) {
             dataDescription.setDataType(DataType.BOOLEAN);
+            dataDescription.setObjectQName(java.lang.Boolean.class.getName());
         }
         else if (clazz == Byte.class || clazz == byte.class) {
             dataDescription.setDataType(DataType.BYTE);
+            dataDescription.setObjectQName(java.lang.Byte.class.getName());
         }
         else if (clazz == Character.class || clazz == char.class) {
             dataDescription.setDataType(DataType.CHAR);
-        }
-        else if (clazz == Byte.class || clazz == byte.class) {
-            dataDescription.setDataType(DataType.BYTE);
+            dataDescription.setObjectQName(java.lang.Character.class.getName());
         }
         else if (clazz == Short.class || clazz == short.class) {
             dataDescription.setDataType(DataType.SHORT);
+            dataDescription.setObjectQName(java.lang.Short.class.getName());
         }
         else if (clazz == Integer.class || clazz == int.class) {
             dataDescription.setDataType(DataType.INT);
+            dataDescription.setObjectQName(java.lang.Integer.class.getName());
         }
         else if (clazz == Long.class || clazz == long.class) {
             dataDescription.setDataType(DataType.LONG);
+            dataDescription.setObjectQName(java.lang.Long.class.getName());
         }
         else if (clazz == Float.class || clazz == float.class) {
             dataDescription.setDataType(DataType.FLOAT);
+            dataDescription.setObjectQName(java.lang.Float.class.getName());
         }
         else if (clazz == Double.class || clazz == double.class) {
             dataDescription.setDataType(DataType.DOUBLE);
+            dataDescription.setObjectQName(java.lang.Double.class.getName());
         }
         else if (clazz == String.class) {
             dataDescription.setDataType(DataType.STRING);
+            dataDescription.setObjectQName(java.lang.String.class.getName());
         }
         else if (List.class.isAssignableFrom(clazz)) {
             dataDescription.setDataType(DataType.LIST);
+            dataDescription.setObjectQName(java.util.LinkedList.class.getName());
         }
         else if (Map.class.isAssignableFrom(clazz)) {
             dataDescription.setDataType(DataType.MAP);
+            dataDescription.setObjectQName(java.util.HashMap.class.getName());
         }
         else {
             dataDescription.setDataType(DataType.OBJECT);

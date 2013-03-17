@@ -542,7 +542,7 @@
     </p>
     <blockquote>
       <p>
-         This is a special exception that services can throw if they are intended to be available as REST services through the APSExternalProtocolExtender+APSRPCHTTPTransportProvider. This allows for better control over status codes returned by the service call.         
+         This is a special exception that services can throw if they are intended to be available as REST services through the APSExternalProtocolExtender + APSRPCHTTPTransportProvider. This allows for better control over status codes returned by the service call.         
       </p>
     </blockquote>
     <p>
@@ -604,7 +604,7 @@
     </p>
     <blockquote>
       <p>
-         This defines what I think is a rather well though through set of error types applicable for an RPC call. No they are not mine, they come from Matt Morley in his JSONRPC 2.0 specification at http://jsonrpc.org/spec.html.         
+         This defines what I think is a rather well though through set of error types applicable for an RPC call. No they are not mine, they come from Matt Morley in his JSONRPC 2.0 specification at http://jsonrpc.org/spec.html. I did add SERVICE_NOT_FOUND since it is fully possible to try to call a service that does not exist.         
       </p>
     </blockquote>
     <p>
@@ -632,6 +632,14 @@
       </p>
     </blockquote>
     <p>
+      <strong>SERVICE_NOT_FOUND</strong>      
+    </p>
+    <blockquote>
+      <p>
+         The called service does not exist / is not available.         
+      </p>
+    </blockquote>
+    <p>
       <strong>INVALID_PARAMS</strong>      
     </p>
     <blockquote>
@@ -652,15 +660,37 @@
     </p>
     <blockquote>
       <p>
-         Server related errors.         
+         Server related error.         
       </p>
     </blockquote>
     <p>
-      <strong>REST</strong>      
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>HTTPError </strong> extends  RPCError    [se.natusoft.osgi.aps.api.net.rpc.errors] {      
     </p>
     <blockquote>
       <p>
-         This means the protocol is of REST type and should return a HTTP status code.         
+         Extends RPCError with an HTTP status code. HTTP transports can make use of this information.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public int getHttpStatusCode()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        Returns an http status code.        
       </p>
     </blockquote>
     <p>
@@ -686,11 +716,11 @@
       </p>
     </blockquote>
     <p>
-      <strong>public int getRESTHttpStatusCode()</strong>      
+      <strong>public String getErrorCode()</strong>      
     </p>
     <blockquote>
       <p>
-         This should return a valid http status code if ErrorType == REST.         
+         A potential error code.         
       </p>
     </blockquote>
     <p>
@@ -715,6 +745,57 @@
     <blockquote>
       <p>
          The optional data.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>RequestedParamNotAvailableException </strong> extends  APSException    [se.natusoft.osgi.aps.api.net.rpc.exceptions] {      
+    </p>
+    <blockquote>
+      <p>
+         This exception is thrown when a parameter request cannot be fulfilled.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public RequestedParamNotAvailableException(String message)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new APSException instance.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The exception message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public RequestedParamNotAvailableException(String message, Throwable cause)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Creates a new APSException instance.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The exception message.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>cause</em> - The cause of this exception.         
       </p>
     </blockquote>
     <p>
@@ -872,17 +953,21 @@
             
     </p>
     <p>
-            
+      <strong>public void addParameter(Object parameter)</strong>      
     </p>
+    <blockquote>
+      <p>
+         Adds a parameter. This is mutually exclusive with addParameter(name, parameter)!          
+      </p>
+    </blockquote>
     <p>
-            
+      <em>Parameters</em>      
     </p>
-    <p>
-            
-    </p>
-    <p>
-            
-    </p>
+    <blockquote>
+      <p>
+        <em>parameter</em> - The parameter to add.         
+      </p>
+    </blockquote>
     <p>
       }      
     </p>
@@ -964,43 +1049,6 @@
       </p>
     </blockquote>
     <p>
-      <strong>void addParameter(Object parameter)</strong>      
-    </p>
-    <blockquote>
-      <p>
-         Adds a parameter. This is mutually exclusive with addParameter(name, parameter)!          
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>parameter</em> - The parameter to add.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>void addNamedParameter(String name, Object parameter)</strong>      
-    </p>
-    <blockquote>
-      <p>
-         Adds a named parameter. This is mutually exclusive with addParameter(parameter)!          
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>name</em> - The name of the parameter.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>parameter</em> - The parameter to add.         
-      </p>
-    </blockquote>
-    <p>
       <strong>int getNumberOfParameters()</strong>      
     </p>
     <blockquote>
@@ -1017,7 +1065,7 @@
       </p>
     </blockquote>
     <p>
-      <strong>&lt;T&gt; T getParameter(int index, Class&lt;T&gt; paramClass)</strong>      
+      <strong>&lt;T&gt; T getIndexedParameter(int index, Class&lt;T&gt; paramClass) throws RequestedParamNotAvailableException</strong>      
     </p>
     <blockquote>
       <p>
@@ -1029,7 +1077,7 @@
     </p>
     <blockquote>
       <p>
-        The parameter object.        
+        The parameter object or null if indexed parameters cannot be delivered.        
       </p>
     </blockquote>
     <p>
@@ -1046,64 +1094,11 @@
       </p>
     </blockquote>
     <p>
-      <strong>boolean hasNamedParameters()</strong>      
+      <em>Throws</em>      
     </p>
     <blockquote>
       <p>
-                 
-      </p>
-    </blockquote>
-    <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-        true if there are named parameters available. If false the plain parameter list should be used.        
-      </p>
-    </blockquote>
-    <p>
-      <strong>Set&lt;String&gt; getParameterNames()</strong>      
-    </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
-    <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-        The available parameter names.        
-      </p>
-    </blockquote>
-    <p>
-      <strong>&lt;T&gt; T getNamedParameter(String name, Class&lt;T&gt; paramClass)</strong>      
-    </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
-    <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-        A named parameter.        
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>name</em> - The name of the parameter to get.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>paramClass</em> - The expected class of the parameter.         
+        <em>RequestedParamNotAvailableException</em> - if requested parameter is not available.         
       </p>
     </blockquote>
     <p>
@@ -1201,7 +1196,7 @@
       </p>
     </blockquote>
     <p>
-      <strong>RPCError createRPCError(ErrorType errorType, String message, String optionalData)</strong>      
+      <strong>RPCError createRPCError(ErrorType errorType, String errorCode, String message, String optionalData, Throwable cause)</strong>      
     </p>
     <blockquote>
       <p>
@@ -1213,7 +1208,7 @@
     </p>
     <blockquote>
       <p>
-        An RPCError implementation.        
+        An RPCError implementation or null if not handled by the protocol implementation.        
       </p>
     </blockquote>
     <p>
@@ -1226,12 +1221,36 @@
     </blockquote>
     <blockquote>
       <p>
+        <em>errorCode</em> - An error code representing the error.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
         <em>message</em> - An error message.         
       </p>
     </blockquote>
     <blockquote>
       <p>
         <em>optionalData</em> - Whatever optional data you want to pass along or null.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>cause</em> - The cause of the error.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>StreamedHTTPProtocol </strong> extends  StreamedRPCProtocol    [se.natusoft.osgi.aps.api.net.rpc.service] {      
+    </p>
+    <blockquote>
+      <p>
+         This is a marker interface indicating that the protocol is really assuming a HTTP transport and is expecting to be able to return http status codes. This also means it will be returning an HTTPError (which extends RPCError) from _createError(...)_.  It might be difficult for non HTTP transports to support this kind of protocol, and such should probably ignore these protocols. For example a REST implementation of this protocol will not be writing any error response back, but rather expect the transport to deliver the http status code it provides. A non HTTP transport will not be able to know how to communicate back errors in this case since it will not know anything about the protocol itself.         
       </p>
     </blockquote>
     <p>
@@ -1245,19 +1264,11 @@
     </p>
     <blockquote>
       <p>
-         This represents an RPC protocol provider that provide client/service calls with requests read from an InputStream and responses written to an OutputStream.         
+         This represents an RPC protocol provider that provide client/service calls with requests read from an InputStream or having parameters passes as strings and responses written to an OutputStream.  HTTP transports can support both _parseRequests(...)_ and _parseRequest(...)_ while other transports probably can handle only _parseRequests(...)_. __A protocol provider can return null for either of these!__ Most protocol providers will support _parseRequests(...)_ and some also _parseRequest(...)_.         
       </p>
     </blockquote>
     <p>
-      <strong>boolean isREST()</strong>      
-    </p>
-    <blockquote>
-      <p>
-         Returns true if the protocol is a REST protocol.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>List&lt;RPCRequest&gt; parseRequests(String serviceQName, InputStream requestStream) throws IOException</strong>      
+      <strong>List&lt;RPCRequest&gt; parseRequests(String serviceQName, String method, InputStream requestStream) throws IOException</strong>      
     </p>
     <blockquote>
       <p>
@@ -1282,7 +1293,54 @@
     </blockquote>
     <blockquote>
       <p>
+        <em>method</em> - The method to call. This can be null if method name is provided on the stream.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
         <em>requestStream</em> - The stream to parse request from.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on IO failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>RPCRequest parseRequest(String serviceQName, String method, Map&lt;String, String&gt; parameters) throws IOException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Provides an RPCRequest based on in-parameters. This variant supports HTTP transports.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The parsed requests.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>serviceQName</em> - A fully qualified name to the service to call. This can be null if service name is provided on the stream.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>method</em> - The method to call. This can be null if method name is provided on the stream.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>parameters</em> - parameters passed as a         
       </p>
     </blockquote>
     <p>
@@ -1328,11 +1386,19 @@
       </p>
     </blockquote>
     <p>
-      <strong>void writeErrorResponse(RPCError error, RPCRequest request, OutputStream responseStream) throws IOException</strong>      
+      <strong>boolean writeErrorResponse(RPCError error, RPCRequest request, OutputStream responseStream) throws IOException</strong>      
     </p>
     <blockquote>
       <p>
          Writes an error response.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if this call was handled and an error response was written. It returns false otherwise.        
       </p>
     </blockquote>
     <p>
@@ -1359,43 +1425,6 @@
     <blockquote>
       <p>
         <em>IOException</em> - on IO failure.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>RPCError createRESTError(int httpStatusCode)</strong>      
-    </p>
-    <blockquote>
-      <p>
-         Returns an RPCError for a REST protocol with a http status code.          
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>httpStatusCode</em> - The http status code to return.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>RPCError createRESTError(int httpStatusCode, String message)</strong>      
-    </p>
-    <blockquote>
-      <p>
-         Returns an RPCError for a REST protocol with a http status code.          
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>httpStatusCode</em> - The http status code to return.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>message</em> - An error message.         
       </p>
     </blockquote>
     <p>

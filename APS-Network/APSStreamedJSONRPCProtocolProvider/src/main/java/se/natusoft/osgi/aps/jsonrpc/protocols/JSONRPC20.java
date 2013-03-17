@@ -5,7 +5,7 @@
  *         APS Streamed JSONRPC Protocol Provider
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         Provides JSONRPC implementations for version 1.0 and 2.0.
@@ -34,7 +34,7 @@
  *         2012-01-08: Created!
  *         
  */
-package se.natusoft.osgi.aps.jsonrpc.versions;
+package se.natusoft.osgi.aps.jsonrpc.protocols;
 
 import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONArray;
@@ -56,12 +56,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * JSONRPC 2.0 implementation of JSONRPC as described on http://jsonrpc.org/spec.html.
  */
 public class JSONRPC20 implements StreamedRPCProtocol {
-    private static final boolean debug = true;
+    private static final boolean debug = false;
 
     //
     // Private Members
@@ -124,29 +125,22 @@ public class JSONRPC20 implements StreamedRPCProtocol {
     }
 
     /**
-     * Returns true if the protocol is a REST protocol.
-     */
-    @Override
-    public boolean isREST() {
-        return false;
-    }
-
-    /**
      * Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.
      *
-     * @param serviceQName A fully qualified name to the service to call. This can be null if service name is provided on the stream.
+     * @param serviceQName  A fully qualified name to the service to call. This can be null if service name is provided on the stream.
+     * @param method        The method to call. This can be null if method name is provided on the stream.
      * @param requestStream The stream to parse request from.
-     *
      * @return The parsed requests.
+     * @throws java.io.IOException on IO failure.
      */
     @Override
-    public List<RPCRequest> parseRequests(String serviceQName, InputStream requestStream) throws IOException {
-        List<RPCRequest> requests = new LinkedList<RPCRequest>();
+    public List<RPCRequest> parseRequests(String serviceQName, String method, InputStream requestStream) throws IOException {
+        List<RPCRequest> requests = new LinkedList<>();
 
         try {
             // Read the JSON request
             ReqJSONErrorHandler errorHandler = new ReqJSONErrorHandler();
-            JSONValue jsonReq = null;
+            JSONValue jsonReq;
             try {
                 jsonReq = this.jsonService.readJSON(requestStream, errorHandler);
             }
@@ -158,16 +152,18 @@ public class JSONRPC20 implements StreamedRPCProtocol {
                 for (JSONValue reqValue : ((JSONArray)jsonReq).getAsList()) {
                     if (reqValue instanceof JSONObject) {
                         JSONRPCRequest rpcReq = jsonObjectToRPCRequest((JSONObject)reqValue);
+                        rpcReq.setServiceQName(serviceQName);
                         requests.add(rpcReq);
                     }
                     else {
                         throw new JSONRPCInvalidRequestError("Non JSON object value in request array! If the request starts with an " +
-                        "array then the contents of the array has to be objects!");
+                                "array then the contents of the array has to be objects!");
                     }
                 }
             }
             else if (jsonReq instanceof JSONObject) {
                 JSONRPCRequest rpcReq = jsonObjectToRPCRequest((JSONObject)jsonReq);
+                rpcReq.setServiceQName(serviceQName);
                 requests.add(rpcReq);
             }
             else {
@@ -176,11 +172,27 @@ public class JSONRPC20 implements StreamedRPCProtocol {
         }
         catch (JSONRPCError error) {
             JSONRPCRequest req = new JSONRPCRequest(error);
+            req.setServiceQName(serviceQName);
             requests.add(req);
         }
 
         return requests;
     }
+
+    /**
+     * Provides an RPCRequest based on in-parameters. This variant supports HTTP transports.
+     *
+     * @param serviceQName A fully qualified name to the service to call. This can be null if service name is provided on the stream.
+     * @param method       The method to call. This can be null if method name is provided on the stream.
+     * @param parameters   parameters passed as a
+     * @return The parsed requests.
+     * @throws java.io.IOException on IO failure.
+     */
+    @Override
+    public RPCRequest parseRequest(String serviceQName, String method, Map<String, String> parameters) throws IOException {
+        return null;
+    }
+
 
     /**
      * Converts a JSONObject to an RPCRequest.
@@ -238,7 +250,7 @@ public class JSONRPC20 implements StreamedRPCProtocol {
      * @param responseStream The OutputStream to write the response to.
      */
     @Override
-    public void writeErrorResponse(RPCError error, RPCRequest request, OutputStream responseStream) throws IOException {
+    public boolean writeErrorResponse(RPCError error, RPCRequest request, OutputStream responseStream) throws IOException {
         // If the parse of the request fails then we wont have any id!
         JSONValue id = (JSONValue)request.getCallId();
         if (id == null) {
@@ -266,7 +278,8 @@ public class JSONRPC20 implements StreamedRPCProtocol {
                 errorCode = -32603;
                 break;
             case SERVER_ERROR:
-                errorCode = -32000 - ((JSONRPCError)error).getSvcImplErrorCodeOffset();
+                int errorCodeOffset = Integer.valueOf(error.getErrorCode());
+                errorCode = -32000 - errorCodeOffset;
         }
 
         JSONObject errObj = this.jsonService.createJSONObject();
@@ -279,6 +292,8 @@ public class JSONRPC20 implements StreamedRPCProtocol {
         resp.addValue("id", id);
 
         this.jsonService.writeJSON(responseStream, resp, !debug);
+
+        return true;
     }
 
     /**
@@ -329,22 +344,38 @@ public class JSONRPC20 implements StreamedRPCProtocol {
      * Factory method to create an error object.
      *
      * @param errorType    The type of the error.
+     * @param errorCode    An error code representing the error.
      * @param message      An error message.
      * @param optionalData Whatever optional data you want to pass along or null.
-     *
-     * @return An RPCError implementation.
+     * @param cause        The cause of the error.
+     * @return An RPCError implementation or null if not handled by the protocol implementation.
      */
     @Override
-    public RPCError createRPCError(ErrorType errorType, String message, String optionalData) {
+    public RPCError createRPCError(ErrorType errorType, String errorCode, String message, String optionalData, Throwable cause) {
         RPCError error = null;
-        
+        int errCode = 1;
+        try {
+            errCode = Integer.valueOf(errorCode);
+        }
+        catch (Exception nfe) {/*OK*/}
+
         switch (errorType) {
             case SERVER_ERROR:
-                error = new JSONRPCServerError(message, 1);                
+                if (cause != null) {
+                    error = new JSONRPCServerError(message, errCode, cause);
+                }
+                else {
+                    error = new JSONRPCServerError(message, errCode);
+                }
                 break;
-            
+
             case INTERNAL_ERROR:
-                error = new JSONRPCInternalError(message);
+                if (cause != null) {
+                    error = new JSONRPCInternalError(message, cause);
+                }
+                else {
+                    error = new JSONRPCInternalError(message);
+                }
                 break;
 
             case INVALID_PARAMS:
@@ -360,31 +391,15 @@ public class JSONRPC20 implements StreamedRPCProtocol {
                 break;
 
             case PARSE_ERROR:
-                error = new JSONRPCParseError(message);
+                if (cause != null) {
+                    error = new JSONRPCParseError(message, cause);
+                }
+                else {
+                    error = new JSONRPCParseError(message);
+                }
         }
-        
+
         return error;
-    }
-
-    /**
-     * Returns an RPCError for a REST protocol with a http status code.
-     *
-     * @param httpStatusCode The http status code to return.
-     */
-    @Override
-    public RPCError createRESTError(int httpStatusCode) {
-        return null; // We are not a REST protocol!
-    }
-
-    /**
-     * Returns an RPCError for a REST protocol with a http status code.
-     *
-     * @param httpStatusCode The http status code to return.
-     * @param message        An error message.
-     */
-    @Override
-    public RPCError createRESTError(int httpStatusCode, String message) {
-        return null;
     }
 
     //
@@ -442,8 +457,6 @@ public class JSONRPC20 implements StreamedRPCProtocol {
          */
         @Override
         public void fail(String message, Throwable cause) throws RuntimeException {
-            String failMessage = message;
-
             throw new JSONParseException(message, cause);
         }
 

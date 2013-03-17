@@ -6,7 +6,7 @@
             APS Web Applications
         
         Code Version
-            0.9.0
+            0.9.1
         
         Description
             APS Web Applications
@@ -41,7 +41,7 @@
     <parent>
         <artifactId>APS</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version><!--APSVER-->0.9.0</version>
+        <version><!--APSVER-->0.9.1</version>
         <relativePath>..</relativePath>
     </parent>
 

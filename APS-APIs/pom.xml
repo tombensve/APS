@@ -6,7 +6,7 @@
             APS APIs
         
         Code Version
-            0.9.0
+            0.9.1
         
         Description
             Provides the APIs for the application platform services.
@@ -40,7 +40,7 @@
     <parent>
         <artifactId>APS</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version><!--APSVER-->0.9.0</version>
+        <version><!--APSVER-->0.9.1</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -105,6 +105,7 @@
             se.natusoft.osgi.aps.api.net.rpc.errors;version="${project.version}",
             se.natusoft.osgi.aps.api.net.rpc.model;version="${project.version}",
             se.natusoft.osgi.aps.api.net.rpc.service;version="${project.version}",
+            se.natusoft.osgi.aps.api.net.rpc.exceptions;version="${project.version}",
             se.natusoft.osgi.aps.api.net.groups.service;version="${project.version}",
             se.natusoft.osgi.aps.api.web.config;version="${project.version}"
         </osgi.export.package>
@@ -232,6 +233,11 @@
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.9</version>
+                <configuration>
+                    <docletPath>${project.basedir}/../lib/MarkdownDoclet-3-1.0.jar</docletPath>
+                    <doclet>com.visural.doclets.markdown.standard.Standard</doclet>
+                    <stylesheetfile>${project.basedir}/../css/apidocs.css</stylesheetfile>
+                </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>

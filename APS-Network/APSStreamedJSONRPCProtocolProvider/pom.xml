@@ -6,7 +6,7 @@
             APS Streamed JSONRPC Protocol Provider
         
         Code Version
-            0.9.0
+            0.9.1
         
         Description
             Provides JSONRPC implementations for version 1.0 and 2.0.
@@ -41,7 +41,7 @@
     <parent>
         <artifactId>APS-Network</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version><!--APSVER-->0.9.0</version>
+        <version><!--APSVER-->0.9.1</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -77,7 +77,7 @@
             se.natusoft.osgi.aps.jsonrpc;version="${project.version}",
             se.natusoft.osgi.aps.jsonrpc.errors;version="${project.version}",
             se.natusoft.osgi.aps.jsonrpc.model;version="${project.version}",
-            se.natusoft.osgi.aps.jsonrpc.versions;version="${project.version}"
+            se.natusoft.osgi.aps.jsonrpc.protocols;version="${project.version}"
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->

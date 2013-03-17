@@ -42,7 +42,7 @@
 
     <groupId>se.natusoft.osgi.aps</groupId>
     <artifactId>DeployBundleTile</artifactId>
-    <version><!--APSVER-->0.9.0</version>
+    <version><!--APSVER-->0.9.1</version>
     <packaging>pom</packaging>
 
     <!--
@@ -69,7 +69,7 @@
             <plugin>
                 <groupId>se.natusoft.osgi.aps</groupId>
                 <artifactId>ServerDeployPlugin</artifactId>
-                <version><!--APSVER-->0.9.0</version>
+                <version><!--APSVER-->0.9.1</version>
                 <executions>
                     <execution>
                         <id>server-deploy</id>

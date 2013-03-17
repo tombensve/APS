@@ -5,7 +5,7 @@
             APS Platform Service Provider
         
         Code Version
-            0.9.0
+            0.9.1
         
         Description
             Provides a platform specific configuration and service providing platform instance
@@ -40,7 +40,7 @@
     <parent>
         <artifactId>APS-Core</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version><!--APSVER-->0.9.0</version>
+        <version><!--APSVER-->0.9.1</version>
         <relativePath>..</relativePath>
     </parent>
 

@@ -5,7 +5,7 @@
  *         APS Configuration Admin Web
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         Edits configurations registered with the APSConfigurationService.

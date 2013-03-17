@@ -5,7 +5,7 @@
  *         APS Simple User Service Provider
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.

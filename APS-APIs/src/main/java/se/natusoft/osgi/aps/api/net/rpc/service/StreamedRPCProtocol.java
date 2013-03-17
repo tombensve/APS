@@ -5,7 +5,7 @@
  *         APS APIs
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         Provides the APIs for the application platform services.
@@ -43,29 +43,43 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 /**
- * This represents an RPC protocol provider that provide client/service calls
- * with requests read from an InputStream and responses written to an OutputStream.
+ * This represents an RPC protocol provider that provide client/service calls with requests read from an InputStream
+ * or having parameters passes as strings and responses written to an OutputStream.
+ *
+ * HTTP transports can support both _parseRequests(...)_ and _parseRequest(...)_ while other transports probably can
+ * handle only _parseRequests(...)_. __A protocol provider can return null for either of these!__ Most protocol
+ * providers will support _parseRequests(...)_ and some also _parseRequest(...)_.
  */
 public interface StreamedRPCProtocol extends RPCProtocol {
-
-    /**
-     * Returns true if the protocol is a REST protocol.
-     */
-    boolean isREST();
 
     /**
      * Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.
      *
      * @param serviceQName A fully qualified name to the service to call. This can be null if service name is provided on the stream.
+     * @param method The method to call. This can be null if method name is provided on the stream.
      * @param requestStream The stream to parse request from.
      *
      * @return The parsed requests.
      *
      * @throws IOException on IO failure.
      */
-    List<RPCRequest> parseRequests(String serviceQName, InputStream requestStream) throws IOException;
+    List<RPCRequest> parseRequests(String serviceQName, String method, InputStream requestStream) throws IOException;
+
+    /**
+     * Provides an RPCRequest based on in-parameters. This variant supports HTTP transports.
+     *
+     * @param serviceQName A fully qualified name to the service to call. This can be null if service name is provided on the stream.
+     * @param method The method to call. This can be null if method name is provided on the stream.
+     * @param parameters parameters passed as a
+     *
+     * @return The parsed requests.
+     *
+     * @throws IOException on IO failure.
+     */
+    RPCRequest parseRequest(String serviceQName, String method, Map<String, String> parameters) throws IOException;
 
     /**
      * Writes a successful response to the specified OutputStream.
@@ -85,22 +99,11 @@ public interface StreamedRPCProtocol extends RPCProtocol {
      * @param request The request that this is a response to.
      * @param responseStream The OutputStream to write the response to.
      *
+     * @return true if this call was handled and an error response was written. It returns false otherwise.
+     *              If false the protocol is saying that it does not handle error responses.
+     *
+     *
      * @throws IOException on IO failure.
      */
-    void writeErrorResponse(RPCError error, RPCRequest request, OutputStream responseStream) throws IOException;
-
-    /**
-     * Returns an RPCError for a REST protocol with a http status code.
-     *
-     * @param httpStatusCode The http status code to return.
-     */
-    RPCError createRESTError(int httpStatusCode);
-
-    /**
-     * Returns an RPCError for a REST protocol with a http status code.
-     *
-     * @param httpStatusCode The http status code to return.
-     * @param message An error message.
-     */
-    RPCError createRESTError(int httpStatusCode, String message);
+    boolean writeErrorResponse(RPCError error, RPCRequest request, OutputStream responseStream) throws IOException;
 }

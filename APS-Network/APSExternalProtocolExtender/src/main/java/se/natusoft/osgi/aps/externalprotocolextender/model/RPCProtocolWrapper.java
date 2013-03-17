@@ -5,7 +5,7 @@
  *         APS External Protocol Extender
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         This does two things:
@@ -177,15 +177,16 @@ public class RPCProtocolWrapper implements RPCProtocol {
      * Factory method to create an error object.
      *
      * @param errorType    The type of the error.
+     * @param errorCode    An error code representing the error.
      * @param message      An error message.
      * @param optionalData Whatever optional data you want to pass along or null.
-     *
-     * @return An RPCError implementation.
+     * @param cause        The cause of the error.
+     * @return An RPCError implementation or null if not handled by the protocol implementation.
      */
     @Override
-    public RPCError createRPCError(ErrorType errorType, String message, String optionalData) {
+    public RPCError createRPCError(ErrorType errorType, String errorCode, String message, String optionalData, Throwable cause) {
         try {
-            return getInstance().createRPCError(errorType, message, optionalData);
+            return getInstance().createRPCError(errorType, errorCode, message, optionalData, cause);
         }
         finally {
             ungetInstance();

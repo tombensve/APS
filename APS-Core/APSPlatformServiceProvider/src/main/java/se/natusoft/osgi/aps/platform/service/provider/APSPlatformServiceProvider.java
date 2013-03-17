@@ -5,7 +5,7 @@
  *         APS Platform Service Provider
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         Provides a platform specific configuration and service providing platform instance

@@ -2,7 +2,7 @@
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Osmorc" name="OSGi">
-      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-datasource-0.9.0.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.dsconfig.DSConfigActivator" bundleSymbolicName="aps-datasource" bundleVersion="0.9.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
+      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-datasource-0.9.1.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.dsconfig.DSConfigActivator" bundleSymbolicName="aps-datasource" bundleVersion="0.9.1" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
           <property key="Bundle-Description" value="This bundle provides data source definitions configuration and a service to lookupthe configured data source definitions with. These are not javax.sql.DataSourceobjects! This only provides the configuration data to setup a data source. Someother bundle can use this to configure a DataSource, a connection pool, JPA, etcfrom this." />
           <property key="Bundle-Vendor" value="Natusoft AB" />

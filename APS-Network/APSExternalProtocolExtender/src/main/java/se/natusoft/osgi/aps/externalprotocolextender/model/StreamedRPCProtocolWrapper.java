@@ -5,7 +5,7 @@
  *         APS External Protocol Extender
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         This does two things:
@@ -61,10 +61,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Map;
 
 /**
- * This wraps a ServiceReference whose service instance implements the StreamedRPCProtocolService, extracting
- * and cacheing static information and wraps service get and release on protocol implementation calls.
+ * This wraps a ServiceReference whose service instance implements the StreamedRPCProtocol, extracting
+ * and caching static information and wraps service get and release on protocol implementation calls.
  */
 public class StreamedRPCProtocolWrapper extends RPCProtocolWrapper implements StreamedRPCProtocol {
     //
@@ -95,34 +96,37 @@ public class StreamedRPCProtocolWrapper extends RPCProtocolWrapper implements St
     }
 
     /**
-     * Returns true if the protocol is a REST protocol.
+     * Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.
+     *
+     * @param serviceQName  A fully qualified name to the service to call. This can be null if service name is provided on the stream.
+     * @param method        The method to call. This can be null if method name is provided on the stream.
+     * @param requestStream The stream to parse request from.
+     * @return The parsed requests.
+     * @throws java.io.IOException on IO failure.
      */
     @Override
-    public boolean isREST() {
-        boolean rest = false;
+    public List<RPCRequest> parseRequests(String serviceQName, String method, InputStream requestStream) throws IOException {
         try {
-            rest = getInstance().isREST();
+            return getInstance().parseRequests(serviceQName, method, requestStream);
         }
         finally {
             ungetInstance();
         }
-        return rest;
     }
 
     /**
-     * Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.
+     * Provides an RPCRequest based on in-parameters. This variant supports HTTP transports.
      *
-     * @param serviceQName  A fully qualified name to the service to call. This can be null if service name is provided on the stream.
-     * @param requestStream The stream to parse request from.
-     *
+     * @param serviceQName A fully qualified name to the service to call. This can be null if service name is provided on the stream.
+     * @param method       The method to call. This can be null if method name is provided on the stream.
+     * @param parameters   parameters passed as a
      * @return The parsed requests.
-     *
      * @throws java.io.IOException on IO failure.
      */
     @Override
-    public List<RPCRequest> parseRequests(String serviceQName, InputStream requestStream) throws IOException {
+    public RPCRequest parseRequest(String serviceQName, String method, Map<String, String> parameters) throws IOException {
         try {
-            return getInstance().parseRequests(serviceQName, requestStream);
+            return getInstance().parseRequest(serviceQName, method, parameters);
         }
         finally {
             ungetInstance();
@@ -158,47 +162,12 @@ public class StreamedRPCProtocolWrapper extends RPCProtocolWrapper implements St
      * @throws java.io.IOException on IO failure.
      */
     @Override
-    public void writeErrorResponse(RPCError error, RPCRequest request, OutputStream responseStream) throws IOException {
+    public boolean writeErrorResponse(RPCError error, RPCRequest request, OutputStream responseStream) throws IOException {
         try {
-            getInstance().writeErrorResponse(error, request, responseStream);
+            return getInstance().writeErrorResponse(error, request, responseStream);
         }
         finally {
             ungetInstance();
         }
-    }
-
-    /**
-     * Returns an RPCError for a REST protocol with a http status code.
-     *
-     * @param httpStatusCode The http status code to return.
-     */
-    @Override
-    public RPCError createRESTError(int httpStatusCode) {
-        RPCError error = null;
-        try {
-            error = getInstance().createRESTError(httpStatusCode);
-        }
-        finally {
-            ungetInstance();
-        }
-        return error;
-    }
-
-    /**
-     * Returns an RPCError for a REST protocol with a http status code.
-     *
-     * @param httpStatusCode The http status code to return.
-     * @param message        An error message.
-     */
-    @Override
-    public RPCError createRESTError(int httpStatusCode, String message) {
-        RPCError error = null;
-        try {
-            error = getInstance().createRESTError(httpStatusCode, message);
-        }
-        finally {
-            ungetInstance();
-        }
-        return error;
     }
 }

@@ -5,7 +5,7 @@
  *         APS OpenJPA Provider
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         Provides an implementation of APSJPAService using OpenJPA.

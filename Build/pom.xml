@@ -6,7 +6,7 @@
             Build
         
         Code Version
-            0.9.0
+            0.9.1
         
         Description
             APS (Application Platform Services) - A smörgåsbord of OSGi platform type services.
@@ -41,7 +41,7 @@
     <parent>
         <artifactId>APS</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version>0.9.0</version>
+        <version><!--APSVER-->0.9.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

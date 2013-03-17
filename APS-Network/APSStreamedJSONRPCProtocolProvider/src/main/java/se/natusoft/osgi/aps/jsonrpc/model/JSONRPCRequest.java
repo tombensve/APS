@@ -5,7 +5,7 @@
  *         APS Streamed JSONRPC Protocol Provider
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         Provides JSONRPC implementations for version 1.0 and 2.0.
@@ -102,20 +102,8 @@ public class JSONRPCRequest extends AbstractRPCRequest implements RPCRequest {
      * @return The parameter object.
      */
     @Override
-    public <T> T getParameter(int index, Class<T> paramClass) {
+    public <T> T getIndexedParameter(int index, Class<T> paramClass) {
         JSONValue jval = (JSONValue)getParameters().get(index);
-        return this.jsonService.jsonToJava(jval, paramClass);
-    }
-
-    /**
-     * @param name The name of the parameter to get.
-     * @param paramClass The expected class of the parameter.
-     *
-     * @return A named parameter.
-     */
-    @Override
-    public <T> T getNamedParameter(String name, Class<T> paramClass) {
-        JSONValue jval = (JSONValue)getNamedParameters().get(name);
         return this.jsonService.jsonToJava(jval, paramClass);
     }
 }

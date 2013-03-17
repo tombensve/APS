@@ -5,7 +5,7 @@
  *         APS External Protocol HTTP Transport Provider
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         This uses aps-external-protocol-extender to provide remote calls over HTTP. It makes
@@ -53,8 +53,10 @@ import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescriptionProvider;
 import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService;
 import se.natusoft.osgi.aps.api.net.rpc.errors.APSRESTException;
 import se.natusoft.osgi.aps.api.net.rpc.errors.ErrorType;
+import se.natusoft.osgi.aps.api.net.rpc.errors.HTTPError;
 import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
 import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;
+import se.natusoft.osgi.aps.api.net.rpc.service.StreamedHTTPProtocol;
 import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 import se.natusoft.osgi.aps.exceptions.APSException;
 import se.natusoft.osgi.aps.rpchttpextender.config.RPCServletConfig;
@@ -76,9 +78,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The servlet we make the RPC http transport available on.
@@ -99,40 +99,62 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     //
     // Private Members
     //
-    
-    /** The logger to log to. */
+
+    /**
+     * The logger to log to.
+     */
     private APSLogger logger = null;
-    
-    /** This is used to access the externally available services. */
+
+    /**
+     * This is used to access the externally available services.
+     */
     private APSServiceTracker<APSExternalProtocolService> externalProtocolServiceTracker = null;
 
-    /** The tracked service. */
+    /**
+     * The tracked service.
+     */
     private APSExternalProtocolService externalProtocolService = null;
 
-    /** Used for displaying result of text executions of no args methods on method display. */
+    /**
+     * Used for displaying result of text executions of no args methods on method display.
+     */
     private APSServiceTracker<APSJSONExtendedService> jsonServiceTracker = null;
 
-    /** The tracked service. */
+    /**
+     * The tracked service.
+     */
     private APSJSONExtendedService jsonService = null;
 
-    /** Used for registering services that are remotely available. */
+    /**
+     * Used for registering services that are remotely available.
+     */
     private APSServiceTracker<APSSimpleDiscoveryService> discoveryServiceTracker = null;
 
-    /** The context of the bundle we belong to. */
-    private BundleContext bundleContext = null;      
+    /**
+     * The context of the bundle we belong to.
+     */
+    private BundleContext bundleContext = null;
 
-    /** The host name of the server we are being served on. */
+    /**
+     * The host name of the server we are being served on.
+     */
     private String serverHost = null;
 
-    /** The port of the server we are being served on. */
+    /**
+     * The port of the server we are being served on.
+     */
     private int serverPort = 0;
 
-    /** The base url for RPC calls. */
+    /**
+     * The base url for RPC calls.
+     */
     private String rpcBaseUrl = null;
 
-    /** The admin web login handler. */
+    /**
+     * The admin web login handler.
+     */
     private APSAdminWebLoginHandler loginHandler = null;
-    
+
     //
     // Constructors
     //
@@ -140,8 +162,9 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     /**
      * Creates a new JSONRPCServlet instance.
      */
-    public RPCServlet() {}
-    
+    public RPCServlet() {
+    }
+
     //
     // Setup and shutdown.
     //
@@ -150,13 +173,12 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
      * First time setup.
      *
      * @param servletConfig The configuration for the servlet.
-     *
      * @throws ServletException on failure.
      */
     public void init(javax.servlet.ServletConfig servletConfig) throws javax.servlet.ServletException {
         servletConfig.getServletContext().getServerInfo();
         if (this.bundleContext == null) {
-            this.bundleContext = (BundleContext)servletConfig.getServletContext().getAttribute("osgi-bundlecontext");
+            this.bundleContext = (BundleContext) servletConfig.getServletContext().getAttribute("osgi-bundlecontext");
 
             if (this.bundleContext == null) {
                 throw new ServletException("BundleContext not found! This war must be deployed in an OSGi compatible web container!");
@@ -170,22 +192,24 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                 this.logger.start(this.bundleContext);
 
                 this.externalProtocolServiceTracker =
-                        new APSServiceTracker<APSExternalProtocolService>(this.bundleContext, APSExternalProtocolService.class, APSServiceTracker.SHORT_TIMEOUT);
+                        new APSServiceTracker<>(this.bundleContext, APSExternalProtocolService.class,
+                                APSServiceTracker.SHORT_TIMEOUT);
                 this.externalProtocolServiceTracker.start();
                 this.externalProtocolService = this.externalProtocolServiceTracker.getWrappedService();
                 this.externalProtocolService.addExternalProtocolListener(this);
 
                 this.jsonServiceTracker =
-                        new APSServiceTracker<APSJSONExtendedService>(this.bundleContext, APSJSONExtendedService.class, APSServiceTracker.SHORT_TIMEOUT);
+                        new APSServiceTracker<>(this.bundleContext, APSJSONExtendedService.class,
+                                APSServiceTracker.SHORT_TIMEOUT);
                 this.jsonServiceTracker.start();
                 this.jsonService = this.jsonServiceTracker.getWrappedService();
 
                 this.discoveryServiceTracker =
-                        new APSServiceTracker<APSSimpleDiscoveryService>(this.bundleContext, APSSimpleDiscoveryService.class, APSServiceTracker.SHORT_TIMEOUT);
+                        new APSServiceTracker<>(this.bundleContext, APSSimpleDiscoveryService.class,
+                                APSServiceTracker.SHORT_TIMEOUT);
                 this.discoveryServiceTracker.start();
                 this.discoveryServiceTracker.onServiceAvailable(this);
-            }
-            catch (APSNoServiceAvailableException nsae) {
+            } catch (APSNoServiceAvailableException nsae) {
                 throw new ServletException(nsae.getMessage(), nsae);
             }
         }
@@ -226,7 +250,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             this.bundleContext = null;
         }
     }
-    
+
     //
     // RPC call handling
     //
@@ -235,9 +259,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
      * Handles a get/put/post request.
      * <p/>
      * The format of requests are:
-     * <code>
-     *     http://host:port/apsrpc/<i>protocol</i>/<i>version</i>[/<i>service</i>]
-     * </code>
+     * @code {http://host:port/apsrpc/<i>protocol</i>/<i>version</i>[/<i>service</i>][/<i>method</i>]}
      * <p/>
      * <i>protocol</i> - This is the name of the protocol to use. For example JSONRPC. For this to work there must be
      * a registered service available that implements StreamedRPCProtocolService and whose getServiceProtocolName()
@@ -258,10 +280,9 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
      * The rest of the request data is read from the input stream, which should be passed on to the matching
      * StreamedRPCProtocolService.
      *
-     * @param req The request
+     * @param req  The request
      * @param resp The response
-     *
-     * @throws ServletException on servlet related failures.
+     * @throws ServletException    on servlet related failures.
      * @throws java.io.IOException on IO failure.
      */
     protected void doReq(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -276,25 +297,21 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             // relative links generated for services will be incorrect.
             if (pathInfo.equals("_help")) {
                 resp.sendRedirect(pathInfo + "/");
-            }
-            else {
+            } else {
                 if (!RPCServletConfig.mc.isManaged()) {
                     RPCServletConfig.mc.waitUtilManaged();
                 }
                 if (this.loginHandler.hasValidLogin()) {
                     if (RPCServletConfig.mc.get().enableHelpWeb.toBoolean()) {
                         doHelp(req, resp);
-                    }
-                    else {
+                    } else {
                         resp.sendError(HttpServletResponse.SC_FORBIDDEN, "The help web has been disabled!");
                     }
-                }
-                else {
+                } else {
                     resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication is required! Please login.");
                 }
             }
-        }
-        else {
+        } else {
             doService(req, resp);
         }
     }
@@ -322,6 +339,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
      * @throws ServletException
      * @throws IOException
      */
+    @SuppressWarnings("unchecked")
     private void doService(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         String pathInfo = req.getPathInfo();
@@ -332,7 +350,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
 
         if (pathParts.length < 2) {
             String urlstart = "http://" + req.getServerName() + ":" + req.getServerPort();
-            resp.sendError(404, "Too short path in URL! The URL should look like this: " +
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Too short path in URL! The URL should look like this: " +
                     "'" + urlstart + "/apsrpc/[auth:<user>:<password>/]<protocol>/<version>[/<service>]', or " +
                     "'" + urlstart + "/apsrpc/_help/' to get a bit of help as HTML.");
             return;
@@ -358,14 +376,34 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             service = pathParts[part++];
         }
         if (pathParts.length > part) {
-            method = pathParts[part++];
+            method = pathParts[part];
         }
 
         StreamedRPCProtocol protocol = this.externalProtocolService.getStreamedProtocolByNameAndVersion(protocolName, version);
         if (protocol != null) {
+            List<RPCRequest> requests = null;
+
+            String reqMethod = req.getMethod().toUpperCase();
+
+            if (reqMethod.equals("POST") || reqMethod.equals("PUT")) {
+                requests = protocol.parseRequests(service, method, req.getInputStream());
+            }
+            else if (reqMethod.equals("GET")) {
+                requests = new LinkedList<>();
+
+                Map<String, String> reqParams = new HashMap<String, String>();
+
+                Enumeration<String> rpEnumeration = req.getParameterNames();
+                while (rpEnumeration.hasMoreElements()) {
+                    String name = rpEnumeration.nextElement();
+                    String value = req.getParameter(name);
+                    reqParams.put(name, value);
+                }
+                requests.add(protocol.parseRequest(service, method, reqParams));
+            }
 
             // It is possible to send multiple requests on the stream!
-            for (RPCRequest rpcRequest : protocol.parseRequests(service, req.getInputStream())) {
+            for (RPCRequest rpcRequest : requests) {
 
                 try {
                     if (rpcRequest.isValid()) {
@@ -379,18 +417,40 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                             List<Object> params = new LinkedList<Object>();
                             int param = 0;
                             for (ParameterDataTypeDescription paramDesc : callable.getParameterDataDescriptions()) {
-                                Class paramClass = null;
+                                Class paramClass = Void.class;
                                 try {
                                     // Since we don't have a dependency to any of the services we will be calling, our bundle
                                     // will not have the correct classpath required for creating arguments to the service.
                                     // Therefore we need to let the bundle of the service we are about to call load argument
                                     // classes for us.
-                                    paramClass = callable.getServiceBundle().loadClass(paramDesc.getObjectQName());
+                                    if (paramDesc.getObjectQName() != null) {
+                                        paramClass = callable.getServiceBundle().loadClass(paramDesc.getObjectQName());
+                                    }
+                                } catch (ClassNotFoundException cnfe) {
+                                    if (protocol instanceof StreamedHTTPProtocol) {
+                                        throw new RPCErrorException(
+                                                protocol.createRPCError(
+                                                        ErrorType.SERVICE_NOT_FOUND,
+                                                        "" + HttpServletResponse.SC_BAD_REQUEST,
+                                                        cnfe.getMessage(),
+                                                        null,
+                                                        cnfe
+                                                )
+                                        );
+                                    } else {
+                                        throw new RPCErrorException(
+                                                protocol.createRPCError(
+                                                        ErrorType.SERVICE_NOT_FOUND,
+                                                        null,
+                                                        cnfe.getMessage(),
+                                                        null,
+                                                        cnfe
+                                                )
+                                        );
+                                    }
                                 }
-                                catch (ClassNotFoundException cnfe) {
-                                    throw new RPCErrorException(protocol.createRPCError(ErrorType.SERVER_ERROR, cnfe.getMessage(), null));
-                                }
-                                params.add(rpcRequest.getParameter(param++, paramClass));
+
+                                params.add(rpcRequest.getIndexedParameter(param++, paramClass));
                             }
 
                             Object[] paramsArray = new Object[params.size()];
@@ -401,70 +461,120 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                             Object result = null;
                             try {
                                 result = callable.call();
-                            }
-                            catch (APSRESTException are) {
-                                throw new RPCErrorException(protocol.createRESTError(are.getHttpStatusCode(), are.getMessage()));
-                            }
-                            catch (APSNoServiceAvailableException nsae) {
-                                if (protocol.isREST()) {
-                                    throw new RPCErrorException(protocol.createRESTError(HttpServletResponse.SC_SERVICE_UNAVAILABLE));
+                            } catch (APSRESTException are) {
+                                throw new RPCErrorException(
+                                        protocol.createRPCError(
+                                                ErrorType.SERVICE_NOT_FOUND,
+                                                "" + are.getHttpStatusCode(),
+                                                are.getMessage(),
+                                                null,
+                                                are.getCause()
+                                        )
+                                );
+                            } catch (APSNoServiceAvailableException nsae) {
+                                if (protocol instanceof StreamedHTTPProtocol) {
+                                    throw new RPCErrorException(
+                                            protocol.createRPCError(
+                                                    ErrorType.SERVICE_NOT_FOUND,
+                                                    "" + HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                                                    nsae.getMessage(),
+                                                    null,
+                                                    nsae
+                                            )
+                                    );
+                                } else {
+                                    throw new RPCErrorException(
+                                            protocol.createRPCError(
+                                                    ErrorType.SERVICE_NOT_FOUND,
+                                                    null,
+                                                    "Service '" + service + "' is not available!",
+                                                    null,
+                                                    nsae
+                                            )
+                                    );
                                 }
-                                else {
-                                    throw new RPCErrorException(protocol.createRPCError(ErrorType.SERVER_ERROR,
-                                            "Service '" + service + "' is not available!", null));
-                                }
-                            }
-                            catch (Exception e) {
-                                if (protocol.isREST()) {
-                                    throw new RPCErrorException(protocol.createRESTError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
-                                }
-                                else {
-                                    throw new RPCErrorException(protocol.createRPCError(ErrorType.SERVER_ERROR, e.getMessage(), null));
+                            } catch (Exception e) {
+                                if (protocol instanceof StreamedHTTPProtocol) {
+                                    throw new RPCErrorException(
+                                            protocol.createRPCError(
+                                                    ErrorType.SERVER_ERROR,
+                                                    "" + HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                                                    e.getMessage(),
+                                                    null,
+                                                    e
+                                            )
+                                    );
+                                } else {
+                                    throw new RPCErrorException(
+                                            protocol.createRPCError(
+                                                    ErrorType.SERVER_ERROR,
+                                                    null,
+                                                    e.getMessage(),
+                                                    null,
+                                                    e
+                                            )
+                                    );
                                 }
                             }
 
                             // Write the normal OK response.
                             protocol.writeResponse(result, rpcRequest, resp.getOutputStream());
-                        }
-                        else {
-                            if (protocol.isREST()) {
-                                throw new RPCErrorException(protocol.createRESTError(HttpServletResponse.SC_BAD_REQUEST, "Method '" +
-                                        method + "' is not available!"));
+
+                        } else {
+                            if (protocol instanceof StreamedHTTPProtocol) {
+                                throw new RPCErrorException(
+                                        protocol.createRPCError(
+                                                ErrorType.METHOD_NOT_FOUND,
+                                                "" + HttpServletResponse.SC_BAD_REQUEST,
+                                                "Method '" + method + "' is not available!",
+                                                null,
+                                                null
+                                        )
+                                );
+                            } else {
+                                throw new RPCErrorException(
+                                        protocol.createRPCError(
+                                                ErrorType.METHOD_NOT_FOUND,
+                                                null,
+                                                "Method '" + method + "' is not available!",
+                                                null,
+                                                null
+                                        )
+                                );
                             }
-                            else {
-                                throw new RPCErrorException(protocol.createRPCError(ErrorType.METHOD_NOT_FOUND, "Method '" +
-                                        method + "' is not available!", null));
-                            }
                         }
-                    }
-                    else {
+                    } else {
                         throw new RPCErrorException(rpcRequest.getError());
                     }
                 }
                 // Write error responses.
                 catch (RPCErrorException ree) {
-                    if (protocol.isREST()) {
-                        resp.sendError(ree.getError().getRESTHttpStatusCode(), ree.getError().getMessage());
-                    }
-                    else {
+                    if (protocol instanceof StreamedHTTPProtocol) {
+                        resp.sendError(((HTTPError) ree.getError()).getHttpStatusCode(), ree.getError().getMessage());
+                    } else {
                         protocol.writeErrorResponse(ree.getError(), rpcRequest, resp.getOutputStream());
                     }
-                }
-                catch (Exception e) {
-                    if (protocol.isREST()) {
-                       resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-                    }
-                    else {
+                } catch (Exception e) {
+                    if (protocol instanceof StreamedHTTPProtocol) {
+                        resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                    } else {
                         protocol.writeErrorResponse(
-                                protocol.createRPCError(ErrorType.SERVER_ERROR, e.getMessage(), null), rpcRequest, resp.getOutputStream()
+                                protocol.createRPCError(
+                                        ErrorType.SERVER_ERROR,
+                                        null,
+                                        e.getMessage(),
+                                        null,
+                                        e
+                                ),
+                                rpcRequest,
+                                resp.getOutputStream()
                         );
                     }
                 }
             }
-        }
-        else {
+        } else {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No RPC protocol provider found for protocol '" + protocol +
-                    "' with version '" + version +"'!");
+                    "' with version '" + version + "'!");
         }
     }
 
@@ -472,12 +582,10 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
      * Handles the authentication part of the request.
      *
      * @param pathParts The split parts of the path to potentially extract credentials from.
-     * @param part the current index in the pathParts array.
-     * @param req The http request.
-     * @param resp The http response.
-     *
+     * @param part      the current index in the pathParts array.
+     * @param req       The http request.
+     * @param resp      The http response.
      * @return The new current index in the pathParts array.
-     *
      * @throws IOException On failure to set header or error on response.
      */
     private int checkAuth(String[] pathParts, int part, HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -523,8 +631,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                 resp.sendError(401, "Authorisation failed!");
                 return AUTH_FAILED;
             }
-        }
-        else {
+        } else {
             if (RPCServletConfig.mc.get().requireAuthentication.toBoolean()) {
                 resp.setHeader("WWW-Authenticate", "Basic realm=\"aps\"");
                 resp.sendError(401, "Authorisation required!");
@@ -544,7 +651,9 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
         // Private Members
         //
 
-        /** A passed along RPCError. */
+        /**
+         * A passed along RPCError.
+         */
         private RPCError error = null;
 
         //
@@ -586,13 +695,11 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
      * @throws IOException
      */
     public void service(ServletRequest req, ServletResponse resp) throws ServletException, IOException {
-        // TODO: I have to provide this information with configuration instead.
         if (this.rpcBaseUrl == null) {
             String protocol = req.getProtocol().split("/")[0].toLowerCase();
             if (req.getServerName() != null) {
                 this.serverHost = req.getServerName();
-            }
-            else if (req.getLocalName() != null) {
+            } else if (req.getLocalName() != null) {
                 this.serverHost = req.getLocalName();
             }
             if (this.serverHost.equals("localhost")) {
@@ -604,8 +711,8 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             try {
                 onServiceAvailable(this.discoveryServiceTracker.allocateService(), null);
                 this.discoveryServiceTracker.releaseService();
+            } catch (Exception e) {
             }
-            catch (Exception e) {}
         }
         super.service(req, resp);
     }
@@ -624,7 +731,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                 serviceDescription.setServiceHost(this.serverHost);
                 serviceDescription.setServicePort(this.serverPort);
                 serviceDescription.setServiceURL(this.rpcBaseUrl + protocol.getServiceProtocolName() + "/" + protocol.getServiceProtocolVersion() +
-                    "/" + service);
+                        "/" + service);
                 serviceDescription.setVersion(version);
                 serviceDescription.setServiceId(service);
 
@@ -749,9 +856,8 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
      * This gets called whenever a new APSSimpleDiscoveryService becomes available. Thereby we handle restart of the discovery service
      * or new implementations of it, or the case where this bundle is up and running before any discovery service.
      *
-     * @param discoverySvc          The received service.
+     * @param discoverySvc     The received service.
      * @param serviceReference The reference to the received service.
-     *
      * @throws Exception Implementation can throw any exception. How it is handled depends on the APSServiceTracker method this
      *                   gets passed to.
      */
@@ -784,7 +890,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
      * Since all service calls are done using HTTP PUT we provide information about the service and available services and methods
      * on HTTP GET.
      *
-     * @param req The request
+     * @param req  The request
      * @param resp The response
      * @throws ServletException
      * @throws java.io.IOException
@@ -800,17 +906,14 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
 
         if (query.length == 1 || query[1].equals("")) {
             handleFirstPage(html, req);
-        }
-        else if (query.length == 2 && query[1].length() > 0) {
+        } else if (query.length == 2 && query[1].length() > 0) {
             String service = query[1];
             handleServicePage(html, service, req);
-        }
-        else if (query.length == 3 && query[1].length() > 0 && query[2].length() > 0) {
+        } else if (query.length == 3 && query[1].length() > 0 && query[2].length() > 0) {
             String service = query[1];
             String method = query[2];
             handleMethodPage(html, service, method, req);
-        }
-        else {
+        } else {
             resp.sendError(401, "Invalid path!");
         }
     }
@@ -819,8 +922,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
      * Handles the first page with general information inlcuding protocols and services.
      *
      * @param html The HTMLWriter to write to.
-     * @param req The HttpServletRequest.
-     *
+     * @param req  The HttpServletRequest.
      * @throws IOException
      */
     private void handleFirstPage(HTMLWriter html, HttpServletRequest req) throws IOException {
@@ -830,49 +932,52 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             {
                 html.tagc("h1", "ApplicationPlatformServices (APS) Remote service call over HTTP transport provider");
                 html.tagc("p",
-                        "This provides an http transport for simple remote requests to OSGi services that have the \"APS-Externalizable: true\" in their META-INF/MANIFEST.MF. " +
-                        "This follows the OSGi extender pattern and makes any registered OSGi services of bundles having the above manifest entry " +
-                        "available for remote calls over HTTP. This transport makes use of the aps-external-protocol-extender which exposes services " +
-                        "with the above mentioned manifest entry with each service method available as an APSExternallyCallable." +
-                        "The aps-ext-protocol-http-transport acts as a mediator between the protocol implementations and aps-external-protocol-extender " +
-                        "for requests over HTTP."
+                        "This provides an http transport for simple remote requests to OSGi services that have the \"APS-Externalizable: " +
+                                "true\" in their META-INF/MANIFEST.MF. This follows the OSGi extender pattern and makes any registered " +
+                                "OSGi services of bundles having the above manifest entry available for remote calls over HTTP. This " +
+                                "transport makes use of the aps-external-protocol-extender which exposes services with the above " +
+                                "mentioned manifest entry with each service method available as an APSExternallyCallable." +
+                                "The aps-ext-protocol-http-transport acts as a mediator between the protocol implementations and " +
+                                "aps-external-protocol-extender for requests over HTTP."
                 );
-                html.tagc("p", "<b>Please note</b> that depending on protocol not every service method will be callable. It depends on its arguments " +
-                        "and return value. It mostly depends on how well the protocol handles types and can convert between the caller and the service. " +
-                        "Also note that bundles can specify \"APS-Externalizable: false\" in their META-INF/MANIFEST.MF. In that case none of the " +
-                        "bundles services will be callable this way!");
+                html.tagc("p", "<b>Please note</b> that depending on protocol not every service method will be callable. It depends on " +
+                        "its arguments and return value. It mostly depends on how well the protocol handles types and can convert " +
+                        "between the caller and the service. Also note that bundles can specify \"APS-Externalizable: false\" in their " +
+                        "META-INF/MANIFEST.MF. In that case none of the bundles services will be callable this way!"
+                );
                 html.tagc("p",
                         "This does not provide any protocol, only transport! For services " +
-                                "to be able to be called at least one protocol is needed. Protocols are provided by providing an implementation of " +
-                                "se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocolService and registering it as an OSGi service." +
-                                "The StreamedRPCProtocolService API provides a protocol name and protocol version getter which is used to identify it. " +
-                                "A call to an RPC service looks like this:"
+                                "to be able to be called at least one protocol is needed. Protocols are provided by providing an " +
+                                "implementation of se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocolService and registering " +
+                                "it as an OSGi service. The StreamedRPCProtocolService API provides a protocol name and protocol " +
+                                "version getter which is used to identify it. A call to an RPC service looks like this:"
                 );
                 html.text("<ul><code>http://host:port/apsrpc/<i>protocol</i>/<i>version</i>[/<i>service</i>][/<i>method</i>]</code></ul>");
                 html.text(
                         "<ul>" +
-                            "<i>protocol</i>" +
-                            "<ul>" +
-                                "This is the name of the protocol to use. An implementation of that protocol must of course be available for " +
-                                "this to work. If it isn't you will get a 404 back!" +
-                            "</ul>" +
-                        "</ul>"
+                                "<i>protocol</i>" +
+                                "<ul>" +
+                                "This is the name of the protocol to use. An implementation of that protocol must of course be available " +
+                                "for this to work. If it isn't you will get a 404 back!" +
+                                "</ul>" +
+                                "</ul>"
                 );
                 html.text(
                         "<ul>" +
-                            "<i>version</i>" +
-                            "<ul>" +
-                                "This is the version of the protocol. If this doesn't match any protocols available you will also get a 404 back." +
-                            "</ul>" +
-                        "</ul>"
+                                "<i>version</i>" +
+                                "<ul>" +
+                                "This is the version of the protocol. If this doesn't match any protocols available you will also get a " +
+                                "404 back." +
+                                "</ul>" +
+                                "</ul>"
                 );
                 html.text(
                         "<ul>" +
                                 "<i>service</i>" +
                                 "<ul>" +
-                                "This is the service to call. Depending on the protocol you might not need this. But for protocols that only " +
-                                "provide method in the stream data like JSONRPC for example, then this is needed. When provided it has to be " +
-                                "a fully qualified service interface class name." +
+                                "This is the service to call. Depending on the protocol you might not need this. But for protocols that " +
+                                "only provide method in the stream data like JSONRPC for example, then this is needed. When provided it " +
+                                "has to be a fully qualified service interface class name." +
                                 "</ul>" +
                                 "</ul>"
                 );
@@ -890,30 +995,30 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                 html.tagc("h2", "Security");
                 html.tagc("p",
                         "This help page always require authentication. This is because it register itself with the APSAdminWeb and " +
-                        "is available as a tab there and thereby joins in the admin web authentication. For service calls however " +
-                        "authentication is only required if you enable it in the configuration (network/rpc-http-transport). " +
-                        "There are 2 variants of authentication for services:" +
-                        "<ul>" +
-                        "<li>http://.../apsrpc/<b>auth:user:password</b>/protocol/...</li>" +
-                        "<li>Basic HTTP authentication using header: 'Authorization: Basic {base 64 encoded user:password}'.</li>" +
-                        "</ul>"
+                                "is available as a tab there and thereby joins in the admin web authentication. For service calls however " +
+                                "authentication is only required if you enable it in the configuration (network/rpc-http-transport). " +
+                                "There are 2 variants of authentication for services:" +
+                                "<ul>" +
+                                "<li>http://.../apsrpc/<b>auth:user:password</b>/protocol/...</li>" +
+                                "<li>Basic HTTP authentication using header: 'Authorization: Basic {base 64 encoded user:password}'.</li>" +
+                                "</ul>"
                 );
                 html.tagc("p",
                         "Note that this is only a transport (over http)! It has nothing to say about protocols which is why the " +
-                        "above auth methods are outside of the protocol, only part of this transport. If you make services that you " +
-                        "expose this way it is also possible to leave the authentication config at false and provide authentication in " +
-                        "your service by using the APSSimpleUserService or something else."
+                                "above auth methods are outside of the protocol, only part of this transport. If you make services that you " +
+                                "expose this way it is also possible to leave the authentication config at false and provide authentication " +
+                                "in your service by using the APSSimpleUserService or something else."
                 );
-                
+
                 html.tagc("h2", "Found Protocols");
-                
+
                 for (StreamedRPCProtocol protocol : this.externalProtocolService.getAllStreamedProtocols()) {
                     html.tagc("h3", protocol.getServiceProtocolName() + " : " + protocol.getServiceProtocolVersion());
                     html.tagc("p", protocol.getRPCProtocolDescription());
-                    
+
                     html.tagc("p", "<b>Request URL:</b>&nbsp;http://" + req.getLocalName() + ":" + req.getLocalPort() + "/apsrpc/" +
-                            protocol.getServiceProtocolName() + "/" + protocol.getServiceProtocolVersion() + "[/&lt;service&gt;]");
-                    
+                            protocol.getServiceProtocolName() + "/" + protocol.getServiceProtocolVersion() + "[/&lt;service&gt;][/&lt;method&gt;]");
+
                     String reqContentType = protocol.getRequestContentType();
                     String respContentType = protocol.getResponseContentType();
                     if (reqContentType != null && reqContentType.trim().length() > 0) {
@@ -923,13 +1028,15 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                         html.tagc("p", "<b>Response Content-type:</b> " + respContentType);
                     }
                 }
-        
+
                 html.tagc("h2", "Found Services");
                 for (String service : this.externalProtocolService.getAvailableServices()) {
                     ServiceReference sref = this.bundleContext.getServiceReference(service);
                     if (sref != null) {
-                        html.tagc("p", "<a href=\"" + service + "\">" + service + "</a> <i>Bundle version:</i> " + sref.getBundle().getVersion() +
-                            ", <i>Bundle symbolic name:</i> " + sref.getBundle().getSymbolicName() + ", <i>Bundle id:</i> " + sref.getBundle().getBundleId());
+                        html.tagc("p", "<a href=\"" + service + "\">" + service + "</a> <i>Bundle version:</i> " +
+                                sref.getBundle().getVersion() +
+                                ", <i>Bundle symbolic name:</i> " + sref.getBundle().getSymbolicName() + ", " +
+                                "<i>Bundle id:</i> " + sref.getBundle().getBundleId());
                     }
                 }
             }
@@ -941,43 +1048,43 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     /**
      * Handles the service page showing information about a specific service, like all its methods.
      *
-     * @param html The HTMLWriter to write to.
+     * @param html    The HTMLWriter to write to.
      * @param service The service to show information about.
-     * @param req The HTTPServletRequest.
-     *
+     * @param req     The HTTPServletRequest.
      * @throws IOException
      */
     private void handleServicePage(HTMLWriter html, String service, HttpServletRequest req) throws IOException {
         Set<String> methodNames = this.externalProtocolService.getAvailableServiceFunctionNames(service);
-        
+
         html.tag("html");
         {
             html.tag("body", "", BG_COLOR);
             {
                 html.tagc("h1", "ApplicationPlatformServices (APS) Remote service call over HTTP transport provider");
                 html.tagc("p", "Here the service and all its methods are displayed. Each method is clickable for details on the method.");
-                
+
                 html.tagc("h2", "Service");
                 if (!methodNames.isEmpty()) {
                     html.tagc("h3", service + " {");
                     html.tag("ul");
                     for (String method : methodNames) {
                         APSExternallyCallable<Object> callable = this.externalProtocolService.getCallable(service, method);
-    
+
                         String params = "";
                         String comma = "";
                         for (DataTypeDescription parameter : callable.getParameterDataDescriptions()) {
                             params = params + comma + toTypeName(parameter);
                             comma = ", ";
                         }
-    
+
                         html.tagc("h4", toMethodDecl(callable, service, method));
                     }
                     html.tage("ul");
                     html.tagc("h3", "}");
-                    
+
                     html.tagc("h2", "Protocol URLs");
-                    html.tagc("p", "Please note that even though these urls include the service, not all protocols require the service in the URL!");
+                    html.tagc("p", "Please note that even though these urls include the service, not all protocols require the service in " +
+                            "the URL!");
 
                     for (StreamedRPCProtocol protocol : this.externalProtocolService.getAllStreamedProtocols()) {
                         html.tagc("h3", protocol.getServiceProtocolName() + " : " + protocol.getServiceProtocolVersion());
@@ -986,9 +1093,8 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                                 protocol.getServiceProtocolName() + "/" + protocol.getServiceProtocolVersion() + "/" + service + "/");
                     }
 
-                }
-                else {
-                   html.tagc("h2", "Service '" + service + "' not found!");
+                } else {
+                    html.tagc("h2", "Service '" + service + "' not found!");
                 }
             }
             html.tage("body");
@@ -1000,12 +1106,11 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
      * Handles the method page showing details about a method including parameters, return type, and if no args method the
      * result of the execution of the method.
      *
-     * @param html The HTMLWriter to write to.
+     * @param html    The HTMLWriter to write to.
      * @param service The service the method belongs to.
-     * @param method The method to show information for.
-     * @pararm request
-     *
+     * @param method  The method to show information for.
      * @throws IOException
+     * @pararm request
      */
     private void handleMethodPage(HTMLWriter html, String service, String method, HttpServletRequest request) throws IOException {
         boolean execute = false;
@@ -1025,49 +1130,48 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             html.tag("body", "", BG_COLOR);
             {
                 if (callable != null) {
-                html.tagc("h1", "ApplicationPlatformServices (APS) Remote service call over HTTP transport provider");
-                html.tagc("p",
-                        "This page provides details about a method. "
-                );
-                html.tagc("p",
-                        "The method can be executed by providing the arguments and pressing 'Execute'. For boolean values " +
-                        "specify 'true' or 'false', for floating point numbers specify 'n.n', for long and ints, etc specify " +
-                        "'n', for string values specify \"<i>value</i>\", and for objects specify the object in JSON format " +
-                        "starting with { and ending with }. This is very useful for testing/debugging services."
-                );
-                html.tagc("h2", toMethodDecl(callable, null, method));
-                
-                html.tagc("h3", "Parameters");
-                html.text("<ul>");
-                html.text("<form name=\"input\" action=\"" + method + "-exec\" method=\"post\">");
-                String comma = "";
-                paramPos = 0;
-                for (DataTypeDescription parameter : callable.getParameterDataDescriptions()) {
-                    html.text(comma);
-                    displayDataType(html, parameter);
-                    String value = request.getParameter("param" + paramPos);
-                    if (value == null) value = "";
-                    html.text("&nbsp;&nbsp;&nbsp;&nbsp;<textarea cols=\"60\" rows=\"2\" name=\"param" + paramPos + "\">" + value + "</textarea>");
-                    comma = ",<br/>";
-                    ++paramPos;
-                }
-                html.text("</ul>");
+                    html.tagc("h1", "ApplicationPlatformServices (APS) Remote service call over HTTP transport provider");
+                    html.tagc("p",
+                            "This page provides details about a method. "
+                    );
+                    html.tagc("p",
+                            "The method can be executed by providing the arguments and pressing 'Execute'. For boolean values " +
+                                    "specify 'true' or 'false', for floating point numbers specify 'n.n', for long and ints, etc specify " +
+                                    "'n', for string values specify \"<i>value</i>\", and for objects specify the object in JSON format " +
+                                    "starting with { and ending with }. This is very useful for testing/debugging services."
+                    );
+                    html.tagc("h2", toMethodDecl(callable, null, method));
 
-                html.tagc("h3", "Returntype");
-                html.text("<ul>");
-                displayDataType(html, callable.getReturnDataDescription());
-                }
-                else {
+                    html.tagc("h3", "Parameters");
+                    html.text("<ul>");
+                    html.text("<form name=\"input\" action=\"" + method + "-exec\" method=\"post\">");
+                    String comma = "";
+                    paramPos = 0;
+                    for (DataTypeDescription parameter : callable.getParameterDataDescriptions()) {
+                        html.text(comma);
+                        displayDataType(html, parameter);
+                        String value = request.getParameter("param" + paramPos);
+                        if (value == null) value = "";
+                        html.text("&nbsp;&nbsp;&nbsp;&nbsp;<textarea cols=\"60\" rows=\"2\" name=\"param" + paramPos + "\">" + value +
+                                "</textarea>");
+                        comma = ",<br/>";
+                        ++paramPos;
+                    }
+                    html.text("</ul>");
+
+                    html.tagc("h3", "Returntype");
+                    html.text("<ul>");
+                    displayDataType(html, callable.getReturnDataDescription());
+                } else {
                     html.tagc("h2", "Method '" + method + "' was not found!");
                 }
                 html.text("</ul>");
-                
+
                 html.tagc("h2", "Execution");
                 html.text("<ul>");
                 if (execute) {
                     html.tagc("p", execute(callable, paramPos, request));
-                }
-                else {
+                } else {
                     html.text("<input type=\"submit\" value=\"Execute\"");
                 }
                 html.text("</ul>");
@@ -1075,10 +1179,10 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             }
             html.tage("body");
         }
-        html.tage("html");        
+        html.tage("html");
     }
 
-    private String execute(APSExternallyCallable<Object> callable, int noParams, HttpServletRequest request) throws IOException{
+    private String execute(APSExternallyCallable<Object> callable, int noParams, HttpServletRequest request) throws IOException {
         try {
             String paramFail = null;
             Object[] args = new Object[noParams];
@@ -1089,27 +1193,23 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                     Object paramJavaValue = null;
                     if (paramValue.toLowerCase().equals("true") || paramValue.toLowerCase().equals("false")) {
                         paramJavaValue = Boolean.valueOf(paramValue);
-                    }
-                    else if (paramValue.trim().startsWith("\"")) {
+                    } else if (paramValue.trim().startsWith("\"")) {
                         paramValue = paramValue.trim().substring(1);
                         paramValue = paramValue.substring(0, paramValue.length() - 1);
                         paramJavaValue = paramValue;
-                    }
-                    else if (paramValue.trim().startsWith("{")) {
+                    } else if (paramValue.trim().startsWith("{")) {
                         ByteArrayInputStream bais = new ByteArrayInputStream(paramValue.getBytes());
                         JSONValue jsonObj = this.jsonService.readJSON(bais, null);
                         bais.close();
                         Class javaType = callable.getServiceBundle().loadClass(parameter.getObjectQName());
                         paramJavaValue = this.jsonService.jsonToJava(jsonObj, javaType);
-                    }
-                    else {
+                    } else {
                         if (paramValue.indexOf(".") >= 0) {
                             if (parameter.getDataType() == DataType.DOUBLE)
                                 paramJavaValue = Double.valueOf(paramValue);
                             else if (parameter.getDataType() == DataType.FLOAT)
                                 paramJavaValue = Float.valueOf(paramValue);
-                        }
-                        else if (parameter.getDataType() == DataType.LONG)
+                        } else if (parameter.getDataType() == DataType.LONG)
                             paramJavaValue = Long.valueOf(paramValue);
                         else if (parameter.getDataType() == DataType.INT)
                             paramJavaValue = Integer.valueOf(paramValue);
@@ -1123,8 +1223,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
 
                     }
                     args[p] = paramJavaValue;
-                }
-                else {
+                } else {
                     paramFail = "Parameter #" + p + " was null!";
                 }
                 ++p;
@@ -1139,12 +1238,10 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                 this.jsonService.writeJSON(baos, jsonValue, false);
                 baos.close();
                 return "<pre>" + baos.toString() + "</pre>";
-            }
-            else {
+            } else {
                 return "Bad parameter: " + paramFail;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return "Failed: " + e.getMessage();
         }
     }
@@ -1152,47 +1249,41 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     /**
      * Displays the specified data type.
      *
-     * @param html The HMTLWriter to display on.
+     * @param html     The HMTLWriter to display on.
      * @param dataType The data type to display.
-     *
      * @throws IOException
      */
     private void displayDataType(HTMLWriter html, DataTypeDescription dataType) throws IOException {
         if (!dataType.getDataType().isStructured()) {
             html.text(toTypeName(dataType));
-        }
-        else {
+        } else {
             if (dataType.hasMembers()) {
                 html.text(toTypeName(dataType) + " {");
-                    html.text("<ul>");
-                        for (String memberName : dataType.getMemberNames()) {
-                            displayDataType(html, dataType.getMemberDataDescriptionByName(memberName));
-                            html.text(" " + memberName + ";<br/>");
-                        }
-                    html.text("</ul>");
+                html.text("<ul>");
+                for (String memberName : dataType.getMemberNames()) {
+                    displayDataType(html, dataType.getMemberDataDescriptionByName(memberName));
+                    html.text(" " + memberName + ";<br/>");
+                }
+                html.text("</ul>");
                 html.text("}");
-            }
-            else {
+            } else {
                 if (dataType.getDataType() == DataType.LIST) {
                     html.text(dataType.getDataType().getTypeName() + "&lt;?&gt;");
-                }
-                else if (dataType.getDataType() == DataType.MAP) {
+                } else if (dataType.getDataType() == DataType.MAP) {
                     html.text(dataType.getDataType().getTypeName() + "&lt;?,?&gt;");
-                }
-                else {
+                } else {
                     html.text(toTypeName(dataType));
                 }
             }
         }
     }
-    
+
     /**
      * Creates a displayable method declaration.
      *
      * @param callable The callable to create the method declaration from.
-     * @param service The service the method belongs to. If this is provided the method name will be a link. If null no link will be created.
-     * @param method The name of the method.
-     *
+     * @param service  The service the method belongs to. If this is provided the method name will be a link. If null no link will be created.
+     * @param method   The name of the method.
      * @return A String with a full method declaration.
      */
     private String toMethodDecl(APSExternallyCallable<Object> callable, String service, String method) {
@@ -1205,25 +1296,24 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             String typeName = toTypeName(parameter);
             if (typeName.indexOf('.') > 0) {
                 String[] parts = typeName.split("\\.");
-                typeName = parts[parts.length-1];
+                typeName = parts[parts.length - 1];
             }
             params = params + comma + typeName;
             comma = ", ";
         }
-        
+
         if (service != null) {
             return toTypeName(callable.getReturnDataDescription()) + " <a href=\"" + service + "/" + method + "\">" + method +
-                "</a> (" + params + ");";
-        }
-        else {
+                    "</a> (" + params + ");";
+        } else {
             return toTypeName(callable.getReturnDataDescription()) + " " + method + " (" + params + ");";
         }
     }
+
     /**
      * Builds a displayable type name from a DataTypeDescription.
      *
      * @param dataTypeDescription The DataTypeDescripion to build a display name from.
-     *
      * @return A type name.
      */
     private String toTypeName(DataTypeDescription dataTypeDescription) {
@@ -1241,23 +1331,25 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
         //
         // Private Members
         //
-        
-        /** The stream to write to. */
+
+        /**
+         * The stream to write to.
+         */
         private OutputStream out = null;
-        
+
         //
         // Constructors
         //
 
         /**
          * Creates a new HTMLWriter instance.
-         * 
+         *
          * @param out The OutputStream to write to.
          */
         public HTMLWriter(OutputStream out) {
             this.out = out;
         }
-        
+
         //
         // Methods
         //
@@ -1266,40 +1358,37 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
          * Writes to output stream with some conversions.
          *
          * @param text The text to write.
-         *
          * @throws IOException
          */
         private void write(String text) throws IOException {
             String[] parts = text.split(" ");
-            
+
             for (String part : parts) {
                 if (part.startsWith("http://") || part.startsWith("https://")) {
                     String link = "<a href=\"" + part + "\">" + part + "</a>";
                     text = text.replace(part, link);
                 }
             }
-            
+
             this.out.write(text.getBytes());
         }
-        
+
         /**
          * Writes text.
          *
          * @param content The text to write.
-         *                
          * @throws IOException
          */
         public void text(String content) throws IOException {
             write(content);
         }
-        
+
         /**
          * Writes an html tag.
          *
-         * @param tag The tag to write.
-         * @param content The content of the tag.
+         * @param tag        The tag to write.
+         * @param content    The content of the tag.
          * @param attributes The attributes of the tag. Example: "color=#ffffff".
-         *
          * @throws IOException The one and only!
          */
         public void tag(String tag, String content, String... attributes) throws IOException {
@@ -1319,9 +1408,8 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
         /**
          * Writes an html tag.
          *
-         * @param tag The tag to write.
+         * @param tag     The tag to write.
          * @param content The content of the tag.
-         *
          * @throws IOException The one and only!
          */
         public void tag(String tag, String content) throws IOException {
@@ -1331,8 +1419,8 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
         /**
          * Writes a complete ending tag.
          *
-         * @param tag The tag to write.
-         * @param content The content of the tag.
+         * @param tag        The tag to write.
+         * @param content    The content of the tag.
          * @param attributes The attributes of the tag.
          * @throws IOException
          */
@@ -1344,7 +1432,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
         /**
          * Writes a complete ending tag.
          *
-         * @param tag The tag to write.
+         * @param tag     The tag to write.
          * @param content The content of the tag.
          * @throws IOException
          */
@@ -1357,7 +1445,6 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
          * Writes an html tag.
          *
          * @param tag The tag to write.
-         *
          * @throws IOException The one and only!
          */
         public void tag(String tag) throws IOException {
@@ -1368,7 +1455,6 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
          * Writes an end tag.
          *
          * @param tag The tag to end.
-         *
          * @throws IOException
          */
         public void tage(String tag) throws IOException {

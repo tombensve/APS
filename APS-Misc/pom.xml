@@ -6,7 +6,7 @@
             APS Misc Services
         
         Code Version
-            0.9.0
+            0.9.1
         
         Description
             Miscellaneous APS Service Providers
@@ -41,7 +41,7 @@
     <parent>
         <artifactId>APS</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version><!--APSVER-->0.9.0</version>
+        <version><!--APSVER-->0.9.1</version>
         <relativePath>..</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>

@@ -6,7 +6,7 @@
             APS Configuration Service Provider
         
         Code Version
-            0.9.0
+            0.9.1
         
         Description
             A more advanced configuration service that uses annotated interfaces to
@@ -42,7 +42,7 @@
     <parent>
         <artifactId>APS-Core</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version><!--APSVER-->0.9.0</version>
+        <version><!--APSVER-->0.9.1</version>
     </parent>
 
     <groupId>se.natusoft.osgi.aps</groupId>

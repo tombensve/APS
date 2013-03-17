@@ -5,7 +5,7 @@
  *         APS Streamed JSONRPC Protocol Provider
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         Provides JSONRPC implementations for version 1.0 and 2.0.
@@ -42,8 +42,9 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
 import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
-import se.natusoft.osgi.aps.jsonrpc.versions.JSONRPC10;
-import se.natusoft.osgi.aps.jsonrpc.versions.JSONRPC20;
+import se.natusoft.osgi.aps.jsonrpc.protocols.JSONHTTP;
+import se.natusoft.osgi.aps.jsonrpc.protocols.JSONRPC10;
+import se.natusoft.osgi.aps.jsonrpc.protocols.JSONRPC20;
 import se.natusoft.osgi.aps.tools.APSLogger;
 import se.natusoft.osgi.aps.tools.APSServiceTracker;
 
@@ -67,6 +68,9 @@ public class APSStreamedJSONRPCServiceActivator implements BundleActivator {
 
     /** The JSONRPC 2.0 service registration. */
     private ServiceRegistration jsonRPC20ServiceReg = null;
+
+    /** The JSONHTTP 1.0 service registration. */
+    private ServiceRegistration jsonHTTPServiceReg = null;
 
     // Other Members
     
@@ -97,6 +101,12 @@ public class APSStreamedJSONRPCServiceActivator implements BundleActivator {
         jsonRPC20ServiceProps.put(Constants.SERVICE_PID, JSONRPC20.class.getName());
         this.jsonRPC20ServiceReg =
                 context.registerService(StreamedRPCProtocol.class.getName(), jsonrpc20, jsonRPC20ServiceProps);
+
+        JSONHTTP jsonHTTP = new JSONHTTP(this.logger, jsonService);
+        Dictionary jsonHTTPServiceProps = new Properties();
+        jsonHTTPServiceProps.put(Constants.SERVICE_PID, JSONHTTP.class.getName());
+        this.jsonHTTPServiceReg =
+                context.registerService(StreamedRPCProtocol.class.getName(), jsonHTTP, jsonHTTPServiceProps);
     }
 
     //
@@ -118,6 +128,13 @@ public class APSStreamedJSONRPCServiceActivator implements BundleActivator {
             try {
                 this.jsonRPC20ServiceReg.unregister();
                 this.jsonRPC20ServiceReg = null;
+            }
+            catch (IllegalStateException ise) { stopMsg += (" | " + ise.getMessage()); }
+        }
+        if (this.jsonHTTPServiceReg != null) {
+            try {
+                this.jsonHTTPServiceReg.unregister();
+                this.jsonHTTPServiceReg = null;
             }
             catch (IllegalStateException ise) { stopMsg += (" | " + ise.getMessage()); }
         }

@@ -5,7 +5,7 @@
  *         APS APIs
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         Provides the APIs for the application platform services.
@@ -39,7 +39,8 @@ package se.natusoft.osgi.aps.api.net.rpc.errors;
 /**
  * This defines what I think is a rather well though through set of error types applicable
  * for an RPC call. No they are not mine, they come from Matt Morley in his JSONRPC 2.0 specification
- * at http://jsonrpc.org/spec.html.
+ * at http://jsonrpc.org/spec.html. I did add SERVICE_NOT_FOUND since it is fully possible to try to
+ * call a service that does not exist.
  */
 public enum ErrorType {
     /**
@@ -58,6 +59,11 @@ public enum ErrorType {
     METHOD_NOT_FOUND,
 
     /**
+     * The called service does not exist / is not available.
+     */
+    SERVICE_NOT_FOUND,
+
+    /**
      * The parameters to the method are invalid.
      */
     INVALID_PARAMS,
@@ -68,15 +74,8 @@ public enum ErrorType {
     INTERNAL_ERROR,
 
     /**
-     * Server related errors.
+     * Server related error.
      */
-    SERVER_ERROR,
-
-    // -- My additions --
-
-    /**
-     * This means the protocol is of REST type and should return a HTTP status code.
-     */
-    REST
+    SERVER_ERROR
 
 }

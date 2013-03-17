@@ -284,7 +284,7 @@ _Parameters_
 
 public _class_ __APSRESTException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.rpc.errors] {
 
->  This is a special exception that services can throw if they are intended to be available as REST services through the APSExternalProtocolExtender+APSRPCHTTPTransportProvider. This allows for better control over status codes returned by the service call. 
+>  This is a special exception that services can throw if they are intended to be available as REST services through the APSExternalProtocolExtender + APSRPCHTTPTransportProvider. This allows for better control over status codes returned by the service call. 
 
 
 
@@ -318,7 +318,7 @@ __public int getHttpStatusCode()__
 
 public _enum_ __ErrorType__   [se.natusoft.osgi.aps.api.net.rpc.errors] {
 
->  This defines what I think is a rather well though through set of error types applicable for an RPC call. No they are not mine, they come from Matt Morley in his JSONRPC 2.0 specification at http://jsonrpc.org/spec.html. 
+>  This defines what I think is a rather well though through set of error types applicable for an RPC call. No they are not mine, they come from Matt Morley in his JSONRPC 2.0 specification at http://jsonrpc.org/spec.html. I did add SERVICE_NOT_FOUND since it is fully possible to try to call a service that does not exist. 
 
 __PARSE_ERROR__
 
@@ -332,6 +332,10 @@ __METHOD_NOT_FOUND__
 
 >  The called method does not exist / is not available. 
 
+__SERVICE_NOT_FOUND__
+
+>  The called service does not exist / is not available. 
+
 __INVALID_PARAMS__
 
 >  The parameters to the method are invalid. 
@@ -342,11 +346,25 @@ __INTERNAL_ERROR__
 
 __SERVER_ERROR__
 
->  Server related errors. 
+>  Server related error. 
 
-__REST__
+}
 
->  This means the protocol is of REST type and should return a HTTP status code. 
+----
+
+    
+
+public _interface_ __HTTPError__ extends  RPCError    [se.natusoft.osgi.aps.api.net.rpc.errors] {
+
+>  Extends RPCError with an HTTP status code. HTTP transports can make use of this information. 
+
+__public int getHttpStatusCode()__
+
+>  
+
+_Returns_
+
+> Returns an http status code.
 
 }
 
@@ -362,9 +380,9 @@ __public ErrorType getErrorType()__
 
 >  The type of the error. 
 
-__public int getRESTHttpStatusCode()__
+__public String getErrorCode()__
 
->  This should return a valid http status code if ErrorType == REST. 
+>  A potential error code. 
 
 __public String getMessage()__
 
@@ -377,6 +395,34 @@ __public boolean hasOptionalData()__
 __public String getOptionalData()__
 
 >  The optional data. 
+
+}
+
+----
+
+    
+
+public _class_ __RequestedParamNotAvailableException__ extends  APSException    [se.natusoft.osgi.aps.api.net.rpc.exceptions] {
+
+>  This exception is thrown when a parameter request cannot be fulfilled. 
+
+__public RequestedParamNotAvailableException(String message)__
+
+>  Creates a new APSException instance.  
+
+_Parameters_
+
+> _message_ - The exception message. 
+
+__public RequestedParamNotAvailableException(String message, Throwable cause)__
+
+>  Creates a new APSException instance.  
+
+_Parameters_
+
+> _message_ - The exception message. 
+
+> _cause_ - The cause of this exception. 
 
 }
 
@@ -464,13 +510,13 @@ _Parameters_
 
 
 
+__public void addParameter(Object parameter)__
 
+>  Adds a parameter. This is mutually exclusive with addParameter(name, parameter)!  
 
+_Parameters_
 
-
-
-
-
+> _parameter_ - The parameter to add. 
 
 }
 
@@ -514,24 +560,6 @@ __Object getCallId()__
 
 > A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont. 
 
-__void addParameter(Object parameter)__
-
->  Adds a parameter. This is mutually exclusive with addParameter(name, parameter)!  
-
-_Parameters_
-
-> _parameter_ - The parameter to add. 
-
-__void addNamedParameter(String name, Object parameter)__
-
->  Adds a named parameter. This is mutually exclusive with addParameter(parameter)!  
-
-_Parameters_
-
-> _name_ - The name of the parameter. 
-
-> _parameter_ - The parameter to add. 
-
 __int getNumberOfParameters()__
 
 >  
@@ -540,13 +568,13 @@ _Returns_
 
 > The number of parameters available.
 
-__<T> T getParameter(int index, Class<T> paramClass)__
+__<T> T getIndexedParameter(int index, Class<T> paramClass) throws RequestedParamNotAvailableException__
 
 >  Returns the parameter at the specified index.  
 
 _Returns_
 
-> The parameter object.
+> The parameter object or null if indexed parameters cannot be delivered.
 
 _Parameters_
 
@@ -554,35 +582,9 @@ _Parameters_
 
 > _paramClass_ - The expected class of the parameter. 
 
-__boolean hasNamedParameters()__
+_Throws_
 
->  
-
-_Returns_
-
-> true if there are named parameters available. If false the plain parameter list should be used.
-
-__Set<String> getParameterNames()__
-
->  
-
-_Returns_
-
-> The available parameter names.
-
-__<T> T getNamedParameter(String name, Class<T> paramClass)__
-
->  
-
-_Returns_
-
-> A named parameter.
-
-_Parameters_
-
-> _name_ - The name of the parameter to get. 
-
-> _paramClass_ - The expected class of the parameter. 
+> _RequestedParamNotAvailableException_ - if requested parameter is not available. 
 
 }
 
@@ -634,21 +636,35 @@ _Returns_
 
 > A short description of the provided service. This should be in plain text.
 
-__RPCError createRPCError(ErrorType errorType, String message, String optionalData)__
+__RPCError createRPCError(ErrorType errorType, String errorCode, String message, String optionalData, Throwable cause)__
 
 >  Factory method to create an error object.  
 
 _Returns_
 
-> An RPCError implementation.
+> An RPCError implementation or null if not handled by the protocol implementation.
 
 _Parameters_
 
 > _errorType_ - The type of the error. 
 
+> _errorCode_ - An error code representing the error. 
+
 > _message_ - An error message. 
 
 > _optionalData_ - Whatever optional data you want to pass along or null. 
+
+> _cause_ - The cause of the error. 
+
+}
+
+----
+
+    
+
+public _interface_ __StreamedHTTPProtocol__ extends  StreamedRPCProtocol    [se.natusoft.osgi.aps.api.net.rpc.service] {
+
+>  This is a marker interface indicating that the protocol is really assuming a HTTP transport and is expecting to be able to return http status codes. This also means it will be returning an HTTPError (which extends RPCError) from _createError(...)_.  It might be difficult for non HTTP transports to support this kind of protocol, and such should probably ignore these protocols. For example a REST implementation of this protocol will not be writing any error response back, but rather expect the transport to deliver the http status code it provides. A non HTTP transport will not be able to know how to communicate back errors in this case since it will not know anything about the protocol itself. 
 
 }
 
@@ -658,13 +674,9 @@ _Parameters_
 
 public _interface_ __StreamedRPCProtocol__ extends  RPCProtocol    [se.natusoft.osgi.aps.api.net.rpc.service] {
 
->  This represents an RPC protocol provider that provide client/service calls with requests read from an InputStream and responses written to an OutputStream. 
+>  This represents an RPC protocol provider that provide client/service calls with requests read from an InputStream or having parameters passes as strings and responses written to an OutputStream.  HTTP transports can support both _parseRequests(...)_ and _parseRequest(...)_ while other transports probably can handle only _parseRequests(...)_. __A protocol provider can return null for either of these!__ Most protocol providers will support _parseRequests(...)_ and some also _parseRequest(...)_. 
 
-__boolean isREST()__
-
->  Returns true if the protocol is a REST protocol. 
-
-__List<RPCRequest> parseRequests(String serviceQName, InputStream requestStream) throws IOException__
+__List<RPCRequest> parseRequests(String serviceQName, String method, InputStream requestStream) throws IOException__
 
 >  Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.  
 
@@ -676,7 +688,29 @@ _Parameters_
 
 > _serviceQName_ - A fully qualified name to the service to call. This can be null if service name is provided on the stream. 
 
+> _method_ - The method to call. This can be null if method name is provided on the stream. 
+
 > _requestStream_ - The stream to parse request from. 
+
+_Throws_
+
+> _IOException_ - on IO failure. 
+
+__RPCRequest parseRequest(String serviceQName, String method, Map<String, String> parameters) throws IOException__
+
+>  Provides an RPCRequest based on in-parameters. This variant supports HTTP transports.  
+
+_Returns_
+
+> The parsed requests.
+
+_Parameters_
+
+> _serviceQName_ - A fully qualified name to the service to call. This can be null if service name is provided on the stream. 
+
+> _method_ - The method to call. This can be null if method name is provided on the stream. 
+
+> _parameters_ - parameters passed as a 
 
 _Throws_
 
@@ -698,9 +732,13 @@ _Throws_
 
 > _IOException_ - on IO failure. 
 
-__void writeErrorResponse(RPCError error, RPCRequest request, OutputStream responseStream) throws IOException__
+__boolean writeErrorResponse(RPCError error, RPCRequest request, OutputStream responseStream) throws IOException__
 
 >  Writes an error response.  
+
+_Returns_
+
+> true if this call was handled and an error response was written. It returns false otherwise.
 
 _Parameters_
 
@@ -713,24 +751,6 @@ _Parameters_
 _Throws_
 
 > _IOException_ - on IO failure. 
-
-__RPCError createRESTError(int httpStatusCode)__
-
->  Returns an RPCError for a REST protocol with a http status code.  
-
-_Parameters_
-
-> _httpStatusCode_ - The http status code to return. 
-
-__RPCError createRESTError(int httpStatusCode, String message)__
-
->  Returns an RPCError for a REST protocol with a http status code.  
-
-_Parameters_
-
-> _httpStatusCode_ - The http status code to return. 
-
-> _message_ - An error message. 
 
 }
 

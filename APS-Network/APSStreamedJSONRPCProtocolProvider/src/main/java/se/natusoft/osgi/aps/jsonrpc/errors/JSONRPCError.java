@@ -5,7 +5,7 @@
  *         APS Streamed JSONRPC Protocol Provider
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         Provides JSONRPC implementations for version 1.0 and 2.0.
@@ -107,14 +107,6 @@ public class JSONRPCError extends APSRuntimeException implements RPCError {
     //
 
     /**
-     * @return The error code.
-     */
-    public int getSvcImplErrorCodeOffset() {
-        return this.svcImplErrorCodeOffset;
-    }
-
-
-    /**
      * @return The type of the error.
      */
     public ErrorType getErrorType() {
@@ -122,11 +114,11 @@ public class JSONRPCError extends APSRuntimeException implements RPCError {
     }
 
     /**
-     * This should return a valid http status code if ErrorType == REST.
+     * A potential error code.
      */
     @Override
-    public int getRESTHttpStatusCode() {
-        return -1;
+    public String getErrorCode() {
+        return "" + this.svcImplErrorCodeOffset;
     }
 
     /**

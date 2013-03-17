@@ -5,7 +5,7 @@
  *         APS Discovery Service Provider
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         This is a simple discovery service to discover other services on the network.

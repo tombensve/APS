@@ -5,7 +5,7 @@
  *         APS APIs
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         Provides the APIs for the application platform services.
@@ -47,9 +47,9 @@ public interface RPCError {
     public ErrorType getErrorType();
 
     /**
-     * This should return a valid http status code if ErrorType == REST.
+     * A potential error code.
      */
-    public int getRESTHttpStatusCode();
+    public String getErrorCode();
 
     /**
      * Returns an error message. This is also optional.

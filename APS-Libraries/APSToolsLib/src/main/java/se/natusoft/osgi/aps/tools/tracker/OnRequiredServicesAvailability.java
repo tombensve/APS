@@ -5,7 +5,7 @@
  *         APS Tools Library
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         Provides a library of utilities, among them APSServiceTracker used by all other APS bundles.

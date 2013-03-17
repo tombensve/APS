@@ -6,7 +6,7 @@
             APS Filesystem Service Provider
         
         Code Version
-            0.9.0
+            0.9.1
         
         Description
             Provides access to a service/application private filesystem that remains until the
@@ -42,7 +42,7 @@
     <parent>
         <artifactId>APS-Core</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version><!--APSVER-->0.9.0</version>
+        <version><!--APSVER-->0.9.1</version>
         <relativePath>..</relativePath>
     </parent>
 

@@ -5,7 +5,7 @@
  *         APS APIs
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         Provides the APIs for the application platform services.
@@ -32,13 +32,13 @@
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2012-01-30: Created!
+ *         2013-03-15: Removed 2 brain-dead methods!
  *         
  */
 package se.natusoft.osgi.aps.api.net.rpc.model;
 
 import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
-
-import java.util.Set;
+import se.natusoft.osgi.aps.api.net.rpc.exceptions.RequestedParamNotAvailableException;
 
 /**
  */
@@ -83,21 +83,6 @@ public interface RPCRequest {
     Object getCallId();
 
     /**
-     * Adds a parameter. This is mutually exclusive with addParameter(name, parameter)!
-     *
-     * @param parameter The parameter to add.
-     */
-    void addParameter(Object parameter);
-
-    /**
-     * Adds a named parameter. This is mutually exclusive with addParameter(parameter)!
-     *
-     * @param name The name of the parameter.
-     * @param parameter The parameter to add.
-     */
-    void addNamedParameter(String name, Object parameter);
-
-    /**
      * @return The number of parameters available.
      */
     int getNumberOfParameters();
@@ -108,25 +93,9 @@ public interface RPCRequest {
      * @param index The index of the parameter to get.
      * @param paramClass The expected class of the parameter.              
      *
-     * @return The parameter object.
-     */
-    <T> T getParameter(int index, Class<T> paramClass);
-
-    /**
-     * @return true if there are named parameters available. If false the plain parameter list should be used.
-     */
-    boolean hasNamedParameters();
-
-    /**
-     * @return The available parameter names.
-     */
-    Set<String> getParameterNames();
-
-    /**
-     * @param name The name of the parameter to get.
-     * @param paramClass The expected class of the parameter.
+     * @return The parameter object or null if indexed parameters cannot be delivered.
      *
-     * @return A named parameter.
+     * @throws RequestedParamNotAvailableException if requested parameter is not available.
      */
-    <T> T getNamedParameter(String name, Class<T> paramClass);
+    <T> T getIndexedParameter(int index, Class<T> paramClass) throws RequestedParamNotAvailableException;
 }

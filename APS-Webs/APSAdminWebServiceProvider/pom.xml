@@ -6,7 +6,7 @@
             APS Administration Web Registration Service
         
         Code Version
-            0.9.0
+            0.9.1
         
         Description
             The service for registering admin webs with aps-admin-web.
@@ -41,7 +41,7 @@
   <parent>
 	    <artifactId>APS-Webs</artifactId>
     	<groupId>se.natusoft.osgi.aps</groupId>
-    	<version><!--APSVER-->0.9.0</version>
+    	<version><!--APSVER-->0.9.1</version>
         <relativePath>..</relativePath>
   </parent>
   

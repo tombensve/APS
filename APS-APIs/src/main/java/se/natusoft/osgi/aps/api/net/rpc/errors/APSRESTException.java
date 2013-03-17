@@ -5,7 +5,7 @@
  *         APS APIs
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         Provides the APIs for the application platform services.
@@ -40,7 +40,7 @@ import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
 
 /**
  * This is a special exception that services can throw if they are intended to be available as REST services
- * through the APSExternalProtocolExtender+APSRPCHTTPTransportProvider. This allows for better control over
+ * through the APSExternalProtocolExtender + APSRPCHTTPTransportProvider. This allows for better control over
  * status codes returned by the service call.
  */
 public class APSRESTException extends APSRuntimeException {

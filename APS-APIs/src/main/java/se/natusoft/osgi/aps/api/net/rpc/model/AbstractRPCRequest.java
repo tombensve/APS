@@ -5,7 +5,7 @@
  *         APS APIs
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         Provides the APIs for the application platform services.
@@ -38,7 +38,10 @@ package se.natusoft.osgi.aps.api.net.rpc.model;
 
 import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This contains a parsed JSONRPC request.
@@ -181,27 +184,6 @@ public abstract class AbstractRPCRequest implements RPCRequest {
     public Object getCallId() {
         return this.callId;
     }
-    
-    /**
-     * Adds a parameter. This is mutually exclusive with addParameter(name, parameter)!
-     * 
-     * @param parameter The parameter to add.
-     */
-    @Override
-    public void addParameter(Object parameter) {
-        this.parameters.add(parameter);
-    }
-
-    /**
-     * Adds a named parameter. This is mutually exclusive with addParameter(parameter)!
-     * 
-     * @param name The name of the parameter.
-     * @param parameter The parameter to add.
-     */
-    @Override
-    public void addNamedParameter(String name, Object parameter) {
-        this.namedParameters.put(name, parameter);
-    }
 
     /**
      * @return The number of parameters available.
@@ -212,18 +194,12 @@ public abstract class AbstractRPCRequest implements RPCRequest {
     }
 
     /**
-     * @return true if there are named parameters available. If false the plain parameter list should be used.
+     * Adds a parameter. This is mutually exclusive with addParameter(name, parameter)!
+     *
+     * @param parameter The parameter to add.
      */
-    @Override
-    public boolean hasNamedParameters() {
-        return !this.namedParameters.isEmpty();
+    public void addParameter(Object parameter) {
+        this.parameters.add(parameter);
     }
 
-    /**
-     * @return The available parameter names.
-     */
-    @Override
-    public Set<String> getParameterNames() {
-        return this.namedParameters.keySet();
-    }
 }

@@ -6,7 +6,7 @@
             APS Configuration Admin Web
         
         Code Version
-            0.9.0
+            0.9.1
         
         Description
             Edits configurations registered with the APSConfigurationService.
@@ -41,7 +41,7 @@
     <parent>
         <artifactId>APS-Webs</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version><!--APSVER-->0.9.0</version>
+        <version><!--APSVER-->0.9.1</version>
     </parent>
     
     <groupId>se.natusoft.osgi.aps</groupId>
@@ -120,7 +120,7 @@
             package list here is due to that we have most of our dependencies embedded locally in the WAR/VAB. The reason for
             that is that even though the Vaadin jar is an OSGi bundle we cannot deploy it separately as its own bundle since
             we are a web application managed by a web.xml, where the web container creates the Vaadin servlet and passes the
-            init params to it, which includes the fully qualified class name of APSConfigAdminWebApp. Now the Vaadin servlet
+            init urlParams to it, which includes the fully qualified class name of APSConfigAdminWebApp. Now the Vaadin servlet
             tries to load and instantiate this class and for that to succeed the class has to be available in the classpath
             of the vaadin servlet. If the Vaadin servlet was deployed as an OSGi bundle then it has its own class loader
             which import nothing from this bundle since it doesn't know anything about this bundle, thereby making it
