@@ -57,7 +57,7 @@ public enum DataType {
     SHORT(true, "Short"),
 
     /** A standard integer (32 bits) */
-    INT(true, "Int"),
+    INT(true, "Integer"),
 
     /** A long integer (64 bitrs) */
     LONG(true, "Long"),

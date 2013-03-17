@@ -1070,12 +1070,12 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                     for (String method : methodNames) {
                         APSExternallyCallable<Object> callable = this.externalProtocolService.getCallable(service, method);
 
-                        String params = "";
-                        String comma = "";
-                        for (DataTypeDescription parameter : callable.getParameterDataDescriptions()) {
-                            params = params + comma + toTypeName(parameter);
-                            comma = ", ";
-                        }
+//                        String params = "";
+//                        String comma = "";
+//                        for (DataTypeDescription parameter : callable.getParameterDataDescriptions()) {
+//                            params = params + comma + toTypeName(parameter);
+//                            comma = ", ";
+//                        }
 
                         html.tagc("h4", toMethodDecl(callable, service, method));
                     }
@@ -1304,7 +1304,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
 
         if (service != null) {
             return toTypeName(callable.getReturnDataDescription()) + " <a href=\"" + service + "/" + method + "\">" + method +
-                    "</a> (" + params + ");";
+                    "</a>;";
         } else {
             return toTypeName(callable.getReturnDataDescription()) + " " + method + " (" + params + ");";
         }

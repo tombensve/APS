@@ -53,6 +53,7 @@ package se.natusoft.osgi.aps.externalprotocolextender.model;
 
 import org.osgi.framework.ServiceReference;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternallyCallable;
+import se.natusoft.osgi.aps.api.external.model.type.DataType;
 import se.natusoft.osgi.aps.api.external.model.type.ParameterDataTypeDescription;
 
 import java.util.HashMap;
@@ -147,7 +148,12 @@ public class ServiceRepresentation {
         String comma = "";
         for (ParameterDataTypeDescription param : callable.getParameterDataDescriptions()) {
             methodName.append(comma);
-            methodName.append(param.getDataType().getTypeName());
+            if (param.getDataType() == DataType.OBJECT) {
+                methodName.append(param.getDataTypeClass().getSimpleName());
+            }
+            else {
+                methodName.append(param.getDataType().getTypeName());
+            }
             comma = ",";
         }
         methodName.append(')');

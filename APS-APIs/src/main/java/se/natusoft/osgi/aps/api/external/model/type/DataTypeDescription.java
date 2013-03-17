@@ -54,6 +54,9 @@ public class DataTypeDescription {
     /** The type of the data of this description. */
     private DataType dataType = null;
 
+    /** The original class that this description came from. */
+    private Class dataTypeClass = null;
+
     /** The members of this data description. */
     private Map<String, DataTypeDescription> members = new HashMap<String, DataTypeDescription>();
     
@@ -187,5 +190,21 @@ public class DataTypeDescription {
      */
     public DataTypeDescription getMemberDataDescriptionByName(String name) {
         return this.members.get(name);
+    }
+
+    /**
+     * Sets the original class this data type description came from.
+     *
+     * @param clazz The class to set.
+     */
+    public void setDataTypeClass(Class clazz) {
+        this.dataTypeClass = dataTypeClass;
+    }
+
+    /**
+     * @return The original class this data type description came from.
+     */
+    public Class getDataTypeClass() {
+        return this.dataTypeClass;
     }
 }

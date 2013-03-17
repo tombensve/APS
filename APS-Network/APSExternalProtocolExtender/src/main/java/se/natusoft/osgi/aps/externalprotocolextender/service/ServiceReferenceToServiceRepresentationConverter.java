@@ -261,6 +261,7 @@ public class ServiceReferenceToServiceRepresentationConverter implements Trivial
                         ParameterDataTypeDescription parameterDataDescription = new ParameterDataTypeDescription();
                         parameterDataDescription.setPosition(paramPos++);
                         createClassDescription(parameterDataDescription, parameterType);
+                        parameterDataDescription.setDataTypeClass(parameterType);
 
                         serviceMethodCallable.addParamterDataDescription(parameterDataDescription);
                     }

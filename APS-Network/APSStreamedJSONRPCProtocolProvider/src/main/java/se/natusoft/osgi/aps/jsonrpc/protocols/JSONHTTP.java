@@ -38,7 +38,6 @@ package se.natusoft.osgi.aps.jsonrpc.protocols;
 
 import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONArray;
-import se.natusoft.osgi.aps.api.misc.json.model.JSONObject;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
 import se.natusoft.osgi.aps.api.net.rpc.errors.ErrorType;
@@ -122,8 +121,8 @@ public class JSONHTTP implements StreamedHTTPProtocol {
                         "'" + jsonReqValue + "' was received!", null, cce);
             }
 
-            if (jsonReq != null && !(jsonReq instanceof  JSONObject)) {
-                throw new JSONRESTError(ErrorType.INVALID_REQUEST, 400, "Bad request! Requires no input or *one* JSON object!", null, null);
+            if (jsonReq != null && !(jsonReq instanceof  JSONArray)) {
+                throw new JSONRESTError(ErrorType.INVALID_REQUEST, 400, "Bad request! Requires no input or *one* JSON array!", null, null);
             }
 
             JSONRESTRequest req = new JSONRESTRequest(serviceQName, method, jsonReq.getAsList(), null);
