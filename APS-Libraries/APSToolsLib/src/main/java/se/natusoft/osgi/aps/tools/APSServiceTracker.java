@@ -1083,6 +1083,12 @@ public class APSServiceTracker<Service>  implements ServiceListener{
                     if (APSServiceTracker.this.logger != null) {
                         APSServiceTracker.this.logger.error("Failed to run an OnServiceAvailable callback for active service!", e);
                     }
+                    else {
+                        System.out.println("___________________________________________________________________________________");
+                        System.out.println("APSServiceTracker: Failed to run an OnServiceAvailable callback for active service!");
+                        e.printStackTrace();
+                        System.out.println("___________________________________________________________________________________");
+                    }
                 }
                 finally {
                     if (this.reference != null) {
@@ -1098,6 +1104,12 @@ public class APSServiceTracker<Service>  implements ServiceListener{
                 catch (Exception e) {
                     if (APSServiceTracker.this.logger != null) {
                         APSServiceTracker.this.logger.error("Failed to run an OnServiceLeaving callback for active service!", e);
+                    }
+                    else {
+                        System.out.println("___________________________________________________________________________________");
+                        System.out.println("APSServiceTracker: Failed to run an OnServiceLeaving callback for active service!");
+                        e.printStackTrace();
+                        System.out.println("___________________________________________________________________________________");
                     }
                 }
             }
