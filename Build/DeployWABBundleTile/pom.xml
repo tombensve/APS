@@ -79,7 +79,7 @@
                         <phase>install</phase>
                         <configuration>
                             <sourceFile>${project.build.directory}/${project.build.finalName}.war</sourceFile>
-                            <destFile>/Users/tommy/Development/servers/virgo/pickup/${project.build.finalName}.war</destFile>
+                            <destFile>${server.deploy.dir}/${project.build.finalName}.war</destFile>
                         </configuration>
                     </execution>
                 </executions>

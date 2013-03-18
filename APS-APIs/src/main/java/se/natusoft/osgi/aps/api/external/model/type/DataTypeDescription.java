@@ -195,9 +195,9 @@ public class DataTypeDescription {
     /**
      * Sets the original class this data type description came from.
      *
-     * @param clazz The class to set.
+     * @param dataTypeClass The class to set.
      */
-    public void setDataTypeClass(Class clazz) {
+    public void setDataTypeClass(Class dataTypeClass) {
         this.dataTypeClass = dataTypeClass;
     }
 
