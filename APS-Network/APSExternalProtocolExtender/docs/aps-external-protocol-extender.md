@@ -74,6 +74,22 @@ _Throws_
 
 > _RuntimeException_ - If the service is not available. 
 
+__public boolean isRESTCallable(String serviceName) throws RuntimeException__
+
+>  Returns true if the service has put*(...), get*(...), and/or delete*(...) methods.  
+
+_Parameters_
+
+> _serviceName_ - The service to check if it has any REST methods. 
+
+__public APSRESTCallable getRESTCallable(String serviceName)__
+
+>  Returns an APSRESTCallable containing one or more of post, put.get, and delete methods.  
+
+_Parameters_
+
+> _serviceName_ - The name of the service to get the REST Callables for. 
+
 __public Set<String> getAvailableServiceFunctionNames(String serviceName)__
 
 >  Returns the names of all available functions of the specified service.  
@@ -275,6 +291,12 @@ _Parameters_
 > _protocolName_ - The name of the protocol. 
 
 > _protocolVersion_ - The version of the protocol. 
+
+}
+
+----
+
+    
 
 }
 

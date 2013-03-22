@@ -55,6 +55,7 @@ import org.osgi.framework.ServiceReference;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.APSExternalProtocolService;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternalProtocolListener;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternallyCallable;
+import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSRESTCallable;
 import se.natusoft.osgi.aps.api.net.rpc.service.RPCProtocol;
 import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 import se.natusoft.osgi.aps.externalprotocolextender.model.ProtocolEvent;
@@ -81,17 +82,13 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
     private APSLogger logger;
 
     /** Holds all currently known services. */
-    private Map<String /*service*/, ServiceRepresentation> services = new HashMap<String, ServiceRepresentation>();
+    private Map<String /*service*/, ServiceRepresentation> services = new HashMap<>();
     
     /** Double stored by service reference. */
-    private Map<ServiceReference, ServiceRepresentation> servicesByRef = new HashMap<ServiceReference, ServiceRepresentation>();
-    
-    private List<RPCProtocol> protocols = new LinkedList<RPCProtocol>();
-    
-    private List<StreamedRPCProtocol> streamedProtocols = new LinkedList<StreamedRPCProtocol>();
-    
+    private Map<ServiceReference, ServiceRepresentation> servicesByRef = new HashMap<>();
+
     /** The registered external service listeners. */
-    private List<APSExternalProtocolListener> externalServiceListeners = new LinkedList<APSExternalProtocolListener>();
+    private List<APSExternalProtocolListener> externalServiceListeners = new LinkedList<>();
 
     /** The bus we will be a member of. */
     private TrivialDataBus bus = null;
@@ -131,7 +128,7 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
      */
     @Override
     public List<APSExternallyCallable> getCallables(String serviceName) throws APSNoServiceAvailableException {
-        List<APSExternallyCallable> serviceMethods = new LinkedList<APSExternallyCallable>();
+        List<APSExternallyCallable> serviceMethods = new LinkedList<>();
         
         ServiceRepresentation serviceRep = this.services.get(serviceName);
         if (serviceRep != null) {
@@ -141,6 +138,30 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
         }
 
         return serviceMethods;
+    }
+
+    /**
+     * Returns true if the service has put*(...), get*(...), and/or delete*(...)
+     * methods.
+     *
+     * @param serviceName The service to check if it has any REST methods.
+     */
+    @Override
+    public boolean isRESTCallable(String serviceName) throws RuntimeException {
+        ServiceRepresentation serviceRep = this.services.get(serviceName);
+        return serviceRep != null && serviceRep.isRESTCompatible();
+    }
+
+    /**
+     * Returns an APSRESTCallable containing one or more of post, put.get, and delete
+     * methods.
+     *
+     * @param serviceName The name of the service to get the REST Callables for.
+     */
+    @Override
+    public APSRESTCallable getRESTCallable(String serviceName) {
+        ServiceRepresentation serviceRep = this.services.get(serviceName);
+        return serviceRep != null ? serviceRep.getRESTCallable() : null;
     }
 
     /**
@@ -155,7 +176,7 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
             return serviceRep.getMethodNames();
         }
 
-        return new HashSet<String>();
+        return new HashSet<>();
     }
 
     /**
@@ -183,8 +204,9 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
      * @return All currently deployed providers of RPCProtocolService.
      */
     @Override
+    @SuppressWarnings("unchecked")
     public List<RPCProtocol> getAllProtocols() {
-        TrivialManyDataRequest<RPCProtocol> dataRequest = new TrivialManyDataRequest<RPCProtocol>(RPCProtocol.class, null);
+        TrivialManyDataRequest<RPCProtocol> dataRequest = new TrivialManyDataRequest<>(RPCProtocol.class, null);
         this.bus.sendData(ServiceDataReason.INFORMATION_REQUEST, dataRequest);
         return dataRequest.getData();
     }
@@ -198,8 +220,9 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
      * @return Any matching protocol or null if nothing matches.
      */
     @Override
+    @SuppressWarnings("unchecked")
     public RPCProtocol getProtocolByNameAndVersion(String name, String version) {
-        TrivialSingleDataRequest<RPCProtocol> dataRequest = new TrivialSingleDataRequest<RPCProtocol>(RPCProtocol.class, name, version);
+        TrivialSingleDataRequest<RPCProtocol> dataRequest = new TrivialSingleDataRequest<>(RPCProtocol.class, name, version);
         this.bus.sendData(ServiceDataReason.INFORMATION_REQUEST, dataRequest);
         return dataRequest.getData();
     }
@@ -208,9 +231,10 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
      * @return All currently deployed providers of StreamedRPCProtocolService.
      */
     @Override
+    @SuppressWarnings("unchecked")
     public List<StreamedRPCProtocol> getAllStreamedProtocols() {
         TrivialManyDataRequest<StreamedRPCProtocol> dataRequest =
-                new TrivialManyDataRequest<StreamedRPCProtocol>(StreamedRPCProtocol.class, null);
+                new TrivialManyDataRequest<>(StreamedRPCProtocol.class, null);
         this.bus.sendData(ServiceDataReason.INFORMATION_REQUEST, dataRequest);
         return dataRequest.getData();
     }
@@ -224,9 +248,10 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
      * @return Any matching protocol or null if nothing matches.
      */
     @Override
+    @SuppressWarnings("unchecked")
     public StreamedRPCProtocol getStreamedProtocolByNameAndVersion(String name, String version) {
         TrivialSingleDataRequest<StreamedRPCProtocol> dataRequest =
-                new TrivialSingleDataRequest<StreamedRPCProtocol>(StreamedRPCProtocol.class, name, version);
+                new TrivialSingleDataRequest<>(StreamedRPCProtocol.class, name, version);
         this.bus.sendData(ServiceDataReason.INFORMATION_REQUEST, dataRequest);
         return dataRequest.getData();
     }

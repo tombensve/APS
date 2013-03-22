@@ -133,6 +133,38 @@
       </p>
     </blockquote>
     <p>
+      <strong>public boolean isRESTCallable(String serviceName) throws RuntimeException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns true if the service has put*(...), get*(...), and/or delete*(...) methods.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>serviceName</em> - The service to check if it has any REST methods.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public APSRESTCallable getRESTCallable(String serviceName)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns an APSRESTCallable containing one or more of post, put.get, and delete methods.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>serviceName</em> - The name of the service to get the REST Callables for.         
+      </p>
+    </blockquote>
+    <p>
       <strong>public Set&lt;String&gt; getAvailableServiceFunctionNames(String serviceName)</strong>      
     </p>
     <blockquote>
@@ -531,6 +563,12 @@
         <em>protocolVersion</em> - The version of the protocol.         
       </p>
     </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
     <p>
       }      
     </p>

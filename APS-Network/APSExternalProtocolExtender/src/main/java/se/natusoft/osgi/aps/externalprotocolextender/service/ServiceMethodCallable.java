@@ -122,15 +122,14 @@ public class ServiceMethodCallable implements APSExternallyCallable {
      *
      * @param callable The APSExternallyCallable to copy.
      */
-    public ServiceMethodCallable(APSExternallyCallable callable) {
-        ServiceMethodCallable smc = (ServiceMethodCallable)callable;
-        this.serviceName = smc.serviceName;
-        this.method = smc.method;
-        this.serviceReference = smc.serviceReference;
-        this.bundleContext = smc.bundleContext;
-        this.returnDataDescription = smc.returnDataDescription;
-        this.parameterDataDescriptions = smc.parameterDataDescriptions;
-        this.serviceBundle = smc.serviceBundle;
+    public ServiceMethodCallable(ServiceMethodCallable callable) {
+        this.serviceName = callable.serviceName;
+        this.method = callable.method;
+        this.serviceReference = callable.serviceReference;
+        this.bundleContext = callable.bundleContext;
+        this.returnDataDescription = callable.returnDataDescription;
+        this.parameterDataDescriptions = callable.parameterDataDescriptions;
+        this.serviceBundle = callable.serviceBundle;
         this.arguments = null;
     }
 

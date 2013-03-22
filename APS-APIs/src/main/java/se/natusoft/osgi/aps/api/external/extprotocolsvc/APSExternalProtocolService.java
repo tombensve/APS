@@ -38,6 +38,7 @@ package se.natusoft.osgi.aps.api.external.extprotocolsvc;
 
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternalProtocolListener;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternallyCallable;
+import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSRESTCallable;
 import se.natusoft.osgi.aps.api.net.rpc.service.RPCProtocol;
 import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 
@@ -72,6 +73,22 @@ public interface APSExternalProtocolService {
      * @throws RuntimeException If the service is not available.
      */
     public List<APSExternallyCallable> getCallables(String serviceName) throws RuntimeException;
+    
+    /**
+     * Returns true if the service has put*(...), get*(...), and/or delete*(...)
+     * methods.
+     *
+     * @param serviceName The service to check if it has any REST methods.
+     */
+    public boolean isRESTCallable(String serviceName) throws RuntimeException;
+    
+    /**
+     * Returns an APSRESTCallable containing one or more of post, put.get, and delete
+     * methods.
+     *
+     * @param serviceName The name of the service to get the REST Callables for.
+     */
+    public APSRESTCallable getRESTCallable(String serviceName);
 
     /**
      * Returns the names of all available functions of the specified service.
