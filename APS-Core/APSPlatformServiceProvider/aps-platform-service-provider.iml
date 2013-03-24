@@ -4,6 +4,9 @@
     <facet type="Osmorc" name="OSGi">
       <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-platform-service-provider-0.9.1.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.platform.APSPlatformActivator" bundleSymbolicName="aps-platform-service-provider" bundleVersion="0.9.1" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
+          <property key="Bundle-Description" value="Provides a platform specific configuration and service providing platform instancespecific information." />
+          <property key="Bundle-Vendor" value="Natusoft AB" />
+          <property key="Bundle-DocURL" value="http://www.natusoft.se/" />
           <property key="Export-Package" value="se.natusoft.osgi.aps.platform.service;version=&quot;0.9.1&quot;" />
           <property key="Import-Package" value="*" />
           <property key="Private-Package" value="se.natusoft.osgi.aps.platform,se.natusoft.osgi.aps.platform.service.provider,se.natusoft.osgi.aps.platform.config" />
