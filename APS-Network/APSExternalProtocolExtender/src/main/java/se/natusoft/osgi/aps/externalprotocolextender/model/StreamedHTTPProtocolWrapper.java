@@ -77,4 +77,16 @@ public class StreamedHTTPProtocolWrapper extends StreamedRPCProtocolWrapper impl
         super(context, protocolReference, protocol);
     }
 
+    /**
+     * @return true if the protocol supports REST.
+     */
+    @Override
+    public boolean supportsREST() {
+        try {
+            return ((StreamedHTTPProtocol)getInstance()).supportsREST();
+        }
+        finally {
+            ungetInstance();
+        }
+    }
 }

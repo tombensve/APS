@@ -48,4 +48,9 @@ package se.natusoft.osgi.aps.api.net.rpc.service;
  * this case since it will not know anything about the protocol itself.
  */
 public interface StreamedHTTPProtocol extends StreamedRPCProtocol {
+
+    /**
+     * @return true if the protocol supports REST.
+     */
+    boolean supportsREST();
 }

@@ -43,6 +43,7 @@ import org.osgi.framework.ServiceRegistration;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
 import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 import se.natusoft.osgi.aps.jsonrpc.protocols.JSONHTTP;
+import se.natusoft.osgi.aps.jsonrpc.protocols.JSONREST;
 import se.natusoft.osgi.aps.jsonrpc.protocols.JSONRPC10;
 import se.natusoft.osgi.aps.jsonrpc.protocols.JSONRPC20;
 import se.natusoft.osgi.aps.tools.APSLogger;
@@ -71,6 +72,9 @@ public class APSStreamedJSONRPCServiceActivator implements BundleActivator {
 
     /** The JSONHTTP 1.0 service registration. */
     private ServiceRegistration jsonHTTPServiceReg = null;
+
+    /** The JSONREST 1.0 service registration. */
+    private ServiceRegistration jsonRESTServiceReg = null;
 
     // Other Members
     
@@ -107,6 +111,12 @@ public class APSStreamedJSONRPCServiceActivator implements BundleActivator {
         jsonHTTPServiceProps.put(Constants.SERVICE_PID, JSONHTTP.class.getName());
         this.jsonHTTPServiceReg =
                 context.registerService(StreamedRPCProtocol.class.getName(), jsonHTTP, jsonHTTPServiceProps);
+
+        JSONREST jsonREST = new JSONREST(this.logger, jsonService);
+        Dictionary jsonRESTServiceProps = new Properties();
+        jsonRESTServiceProps.put(Constants.SERVICE_PID, JSONREST.class.getName());
+        this.jsonRESTServiceReg =
+                context.registerService(StreamedRPCProtocol.class.getName(), jsonREST, jsonRESTServiceProps);
     }
 
     //
@@ -135,6 +145,13 @@ public class APSStreamedJSONRPCServiceActivator implements BundleActivator {
             try {
                 this.jsonHTTPServiceReg.unregister();
                 this.jsonHTTPServiceReg = null;
+            }
+            catch (IllegalStateException ise) { stopMsg += (" | " + ise.getMessage()); }
+        }
+        if (this.jsonRESTServiceReg != null) {
+            try {
+                this.jsonRESTServiceReg.unregister();
+                this.jsonRESTServiceReg = null;
             }
             catch (IllegalStateException ise) { stopMsg += (" | " + ise.getMessage()); }
         }

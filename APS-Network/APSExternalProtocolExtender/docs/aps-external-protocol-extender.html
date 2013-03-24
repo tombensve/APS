@@ -92,12 +92,7 @@
     </p>
     <blockquote>
       <p>
-         This service makes the currently available externalizable services available for calling. It should be used by a bundle providing an externally available way of calling a service (JSON over http for example) to translate and forward calls to the local service. The locally called service is not required to be aware that it is called externally.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        Never cache any result of this service! Always make a new call to get the current state. Also note that it is possible that the service represented by an APSExternallyCallable have gone away after it was returned, but before you do call() on it! In that case an APSNoServiceAvailableException will be thrown. Note that you can register as an APSExternalProtocolListener to receive notifications about externalizable services coming and going, and also protocols coming and going to keep up to date with the current state of things.          
+         This service makes the currently available externalizable services available for calling. It should be used by a bundle providing an externally available way of calling a service (JSON over http for example) to translate and forward calls to the local service. The locally called service is not required to be aware that it is called externally.  __Never cache any result of this service!__ Always make a new call to get the current state. Also note that it is possible that the service represented by an APSExternallyCallable have gone away after it was returned, but before you do call() on it! In that case an APSNoServiceAvailableException will be thrown. Note that you can register as an APSExternalProtocolListener to receive notifications about externalizable services coming and going, and also protocols coming and going to keep up to date with the current state of things.         
       </p>
     </blockquote>
     <p>
@@ -137,7 +132,7 @@
     </p>
     <blockquote>
       <p>
-         Returns true if the service has put*(...), get*(...), and/or delete*(...) methods.          
+         Returns true if the service has _put*(...)_, _get*(...)_, and/or _delete*(...)_ methods. This is to help HTTP transports support REST calls.          
       </p>
     </blockquote>
     <p>
@@ -153,7 +148,7 @@
     </p>
     <blockquote>
       <p>
-         Returns an APSRESTCallable containing one or more of post, put.get, and delete methods.          
+         Returns an APSRESTCallable containing one or more of post, put.get, and delete methods. This is to help HTTP transports support REST calls.          
       </p>
     </blockquote>
     <p>
@@ -1289,6 +1284,22 @@
     <blockquote>
       <p>
          This is a marker interface indicating that the protocol is really assuming a HTTP transport and is expecting to be able to return http status codes. This also means it will be returning an HTTPError (which extends RPCError) from _createError(...)_.  It might be difficult for non HTTP transports to support this kind of protocol, and such should probably ignore these protocols. For example a REST implementation of this protocol will not be writing any error response back, but rather expect the transport to deliver the http status code it provides. A non HTTP transport will not be able to know how to communicate back errors in this case since it will not know anything about the protocol itself.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean supportsREST()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if the protocol supports REST.        
       </p>
     </blockquote>
     <p>

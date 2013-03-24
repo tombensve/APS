@@ -80,7 +80,8 @@ public class JSONHTTP implements StreamedHTTPProtocol {
      * Creates a new JSONRPC20 instance.
      *
      * @param logger A logger to log to.
-     * @param jsonService An APSServiceTracker wrapping of the APSJSONService that will automatically handle the getting and releasing of the service upon calls.
+     * @param jsonService An APSServiceTracker wrapping of the APSJSONService that will automatically handle the getting and
+     *                    releasing of the service upon calls.
      */
     public JSONHTTP(APSLogger logger, APSJSONExtendedService jsonService) {
         this.logger = logger;
@@ -268,6 +269,14 @@ public class JSONHTTP implements StreamedHTTPProtocol {
         catch (Exception nfe) {/*OK*/}
 
         return new JSONRESTError(errorType, httpStatusCode, message, optionalData, cause);
+    }
+
+    /**
+     * @return true if the protocol supports REST.
+     */
+    @Override
+    public boolean supportsREST() {
+        return false;
     }
 
     //

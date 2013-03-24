@@ -60,7 +60,7 @@ public class RPCServletConfig extends APSConfig {
     public static ManagedConfig<RPCServletConfig> mc = new ManagedConfig<RPCServletConfig>();
 
     @APSConfigItemDescription(
-            description = "If this is selected the APSUserService will be used to require authentication for service calls. " +
+            description = "If this is selected the APSAuthService will be used to require authentication for service calls. " +
                           "Authentication is either provided by specifying \"http://.../apsrpc/auth:user:pw/...\" or " +
                           "using basic http authentication as described on 'http://en.wikipedia.org/wiki/Basic_access_authentication'.",
             isBoolean = true,

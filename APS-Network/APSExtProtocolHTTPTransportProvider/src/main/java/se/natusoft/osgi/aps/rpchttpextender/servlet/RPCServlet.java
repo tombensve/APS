@@ -44,6 +44,7 @@ import org.osgi.framework.ServiceReference;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.APSExternalProtocolService;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternalProtocolListener;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternallyCallable;
+import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSRESTCallable;
 import se.natusoft.osgi.aps.api.external.model.type.DataType;
 import se.natusoft.osgi.aps.api.external.model.type.DataTypeDescription;
 import se.natusoft.osgi.aps.api.external.model.type.ParameterDataTypeDescription;
@@ -381,25 +382,38 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
 
         StreamedRPCProtocol protocol = this.externalProtocolService.getStreamedProtocolByNameAndVersion(protocolName, version);
         if (protocol != null) {
+            boolean isHttpProtocol = false;
+            boolean supportsREST = false;
+
+            if (protocol instanceof StreamedHTTPProtocol) {
+                isHttpProtocol = true;
+                supportsREST = ((StreamedHTTPProtocol)protocol).supportsREST();
+            }
+
             List<RPCRequest> requests = null;
 
             String reqMethod = req.getMethod().toUpperCase();
 
-            if (reqMethod.equals("POST") || reqMethod.equals("PUT")) {
-                requests = protocol.parseRequests(service, method, req.getInputStream());
-            }
-            else if (reqMethod.equals("GET")) {
-                requests = new LinkedList<>();
-
-                Map<String, String> reqParams = new HashMap<String, String>();
-
-                Enumeration<String> rpEnumeration = req.getParameterNames();
-                while (rpEnumeration.hasMoreElements()) {
-                    String name = rpEnumeration.nextElement();
-                    String value = req.getParameter(name);
-                    reqParams.put(name, value);
+            if (isHttpProtocol) {
+                if (reqMethod.equalsIgnoreCase("POST") || reqMethod.equalsIgnoreCase("PUT") || reqMethod.equalsIgnoreCase("DELETE")) {
+                    requests = protocol.parseRequests(service, method, req.getInputStream());
                 }
-                requests.add(protocol.parseRequest(service, method, reqParams));
+                else if (reqMethod.equalsIgnoreCase("GET")) {
+                    requests = new LinkedList<>();
+
+                    Map<String, String> reqParams = new HashMap<String, String>();
+
+                    Enumeration<String> rpEnumeration = req.getParameterNames();
+                    while (rpEnumeration.hasMoreElements()) {
+                        String name = rpEnumeration.nextElement();
+                        String value = req.getParameter(name);
+                        reqParams.put(name, value);
+                    }
+                    requests.add(protocol.parseRequest(service, method, reqParams));
+                }
+            }
+            else {
+                requests = protocol.parseRequests(service, method, req.getInputStream());
             }
 
             // It is possible to send multiple requests on the stream!
@@ -410,7 +424,38 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                         if (method == null) {
                             method = rpcRequest.getMethod();
                         }
-                        APSExternallyCallable<Object> callable = this.externalProtocolService.getCallable(service, method);
+                        APSExternallyCallable<Object> callable = null;
+
+                        if (supportsREST && this.externalProtocolService.isRESTCallable(service)) {
+                            callable = this.externalProtocolService.getRESTCallable(service);
+                            APSRESTCallable restCallable = (APSRESTCallable)callable;
+                            if (reqMethod.equalsIgnoreCase("POST") && restCallable.supportsPost()) {
+                                restCallable.selectMethod(APSRESTCallable.HttpMethod.POST);
+                            }
+                            else if (reqMethod.equalsIgnoreCase("PUT") && restCallable.supportsPut()) {
+                                restCallable.selectMethod(APSRESTCallable.HttpMethod.PUT);
+                            }
+                            else if (reqMethod.equalsIgnoreCase("DELETE") && restCallable.supportsDelete()) {
+                                restCallable.selectMethod(APSRESTCallable.HttpMethod.DELETE);
+                            }
+                            else if (restCallable.supportsGet()) {
+                                restCallable.selectMethod(APSRESTCallable.HttpMethod.GET);
+                            }
+                            else {
+                                throw new RPCErrorException(
+                                        protocol.createRPCError(
+                                                ErrorType.SERVICE_NOT_FOUND,
+                                                null,
+                                                "HTTP method of '" + reqMethod + "' is not supported by service '" + service + "'!",
+                                                null,
+                                                null
+                                        )
+                                );
+                            }
+                        }
+                        else {
+                            callable = this.externalProtocolService.getCallable(service, method);
+                        }
 
                         if (callable != null) {
                             // Handle parameters
@@ -730,8 +775,8 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                 serviceDescription.setDescription("Published by aps-rpc-http-transport-provider.");
                 serviceDescription.setServiceHost(this.serverHost);
                 serviceDescription.setServicePort(this.serverPort);
-                serviceDescription.setServiceURL(this.rpcBaseUrl + protocol.getServiceProtocolName() + "/" + protocol.getServiceProtocolVersion() +
-                        "/" + service);
+                serviceDescription.setServiceURL(this.rpcBaseUrl + protocol.getServiceProtocolName() + "/" +
+                        protocol.getServiceProtocolVersion() + "/" + service);
                 serviceDescription.setVersion(version);
                 serviceDescription.setServiceId(service);
 

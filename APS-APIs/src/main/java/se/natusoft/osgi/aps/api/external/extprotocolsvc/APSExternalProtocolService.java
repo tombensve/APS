@@ -50,13 +50,12 @@ import java.util.Set;
  * a bundle providing an externally available way of calling a service (JSON over http for example) to translate
  * and forward calls to the local service. The locally called service is not required to be aware that it is called
  * externally.
- * <p/>
- * Never cache any result of this service! Always make a new call to get the current state. Also note that it is
+ *
+ * __Never cache any result of this service!__ Always make a new call to get the current state. Also note that it is
  * possible that the service represented by an APSExternallyCallable have gone away after it was returned, but
  * before you do call() on it! In that case an APSNoServiceAvailableException will be thrown. Note that you can
  * register as an APSExternalProtocolListener to receive notifications about externalizable services coming and
  * going, and also protocols coming and going to keep up to date with the current state of things.
- *
  */
 public interface APSExternalProtocolService {
 
@@ -75,8 +74,8 @@ public interface APSExternalProtocolService {
     public List<APSExternallyCallable> getCallables(String serviceName) throws RuntimeException;
     
     /**
-     * Returns true if the service has put*(...), get*(...), and/or delete*(...)
-     * methods.
+     * Returns true if the service has _put*(...)_, _get*(...)_, and/or _delete*(...)_
+     * methods. This is to help HTTP transports support REST calls.
      *
      * @param serviceName The service to check if it has any REST methods.
      */
@@ -84,7 +83,7 @@ public interface APSExternalProtocolService {
     
     /**
      * Returns an APSRESTCallable containing one or more of post, put.get, and delete
-     * methods.
+     * methods. This is to help HTTP transports support REST calls.
      *
      * @param serviceName The name of the service to get the REST Callables for.
      */
