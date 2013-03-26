@@ -8,15 +8,15 @@ All administrations web applications are WABs and thus require that the OSGi ser
 
 Another point of APS is to be OSGi server independent. 
 
-APS is made using basic OSGi functionality and is not using blueprint and other fancy stuff!   
+APS is made using basic OSGi functionality and is not using blueprint and other fancy stuff! Each bundle has an activator that does setup, creates trackers, loggers, and manually dependency injects them into the service providers it publishes.
 
 ## Features
 
 ### Current
 
-* A configuration service that works with annotated configuration models where each config value can be described/documented. The configuration model can be structured with sub models that there can be one or many of. Each top level configuration model registered with the configuration service will be available for publishing in its admin web.
+* A configuration service that works with annotated configuration models where each config value can be described/documented. The configuration model can be structured with sub models that there can be one or many of. Each top level configuration model registered with the configuration service will be available for publishing in the admin web. The configuration service also supports different configuration environments and allows for configuration values to be different for different configuration environments, but doesn´t require them to be.
 
-* A filesystem service that provides a persistent filesystem outside of the OSGi server. The configuration service makes use of this to store configurations.
+* A filesystem service that provides a persistent filesystem outside of the OSGi server. The configuration service makes use of this to store configurations. Each client can get its own filesystem area, and can´t access anything outside of its area.
 
 * A platform service that simply identifies the local installation and provides a description of it. It is basically a read only service that provides configured information about the installation.
 
@@ -24,9 +24,11 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A data source service. Only provides connection information, no pooling (OpenJPA provides its own pooling)!
 
-* External protocol extender that allows more or less any OSGi service to be called remotely using any deployed protocol service and transport. Currently provides JSONRPC 1.0 and 2.0 protocols, and an http transport. Protocols have a defined service API whose implementations can just be dropped in to make them available. Transport providers can make use of any deployed protocol.
+* External protocol extender that allows more or less any OSGi service to be called remotely using any deployed protocol service and transport. Currently provides JSONRPC 1.0 & 2.0, JSONHTTP, and JSONREST protocols, and an http transport. Protocols have a defined service API whose implementations can just be dropped in to make them available. Transport providers can make use of any deployed protocol. The APSExternalProtocolService now provides support for REST services where there is a method for post, put, get,and delete, and the http transport makes use of this in conjunction with any protocol that indicates it can support REST like JSONREST.
 
-* A multicast discovery service.
+* A group service that can send data to each member over transport safe multicast.
+
+* A service discovery service using the group service.
 
 * A session service (not http!). This is used by apsadminweb to keep a session among several different administration web applications.
 
@@ -40,17 +42,17 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A log service with a log viewer GUI. The GUI should support server push and also allow for filtering of logs and configuration of what logs go to what log files.
 
-* A REST/JSON protocol for use with aps-external-protocol-extender.
+* Synchronizing configurations between installations so that all configuration for all configuration environments can be edited in one place and automatically be distributed to each installation. This would also make it possible to configure installations without deployed admin webs.
 
 * Anything else relevant I come up with and consider fun to do :-).
 
 ### Ideas
 
+* A JCR (Java Content Repository) service and a content publishing GUI (following the general APS ambition - reasonable functionality and flexibility, ease of use. Will fit many, but not everyone).
+
 * JDBC connection pool service (based on some open source connection pool implementation). Will use the Data source service to create connection pools.
 
 * Since JBoss is apparently having trouble getting WABs to work (they are still using PAX, but claim that they have solved this in 7.2 that will not build when checked out from GitHub and don't seem to be released anytime soon) I am considering to add support for their WAR->OSGi service bridge though I haven't had much luck in getting that to work either so far. 
-
-* A JCR (Java Content Repository) service and a content publishing GUI (following the general APS ambition - reasonable functionality and flexibility, ease of use. Will fit many, but not everyone).
 
 * Support for being able to redeploy a web application live without loosing session nor user transactions. With OSGi it should be teoretically possible. For a limited number of redeployments at least. It is very easy to run into the ”perm gen space” problem, but according to Frank Kieviet ([Classloader leaks: The dreaded permgen space](http://frankkieviet.blogspot.se/2006/10/classloader-leaks-dreaded-permgen-space.html)) it is caused by bad code and can be avoided. 
 

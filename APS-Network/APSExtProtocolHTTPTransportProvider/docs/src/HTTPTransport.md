@@ -4,7 +4,7 @@ This provides an http transport for simple remote requests to OSGi services that
 
 Please note that depending on protocol not every service method will be callable. It depends on its arguments and return value. It mostly depends on how well the protocol handles types and can convert between the caller and the service. 
 
-This does not provide any protocol, only transport! For services to be able to be called at least one protocol is needed. Protocols are provided by providing an implementation of se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocolService and registering it as an OSGi service. The StreamedRPCProtocolService API provides a protocol name and protocol version getter which is used to identify it. A call to an RPC service looks like this:
+This does not provide any protocol, only transport! For services to be able to be called at least one protocol is needed. Protocols are provided by providing an implementation of se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol and registering it as an OSGi service. The StreamedRPCProtocol API provides a protocol name and protocol version getter which is used to identify it. A call to an RPC service looks like this:
 
 &nbsp;&nbsp;&nbsp;&nbsp;http://host:port/apsrpc/_protocol_/_version_\[/_service_\]\[/_method_\]
 
@@ -23,7 +23,7 @@ The method will be resolved in that order. The parameter type specifying version
 
 ## Example
 
-Here is an example calling the APSPlatformService with JSONRPC 2.0 using curl:
+Here is some examples calling services over http with diffent protocols using curl:
 
 	curl --data '{"jsonrpc": "2.0", "method": "getPlatformDescription", "params": [], "id": 1}' http://localhost:8080/apsrpc/JSONRPC/2.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService 
 
@@ -40,8 +40,24 @@ Yields:
 	, 
     	"jsonrpc": "2.0"
 	}
+	
+while
 
-The APSPlatformService is a plain OSGi service that provides data with JavaBean setters and getters. This simple example only works if you have disabled the ”requireAuthentication” configuration (network/rpc-http-transport). 
+	curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService/getPlatformDescription
+	
+would yield
+
+    {
+        "description": "My personal development environment.", 
+        "type": "Development", 
+        "identifier": "MyDev"
+    }
+    
+and 
+
+     ...
+
+This simple example only works if you have disabled the ”requireAuthentication” configuration (network/rpc-http-transport). 
 
 ## Authentication
 
