@@ -2,11 +2,11 @@
 
 OSGi Application Platform Services - A "smorgasbord" of OSGi services that focuses on ease of use and good enough functionality for many but wont fit all. It can be seen as osgi-ee-light-and-easy. The services are of platform type: configuration, database, JPA, etc, with companion web applications for administration.
 
-All services that require some form of administration have an admin web application for that, that plugs into the general apsadminweb admin application.
+All services that require some form of administration have an admin web application for that, that plugs into the general apsadminweb admin web application.
 
 All administrations web applications are WABs and thus require that the OSGi server supports WABs. 
 
-Another point of APS is to be OSGi server independent. 
+Another point of APS is to be as OSGi server independent as possible, but as said above the admin web applications do need support for WABs. 
 
 APS is made using basic OSGi functionality and is not using blueprint and other fancy stuff! Each bundle has an activator that does setup, creates trackers, loggers, and manually dependency injects them into the service providers it publishes.
 
@@ -36,11 +36,15 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A user service. Provides basic user management including roles/groups. Is accompanied with a admin GUI (plugnis into apsadminweb) for administration of users. (org.osgi.service.useradmin.UserAdmin felt uncomplete. It did not provide what I wanted).
 
-* A far better service tracker that does a better job at handling services coming and going. Supports service availability wait and timeout and can be wrapped as a proxy to the service. 
+* A user authentication service. This does nothing more that authenticating a user and have a really simple API. APS provides an implementation that makes use of the user service, but it is easy to make another implementation that authenticates against an LDAP for example or something else. The Admin web applications uses the authentication service for authenticating admin users. 
+
+* A far better service tracker that does a better job at handling services coming and going. Supports service availability wait and timeout and can be wrapped as a proxy to the service. Instead of returning null it throws an exception if no service becomes available within the timeout, and is thus much easier to handle.
 
 ### Planned
 
-* A log service with a log viewer GUI. The GUI should support server push and also allow for filtering of logs and configuration of what logs go to what log files.
+* An implementation of the standard OSGi LogService since not all servers provide one.
+
+* A log veiwer web application supporting reqular expression filters on log information and a live log view. This is waiting on Vaadin 7.1 which will support server push.  Another alternative is to go pure GWT and use Errai for this, but I rather continue with Vaadin having all admin webs looking and feeling the same. 
 
 * Synchronizing configurations between installations so that all configuration for all configuration environments can be edited in one place and automatically be distributed to each installation. This would also make it possible to configure installations without deployed admin webs.
 

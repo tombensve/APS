@@ -21,43 +21,9 @@ _method_ - This is the method to call. The need for this also depends on the pro
 
 The method will be resolved in that order. The parameter type specifying version is required when there are several methods with the same name but different parameters. The method name only will give you the last one in that case. 
 
-## Example
+## Examples
 
-Here is some examples calling services over http with diffent protocols using curl:
-
-	curl --data '{"jsonrpc": "2.0", "method": "getPlatformDescription", "params": [], "id": 1}' http://localhost:8080/apsrpc/JSONRPC/2.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService 
-
-Yields:
-
-	{
-    	"id": 1, 
-    	"result": 
-    	{
-        	"description": "My personal development environment.", 
-        	"type": "Development", 
-        	"identifier": "MyDev"
-    	}
-	, 
-    	"jsonrpc": "2.0"
-	}
-	
-while
-
-	curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService/getPlatformDescription
-	
-would yield
-
-    {
-        "description": "My personal development environment.", 
-        "type": "Development", 
-        "identifier": "MyDev"
-    }
-    
-and 
-
-     ...
-
-This simple example only works if you have disabled the ”requireAuthentication” configuration (network/rpc-http-transport). 
+See examples under the  __APSStreamedJSONRPCProtocolProvider__ section.
 
 ## Authentication
 
