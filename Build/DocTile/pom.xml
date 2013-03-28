@@ -68,6 +68,16 @@
     <version><!--APSVER-->0.9.1</version>
     <packaging>pom</packaging>
 
+    <!--
+        This is needed for it to compile during a deploy phase.
+    -->
+    <distributionManagement>
+        <repository>
+            <id>maven-repository-upload</id>
+            <url>ftp://${maven.repo.upload}/${maven.base.path}</url>
+        </repository>
+    </distributionManagement>
+
     <build>
         <extensions>
             <!-- Enabling the use of FTP -->
@@ -77,108 +87,88 @@
                 <version>2.3</version>
             </extension>
         </extensions>
-    </build>
 
-    <profiles>
-
-        <profile>
-            <id>generate-docs</id>
-
+        <plugins>
             <!--
-                This is needed for it to compile during a deploy phase.
+                Generate Documentation
             -->
-            <distributionManagement>
-                <repository>
-                    <id>maven-repository-upload</id>
-                    <url>ftp://${maven.repo.upload}/${maven.base.path}</url>
-                </repository>
-            </distributionManagement>
+            <plugin>
+                <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
+                <artifactId>markdowndoc-maven-plugin</artifactId>
+                <version>1.2.4</version>
 
-            <build>
+                <executions>
+                    <execution>
+                        <id>generate-pdf-doc</id>
+                        <goals>
+                            <goal>doc</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
 
-                <plugins>
-                    <!--
-                        Generate Documentation
-                    -->
-                    <plugin>
-                        <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
-                        <artifactId>markdowndoc-maven-plugin</artifactId>
-                        <version>1.2.4</version>
+                            <generatorOptions>
+                                <generator>pdf</generator>
+                                <inputPaths>${project.basedir}/docs/**/.*.fs</inputPaths>
+                            </generatorOptions>
 
-                        <executions>
-                            <execution>
-                                <id>generate-pdf-doc</id>
-                                <goals>
-                                    <goal>doc</goal>
-                                </goals>
-                                <phase>package</phase>
-                                <configuration>
+                            <pdfGeneratorOptions>
+                                <resultFile>${project.basedir}/docs/${project.artifactId}.pdf</resultFile>
+                                <pageSize>A4</pageSize>
+                                <title>${project.name}</title>
+                                <subject>User Guide</subject>
+                                <version>${project.version}</version>
+                                <author>Tommy Svensson</author>
+                                <copyright>Copyright © 2013 ${project.organization.name}</copyright>
+                                <generateTitlePage>true</generateTitlePage>
+                                <generateTOC>true</generateTOC>
+                            </pdfGeneratorOptions>
 
-                                    <generatorOptions>
-                                        <generator>pdf</generator>
-                                        <inputPaths>${project.basedir}/docs/**/.*.fs</inputPaths>
-                                    </generatorOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-html-doc</id>
+                        <goals>
+                            <goal>doc</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
 
-                                    <pdfGeneratorOptions>
-                                        <resultFile>${project.basedir}/docs/${project.artifactId}.pdf</resultFile>
-                                        <pageSize>A4</pageSize>
-                                        <title>${project.name}</title>
-                                        <subject>User Guide</subject>
-                                        <version>${project.version}</version>
-                                        <author>Tommy Svensson</author>
-                                        <copyright>Copyright © 2013 ${project.organization.name}</copyright>
-                                        <generateTitlePage>true</generateTitlePage>
-                                        <generateTOC>true</generateTOC>
-                                    </pdfGeneratorOptions>
+                            <generatorOptions>
+                                <generator>html</generator>
+                                <inputPaths>${project.basedir}/docs/**/.*.fs</inputPaths>
+                            </generatorOptions>
 
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>generate-html-doc</id>
-                                <goals>
-                                    <goal>doc</goal>
-                                </goals>
-                                <phase>package</phase>
-                                <configuration>
+                            <htmlGeneratorOptions>
+                                <resultFile>${project.basedir}/docs/${project.artifactId}.html</resultFile>
+                                <makeFileLinksRelativeTo>${project.basedir}/docs/src+images/</makeFileLinksRelativeTo>
+                                <css>docs.css</css>
+                            </htmlGeneratorOptions>
 
-                                    <generatorOptions>
-                                        <generator>html</generator>
-                                        <inputPaths>${project.basedir}/docs/**/.*.fs</inputPaths>
-                                    </generatorOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-markdown-doc</id>
+                        <goals>
+                            <goal>doc</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
 
-                                    <htmlGeneratorOptions>
-                                        <resultFile>${project.basedir}/docs/${project.artifactId}.html</resultFile>
-                                        <makeFileLinksRelativeTo>${project.basedir}/docs/src+images/</makeFileLinksRelativeTo>
-                                        <css>docs.css</css>
-                                    </htmlGeneratorOptions>
+                            <generatorOptions>
+                                <generator>md</generator>
+                                <inputPaths>${project.basedir}/docs/**/.*.fs</inputPaths>
+                            </generatorOptions>
 
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>generate-markdown-doc</id>
-                                <goals>
-                                    <goal>doc</goal>
-                                </goals>
-                                <phase>package</phase>
-                                <configuration>
+                            <mdGeneratorOptions>
+                                <resultFile>${project.basedir}/docs/${project.artifactId}.md</resultFile>
+                                <makeFileLinksRelativeTo>${project.basedir}/docs/src+images/</makeFileLinksRelativeTo>
+                            </mdGeneratorOptions>
 
-                                    <generatorOptions>
-                                        <generator>md</generator>
-                                        <inputPaths>${project.basedir}/docs/**/.*.fs</inputPaths>
-                                    </generatorOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
-                                    <mdGeneratorOptions>
-                                        <resultFile>${project.basedir}/docs/${project.artifactId}.md</resultFile>
-                                        <makeFileLinksRelativeTo>${project.basedir}/docs/src+images/</makeFileLinksRelativeTo>
-                                    </mdGeneratorOptions>
-
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+        </plugins>
+    </build>
 </project>
