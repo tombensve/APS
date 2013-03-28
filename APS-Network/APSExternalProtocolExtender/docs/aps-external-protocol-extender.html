@@ -14,7 +14,7 @@
       The exernal protocol extender also provides a configuration where services can be specified with their fully qualified name to be made externally available. If a bundle however have specifically specified false for the above manifest entry then the config entry will be ignored.      
     </p>
     <p>
-      So, what is meant by ”made externally available” ? Well what this bundle does is to analyze with reflection all services that are in one way or the other specified as being externalizable (manifest or config) and for all callable methods of the service an <em>APSExternallyCallable</em> object will be created and saved locally with the service name. <em>APSExternallyCallable</em> extends <em>java.util.concurrent.Callable</em>, and adds the possibility to add parameters to calls and also provides meta data for the service method, and the bundle it belongs to.      
+      So, what is meant by ”made externally available” ? Well what this bundle does is to analyze with reflection all services that are in one way or the other specified as being externalizable (manifest or config) and for all callable methods of the service an <em>APSExternallyCallable</em> object will be created and saved locally with the service name. <em>APSExternallyCallable</em> extends <em>java.util.concurrent.Callable</em>, and adds the possibility to add parameters to calls and also provides meta data for the service method, and the bundle it belongs to. There is also an <em>APSRESTCallable</em> that extends <em>APSExternallyCallable</em> and also takes an http method and maps that to a appropriate service method.      
     </p>
     <H2>The overall structure</H2>
     <p>
@@ -67,13 +67,16 @@
     </p>
     <H3>Protocols</H3>
     <p>
-      There is a base API for protocols: RPCProtocol. APIs for different types of protocols should extend this. There is currently only one type of protocol available: <em>StreamedRPCProtocol</em>. The protocol type APIs are service APIs and services implementing them must be provided by other bundles. This bundle looks for and keeps track of all such service providers.      
+      There is a base API for protocols: RPCProtocol. APIs for different types of protocols should extend this. The protocol type APIs are service APIs and services implementing them must be provided by other bundles. This bundle looks for and keeps track of all such service providers.      
     </p>
     <p>
-      The <em>StreamedRPCProtocol</em> provides a method for parsing a request from an InputStream returning an RPCRequest object. This request object contains the name of the service, the method, and the parameters. This is enough for using <em>APSExternalProtocolService</em> to do a call to the service. The request object is also used to write the call response on an OutputStream. There is also a method to write an error response.      
+      The <em>StreamedRPCProtocol</em> extends <em>RPCPROTOCOL</em> and provides a method for parsing a request from an InputStream returning an RPCRequest object. This request object contains the name of the service, the method, and the parameters. This is enough for using <em>APSExternalProtocolService</em> to do a call to the service. The request object is also used to write the call response on an OutputStream. There is also a method to write an error response.      
     </p>
     <p>
-      It is the responsibility of the transport provider to use a protocol to read and write requests and responses and to use the request information to call a service method.      
+      The <em>StreamedHTTPProtocol</em> extends <em>StreamedRPCProtocol</em> and indicates that the protocol should probably only be supported by http transports. It also provides a <em>supportsREST()</em> method that transports can use to make decicions on how the call should be interpreted.      
+    </p>
+    <p>
+      It is the responsibility of the transport provider to use a protocol to read and write requests and responses and to use the request information to call a service method. An exception is the case of http transports supporting REST that must take the responibility for returning an http status.      
     </p>
     <H3>Getting information about services and protocols.</H3>
     <p>

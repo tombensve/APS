@@ -16,6 +16,12 @@
     <p>
       The 2.0 version of the JSONRPC protocol are describved at <a href='http://jsonrpc.org/spec.html' title=''>http://jsonrpc.org/spec.html</a>.      
     </p>
+    <p>
+      JSONHTTP version 1.0 which is not any standard protocol at all. It requires both service name and method name on the url, and in case of HTTP GET also arguments as ?arg=value,... where values are strings or primitives. For POST, PUT, and DELETE a JSON array of values need to be written on the stream.      
+    </p>
+    <p>
+      JSONREST version 1.0 extending JSONHTTP and providing 'true' for <em>supportsREST()</em> which will make the http transport always map methods starting with post, put, get, or delete to the http method. This can thereby deliver a true REST API.      
+    </p>
     <H2>See also</H2>
     <p>
       Se the documentation for <em>APSExtProtocolHTTPTransportProvider</em> for an HTTP transport through which these protocols can be used.      

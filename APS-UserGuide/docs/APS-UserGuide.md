@@ -8,15 +8,15 @@ All administrations web applications are WABs and thus require that the OSGi ser
 
 Another point of APS is to be OSGi server independent.
 
-APS is made using basic OSGi functionality and is not using blueprint and other fancy stuff!
+APS is made using basic OSGi functionality and is not using blueprint and other fancy stuff! Each bundle has an activator that does setup, creates trackers, loggers, and manually dependency injects them into the service providers it publishes.
 
 ## Features
 
 ### Current
 
-* A configuration service that works with annotated configuration models where each config value can be described/documented. The configuration model can be structured with sub models that there can be one or many of. Each top level configuration model registered with the configuration service will be available for publishing in its admin web.
+* A configuration service that works with annotated configuration models where each config value can be described/documented. The configuration model can be structured with sub models that there can be one or many of. Each top level configuration model registered with the configuration service will be available for publishing in the admin web. The configuration service also supports different configuration environments and allows for configuration values to be different for different configuration environments, but doesn´t require them to be.
 
-* A filesystem service that provides a persistent filesystem outside of the OSGi server. The configuration service makes use of this to store configurations.
+* A filesystem service that provides a persistent filesystem outside of the OSGi server. The configuration service makes use of this to store configurations. Each client can get its own filesystem area, and can´t access anything outside of its area.
 
 * A platform service that simply identifies the local installation and provides a description of it. It is basically a read only service that provides configured information about the installation.
 
@@ -24,9 +24,11 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A data source service. Only provides connection information, no pooling (OpenJPA provides its own pooling)!
 
-* External protocol extender that allows more or less any OSGi service to be called remotely using any deployed protocol service and transport. Currently provides JSONRPC 1.0 and 2.0 protocols, and an http transport. Protocols have a defined service API whose implementations can just be dropped in to make them available. Transport providers can make use of any deployed protocol.
+* External protocol extender that allows more or less any OSGi service to be called remotely using any deployed protocol service and transport. Currently provides JSONRPC 1.0 & 2.0, JSONHTTP, and JSONREST protocols, and an http transport. Protocols have a defined service API whose implementations can just be dropped in to make them available. Transport providers can make use of any deployed protocol. The APSExternalProtocolService now provides support for REST services where there is a method for post, put, get,and delete, and the http transport makes use of this in conjunction with any protocol that indicates it can support REST like JSONREST.
 
-* A multicast discovery service.
+* A group service that can send data to each member over transport safe multicast.
+
+* A service discovery service using the group service.
 
 * A session service (not http!). This is used by apsadminweb to keep a session among several different administration web applications.
 
@@ -40,17 +42,17 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A log service with a log viewer GUI. The GUI should support server push and also allow for filtering of logs and configuration of what logs go to what log files.
 
-* A REST/JSON protocol for use with aps-external-protocol-extender.
+* Synchronizing configurations between installations so that all configuration for all configuration environments can be edited in one place and automatically be distributed to each installation. This would also make it possible to configure installations without deployed admin webs.
 
 * Anything else relevant I come up with and consider fun to do :-).
 
 ### Ideas
 
+* A JCR (Java Content Repository) service and a content publishing GUI (following the general APS ambition - reasonable functionality and flexibility, ease of use. Will fit many, but not everyone).
+
 * JDBC connection pool service (based on some open source connection pool implementation). Will use the Data source service to create connection pools.
 
 * Since JBoss is apparently having trouble getting WABs to work (they are still using PAX, but claim that they have solved this in 7.2 that will not build when checked out from GitHub and don't seem to be released anytime soon) I am considering to add support for their WAR->OSGi service bridge though I haven't had much luck in getting that to work either so far.
-
-* A JCR (Java Content Repository) service and a content publishing GUI (following the general APS ambition - reasonable functionality and flexibility, ease of use. Will fit many, but not everyone).
 
 * Support for being able to redeploy a web application live without loosing session nor user transactions. With OSGi it should be teoretically possible. For a limited number of redeployments at least. It is very easy to run into the ”perm gen space” problem, but according to Frank Kieviet ([Classloader leaks: The dreaded permgen space](http://frankkieviet.blogspot.se/2006/10/classloader-leaks-dreaded-permgen-space.html)) it is caused by bad code and can be avoided.
 
@@ -3593,7 +3595,7 @@ This is an OSGi bundle that makes use of the OSGi extender pattern. It listens t
 
 The exernal protocol extender also provides a configuration where services can be specified with their fully qualified name to be made externally available. If a bundle however have specifically specified false for the above manifest entry then the config entry will be ignored.
 
-So, what is meant by ”made externally available” ? Well what this bundle does is to analyze with reflection all services that are in one way or the other specified as being externalizable (manifest or config) and for all callable methods of the service an _APSExternallyCallable_ object will be created and saved locally with the service name. _APSExternallyCallable_ extends _java.util.concurrent.Callable_, and adds the possibility to add parameters to calls and also provides meta data for the service method, and the bundle it belongs to.
+So, what is meant by ”made externally available” ? Well what this bundle does is to analyze with reflection all services that are in one way or the other specified as being externalizable (manifest or config) and for all callable methods of the service an _APSExternallyCallable_ object will be created and saved locally with the service name. _APSExternallyCallable_ extends _java.util.concurrent.Callable_, and adds the possibility to add parameters to calls and also provides meta data for the service method, and the bundle it belongs to. There is also an _APSRESTCallable_ that extends _APSExternallyCallable_ and also takes an http method and maps that to a appropriate service method.
 
 ## The overall structure
 
@@ -3623,11 +3625,13 @@ This bundle registers an _APSExternalProtocolService_ that will provide all _APS
 
 ### Protocols
 
-There is a base API for protocols: RPCProtocol. APIs for different types of protocols should extend this. There is currently only one type of protocol available: _StreamedRPCProtocol_. The protocol type APIs are service APIs and services implementing them must be provided by other bundles. This bundle looks for and keeps track of all such service providers.
+There is a base API for protocols: RPCProtocol. APIs for different types of protocols should extend this. The protocol type APIs are service APIs and services implementing them must be provided by other bundles. This bundle looks for and keeps track of all such service providers.
 
-The _StreamedRPCProtocol_ provides a method for parsing a request from an InputStream returning an RPCRequest object. This request object contains the name of the service, the method, and the parameters. This is enough for using _APSExternalProtocolService_ to do a call to the service. The request object is also used to write the call response on an OutputStream. There is also a method to write an error response.
+The _StreamedRPCProtocol_ extends _RPCPROTOCOL_ and provides a method for parsing a request from an InputStream returning an RPCRequest object. This request object contains the name of the service, the method, and the parameters. This is enough for using _APSExternalProtocolService_ to do a call to the service. The request object is also used to write the call response on an OutputStream. There is also a method to write an error response.
 
-It is the responsibility of the transport provider to use a protocol to read and write requests and responses and to use the request information to call a service method.
+The _StreamedHTTPProtocol_ extends _StreamedRPCProtocol_ and indicates that the protocol should probably only be supported by http transports. It also provides a _supportsREST()_ method that transports can use to make decicions on how the call should be interpreted.
+
+It is the responsibility of the transport provider to use a protocol to read and write requests and responses and to use the request information to call a service method. An exception is the case of http transports supporting REST that must take the responibility for returning an http status.
 
 ### Getting information about services and protocols.
 
@@ -3643,9 +3647,7 @@ _APSStreamedJSONRPCProtocolProvider_ - Provides version 1.0 and 2.0 of JSONRPC.
 
 public _interface_ __APSExternalProtocolService__   [se.natusoft.osgi.aps.api.external.extprotocolsvc] {
 
->  This service makes the currently available externalizable services available for calling. It should be used by a bundle providing an externally available way of calling a service (JSON over http for example) to translate and forward calls to the local service. The locally called service is not required to be aware that it is called externally. 
-
-> Never cache any result of this service! Always make a new call to get the current state. Also note that it is possible that the service represented by an APSExternallyCallable have gone away after it was returned, but before you do call() on it! In that case an APSNoServiceAvailableException will be thrown. Note that you can register as an APSExternalProtocolListener to receive notifications about externalizable services coming and going, and also protocols coming and going to keep up to date with the current state of things.  
+>  This service makes the currently available externalizable services available for calling. It should be used by a bundle providing an externally available way of calling a service (JSON over http for example) to translate and forward calls to the local service. The locally called service is not required to be aware that it is called externally.  __Never cache any result of this service!__ Always make a new call to get the current state. Also note that it is possible that the service represented by an APSExternallyCallable have gone away after it was returned, but before you do call() on it! In that case an APSNoServiceAvailableException will be thrown. Note that you can register as an APSExternalProtocolListener to receive notifications about externalizable services coming and going, and also protocols coming and going to keep up to date with the current state of things. 
 
 __public Set<String> getAvailableServices()__
 
@@ -3662,6 +3664,22 @@ _Parameters_
 _Throws_
 
 > _RuntimeException_ - If the service is not available. 
+
+__public boolean isRESTCallable(String serviceName) throws RuntimeException__
+
+>  Returns true if the service has _put*(...)_, _get*(...)_, and/or _delete*(...)_ methods. This is to help HTTP transports support REST calls.  
+
+_Parameters_
+
+> _serviceName_ - The service to check if it has any REST methods. 
+
+__public APSRESTCallable getRESTCallable(String serviceName)__
+
+>  Returns an APSRESTCallable containing one or more of post, put.get, and delete methods. This is to help HTTP transports support REST calls.  
+
+_Parameters_
+
+> _serviceName_ - The name of the service to get the REST Callables for. 
 
 __public Set<String> getAvailableServiceFunctionNames(String serviceName)__
 
@@ -3864,6 +3882,12 @@ _Parameters_
 > _protocolName_ - The name of the protocol. 
 
 > _protocolVersion_ - The version of the protocol. 
+
+}
+
+----
+
+    
 
 }
 
@@ -4255,6 +4279,14 @@ public _interface_ __StreamedHTTPProtocol__ extends  StreamedRPCProtocol    [se.
 
 >  This is a marker interface indicating that the protocol is really assuming a HTTP transport and is expecting to be able to return http status codes. This also means it will be returning an HTTPError (which extends RPCError) from _createError(...)_.  It might be difficult for non HTTP transports to support this kind of protocol, and such should probably ignore these protocols. For example a REST implementation of this protocol will not be writing any error response back, but rather expect the transport to deliver the http status code it provides. A non HTTP transport will not be able to know how to communicate back errors in this case since it will not know anything about the protocol itself. 
 
+__boolean supportsREST()__
+
+>  
+
+_Returns_
+
+> true if the protocol supports REST.
+
 }
 
 ----
@@ -4353,7 +4385,7 @@ This provides an http transport for simple remote requests to OSGi services that
 
 Please note that depending on protocol not every service method will be callable. It depends on its arguments and return value. It mostly depends on how well the protocol handles types and can convert between the caller and the service.
 
-This does not provide any protocol, only transport! For services to be able to be called at least one protocol is needed. Protocols are provided by providing an implementation of se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocolService and registering it as an OSGi service. The StreamedRPCProtocolService API provides a protocol name and protocol version getter which is used to identify it. A call to an RPC service looks like this:
+This does not provide any protocol, only transport! For services to be able to be called at least one protocol is needed. Protocols are provided by providing an implementation of se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol and registering it as an OSGi service. The StreamedRPCProtocol API provides a protocol name and protocol version getter which is used to identify it. A call to an RPC service looks like this:
 
 &nbsp; &nbsp; &nbsp; &nbsp;http://host:port/apsrpc/_protocol_/_version_[/_service_][/_method_]
 
@@ -4373,7 +4405,7 @@ The method will be resolved in that order. The parameter type specifying version
 
 ## Example
 
-Here is an example calling the APSPlatformService with JSONRPC 2.0 using curl:
+Here is some examples calling services over http with diffent protocols using curl:
 
         curl --data '{"jsonrpc": "2.0", "method": "getPlatformDescription", "params": [], "id": 1}' http://localhost:8080/apsrpc/JSONRPC/2.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService 
 
@@ -4390,8 +4422,27 @@ Yields:
         , 
             "jsonrpc": "2.0"
         }
+        
 
-The APSPlatformService is a plain OSGi service that provides data with JavaBean setters and getters. This simple example only works if you have disabled the ”requireAuthentication” configuration (network/rpc-http-transport).
+while
+
+        curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService/getPlatformDescription
+        
+
+would yield
+
+        {
+            "description": "My personal development environment.", 
+            "type": "Development", 
+            "identifier": "MyDev"
+        }
+        
+
+and
+
+         ...
+
+This simple example only works if you have disabled the ”requireAuthentication” configuration (network/rpc-http-transport).
 
 ## Authentication
 
@@ -4771,6 +4822,10 @@ This provides JSONRPC protocol. It provides both version 1.0 and 2.0 of the prot
 The 1.0 version of the JSONRPC protocol are described at [http://json-rpc.org/wiki/specification](http://json-rpc.org/wiki/specification).
 
 The 2.0 version of the JSONRPC protocol are describved at [http://jsonrpc.org/spec.html](http://jsonrpc.org/spec.html).
+
+JSONHTTP version 1.0 which is not any standard protocol at all. It requires both service name and method name on the url, and in case of HTTP GET also arguments as ?arg=value,... where values are strings or primitives. For POST, PUT, and DELETE a JSON array of values need to be written on the stream.
+
+JSONREST version 1.0 extending JSONHTTP and providing 'true' for _supportsREST()_ which will make the http transport always map methods starting with post, put, get, or delete to the http method. This can thereby deliver a true REST API.
 
 ## See also
 

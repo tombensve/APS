@@ -20,19 +20,19 @@
       Another point of APS is to be OSGi server independent.      
     </p>
     <p>
-      APS is made using basic OSGi functionality and is not using blueprint and other fancy stuff!      
+      APS is made using basic OSGi functionality and is not using blueprint and other fancy stuff! Each bundle has an activator that does setup, creates trackers, loggers, and manually dependency injects them into the service providers it publishes.      
     </p>
     <H2>Features</H2>
     <H3>Current</H3>
     <ul>
       <li>
         <p>
-          A configuration service that works with annotated configuration models where each config value can be described/documented. The configuration model can be structured with sub models that there can be one or many of. Each top level configuration model registered with the configuration service will be available for publishing in its admin web.          
+          A configuration service that works with annotated configuration models where each config value can be described/documented. The configuration model can be structured with sub models that there can be one or many of. Each top level configuration model registered with the configuration service will be available for publishing in the admin web. The configuration service also supports different configuration environments and allows for configuration values to be different for different configuration environments, but doesn´t require them to be.          
         </p>
       </li>
       <li>
         <p>
-          A filesystem service that provides a persistent filesystem outside of the OSGi server. The configuration service makes use of this to store configurations.          
+          A filesystem service that provides a persistent filesystem outside of the OSGi server. The configuration service makes use of this to store configurations. Each client can get its own filesystem area, and can´t access anything outside of its area.          
         </p>
       </li>
       <li>
@@ -52,12 +52,17 @@
       </li>
       <li>
         <p>
-          External protocol extender that allows more or less any OSGi service to be called remotely using any deployed protocol service and transport. Currently provides JSONRPC 1.0 and 2.0 protocols, and an http transport. Protocols have a defined service API whose implementations can just be dropped in to make them available. Transport providers can make use of any deployed protocol.          
+          External protocol extender that allows more or less any OSGi service to be called remotely using any deployed protocol service and transport. Currently provides JSONRPC 1.0 &amp; 2.0, JSONHTTP, and JSONREST protocols, and an http transport. Protocols have a defined service API whose implementations can just be dropped in to make them available. Transport providers can make use of any deployed protocol. The APSExternalProtocolService now provides support for REST services where there is a method for post, put, get,and delete, and the http transport makes use of this in conjunction with any protocol that indicates it can support REST like JSONREST.          
         </p>
       </li>
       <li>
         <p>
-          A multicast discovery service.          
+          A group service that can send data to each member over transport safe multicast.          
+        </p>
+      </li>
+      <li>
+        <p>
+          A service discovery service using the group service.          
         </p>
       </li>
       <li>
@@ -90,7 +95,7 @@
       </li>
       <li>
         <p>
-          A REST/JSON protocol for use with aps-external-protocol-extender.          
+          Synchronizing configurations between installations so that all configuration for all configuration environments can be edited in one place and automatically be distributed to each installation. This would also make it possible to configure installations without deployed admin webs.          
         </p>
       </li>
       <li>
@@ -103,17 +108,17 @@
     <ul>
       <li>
         <p>
+          A JCR (Java Content Repository) service and a content publishing GUI (following the general APS ambition - reasonable functionality and flexibility, ease of use. Will fit many, but not everyone).          
+        </p>
+      </li>
+      <li>
+        <p>
           JDBC connection pool service (based on some open source connection pool implementation). Will use the Data source service to create connection pools.          
         </p>
       </li>
       <li>
         <p>
           Since JBoss is apparently having trouble getting WABs to work (they are still using PAX, but claim that they have solved this in 7.2 that will not build when checked out from GitHub and don't seem to be released anytime soon) I am considering to add support for their WAR-&gt;OSGi service bridge though I haven't had much luck in getting that to work either so far.          
-        </p>
-      </li>
-      <li>
-        <p>
-          A JCR (Java Content Repository) service and a content publishing GUI (following the general APS ambition - reasonable functionality and flexibility, ease of use. Will fit many, but not everyone).          
         </p>
       </li>
       <li>
@@ -6283,7 +6288,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       The exernal protocol extender also provides a configuration where services can be specified with their fully qualified name to be made externally available. If a bundle however have specifically specified false for the above manifest entry then the config entry will be ignored.      
     </p>
     <p>
-      So, what is meant by ”made externally available” ? Well what this bundle does is to analyze with reflection all services that are in one way or the other specified as being externalizable (manifest or config) and for all callable methods of the service an <em>APSExternallyCallable</em> object will be created and saved locally with the service name. <em>APSExternallyCallable</em> extends <em>java.util.concurrent.Callable</em>, and adds the possibility to add parameters to calls and also provides meta data for the service method, and the bundle it belongs to.      
+      So, what is meant by ”made externally available” ? Well what this bundle does is to analyze with reflection all services that are in one way or the other specified as being externalizable (manifest or config) and for all callable methods of the service an <em>APSExternallyCallable</em> object will be created and saved locally with the service name. <em>APSExternallyCallable</em> extends <em>java.util.concurrent.Callable</em>, and adds the possibility to add parameters to calls and also provides meta data for the service method, and the bundle it belongs to. There is also an <em>APSRESTCallable</em> that extends <em>APSExternallyCallable</em> and also takes an http method and maps that to a appropriate service method.      
     </p>
     <H2>The overall structure</H2>
     <p>
@@ -6336,13 +6341,16 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <H3>Protocols</H3>
     <p>
-      There is a base API for protocols: RPCProtocol. APIs for different types of protocols should extend this. There is currently only one type of protocol available: <em>StreamedRPCProtocol</em>. The protocol type APIs are service APIs and services implementing them must be provided by other bundles. This bundle looks for and keeps track of all such service providers.      
+      There is a base API for protocols: RPCProtocol. APIs for different types of protocols should extend this. The protocol type APIs are service APIs and services implementing them must be provided by other bundles. This bundle looks for and keeps track of all such service providers.      
     </p>
     <p>
-      The <em>StreamedRPCProtocol</em> provides a method for parsing a request from an InputStream returning an RPCRequest object. This request object contains the name of the service, the method, and the parameters. This is enough for using <em>APSExternalProtocolService</em> to do a call to the service. The request object is also used to write the call response on an OutputStream. There is also a method to write an error response.      
+      The <em>StreamedRPCProtocol</em> extends <em>RPCPROTOCOL</em> and provides a method for parsing a request from an InputStream returning an RPCRequest object. This request object contains the name of the service, the method, and the parameters. This is enough for using <em>APSExternalProtocolService</em> to do a call to the service. The request object is also used to write the call response on an OutputStream. There is also a method to write an error response.      
     </p>
     <p>
-      It is the responsibility of the transport provider to use a protocol to read and write requests and responses and to use the request information to call a service method.      
+      The <em>StreamedHTTPProtocol</em> extends <em>StreamedRPCProtocol</em> and indicates that the protocol should probably only be supported by http transports. It also provides a <em>supportsREST()</em> method that transports can use to make decicions on how the call should be interpreted.      
+    </p>
+    <p>
+      It is the responsibility of the transport provider to use a protocol to read and write requests and responses and to use the request information to call a service method. An exception is the case of http transports supporting REST that must take the responibility for returning an http status.      
     </p>
     <H3>Getting information about services and protocols.</H3>
     <p>
@@ -6361,12 +6369,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
-         This service makes the currently available externalizable services available for calling. It should be used by a bundle providing an externally available way of calling a service (JSON over http for example) to translate and forward calls to the local service. The locally called service is not required to be aware that it is called externally.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        Never cache any result of this service! Always make a new call to get the current state. Also note that it is possible that the service represented by an APSExternallyCallable have gone away after it was returned, but before you do call() on it! In that case an APSNoServiceAvailableException will be thrown. Note that you can register as an APSExternalProtocolListener to receive notifications about externalizable services coming and going, and also protocols coming and going to keep up to date with the current state of things.          
+         This service makes the currently available externalizable services available for calling. It should be used by a bundle providing an externally available way of calling a service (JSON over http for example) to translate and forward calls to the local service. The locally called service is not required to be aware that it is called externally.  __Never cache any result of this service!__ Always make a new call to get the current state. Also note that it is possible that the service represented by an APSExternallyCallable have gone away after it was returned, but before you do call() on it! In that case an APSNoServiceAvailableException will be thrown. Note that you can register as an APSExternalProtocolListener to receive notifications about externalizable services coming and going, and also protocols coming and going to keep up to date with the current state of things.         
       </p>
     </blockquote>
     <p>
@@ -6399,6 +6402,38 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <blockquote>
       <p>
         <em>RuntimeException</em> - If the service is not available.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public boolean isRESTCallable(String serviceName) throws RuntimeException</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns true if the service has _put*(...)_, _get*(...)_, and/or _delete*(...)_ methods. This is to help HTTP transports support REST calls.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>serviceName</em> - The service to check if it has any REST methods.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public APSRESTCallable getRESTCallable(String serviceName)</strong>      
+    </p>
+    <blockquote>
+      <p>
+         Returns an APSRESTCallable containing one or more of post, put.get, and delete methods. This is to help HTTP transports support REST calls.          
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>serviceName</em> - The name of the service to get the REST Callables for.         
       </p>
     </blockquote>
     <p>
@@ -6800,6 +6835,12 @@ The above empty lines are required due to a bug in iText used to render the PDF.
         <em>protocolVersion</em> - The version of the protocol.         
       </p>
     </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
     <p>
       }      
     </p>
@@ -7523,6 +7564,22 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       </p>
     </blockquote>
     <p>
+      <strong>boolean supportsREST()</strong>      
+    </p>
+    <blockquote>
+      <p>
+                 
+      </p>
+    </blockquote>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if the protocol supports REST.        
+      </p>
+    </blockquote>
+    <p>
       }      
     </p>
     <hr/>    <p>
@@ -7710,7 +7767,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       Please note that depending on protocol not every service method will be callable. It depends on its arguments and return value. It mostly depends on how well the protocol handles types and can convert between the caller and the service.      
     </p>
     <p>
-      This does not provide any protocol, only transport! For services to be able to be called at least one protocol is needed. Protocols are provided by providing an implementation of se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocolService and registering it as an OSGi service. The StreamedRPCProtocolService API provides a protocol name and protocol version getter which is used to identify it. A call to an RPC service looks like this:      
+      This does not provide any protocol, only transport! For services to be able to be called at least one protocol is needed. Protocols are provided by providing an implementation of se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol and registering it as an OSGi service. The StreamedRPCProtocol API provides a protocol name and protocol version getter which is used to identify it. A call to an RPC service looks like this:      
     </p>
     <p>
       &nbsp; &nbsp; &nbsp; &nbsp;http://host:port/apsrpc/<em>protocol</em>/<em>version</em>[/<em>service</em>][/<em>method</em>]      
@@ -7744,7 +7801,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <H2>Example</H2>
     <p>
-      Here is an example calling the APSPlatformService with JSONRPC 2.0 using curl:      
+      Here is some examples calling services over http with diffent protocols using curl:      
     </p>
     <pre>
       <code>
@@ -7767,10 +7824,41 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     , 
         "jsonrpc": "2.0"
     }
+    
       </code>
     </pre>
     <p>
-      The APSPlatformService is a plain OSGi service that provides data with JavaBean setters and getters. This simple example only works if you have disabled the ”requireAuthentication” configuration (network/rpc-http-transport).      
+      while      
+    </p>
+    <pre>
+      <code>
+    curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService/getPlatformDescription
+    
+      </code>
+    </pre>
+    <p>
+      would yield      
+    </p>
+    <pre>
+      <code>
+    {
+        "description": "My personal development environment.", 
+        "type": "Development", 
+        "identifier": "MyDev"
+    }
+    
+      </code>
+    </pre>
+    <p>
+      and      
+    </p>
+    <pre>
+      <code>
+     ...
+      </code>
+    </pre>
+    <p>
+      This simple example only works if you have disabled the ”requireAuthentication” configuration (network/rpc-http-transport).      
     </p>
     <H2>Authentication</H2>
     <p>
@@ -8396,6 +8484,12 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <p>
       The 2.0 version of the JSONRPC protocol are describved at <a href='http://jsonrpc.org/spec.html' title=''>http://jsonrpc.org/spec.html</a>.      
+    </p>
+    <p>
+      JSONHTTP version 1.0 which is not any standard protocol at all. It requires both service name and method name on the url, and in case of HTTP GET also arguments as ?arg=value,... where values are strings or primitives. For POST, PUT, and DELETE a JSON array of values need to be written on the stream.      
+    </p>
+    <p>
+      JSONREST version 1.0 extending JSONHTTP and providing 'true' for <em>supportsREST()</em> which will make the http transport always map methods starting with post, put, get, or delete to the http method. This can thereby deliver a true REST API.      
     </p>
     <H2>See also</H2>
     <p>
