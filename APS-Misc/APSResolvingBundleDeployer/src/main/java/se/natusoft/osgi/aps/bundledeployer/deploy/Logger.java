@@ -5,7 +5,7 @@
  *         APS Resolving Bundle Deployer
  *     
  *     Code Version
- *         0.9.0
+ *         0.9.1
  *     
  *     Description
  *         Deploys bundles resolving dependencies as automatically as possible by accepting a few

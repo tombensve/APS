@@ -11,13 +11,13 @@
       OSGi Application Platform Services - A "smorgasbord" of OSGi services that focuses on ease of use and good enough functionality for many but wont fit all. It can be seen as osgi-ee-light-and-easy. The services are of platform type: configuration, database, JPA, etc, with companion web applications for administration.      
     </p>
     <p>
-      All services that require some form of administration have an admin web application for that, that plugs into the general apsadminweb admin application.      
+      All services that require some form of administration have an admin web application for that, that plugs into the general apsadminweb admin web application.      
     </p>
     <p>
       All administrations web applications are WABs and thus require that the OSGi server supports WABs.      
     </p>
     <p>
-      Another point of APS is to be OSGi server independent.      
+      Another point of APS is to be as OSGi server independent as possible, but as said above the admin web applications do need support for WABs.      
     </p>
     <p>
       APS is made using basic OSGi functionality and is not using blueprint and other fancy stuff! Each bundle has an activator that does setup, creates trackers, loggers, and manually dependency injects them into the service providers it publishes.      
@@ -82,7 +82,12 @@
       </li>
       <li>
         <p>
-          A far better service tracker that does a better job at handling services coming and going. Supports service availability wait and timeout and can be wrapped as a proxy to the service.          
+          A user authentication service. This does nothing more that authenticating a user and have a really simple API. APS provides an implementation that makes use of the user service, but it is easy to make another implementation that authenticates against an LDAP for example or something else. The Admin web applications uses the authentication service for authenticating admin users.          
+        </p>
+      </li>
+      <li>
+        <p>
+          A far better service tracker that does a better job at handling services coming and going. Supports service availability wait and timeout and can be wrapped as a proxy to the service. Instead of returning null it throws an exception if no service becomes available within the timeout, and is thus much easier to handle.          
         </p>
       </li>
     </ul>
@@ -90,7 +95,12 @@
     <ul>
       <li>
         <p>
-          A log service with a log viewer GUI. The GUI should support server push and also allow for filtering of logs and configuration of what logs go to what log files.          
+          An implementation of the standard OSGi LogService since not all servers provide one.          
+        </p>
+      </li>
+      <li>
+        <p>
+          A log veiwer web application supporting reqular expression filters on log information and a live log view. This is waiting on Vaadin 7.1 which will support server push. Another alternative is to go pure GWT and use Errai for this, but I rather continue with Vaadin having all admin webs looking and feeling the same.          
         </p>
       </li>
       <li>
@@ -113,17 +123,12 @@
       </li>
       <li>
         <p>
-          JDBC connection pool service (based on some open source connection pool implementation). Will use the Data source service to create connection pools.          
-        </p>
-      </li>
-      <li>
-        <p>
           Since JBoss is apparently having trouble getting WABs to work (they are still using PAX, but claim that they have solved this in 7.2 that will not build when checked out from GitHub and don't seem to be released anytime soon) I am considering to add support for their WAR-&gt;OSGi service bridge though I haven't had much luck in getting that to work either so far.          
         </p>
       </li>
       <li>
         <p>
-          Support for being able to redeploy a web application live without loosing session nor user transactions. With OSGi it should be teoretically possible. For a limited number of redeployments at least. It is very easy to run into the ”perm gen space” problem, but according to Frank Kieviet (<a href='http://frankkieviet.blogspot.se/2006/10/classloader-leaks-dreaded-permgen-space.html' title=''>Classloader leaks: The dreaded permgen space</a>) it is caused by bad code and can be avoided.          
+          Support for being able to redeploy a web application and services live without loosing session nor user transactions. With OSGi it should be teoretically possible. For a limited number of redeployments at least. It is very easy to run into the ”perm gen space” problem, but according to Frank Kieviet (<a href='http://frankkieviet.blogspot.se/2006/10/classloader-leaks-dreaded-permgen-space.html' title=''>Classloader leaks: The dreaded permgen space</a>) it is caused by bad code and can be avoided.          
         </p>
       </li>
     </ul>
@@ -7799,66 +7804,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       The method will be resolved in that order. The parameter type specifying version is required when there are several methods with the same name but different parameters. The method name only will give you the last one in that case.      
     </p>
-    <H2>Example</H2>
+    <H2>Examples</H2>
     <p>
-      Here is some examples calling services over http with diffent protocols using curl:      
-    </p>
-    <pre>
-      <code>
-    curl --data '{"jsonrpc": "2.0", "method": "getPlatformDescription", "params": [], "id": 1}' http://localhost:8080/apsrpc/JSONRPC/2.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService 
-      </code>
-    </pre>
-    <p>
-      Yields:      
-    </p>
-    <pre>
-      <code>
-    {
-        "id": 1, 
-        "result": 
-        {
-            "description": "My personal development environment.", 
-            "type": "Development", 
-            "identifier": "MyDev"
-        }
-    , 
-        "jsonrpc": "2.0"
-    }
-    
-      </code>
-    </pre>
-    <p>
-      while      
-    </p>
-    <pre>
-      <code>
-    curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService/getPlatformDescription
-    
-      </code>
-    </pre>
-    <p>
-      would yield      
-    </p>
-    <pre>
-      <code>
-    {
-        "description": "My personal development environment.", 
-        "type": "Development", 
-        "identifier": "MyDev"
-    }
-    
-      </code>
-    </pre>
-    <p>
-      and      
-    </p>
-    <pre>
-      <code>
-     ...
-      </code>
-    </pre>
-    <p>
-      This simple example only works if you have disabled the ”requireAuthentication” configuration (network/rpc-http-transport).      
+      See examples under the <strong>APSStreamedJSONRPCProtocolProvider</strong> section.      
     </p>
     <H2>Authentication</H2>
     <p>
@@ -8480,16 +8428,76 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       This provides JSONRPC protocol. It provides both version 1.0 and 2.0 of the protocol. It requires a transport that uses it and services provided by aps-external-protocol-extender to be useful.      
     </p>
     <p>
-      The 1.0 version of the JSONRPC protocol are described at <a href='http://json-rpc.org/wiki/specification' title=''>http://json-rpc.org/wiki/specification</a>.      
+      JSONRPC version 1.0 protocol as described at <a href='http://json-rpc.org/wiki/specification' title=''>http://json-rpc.org/wiki/specification</a>.      
     </p>
     <p>
-      The 2.0 version of the JSONRPC protocol are describved at <a href='http://jsonrpc.org/spec.html' title=''>http://jsonrpc.org/spec.html</a>.      
+      JSONRPC version 2.0 protocol as describved at <a href='http://jsonrpc.org/spec.html' title=''>http://jsonrpc.org/spec.html</a>.      
     </p>
     <p>
-      JSONHTTP version 1.0 which is not any standard protocol at all. It requires both service name and method name on the url, and in case of HTTP GET also arguments as ?arg=value,... where values are strings or primitives. For POST, PUT, and DELETE a JSON array of values need to be written on the stream.      
+      JSONHTTP version 1.0 which is not any standard protocol at all. It requires both service name and method name on the url, and in case of HTTP GET also arguments as ?params=arg:...:arg where values are strings or primitives. For POST, PUT, and DELETE a JSON array of values need to be written on the stream.      
     </p>
     <p>
       JSONREST version 1.0 extending JSONHTTP and providing 'true' for <em>supportsREST()</em> which will make the http transport always map methods starting with post, put, get, or delete to the http method. This can thereby deliver a true REST API.      
+    </p>
+    <H2>Examples</H2>
+    <p>
+      Here is some examples calling services over http with diffent protocols using curl (requires aps-ext-protocol-http-transport-provider.jar to be deployed):      
+    </p>
+    <pre>
+      <code>
+    curl --data '{"jsonrpc": "2.0", "method": "getPlatformDescription", "params": [], "id": 1}' http://localhost:8080/apsrpc/JSONRPC/2.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService 
+      </code>
+    </pre>
+    <p>
+      yields:      
+    </p>
+    <pre>
+      <code>
+    {"id": 1, "result": {"description": "My personal development environment.", "type": "Development", "identifier": "MyDev"}, "jsonrpc": "2.0"}
+        
+      </code>
+    </pre>
+    <p>
+      while      
+    </p>
+    <pre>
+      <code>
+    curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService/getPlatformDescription
+    
+      </code>
+    </pre>
+    <p>
+      yields      
+    </p>
+    <pre>
+      <code>
+    {"description": "My personal development environment.", "type": "Development", "identifier": "MyDev"}
+       
+      </code>
+    </pre>
+    <p>
+      and      
+    </p>
+    <pre>
+      <code>
+     curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/se.natusoft.osgi.aps.api.misc.session.APSSessionService/createSession\(Integer\)?params=5
+     
+      </code>
+    </pre>
+    <p>
+      yields      
+    </p>
+    <pre>
+      <code>
+    {"id": "6d25d646-11fc-44c3-b74d-29b3d5c94920", "valid": true}
+    
+      </code>
+    </pre>
+    <p>
+      In this case we didn’t just use <em>createSession</em> as method name, but <em>createSession(Integer)</em> though with parentheses escaped to not confuse the shell. This is because there is 2 variants of createSession: createSession(String, Integer) and createSession(Integer). If we don’t specify clearly we might get the wrong one and in this case that happens and will fail due to missing second parameter. Also note the <em>params=5</em>. On get we cannot pass any data on the stream to the service, we can only pass parameters on the URL which is done by specifying url parameter <em>params</em> with a colon (”:”) separated list of parameters as value. In this case only String and primitives are supported for parameters.      
+    </p>
+    <p>
+      These examples only works if you have disabled the ”requireAuthentication” configuration (network/rpc-http-transport).      
     </p>
     <H2>See also</H2>
     <p>
