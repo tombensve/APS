@@ -58,6 +58,12 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * Support for being able to redeploy a web application and services live without loosing session nor user transactions. With OSGi it should be teoretically possible. For a limited number of redeployments at least. It is very easy to run into the ”perm gen space” problem, but according to Frank Kieviet ([Classloader leaks: The dreaded permgen space](http://frankkieviet.blogspot.se/2006/10/classloader-leaks-dreaded-permgen-space.html)) it is caused by bad code and can be avoided. 
 
+### What is new in version 0.9.1
+
+* Now have full REST support in aps-external-protocol-extender and aps-ext-protocol-http-transport-provider.
+
+* Documentation have been cleaned up a bit.
+
 ## Requirements
 
 The administration web application(s) are currently WABs and thus require a server supporting WAB deployments. I have developed/tested this on Glassfish and Virgo. I am however considering seeing if it is possible to also support both Glassfish and JBoss JEE WAR to OSGi bridges. They are unfortunately very server specific since there are no such standard. Other than that all services are basic OSGi services and should theoretically run in any R4 compatible OSGi server. 
