@@ -12,10 +12,9 @@ _A "smorgasbord" of OSGi services that focuses on ease of use and good enough fu
 
 It can be seen as osgi-ee-light-and-easy. The services are of platform type: configuration, database, JPA, etc.
 
-[User Guide](https://github.com/tombensve/APS/blob/master/APS-UserGuide/docs/APS-UserGuide.md)
+[User Guide](https://github.com/tombensve/APS/blob/master/APS-UserGuide/docs/APS-UserGuide.md) (indexed [PDF](https://github.com/tombensve/APS/blob/master/APS-UserGuide/docs/APS-UserGuide.pdf))
 
 [Licenses](https://github.com/tombensve/APS/blob/master/lics/licenses.md)
 
 ---
 
-[PDF Version](https://github.com/tombensve/APS/blob/master/APS-UserGuide/docs/APS-UserGuide.pdf)
