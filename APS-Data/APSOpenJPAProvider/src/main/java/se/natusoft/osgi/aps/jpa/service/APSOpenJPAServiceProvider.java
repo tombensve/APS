@@ -295,7 +295,7 @@ public class APSOpenJPAServiceProvider implements BundleListener, APSJPAService,
 
     /**
      * Please note that this provides the org.osgi.service.jpa.EntityManagerFactoryBuilder implementation. For
-     * this API persistence unit names must be unique withing the whole server. With the APS API the persistence
+     * this API persistence unit names must be unique within the whole server. With the APS API the persistence
      * unit names only have to be unique within a bundle. This does not handle service restart/redeploy either.
      * If that happens the use of the returned EntityManagerFactory will throw an unknown exception!
      * <p/>
