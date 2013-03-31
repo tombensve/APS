@@ -42,7 +42,7 @@ package se.natusoft.osgi.aps.exceptions;
 public class APSInvalidContextException extends APSRuntimeException {
 
     /**
-     * Creates a new APSInvalidContextException instance.
+     * Creates a new _APSInvalidContextException_ instance.
      *
      * @param message The exception message.
      */
@@ -51,7 +51,7 @@ public class APSInvalidContextException extends APSRuntimeException {
     }
 
     /**
-     * Creates a new APSInvalidContextException instance.
+     * Creates a new _APSInvalidContextException_ instance.
      *
      * @param message The exception message.
      * @param cause The cause of the exception.

@@ -45,13 +45,13 @@ import java.util.Map;
 
 /**
  * This is a wrapping of Vaadins HierarchicalContainer. 
- * <p/>
+ *
  * The reason for this is that I want to be able to associate a set of specific data with each item. For a Tree you
  * can use item properties, but that is more of a side-effect than intentional usage. It will work less well with a
  * Table. So this wrapper will build a HierarchicalContainer, generate item ids, which will also be used to associate
  * a data object with each item in a separate map. Once the HierarchicalModel is built the HierarchicalContainer can
  * be gotten from it and the data object for any item can be looked up by its id.
- * <p/>
+ *
  * This does currently not support default values!
  *
  * @param <Data> The type of the data model associated with Hierarchical model entries.

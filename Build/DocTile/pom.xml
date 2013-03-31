@@ -95,7 +95,7 @@
             <plugin>
                 <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
                 <artifactId>markdowndoc-maven-plugin</artifactId>
-                <version>1.2.4</version>
+                <version>1.2.5</version>
 
                 <executions>
                     <execution>
@@ -103,12 +103,13 @@
                         <goals>
                             <goal>doc</goal>
                         </goals>
-                        <phase>package</phase>
+                        <phase>deploy</phase>
                         <configuration>
 
                             <generatorOptions>
                                 <generator>pdf</generator>
                                 <inputPaths>${project.basedir}/docs/**/.*.fs</inputPaths>
+                                <parserOptions>markdownJavadoc=true</parserOptions>
                             </generatorOptions>
 
                             <pdfGeneratorOptions>
@@ -130,12 +131,13 @@
                         <goals>
                             <goal>doc</goal>
                         </goals>
-                        <phase>package</phase>
+                        <phase>deploy</phase>
                         <configuration>
 
                             <generatorOptions>
                                 <generator>html</generator>
                                 <inputPaths>${project.basedir}/docs/**/.*.fs</inputPaths>
+                                <parserOptions>markdownJavadoc=true</parserOptions>
                             </generatorOptions>
 
                             <htmlGeneratorOptions>
@@ -151,12 +153,13 @@
                         <goals>
                             <goal>doc</goal>
                         </goals>
-                        <phase>package</phase>
+                        <phase>deploy</phase>
                         <configuration>
 
                             <generatorOptions>
                                 <generator>md</generator>
                                 <inputPaths>${project.basedir}/docs/**/.*.fs</inputPaths>
+                                <parserOptions>markdownJavadoc=true</parserOptions>
                             </generatorOptions>
 
                             <mdGeneratorOptions>

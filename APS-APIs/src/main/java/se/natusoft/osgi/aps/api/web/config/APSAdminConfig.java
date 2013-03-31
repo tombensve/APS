@@ -43,7 +43,7 @@ import se.natusoft.osgi.aps.api.core.config.annotation.APSDefaultValue;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
 
 /**
- * Configuration for the APS admin web.
+ * Configuration for the APS admin web. This is used by multiple admin web apps.
  */
 @APSConfigDescription(
         version="1.0",

@@ -37,7 +37,7 @@
 package se.natusoft.osgi.aps.api.core.config.model;
 
 /**
- * This represents a list of a sub-configuration (A config class extending APSConfig, but only referenced by another such class).
+ * This represents a list of a sub-configuration (A config class extending _APSConfig_, but only referenced by another such class).
  *
  * @param <Subclass> The subclass of APSConfig held by the list.
  */

@@ -40,16 +40,15 @@ import java.util.Set;
 
 /**
  * This class is based on the structure defined on http://www.json.org/.
- * <p>
- * It represents the "object" diagram on the above mentioned web page:
- * <pre>
- *              ________________________________________
- *             /                                        \
- * |___ ({) __/_____ (string) ____ (:) ____ (value) _____\___ (}) ____|
- * |           /                                        \             |
- *             \__________________ (,) _________________/
  *
- * </pre>
+ * It represents the "object" diagram on the above mentioned web page:
+ *
+ *                  ________________________________________
+ *                 /                                        \
+ *     |___ ({) __/_____ (string) ____ (:) ____ (value) _____\___ (}) ____|
+ *     |           /                                        \             |
+ *                 \__________________ (,) _________________/
+ *
  *
  * @see JSONValue
  *

@@ -49,7 +49,7 @@ public class APSConfigAdminToolkit {
     private APSConfigAdminToolkit() {}
 
     /**
-     * Returns the size of a 'many' type value. It will return 1 for a non 'many' type value.
+     * Returns the size of a _many_ type value. It will return 1 for a non _many_ type value.
      *
      * @param confInstRef A config instance reference to get the size for.
      * @param configAdmin The APSConfigAdmin from which the values in the APSConfigInstReference comes from (or this will fail!).

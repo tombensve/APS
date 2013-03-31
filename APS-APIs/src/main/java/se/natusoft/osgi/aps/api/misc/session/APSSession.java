@@ -61,7 +61,7 @@ public interface APSSession {
 
     /**
      * Returns a object stored under the specified name or null if no object is stored under that name.
-     * <p/>
+     *
      * If isValid() returns false then this will always return null.
      *
      * @param name The name of the object to get.

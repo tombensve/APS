@@ -136,7 +136,7 @@ public class RequiredServices {
     }
 
     /**
-     * Releases all service instances looked up by loadServices(). After this getService(Class) will not work.
+     * Releases all service instances looked up by `loadServices()`. After this `getService(Class)` will not work.
      *
      * @param context The BundleContext to use to release the service instance with.
      */

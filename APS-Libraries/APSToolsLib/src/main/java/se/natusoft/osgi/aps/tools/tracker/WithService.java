@@ -37,7 +37,7 @@
 package se.natusoft.osgi.aps.tools.tracker;
 
 /**
- * This interface is used in conjunction with APSServiceTracker and provides callback code to run with a service.
+ * This interface is used in conjunction with _APSServiceTracker_ and provides callback code to run with a service.
  */
 public abstract class WithService<Service> {
 

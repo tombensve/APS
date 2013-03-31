@@ -7,3 +7,5 @@ This basically provides a class representing each JSON type: JSONObject, JSONStr
 This does not try to be an alternative to Jackson! This is used internally by other services. 
 
 ## APIs
+
+Complete javadocs can be found at <http://apidoc.natusoft.se/APSJSONLib/>.

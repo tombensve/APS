@@ -44,9 +44,9 @@ import com.vaadin.ui.VerticalLayout;
 
 /**
  * This is a layout that only accepts 5 components at 5 positions: left, top, center, bottom, right.
- * <p/>
+ *
  * The layout looks like this:
- * <pre>
+ *
  *     +------+----------------+------+
  *     |      |                |      |
  *     |      +----------------+      |
@@ -56,10 +56,10 @@ import com.vaadin.ui.VerticalLayout;
  *     |      +----------------+      |
  *     |      |                |      |
  *     +------+----------------+------+
- * </pre>
+ *
  * You set the different components with "setLeft(...), setTop(...), ...". All positions are optional, and you don't have to set any,
  * but that would be pointless.
- * <p/>
+ *
  * When you have set all your components the doLayout() method must be called, and it cannot be called before that. If you fail to
  * call doLayout() there will be an exception when rendering.
  */

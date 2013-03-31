@@ -71,8 +71,8 @@ The __APSConfigList\<Type\>__  container is an _java.lang.Iterable_ of \<Type\> 
 
 * Use __APSConfigValue__ for plain values. 
 * Use __APSConfigValueList__ for a list of plain values.
-* Use __MyConfigModel extends APSConfig__ for a subconfig model.
-* Use __APSConfigList\<MyConfigModel extends APSConfig\>__ for a list of subconfig models.
+* Use __\* extends APSConfig__ for a subconfig model.
+* Use __APSConfigList\<\* extends APSConfig\>__ for a list of subconfig models.
 
 ### The config annotations
 

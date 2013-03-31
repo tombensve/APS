@@ -48,37 +48,38 @@ import java.util.List;
 
 /**
  *  Provides an alternative service tracker.
- *  <p/>
- *  This makes services available in three ways.<br/>
- *  1) With the OnServiceAvailable, OnServiceLeaving, OnActiveServiceAvailable, OnActiveServiceLeaving,
- *  and WithService interfaces. These are all callbacks and implementations must be passed to the
+ *
+ *  This makes services available in three ways.
+ *
+ *  1. With the _OnServiceAvailable_, _OnServiceLeaving_, _OnActiveServiceAvailable_, _OnActiveServiceLeaving_,
+ *  and _WithService_ interfaces. These are all callbacks and implementations must be passed to the
  *  appropriate method to register the callback.
- *  <p/>
- *  2) With allocateService() and releaseService(), which always have to match like open and close.
- *  <b>Do not</b> call allocateService() more than once without having called releaseService() in between!
- *  <p/>
- *  3) with getWrappedService() which will provide a proxied implementation of the service interface that
+ *
+ *  2. With _allocateService()_ and _releaseService()_, which always have to match like open and close.
+ *  **Do not** call allocateService() more than once without having called releaseService() in between!
+ *
+ *  3. with getWrappedService() which will provide a proxied implementation of the service interface that
  *  will use the tracker to get a service instance and forward the call to this service. It handles
  *  services coming and going and waits for the specified timeout if no service is available before
  *  throwing an APSNoServiceAvailableException (which is a runtime exception!). This is the easiest
  *  usage of the tracker and you don't need to handle allocateService() and releaseService() since
  *  that is done automatically for you.
- *  <p/>
+ *
  *  Independent on how many services are tracked there is only one considered active and
  *  it is the active service that gets used in all cases where one/any service provider is needed.
  *  The first tracked service is set to the active service. If the active service goes away and there
  *  are other tracked services the first in the list becomes the new active service. If there
  *  are no other services in the list of tracked services then there will be no active
  *  service either.
- *  <p/>
+ *
  *  All ways of getting a service throws APSNoServiceAvailableException if the service is not available.
  *  Thereby you will never get a null service!
- *  <p/>
+ *
  *  When the tracker is created a timeout can optionally be provided. When this is provided this amount
  *  of time will be waited for a service to become available before APSNoServiceAvailableException is
  *  thrown.
- *  <p/>
- *  <b>Please note</b> that when a timeout is provided and the tracker is used to get a service instance
+ *
+ *  **Please note** that when a timeout is provided and the tracker is used to get a service instance
  *  in the activator the startup for that bundle will hang waiting for the service to become available.
  *  Bundle starts taking too much time is in general a bad thing.
  */
@@ -142,7 +143,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
 
 
     /**
-     * Creates a new APSServiceTracker instance.
+     * Creates a new _APSServiceTracker_ instance.
      *
      * @param context The bundles context.
      * @param serviceClass The class of the service to track.
@@ -153,7 +154,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     }
 
     /**
-     * Creates a new APSServiceTracker instance.
+     * Creates a new _APSServiceTracker_ instance.
      *
      * @param context The bundles context.
      * @param serviceClass The class of the service to track.
@@ -169,7 +170,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     }
 
     /**
-     * Creates a new APSServiceTracker instance.
+     * Creates a new _APSServiceTracker_ instance.
      *
      * @param context The bundles context.
      * @param serviceClass The class of the service to track.
@@ -181,7 +182,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     }
 
     /**
-     * Creates a new APSServiceTracker instance.
+     * Creates a new _APSServiceTracker_ instance.
      *
      * @param context The bundles context.
      * @param serviceClass The class of the service to track.
@@ -198,7 +199,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     }
 
     /**
-     * Creates a new APSServiceTracker instance.
+     * Creates a new _APSServiceTracker_ instance.
      *
      * @param context The bundles context.
      * @param serviceClass The class of the service to track.
@@ -210,7 +211,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     }
 
     /**
-     * Creates a new APSServiceTracker instance.
+     * Creates a new _APSServiceTracker_ instance.
      *
      * @param context The bundles context.
      * @param serviceClass The class of the service to track.
@@ -310,7 +311,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     /**
      * Receives notification that a service has had a lifecycle change.
      *
-     * @param event The <code>ServiceEvent</code> object.
+     * @param event The `ServiceEvent object.
      */
     @Override
     public void serviceChanged(ServiceEvent event) {
@@ -418,7 +419,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     /**
      * Sets the callback to call when a service becomes available. Please note that this callback gets
      * called for all instances of the tracked service, not just the active! If you only want the active
-     * one use onActiveServiceAvailable()!
+     * one use _onActiveServiceAvailable()_!
      *
      * @param onServiceAvailable The callback to set.
      */
@@ -429,7 +430,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     /**
      * Sets the callback to call when a service is leaving. Please note that this callback gets
      * called for all instances of the tracked service, not just the active! If you only want the active
-     * one use OnActiveServiceLeaving()!
+     * one use _OnActiveServiceLeaving()_!
      *
      * @param onServiceLeaving The callback to set.
      */
@@ -440,10 +441,10 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     /**
      * Sets the callback to call when there is a new active service available. This is
      * the most failsafe way of getting hold of a service.
-     * <p/>
+     *
      * Please note that this will also be called when the active service changes, that
      * is the previous active service has gone away, and a new has replaced it.
-     * <p/>
+     *
      * Also note that this callback can be called at any time possibly by another
      * thread! It differs considerably from the withService*() methods who all execute
      * immediately and can thereby also throw exceptions. If this callback throws an
@@ -470,10 +471,10 @@ public class APSServiceTracker<Service>  implements ServiceListener{
 
     /**
      * Runs the specified callback providing it with a service to use.
-     * <p/>
+     *
      * This will wait for a service to become available if a timeout has been provided for
      * the tracker.
-     * <p/>
+     *
      * Don't use this in an activator start() method! onActiveServiceAvailable() and onActiveServiceLeaving()
      * are safe in a start() method, this is not!
      *
@@ -511,10 +512,10 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * Runs the specified callback providing it with a service to use if and only if the service is available.
      * If the service is not available nothing happens and you will not be notified of the failure! This is
      * for "if it works, it works and if it doesn't it doesn't" cases. This is basically a convenience for
-     * withService() and ignoring APSNoServiceAvailableException.
-     * <p/>
-     * Dont use this in an activate start() method! onActiveServiceAvailable() and onActiveServiceLeaving()
-     * are safe in a start() method, this is not!
+     * _withService()_ and ignoring _APSNoServiceAvailableException_.
+     *
+     * Don't use this in an activator _start()_ method! _onActiveServiceAvailable()_ and _onActiveServiceLeaving()_
+     * are safe in a _start()_ method, this is not!
      *
      * @param withService The callback to run and provide service to.
      * @param args Optional arguments to pass to the callback.
@@ -538,12 +539,12 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     }
 
     /**
-     * Runs the specified callback for all <b>currently</b> available services.
-     * <p/>
-     * Dont use this in an activate start() method! onActiveServiceAvailable() and onActiveServiceLeaving()
-     * are safe in a start() method, this is not!
+     * Runs the specified callback for all **currently** available services.
      *
-     * @param withService The callbaciki to run and provide service to.
+     * Don't use this in an activator _start()_ method! _onActiveServiceAvailable()_ and _onActiveServiceLeaving()_
+     * are safe in a _start()_ method, this is not!
+     *
+     * @param withService The callback to run and provide service to.
      * @param args Optional arguments to pass to the callback.
      *
      * @throws WithServiceException Wraps any exception thrown by the callback.
@@ -584,8 +585,8 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     /**
      * Returns the active service possibly waiting for one to become available if a timeout has been specified when
      * tracker were created.
-     * <p/>
-     * Please always call releaseTrackedService() when you are done with the service!
+     *
+     * Please always call _releaseTrackedService()_ when you are done with the service!
      *
      * @return The active service.
      *
@@ -907,7 +908,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
         }
 
         /**
-         * Allocates the active service and returns an instance of it. releaseActiveService() should be called when done with it.
+         * Allocates the active service and returns an instance of it. _releaseActiveService()_ should be called when done with it.
          *
          * @return The allocated active service instance.
          */
@@ -994,7 +995,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     }
 
     /**
-     * Runs an OnServiceAvailable or an OnServiceLeaving in another thread.
+     * Runs an _OnServiceAvailable_ or an _OnServiceLeaving_ in another thread.
      */
     private class OnServiceRunnerThread extends Thread {
         //

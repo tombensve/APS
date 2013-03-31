@@ -45,8 +45,8 @@ import java.util.List;
  * This is registered in web.xml and installs itself in the session on session create
  * using its class name as key. Web applications can then get this from the session
  * and register themselves as "destroyed" listeners on this to be called when
- * sessionDestroyed() is called on this.
- * <p/>
+ * _sessionDestroyed()_ is called on this.
+ *
  * The main reason for this is to be able to shutdown and release any service trackers
  * that were started on session startup.
  */

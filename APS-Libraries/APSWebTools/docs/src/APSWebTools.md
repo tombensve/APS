@@ -6,7 +6,7 @@ Among other things it provides support for being part of the APS administration 
 
 ## APIs
 
-The following are the APIs for a few selected classes. The complete javadoc for this library can be found at [http://apidoc.natusoft.se/APSWebTools](http://apidoc.natusoft.se/APSWebTools).
+The following are the APIs for a few selected classes. The complete javadoc for this library can be found at <http://apidoc.natusoft.se/APSWebTools/>.
 
 ----
 

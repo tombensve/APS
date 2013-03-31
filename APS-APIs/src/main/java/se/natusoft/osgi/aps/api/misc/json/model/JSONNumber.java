@@ -38,23 +38,23 @@ package se.natusoft.osgi.aps.api.misc.json.model;
 
 /**
  * This class is based on the structure defined on http://www.json.org/.
- * <p>
+ *
  * This represents the "number" diagram on the above mentioned web page:
- * <pre>
- *                                       ______________________
- *                                      /                      \
- *                                      |                      |
- * |_|______________ (0) _______________/__ (.) ___ (digit) ___\_________________________|_|
- * | | \       /  \                    /         /           \  \                      / | |
- *     |       |  |                   /          \___________/  |                      |
- *     \_ (-) _/  \_ (digit 1-9) ____/_______                   |                      |
- *                                /          \                  |                      |
- *                                \_ (digit) /           _ (e) _|                      |
- *                                                      |_ (E) _|           ___________|
- *                                                      |        _ (+) _   /           |
- *                                                      \_______/_______\__\_ (digit) _/
- *                                                              \_ (-) _/
- * </pre>
+ *
+ *                                           ______________________
+ *                                          /                      \
+ *                                          |                      |
+ *     |_|______________ (0) _______________/__ (.) ___ (digit) ___\_________________________|_|
+ *     | | \       /  \                    /         /           \  \                      / | |
+ *         |       |  |                   /          \___________/  |                      |
+ *         \_ (-) _/  \_ (digit 1-9) ____/_______                   |                      |
+ *                                    /          \                  |                      |
+ *                                    \_ (digit) /           _ (e) _|                      |
+ *                                                          |_ (E) _|           ___________|
+ *                                                          |        _ (+) _   /           |
+ *                                                          \_______/_______\__\_ (digit) _/
+ *                                                                  \_ (-) _/
+ *
  * @author Tommy Svesson
  */
 public interface JSONNumber extends JSONValue {

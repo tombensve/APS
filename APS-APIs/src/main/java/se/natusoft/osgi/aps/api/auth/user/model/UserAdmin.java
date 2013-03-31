@@ -80,9 +80,9 @@ public interface UserAdmin extends User {
 
     /**
      * Sets properties for the user.
-     * <p/>
-     * To update the user properties either first do getProperties() do your changes, and then call this method
-     * with the changed properties or just use the addUserProperty() and removeUserProperty() methods.
+     *
+     * To update the user properties either first do _getProperties()_, do your changes, and then call this method
+     * with the changed properties or just use the _addUserProperty()_ and _removeUserProperty()_ methods.
      *
      * @param properties The properties to set.
      */

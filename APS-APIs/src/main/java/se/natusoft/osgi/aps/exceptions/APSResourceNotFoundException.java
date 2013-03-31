@@ -42,7 +42,7 @@ package se.natusoft.osgi.aps.exceptions;
 public class APSResourceNotFoundException extends APSRuntimeException {
 
     /**
-     * Creates a new APSResourceNotFoundException.
+     * Creates a new _APSResourceNotFoundException_.
      *
      * @param resource The name of the unavailable resource.
      */
@@ -51,7 +51,7 @@ public class APSResourceNotFoundException extends APSRuntimeException {
     }
 
     /**
-     * Creates a new APSResourceNotFoundException.
+     * Creates a new _APSResourceNotFoundException_.
      *
      * @param resource The name of the unavailable resource.
      * @param message An additional message.
@@ -61,7 +61,7 @@ public class APSResourceNotFoundException extends APSRuntimeException {
     }
 
     /**
-     * Creates a new APSResourceNotFoundException.
+     * Creates a new _APSResourceNotFoundException_.
      *
      * @param resource The name of the unavailable resource.
      * @param cause The cause of this exception.
@@ -71,7 +71,7 @@ public class APSResourceNotFoundException extends APSRuntimeException {
     }
 
     /**
-     * Creates a new APSResourceNotFoundException.
+     * Creates a new _APSResourceNotFoundException_.
      *
      * @param resource The name of the unavailable resource.
      * @param message An additional message.

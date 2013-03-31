@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This contains a parsed JSONRPC request.
+ * This provides a partial implementation of RPCRequest.
  */
 public abstract class AbstractRPCRequest implements RPCRequest {
     //

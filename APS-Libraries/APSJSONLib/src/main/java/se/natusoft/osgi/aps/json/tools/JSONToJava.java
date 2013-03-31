@@ -49,13 +49,13 @@ import java.util.*;
 
 /**
  * Creates a JavaBean instance and copies data from a JSON value to it.
- * <p/>
+ *
  * The following mappings are made in addition to the expected ones:
- * <ul>
- *     <li>JSONArray only maps to an array property.</li>
- *     <li>Date properties in bean are mapped from JSONString "yyyy-MM-dd HH:mm:ss"</li>
- *     <li>Enum properties in bean are mapped from JSONString which have to contain enum constant name.</li>
- * </ul>
+ *
+ * * _JSONArray_ only maps to an array property.
+ * * Date properties in bean are mapped from _JSONString_ "yyyy-MM-dd HH:mm:ss".
+ * * Enum properties in bean are mapped from _JSONString_ which have to contain enum constant name.
+ *
  */
 public class JSONToJava {
 
@@ -134,7 +134,7 @@ public class JSONToJava {
     }
 
     /**
-     * Loads data into a java object wrapped in a ModelInstance from a JSONObject.
+     * Loads data into a java object wrapped in a _ModelInstance_ from a _JSONObject_.
      *
      * @param bean The bean to load.
      * @param jsonObject The JSON object to load from.

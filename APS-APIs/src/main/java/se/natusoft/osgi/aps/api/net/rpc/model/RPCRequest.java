@@ -41,16 +41,17 @@ import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
 import se.natusoft.osgi.aps.api.net.rpc.exceptions.RequestedParamNotAvailableException;
 
 /**
+ * This represents a request returned by protocol implementations.
  */
 public interface RPCRequest {
     /**
-     * Returns true if this request is valid. If this returns false all information except getError() is invalid, and
-     * getError() should return a valid RPCError object.
+     * Returns true if this request is valid. If this returns false all information except _getError()_ is invalid, and
+     * _getError()_ should return a valid _RPCError_ object.
      */
     boolean isValid();
 
     /**
-     * Returns an RPCError object if isValid() == false, null otherwise.
+     * Returns an _RPCError_ object if `isValid() == false`, _null_ otherwise.
      */
     RPCError getError();
 
@@ -61,14 +62,14 @@ public interface RPCRequest {
     String getServiceQName();
     
     /**
-     * @return The method to call. This can return null if the method is provided by other means, for example a
+     * Returns the method to call. This can return _null_ if the method is provided by other means, for example a
      * REST protocol where it will be part of the URL.
      */
     String getMethod();
 
     /**
      * Returns true if there is a call id available in the request.
-     * <p/>
+     *
      * A call id is something that is received with a request and passed back with the
      * response to the request. Some RPC implementations will require this and some wont.
      */
@@ -76,14 +77,14 @@ public interface RPCRequest {
 
     /**
      * Returns the method call call Id.
-     * <p/>
+     *
      * A call id is something that is received with a request and passed back with the
      * response to the request. Some RPC implementations will require this and some wont.
      */
     Object getCallId();
 
     /**
-     * @return The number of parameters available.
+     * Return the number of parameters available.
      */
     int getNumberOfParameters();
 

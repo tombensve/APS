@@ -254,12 +254,12 @@
       </li>
       <li>
         <p>
-          Use <strong>MyConfigModel extends APSConfig</strong> for a subconfig model.          
+          Use <strong>* extends APSConfig</strong> for a subconfig model.          
         </p>
       </li>
       <li>
         <p>
-          Use <strong>APSConfigList&lt;MyConfigModel extends APSConfig&gt;</strong> for a list of subconfig models.          
+          Use <strong>APSConfigList&lt;* extends APSConfig&gt;</strong> for a list of subconfig models.          
         </p>
       </li>
     </ul>
@@ -510,29 +510,21 @@
     <p>
       public <em>interface</em> <strong>APSDirectory </strong> extends  APSFile    [se.natusoft.osgi.aps.api.core.filesystem.model] {      
     </p>
-    <blockquote>
-      <p>
-         This represents a directory in an APSFilesystem.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        Use this to create or get directories and files and list contents of directories.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        Personal comment: I do prefer the term "folder" over "directory" since I think that is less ambigous, but since Java uses the term "directory" I decided to stick with that name.         
-      </p>
-    </blockquote>
+    <p>
+      This represents a directory in an <em>APSFilesystem</em>.      
+    </p>
+    <p>
+      Use this to create or get directories and files and list contents of directories.      
+    </p>
+    <p>
+      Personal comment: I do prefer the term "folder" over "directory" since I think that is less ambiguous, but since Java uses the term "directory" I decided to stick with that name.      
+    </p>
     <p>
       <strong>APSDirectory createDir(String name) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns a newly created directory with the specified name.          
-      </p>
-    </blockquote>
+    <p>
+      Returns a newly created directory with the specified name.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -552,11 +544,9 @@
     <p>
       <strong>APSDirectory createDir(String name, String duplicateMessage) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns a newly created directory with the specified name.          
-      </p>
-    </blockquote>
+    <p>
+      Returns a newly created directory with the specified name.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -581,11 +571,9 @@
     <p>
       <strong>APSFile createFile(String name) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new file in the directory represented by the current APSDirectory.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new file in the directory represented by the current <em>APSDirectory</em>.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -605,11 +593,9 @@
     <p>
       <strong>APSDirectory getDir(String dirname) throws FileNotFoundException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the specified directory.          
-      </p>
-    </blockquote>
+    <p>
+      Returns the specified directory.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -629,11 +615,9 @@
     <p>
       <strong>APSFile getFile(String name)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the named file in this directory.          
-      </p>
-    </blockquote>
+    <p>
+      Returns the named file in this directory.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -645,11 +629,9 @@
     <p>
       <strong>void recursiveDelete() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Performs a recursive delete of the directory represented by this APSDirectory and all subdirectories and files.          
-      </p>
-    </blockquote>
+    <p>
+      Performs a recursive delete of the directory represented by this <em>APSDirectory</em> and all subdirectories and files.      
+    </p>
     <p>
       <em>Throws</em>      
     </p>
@@ -661,11 +643,6 @@
     <p>
       <strong>String[] list()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -677,11 +654,6 @@
     <p>
       <strong>APSFile[] listFiles()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -699,24 +671,18 @@
     <p>
       public <em>interface</em> <strong>APSFile </strong>   [se.natusoft.osgi.aps.api.core.filesystem.model] {      
     </p>
-    <blockquote>
-      <p>
-         This represents a file in an APSFilesystemService provided filsystem. It provides most of the API of java.io.File but is not a File! It never discloses the full path in the host filesystem, only paths relative to its APSFilesystem root.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        Use the createInputStream/OutputStream/Reader/Writer to read and write the file.         
-      </p>
-    </blockquote>
+    <p>
+      This represents a file in an <em>APSFilesystemService</em> provided filesystem. It provides most of the API of <em>java.io.File</em> but is not a <em>java.io.File</em>! It never discloses the full path in the host filesystem, only paths relative to its <em>APSFilesystem</em> root.      
+    </p>
+    <p>
+      Use the createInputStream/OutputStream/Reader/Writer to read and write the file.      
+    </p>
     <p>
       <strong>InputStream createInputStream() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new InputStream to this file.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>InputStream</em> to this file.      
+    </p>
     <p>
       <em>Throws</em>      
     </p>
@@ -728,11 +694,9 @@
     <p>
       <strong>OutputStream createOutputStream() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new OutputStream to this file.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>OutputStream</em> to this file.      
+    </p>
     <p>
       <em>Throws</em>      
     </p>
@@ -744,11 +708,9 @@
     <p>
       <strong>Reader createReader() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new Reader to this file.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>Reader</em> to this file.      
+    </p>
     <p>
       <em>Throws</em>      
     </p>
@@ -760,11 +722,9 @@
     <p>
       <strong>Writer createWriter() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new Writer to this file.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>Writer</em> to this file.      
+    </p>
     <p>
       <em>Throws</em>      
     </p>
@@ -776,11 +736,9 @@
     <p>
       <strong>Properties loadProperties() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         If this file denotes a properties file it is loaded and returned.          
-      </p>
-    </blockquote>
+    <p>
+      If this file denotes a properties file it is loaded and returned.      
+    </p>
     <p>
       <em>Throws</em>      
     </p>
@@ -792,11 +750,9 @@
     <p>
       <strong>void saveProperties(Properties properties) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         If this file denotes a properties file it is written with the specified properties.          
-      </p>
-    </blockquote>
+    <p>
+      If this file denotes a properties file it is written with the specified properties.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -816,19 +772,12 @@
     <p>
       <strong>APSDirectory toDirectory()</strong>      
     </p>
-    <blockquote>
-      <p>
-         If this APSFile represents a directory an APSDirectory instance will be returned. Otherwise null will be returned.         
-      </p>
-    </blockquote>
+    <p>
+      If this <em>APSFile</em> represents a directory an <em>APSDirectory</em> instance will be returned. Otherwise <em>null</em> will be returned.      
+    </p>
     <p>
       <strong>APSFile getAbsoluteFile()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -840,19 +789,12 @@
     <p>
       <strong>String getAbsolutePath()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the absolute path relative to filesystem root.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the absolute path relative to filesystem root.      
+    </p>
     <p>
       <strong>APSFile getCanonicalFile() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -864,11 +806,6 @@
     <p>
       <strong>String getCanonicalPath() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -880,11 +817,6 @@
     <p>
       <strong>String getParent()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -896,11 +828,6 @@
     <p>
       <strong>APSDirectory getParentFile()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -912,11 +839,6 @@
     <p>
       <strong>String getPath()</strong>      
     </p>
-    <blockquote>
-      <p>
-                  
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -928,11 +850,6 @@
     <p>
       <strong>boolean renameTo(APSFile dest)</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -944,11 +861,6 @@
     <p>
       <strong>String getName()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -960,11 +872,6 @@
     <p>
       <strong>boolean canRead()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -976,11 +883,6 @@
     <p>
       <strong>boolean canWrite()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -992,11 +894,6 @@
     <p>
       <strong>boolean exists()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -1008,11 +905,6 @@
     <p>
       <strong>boolean isDirectory()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -1024,11 +916,6 @@
     <p>
       <strong>boolean isFile()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -1040,11 +927,6 @@
     <p>
       <strong>boolean isHidden()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -1056,11 +938,6 @@
     <p>
       <strong>long lastModified()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -1072,11 +949,6 @@
     <p>
       <strong>long length()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -1088,11 +960,6 @@
     <p>
       <strong>boolean createNewFile() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -1104,11 +971,6 @@
     <p>
       <strong>boolean delete()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -1120,11 +982,6 @@
     <p>
       <strong>void deleteOnExit()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -1136,11 +993,9 @@
     <p>
       <strong>String toString()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns a string representation of this APSFileImpl.         
-      </p>
-    </blockquote>
+    <p>
+      Returns a string representation of this <em>APSFile</em>.      
+    </p>
     <p>
       }      
     </p>
@@ -1150,19 +1005,15 @@
     <p>
       public <em>interface</em> <strong>APSFilesystem </strong>   [se.natusoft.osgi.aps.api.core.filesystem.model] {      
     </p>
-    <blockquote>
-      <p>
-         This represents an APSFilesystemService filesytem.         
-      </p>
-    </blockquote>
+    <p>
+      This represents an <em>APSFilesystemService</em> filesystem.      
+    </p>
     <p>
       <strong>APSDirectory getDirectory(String path) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns a folder at the specified path.          
-      </p>
-    </blockquote>
+    <p>
+      Returns a folder at the specified path.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -1182,11 +1033,9 @@
     <p>
       <strong>APSFile getFile(String path)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the file or folder of the specifeid path.          
-      </p>
-    </blockquote>
+    <p>
+      Returns the file or folder of the specified path.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -1198,11 +1047,9 @@
     <p>
       <strong>APSDirectory getRootDirectory()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the root directory.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the root directory.      
+    </p>
     <p>
       }      
     </p>
@@ -1212,21 +1059,17 @@
     <p>
       public <em>interface</em> <strong>APSFilesystemService </strong>   [se.natusoft.osgi.aps.api.core.filesystem.service] {      
     </p>
-    <blockquote>
-      <p>
-         This provides a filesystem for use by services/applications. Each filesystem has its own root that cannot be navigated outside of.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        Services or application using this should do something like this in their activators:         
-      </p>
-    </blockquote>
+    <p>
+      This provides a filesystem for use by services/applications. Each filesystem has its own root that cannot be navigated outside of.      
+    </p>
+    <p>
+      Services or application using this should do something like this in their activators:      
+    </p>
     <pre>
       <code>
     APSFilesystemService fss;
-    APSFilesystemImpl fs;
-
+    APSFilesystem fs;
+    
     if (fss.hasFilesystem("my.file.system")) {
         fs = fss.getFilsystem("my.file.system");
     }
@@ -1235,28 +1078,21 @@
     }
       </code>
     </pre>
-    <blockquote>
-      <p>
-                
-      </p>
-    </blockquote>
     <p>
             
     </p>
     <p>
       <strong>APSFilesystem createFilesystem(String owner) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new filesystem for use by an application or service. Where on disk this filesystem resides is irellevant. It is accessed using the "owner", and will exist until it is removed.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new filesystem for use by an application or service. Where on disk this filesystem resides is irrelevant. It is accessed using the "owner", and will exist until it is removed.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>owner</em> - The owner of the filesystem or rather a unique identifier of it. Concider using application or service package.         
+        <em>owner</em> - The owner of the filesystem or rather a unique identifier of it. Consider using application or service package.         
       </p>
     </blockquote>
     <p>
@@ -1270,33 +1106,29 @@
     <p>
       <strong>boolean hasFilesystem(String owner)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns true if the specified owner has a fileystem.          
-      </p>
-    </blockquote>
+    <p>
+      Returns true if the specified owner has a filesystem.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>owner</em> - The owner of the fileystem or rather a unique identifier of it.         
+        <em>owner</em> - The owner of the filesystem or rather a unique identifier of it.         
       </p>
     </blockquote>
     <p>
       <strong>APSFilesystem getFilesystem(String owner) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the filesystem for the specified owner.          
-      </p>
-    </blockquote>
+    <p>
+      Returns the filesystem for the specified owner.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>owner</em> - The owner of the filesystem or rahter a unique identifier of it.         
+        <em>owner</em> - The owner of the filesystem or rather a unique identifier of it.         
       </p>
     </blockquote>
     <p>
@@ -1310,11 +1142,9 @@
     <p>
       <strong>void deleteFilesystem(String owner) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Removes the filesystem and all files in it.          
-      </p>
-    </blockquote>
+    <p>
+      Removes the filesystem and all files in it.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -1348,11 +1178,9 @@
     <p>
       public <em>class</em> <strong>PlatformDescription </strong>   [se.natusoft.osgi.aps.api.core.platform.model] {      
     </p>
-    <blockquote>
-      <p>
-         This model provides information about a platform installation.         
-      </p>
-    </blockquote>
+    <p>
+      This model provides information about a platform installation.      
+    </p>
     <p>
             
     </p>
@@ -1365,19 +1193,15 @@
     <p>
       <strong>public PlatformDescription()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new PlatformDescription.         
-      </p>
-    </blockquote>
+    <p>
+      Creates a new PlatformDescription.      
+    </p>
     <p>
       <strong>public PlatformDescription(String identifier, String type, String description)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new PlatformDescription.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new PlatformDescription.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -1399,27 +1223,21 @@
     <p>
       <strong>public String getIdentifier()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the platform identifier.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the platform identifier.      
+    </p>
     <p>
       <strong>public String getType()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the type of the platform.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the type of the platform.      
+    </p>
     <p>
       <strong>public String getDescription()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the description of the platform.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the description of the platform.      
+    </p>
     <p>
       }      
     </p>
@@ -1429,19 +1247,15 @@
     <p>
       public <em>interface</em> <strong>APSPlatformService </strong>   [se.natusoft.osgi.aps.api.core.platform.service] {      
     </p>
-    <blockquote>
-      <p>
-         Provides information about the platform instance.         
-      </p>
-    </blockquote>
+    <p>
+      Provides information about the platform instance.      
+    </p>
     <p>
       <strong>public PlatformDescription getPlatformDescription()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns a description of the platform instance / installation.         
-      </p>
-    </blockquote>
+    <p>
+      Returns a description of the platform instance / installation.      
+    </p>
     <p>
       }      
     </p>
@@ -1460,21 +1274,20 @@
     </p>
     <H2>APIs</H2>
     <p>
+      Complete javadocs can be found at <a href='http://apidoc.natusoft.se/APSJSONLib/' title=''>http://apidoc.natusoft.se/APSJSONLib/</a>.      
+    </p>
+    <p>
       public <em>class</em> <strong>JSON </strong>   [se.natusoft.osgi.aps.json] {      
     </p>
-    <blockquote>
-      <p>
-         This is the official API for reading and writing JSON values.         
-      </p>
-    </blockquote>
+    <p>
+      This is the official API for reading and writing JSON values.      
+    </p>
     <p>
       <strong>public static JSONValue read(InputStream jsonIn, JSONErrorHandler errorHandler) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Reads any JSON object from the specified InputStream.          
-      </p>
-    </blockquote>
+    <p>
+      Reads any JSON object from the specified <em>InputStream</em>.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -1507,11 +1320,9 @@
     <p>
       <strong>public static void write(OutputStream jsonOut, JSONValue value) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Writes a JSONValue to an OutputStream. This will write compact output by default.          
-      </p>
-    </blockquote>
+    <p>
+      Writes a <em>JSONValue</em> to an <em>OutputStream</em>. This will write compact output by default.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -1536,11 +1347,9 @@
     <p>
       <strong>public static void write(OutputStream jsonOut, JSONValue value, boolean compact) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Writes a JSONValue to an OutputStream.          
-      </p>
-    </blockquote>
+    <p>
+      Writes a <em>JSONValue</em> to an <em>OutputStream</em>.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -1576,51 +1385,41 @@
     <p>
       public <em>class</em> <strong>JSONArray </strong> extends  JSONValue  [se.natusoft.osgi.aps.json] {      
     </p>
-    <blockquote>
-      <p>
-         This class is based on the structure defined on http://www.json.org/.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        This represents the "array" diagram on the above mentioned web page:         
-      </p>
-    </blockquote>
+    <p>
+      This class is based on the structure defined on http://www.json.org/.      
+    </p>
+    <p>
+      This represents the "array" diagram on the above mentioned web page:      
+    </p>
     <pre>
       <code>
-              _______________________
-             /                       \
-             |                       |
-|_____ ([) __/_______ (value) _______\__ (]) _____|
-|              /                   \              |
-               |                   |
-               \_______ (,) _______/
+                  _______________________
+                 /                       \
+                 |                       |
+    |_____ ([) __/_______ (value) _______\__ (]) _____|
+    |              /                   \              |
+                   |                   |
+                   \_______ (,) _______/
       </code>
     </pre>
-    <blockquote>
-      <p>
-         @author Tommy Svensson         
-      </p>
-    </blockquote>
+    <p>
+      @author Tommy Svensson      
+    </p>
     <p>
             
     </p>
     <p>
       <strong>public JSONArray()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new JSONArray for wrinting JSON output.         
-      </p>
-    </blockquote>
+    <p>
+      Creates a new JSONArray for wrinting JSON output.      
+    </p>
     <p>
       <strong>public JSONArray(JSONErrorHandler errorHandler)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new JSONArray for reading JSON input and writing JSON output.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new JSONArray for reading JSON input and writing JSON output.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -1638,11 +1437,9 @@
     <p>
       <strong>public void addValue(JSONValue value)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Adds a value to the array.          
-      </p>
-    </blockquote>
+    <p>
+      Adds a value to the array.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -1654,19 +1451,15 @@
     <p>
       <strong>public List&lt;JSONValue&gt; getAsList()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the array values as a List.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the array values as a List.      
+    </p>
     <p>
       <strong>public &lt;T extends JSONValue&gt; List&lt;T&gt; getAsList(Class&lt;T&gt; type)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the array values as a list of a specific type.          
-      </p>
-    </blockquote>
+    <p>
+      Returns the array values as a list of a specific type.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -1703,22 +1496,21 @@
     <p>
       public <em>class</em> <strong>JSONBoolean </strong> extends  JSONValue    [se.natusoft.osgi.aps.json] {      
     </p>
-    <blockquote>
-      <p>
-         This class is based on the structure defined on http://www.json.org/.   @author Tommy Svensson         
-      </p>
-    </blockquote>
+    <p>
+      This class is based on the structure defined on <a href='http://www.json.org/' title=''>http://www.json.org/</a>.      
+    </p>
+    <p>
+      @author Tommy Svensson      
+    </p>
     <p>
             
     </p>
     <p>
       <strong>public JSONBoolean(boolean value)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new JSONBoolean instance for writing JSON output.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new JSONBoolean instance for writing JSON output.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -1730,11 +1522,9 @@
     <p>
       <strong>public JSONBoolean(JSONErrorHandler errorHandler)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new JSONBoolean instance for reading JSON input or writing JSON output.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new JSONBoolean instance for reading JSON input or writing JSON output.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -1749,11 +1539,9 @@
     <p>
       <strong>public void setBooleanValue(boolean value)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets the value of this boolean.          
-      </p>
-    </blockquote>
+    <p>
+      Sets the value of this boolean.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -1765,19 +1553,15 @@
     <p>
       <strong>public boolean getAsBoolean()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the value of this boolean.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the value of this boolean.      
+    </p>
     <p>
       <strong>public String toString()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the value of this boolean as a String.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the value of this boolean as a String.      
+    </p>
     <p>
             
     </p>
@@ -1793,19 +1577,18 @@
     <p>
       public <em>interface</em> <strong>JSONErrorHandler </strong>   [se.natusoft.osgi.aps.json] {      
     </p>
-    <blockquote>
-      <p>
-         This is called on warnings or failures.   @author Tommy Svensson         
-      </p>
-    </blockquote>
+    <p>
+      This is called on warnings or failures.      
+    </p>
+    <p>
+      @author Tommy Svensson      
+    </p>
     <p>
       <strong>void warning(String message)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Warns about something.          
-      </p>
-    </blockquote>
+    <p>
+      Warns about something.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -1817,11 +1600,9 @@
     <p>
       <strong>void fail(String message, Throwable cause) throws RuntimeException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Indicate failure.          
-      </p>
-    </blockquote>
+    <p>
+      Indicate failure.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -1852,27 +1633,24 @@
     <p>
       public <em>class</em> <strong>JSONNull </strong> extends  JSONValue    [se.natusoft.osgi.aps.json] {      
     </p>
-    <blockquote>
-      <p>
-         This class is based on the structure defined on http://www.json.org/.   @author Tommy Svensson         
-      </p>
-    </blockquote>
+    <p>
+      This class is based on the structure defined on <a href='http://www.json.org/' title=''>http://www.json.org/</a>.      
+    </p>
+    <p>
+      @author Tommy Svensson      
+    </p>
     <p>
       <strong>public JSONNull()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new JSONNull instance for writing JSON output.         
-      </p>
-    </blockquote>
+    <p>
+      Creates a new JSONNull instance for writing JSON output.      
+    </p>
     <p>
       <strong>public JSONNull(JSONErrorHandler errorHandler)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new JSONNull instance for reading JSON input or writing JSON output.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new JSONNull instance for reading JSON input or writing JSON output.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -1887,11 +1665,6 @@
     <p>
       <strong>public String toString()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -1915,49 +1688,41 @@
     <p>
       public <em>class</em> <strong>JSONNumber </strong> extends  JSONValue    [se.natusoft.osgi.aps.json] {      
     </p>
-    <blockquote>
-      <p>
-         This class is based on the structure defined on http://www.json.org/.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        This represents the "number" diagram on the above mentioned web page:         
-      </p>
-    </blockquote>
+    <p>
+      This class is based on the structure defined on http://www.json.org/.      
+    </p>
+    <p>
+      This represents the "number" diagram on the above mentioned web page:      
+    </p>
     <pre>
       <code>
-                                      ______________________
-                                     /                      \
-                                     |                      |
-|_|______________ (0) _______________/__ (.) ___ (digit) ___\_________________________|_|
-| | \       /  \                    /         /           \  \                      / | |
-    |       |  |                   /          \___________/  |                      |
-    \_ (-) _/  \_ (digit 1-9) ____/_______                   |                      |
-                               /          \                  |                      |
-                               \_ (digit) /           _ (e) _|                      |
-                                                     |_ (E) _|           ___________|
-                                                     |        _ (+) _   /           |
-                                                     \_______/_______\__\_ (digit) _/
-                                                             \_ (-) _/
+                                          ______________________
+                                         /                      \
+                                         |                      |
+    |_|______________ (0) _______________/__ (.) ___ (digit) ___\_________________________|_|
+    | | \       /  \                    /         /           \  \                      / | |
+        |       |  |                   /          \___________/  |                      |
+        \_ (-) _/  \_ (digit 1-9) ____/_______                   |                      |
+                                   /          \                  |                      |
+                                   \_ (digit) /           _ (e) _|                      |
+                                                         |_ (E) _|           ___________|
+                                                         |        _ (+) _   /           |
+                                                         \_______/_______\__\_ (digit) _/
+                                                                 \_ (-) _/
       </code>
     </pre>
-    <blockquote>
-      <p>
-         @author Tommy Svesson         
-      </p>
-    </blockquote>
+    <p>
+      @author Tommy Svesson      
+    </p>
     <p>
             
     </p>
     <p>
       <strong>public JSONNumber(Number value)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new JSONNumber instance for writing JSON output.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new JSONNumber instance for writing JSON output.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -1969,11 +1734,9 @@
     <p>
       <strong>public JSONNumber(JSONErrorHandler errorHandler)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new JSONNumber instance for reading JSON input or writing JSON output.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new JSONNumber instance for reading JSON input or writing JSON output.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -1988,67 +1751,48 @@
     <p>
       <strong>public Number toNumber()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the number as a Number.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the number as a Number.      
+    </p>
     <p>
       <strong>public double toDouble()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the number as a double value.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the number as a double value.      
+    </p>
     <p>
       <strong>public float toFloat()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the number as a float value.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the number as a float value.      
+    </p>
     <p>
       <strong>public int toInt()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the number as an int value.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the number as an int value.      
+    </p>
     <p>
       <strong>public long toLong()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the number as a long value.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the number as a long value.      
+    </p>
     <p>
       <strong>public short toShort()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the number as a short value.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the number as a short value.      
+    </p>
     <p>
       <strong>public byte toByte()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the number as a byte value.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the number as a byte value.      
+    </p>
     <p>
       <strong>public String toString()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -2060,11 +1804,9 @@
     <p>
       <strong>public Object to(Class type)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the number as a value of the type specified by the type parameter.          
-      </p>
-    </blockquote>
+    <p>
+      Returns the number as a value of the type specified by the type parameter.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2088,60 +1830,48 @@
     <p>
       public <em>class</em> <strong>JSONObject </strong> extends  JSONValue    [se.natusoft.osgi.aps.json] {      
     </p>
-    <blockquote>
-      <p>
-         This class is based on the structure defined on http://www.json.org/.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        It represents the "object" diagram on the above mentioned web page:         
-      </p>
-    </blockquote>
+    <p>
+      This class is based on the structure defined on http://www.json.org/.      
+    </p>
+    <p>
+      It represents the "object" diagram on the above mentioned web page:      
+    </p>
     <pre>
       <code>
-             ________________________________________
-            /                                        \
-|___ ({) __/_____ (string) ____ (:) ____ (value) _____\___ (}) ____|
-|           /                                        \             |
-            \__________________ (,) _________________/
-
+                 ________________________________________
+                /                                        \
+    |___ ({) __/_____ (string) ____ (:) ____ (value) _____\___ (}) ____|
+    |           /                                        \             |
+                \__________________ (,) _________________/
       </code>
     </pre>
-    <blockquote>
-      <p>
-        This is also the starting point.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        To write JSON, create a new JSONObject (new JSONObject()) and call addProperty(name, value) for children. Then do jsonObj.writeJSON(outputStream).         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        To read JSON, create a new JSONObject (new JSONObject(jsonErrorHandler)) and then do jsonObj.readJSON(inputStream). Then use getProperty(name) to extract children.    @author Tommy Svensson         
-      </p>
-    </blockquote>
+    <p>
+      This is also the starting point.      
+    </p>
+    <p>
+      To write JSON, create a new <em>JSONObject</em> (<code>new JSONObject()</code>) and call <code>addProperty(name</code>,<code> value)</code> for children. Then do jsonObj.writeJSON(outputStream)<code>.</code>      
+    </p>
+    <p>
+      To read JSON, create a new <em>JSONObject</em> (<code>new JSONObject(jsonErrorHandler)</code>) and then do <code>jsonObj.readJSON(inputStream)</code>. Then use <code>getProperty(name)</code> to extract children.      
+    </p>
+    <p>
+      @author Tommy Svensson      
+    </p>
     <p>
             
     </p>
     <p>
       <strong>public JSONObject()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a JSONObject instance for writing JSON output.         
-      </p>
-    </blockquote>
+    <p>
+      Creates a JSONObject instance for writing JSON output.      
+    </p>
     <p>
       <strong>public JSONObject(JSONErrorHandler errorHandler)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new JSONObject instance for reading JSON input or writing JSON output.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new JSONObject instance for reading JSON input or writing JSON output.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2159,19 +1889,15 @@
     <p>
       <strong>public Set&lt;JSONString&gt; getPropertyNames()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the names of the available properties.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the names of the available properties.      
+    </p>
     <p>
       <strong>public JSONValue getProperty(JSONString name)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the named property.          
-      </p>
-    </blockquote>
+    <p>
+      Returns the named property.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2183,11 +1909,9 @@
     <p>
       <strong>public JSONValue getProperty(String name)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the named property.          
-      </p>
-    </blockquote>
+    <p>
+      Returns the named property.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2199,11 +1923,9 @@
     <p>
       <strong>public void addProperty(JSONString name, JSONValue value)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Adds a property to this JSONObject instance.          
-      </p>
-    </blockquote>
+    <p>
+      Adds a property to this JSONObject instance.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2220,11 +1942,9 @@
     <p>
       <strong>public void addProperty(String name, JSONValue value)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Adds a property to this JSONObject instance.          
-      </p>
-    </blockquote>
+    <p>
+      Adds a property to this JSONObject instance.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2253,51 +1973,45 @@
     <p>
       public <em>class</em> <strong>JSONString </strong> extends  JSONValue    [se.natusoft.osgi.aps.json] {      
     </p>
-    <blockquote>
-      <p>
-         This class is based on the structure defined on http://www.json.org/.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        This represents the "string" diagram on the above mentioned web page:         
-      </p>
-    </blockquote>
+    <p>
+      This class is based on the structure defined on http://www.json.org/.      
+    </p>
+    <p>
+      This represents the "string" diagram on the above mentioned web page:      
+    </p>
     <pre>
       <code>
-           __________________________________________________________________________
-          /    ___________________________________________________________________   \
-          |   /                                                                   \  |
-|___ (") _|___|___ (Any UNICODE character except " or \ or control character) ____|__|_ (") ___|
-|           \                                                                  /               |
-             |                                                                 |
-             \__ (\) ___ (") (quotation mark) _________________________________|
-                     |__ (\) (reverse solidus) ________________________________|
-                     |__ (/) (solidus) ________________________________________|
-                     |__ (b) (backspace) ______________________________________|
-                     |__ (f) (formfeed) _______________________________________|
-                     |__ (n) (newline) ________________________________________|
-                     |__ (r) (carriage return) ________________________________|
-                     |__ (t) (orizontal tab) __________________________________|
-                     \__ (u) (4 hexadecimal digits) ___________________________/
+               ___________________________________________________________
+              /    ____________________________________________________   \
+              |   /                                                    \  |
+    |___ (") _|___|___ (*1)                                        ____|__|_ (") ___|
+    |           \                                                   /               |
+                 |                                                  |
+                 \__ (\) ___ (") (quotation mark) __________________|
+                         |__ (\) (reverse solidus) _________________|
+                         |__ (/) (solidus) _________________________|
+                         |__ (b) (backspace) _______________________|
+                         |__ (f) (formfeed) ________________________|
+                         |__ (n) (newline) _________________________|
+                         |__ (r) (carriage return) _________________|
+                         |__ (t) (orizontal tab) ___________________|
+                         \__ (u) (4 hexadecimal digits) ____________/
+    
+    *1: Any UNICODE character except " or \ or control character
       </code>
     </pre>
-    <blockquote>
-      <p>
-          @author Tommy Svensson         
-      </p>
-    </blockquote>
+    <p>
+      @author Tommy Svensson      
+    </p>
     <p>
             
     </p>
     <p>
       <strong>public JSONString(String value)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new JSONString for writing JSON output.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new JSONString for writing JSON output.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2309,11 +2023,9 @@
     <p>
       <strong>public JSONString(JSONErrorHandler errorHandler)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new JSONString for reading JSON input and writing JSON output.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new JSONString for reading JSON input and writing JSON output.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2352,35 +2064,28 @@
     <p>
       public <em>abstract</em> <em>class</em> <strong>JSONValue </strong>   [se.natusoft.osgi.aps.json] {      
     </p>
-    <blockquote>
-      <p>
-         This class is based on the structure defined on http://www.json.org/.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        This is a base class for all other JSON* classes. It represents the "value" diagram on the above mentioned web page:         
-      </p>
-    </blockquote>
+    <p>
+      This class is based on the structure defined on http://www.json.org/.      
+    </p>
+    <p>
+      This is a base class for all other JSON* classes. It represents the "value" diagram on the above mentioned web page:      
+    </p>
     <pre>
       <code>
-                                                  Subclasses
-                                                  ----------
-|________________ (STRING) ________________|      JSONString
-|  |_____________ (NUMBER) _____________|  |      JSONNumber
-   |_____________ (OBJECT) _____________|         JSONObject
-   |_____________ (ARRAY)  _____________|         JSONArray
-   |_____________ (true)   _____________|     \__ JSONBoolean
-   |_____________ (false)  _____________|     /
-   \_____________ (null)   _____________/         JSONNull
-
+                                                      Subclasses
+                                                      ----------
+    |________________ (STRING) ________________|      JSONString
+    |  |_____________ (NUMBER) _____________|  |      JSONNumber
+       |_____________ (OBJECT) _____________|         JSONObject
+       |_____________ (ARRAY)  _____________|         JSONArray
+       |_____________ (true)   _____________|     \__ JSONBoolean
+       |_____________ (false)  _____________|     /
+       \_____________ (null)   _____________/         JSONNull
       </code>
     </pre>
-    <blockquote>
-      <p>
-           @author Tommy Svensson         
-      </p>
-    </blockquote>
+    <p>
+      @author Tommy Svensson      
+    </p>
     <p>
             
     </p>
@@ -2390,27 +2095,21 @@
     <p>
       <strong>protected JSONValue()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new JSONValue.         
-      </p>
-    </blockquote>
+    <p>
+      Creates a new JSONValue.      
+    </p>
     <p>
       <strong>protected JSONValue(JSONErrorHandler errorHandler)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new JSONValue         
-      </p>
-    </blockquote>
+    <p>
+      Creates a new JSONValue      
+    </p>
     <p>
       <strong>protected abstract void readJSON(char c, JSONReader reader) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         This will read the vale from an input stream.          
-      </p>
-    </blockquote>
+    <p>
+      This will read the vale from an input stream.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -2443,11 +2142,9 @@
     <p>
       <strong>protected abstract void writeJSON(JSONWriter writer, boolean compact) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         This will write the data held by this JSON value in JSON format on the specified stream.          
-      </p>
-    </blockquote>
+    <p>
+      This will write the data held by this JSON value in JSON format on the specified stream.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2472,11 +2169,6 @@
     <p>
       <strong>protected JSONErrorHandler getErrorHandler()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -2497,11 +2189,9 @@
     <p>
       <strong>protected void warn(String message)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Provide a warning.          
-      </p>
-    </blockquote>
+    <p>
+      Provide a warning.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2513,11 +2203,9 @@
     <p>
       <strong>protected void fail(String message, Throwable cause)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Fails the job.          
-      </p>
-    </blockquote>
+    <p>
+      Fails the job.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2534,11 +2222,9 @@
     <p>
       <strong>protected void fail(String message)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Fails the job.          
-      </p>
-    </blockquote>
+    <p>
+      Fails the job.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2550,11 +2236,9 @@
     <p>
       <strong>public void readJSON(InputStream is) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         This will read the value from an input stream.          
-      </p>
-    </blockquote>
+    <p>
+      This will read the value from an input stream.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2574,11 +2258,9 @@
     <p>
       <strong>public void writeJSON(OutputStream os) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         This writes JSON to the specified OutputStream.          
-      </p>
-    </blockquote>
+    <p>
+      This writes JSON to the specified OutputStream.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2598,11 +2280,9 @@
     <p>
       <strong>public void writeJSON(OutputStream os, boolean compact) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         This writes JSON to the specified OutputStream.          
-      </p>
-    </blockquote>
+    <p>
+      This writes JSON to the specified OutputStream.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2657,11 +2337,9 @@
     <p>
       <strong>protected JSONReader(PushbackReader reader, JSONErrorHandler errorHandler)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new JSONReader instance.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new JSONReader instance.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2678,11 +2356,9 @@
     <p>
       <strong>protected char getChar() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the next character on the specified input stream, setting EOF state checkable with isEOF().          
-      </p>
-    </blockquote>
+    <p>
+      Returns the next character on the specified input stream, setting EOF state checkable with isEOF().      
+    </p>
     <p>
       <em>Throws</em>      
     </p>
@@ -2694,11 +2370,9 @@
     <p>
       <strong>protected char getChar(boolean handleEscapes) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the next character on the specified input stream, setting EOF state checkable with isEOF().          
-      </p>
-    </blockquote>
+    <p>
+      Returns the next character on the specified input stream, setting EOF state checkable with isEOF().      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2718,11 +2392,9 @@
     <p>
       <strong>protected void ungetChar(char c) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Unreads the specified character so that the next call to getNextChar() will return it again.          
-      </p>
-    </blockquote>
+    <p>
+      Unreads the specified character so that the next call to getNextChar() will return it again.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2734,11 +2406,9 @@
     <p>
       <strong>protected char skipWhitespace(char c) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Skips whitespace returning the first non whitespace character. This also sets the EOF flag.          
-      </p>
-    </blockquote>
+    <p>
+      Skips whitespace returning the first non whitespace character. This also sets the EOF flag.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2758,11 +2428,9 @@
     <p>
       <strong>protected char skipWhitespace() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Skips whitespace returning the first non whitespace character. This also sets the EOF flag.          
-      </p>
-    </blockquote>
+    <p>
+      Skips whitespace returning the first non whitespace character. This also sets the EOF flag.      
+    </p>
     <p>
       <em>Throws</em>      
     </p>
@@ -2777,11 +2445,9 @@
     <p>
       <strong>protected char readUntil(String until, char c, StringBuilder sb, boolean handleEscapes) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Reads until any of a specified set of characters occur.          
-      </p>
-    </blockquote>
+    <p>
+      Reads until any of a specified set of characters occur.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -2824,11 +2490,9 @@
     <p>
       <strong>protected char readUntil(String until, StringBuilder sb, boolean string) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Reads until any of a specified set of characters occur.          
-      </p>
-    </blockquote>
+    <p>
+      Reads until any of a specified set of characters occur.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2858,11 +2522,9 @@
     <p>
       <strong>protected char readUntil(String until, StringBuilder sb) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Reads until any of a specified set of characters occur.          
-      </p>
-    </blockquote>
+    <p>
+      Reads until any of a specified set of characters occur.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2887,11 +2549,9 @@
     <p>
       <strong>protected boolean checkValidChar(char c, String validChars)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns true if c is one of the characters in validChars.          
-      </p>
-    </blockquote>
+    <p>
+      Returns true if c is one of the characters in validChars.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2908,11 +2568,9 @@
     <p>
       <strong>protected void assertChar(char a, char e, String message)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Asserts that char a equals expected char c.          
-      </p>
-    </blockquote>
+    <p>
+      Asserts that char a equals expected char c.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2934,11 +2592,9 @@
     <p>
       <strong>protected void assertChar(char a, String expected, String message)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Asserts that char a equals expected char c.          
-      </p>
-    </blockquote>
+    <p>
+      Asserts that char a equals expected char c.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2960,22 +2616,18 @@
     <p>
       protected <em>static</em> <em>class</em> <strong>JSONWriter </strong>   [se.natusoft.osgi.aps.json] {      
     </p>
-    <blockquote>
-      <p>
-         For subclasses to use in writeJSON(JSONWriter writer).         
-      </p>
-    </blockquote>
+    <p>
+      For subclasses to use in writeJSON(JSONWriter writer).      
+    </p>
     <p>
             
     </p>
     <p>
       <strong>protected JSONWriter(Writer writer)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new JSONWriter instance.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new JSONWriter instance.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -2987,11 +2639,9 @@
     <p>
       <strong>protected void write(String json) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Writes JSON output.          
-      </p>
-    </blockquote>
+    <p>
+      Writes JSON output.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -3011,11 +2661,9 @@
     <p>
       <strong>protected void writeln(String json) throws  IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Writes JSON output plus a newline.          
-      </p>
-    </blockquote>
+    <p>
+      Writes JSON output plus a newline.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -3041,22 +2689,18 @@
     <p>
       public <em>class</em> <strong>BeanInstance </strong>   [se.natusoft.osgi.aps.json.tools] {      
     </p>
-    <blockquote>
-      <p>
-         This wraps a Java Bean instance allowing it to be populated with data using setProperty(String, Object) methods handling all reflection calls.         
-      </p>
-    </blockquote>
+    <p>
+      This wraps a Java Bean instance allowing it to be populated with data using <em>setProperty(String</em>,<em> Object)</em> methods handling all reflection calls.      
+    </p>
     <p>
             
     </p>
     <p>
       <strong>public BeanInstance(Object modelInstance)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new ModelInstance.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new ModelInstance.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -3068,35 +2712,27 @@
     <p>
       <strong>public Object getModelInstance()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the test model instance held by this object.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the test model instance held by this object.      
+    </p>
     <p>
       <strong>public List&lt;String&gt; getSettableProperties()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns a list of settable properties.         
-      </p>
-    </blockquote>
+    <p>
+      Returns a list of settable properties.      
+    </p>
     <p>
       <strong>public List&lt;String&gt; getGettableProperties()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns a list of gettable properties.         
-      </p>
-    </blockquote>
+    <p>
+      Returns a list of gettable properties.      
+    </p>
     <p>
       <strong>public void setProperty(String property, Object value) throws JSONConvertionException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets a property          
-      </p>
-    </blockquote>
+    <p>
+      Sets a property      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -3121,11 +2757,9 @@
     <p>
       <strong>public Object getProperty(String property) throws JSONConvertionException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the value of the specified property.          
-      </p>
-    </blockquote>
+    <p>
+      Returns the value of the specified property.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -3156,11 +2790,9 @@
     <p>
       <strong>public Class getPropertyType(String property) throws JSONConvertionException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the type of the specified property.          
-      </p>
-    </blockquote>
+    <p>
+      Returns the type of the specified property.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -3194,19 +2826,15 @@
     <p>
       public <em>class</em> <strong>JavaToJSON </strong>   [se.natusoft.osgi.aps.json.tools] {      
     </p>
-    <blockquote>
-      <p>
-         Takes a JavaBean and produces a JSONObject.         
-      </p>
-    </blockquote>
+    <p>
+      Takes a JavaBean and produces a JSONObject.      
+    </p>
     <p>
       <strong>public static JSONObject convertObject(Object javaBean) throws JSONConvertionException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Converts a JavaBean object into a JSONObject.          
-      </p>
-    </blockquote>
+    <p>
+      Converts a JavaBean object into a <em>JSONObject</em>.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -3234,11 +2862,9 @@
     <p>
       <strong>public static JSONObject convertObject(JSONObject jsonObject, Object javaBean) throws JSONConvertionException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Converts a JavaBean object into a JSONObject.          
-      </p>
-    </blockquote>
+    <p>
+      Converts a JavaBean object into a <em>JSONObject</em>.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -3271,11 +2897,9 @@
     <p>
       <strong>public static JSONValue convertValue(Object value)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Converts a value from a java value to a JSONValue.          
-      </p>
-    </blockquote>
+    <p>
+      Converts a value from a java value to a <em>JSONValue</em>.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -3301,24 +2925,18 @@
     <p>
       public <em>class</em> <strong>JSONConvertionException </strong> extends  RuntimeException    [se.natusoft.osgi.aps.json.tools] {      
     </p>
-    <blockquote>
-      <p>
-         This exception is thrown on failure to convert from JSON to Java or Java to JSON.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        Almost all exceptions within the APS services and libraries extend either APSException or APSRuntimeException. I decided to just extend RuntimeException here to avoid any other dependencies for this library since it can be useful outside of APS and can be used as any jar if not deployed in OSGi container.         
-      </p>
-    </blockquote>
+    <p>
+      This exception is thrown on failure to convert from JSON to Java or Java to JSON.      
+    </p>
+    <p>
+      Almost all exceptions within the APS services and libraries extend either <em>APSException</em> or <em>APSRuntimeException</em>. I decided to just extend RuntimeException here to avoid any other dependencies for this library since it can be useful outside of APS and can be used as any jar if not deployed in OSGi container.      
+    </p>
     <p>
       <strong>public JSONConvertionException(final String message)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new JSONConvertionException.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>JSONConvertionException</em>.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -3330,11 +2948,9 @@
     <p>
       <strong>public JSONConvertionException(final String message, final Throwable cause)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new JSONConvertionException.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>JSONConvertionException</em>.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -3357,24 +2973,35 @@
     <p>
       public <em>class</em> <strong>JSONToJava </strong>   [se.natusoft.osgi.aps.json.tools] {      
     </p>
-    <blockquote>
-      <p>
-         Creates a JavaBean instance and copies data from a JSON value to it.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        The following mappings are made in addition to the expected ones: &lt;ul  &lt;li JSONArray only maps to an array property. li  &lt;li Date properties in bean are mapped from JSONString "yyyy-MM-dd HH:mm:ss" li  &lt;li Enum properties in bean are mapped from JSONString which have to contain enum constant name. li  ul         
-      </p>
-    </blockquote>
+    <p>
+      Creates a JavaBean instance and copies data from a JSON value to it.      
+    </p>
+    <p>
+      The following mappings are made in addition to the expected ones:      
+    </p>
+    <ul>
+      <li>
+        <p>
+          <em>JSONArray</em> only maps to an array property.          
+        </p>
+      </li>
+      <li>
+        <p>
+          Date properties in bean are mapped from <em>JSONString</em> "yyyy-MM-dd HH:mm:ss".          
+        </p>
+      </li>
+      <li>
+        <p>
+          Enum properties in bean are mapped from <em>JSONString</em> which have to contain enum constant name.          
+        </p>
+      </li>
+    </ul>
     <p>
       <strong>public static &lt;T&gt; T convert(InputStream jsonStream, Class&lt;T&gt; javaClass) throws IOException, JSONConvertionException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns an instance of a java class populated with data from a json object value read from a stream.          
-      </p>
-    </blockquote>
+    <p>
+      Returns an instance of a java class populated with data from a json object value read from a stream.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -3412,11 +3039,9 @@
     <p>
       <strong>public static &lt;T&gt; T convert(String json, Class&lt;T&gt; javaClass) throws IOException, JSONConvertionException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns an instance of a java class populated with data from a json object value read from a String containing JSON.          
-      </p>
-    </blockquote>
+    <p>
+      Returns an instance of a java class populated with data from a json object value read from a String containing JSON.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -3454,11 +3079,9 @@
     <p>
       <strong>public static &lt;T&gt; T convert(JSONValue json, Class&lt;T&gt; javaClass) throws JSONConvertionException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns an instance of java class populated with data from json.           
-      </p>
-    </blockquote>
+    <p>
+      Returns an instance of java class populated with data from json.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -3506,11 +3129,9 @@
     <p>
       public <em>class</em> <strong>SystemOutErrorHandler </strong> implements  JSONErrorHandler    [se.natusoft.osgi.aps.json.tools] {      
     </p>
-    <blockquote>
-      <p>
-         A simple implementation of JSONErrorHandler that simply displays messages on System.out and throws a RuntimeException on fail. This is used by the tests. In a non test case another implementation is probably preferred.         
-      </p>
-    </blockquote>
+    <p>
+      A simple implementation of <em>JSONErrorHandler</em> that simply displays messages on System.out and throws a <em>RuntimeException</em> on fail. This is used by the tests. In a non test case another implementation is probably preferred.      
+    </p>
     <p>
             
     </p>
@@ -3793,6 +3414,10 @@
         </p>
       </li>
     </ul>
+    <H2>Javadoc</H2>
+    <p>
+      The javadoc for this can be found at <a href='http://apidoc.natusoft.se/APSToolsLib/' title=''>http://apidoc.natusoft.se/APSToolsLib/</a>.      
+    </p>
     <H1>APSWebTools</H1>
     <p>
       This is not an OSGi bundle! This is a plain jar containing utilities for web applications. Specifically APS administration web applications. This jar has to be included in each web application that wants to use it.      
@@ -3802,27 +3427,23 @@
     </p>
     <H2>APIs</H2>
     <p>
-      The following are the APIs for a few selected classes. The complete javadoc for this library can be found at <a href='http://apidoc.natusoft.se/APSWebTools' title=''>http://apidoc.natusoft.se/APSWebTools</a>.      
+      The following are the APIs for a few selected classes. The complete javadoc for this library can be found at <a href='http://apidoc.natusoft.se/APSWebTools/' title=''>http://apidoc.natusoft.se/APSWebTools/</a>.      
     </p>
     <hr/>    <p>
       public <em>class</em> <strong>APSAdminWebLoginHandler </strong> extends  APSLoginHandler  implements  APSLoginHandler.HandlerInfo    [se.natusoft.osgi.aps.tools.web] {      
     </p>
-    <blockquote>
-      <p>
-         This is a login handler to use by any admin web registering with the APSAdminWeb to validate that there is a valid login available.         
-      </p>
-    </blockquote>
+    <p>
+      This is a login handler to use by any admin web registering with the <em>APSAdminWeb</em> to validate that there is a valid login available.      
+    </p>
     <p>
             
     </p>
     <p>
       <strong>public APSAdminWebLoginHandler(BundleContext context)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new APSAdminWebLoginHandler.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>APSAdminWebLoginHandler</em>.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -3834,11 +3455,9 @@
     <p>
       <strong>public void setSessionIdFromRequestCookie(HttpServletRequest request)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets the session id from a cookie in the specified request.          
-      </p>
-    </blockquote>
+    <p>
+      Sets the session id from a cookie in the specified request.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -3850,11 +3469,9 @@
     <p>
       <strong>public void saveSessionIdOnResponse(HttpServletResponse response)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Saves the current session id on the specified response.          
-      </p>
-    </blockquote>
+    <p>
+      Saves the current session id on the specified response.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -3884,32 +3501,21 @@
     <p>
       public <em>class</em> <strong>APSLoginHandler </strong> implements  LoginHandler    [se.natusoft.osgi.aps.tools.web] {      
     </p>
-    <blockquote>
-      <p>
-         This class validates if there is a valid logged in user and also provides a simple login if no valid logged in user exists.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        This utility makes use of APSAuthService to login auth and APSSessionService for session handling. Trackers for these services are created internally which requires the shutdown() method to be called when no longer used to cleanup.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        The bundle needs to import the following packages for this class to work:         
-      </p>
-    </blockquote>
+    <p>
+      This class validates if there is a valid logged in user and also provides a simple login if no valid logged in user exists.      
+    </p>
+    <p>
+      This utility makes use of APSAuthService to login auth and APSSessionService for session handling. Trackers for these services are created internally which requires the shutdown() method to be called when no longer used to cleanup.      
+    </p>
+    <p>
+      The bundle needs to import the following packages for this class to work:      
+    </p>
     <pre>
       <code>
-   se.natusoft.osgi.aps.api.auth.user;version="[0.9,2)",
-   se.natusoft.osgi.aps.api.misc.session;version="[0.9,2)"
+     se.natusoft.osgi.aps.api.auth.user;version="[0.9,2)",
+     se.natusoft.osgi.aps.api.misc.session;version="[0.9,2)"
       </code>
     </pre>
-    <blockquote>
-      <p>
-                
-      </p>
-    </blockquote>
     <p>
             
     </p>
@@ -3940,11 +3546,9 @@
     <p>
       <strong>public APSLoginHandler(BundleContext context, HandlerInfo handlerInfo)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new VaadinLoginDialogHandler.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new VaadinLoginDialogHandler.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -3956,11 +3560,9 @@
     <p>
       <strong>protected void setHandlerInfo(HandlerInfo handlerInfo)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets the handler info when not provided in constructor.          
-      </p>
-    </blockquote>
+    <p>
+      Sets the handler info when not provided in constructor.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -3972,43 +3574,33 @@
     <p>
       <strong>public void shutdown()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Since this class internally creates and starts service trackers this method needs to be called on shutdown to cleanup!         
-      </p>
-    </blockquote>
+    <p>
+      Since this class internally creates and starts service trackers this method needs to be called on shutdown to cleanup!      
+    </p>
     <p>
       <strong>public String getLoggedInUser()</strong>      
     </p>
-    <blockquote>
-      <p>
-         This returns the currently logged in user or null if none are logged in.         
-      </p>
-    </blockquote>
+    <p>
+      This returns the currently logged in user or null if none are logged in.      
+    </p>
     <p>
             
     </p>
     <p>
       <strong>public boolean hasValidLogin()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns true if this handler sits on a valid login.         
-      </p>
-    </blockquote>
+    <p>
+      Returns true if this handler sits on a valid login.      
+    </p>
     <p>
       <strong>public boolean login(String userId, String pw)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Logs in with a userid and a password.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the APSAuthService when this object is already available due to the code also being an APSAdminWeb member. It is basically a convenience.          
-      </p>
-    </blockquote>
+    <p>
+      Logs in with a userid and a password.      
+    </p>
+    <p>
+      This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the <em>APSAuthService</em> when this object is already available due to the code also being an <em>APSAdminWeb</em> member. It is basically a convenience.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -4033,16 +3625,12 @@
     <p>
       <strong>public boolean login(String userId, String pw, String requiredRole)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Logs in with a userid and a password, and a required role.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the APSAuthService when this object is already available due to the code also being an APSAdminWeb member. It is basically a convenience.          
-      </p>
-    </blockquote>
+    <p>
+      Logs in with a userid and a password, and a required role.      
+    </p>
+    <p>
+      This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the <em>APSAuthService</em> when this object is already available due to the code also being an <em>APSAdminWeb</em> member. It is basically a convenience.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -4072,19 +3660,12 @@
     <p>
       public <em>static</em> <em>interface</em> <strong>HandlerInfo </strong>   [se.natusoft.osgi.aps.tools.web] {      
     </p>
-    <blockquote>
-      <p>
-         Config values for the login handler.         
-      </p>
-    </blockquote>
+    <p>
+      Config values for the login handler.      
+    </p>
     <p>
       <strong>String getSessionId()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -4096,11 +3677,9 @@
     <p>
       <strong>void setSessionId(String sessionId)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets a new session id.          
-      </p>
-    </blockquote>
+    <p>
+      Sets a new session id.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -4112,11 +3691,6 @@
     <p>
       <strong>String getUserSessionName()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -4128,11 +3702,6 @@
     <p>
       <strong>String getRequiredRole()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -4150,27 +3719,21 @@
     <p>
       public <em>interface</em> <strong>LoginHandler </strong>   [se.natusoft.osgi.aps.tools.web] {      
     </p>
-    <blockquote>
-      <p>
-         This is a simple API for doing a login.         
-      </p>
-    </blockquote>
+    <p>
+      This is a simple API for doing a login.      
+    </p>
     <p>
       <strong>public boolean hasValidLogin()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns true if this handler sits on a valid login.         
-      </p>
-    </blockquote>
+    <p>
+      Returns true if this handler sits on a valid login.      
+    </p>
     <p>
       <strong>boolean login(String userId, String pw)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Logs in with a userid and a password.          
-      </p>
-    </blockquote>
+    <p>
+      Logs in with a userid and a password.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -4195,11 +3758,9 @@
     <p>
       <strong>public void shutdown()</strong>      
     </p>
-    <blockquote>
-      <p>
-         If the handler creates service trackers or other things that needs to be shutdown when no longer used this method needs to be called when the handler is no longer needed.         
-      </p>
-    </blockquote>
+    <p>
+      If the handler creates service trackers or other things that needs to be shutdown when no longer used this method needs to be called when the handler is no longer needed.      
+    </p>
     <p>
       }      
     </p>
@@ -4227,29 +3788,21 @@
     <p>
       public <em>interface</em> <strong>APSAuthService&lt;Credential&gt; </strong>   [se.natusoft.osgi.aps.api.auth.user] {      
     </p>
-    <blockquote>
-      <p>
-         This is intended to be used as a wrapper to other means of authentication. Things in APS that needs authentication uses this service.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        Implementations can lookup the user in an LDAP for example, or use some other user service.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        APS supplies an APSSimpleUserServiceAuthServiceProvider that uses the APSSimpleUserService to authenticate. It is provided in its own bundle.         
-      </p>
-    </blockquote>
+    <p>
+      This is intended to be used as a wrapper to other means of authentication. Things in APS that needs authentication uses this service.      
+    </p>
+    <p>
+      Implementations can lookup the user in an LDAP for example, or use some other user service.      
+    </p>
+    <p>
+      APS supplies an <em>APSSimpleUserServiceAuthServiceProvider</em> that uses the <em>APSSimpleUserService</em> to authenticate. It is provided in its own bundle.      
+    </p>
     <p>
       <strong>Properties authUser(String userId, Credential credentials, AuthMethod authMethod) throws APSAuthMethodNotSupportedException</strong>      
     </p>
-    <blockquote>
-      <p>
-         This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!          
-      </p>
-    </blockquote>
+    <p>
+      This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -4287,11 +3840,9 @@
     <p>
       <strong>Properties authUser(String userId, Credential credentials, AuthMethod authMethod, String role) throws APSAuthMethodNotSupportedException</strong>      
     </p>
-    <blockquote>
-      <p>
-         This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!          
-      </p>
-    </blockquote>
+    <p>
+      This authenticates a user. A Properties object is returned on successful authentication. <em>null</em> is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -4334,67 +3885,51 @@
     <p>
       <strong>AuthMethod[] getSupportedAuthMethods()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns an array of the AuthMethods supported by the implementation.         
-      </p>
-    </blockquote>
+    <p>
+      Returns an array of the AuthMethods supported by the implementation.      
+    </p>
     <p>
       public <em>static</em> <em>enum</em> <strong>AuthMethod </strong>   [se.natusoft.osgi.aps.api.auth.user] {      
     </p>
-    <blockquote>
-      <p>
-         This hints at how to use the credentials.         
-      </p>
-    </blockquote>
+    <p>
+      This hints at how to use the credentials.      
+    </p>
     <p>
       <strong>NONE</strong>      
     </p>
-    <blockquote>
-      <p>
-         Only userid is required.         
-      </p>
-    </blockquote>
+    <p>
+      Only userid is required.      
+    </p>
     <p>
       <strong>PASSWORD</strong>      
     </p>
-    <blockquote>
-      <p>
-         toString() on the credentials object should return a password.         
-      </p>
-    </blockquote>
+    <p>
+      toString() on the credentials object should return a password.      
+    </p>
     <p>
       <strong>KEY</strong>      
     </p>
-    <blockquote>
-      <p>
-         The credential object is a key of some sort.         
-      </p>
-    </blockquote>
+    <p>
+      The credential object is a key of some sort.      
+    </p>
     <p>
       <strong>CERTIFICATE</strong>      
     </p>
-    <blockquote>
-      <p>
-         The credential object is a certificate of some sort.         
-      </p>
-    </blockquote>
+    <p>
+      The credential object is a certificate of some sort.      
+    </p>
     <p>
       <strong>DIGEST</strong>      
     </p>
-    <blockquote>
-      <p>
-         The credential object is a digest password.         
-      </p>
-    </blockquote>
+    <p>
+      The credential object is a digest password.      
+    </p>
     <p>
       <strong>SSO</strong>      
     </p>
-    <blockquote>
-      <p>
-         The credential object contains information for participating in a single sign on.         
-      </p>
-    </blockquote>
+    <p>
+      The credential object contains information for participating in a single sign on.      
+    </p>
     <p>
       }      
     </p>
@@ -4571,32 +4106,24 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>APSSimpleUserService </strong>   [se.natusoft.osgi.aps.api.auth.user] {      
     </p>
-    <blockquote>
-      <p>
-         This is the API of a simple user service that provide basic user handling that will probably be enough in many cases, but not all.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        Please note that this API does not declare any exceptions! In the case of an exception being needed the APSSimpleUserServiceException should be thrown. This is a runtime exception.         
-      </p>
-    </blockquote>
+    <p>
+      This is the API of a simple user service that provide basic user handling that will probably be enough in many cases, but not all.      
+    </p>
+    <p>
+      Please note that this API does not declare any exceptions! In the case of an exception being needed the APSSimpleUserServiceException should be thrown. This is a runtime exception.      
+    </p>
     <p>
       <strong>public static final String AUTH_METHOD_PASSWORD = "password"</strong>      
     </p>
-    <blockquote>
-      <p>
-         Password authentication method for authenticateUser().         
-      </p>
-    </blockquote>
+    <p>
+      Password authentication method for authenticateUser().      
+    </p>
     <p>
       <strong>public Role getRole(String roleId)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Gets a role by its id.          
-      </p>
-    </blockquote>
+    <p>
+      Gets a role by its id.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -4616,11 +4143,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public User getUser(String userId)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Gets a user by its id.          
-      </p>
-    </blockquote>
+    <p>
+      Gets a user by its id.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -4640,11 +4165,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public boolean authenticateUser(User user, Object authentication, String authMethod)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Authenticates a user using its user id and user provided authentication.          
-      </p>
-    </blockquote>
+    <p>
+      Authenticates a user using its user id and user provided authentication.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -4663,7 +4186,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </blockquote>
     <blockquote>
       <p>
-        <em>authentication</em> - The user provided authentication data. For example if AuthMethod is AUTH_METHOD_PASSWORD         
+        <em>authentication</em> - The user provided authentication data. For example if AuthMethod is AUTH\_METHOD\_PASSWORD         
       </p>
     </blockquote>
     <blockquote>
@@ -4680,19 +4203,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>APSSimpleUserServiceAdmin </strong> extends  APSSimpleUserService    [se.natusoft.osgi.aps.api.auth.user] {      
     </p>
-    <blockquote>
-      <p>
-         Admin API for APSSimpleUserService.         
-      </p>
-    </blockquote>
+    <p>
+      Admin API for APSSimpleUserService.      
+    </p>
     <p>
       <strong>public RoleAdmin createRole(String name, String description)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new role.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new role.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -4717,11 +4236,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void updateRole(Role role)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Updates a role.          
-      </p>
-    </blockquote>
+    <p>
+      Updates a role.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -4733,11 +4250,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void deleteRole(Role role)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Deletes a role.          
-      </p>
-    </blockquote>
+    <p>
+      Deletes a role.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -4749,19 +4264,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public List&lt;RoleAdmin&gt; getRoles()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns all available roles.         
-      </p>
-    </blockquote>
+    <p>
+      Returns all available roles.      
+    </p>
     <p>
       <strong>public UserAdmin createUser(String id)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new user. Please note that you get an empty user back. You probably want to add roles and also possibly properties to the user. After you have done that call updateUser(user).          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new user. Please note that you get an empty user back. You probably want to add roles and also possibly properties to the user. After you have done that call <em>updateUser(user)</em>.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -4781,11 +4292,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void updateUser(User user)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Updates a user.          
-      </p>
-    </blockquote>
+    <p>
+      Updates a user.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -4797,11 +4306,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void deleteUser(User user)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Deletes a user.          
-      </p>
-    </blockquote>
+    <p>
+      Deletes a user.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -4813,19 +4320,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public List&lt;UserAdmin&gt; getUsers()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns all users.         
-      </p>
-    </blockquote>
+    <p>
+      Returns all users.      
+    </p>
     <p>
       <strong>public void setUserAuthentication(User user, String authentication)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets authentication for the user.          
-      </p>
-    </blockquote>
+    <p>
+      Sets authentication for the user.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -4848,19 +4351,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>class</em> <strong>APSAuthMethodNotSupportedException </strong> extends  APSRuntimeException    [se.natusoft.osgi.aps.api.auth.user.exceptions] {      
     </p>
-    <blockquote>
-      <p>
-         This is thrown by APSAuthService when the implementation does not support the selected auth method.         
-      </p>
-    </blockquote>
+    <p>
+      This is thrown by APSAuthService when the implementation does not support the selected auth method.      
+    </p>
     <p>
       <strong>public APSAuthMethodNotSupportedException(String message)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new APSAuthMethodNotSupportedException instance.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new APSAuthMethodNotSupportedException instance.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -4872,11 +4371,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public APSAuthMethodNotSupportedException(String message, Throwable cause)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new APSAuthMethodNotSupportedException instance.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new APSAuthMethodNotSupportedException instance.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -4899,19 +4396,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>class</em> <strong>APSSimpleUserServiceException </strong> extends  APSRuntimeException    [se.natusoft.osgi.aps.api.auth.user.exceptions] {      
     </p>
-    <blockquote>
-      <p>
-         Indicates a problem with the APSSimpleUserService.         
-      </p>
-    </blockquote>
+    <p>
+      Indicates a problem with the APSSimpleUserService.      
+    </p>
     <p>
       <strong>public APSSimpleUserServiceException(String message)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new APSSimpleUserServiceException instance.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new APSSimpleUserServiceException instance.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -4923,11 +4416,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public APSSimpleUserServiceException(String message, Throwable cause)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new APSSimpleUserServiceException instance.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new APSSimpleUserServiceException instance.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -4950,19 +4441,12 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>Role </strong> extends  Comparable&lt;Role&gt;    [se.natusoft.osgi.aps.api.auth.user.model] {      
     </p>
-    <blockquote>
-      <p>
-         This defines a role.         
-      </p>
-    </blockquote>
+    <p>
+      This defines a role.      
+    </p>
     <p>
       <strong>public String getId()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -4974,11 +4458,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public String getDescription()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -4990,11 +4469,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public boolean hasRole(String roleName)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns true if the role has the specified sub role name.          
-      </p>
-    </blockquote>
+    <p>
+      Returns true if the role has the specified sub role name.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -5006,11 +4483,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>boolean isMasterRole()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -5028,19 +4500,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>RoleAdmin </strong> extends  Role    [se.natusoft.osgi.aps.api.auth.user.model] {      
     </p>
-    <blockquote>
-      <p>
-         Provides update API for Role.         
-      </p>
-    </blockquote>
+    <p>
+      Provides update API for Role.      
+    </p>
     <p>
       <strong>public void setDescription(String description)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Changes the description of the role.          
-      </p>
-    </blockquote>
+    <p>
+      Changes the description of the role.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -5052,19 +4520,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public List&lt;Role&gt; getRoles()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns all sub roles for this role.         
-      </p>
-    </blockquote>
+    <p>
+      Returns all sub roles for this role.      
+    </p>
     <p>
       <strong>public void addRole(Role role)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Adds a sub role to this role.          
-      </p>
-    </blockquote>
+    <p>
+      Adds a sub role to this role.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -5076,11 +4540,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void removeRole(Role role)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Removes a sub role from this role.          
-      </p>
-    </blockquote>
+    <p>
+      Removes a sub role from this role.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -5092,11 +4554,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void setMasterRole(boolean masterRole)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets whether this is a master role or not.          
-      </p>
-    </blockquote>
+    <p>
+      Sets whether this is a master role or not.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -5114,35 +4574,27 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>User </strong> extends  Comparable&lt;User&gt;    [se.natusoft.osgi.aps.api.auth.user.model] {      
     </p>
-    <blockquote>
-      <p>
-         This defines a User.         
-      </p>
-    </blockquote>
+    <p>
+      This defines a User.      
+    </p>
     <p>
       <strong>public String getId()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the unique id of the user.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the unique id of the user.      
+    </p>
     <p>
       <strong>public boolean isAuthenticated()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns true if this user is authenticated.         
-      </p>
-    </blockquote>
+    <p>
+      Returns true if this user is authenticated.      
+    </p>
     <p>
       <strong>public boolean hasRole(String roleName)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns true if the user has the specified role name.          
-      </p>
-    </blockquote>
+    <p>
+      Returns true if the user has the specified role name.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -5154,56 +4606,42 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public Properties getUserProperties()</strong>      
     </p>
-    <blockquote>
-      <p>
-         This provides whatever extra information about the user you want. How to use this is upp to the user of the service. There are some constants in this class that provide potential keys for the user properties.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        Please note that the returned properties are read only!         
-      </p>
-    </blockquote>
+    <p>
+      This provides whatever extra information about the user you want. How to use this is upp to the user of the service. There are some constants in this class that provide potential keys for the user properties.      
+    </p>
+    <p>
+      Please note that the returned properties are read only!      
+    </p>
     <p>
       <strong>public static final String USER_NAME = "name"</strong>      
     </p>
-    <blockquote>
-      <p>
-         Optional suggestion for user properties key.         
-      </p>
-    </blockquote>
+    <p>
+      Optional suggestion for user properties key.      
+    </p>
     <p>
       <strong>public static final String USER_PHONE = "phone"</strong>      
     </p>
-    <blockquote>
-      <p>
-         Optional suggestion for user properties key.         
-      </p>
-    </blockquote>
+    <p>
+      Optional suggestion for user properties key.      
+    </p>
     <p>
       <strong>public static final String USER_PHONE_WORK = "phone.work"</strong>      
     </p>
-    <blockquote>
-      <p>
-         Optional suggestion for user properties key.         
-      </p>
-    </blockquote>
+    <p>
+      Optional suggestion for user properties key.      
+    </p>
     <p>
       <strong>public static final String USER_PHONE_HOME = "phone.home"</strong>      
     </p>
-    <blockquote>
-      <p>
-         Optional suggestion for user properties key.         
-      </p>
-    </blockquote>
+    <p>
+      Optional suggestion for user properties key.      
+    </p>
     <p>
       <strong>public static final String USER_EMAIL = "email"</strong>      
     </p>
-    <blockquote>
-      <p>
-         Optional suggestion for user properties key.         
-      </p>
-    </blockquote>
+    <p>
+      Optional suggestion for user properties key.      
+    </p>
     <p>
       }      
     </p>
@@ -5213,27 +4651,21 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>UserAdmin </strong> extends  User    [se.natusoft.osgi.aps.api.auth.user.model] {      
     </p>
-    <blockquote>
-      <p>
-         Provides update API for the User.         
-      </p>
-    </blockquote>
+    <p>
+      Provides update API for the User.      
+    </p>
     <p>
       <strong>public List&lt;Role&gt; getRoles()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns all roles for this user.         
-      </p>
-    </blockquote>
+    <p>
+      Returns all roles for this user.      
+    </p>
     <p>
       <strong>public void addRole(Role role)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Adds a role to this user.          
-      </p>
-    </blockquote>
+    <p>
+      Adds a role to this user.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -5245,11 +4677,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void removeRole(Role role)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Removes a role from this user.          
-      </p>
-    </blockquote>
+    <p>
+      Removes a role from this user.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -5261,11 +4691,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void addUserProperty(String key, String value)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Adds a user property.          
-      </p>
-    </blockquote>
+    <p>
+      Adds a user property.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -5282,11 +4710,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void removeUserProperty(String key)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Removes a user property.          
-      </p>
-    </blockquote>
+    <p>
+      Removes a user property.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -5298,16 +4724,12 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void setUserProperties(Properties properties)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets properties for the user.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        To update the user properties either first do getProperties() do your changes, and then call this method with the changed properties or just use the addUserProperty() and removeUserProperty() methods.          
-      </p>
-    </blockquote>
+    <p>
+      Sets properties for the user.      
+    </p>
+    <p>
+      To update the user properties either first do <em>getProperties()</em>, do your changes, and then call this method with the changed properties or just use the <em>addUserProperty()</em> and <em>removeUserProperty()</em> methods.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -5341,19 +4763,12 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>DataSourceDef </strong>   [se.natusoft.osgi.aps.api.data.jdbc.model] {      
     </p>
-    <blockquote>
-      <p>
-         This represents information required for setting upp a JDBC data source.         
-      </p>
-    </blockquote>
+    <p>
+      This represents information required for setting upp a JDBC data source.      
+    </p>
     <p>
       <strong>String getName()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -5365,11 +4780,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>String getConnectionURL()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -5381,11 +4791,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>String getConnectionDriveName()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -5397,11 +4802,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>String getConnectionUserName()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -5413,11 +4813,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>String getConnectionPassword()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -5435,19 +4830,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>APSDataSourceDefService </strong>   [se.natusoft.osgi.aps.api.data.jdbc.service] {      
     </p>
-    <blockquote>
-      <p>
-         This service provides lookup of configured data source definitions. These can be used to setup connection pools, JPA, ...         
-      </p>
-    </blockquote>
+    <p>
+      This service provides lookup of configured data source definitions. These can be used to setup connection pools, JPA, ...      
+    </p>
     <p>
       <strong>DataSourceDef lookupByName(String name)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Looks up a data source definition by its configured name.          
-      </p>
-    </blockquote>
+    <p>
+      Looks up a data source definition by its configured name.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -5467,11 +4858,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>List&lt;DataSourceDef&gt; getAllDefinitions()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -5542,34 +4928,27 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>APSJPAService </strong>   [se.natusoft.osgi.aps.api.data.jpa.service] {      
     </p>
-    <blockquote>
-      <p>
-         This service allows an JPA EntityManager to be gotten for a persistent unit name.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        So why is this done this way ? Why is not an EntityManagerFactory returned?         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        The answer to that is that the EntityManagerFactory is internal to the service who is responsible for creating it and for closing it at sometime (stopping of bundle). The client only needs an EntityManager for which the client is responsible after its creation.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        The creation of the EntityManagerFactory is delayed until the call to initialize(...). Creating the EMF along with the persistence provider at persistence bundle discovery would limit database connection properties to the persistence.xml file which is less than optimal to put it mildly. The whole point with the APS project is to provide a configured platform into which you can drop applications and they adapt to their surrounding. Not unlike what JEE does, but does it milder and more flexibly being OSGi and also provides application and service specific configuration with a web gui for editing configuration. Thereby providing database connection properties from clients allows clients more flexibility in how they want to handle that. The APSDataSourceDef service can for example be used to lookup a JDBC connection definition. The default provider implementation of this service uses OpenJPA which provides its own connection pooling.         
-      </p>
-    </blockquote>
+    <p>
+      This service allows an JPA <em>EntityManager</em> to be gotten for a persistent unit name.      
+    </p>
+    <p>
+      So why is this done this way ? Why is not an <em>EntityManagerFactory</em> returned?      
+    </p>
+    <p>
+      The answer to that is that the <em>EntityManagerFactory</em> is internal to the service who is responsible for creating it and for closing it at sometime (stopping of bundle). The client only needs an <em>EntityManager</em> for which the client is responsible after its creation.      
+    </p>
+    <p>
+      The creation of the <em>EntityManagerFactory</em> is delayed until the call to <em>initialize(...)</em>. Creating the EMF along with the persistence provider at persistence bundle discovery would limit database connection properties to the persistence.xml file which is less than optimal to put it mildly. This way a client can make use of the <em>APSDataSourceDefService</em> to get the JDBC properties which it can pass along to this service.      
+    </p>
+    <p>
+      The default provider implementation of this service uses OpenJPA which provides its own connection pooling.      
+    </p>
     <p>
       <strong>APSJPAEntityManagerProvider initialize(BundleContext bundleContext, String persistenceUnitName, Map&lt;String, String&gt; props) throws APSResourceNotFoundException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Initializes and returns a provider from the specified properties.          
-      </p>
-    </blockquote>
+    <p>
+      Initializes and returns a provider from the specified properties.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -5599,32 +4978,24 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>static</em> <em>interface</em> <strong>APSJPAEntityManagerProvider </strong>   [se.natusoft.osgi.aps.api.data.jpa.service] {      
     </p>
-    <blockquote>
-      <p>
-         Once you get this it is valid until the APSJPAService is stopped (which will happen if the service is redeployed!).         
-      </p>
-    </blockquote>
+    <p>
+      Once you get this it is valid until the <em>APSJPAService</em> is stopped (which will happen if the service is redeployed!).      
+    </p>
     <p>
       <strong>public boolean isValid()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns true if this instance is valid. If not call APSJPAService.initialize(...) again to get a new instance. It will be invalid if the APSJPAService provider have been restarted.         
-      </p>
-    </blockquote>
+    <p>
+      Returns true if this instance is valid. If not call APSJPAService.initialize(...) again to get a new instance. It will be invalid if the APSJPAService provider have been restarted.      
+    </p>
     <p>
       <strong>EntityManager createEntityManager()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new EntityManager. You are responsible for closing it!         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        Please note that the EntityManager caches all referenced entities. If you keep and reuse it for a longer time it can use more memory. For example at &lt;a href='http://docs.jboss.org/ejb3/app-server/tutorial/extended_pc/extended.html' http://docs.jboss.org/ejb3/app-server/tutorial/extended_pc/extended.html a it says that "Usually, an EntityManager in JBoss EJB 3.0 lives and dies within a JTA transaction". This indicates how long-lived the EntityManager should preferably be.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>EntityManager</em>. You are responsible for closing it!      
+    </p>
+    <p>
+      Please note that the <em>EntityManager</em> caches all referenced entities. If you keep and reuse it for a longer time it can use more memory. For example at <a href='http://docs.jboss.org/ejb3/app-server/tutorial/extended_pc/extended.html' title=''>http://docs.jboss.org/ejb3/app-server/tutorial/extended_pc/extended.html</a> it says that "Usually, an <em>EntityManager</em> in JBoss EJB 3.0 lives and dies within a JTA transaction". This indicates how long-lived the <em>EntityManager</em> should preferably be.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -5636,11 +5007,12 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>EntityManagerFactory getEntityManagerFactory()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the underlaying entity manager factory. This will return null if isValid() return false!         
-      </p>
-    </blockquote>
+    <p>
+      Returns the underlying <em>EntityManagerFactory</em>. This will return null if isValid() return false!      
+    </p>
+    <p>
+      Be very careful what you do with this! It is managed by this service!      
+    </p>
     <p>
       }      
     </p>
@@ -5688,19 +5060,12 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>APSSession </strong>   [se.natusoft.osgi.aps.api.misc.session] {      
     </p>
-    <blockquote>
-      <p>
-         This represents an active session.         
-      </p>
-    </blockquote>
+    <p>
+      This represents an active session.      
+    </p>
     <p>
       <strong>String getId()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -5712,11 +5077,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>boolean isValid()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -5728,11 +5088,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>void saveObject(String name, Object object)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Saves an object in the session. Will do nothing if the session is no longer valid.          
-      </p>
-    </blockquote>
+    <p>
+      Saves an object in the session. Will do nothing if the session is no longer valid.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -5749,16 +5107,12 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>Object retrieveObject(String name)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns a object stored under the specified name or null if no object is stored under that name.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        If isValid() returns false then this will always return null.          
-      </p>
-    </blockquote>
+    <p>
+      Returns a object stored under the specified name or null if no object is stored under that name.      
+    </p>
+    <p>
+      If isValid() returns false then this will always return null.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -5776,11 +5130,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>APSSessionService </strong>   [se.natusoft.osgi.aps.api.misc.session] {      
     </p>
-    <blockquote>
-      <p>
-         This is not a http session! It is a simple session that can be used by any code running in the same OSGi server.         
-      </p>
-    </blockquote>
+    <p>
+      This is not a http session! It is a simple session that can be used by any code running in the same OSGi server.      
+    </p>
     <p>
             
     </p>
@@ -5799,11 +5151,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>APSSession createSession(int timeoutInMinutes)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new session.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new session.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -5815,16 +5165,12 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>APSSession createSession(String sessionId, int timeoutInMinutes)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new session.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        The idea behind this variant is to support distributed sessions. The implementation must use a session id that is unique enough to support this. The APS implementation uses java.util.UUID.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new session.      
+    </p>
+    <p>
+      The idea behind this variant is to support distributed sessions. The implementation must use a session id that is unique enough to support this. The APS implementation uses java.util.UUID.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -5841,11 +5187,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>APSSession getSession(String sessionId)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Looks up an existing session by its id.          
-      </p>
-    </blockquote>
+    <p>
+      Looks up an existing session by its id.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -5865,11 +5209,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>void closeSession(String sessionId)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Closes the session represented by the specified id. After this call APSSession.isValid() on an APSSession representing this session will return false.          
-      </p>
-    </blockquote>
+    <p>
+      Closes the session represented by the specified id. After this call APSSession.isValid() on an <em>APSSession</em> representing this session will return false.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -5895,19 +5237,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>class</em> <strong>APSDiscoveryPublishException </strong> extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.discovery.exception] {      
     </p>
-    <blockquote>
-      <p>
-         Thrown on service publish problems.         
-      </p>
-    </blockquote>
+    <p>
+      Thrown on service publish problems.      
+    </p>
     <p>
       <strong>public APSDiscoveryPublishException(String message)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new APSRuntimeException instance.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>APSDiscoveryPublishException</em> instance.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -5919,11 +5257,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public APSDiscoveryPublishException(String message, Throwable cause)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new APSRuntimeException instance.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>APSDiscoveryPublishException</em> instance.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -5946,59 +5282,45 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>ServiceDescription </strong>   [se.natusoft.osgi.aps.api.net.discovery.model] {      
     </p>
-    <blockquote>
-      <p>
-         Describes a service.         
-      </p>
-    </blockquote>
+    <p>
+      Describes a service.      
+    </p>
     <p>
       <strong>String getDescription()</strong>      
     </p>
-    <blockquote>
-      <p>
-         A short description of the service.         
-      </p>
-    </blockquote>
+    <p>
+      A short description of the service.      
+    </p>
     <p>
       <strong>String getServiceId()</strong>      
     </p>
-    <blockquote>
-      <p>
-         An id/name of the service.         
-      </p>
-    </blockquote>
+    <p>
+      An id/name of the service.      
+    </p>
     <p>
       <strong>String getVersion()</strong>      
     </p>
-    <blockquote>
-      <p>
-         The version of the service.         
-      </p>
-    </blockquote>
+    <p>
+      The version of the service.      
+    </p>
     <p>
       <strong>String getServiceHost()</strong>      
     </p>
-    <blockquote>
-      <p>
-         The targetHost of the service.         
-      </p>
-    </blockquote>
+    <p>
+      The targetHost of the service.      
+    </p>
     <p>
       <strong>int getServicePort()</strong>      
     </p>
-    <blockquote>
-      <p>
-         The targetPort of the service.         
-      </p>
-    </blockquote>
+    <p>
+      The targetPort of the service.      
+    </p>
     <p>
       <strong>String getServiceURL()</strong>      
     </p>
-    <blockquote>
-      <p>
-         An optional URL to the service.         
-      </p>
-    </blockquote>
+    <p>
+      An optional URL to the service.      
+    </p>
     <p>
       }      
     </p>
@@ -6008,11 +5330,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>class</em> <strong>ServiceDescriptionProvider </strong> implements  ServiceDescription    [se.natusoft.osgi.aps.api.net.discovery.model] {      
     </p>
-    <blockquote>
-      <p>
-         Describes a service.         
-      </p>
-    </blockquote>
+    <p>
+      Describes a service.      
+    </p>
     <p>
             
     </p>
@@ -6034,35 +5354,27 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public ServiceDescriptionProvider()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new ServiceDescirption.         
-      </p>
-    </blockquote>
+    <p>
+      Creates a new ServiceDescirption.      
+    </p>
     <p>
       <strong>public String toString()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns a string representation of this object.         
-      </p>
-    </blockquote>
+    <p>
+      Returns a string representation of this object.      
+    </p>
     <p>
       <strong>public String getDescription()</strong>      
     </p>
-    <blockquote>
-      <p>
-         A short description of the service.         
-      </p>
-    </blockquote>
+    <p>
+      A short description of the service.      
+    </p>
     <p>
       <strong>public void setDescription(String description)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets a short description of the service.          
-      </p>
-    </blockquote>
+    <p>
+      Sets a short description of the service.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6077,11 +5389,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void setServiceId(String serviceId)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets the id of the service.          
-      </p>
-    </blockquote>
+    <p>
+      Sets the id of the service.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6096,11 +5406,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void setVersion(String version)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets the version of the service.          
-      </p>
-    </blockquote>
+    <p>
+      Sets the version of the service.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6115,11 +5423,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void setServiceHost(String serviceHost)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets the targetHost of the service.          
-      </p>
-    </blockquote>
+    <p>
+      Sets the targetHost of the service.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6134,11 +5440,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void setServicePort(int servicePort)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets the targetPort of the servcie.          
-      </p>
-    </blockquote>
+    <p>
+      Sets the targetPort of the service.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6153,17 +5457,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong></strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets an url to the service.          
-      </p>
-    </blockquote>
+    <p>
+      Sets an url to the service.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>serviceURL</em> - The servcie url to set.         
+        <em>serviceURL</em> - The service url to set.         
       </p>
     </blockquote>
     <p>
@@ -6181,43 +5483,33 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>APSSimpleDiscoveryService </strong>   [se.natusoft.osgi.aps.api.net.discovery.service] {      
     </p>
-    <blockquote>
-      <p>
-         A network service discovery.         
-      </p>
-    </blockquote>
+    <p>
+      A network service discovery.      
+    </p>
     <p>
       <strong>public List&lt;ServiceDescription&gt; getRemotelyDiscoveredServices()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns all remotely discovered services.         
-      </p>
-    </blockquote>
+    <p>
+      Returns all remotely discovered services.      
+    </p>
     <p>
       <strong>public List&lt;ServiceDescription&gt; getLocallyRegisteredServices()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the locally registered services.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the locally registered services.      
+    </p>
     <p>
       <strong>public List&lt;ServiceDescription&gt; getAllServices()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns all known services, both locally registered and remotely discovered.         
-      </p>
-    </blockquote>
+    <p>
+      Returns all known services, both locally registered and remotely discovered.      
+    </p>
     <p>
       <strong>public List&lt;ServiceDescription&gt; getService(String serviceId, String version)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns all discovered services with the specified id.          
-      </p>
-    </blockquote>
+    <p>
+      Returns all discovered services with the specified id.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6234,11 +5526,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void publishService(ServiceDescription service) throws APSDiscoveryPublishException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Publishes a local service. This will announce it to other known APSSimpleDiscoveryService instances.          
-      </p>
-    </blockquote>
+    <p>
+      Publishes a local service. This will announce it to other known APSSimpleDiscoveryService instances.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6258,11 +5548,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void unpublishService(ServiceDescription service) throws APSDiscoveryPublishException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Recalls the locally published service, announcing to other known APSSimpleDiscoveryService instances that this service is no longer available.          
-      </p>
-    </blockquote>
+    <p>
+      Recalls the locally published service, announcing to other known APSSimpleDiscoveryService instances that this service is no longer available.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6321,17 +5609,17 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       </li>
       <li>
         <p>
-          Transport calls APSExternalProtocolService to get requested protocol.          
+          Transport calls <em>APSExternalProtocolService</em> to get requested protocol.          
         </p>
       </li>
       <li>
         <p>
-          Transport calls protocol to parse InputStream and it returns an RPCRequest.          
+          Transport calls protocol to parse InputStream and it returns an <em>RPCRequest</em>.          
         </p>
       </li>
       <li>
         <p>
-          Transport uses the information in the RPCRequest to call a service using APSExternalProtocolService.          
+          Transport uses the information in the RPCRequest to call a service using <em>APSExternalProtocolService</em>.          
         </p>
       </li>
       <li>
@@ -6346,10 +5634,10 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <H3>Protocols</H3>
     <p>
-      There is a base API for protocols: RPCProtocol. APIs for different types of protocols should extend this. The protocol type APIs are service APIs and services implementing them must be provided by other bundles. This bundle looks for and keeps track of all such service providers.      
+      There is a base API for protocols: <em>RPCProtocol</em>. APIs for different types of protocols should extend this. The protocol type APIs are service APIs and services implementing them must be provided by other bundles. This bundle looks for and keeps track of all such service providers.      
     </p>
     <p>
-      The <em>StreamedRPCProtocol</em> extends <em>RPCPROTOCOL</em> and provides a method for parsing a request from an InputStream returning an RPCRequest object. This request object contains the name of the service, the method, and the parameters. This is enough for using <em>APSExternalProtocolService</em> to do a call to the service. The request object is also used to write the call response on an OutputStream. There is also a method to write an error response.      
+      The <em>StreamedRPCProtocol</em> extends <em>RPCProtocol</em> and provides a method for parsing a request from an <em>InputStream</em> returning an <em>RPCRequest</em> object. This request object contains the name of the service, the method, and the parameters. This is enough for using <em>APSExternalProtocolService</em> to do a call to the service. The request object is also used to write the call response on an OutputStream. There is also a method to write an error response.      
     </p>
     <p>
       The <em>StreamedHTTPProtocol</em> extends <em>StreamedRPCProtocol</em> and indicates that the protocol should probably only be supported by http transports. It also provides a <em>supportsREST()</em> method that transports can use to make decicions on how the call should be interpreted.      
@@ -6366,33 +5654,30 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       <em>APSExtProtocolHTTPTransportProvider</em> - Provides a HTTP transport.      
     </p>
     <p>
-      <em>APSStreamedJSONRPCProtocolProvider</em> - Provides version 1.0 and 2.0 of JSONRPC.      
+      <em>APSStreamedJSONRPCProtocolProvider</em> - Provides version 1.0 and 2.0 of JSONRPC, JSONHTTP and JSONREST.      
     </p>
     <H2>APIs</H2>
     <p>
       public <em>interface</em> <strong>APSExternalProtocolService </strong>   [se.natusoft.osgi.aps.api.external.extprotocolsvc] {      
     </p>
-    <blockquote>
-      <p>
-         This service makes the currently available externalizable services available for calling. It should be used by a bundle providing an externally available way of calling a service (JSON over http for example) to translate and forward calls to the local service. The locally called service is not required to be aware that it is called externally.  __Never cache any result of this service!__ Always make a new call to get the current state. Also note that it is possible that the service represented by an APSExternallyCallable have gone away after it was returned, but before you do call() on it! In that case an APSNoServiceAvailableException will be thrown. Note that you can register as an APSExternalProtocolListener to receive notifications about externalizable services coming and going, and also protocols coming and going to keep up to date with the current state of things.         
-      </p>
-    </blockquote>
+    <p>
+      This service makes the currently available externalizable services available for calling. It should be used by a bundle providing an externally available way of calling a service (JSON over http for example) to translate and forward calls to the local service. The locally called service is not required to be aware that it is called externally.      
+    </p>
+    <p>
+      <strong>Never cache any result of this service!</strong> Always make a new call to get the current state. Also note that it is possible that the service represented by an APSExternallyCallable have gone away after it was returned, but before you do call() on it! In that case an APSNoServiceAvailableException will be thrown. Note that you can register as an APSExternalProtocolListener to receive notifications about externalizable services coming and going, and also protocols coming and going to keep up to date with the current state of things.      
+    </p>
     <p>
       <strong>public Set&lt;String&gt; getAvailableServices()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns all currently available services.         
-      </p>
-    </blockquote>
+    <p>
+      Returns all currently available services.      
+    </p>
     <p>
       <strong>public List&lt;APSExternallyCallable&gt; getCallables(String serviceName) throws RuntimeException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns all APSExternallyCallable for the named service object.          
-      </p>
-    </blockquote>
+    <p>
+      Returns all APSExternallyCallable for the named service object.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6412,11 +5697,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public boolean isRESTCallable(String serviceName) throws RuntimeException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns true if the service has _put*(...)_, _get*(...)_, and/or _delete*(...)_ methods. This is to help HTTP transports support REST calls.          
-      </p>
-    </blockquote>
+    <p>
+      Returns true if the service has <em>post*(...)</em>, <em>put*(...)</em>, <em>get*(...)</em>, and/or <em>delete*(...)</em> methods. This is to help HTTP transports support REST calls.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6428,11 +5711,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public APSRESTCallable getRESTCallable(String serviceName)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns an APSRESTCallable containing one or more of post, put.get, and delete methods. This is to help HTTP transports support REST calls.          
-      </p>
-    </blockquote>
+    <p>
+      Returns an APSRESTCallable containing one or more of post, put, get, and delete methods. This is to help HTTP transports support REST calls.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6444,11 +5725,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public Set&lt;String&gt; getAvailableServiceFunctionNames(String serviceName)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the names of all available functions of the specified service.          
-      </p>
-    </blockquote>
+    <p>
+      Returns the names of all available functions of the specified service.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6460,11 +5739,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public APSExternallyCallable getCallable(String serviceName, String serviceFunctionName)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Gets an APSExternallyCallable for a specified service name and service function name.          
-      </p>
-    </blockquote>
+    <p>
+      Gets an APSExternallyCallable for a specified service name and service function name.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -6489,11 +5766,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public List&lt;RPCProtocol&gt; getAllProtocols()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -6505,11 +5777,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public RPCProtocol getProtocolByNameAndVersion(String name, String version)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns an RPCProtocol provider by protocol name and version.          
-      </p>
-    </blockquote>
+    <p>
+      Returns an RPCProtocol provider by protocol name and version.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -6534,11 +5804,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public List&lt;StreamedRPCProtocol&gt; getAllStreamedProtocols()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -6550,11 +5815,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public StreamedRPCProtocol getStreamedProtocolByNameAndVersion(String name, String version)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns a StreamedRPCProtocol provider by protocol name and version.          
-      </p>
-    </blockquote>
+    <p>
+      Returns a StreamedRPCProtocol provider by protocol name and version.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -6579,11 +5842,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void addExternalProtocolListener(APSExternalProtocolListener externalServiceListener)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Add a listener for externally available services.          
-      </p>
-    </blockquote>
+    <p>
+      Add a listener for externally available services.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6595,11 +5856,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void removeExternalProtocolListener(APSExternalProtocolListener externalServiceListener)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Removes a listener for externally available services.          
-      </p>
-    </blockquote>
+    <p>
+      Removes a listener for externally available services.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6617,19 +5876,12 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>APSExternallyCallable&lt;ReturnType&gt; </strong> extends  Callable&lt;ReturnType&gt;    [se.natusoft.osgi.aps.api.external.extprotocolsvc.model] {      
     </p>
-    <blockquote>
-      <p>
-         This API represents one callable service method.         
-      </p>
-    </blockquote>
+    <p>
+      This API represents one callable service method.      
+    </p>
     <p>
       <strong>public String getServiceName()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -6641,11 +5893,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public String getServiceFunctionName()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -6657,11 +5904,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public DataTypeDescription getReturnDataDescription()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -6673,11 +5915,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public List&lt;ParameterDataTypeDescription&gt; getParameterDataDescriptions()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -6689,11 +5926,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public Bundle getServiceBundle()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -6705,11 +5937,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void setArguments(Object... value)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Provides parameters to the callable using a varags list of parameter values.          
-      </p>
-    </blockquote>
+    <p>
+      Provides parameters to the callable using a varags list of parameter values.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6721,11 +5951,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>ReturnType call() throws Exception</strong>      
     </p>
-    <blockquote>
-      <p>
-         Calls the service method represented by this APSExternallyCallable.          
-      </p>
-    </blockquote>
+    <p>
+      Calls the service method represented by this APSExternallyCallable.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -6751,19 +5979,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>APSExternalProtocolListener </strong>   [se.natusoft.osgi.aps.api.external.extprotocolsvc.model] {      
     </p>
-    <blockquote>
-      <p>
-         A listener for externally available services. Please note that this means that the service is available for potential external protocol exposure! For it to be truly available there also has to be a protocol and transport available. It is probably only transports that are interested in this information!         
-      </p>
-    </blockquote>
+    <p>
+      A listener for externally available services. Please note that this means that the service is available for potential external protocol exposure! For it to be truly available there also has to be a protocol and transport available. It is probably only transports that are interested in this information!      
+    </p>
     <p>
       <strong>public void externalServiceAvailable(String service, String version)</strong>      
     </p>
-    <blockquote>
-      <p>
-         This gets called when a new externally available service becomes available.          
-      </p>
-    </blockquote>
+    <p>
+      This gets called when a new externally available service becomes available.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6780,11 +6004,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void externalServiceLeaving(String service, String version)</strong>      
     </p>
-    <blockquote>
-      <p>
-         This gets called when an externally available service no longer is available.          
-      </p>
-    </blockquote>
+    <p>
+      This gets called when an externally available service no longer is available.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6801,11 +6023,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void protocolAvailable(String protocolName, String protocolVersion)</strong>      
     </p>
-    <blockquote>
-      <p>
-         This gets called when a new protocol becomes available.          
-      </p>
-    </blockquote>
+    <p>
+      This gets called when a new protocol becomes available.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6822,11 +6042,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void protocolLeaving(String protocolName, String protocolVersion)</strong>      
     </p>
-    <blockquote>
-      <p>
-         This gets called when a new protocol is leaving.          
-      </p>
-    </blockquote>
+    <p>
+      This gets called when a new protocol is leaving.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6847,6 +6065,85 @@ The above empty lines are required due to a bug in iText used to render the PDF.
                 
     </p>
     <p>
+      public <em>interface</em> <strong>APSRESTCallable </strong> extends  APSExternallyCallable    [se.natusoft.osgi.aps.api.external.extprotocolsvc.model] {      
+    </p>
+    <p>
+      This is a special variant of APSExternallyCallable that supports a HTTP REST call.      
+    </p>
+    <p>
+      This is only available when a service have zero or one method whose name starts with put, zero or one method whose name starts with post, and so on. There has to be at least one method of put, post, get or delete.      
+    </p>
+    <p>
+      APSExternalProtocolService can provide an instance of this is a service matches the criteria.      
+    </p>
+    <p>
+      This is only of use for HTTP transports! aps-ext-protocol-http-transport-provider does make use of this for protocols that indicate they support REST.      
+    </p>
+    <p>
+      <strong>public boolean supportsPut()</strong>      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if the service supports the PUT method.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public boolean supportsPost()</strong>      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if the service supports the POST method.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public boolean supportsGet()</strong>      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if the service supports the GET method.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public boolean supportsDelete()</strong>      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if the service supports the DELETE method.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void selectMethod(HttpMethod method)</strong>      
+    </p>
+    <p>
+      This selects the method to call with this callable.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>method</em> - The selected method to call.         
+      </p>
+    </blockquote>
+    <p>
+      public <em>static</em> <em>enum</em> <strong>HttpMethod </strong>   [se.natusoft.osgi.aps.api.external.extprotocolsvc.model] {      
+    </p>
+    <p>
+      This defines the valid choices for selectMethod(...).      
+    </p>
+    <p>
       }      
     </p>
     <hr/>    <p>
@@ -6855,22 +6152,18 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>class</em> <strong>APSRESTException </strong> extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.rpc.errors] {      
     </p>
-    <blockquote>
-      <p>
-         This is a special exception that services can throw if they are intended to be available as REST services through the APSExternalProtocolExtender + APSRPCHTTPTransportProvider. This allows for better control over status codes returned by the service call.         
-      </p>
-    </blockquote>
+    <p>
+      This is a special exception that services can throw if they are intended to be available as REST services through the aps-external-protocol-extender + aps-ext-protocol-http-transport-provider. This allows for better control over status codes returned by the service call.      
+    </p>
     <p>
             
     </p>
     <p>
       <strong>public APSRESTException(int httpStatusCode)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new APSRESTException.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>APSRESTException</em>.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6882,11 +6175,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public APSRESTException(int httpStatusCode, String message)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new APSRESTException.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>APSRESTException</em>.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -6903,11 +6194,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public int getHttpStatusCode()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the http status code.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the http status code.      
+    </p>
     <p>
       }      
     </p>
@@ -6917,67 +6206,51 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>enum</em> <strong>ErrorType </strong>   [se.natusoft.osgi.aps.api.net.rpc.errors] {      
     </p>
-    <blockquote>
-      <p>
-         This defines what I think is a rather well though through set of error types applicable for an RPC call. No they are not mine, they come from Matt Morley in his JSONRPC 2.0 specification at http://jsonrpc.org/spec.html. I did add SERVICE_NOT_FOUND since it is fully possible to try to call a service that does not exist.         
-      </p>
-    </blockquote>
+    <p>
+      This defines what I think is a rather well though through set of error types applicable for an RPC call. No they are not mine, they come from Matt Morley in his JSONRPC 2.0 specification at <a href='http://jsonrpc.org/spec.html' title=''>http://jsonrpc.org/spec.html</a>. I did add SERVICE_NOT_FOUND since it is fully possible to try to call a service that does not exist.      
+    </p>
     <p>
       <strong>PARSE_ERROR</strong>      
     </p>
-    <blockquote>
-      <p>
-         Invalid input was received by the server. An error occurred on the server while parsing request data.         
-      </p>
-    </blockquote>
+    <p>
+      Invalid input was received by the server. An error occurred on the server while parsing request data.      
+    </p>
     <p>
       <strong>INVALID_REQUEST</strong>      
     </p>
-    <blockquote>
-      <p>
-         The request data sent is not a valid.         
-      </p>
-    </blockquote>
+    <p>
+      The request data sent is not a valid.      
+    </p>
     <p>
       <strong>METHOD_NOT_FOUND</strong>      
     </p>
-    <blockquote>
-      <p>
-         The called method does not exist / is not available.         
-      </p>
-    </blockquote>
+    <p>
+      The called method does not exist / is not available.      
+    </p>
     <p>
       <strong>SERVICE_NOT_FOUND</strong>      
     </p>
-    <blockquote>
-      <p>
-         The called service does not exist / is not available.         
-      </p>
-    </blockquote>
+    <p>
+      The called service does not exist / is not available.      
+    </p>
     <p>
       <strong>INVALID_PARAMS</strong>      
     </p>
-    <blockquote>
-      <p>
-         The parameters to the method are invalid.         
-      </p>
-    </blockquote>
+    <p>
+      The parameters to the method are invalid.      
+    </p>
     <p>
       <strong>INTERNAL_ERROR</strong>      
     </p>
-    <blockquote>
-      <p>
-         Internal protocol error.         
-      </p>
-    </blockquote>
+    <p>
+      Internal protocol error.      
+    </p>
     <p>
       <strong>SERVER_ERROR</strong>      
     </p>
-    <blockquote>
-      <p>
-         Server related error.         
-      </p>
-    </blockquote>
+    <p>
+      Server related error.      
+    </p>
     <p>
       }      
     </p>
@@ -6987,19 +6260,12 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>HTTPError </strong> extends  RPCError    [se.natusoft.osgi.aps.api.net.rpc.errors] {      
     </p>
-    <blockquote>
-      <p>
-         Extends RPCError with an HTTP status code. HTTP transports can make use of this information.         
-      </p>
-    </blockquote>
+    <p>
+      Extends <em>RPCError</em> with an HTTP status code. HTTP transports can make use of this information.      
+    </p>
     <p>
       <strong>public int getHttpStatusCode()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -7017,51 +6283,39 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>RPCError </strong>   [se.natusoft.osgi.aps.api.net.rpc.errors] {      
     </p>
-    <blockquote>
-      <p>
-         This represents an error in servicing an RPC request.         
-      </p>
-    </blockquote>
+    <p>
+      This represents an error in servicing an RPC request.      
+    </p>
     <p>
       <strong>public ErrorType getErrorType()</strong>      
     </p>
-    <blockquote>
-      <p>
-         The type of the error.         
-      </p>
-    </blockquote>
+    <p>
+      The type of the error.      
+    </p>
     <p>
       <strong>public String getErrorCode()</strong>      
     </p>
-    <blockquote>
-      <p>
-         A potential error code.         
-      </p>
-    </blockquote>
+    <p>
+      A potential error code.      
+    </p>
     <p>
       <strong>public String getMessage()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns an error message. This is also optional.         
-      </p>
-    </blockquote>
+    <p>
+      Returns an error message. This is also optional.      
+    </p>
     <p>
       <strong>public boolean hasOptionalData()</strong>      
     </p>
-    <blockquote>
-      <p>
-         True if there is optional data available. An example of optional data would be a stack trace for example.         
-      </p>
-    </blockquote>
+    <p>
+      True if there is optional data available. An example of optional data would be a stack trace for example.      
+    </p>
     <p>
       <strong>public String getOptionalData()</strong>      
     </p>
-    <blockquote>
-      <p>
-         The optional data.         
-      </p>
-    </blockquote>
+    <p>
+      The optional data.      
+    </p>
     <p>
       }      
     </p>
@@ -7071,19 +6325,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>class</em> <strong>RequestedParamNotAvailableException </strong> extends  APSException    [se.natusoft.osgi.aps.api.net.rpc.exceptions] {      
     </p>
-    <blockquote>
-      <p>
-         This exception is thrown when a parameter request cannot be fulfilled.         
-      </p>
-    </blockquote>
+    <p>
+      This exception is thrown when a parameter request cannot be fulfilled.      
+    </p>
     <p>
       <strong>public RequestedParamNotAvailableException(String message)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new APSException instance.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>RequestedParamNotAvailableException</em> instance.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -7095,11 +6345,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public RequestedParamNotAvailableException(String message, Throwable cause)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new APSException instance.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>RequestedParamNotAvailableException</em> instance.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -7122,11 +6370,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>abstract</em> <em>class</em> <strong>AbstractRPCRequest </strong> implements  RPCRequest    [se.natusoft.osgi.aps.api.net.rpc.model] {      
     </p>
-    <blockquote>
-      <p>
-         This contains a parsed JSONRPC request.         
-      </p>
-    </blockquote>
+    <p>
+      This provides a partial implementation of RPCRequest.      
+    </p>
     <p>
             
     </p>
@@ -7148,11 +6394,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public AbstractRPCRequest(String method)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new AbstractRPCRequest.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new AbstractRPCRequest.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -7164,11 +6408,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public AbstractRPCRequest(RPCError error)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new AbstractRPCRequest.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new AbstractRPCRequest.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -7180,11 +6422,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public AbstractRPCRequest(String method, Object callId)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new AbstractRPCRequest.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new AbstractRPCRequest.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -7201,11 +6441,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>protected Map&lt;String, Object&gt; getNamedParameters()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -7217,11 +6452,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>protected List&lt;Object&gt; getParameters()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -7242,11 +6472,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void setServiceQName(String serviceQName)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets the fully qualified name of the service to call. This is optional since not all protocol delivers a service name this way.          
-      </p>
-    </blockquote>
+    <p>
+      Sets the fully qualified name of the service to call. This is optional since not all protocol delivers a service name this way.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -7270,11 +6498,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void addParameter(Object parameter)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Adds a parameter. This is mutually exclusive with addParameter(name, parameter)!          
-      </p>
-    </blockquote>
+    <p>
+      Adds a parameter. This is mutually exclusive with addParameter(name, parameter)!      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -7292,101 +6518,63 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>RPCRequest </strong>   [se.natusoft.osgi.aps.api.net.rpc.model] {      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
+    <p>
+      This represents a request returned by protocol implementations.      
+    </p>
     <p>
       <strong>boolean isValid()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns true if this request is valid. If this returns false all information except getError() is invalid, and getError() should return a valid RPCError object.         
-      </p>
-    </blockquote>
+    <p>
+      Returns true if this request is valid. If this returns false all information except <em>getError()</em> is invalid, and <em>getError()</em> should return a valid <em>RPCError</em> object.      
+    </p>
     <p>
       <strong>RPCError getError()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns an RPCError object if isValid() == false, null otherwise.         
-      </p>
-    </blockquote>
+    <p>
+      Returns an <em>RPCError</em> object if <code>isValid() == false</code>, <em>null</em> otherwise.      
+    </p>
     <p>
       <strong>String getServiceQName()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns a fully qualified name of service to call. This will be null for protocols where service name is not provided this way. So this cannot be taken for given!         
-      </p>
-    </blockquote>
+    <p>
+      Returns a fully qualified name of service to call. This will be null for protocols where service name is not provided this way. So this cannot be taken for given!      
+    </p>
     <p>
       <strong>String getMethod()</strong>      
     </p>
-    <blockquote>
-      <p>
-         REST protocol where it will be part of the URL.         
-      </p>
-    </blockquote>
     <p>
-      <em>Returns</em>      
+      Returns the method to call. This can return <em>null</em> if the method is provided by other means, for example a REST protocol where it will be part of the URL.      
     </p>
-    <blockquote>
-      <p>
-        The method to call. This can return null if the method is provided by other means, for example a        
-      </p>
-    </blockquote>
     <p>
       <strong>boolean hasCallId()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns true if there is a call id available in the request.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont.         
-      </p>
-    </blockquote>
+    <p>
+      Returns true if there is a call id available in the request.      
+    </p>
+    <p>
+      A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont.      
+    </p>
     <p>
       <strong>Object getCallId()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the method call call Id.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the method call call Id.      
+    </p>
+    <p>
+      A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont.      
+    </p>
     <p>
       <strong>int getNumberOfParameters()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
-      <em>Returns</em>      
+      Return the number of parameters available.      
     </p>
-    <blockquote>
-      <p>
-        The number of parameters available.        
-      </p>
-    </blockquote>
     <p>
       <strong>&lt;T&gt; T getIndexedParameter(int index, Class&lt;T&gt; paramClass) throws RequestedParamNotAvailableException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the parameter at the specified index.          
-      </p>
-    </blockquote>
+    <p>
+      Returns the parameter at the specified index.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -7425,19 +6613,12 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>RPCProtocol </strong>   [se.natusoft.osgi.aps.api.net.rpc.service] {      
     </p>
-    <blockquote>
-      <p>
-         This represents an RPC protocol provider. This API is not enough in itself, it is a common base for different protocols.         
-      </p>
-    </blockquote>
+    <p>
+      This represents an RPC protocol provider. This API is not enough in itself, it is a common base for different protocols.      
+    </p>
     <p>
       <strong>String getServiceProtocolName()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -7449,11 +6630,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>String getServiceProtocolVersion()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -7465,11 +6641,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>String getRequestContentType()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -7481,11 +6652,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>String getResponseContentType()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -7497,11 +6663,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>String getRPCProtocolDescription()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -7513,11 +6674,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>RPCError createRPCError(ErrorType errorType, String errorCode, String message, String optionalData, Throwable cause)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Factory method to create an error object.          
-      </p>
-    </blockquote>
+    <p>
+      Factory method to create an error object.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -7563,19 +6722,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>StreamedHTTPProtocol </strong> extends  StreamedRPCProtocol    [se.natusoft.osgi.aps.api.net.rpc.service] {      
     </p>
-    <blockquote>
-      <p>
-         This is a marker interface indicating that the protocol is really assuming a HTTP transport and is expecting to be able to return http status codes. This also means it will be returning an HTTPError (which extends RPCError) from _createError(...)_.  It might be difficult for non HTTP transports to support this kind of protocol, and such should probably ignore these protocols. For example a REST implementation of this protocol will not be writing any error response back, but rather expect the transport to deliver the http status code it provides. A non HTTP transport will not be able to know how to communicate back errors in this case since it will not know anything about the protocol itself.         
-      </p>
-    </blockquote>
+    <p>
+      This is a marker interface indicating that the protocol is really assuming a HTTP transport and is expecting to be able to return http status codes. This also means it will be returning an HTTPError (which extends RPCError) from <em>createError(...)</em>.      
+    </p>
+    <p>
+      It might be difficult for non HTTP transports to support this kind of protocol, and such should probably ignore these protocols. For example a REST implementation of this protocol will not be writing any error response back, but rather expect the transport to deliver the http status code it provides. A non HTTP transport will not be able to know how to communicate back errors in this case since it will not know anything about the protocol itself.      
+    </p>
     <p>
       <strong>boolean supportsREST()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -7593,19 +6748,18 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>StreamedRPCProtocol </strong> extends  RPCProtocol    [se.natusoft.osgi.aps.api.net.rpc.service] {      
     </p>
-    <blockquote>
-      <p>
-         This represents an RPC protocol provider that provide client/service calls with requests read from an InputStream or having parameters passes as strings and responses written to an OutputStream.  HTTP transports can support both _parseRequests(...)_ and _parseRequest(...)_ while other transports probably can handle only _parseRequests(...)_. __A protocol provider can return null for either of these!__ Most protocol providers will support _parseRequests(...)_ and some also _parseRequest(...)_.         
-      </p>
-    </blockquote>
+    <p>
+      This represents an RPC protocol provider that provide client/service calls with requests read from an InputStream or having parameters passes as strings and responses written to an OutputStream.      
+    </p>
+    <p>
+      HTTP transports can support both <em>parseRequests(...)</em> and <em>parseRequest(...)</em> while other transports probably can handle only <em>parseRequests(...)</em>. <strong>A protocol provider can return null for either of these!</strong> Most protocol providers will support <em>parseRequests(...)</em> and some also <em>parseRequest(...)</em>.      
+    </p>
     <p>
       <strong>List&lt;RPCRequest&gt; parseRequests(String serviceQName, String method, InputStream requestStream) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.          
-      </p>
-    </blockquote>
+    <p>
+      Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -7643,11 +6797,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>RPCRequest parseRequest(String serviceQName, String method, Map&lt;String, String&gt; parameters) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Provides an RPCRequest based on in-parameters. This variant supports HTTP transports.          
-      </p>
-    </blockquote>
+    <p>
+      Provides an RPCRequest based on in-parameters. This variant supports HTTP transports.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -7685,11 +6837,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>void writeResponse(Object result, RPCRequest request, OutputStream responseStream) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Writes a successful response to the specified OutputStream.          
-      </p>
-    </blockquote>
+    <p>
+      Writes a successful response to the specified OutputStream.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -7719,11 +6869,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>boolean writeErrorResponse(RPCError error, RPCRequest request, OutputStream responseStream) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Writes an error response.          
-      </p>
-    </blockquote>
+    <p>
+      Writes an error response.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -7988,19 +7136,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>APSGroupsService </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
     </p>
-    <blockquote>
-      <p>
-         A service that lets clients send data reliable to all members of a group on any host. There is no limit on the size of the data sent, but that said I wouldn't send MB:s of data!         
-      </p>
-    </blockquote>
+    <p>
+      A service that lets clients send data reliable to all members of a group on any host. There is no limit on the size of the data sent, but that said I wouldn't send MB:s of data!      
+    </p>
     <p>
       <strong>GroupMember joinGroup(String name) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Joins a group.          
-      </p>
-    </blockquote>
+    <p>
+      Joins a group.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -8028,11 +7172,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>void leaveGroup(GroupMember groupMember) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Leaves as member of group.          
-      </p>
-    </blockquote>
+    <p>
+      Leaves as member of group.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -8058,19 +7200,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>GroupMember </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
     </p>
-    <blockquote>
-      <p>
-         This is the API for APSGroupsService members received when they join a group. It is used to send and receive data messages to/from the group.         
-      </p>
-    </blockquote>
+    <p>
+      This is the API for <em>APSGroupsService</em> members received when they join a group. It is used to send and receive data messages to/from the group.      
+    </p>
     <p>
       <strong>void addMessageListener(MessageListener listener)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Adds a listener for incoming messages.         
-      </p>
-    </blockquote>
+    <p>
+      Adds a listener for incoming messages.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -8082,11 +7220,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>void removeMessageListener(MessageListener listener)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Removes a listener for incoming messages.          
-      </p>
-    </blockquote>
+    <p>
+      Removes a listener for incoming messages.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -8098,19 +7234,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>Message createNewMessage()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new Message to send. Use the sendMessage() method when ready to send it.         
-      </p>
-    </blockquote>
+    <p>
+      Creates a new Message to send. Use the sendMessage() method when ready to send it.      
+    </p>
     <p>
       <strong>void sendMessage(Message message) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sends a previously created message to all current members of the group. If this returns without an exception then all members have received the message.          
-      </p>
-    </blockquote>
+    <p>
+      Sends a previously created message to all current members of the group. If this returns without an exception then all members have received the message.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -8130,11 +7262,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>UUID getMemberId()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -8146,19 +7273,12 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>List&lt;String&gt; getMemberInfo()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns information about members.         
-      </p>
-    </blockquote>
+    <p>
+      Returns information about members.      
+    </p>
     <p>
       <strong>NetTime getNow()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -8170,11 +7290,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>NetTime createFromNetTime(long netTimeMillis)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates from milliseconds in net time.          
-      </p>
-    </blockquote>
+    <p>
+      Creates from milliseconds in net time.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -8186,11 +7304,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>NetTime createFromNetTime(Date netTimeDate)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates from a Date in net time.          
-      </p>
-    </blockquote>
+    <p>
+      Creates from a Date in net time.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -8202,11 +7318,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>NetTime createFromLocalTime(long localTimeMillis)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates from milliseconds in local time.          
-      </p>
-    </blockquote>
+    <p>
+      Creates from milliseconds in local time.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -8218,11 +7332,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>NetTime createFromLocalTime(Date localTimeDate)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates from a Date in local time.          
-      </p>
-    </blockquote>
+    <p>
+      Creates from a Date in local time.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -8240,43 +7352,30 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>Message </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
     </p>
-    <blockquote>
-      <p>
-         This represents a complete message containing any data you want to send to the group. You provide the message with data using the OutputStream, and read message data using the InputStream.         
-      </p>
-    </blockquote>
+    <p>
+      This represents a complete message containing any data you want to send to the group. You provide the message with data using the <em>OutputStream</em>, and read message data using the <em>InputStream</em>.      
+    </p>
     <p>
       <strong>OutputStream getOutputStream()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns an OutputStream to write message on. Multiple calls to this will return the same OutputStream!         
-      </p>
-    </blockquote>
+    <p>
+      Returns an <em>OutputStream</em> to write message on. Multiple calls to this will return the same <em>OutputStream</em>!      
+    </p>
     <p>
       <strong>InputStream getInputStream()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns an InputStream for reading the message. Multiple calls to this will return new InputStream:s starting from the beginning!         
-      </p>
-    </blockquote>
+    <p>
+      Returns an <em>InputStream</em> for reading the message. Multiple calls to this will return new <em>InputStream</em>:s starting from the beginning!      
+    </p>
     <p>
       <strong>UUID getId()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the id of this message.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the id of this message.      
+    </p>
     <p>
       <strong>String getMemberId()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -8288,11 +7387,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>String getGroupName()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -8310,19 +7404,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>MessageListener </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
     </p>
-    <blockquote>
-      <p>
-         For listening on messages from the group.         
-      </p>
-    </blockquote>
+    <p>
+      For listening on messages from the group.      
+    </p>
     <p>
       <strong>public void messageReceived(Message message)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Notification of received message.          
-      </p>
-    </blockquote>
+    <p>
+      Notification of received message.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -8340,43 +7430,33 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>NetTime </strong> extends  Serializable    [se.natusoft.osgi.aps.api.net.groups.service] {      
     </p>
-    <blockquote>
-      <p>
-         This represents a common network time between members for handling date and time data. The net time is synchronized between all members. Each receiver of net time diffs it with local time and stores the diff so that they can convert to/from local/net time.         
-      </p>
-    </blockquote>
+    <p>
+      This represents a common network time between members for handling date and time data. The net time is synchronized between all members. Each receiver of net time diffs it with local time and stores the diff so that they can convert to/from local/net time.      
+    </p>
     <p>
       <strong>public long getNetTime()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the number of milliseconds since Januray 1, 1970 in net time.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the number of milliseconds since January 1, 1970 in net time.      
+    </p>
     <p>
       <strong>public Date getNetTimeDate()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the net time as a Date.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the net time as a Date.      
+    </p>
     <p>
       <strong>public Calendar getNetTimeCalendar()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the net time as a Calendar.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the net time as a Calendar.      
+    </p>
     <p>
       <strong>public Calendar getNetTimeCalendar(Locale locale)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the net time as a Calendar.          
-      </p>
-    </blockquote>
+    <p>
+      Returns the net time as a Calendar.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -8388,27 +7468,21 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public Date getLocalTimeDate()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Converts the net time to local time and returns as a Date.         
-      </p>
-    </blockquote>
+    <p>
+      Converts the net time to local time and returns as a Date.      
+    </p>
     <p>
       <strong>public Calendar getLocalTimeCalendar()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Converts the net time to local time and returns as a Calendar.         
-      </p>
-    </blockquote>
+    <p>
+      Converts the net time to local time and returns as a Calendar.      
+    </p>
     <p>
       <strong>public Calendar getLocalTimeCalendar(Locale locale)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Converts the net time to local time and returns as a Calendar.          
-      </p>
-    </blockquote>
+    <p>
+      Converts the net time to local time and returns as a Calendar.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -8574,19 +7648,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>APSAdminWebService </strong>   [se.natusoft.osgi.aps.apsadminweb.service] {      
     </p>
-    <blockquote>
-      <p>
-         This service registers other specific administration web applications to make them available under a common administration gui.         
-      </p>
-    </blockquote>
+    <p>
+      This service registers other specific administration web applications to make them available under a common administration gui.      
+    </p>
     <p>
       <strong>public void registerAdminWeb(AdminWebReg adminWebReg) throws IllegalArgumentException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Registers an admin web application.          
-      </p>
-    </blockquote>
+    <p>
+      Registers an admin web application.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -8606,11 +7676,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void unregisterAdminWeb(AdminWebReg adminWebReg)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Unregisters a previously registered admin web. This is failsafe. If it has not been registered nothing happens.          
-      </p>
-    </blockquote>
+    <p>
+      Unregisters a previously registered admin web. This is failsafe. If it has not been registered nothing happens.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -8622,11 +7690,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public List&lt;AdminWebReg&gt; getRegisteredAdminWebs()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -8644,11 +7707,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>class</em> <strong>AdminWebReg </strong>   [se.natusoft.osgi.aps.apsadminweb.service.model] {      
     </p>
-    <blockquote>
-      <p>
-         This model holds information about a registered admin web application.         
-      </p>
-    </blockquote>
+    <p>
+      This model holds information about a registered admin web application.      
+    </p>
     <p>
             
     </p>
@@ -8664,11 +7725,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public AdminWebReg(String name, String version, String description, String url)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new AdminWebReg instance.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new AdminWebReg instance.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -8695,11 +7754,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public String getName()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -8711,11 +7765,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public String getVersion()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -8727,11 +7776,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public String getDescription()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -8743,11 +7787,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public String getUrl()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>

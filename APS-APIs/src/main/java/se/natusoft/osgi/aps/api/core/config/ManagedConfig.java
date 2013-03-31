@@ -39,7 +39,7 @@ package se.natusoft.osgi.aps.api.core.config;
 import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
 
 /**
- * A static instance of this can be defined in APSConfig subclasses if the config is auto
+ * A static instance of this can be defined in _APSConfig_ subclasses if the config is auto
  * managed by the config service provider. It provides some utility methods.
  */
 public class ManagedConfig<Config> {
@@ -99,7 +99,7 @@ public class ManagedConfig<Config> {
 
     /**
      * This call is for the configuration service to inform that it is now managing the config.
-     * <p/>
+     *
      * Only set this yourself if you like things to be hard and difficult.
      */
     private synchronized void doSetManaged() {
@@ -126,7 +126,7 @@ public class ManagedConfig<Config> {
     public class ConfigServiceAPI {
         /**
          * This call is for the configuration service to inform that it is now managing the config.
-         * <p/>
+         *
          * Only set this yourself if you like things to be hard and difficult.
          */
         public void setManaged() {
@@ -135,7 +135,7 @@ public class ManagedConfig<Config> {
 
         /**
          * For the service provider to use for setting a managed instance.
-         * <p/>
+         *
          * Only set this yourself if you want lesser non working functionality!
          *
          * @param config The config instance to set.

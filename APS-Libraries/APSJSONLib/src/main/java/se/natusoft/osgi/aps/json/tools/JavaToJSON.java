@@ -52,7 +52,7 @@ import java.util.*;
 public class JavaToJSON {
 
     /**
-     * Converts a JavaBean object into a JSONObject.
+     * Converts a JavaBean object into a _JSONObject_.
      *
      * @param javaBean The JavaBean object to convert.
      *
@@ -65,7 +65,7 @@ public class JavaToJSON {
     }
 
     /**
-     * Converts a JavaBean object into a JSONObject.
+     * Converts a JavaBean object into a _JSONObject_.
      *
      * @param jsonObject The jsonObject to convert the bean into or null for a new JSONObject.
      * @param javaBean The JavaBean object to convert.
@@ -133,7 +133,7 @@ public class JavaToJSON {
     }
 
     /**
-     * Converts a value from a java value to a JSONValue.
+     * Converts a value from a java value to a _JSONValue_.
      *
      * @param value The java value to convert. It can be one of String, Number, Boolean, null, JavaBean, or an array of those.
      *              If you pass in something else you will get an empty JSONObject back!

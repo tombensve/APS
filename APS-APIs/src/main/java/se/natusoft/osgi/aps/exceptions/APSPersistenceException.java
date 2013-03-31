@@ -42,7 +42,7 @@ package se.natusoft.osgi.aps.exceptions;
 public class APSPersistenceException extends APSRuntimeException {
 
     /**
-     * Creates a new APSPersistenceException instance.
+     * Creates a new _APSPersistenceException_ instance.
      *
      * @param message The exception message.
      */
@@ -51,7 +51,7 @@ public class APSPersistenceException extends APSRuntimeException {
     }
 
     /**
-     * Creates a new APSPersistenceException instance.
+     * Creates a new _APSPersistenceException_ instance.
      *
      * @param message The exception message.
      * @param cause The cause of the exception.

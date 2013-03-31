@@ -42,7 +42,7 @@ package se.natusoft.osgi.aps.tools.tracker;
 public interface OnRequiredServicesNonAvailability {
 
     /**
-     * This gets called by APSRequriredServicesTracker when all tracked services are available.
+     * This gets called by _APSRequriredServicesTracker_ when all tracked services are available.
      *
      * @param requiredServices A container containing service instances of all required services.
      * @throws Exception

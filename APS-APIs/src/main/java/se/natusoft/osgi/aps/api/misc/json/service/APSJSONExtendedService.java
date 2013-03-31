@@ -46,8 +46,8 @@ import java.io.OutputStream;
 /**
  * Provides additional functionality for populating and extracting from JavaBeans. Implementing
  * this part is of course optional. If this is implemented the service has to be registered both
- * as JSONService and JSONExtendedService. Clients that need the extended service should ask for
- * that. If the extended service is not needed only JSONService should be asked for. Clients
+ * as _JSONService_ and _JSONExtendedService_. Clients that need the extended service should ask for
+ * that. If the extended service is not needed only _JSONService_ should be asked for. Clients
  * should never ever ask for both since the extended service do extend the base service!
  */
 public interface APSJSONExtendedService extends APSJSONService {
@@ -77,8 +77,8 @@ public interface APSJSONExtendedService extends APSJSONService {
     public void writeJSONFromBean(OutputStream out, Object bean) throws IOException;
 
     /**
-     * Takes a JSONValue and converts it to a Java value. You will get one of String, Number, Boolean, null, JavaBean or an array of those
-     * depending on the JSONValue subclass passed.
+     * Takes a _JSONValue_ and converts it to a Java value. You will get one of _String_, _Number_, _Boolean_,
+     * _null_, JavaBean or an array of those depending on the _JSONValue_ subclass passed.
      *
      * @param jsonValue The JSONObject whose information should be transferred to the JavaBean.
      * @param javaType The class of the Java type to return a converted instance of.
@@ -88,7 +88,7 @@ public interface APSJSONExtendedService extends APSJSONService {
     public <T> T jsonToJava(JSONValue jsonValue, Class<T> javaType);
 
     /**
-     * Takes a Java object and converts it to a JSONValue subclass.
+     * Takes a Java object and converts it to a _JSONValue_ subclass.
      *
      * @param java The Java value to convert to a JSONValue. It can be one of String, Number, Boolean, null, JavaBean, or an array of those.
      *

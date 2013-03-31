@@ -79,7 +79,7 @@ public interface APSSimpleUserServiceAdmin extends APSSimpleUserService {
 
     /**
      * Creates a new user. Please note that you get an empty user back. You probably want to
-     * add roles and also possibly properties to the user. After you have done that call updateUser(user).
+     * add roles and also possibly properties to the user. After you have done that call _updateUser(user)_.
      *
      * @param id The id of the user. This is key so it must be unique.
      *

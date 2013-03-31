@@ -163,7 +163,7 @@ public class ServiceDescriptionProvider implements ServiceDescription {
     }
 
     /**
-     * Sets the targetPort of the servcie.
+     * Sets the targetPort of the service.
      *
      * @param servicePort The service targetPort to set.
      */
@@ -182,7 +182,7 @@ public class ServiceDescriptionProvider implements ServiceDescription {
     /**
      * Sets an url to the service.
      *
-     * @param serviceURL The servcie url to set.
+     * @param serviceURL The service url to set.
      */
 
     public void setServiceURL(String serviceURL) {

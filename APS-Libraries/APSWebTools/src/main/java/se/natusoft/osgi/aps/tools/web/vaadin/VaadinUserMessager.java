@@ -41,8 +41,8 @@ import com.vaadin.ui.Window.Notification;
 import se.natusoft.osgi.aps.tools.web.UserMessager;
 
 /**
- * Implementation of UserMessager for Vaadin applications using a Vaadin Window to do
- * showNotification(...) on.
+ * Implementation of _UserMessager_ for Vaadin applications using a Vaadin Window to do
+ * _showNotification(...)_ on.
  */
 public class VaadinUserMessager implements UserMessager {
     //

@@ -40,12 +40,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * This represents a directory in an APSFilesystem. 
- * <p>
+ * This represents a directory in an _APSFilesystem_.
+ *
  * Use this to create or get directories and files and list contents of directories.
- * <p>
+ *
  * Personal comment: I do prefer the term "folder" over "directory" since I think that is 
- * less ambigous, but since Java uses the term "directory" I decided to stick with that name.
+ * less ambiguous, but since Java uses the term "directory" I decided to stick with that name.
  */
 public interface APSDirectory extends APSFile {
 
@@ -69,7 +69,7 @@ public interface APSDirectory extends APSFile {
     APSDirectory createDir(String name, String duplicateMessage) throws IOException;
 
     /**
-     * Creates a new file in the directory represented by the current APSDirectory.
+     * Creates a new file in the directory represented by the current _APSDirectory_.
      *
      * @param name The name of the file to create.
      *
@@ -94,7 +94,7 @@ public interface APSDirectory extends APSFile {
     APSFile getFile(String name);
 
     /**
-     * Performs a recursive delete of the directory represented by this APSDirectory
+     * Performs a recursive delete of the directory represented by this _APSDirectory_
      * and all subdirectories and files.
      *
      * @throws IOException on any failure.

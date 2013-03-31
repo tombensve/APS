@@ -39,7 +39,7 @@ package se.natusoft.osgi.aps.api.net.rpc.errors;
 /**
  * This defines what I think is a rather well though through set of error types applicable
  * for an RPC call. No they are not mine, they come from Matt Morley in his JSONRPC 2.0 specification
- * at http://jsonrpc.org/spec.html. I did add SERVICE_NOT_FOUND since it is fully possible to try to
+ * at <http://jsonrpc.org/spec.html>. I did add SERVICE\_NOT\_FOUND since it is fully possible to try to
  * call a service that does not exist.
  */
 public enum ErrorType {

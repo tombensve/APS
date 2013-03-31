@@ -44,20 +44,19 @@ import java.io.*;
 
 /**
  * This class is based on the structure defined on http://www.json.org/.
- * <p>
- * This is a base class for all other JSON* classes. It represents the "value" diagram on the above mentioned web page:
- * <pre>
- *                                                   Subclasses
- *                                                   ----------
- * |________________ (STRING) ________________|      JSONString
- * |  |_____________ (NUMBER) _____________|  |      JSONNumber
- *    |_____________ (OBJECT) _____________|         JSONObject
- *    |_____________ (ARRAY)  _____________|         JSONArray
- *    |_____________ (true)   _____________|     \__ JSONBoolean
- *    |_____________ (false)  _____________|     /
- *    \_____________ (null)   _____________/         JSONNull
  *
- * </pre>
+ * This is a base class for all other JSON* classes. It represents the "value" diagram on the above mentioned web page:
+ *
+ *                                                       Subclasses
+ *                                                       ----------
+ *     |________________ (STRING) ________________|      JSONString
+ *     |  |_____________ (NUMBER) _____________|  |      JSONNumber
+ *        |_____________ (OBJECT) _____________|         JSONObject
+ *        |_____________ (ARRAY)  _____________|         JSONArray
+ *        |_____________ (true)   _____________|     \__ JSONBoolean
+ *        |_____________ (false)  _____________|     /
+ *        \_____________ (null)   _____________/         JSONNull
+ *
  *
  * @see JSONObject
  * 

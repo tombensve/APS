@@ -40,39 +40,39 @@ import java.io.*;
 import java.util.Properties;
 
 /**
- * This represents a file in an APSFilesystemService provided filsystem. 
- * It provides most of the API of java.io.File but is not a File! It never
- * discloses the full path in the host filesystem, only paths relative to 
- * its APSFilesystem root.
- * <p>
+ * This represents a file in an _APSFilesystemService_ provided filesystem.
+ * It provides most of the API of _java.io.File_ but is not a _java.io.File_!
+ * It never discloses the full path in the host filesystem, only paths
+ * relative to its _APSFilesystem_ root.
+ *
  * Use the createInputStream/OutputStream/Reader/Writer to read and write
  * the file.
  */
 public interface APSFile {
 
     /**
-     * Creates a new InputStream to this file.
+     * Creates a new _InputStream_ to this file.
      *
      * @throws IOException
      */
     InputStream createInputStream() throws IOException;
 
     /**
-     * Creates a new OutputStream to this file.
+     * Creates a new _OutputStream_ to this file.
      *
      * @throws IOException
      */
     OutputStream createOutputStream() throws IOException;
 
     /**
-     * Creates a new Reader to this file.
+     * Creates a new _Reader_ to this file.
      *
      * @throws IOException
      */
     Reader createReader() throws IOException;
 
     /**
-     * Creates a new Writer to this file.
+     * Creates a new _Writer_ to this file.
      *
      * @throws IOException
      */
@@ -95,8 +95,8 @@ public interface APSFile {
     void saveProperties(Properties properties) throws IOException;
 
     /**
-     * If this APSFile represents a directory an APSDirectory instance will be returned.
-     * Otherwise null will be returned.
+     * If this _APSFile_ represents a directory an _APSDirectory_ instance will be returned.
+     * Otherwise _null_ will be returned.
      */
     APSDirectory toDirectory();
     
@@ -202,7 +202,7 @@ public interface APSFile {
     void deleteOnExit();
 
     /**
-     * Returns a string representation of this APSFileImpl.
+     * Returns a string representation of this _APSFile_.
      */
     @Override
     String toString();

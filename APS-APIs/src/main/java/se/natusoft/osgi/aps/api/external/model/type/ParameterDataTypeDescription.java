@@ -37,7 +37,7 @@
 package se.natusoft.osgi.aps.api.external.model.type;
 
 /**
- * This represents a parameter to a service method call. It adds a position value to the DataTypeDescription.
+ * This represents a parameter to a service method call. It adds a position value to the _DataTypeDescription_.
  */
 public class ParameterDataTypeDescription extends DataTypeDescription {
     //
@@ -52,12 +52,12 @@ public class ParameterDataTypeDescription extends DataTypeDescription {
     //
 
     /**
-     * Creates a new ParameterDataDescription.
+     * Creates a new _ParameterDataDescription_.
      */
     public ParameterDataTypeDescription() {}
 
     /**
-     * Creates a new DataDescription.
+     * Creates a new _ParameterDataTypeDescription_.
      *
      * @param position The position of the parameter in the parameter list.
      * @param owner The description of the owner of this description.

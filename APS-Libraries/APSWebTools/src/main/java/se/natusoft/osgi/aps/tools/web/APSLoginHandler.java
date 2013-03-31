@@ -49,16 +49,16 @@ import java.util.Properties;
 /**
  * This class validates if there is a valid logged in user and also provides a simple login if no valid
  * logged in user exists.
- * <p/>
+ *
  * This utility makes use of APSAuthService to login auth and APSSessionService for session handling.
  * Trackers for these services are created internally which requires the shutdown() method to be called
  * when no longer used to cleanup.
- * <p/>
+ *
  * The bundle needs to import the following packages for this class to work:
- * <pre>
- *    se.natusoft.osgi.aps.api.auth.user;version="[0.9,2)",
- *    se.natusoft.osgi.aps.api.misc.session;version="[0.9,2)"
- * </pre>
+ *
+ *      se.natusoft.osgi.aps.api.auth.user;version="[0.9,2)",
+ *      se.natusoft.osgi.aps.api.misc.session;version="[0.9,2)"
+ *
  */
 public class APSLoginHandler implements LoginHandler {
     //
@@ -200,10 +200,10 @@ public class APSLoginHandler implements LoginHandler {
 
     /**
      * Logs in with a userid and a password.
-     * <p/>
+     *
      * This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on.
      * This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own
-     * service tracker for the APSAuthService when this object is already available due to the code also being an APSAdminWeb member.
+     * service tracker for the _APSAuthService_ when this object is already available due to the code also being an _APSAdminWeb_ member.
      * It is basically a convenience.
      *
      * @param userId The id of the user to login.
@@ -226,10 +226,10 @@ public class APSLoginHandler implements LoginHandler {
 
     /**
      * Logs in with a userid and a password, and a required role.
-     * <p/>
+     *
      * This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on.
      * This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own
-     * service tracker for the APSAuthService when this object is already available due to the code also being an APSAdminWeb member.
+     * service tracker for the _APSAuthService_ when this object is already available due to the code also being an _APSAdminWeb_ member.
      * It is basically a convenience.
      *
      * @param userId The id of the user to login.

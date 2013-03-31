@@ -39,7 +39,7 @@ package se.natusoft.osgi.aps.tools.tracker;
 import org.osgi.framework.ServiceReference;
 
 /**
- * This interface is used in conjunction with APSServiceTracker and provides callback code to run when a service becomes
+ * This interface is used in conjunction with _APSServiceTracker_ and provides callback code to run when a service becomes
  * unavailable.
  */
 public interface OnServiceLeaving<Service> {

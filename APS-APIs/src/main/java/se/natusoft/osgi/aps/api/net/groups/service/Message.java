@@ -42,16 +42,16 @@ import java.util.UUID;
 
 /**
  * This represents a complete message containing any data you want to send to the group. You provide the message
- * with data using the OutputStream, and read message data using the InputStream.
+ * with data using the _OutputStream_, and read message data using the _InputStream_.
  */
 public interface Message {
     /**
-     * Returns an OutputStream to write message on. Multiple calls to this will return the same OutputStream!
+     * Returns an _OutputStream_ to write message on. Multiple calls to this will return the same _OutputStream_!
      */
     OutputStream getOutputStream();
 
     /**
-     * Returns an InputStream for reading the message. Multiple calls to this will return new InputStream:s starting
+     * Returns an _InputStream_ for reading the message. Multiple calls to this will return new _InputStream_:s starting
      * from the beginning!
      */
     InputStream getInputStream();

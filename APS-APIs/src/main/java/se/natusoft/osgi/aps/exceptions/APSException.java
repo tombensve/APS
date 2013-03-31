@@ -42,7 +42,7 @@ package se.natusoft.osgi.aps.exceptions;
 public class APSException extends Exception {
     
     /**
-     * Creates a new APSException instance.
+     * Creates a new _APSException_ instance.
      * 
      * @param message The exception message.
      */
@@ -51,7 +51,7 @@ public class APSException extends Exception {
     }
     
     /**
-     * Creates a new APSException instance.
+     * Creates a new _APSException_ instance.
      * 
      * @param message The exception message.
      * @param cause The cause of this exception.

@@ -52,7 +52,7 @@ public @interface APSConfigItemDescription {
     String description();
 
     /**
-     * A date pattern for date values. If you specify this and then do toDate() on the APSConfigValue then this
+     * A date pattern for date values. If you specify this and then do _toDate()_ on the _APSConfigValue_ then this
      * pattern will be used to parse the date value. Configuration editors can also make use of this information
      * when setting date values. Setting this to anything indicates that this is a date value.
      */

@@ -37,7 +37,7 @@
 package se.natusoft.osgi.aps.api.net.rpc.errors;
 
 /**
- * Extends RPCError with an HTTP status code. HTTP transports can make use of this information.
+ * Extends _RPCError_ with an HTTP status code. HTTP transports can make use of this information.
  */
 public interface HTTPError extends RPCError {
     /**

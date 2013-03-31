@@ -48,7 +48,7 @@ import java.io.*;
 public class JSON {
 
     /**
-     * Reads any JSON object from the specified InputStream.
+     * Reads any JSON object from the specified _InputStream_.
      *
      * @param jsonIn The InputStream to read from.
      * @param errorHandler An implementation of this interface should be supplied by the user to handle any errors during JSON parsing.
@@ -69,7 +69,7 @@ public class JSON {
     }
 
     /**
-     * Writes a JSONValue to an OutputStream. This will write compact output by default.
+     * Writes a _JSONValue_ to an _OutputStream_. This will write compact output by default.
      *
      * @param jsonOut The OutputStream to write to.
      * @param value The value to write.
@@ -81,7 +81,7 @@ public class JSON {
     }
 
     /**
-     * Writes a JSONValue to an OutputStream.
+     * Writes a _JSONValue_ to an _OutputStream_.
      *
      * @param jsonOut The OutputStream to write to.
      * @param value The value to write.

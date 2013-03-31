@@ -42,7 +42,7 @@ import se.natusoft.osgi.aps.api.auth.user.model.User;
 /**
  * This is the API of a simple user service that provide basic user
  * handling that will probably be enough in many cases, but not all.
- * <P/>
+ *
  * Please note that this API does not declare any exceptions! In the
  * case of an exception being needed the APSSimpleUserServiceException
  * should be thrown. This is a runtime exception.
@@ -74,7 +74,7 @@ public interface APSSimpleUserService {
      * Authenticates a user using its user id and user provided authentication.
      *
      * @param user The User object representing the user to authenticate.
-     * @param authentication The user provided authentication data. For example if AuthMethod is AUTH_METHOD_PASSWORD
+     * @param authentication The user provided authentication data. For example if AuthMethod is AUTH\_METHOD\_PASSWORD
      *                       then this is a String with a password.
      * @param authMethod Specifies what authentication method is wanted.
      *

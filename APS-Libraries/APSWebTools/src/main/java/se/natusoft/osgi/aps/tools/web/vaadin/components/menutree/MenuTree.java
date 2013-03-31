@@ -54,7 +54,7 @@ import java.util.List;
 
 /**
  * This is a semi advanced menu tree component.
- * <p/>
+ *
  * You add 'MenuBuilder's to provide the menu contents. The builders also provide actions for when
  * a menu entry is accessed.
  */

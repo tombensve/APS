@@ -42,15 +42,15 @@ package se.natusoft.osgi.aps.json.tools;
 
 /**
  * This exception is thrown on failure to convert from JSON to Java or Java to JSON.
- * <p/>
- * Almost all exceptions within the APS services and libraries extend either APSException or APSRuntimeException.
+ *
+ * Almost all exceptions within the APS services and libraries extend either _APSException_ or _APSRuntimeException_.
  * I decided to just extend RuntimeException here to avoid any other dependencies for this library since it can
  * be useful outside of APS and can be used as any jar if not deployed in OSGi container.
  */
 public class JSONConvertionException extends RuntimeException {
 
     /**
-     * Creates a new JSONConvertionException.
+     * Creates a new _JSONConvertionException_.
      *
      * @param message The exception message
      */
@@ -59,7 +59,7 @@ public class JSONConvertionException extends RuntimeException {
     }
 
     /**
-     * Creates a new JSONConvertionException.
+     * Creates a new _JSONConvertionException_.
      *
      * @param message The exception message
      * @param cause The cause of this exception.

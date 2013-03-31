@@ -43,11 +43,11 @@ import java.io.IOException;
 /**
  * This provides a filesystem for use by services/applications. Each filesystem has its own root that cannot be navigated
  * outside of. 
- * <p>
+ *
  * Services or application using this should do something like this in their activators:
- * <pre>
+ *
  *     APSFilesystemService fss; 
- *     APSFilesystemImpl fs;
+ *     APSFilesystem fs;
  * 
  *     if (fss.hasFilesystem("my.file.system")) {
  *         fs = fss.getFilsystem("my.file.system");
@@ -55,7 +55,7 @@ import java.io.IOException;
  *     else {
  *         fs = fss.createFilesystem("my.file.system");
  *     }
- * </pre>
+ *
  */
 public interface APSFilesystemService {
     
@@ -71,26 +71,26 @@ public interface APSFilesystemService {
     //
     
     /**
-     * Creates a new filesystem for use by an application or service. Where on disk this filesystem resides is irellevant. It is
+     * Creates a new filesystem for use by an application or service. Where on disk this filesystem resides is irrelevant. It is
      * accessed using the "owner", and will exist until it is removed. 
      * 
-     * @param owner The owner of the filesystem or rather a unique identifier of it. Concider using application or service package.
+     * @param owner The owner of the filesystem or rather a unique identifier of it. Consider using application or service package.
      * 
      * @throws IOException on any failure. An already existing filesystem for the "owner" will cause this exception.
      */
     APSFilesystem createFilesystem(String owner) throws IOException;
         
     /**
-     * Returns true if the specified owner has a fileystem.
+     * Returns true if the specified owner has a filesystem.
      * 
-     * @param owner The owner of the fileystem or rather a unique identifier of it.
+     * @param owner The owner of the filesystem or rather a unique identifier of it.
      */
     boolean hasFilesystem(String owner);
     
     /**
      * Returns the filesystem for the specified owner.
      * 
-     * @param owner The owner of the filesystem or rahter a unique identifier of it.
+     * @param owner The owner of the filesystem or rather a unique identifier of it.
      * 
      * @throws IOException on any failure.
      */

@@ -46,9 +46,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Wraps a service provider class and for each @APSRunInBundlesContext annotation on a service method
- * that method will be run with the bundles classloader as thread context classloader, and the previous
- * thread context classloader will be restored on exit.
+ * Wraps a service provider class and for each _@APSRunInBundlesContext_ annotation on a service method
+ * that method will be run with the bundles class loader as thread context class loader, and the previous
+ * thread context class loader will be restored on exit.
  */
 public class APSContextWrapper {
 

@@ -65,7 +65,7 @@ public interface APSSessionService {
 
     /**
      * Creates a new session.
-     * <p/>
+     *
      * The idea behind this variant is to support distributed sessions. The implementation must use a session id
      * that is unique enough to support this. The APS implementation uses java.util.UUID.
      *
@@ -84,7 +84,7 @@ public interface APSSessionService {
     APSSession getSession(String sessionId);
 
     /**
-     * Closes the session represented by the specified id. After this call APSSession.isValid() on an APSSession
+     * Closes the session represented by the specified id. After this call APSSession.isValid() on an _APSSession_
      * representing this session will return false.
      *
      * @param sessionId The id of the session to close.

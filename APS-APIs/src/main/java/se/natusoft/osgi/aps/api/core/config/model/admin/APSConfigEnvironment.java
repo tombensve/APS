@@ -39,14 +39,14 @@ package se.natusoft.osgi.aps.api.core.config.model.admin;
 
 /**
  * This represents a configuration environment. For example: Development, Systemtest, Acceptancetest, Production.
- * <p>
+ *
  * It is however seldom that simple, so instead of making an enum defining the above, this model represents one
  * environment, and can be instantiated for as many environment alternatives as are needed.
- * <p>
+ *
  * As an example there might be more than one development environment due to different stages of development
  * uses different backend services. 
- * <p>
- * Any configuration value annotated with @APSConfigItemDescription(environmentSpecific=true) will have different values for
+ *
+ * Any configuration value annotated with _@APSConfigItemDescription(environmentSpecific=true)_ will have different values for
  * each config environment. Those values that are not ignores the config environment even when provided.
  */
 public interface APSConfigEnvironment {

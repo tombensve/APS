@@ -38,8 +38,8 @@
 package se.natusoft.osgi.aps.api.core.config.model.admin;
 
 /**
- * This is a model describing/modelling a configuration value (APSConfigValue).
- * <p/>
+ * This is a model describing/modelling a configuration value (_APSConfigValue_).
+ *
  * This is intended for configuration editors using APSConfigAdminService to edit configuration. This models
  * the structure of the original and makes it easier to any editor to represent and edit this structure.
  *
@@ -92,7 +92,7 @@ public interface APSConfigValueEditModel {
     /**
      * If the size of this array > 0 then these are the valid values to set for this value.
      *
-     * @return An emtpy array or set of valid values.
+     * @return An empty array or set of valid values.
      */
     String[] getValidValues();
 

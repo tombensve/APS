@@ -68,12 +68,12 @@ public class DataTypeDescription {
     //
 
     /**
-     * Creates a new DataDescription
+     * Creates a new _DataTypeDescription_.
      */
     public DataTypeDescription() {}
     
     /**
-     * Creates a new DataDescription.
+     * Creates a new _DataTypeDescription_.
      *
      * @param owner The description of the owner of this description.
      * @param dataType The type of the data of this description.
@@ -90,13 +90,13 @@ public class DataTypeDescription {
     //
 
     /**
-     * Copies data from another DataTypeDescription.
-     * <p/>
-     * This is relevant when this instance is a subclass of DataTypeDescription (ParameterDataTypeDescription) and
-     * there already exists a plain DataTypeDescription representing the type. Then this method can be used
+     * Copies data from another _DataTypeDescription_.
+     *
+     * This is relevant when this instance is a subclass of _DataTypeDescription_ (_ParameterDataTypeDescription_) and
+     * there already exists a plain _DataTypeDescription_ representing the type. Then this method can be used
      * to copy that type information into this instance.
      *
-     * @param toCopy
+     * @param toCopy The description to copy.
      */
     public void copyFrom(DataTypeDescription toCopy) {
         this.owner = toCopy.owner;

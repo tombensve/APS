@@ -47,7 +47,7 @@ public enum Language {
     // Codes from http://www.loc.gov/standards/iso639-2/php/code_list.php
     // Language names from: http://translate.google.com/
 
-    // Yes, this list is currently a bit short!
+    // Yes, this list is currently a bit short! It is also currently not used by anything.
 
     // European
     EN("English", "en"),

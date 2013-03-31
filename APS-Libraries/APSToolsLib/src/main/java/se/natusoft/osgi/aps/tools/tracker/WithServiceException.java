@@ -37,8 +37,8 @@
 package se.natusoft.osgi.aps.tools.tracker;
 
 /**
- * This is thrown by withService() on any exception. The real exception
- * is available with getCause().
+ * This is thrown by `withService()` on any exception. The real exception
+ * is available with `getCause()`.
  */
 public class WithServiceException extends RuntimeException {
 

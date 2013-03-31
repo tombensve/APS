@@ -39,18 +39,18 @@ package se.natusoft.osgi.aps.api.core.config.model.admin;
 
 /**
  * This represents a specific configuration.
- * <p>
+ *
  * This API is intended for editing configuration. Start by getting the APSConfigModel that represents the configuration structure. Then
- * each model value (APSConfigValueModel) can be used to get or set configuration values using this API. It is the config models
+ * each model value (_APSConfigValueModel_) can be used to get or set configuration values using this API. It is the config models
  * that generate the keys for the values in the store, which is why they are used to set and get configuration values.
- * <p/>
+ *
  * Please note that some configuration values are not dependent on configuration environment while others are. Those configuration values
- * whose definition are annotated with @APSConfigItemDescription(environmentSpecific=true) will have different values depending on the
+ * whose definition are annotated with _@APSConfigItemDescription(environmentSpecific=true)_ will have different values depending on the
  * configuration environment, which is why that is also passed to all get and set methods. Easiest is to not care which values are env
  * specific and which are and always pass a configuration environment. If you are making a GUI editor for the configuration it is however
  * a good idea to check if a value is configuration environment specific or not so that the user can choose for which environment to set
- * a value. This information is available in APSConfigValueModel.isConfigEnvironmentSpecific(). The APSConfigAdminService also provides
- * all defined configuration environments since it is also used for defining the configuration environments.
+ * a value. This information is available in _APSConfigValueModel.isConfigEnvironmentSpecific()_. The _APSConfigAdminService_ also
+ * provides all defined configuration environments since it is also used for defining the configuration environments.
  */
 public interface APSConfigAdmin {
 
@@ -154,12 +154,12 @@ public interface APSConfigAdmin {
     String removeConfigValue(APSConfigValueEditModel valueEditModel, int index, APSConfigEnvironment configEnvironment);
 
     /**
-     * The APSConfigEditModel that represents an APSConfigList represents just the list itself. This returns a new APSConfigEditModel
+     * The _APSConfigEditModel_ that represents an _APSConfigList_ represents just the list itself. This returns a new _APSConfigEditModel_
      * that represents an entry at a specific index in the list and can be used to set and get values for the config entry at that index.
-     * <p/>
-     * The returned model is a temporary model and should <b>only</b> be used to access and modify values of the specified index.
+     *
+     * The returned model is a temporary model and should **only** be used to access and modify values of the specified index.
      * Never ever pass such a model as input to any of the get/add/removeConfig() methods. It should only be used with
-     * the *configValue() methods. Also note that the returned model will return false for isMany() since it is not
+     * the _\*configValue()_ methods. Also note that the returned model will return false for _isMany()_ since it is not
      * representing the whole list, but an entry in the list.
      *
      * @param configModel The original config model representing its structural place.
@@ -172,10 +172,10 @@ public interface APSConfigAdmin {
     /**
      * The APSConfigModel that represents an APSConfigList represents just the list itself. This creates a new list entry and
      * returns a model representing that entry and can be used to set and get values in the entry.
-     * <p/>
-     * The returned model is a temporary model and should <b>only</b> be used to access and modify values of the specified index.
-     * Never ever pass such a model as input to any of the get/add/removeConfig() method. It should only be used with
-     * the *configValue() methods. This model will return false for isMany()!
+     *
+     * The returned model is a temporary model and should **only** be used to access and modify values of the specified index.
+     * Never ever pass such a model as input to any of the _get/add/removeConfig()_ method. It should only be used with
+     * the _\*configValue()_ methods. This model will return false for _isMany()_!
      *
      * @param configModel The config model representing the APSConfigList.
      * @param configEnvironment This argument can always be null. If the config value is not config env specific then this argument has no effect.
@@ -186,7 +186,7 @@ public interface APSConfigAdmin {
     APSConfigEditModel createConfigListEntry(APSConfigEditModel configModel, APSConfigEnvironment configEnvironment);
 
     /**
-     * This removes a config entry in the APSConfigList represented by the specified APSConfigModel.
+     * This removes a config entry in the _APSConfigList_ represented by the specified _APSConfigModel_.
      *
      * @param configModel The config model representing the config entry to remove.
      * @param index The index of the entry to remove.
@@ -217,13 +217,13 @@ public interface APSConfigAdmin {
     /**
      * This object represents a specific configuration. When editing a configuration you might not want changed values to
      * have immediate effect, but rather have the user do a "save" to change the active configuration. In this case use
-     * this method to clone the config, edit that, then on save call APSConfigAdminService.updateConfiguration(clone).
+     * this method to clone the config, edit that, then on save call _APSConfigAdminService.updateConfiguration(clone)_.
      */
     APSConfigAdmin cloneConfig();
 
     /**
      * Sends an event to all listeners of modified config.
-     * <p/>
+     *
      * This needs to be called by any code that updates config values. I do not
      * want to trigger this for every changed value!
      */

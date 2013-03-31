@@ -64,7 +64,7 @@ public interface User extends Comparable<User> {
      * This provides whatever extra information about the user you want. How to use this
      * is upp to the user of the service. There are some constants in this class that
      * provide potential keys for the user properties.
-     * <p/>
+     *
      * Please note that the returned properties are read only!
      */
     public Properties getUserProperties();

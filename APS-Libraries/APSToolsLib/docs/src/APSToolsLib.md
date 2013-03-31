@@ -191,3 +191,7 @@ that have 2 implementations:
 * IntID - Produces int ids.
 * UUID - Produces java.util.UUID Ids.
 
+## Javadoc
+
+The javadoc for this can be found at <http://apidoc.natusoft.se/APSToolsLib/>.
+

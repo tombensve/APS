@@ -38,20 +38,19 @@ package se.natusoft.osgi.aps.api.misc.json.model;
 
 /**
  * This API is based on the structure defined on http://www.json.org/.
- * <p/>
- * This is a base class for all other JSON* APIs. It represents the "value" diagram on the above mentioned web page:
- * <pre>
- *                                                   Subinterfaces
- *                                                   -------------
- * |________________ (STRING) ________________|      JSONString
- * |  |_____________ (NUMBER) _____________|  |      JSONNumber
- *    |_____________ (OBJECT) _____________|         JSONObject
- *    |_____________ (ARRAY)  _____________|         JSONArray
- *    |_____________ (true)   _____________|     \__ JSONBoolean
- *    |_____________ (false)  _____________|     /
- *    \_____________ (null)   _____________/         JSONNull
  *
- * </pre>
+ * This is a base class for all other JSON* APIs. It represents the "value" diagram on the above mentioned web page:
+ *
+ *                                                       Subinterfaces
+ *                                                       -------------
+ *     |________________ (STRING) ________________|      JSONString
+ *     |  |_____________ (NUMBER) _____________|  |      JSONNumber
+ *        |_____________ (OBJECT) _____________|         JSONObject
+ *        |_____________ (ARRAY)  _____________|         JSONArray
+ *        |_____________ (true)   _____________|     \__ JSONBoolean
+ *        |_____________ (false)  _____________|     /
+ *        \_____________ (null)   _____________/         JSONNull
+ *
  *
  */
 public interface JSONValue {

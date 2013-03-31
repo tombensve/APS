@@ -47,23 +47,23 @@ import java.util.Set;
 
 /**
  * This class is based on the structure defined on http://www.json.org/.
- * <p>
+ *
  * It represents the "object" diagram on the above mentioned web page:
- * <pre>
- *              ________________________________________
- *             /                                        \
- * |___ ({) __/_____ (string) ____ (:) ____ (value) _____\___ (}) ____|
- * |           /                                        \             |
- *             \__________________ (,) _________________/
+ *
+ *                  ________________________________________
+ *                 /                                        \
+ *     |___ ({) __/_____ (string) ____ (:) ____ (value) _____\___ (}) ____|
+ *     |           /                                        \             |
+ *                 \__________________ (,) _________________/
  * 
- * </pre>
+ *
  * This is also the starting point.
- * <p/>
- * To write JSON, create a new JSONObject (new JSONObject()) and  call addProperty(name, value)
- * for children. Then do jsonObj.writeJSON(outputStream).
- * <p/>
- * To read JSON, create a new JSONObject (new JSONObject(jsonErrorHandler)) and then do jsonObj.readJSON(inputStream).
- * Then use getProperty(name) to extract children.
+ *
+ * To write JSON, create a new _JSONObject_ (`new JSONObject()`) and  call `addProperty(name, value)`
+ * for children. Then do jsonObj.writeJSON(outputStream)`.
+ *
+ * To read JSON, create a new _JSONObject_ (`new JSONObject(jsonErrorHandler)`) and then do `jsonObj.readJSON(inputStream)`.
+ * Then use `getProperty(name)` to extract children.
  *
  * @see JSONValue
  *

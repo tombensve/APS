@@ -38,20 +38,19 @@ package se.natusoft.osgi.aps.api.misc.json.model;
 
 /**
  * This class is based on the structure defined on http://www.json.org/.
- * <p/>
- * This represents a JSON null value.
- * <pre>
- *                                                   Subclasses
- *                                                   ----------
- * |________________ (STRING) ________________|      JSONString
- * |  |_____________ (NUMBER) _____________|  |      JSONNumber
- *    |_____________ (OBJECT) _____________|         JSONObject
- *    |_____________ (ARRAY)  _____________|         JSONArray
- *    |_____________ (true)   _____________|     \__ JSONBoolean
- *    |_____________ (false)  _____________|     /
- *    \_____________ (null)   _____________/         <b>JSONNull</b>
  *
- * </pre>
+ * This represents a JSON null value.
+ *
+ *                                                       Subclasses
+ *                                                       ----------
+ *     |________________ (STRING) ________________|      JSONString
+ *     |  |_____________ (NUMBER) _____________|  |      JSONNumber
+ *        |_____________ (OBJECT) _____________|         JSONObject
+ *        |_____________ (ARRAY)  _____________|         JSONArray
+ *        |_____________ (true)   _____________|     \__ JSONBoolean
+ *        |_____________ (false)  _____________|     /
+ *        \_____________ (null)   _____________/         <b>JSONNull</b>
+ *
  *
  * @author Tommy Svensson
  */

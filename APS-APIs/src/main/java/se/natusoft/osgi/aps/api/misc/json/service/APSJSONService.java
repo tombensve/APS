@@ -46,14 +46,11 @@ import java.io.OutputStream;
 
 /**
  * This provides a service for reading and writing JSON and models representing the different JSON structures.
- * <p/>
- * The idea here is to have a generic JSON API that can be wrapped around any JSON parser (in theory at least :-))
- * and provide it as a service.
  */
 public interface APSJSONService extends JSONValueFactory {
 
     /**
-     * Reads JSON from an InputStream producing a JSONValue subclass depending on what is on the stream.
+     * Reads JSON from an InputStream producing a _JSONValue_ subclass depending on what is on the stream.
      *
      * @param in The stream to read from.
      * @param errorHandler An optional error handler for parsing errors. This can be null in which case all parsing errors are ignored.
@@ -65,7 +62,7 @@ public interface APSJSONService extends JSONValueFactory {
     public JSONValue readJSON(InputStream in, JSONErrorHandler errorHandler) throws IOException;
 
     /**
-     * Writes a JSONValue to an OutputStream in compact format.
+     * Writes a _JSONValue_ to an _OutputStream_ in compact format.
      *
      * @param out The stream to write to.
      * @param jsonValue The value to write.
@@ -75,7 +72,7 @@ public interface APSJSONService extends JSONValueFactory {
     public void writeJSON(OutputStream out, JSONValue jsonValue) throws IOException;
 
     /**
-     * Writes a JSONValue to an OutputStream.
+     * Writes a _JSONValue_ to an _OutputStream_.
      *
      * @param out The stream to write to.
      * @param jsonValue The value to write.

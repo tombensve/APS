@@ -43,11 +43,12 @@ package se.natusoft.osgi.aps.json.tools;
 import se.natusoft.osgi.aps.json.JSONErrorHandler;
 
 /**
- * A simple implementation of JSONErrorHandler that simply displays messages on System.out
- * and throws a RuntimeException on fail. This is used by the tests. In a non test case
+ * A simple implementation of _JSONErrorHandler_ that simply displays messages on System.out
+ * and throws a _RuntimeException_ on fail. This is used by the tests. In a non test case
  * another implementation is probably preferred.
  */
 public class SystemOutErrorHandler implements JSONErrorHandler {
+
     /**
      * Warns about something.
      *

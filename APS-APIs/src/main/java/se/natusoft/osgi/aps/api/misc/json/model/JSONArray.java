@@ -40,17 +40,17 @@ import java.util.List;
 
 /**
  * This class is based on the structure defined on http://www.json.org/.
- * <p>
+ *
  * This represents the "array" diagram on the above mentioned web page:
- * <pre>
- *               _______________________
- *              /                       \
- *              |                       |
- * |_____ ([) __/_______ (value) _______\__ (]) _____|
- * |              /                   \              |
- *                |                   |
- *                \_______ (,) _______/
- * </pre>
+ *
+ *                   _______________________
+ *                  /                       \
+ *                  |                       |
+ *     |_____ ([) __/_______ (value) _______\__ (]) _____|
+ *     |              /                   \              |
+ *                    |                   |
+ *                    \_______ (,) _______/
+ *
  * @author Tommy Svensson
  */
 public interface JSONArray extends JSONValue {

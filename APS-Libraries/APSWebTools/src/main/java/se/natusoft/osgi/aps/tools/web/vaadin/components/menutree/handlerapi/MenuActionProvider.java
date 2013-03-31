@@ -38,7 +38,7 @@ package se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.handlerapi;
 
 /**
  * A common base interface for menu actions. The only function of this is to make it a declarable argument type,
- * and thus restrict what can be passed. There are only 2 subclasses of this: ComponentHandler and MenuActionExecutor.
+ * and thus restrict what can be passed. There are only 2 subclasses of this: _ComponentHandler_ and _MenuActionExecutor_.
  * They are 2 "either one or the other" targets of an invoked menu entry.
  */
 public interface MenuActionProvider {}

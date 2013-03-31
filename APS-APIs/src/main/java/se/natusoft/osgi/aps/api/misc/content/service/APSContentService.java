@@ -40,8 +40,15 @@ import javax.jcr.Repository;
 import javax.jcr.Session;
 import java.util.List;
 
+
 /**
  * This service just supplies a configured and managed JCR repository.
+ *
+ * **WARNING:** This API is not done yet, and there is no implementation of this
+ * available yet. A service like this was at first intended for the first version,
+ * but has been put on hold for now and currently resides somewhere between the
+ * planned and ideas list. This is something I really want to do, but it requires
+ * a lot more thinking and testing. --_Tommy_
  */
 public interface APSContentService {
     

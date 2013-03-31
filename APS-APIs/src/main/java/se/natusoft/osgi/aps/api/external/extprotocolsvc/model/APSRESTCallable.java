@@ -36,18 +36,51 @@
  */
 package se.natusoft.osgi.aps.api.external.extprotocolsvc.model;
 
+/**
+ * This is a special variant of APSExternallyCallable that supports a HTTP REST call.
+ *
+ * This is only available when a service have zero or one method whose name starts with
+ * put, zero or one method whose name starts with post, and so on. There has to be at
+ * least one method of put, post, get or delete.
+ *
+ * APSExternalProtocolService can provide an instance of this is a service matches the
+ * criteria.
+ *
+ * This is only of use for HTTP transports! aps-ext-protocol-http-transport-provider
+ * does make use of this for protocols that indicate they support REST.
+ */
 public interface APSRESTCallable extends APSExternallyCallable {
-	
+
+    /**
+     * @return true if the service supports the PUT method.
+     */
 	public boolean supportsPut();
-	
+
+    /**
+     * @return true if the service supports the POST method.
+     */
 	public boolean supportsPost();
-	
+
+    /**
+     * @return true if the service supports the GET method.
+     */
 	public boolean supportsGet();
-	
+
+    /**
+     * @return true if the service supports the DELETE method.
+     */
 	public boolean supportsDelete();
-	
+
+    /**
+     * This selects the method to call with this callable.
+     *
+     * @param method The selected method to call.
+     */
 	public void selectMethod(HttpMethod method);
-	
+
+    /**
+     * This defines the valid choices for selectMethod(...).
+     */
 	public static enum HttpMethod {
 		PUT,
 		POST,

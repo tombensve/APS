@@ -43,11 +43,11 @@ import java.util.Properties;
 /**
  * This is intended to be used as a wrapper to other means of authentication. Things in APS
  * that needs authentication uses this service.
- * <p/>
+ *
  * Implementations can lookup the user in an LDAP for example, or use some other user service.
- * <p/>
- * APS supplies an APSSimpleUserServiceAuthServiceProvider that uses the
- * APSSimpleUserService to authenticate. It is provided in its own bundle.
+ *
+ * APS supplies an _APSSimpleUserServiceAuthServiceProvider_ that uses the _APSSimpleUserService_
+ * to authenticate. It is provided in its own bundle.
  */
 public interface APSAuthService<Credential> {
 
@@ -67,7 +67,7 @@ public interface APSAuthService<Credential> {
     Properties authUser(String userId, Credential credentials, AuthMethod authMethod) throws APSAuthMethodNotSupportedException;
 
     /**
-     * This authenticates a user. A Properties object is returned on successful authentication. null is returned
+     * This authenticates a user. A Properties object is returned on successful authentication. _null_ is returned
      * on failure. The Properties object returned contains misc information about the user. It can contain anything
      * or nothing at all. There can be no assumptions about its contents!
      *

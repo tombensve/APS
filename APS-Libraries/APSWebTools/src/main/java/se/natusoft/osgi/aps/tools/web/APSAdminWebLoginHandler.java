@@ -42,7 +42,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * This is a login handler to use by any admin web registering with the APSAdminWeb to validate
+ * This is a login handler to use by any admin web registering with the _APSAdminWeb_ to validate
  * that there is a valid login available.
  */
 public class APSAdminWebLoginHandler extends APSLoginHandler implements APSLoginHandler.HandlerInfo {
@@ -50,7 +50,7 @@ public class APSAdminWebLoginHandler extends APSLoginHandler implements APSLogin
     // Private Members
     //
 
-    /** The current APSSession id. */
+    /** The current _APSSession_ id. */
     private String sessionId = null;
 
     //
@@ -58,7 +58,7 @@ public class APSAdminWebLoginHandler extends APSLoginHandler implements APSLogin
     //
 
     /**
-     * Creates a new APSAdminWebLoginHandler.
+     * Creates a new _APSAdminWebLoginHandler_.
      *
      * @param context The bundle context.
      */
@@ -98,7 +98,7 @@ public class APSAdminWebLoginHandler extends APSLoginHandler implements APSLogin
     }
 
     /**
-     * @return An id to an APSSessionService session.
+     * @return An id to an _APSSessionService_ session.
      */
     @Override
     public String getSessionId() {

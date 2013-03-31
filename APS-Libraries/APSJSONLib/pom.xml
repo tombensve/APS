@@ -172,6 +172,67 @@
                 </configuration>
             </plugin>
 
+            <!--
+                Deploy plugins
+            -->
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <docletPath>${project.basedir}/../../lib/MarkdownDoclet-3-1.0.jar</docletPath>
+                    <doclet>com.visural.doclets.markdown.standard.Standard</doclet>
+                    <stylesheetfile>${project.basedir}/../../css/apidocs.css</stylesheetfile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                    </execution>
+                    <execution>
+                        <id>gendocs</id>
+                        <goals>
+                            <goal>javadoc</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                    </execution>
+                    <execution>
+                        <id>jar-javadoc</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                        <configuration>
+                            <attach>true</attach>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>se.natusoft.maven.plugin</groupId>
+                <artifactId>ftp-maven-plugin</artifactId>
+                <version>${ftpPlugin.ver}</version>
+                <executions>
+                    <execution>
+                        <id>upload</id>
+                        <goals>
+                            <goal>upload</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                        <configuration>
+                            <files>**/.*</files>
+                            <targetHost>${javadoc.upload}</targetHost>
+                            <targetPort>21</targetPort>
+                            <userName>${web.server.user}</userName>
+                            <password>${web.server.pw}</password>
+                            <targetPath>${javadoc.base.path}/APSJSONLib</targetPath>
+                            <baseDir>${basedir}/target/site/apidocs</baseDir>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

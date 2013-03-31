@@ -44,25 +44,22 @@ import javax.persistence.EntityManagerFactory;
 import java.util.Map;
 
 /**
- * This service allows an JPA EntityManager to be gotten for a persistent unit name.
- * <p/>
- * So why is this done this way ? Why is not an EntityManagerFactory returned?
- * <p/>
- * The answer to that is that the EntityManagerFactory is internal to the service who is
+ * This service allows an JPA _EntityManager_ to be gotten for a persistent unit name.
+ *
+ * So why is this done this way ? Why is not an _EntityManagerFactory_ returned?
+ *
+ * The answer to that is that the _EntityManagerFactory_ is internal to the service who is
  * responsible for creating it and for closing it at sometime (stopping of bundle). The
- * client only needs an EntityManager for which the client is responsible after its creation.
- * <p/>
- * The creation of the EntityManagerFactory is delayed until the call to initialize(...).
+ * client only needs an _EntityManager_ for which the client is responsible after its creation.
+ *
+ * The creation of the _EntityManagerFactory_ is delayed until the call to _initialize(...)_.
  * Creating the EMF along with the persistence provider at persistence bundle discovery would
  * limit database connection properties to the persistence.xml file which is less than optimal
- * to put it mildly. The whole point with the APS project is to provide a configured platform
- * into which you can drop applications and they adapt to their surrounding. Not unlike what
- * JEE does, but does it milder and more flexibly being OSGi and also provides application
- * and service specific configuration with a web gui for editing configuration. Thereby
- * providing database connection properties from clients allows clients more flexibility
- * in how they want to handle that. The APSDataSourceDef service can for example be used
- * to lookup a JDBC connection definition. The default provider implementation of this
- * service uses OpenJPA which provides its own connection pooling.
+ * to put it mildly. This way a client can make use of the _APSDataSourceDefService_ to get the
+ * JDBC properties which it can pass along to this service.
+ *
+ * The default provider implementation of this service uses OpenJPA which provides its own
+ * connection pooling.
  */
 public interface APSJPAService {
 
@@ -78,7 +75,7 @@ public interface APSJPAService {
     APSJPAEntityManagerProvider initialize(BundleContext bundleContext, String persistenceUnitName, Map<String, String> props) throws APSResourceNotFoundException;
 
     /**
-     * Once you get this it is valid until the APSJPAService is stopped (which will happen if the service is redeployed!).
+     * Once you get this it is valid until the _APSJPAService_ is stopped (which will happen if the service is redeployed!).
      */
     public static interface APSJPAEntityManagerProvider {
 
@@ -89,20 +86,22 @@ public interface APSJPAService {
         public boolean isValid();
 
         /**
-         * Creates a new EntityManager. You are responsible for closing it!
-         * <p/>
-         * Please note that the EntityManager caches all referenced entities. If you keep and reuse it for a longer
+         * Creates a new _EntityManager_. You are responsible for closing it!
+         *
+         * Please note that the _EntityManager_ caches all referenced entities. If you keep and reuse it for a longer
          * time it can use more memory. For example at
-         * <a href='http://docs.jboss.org/ejb3/app-server/tutorial/extended_pc/extended.html'>http://docs.jboss.org/ejb3/app-server/tutorial/extended_pc/extended.html</a>
-         * it says that "Usually, an EntityManager in JBoss EJB 3.0 lives and dies within a JTA transaction". This
-         * indicates how long-lived the EntityManager should preferably be.
+         * <http://docs.jboss.org/ejb3/app-server/tutorial/extended_pc/extended.html>
+         * it says that "Usually, an _EntityManager_ in JBoss EJB 3.0 lives and dies within a JTA transaction". This
+         * indicates how long-lived the _EntityManager_ should preferably be.
          *
          * @return A configured EntityManager.
          */
         EntityManager createEntityManager();
 
         /**
-         * Returns the underlaying entity manager factory. This will return null if isValid() return false!
+         * Returns the underlying _EntityManagerFactory_. This will return null if isValid() return false!
+         *
+         * Be very careful what you do with this! It is managed by this service!
          */
         EntityManagerFactory getEntityManagerFactory();
     }

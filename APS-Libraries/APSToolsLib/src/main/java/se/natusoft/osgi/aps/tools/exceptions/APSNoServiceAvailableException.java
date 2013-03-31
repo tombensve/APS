@@ -43,7 +43,7 @@ package se.natusoft.osgi.aps.tools.exceptions;
 public class APSNoServiceAvailableException extends RuntimeException {
     
     /**
-     * Creates a new APSNoServiceAvailableException.
+     * Creates a new _APSNoServiceAvailableException_.
      * 
      * @param service The name of the unavilable service.
      */
@@ -52,7 +52,7 @@ public class APSNoServiceAvailableException extends RuntimeException {
     }
 
     /**
-     * Creates a new APSNoServiceAvailableException.
+     * Creates a new _APSNoServiceAvailableException_.
      *
      * @param service The name of the unavilable service.
      * @param cause The cause of this exception.

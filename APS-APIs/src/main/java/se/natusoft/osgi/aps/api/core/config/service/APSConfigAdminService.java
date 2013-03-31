@@ -45,22 +45,22 @@ import java.util.Set;
 
 /**
  * This defines an administration service for modifying configuration values.
- * <p>
+ *
  * All handled information in this service should be persisted! It is entirely
  * up to the implementation on how it is persisted even though implementations
- * is forced to provide java.util.Properties backing.
- * <p>
+ * is forced to provide _java.util.Properties_ backing.
+ *
  * The API for managing the configuration is designed to be compatible with
  * storing in the standard OSGi R4 configuration service though that is not
  * a requirement. However if the standard OSGi R4 configuration service is
  * used as in memory storage of configuration data then configuration definitions
  * for other non APS services can be made to persist and edit configuration
  * for those.
- * <p/>
+ *
  * Configurations are only considered actively valid if they are currently registered
  * by a deployed and active bundle. In other words, the configurations editable by
- * this service is only those that have been provided with APSConfigService.registerConfiguration()
- * since server start and have not had a APSConfigService.unregisterConfiguration() done
+ * this service is only those that have been provided with _APSConfigService.registerConfiguration()_
+ * since server start and have not had a _APSConfigService.unregisterConfiguration()_ done
  * on them yet.
  */
 public interface APSConfigAdminService {
@@ -105,7 +105,7 @@ public interface APSConfigAdminService {
         List<APSConfigEnvironment> getAvailableConfigEnvironments();
 
         /**
-         * Selects a specified environment as the active environment to use for APSConfigService
+         * Selects a specified environment as the active environment to use for _APSConfigService_
          * when getting configurations.
          *
          * @param environment The environment to make active.
@@ -146,11 +146,11 @@ public interface APSConfigAdminService {
 
     /**
      * Returns the admin object for the specified configuration. This object lets you edit the configuration.
-     * <p/>
+     *
      * The returned object sits on the active configuration values, thus any change to any value will directly
      * be reflected for clients of the configuration. If you want to do an edit then save, start by calling
-     * cloneConfig() on the returned object, and then edit that instead. When you want to save, call
-     * updateConfiguration(APSConfigAdmin) in this service.
+     * _cloneConfig()_ on the returned object, and then edit that instead. When you want to save, call
+     * _updateConfiguration(APSConfigAdmin)_ in this service.
      *
      * @param configId The id of the configuration.
      * @param version The version to get the configuration for.
@@ -159,9 +159,9 @@ public interface APSConfigAdminService {
 
     /**
      * Updates an existing configuration with the specified one. Please note that configurations are created
-     * the first time a bundle registers the configuration with the APSConfigService.
-     * <p/>
-     * To edit a configuration, first call getConfiguration(...) then clone it, make changes to it, and then
+     * the first time a bundle registers the configuration with the _APSConfigService_.
+     *
+     * To edit a configuration, first call _getConfiguration(...)_ then clone it, make changes to it, and then
      * call this method to update the original with the updated version.
      *
      * @param configuration The configuration to update with.
@@ -172,7 +172,7 @@ public interface APSConfigAdminService {
 
     /**
      * Removes the specified configuration from persistent store. If a client re-registers this configuration
-     * with the APSConfigService after this call then all previous configuration for it will be gone and only
+     * with the _APSConfigService_ after this call then all previous configuration for it will be gone and only
      * blank, null or default values will be returned.
      *
      * @param configuration The configuration to remove.
@@ -183,7 +183,7 @@ public interface APSConfigAdminService {
 
     /**
      * Removes the specified configuration from persistent store. If a client re-registers this configuration
-     * with the APSConfigService after this call then all previous configuration for it will be gone and only
+     * with the _APSConfigService_ after this call then all previous configuration for it will be gone and only
      * blank, null or default values will be returned.
      *
      * @param configId The id of the configuration to remove.

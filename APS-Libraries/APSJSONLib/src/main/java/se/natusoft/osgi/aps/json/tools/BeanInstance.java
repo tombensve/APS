@@ -49,7 +49,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * This wraps a Java Bean instance allowing it to be populated with data using setProperty(String, Object) methods
+ * This wraps a Java Bean instance allowing it to be populated with data using _setProperty(String, Object)_ methods
  * handling all reflection calls.
  */
 public class BeanInstance {

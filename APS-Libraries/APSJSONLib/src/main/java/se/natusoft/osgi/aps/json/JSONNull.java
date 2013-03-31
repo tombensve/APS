@@ -43,7 +43,7 @@ package se.natusoft.osgi.aps.json;
 import java.io.IOException;
 
 /**
- * This class is based on the structure defined on http://www.json.org/.
+ * This class is based on the structure defined on <http://www.json.org/>.
  *
  * @author Tommy Svensson
  */

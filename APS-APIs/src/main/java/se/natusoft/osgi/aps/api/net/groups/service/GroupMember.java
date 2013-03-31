@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * This is the API for APSGroupsService members received when they join a group.
+ * This is the API for _APSGroupsService_ members received when they join a group.
  * It is used to send and receive data messages to/from the group.
  */
 public interface GroupMember {

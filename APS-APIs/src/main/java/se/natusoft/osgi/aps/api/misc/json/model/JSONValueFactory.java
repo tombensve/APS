@@ -37,18 +37,12 @@
 package se.natusoft.osgi.aps.api.misc.json.model;
 
 /**
- * This provides factory methods for creating JSONValue objects.
- * <p/>
- * Please note that even if the APSJSONService uses these model, they are not bound
- * specifically to that service! These can be used to wrap any JSON provider. For
- * example, aps-json-rpc-lib uses these not caring from where the implementation
- * comes. That library is dependent on these APIs, but not on APSJSONService!
- * APSJSONService can however be used to supply an implementation.
+ * This provides factory methods for creating _JSONValue_ objects.
  */
 public interface JSONValueFactory {
 
     /**
-     * Creates a new instance of a JSONString implementation.
+     * Creates a new instance of a _JSONString_ implementation.
      *
      * @param value The string value.
      *
@@ -57,14 +51,14 @@ public interface JSONValueFactory {
     public JSONString createJSONString(String value);
 
     /**
-     * Creates a new instance of a JSONObject implementation.
+     * Creates a new instance of a _JSONObject_ implementation.
      *
      * @return A new JSONObject.
      */
     public JSONObject createJSONObject();
 
     /**
-     * Creates a new instance of a JSONNumber implementation.
+     * Creates a new instance of a _JSONNumber_ implementation.
      *
      * @param number The numeric value of the number.
      *
@@ -73,14 +67,14 @@ public interface JSONValueFactory {
     public JSONNumber createJSONNumber(Number number);
 
     /**
-     * Creates a new instance of a JSONNull implementation.
+     * Creates a new instance of a _JSONNull_ implementation.
      *
      * @return A new JSONNull.
      */
     public JSONNull createJSONNull();
 
     /**
-     * Creates a new instance of a JSONBoolean implementation.
+     * Creates a new instance of a _JSONBoolean_ implementation.
      *
      * @param value The boolean value.
      *
@@ -89,7 +83,7 @@ public interface JSONValueFactory {
     public JSONBoolean createJSONBoolean(Boolean value);
 
     /**
-     * Creates a new instance of a JSONArray implementation.
+     * Creates a new instance of a _JSONArray_ implementation.
      *
      * @return A new JSONArray.
      */

@@ -155,9 +155,9 @@ The __APSConfigList<Type>__ container is an _java.lang.Iterable_ of <Type> type 
 
 * Use __APSConfigValueList__ for a list of plain values.
 
-* Use __MyConfigModel extends APSConfig__ for a subconfig model.
+* Use __* extends APSConfig__ for a subconfig model.
 
-* Use __APSConfigList<MyConfigModel extends APSConfig>__ for a list of subconfig models.
+* Use __APSConfigList<* extends APSConfig>__ for a list of subconfig models.
 
 ### The config annotations
 
@@ -355,15 +355,15 @@ The javadoc for the [APSFilesystemService](http://apidoc.natusoft.se/APS/se/natu
 
 public _interface_ __APSDirectory__ extends  APSFile    [se.natusoft.osgi.aps.api.core.filesystem.model] {
 
->  This represents a directory in an APSFilesystem. 
+This represents a directory in an _APSFilesystem_.
 
-> Use this to create or get directories and files and list contents of directories. 
+Use this to create or get directories and files and list contents of directories.
 
-> Personal comment: I do prefer the term "folder" over "directory" since I think that is less ambigous, but since Java uses the term "directory" I decided to stick with that name. 
+Personal comment: I do prefer the term "folder" over "directory" since I think that is less ambiguous, but since Java uses the term "directory" I decided to stick with that name.
 
 __APSDirectory createDir(String name) throws IOException__
 
->  Returns a newly created directory with the specified name.  
+Returns a newly created directory with the specified name.
 
 _Parameters_
 
@@ -375,7 +375,7 @@ _Throws_
 
 __APSDirectory createDir(String name, String duplicateMessage) throws IOException__
 
->  Returns a newly created directory with the specified name.  
+Returns a newly created directory with the specified name.
 
 _Parameters_
 
@@ -389,7 +389,7 @@ _Throws_
 
 __APSFile createFile(String name) throws IOException__
 
->  Creates a new file in the directory represented by the current APSDirectory.  
+Creates a new file in the directory represented by the current _APSDirectory_.
 
 _Parameters_
 
@@ -401,7 +401,7 @@ _Throws_
 
 __APSDirectory getDir(String dirname) throws FileNotFoundException__
 
->  Returns the specified directory.  
+Returns the specified directory.
 
 _Parameters_
 
@@ -413,7 +413,7 @@ _Throws_
 
 __APSFile getFile(String name)__
 
->  Returns the named file in this directory.  
+Returns the named file in this directory.
 
 _Parameters_
 
@@ -421,7 +421,7 @@ _Parameters_
 
 __void recursiveDelete() throws IOException__
 
->  Performs a recursive delete of the directory represented by this APSDirectory and all subdirectories and files.  
+Performs a recursive delete of the directory represented by this _APSDirectory_ and all subdirectories and files.
 
 _Throws_
 
@@ -429,15 +429,11 @@ _Throws_
 
 __String[] list()__
 
->  
-
 _See_
 
 > java.io.File.list()
 
 __APSFile[] listFiles()__
-
->  
 
 _See_
 
@@ -451,13 +447,13 @@ _See_
 
 public _interface_ __APSFile__   [se.natusoft.osgi.aps.api.core.filesystem.model] {
 
->  This represents a file in an APSFilesystemService provided filsystem. It provides most of the API of java.io.File but is not a File! It never discloses the full path in the host filesystem, only paths relative to its APSFilesystem root. 
+This represents a file in an _APSFilesystemService_ provided filesystem. It provides most of the API of _java.io.File_ but is not a _java.io.File_! It never discloses the full path in the host filesystem, only paths relative to its _APSFilesystem_ root.
 
-> Use the createInputStream/OutputStream/Reader/Writer to read and write the file. 
+Use the createInputStream/OutputStream/Reader/Writer to read and write the file.
 
 __InputStream createInputStream() throws IOException__
 
->  Creates a new InputStream to this file.  
+Creates a new _InputStream_ to this file.
 
 _Throws_
 
@@ -465,7 +461,7 @@ _Throws_
 
 __OutputStream createOutputStream() throws IOException__
 
->  Creates a new OutputStream to this file.  
+Creates a new _OutputStream_ to this file.
 
 _Throws_
 
@@ -473,7 +469,7 @@ _Throws_
 
 __Reader createReader() throws IOException__
 
->  Creates a new Reader to this file.  
+Creates a new _Reader_ to this file.
 
 _Throws_
 
@@ -481,7 +477,7 @@ _Throws_
 
 __Writer createWriter() throws IOException__
 
->  Creates a new Writer to this file.  
+Creates a new _Writer_ to this file.
 
 _Throws_
 
@@ -489,7 +485,7 @@ _Throws_
 
 __Properties loadProperties() throws IOException__
 
->  If this file denotes a properties file it is loaded and returned.  
+If this file denotes a properties file it is loaded and returned.
 
 _Throws_
 
@@ -497,7 +493,7 @@ _Throws_
 
 __void saveProperties(Properties properties) throws IOException__
 
->  If this file denotes a properties file it is written with the specified properties.  
+If this file denotes a properties file it is written with the specified properties.
 
 _Parameters_
 
@@ -509,11 +505,9 @@ _Throws_
 
 __APSDirectory toDirectory()__
 
->  If this APSFile represents a directory an APSDirectory instance will be returned. Otherwise null will be returned. 
+If this _APSFile_ represents a directory an _APSDirectory_ instance will be returned. Otherwise _null_ will be returned.
 
 __APSFile getAbsoluteFile()__
-
->  
 
 _See_
 
@@ -521,11 +515,9 @@ _See_
 
 __String getAbsolutePath()__
 
->  Returns the absolute path relative to filesystem root. 
+Returns the absolute path relative to filesystem root.
 
 __APSFile getCanonicalFile() throws IOException__
-
->  
 
 _See_
 
@@ -533,15 +525,11 @@ _See_
 
 __String getCanonicalPath() throws IOException__
 
->  
-
 _See_
 
 > java.io.File.getCanonicalPath()
 
 __String getParent()__
-
->  
 
 _See_
 
@@ -549,15 +537,11 @@ _See_
 
 __APSDirectory getParentFile()__
 
->  
-
 _See_
 
 > java.io.File.getParentFile()
 
 __String getPath()__
-
->   
 
 _See_
 
@@ -565,15 +549,11 @@ _See_
 
 __boolean renameTo(APSFile dest)__
 
->  
-
 _See_
 
 > java.io.File.renameTo(File)
 
 __String getName()__
-
->  
 
 _See_
 
@@ -581,15 +561,11 @@ _See_
 
 __boolean canRead()__
 
->  
-
 _See_
 
 > java.io.File.canRead()
 
 __boolean canWrite()__
-
->  
 
 _See_
 
@@ -597,15 +573,11 @@ _See_
 
 __boolean exists()__
 
->  
-
 _See_
 
 > java.io.File.exists()
 
 __boolean isDirectory()__
-
->  
 
 _See_
 
@@ -613,15 +585,11 @@ _See_
 
 __boolean isFile()__
 
->  
-
 _See_
 
 > java.io.File.isFile()
 
 __boolean isHidden()__
-
->  
 
 _See_
 
@@ -629,15 +597,11 @@ _See_
 
 __long lastModified()__
 
->  
-
 _See_
 
 > java.io.File.lastModified()
 
 __long length()__
-
->  
 
 _See_
 
@@ -645,15 +609,11 @@ _See_
 
 __boolean createNewFile() throws IOException__
 
->  
-
 _See_
 
 > java.io.File.createNewFile()
 
 __boolean delete()__
-
->  
 
 _See_
 
@@ -661,15 +621,13 @@ _See_
 
 __void deleteOnExit()__
 
->  
-
 _See_
 
 > java.io.File.deleteOnExit()
 
 __String toString()__
 
->  Returns a string representation of this APSFileImpl. 
+Returns a string representation of this _APSFile_.
 
 }
 
@@ -679,11 +637,11 @@ __String toString()__
 
 public _interface_ __APSFilesystem__   [se.natusoft.osgi.aps.api.core.filesystem.model] {
 
->  This represents an APSFilesystemService filesytem. 
+This represents an _APSFilesystemService_ filesystem.
 
 __APSDirectory getDirectory(String path) throws IOException__
 
->  Returns a folder at the specified path.  
+Returns a folder at the specified path.
 
 _Parameters_
 
@@ -695,7 +653,7 @@ _Throws_
 
 __APSFile getFile(String path)__
 
->  Returns the file or folder of the specifeid path.  
+Returns the file or folder of the specified path.
 
 _Parameters_
 
@@ -703,7 +661,7 @@ _Parameters_
 
 __APSDirectory getRootDirectory()__
 
->  Returns the root directory. 
+Returns the root directory.
 
 }
 
@@ -713,13 +671,13 @@ __APSDirectory getRootDirectory()__
 
 public _interface_ __APSFilesystemService__   [se.natusoft.osgi.aps.api.core.filesystem.service] {
 
->  This provides a filesystem for use by services/applications. Each filesystem has its own root that cannot be navigated outside of. 
+This provides a filesystem for use by services/applications. Each filesystem has its own root that cannot be navigated outside of.
 
-> Services or application using this should do something like this in their activators: 
+Services or application using this should do something like this in their activators:
 
         APSFilesystemService fss;
-        APSFilesystemImpl fs;
-    
+        APSFilesystem fs;
+        
         if (fss.hasFilesystem("my.file.system")) {
             fs = fss.getFilsystem("my.file.system");
         }
@@ -727,17 +685,15 @@ public _interface_ __APSFilesystemService__   [se.natusoft.osgi.aps.api.core.fil
             fs = fss.createFilesystem("my.file.system");
         }
 
-> 
-
 
 
 __APSFilesystem createFilesystem(String owner) throws IOException__
 
->  Creates a new filesystem for use by an application or service. Where on disk this filesystem resides is irellevant. It is accessed using the "owner", and will exist until it is removed.  
+Creates a new filesystem for use by an application or service. Where on disk this filesystem resides is irrelevant. It is accessed using the "owner", and will exist until it is removed.
 
 _Parameters_
 
-> _owner_ - The owner of the filesystem or rather a unique identifier of it. Concider using application or service package. 
+> _owner_ - The owner of the filesystem or rather a unique identifier of it. Consider using application or service package. 
 
 _Throws_
 
@@ -745,19 +701,19 @@ _Throws_
 
 __boolean hasFilesystem(String owner)__
 
->  Returns true if the specified owner has a fileystem.  
+Returns true if the specified owner has a filesystem.
 
 _Parameters_
 
-> _owner_ - The owner of the fileystem or rather a unique identifier of it. 
+> _owner_ - The owner of the filesystem or rather a unique identifier of it. 
 
 __APSFilesystem getFilesystem(String owner) throws IOException__
 
->  Returns the filesystem for the specified owner.  
+Returns the filesystem for the specified owner.
 
 _Parameters_
 
-> _owner_ - The owner of the filesystem or rahter a unique identifier of it. 
+> _owner_ - The owner of the filesystem or rather a unique identifier of it. 
 
 _Throws_
 
@@ -765,7 +721,7 @@ _Throws_
 
 __void deleteFilesystem(String owner) throws IOException__
 
->  Removes the filesystem and all files in it.  
+Removes the filesystem and all files in it.
 
 _Parameters_
 
@@ -791,7 +747,7 @@ The returned information is configured in the _/apsadminweb_.
 
 public _class_ __PlatformDescription__   [se.natusoft.osgi.aps.api.core.platform.model] {
 
->  This model provides information about a platform installation. 
+This model provides information about a platform installation.
 
 
 
@@ -801,11 +757,11 @@ public _class_ __PlatformDescription__   [se.natusoft.osgi.aps.api.core.platform
 
 __public PlatformDescription()__
 
->  Creates a new PlatformDescription. 
+Creates a new PlatformDescription.
 
 __public PlatformDescription(String identifier, String type, String description)__
 
->  Creates a new PlatformDescription.  
+Creates a new PlatformDescription.
 
 _Parameters_
 
@@ -817,15 +773,15 @@ _Parameters_
 
 __public String getIdentifier()__
 
->  Returns the platform identifier. 
+Returns the platform identifier.
 
 __public String getType()__
 
->  Returns the type of the platform. 
+Returns the type of the platform.
 
 __public String getDescription()__
 
->  Returns the description of the platform. 
+Returns the description of the platform.
 
 }
 
@@ -835,11 +791,11 @@ __public String getDescription()__
 
 public _interface_ __APSPlatformService__   [se.natusoft.osgi.aps.api.core.platform.service] {
 
->  Provides information about the platform instance. 
+Provides information about the platform instance.
 
 __public PlatformDescription getPlatformDescription()__
 
->  Returns a description of the platform instance / installation. 
+Returns a description of the platform instance / installation.
 
 }
 
@@ -857,13 +813,15 @@ This does not try to be an alternative to Jackson! This is used internally by ot
 
 ## APIs
 
+Complete javadocs can be found at [http://apidoc.natusoft.se/APSJSONLib/](http://apidoc.natusoft.se/APSJSONLib/).
+
 public _class_ __JSON__   [se.natusoft.osgi.aps.json] {
 
->  This is the official API for reading and writing JSON values. 
+This is the official API for reading and writing JSON values.
 
 __public static JSONValue read(InputStream jsonIn, JSONErrorHandler errorHandler) throws IOException__
 
->  Reads any JSON object from the specified InputStream.  
+Reads any JSON object from the specified _InputStream_.
 
 _Returns_
 
@@ -881,7 +839,7 @@ _Throws_
 
 __public static void write(OutputStream jsonOut, JSONValue value) throws IOException__
 
->  Writes a JSONValue to an OutputStream. This will write compact output by default.  
+Writes a _JSONValue_ to an _OutputStream_. This will write compact output by default.
 
 _Parameters_
 
@@ -895,7 +853,7 @@ _Throws_
 
 __public static void write(OutputStream jsonOut, JSONValue value, boolean compact) throws IOException__
 
->  Writes a JSONValue to an OutputStream.  
+Writes a _JSONValue_ to an _OutputStream_.
 
 _Parameters_
 
@@ -917,29 +875,29 @@ _Throws_
 
 public _class_ __JSONArray__ extends  JSONValue  [se.natusoft.osgi.aps.json] {
 
->  This class is based on the structure defined on http://www.json.org/. 
+This class is based on the structure defined on http://www.json.org/.
 
-> This represents the "array" diagram on the above mentioned web page: 
+This represents the "array" diagram on the above mentioned web page:
 
-                  _______________________
-                 /                       \
-                 |                       |
-    |_____ ([) __/_______ (value) _______\__ (]) _____|
-    |              /                   \              |
-                   |                   |
-                   \_______ (,) _______/
+                      _______________________
+                     /                       \
+                     |                       |
+        |_____ ([) __/_______ (value) _______\__ (]) _____|
+        |              /                   \              |
+                       |                   |
+                       \_______ (,) _______/
 
->  @author Tommy Svensson 
+@author Tommy Svensson
 
 
 
 __public JSONArray()__
 
->  Creates a new JSONArray for wrinting JSON output. 
+Creates a new JSONArray for wrinting JSON output.
 
 __public JSONArray(JSONErrorHandler errorHandler)__
 
->  Creates a new JSONArray for reading JSON input and writing JSON output.  
+Creates a new JSONArray for reading JSON input and writing JSON output.
 
 _Parameters_
 
@@ -951,7 +909,7 @@ _Parameters_
 
 __public void addValue(JSONValue value)__
 
->  Adds a value to the array.  
+Adds a value to the array.
 
 _Parameters_
 
@@ -959,11 +917,11 @@ _Parameters_
 
 __public List<JSONValue> getAsList()__
 
->  Returns the array values as a List. 
+Returns the array values as a List.
 
 __public <T extends JSONValue> List<T> getAsList(Class<T> type)__
 
->  Returns the array values as a list of a specific type.  
+Returns the array values as a list of a specific type.
 
 _Returns_
 
@@ -987,13 +945,15 @@ _Parameters_
 
 public _class_ __JSONBoolean__ extends  JSONValue    [se.natusoft.osgi.aps.json] {
 
->  This class is based on the structure defined on http://www.json.org/.   @author Tommy Svensson 
+This class is based on the structure defined on [http://www.json.org/](http://www.json.org/).
+
+@author Tommy Svensson
 
 
 
 __public JSONBoolean(boolean value)__
 
->  Creates a new JSONBoolean instance for writing JSON output.  
+Creates a new JSONBoolean instance for writing JSON output.
 
 _Parameters_
 
@@ -1001,7 +961,7 @@ _Parameters_
 
 __public JSONBoolean(JSONErrorHandler errorHandler)__
 
->  Creates a new JSONBoolean instance for reading JSON input or writing JSON output.  
+Creates a new JSONBoolean instance for reading JSON input or writing JSON output.
 
 _Parameters_
 
@@ -1011,7 +971,7 @@ _Parameters_
 
 __public void setBooleanValue(boolean value)__
 
->  Sets the value of this boolean.  
+Sets the value of this boolean.
 
 _Parameters_
 
@@ -1019,11 +979,11 @@ _Parameters_
 
 __public boolean getAsBoolean()__
 
->  Returns the value of this boolean. 
+Returns the value of this boolean.
 
 __public String toString()__
 
->  Returns the value of this boolean as a String. 
+Returns the value of this boolean as a String.
 
 
 
@@ -1037,11 +997,13 @@ __public String toString()__
 
 public _interface_ __JSONErrorHandler__   [se.natusoft.osgi.aps.json] {
 
->  This is called on warnings or failures.   @author Tommy Svensson 
+This is called on warnings or failures.
+
+@author Tommy Svensson
 
 __void warning(String message)__
 
->  Warns about something.  
+Warns about something.
 
 _Parameters_
 
@@ -1049,7 +1011,7 @@ _Parameters_
 
 __void fail(String message, Throwable cause) throws RuntimeException__
 
->  Indicate failure.  
+Indicate failure.
 
 _Parameters_
 
@@ -1069,15 +1031,17 @@ _Throws_
 
 public _class_ __JSONNull__ extends  JSONValue    [se.natusoft.osgi.aps.json] {
 
->  This class is based on the structure defined on http://www.json.org/.   @author Tommy Svensson 
+This class is based on the structure defined on [http://www.json.org/](http://www.json.org/).
+
+@author Tommy Svensson
 
 __public JSONNull()__
 
->  Creates a new JSONNull instance for writing JSON output. 
+Creates a new JSONNull instance for writing JSON output.
 
 __public JSONNull(JSONErrorHandler errorHandler)__
 
->  Creates a new JSONNull instance for reading JSON input or writing JSON output.  
+Creates a new JSONNull instance for reading JSON input or writing JSON output.
 
 _Parameters_
 
@@ -1086,8 +1050,6 @@ _Parameters_
 
 
 __public String toString()__
-
->  
 
 _Returns_
 
@@ -1105,31 +1067,31 @@ _Returns_
 
 public _class_ __JSONNumber__ extends  JSONValue    [se.natusoft.osgi.aps.json] {
 
->  This class is based on the structure defined on http://www.json.org/. 
+This class is based on the structure defined on http://www.json.org/.
 
-> This represents the "number" diagram on the above mentioned web page: 
+This represents the "number" diagram on the above mentioned web page:
 
-                                          ______________________
-                                         /                      \
-                                         |                      |
-    |_|______________ (0) _______________/__ (.) ___ (digit) ___\_________________________|_|
-    | | \       /  \                    /         /           \  \                      / | |
-        |       |  |                   /          \___________/  |                      |
-        \_ (-) _/  \_ (digit 1-9) ____/_______                   |                      |
-                                   /          \                  |                      |
-                                   \_ (digit) /           _ (e) _|                      |
-                                                         |_ (E) _|           ___________|
-                                                         |        _ (+) _   /           |
-                                                         \_______/_______\__\_ (digit) _/
-                                                                 \_ (-) _/
+                                              ______________________
+                                             /                      \
+                                             |                      |
+        |_|______________ (0) _______________/__ (.) ___ (digit) ___\_________________________|_|
+        | | \       /  \                    /         /           \  \                      / | |
+            |       |  |                   /          \___________/  |                      |
+            \_ (-) _/  \_ (digit 1-9) ____/_______                   |                      |
+                                       /          \                  |                      |
+                                       \_ (digit) /           _ (e) _|                      |
+                                                             |_ (E) _|           ___________|
+                                                             |        _ (+) _   /           |
+                                                             \_______/_______\__\_ (digit) _/
+                                                                     \_ (-) _/
 
->  @author Tommy Svesson 
+@author Tommy Svesson
 
 
 
 __public JSONNumber(Number value)__
 
->  Creates a new JSONNumber instance for writing JSON output.  
+Creates a new JSONNumber instance for writing JSON output.
 
 _Parameters_
 
@@ -1137,7 +1099,7 @@ _Parameters_
 
 __public JSONNumber(JSONErrorHandler errorHandler)__
 
->  Creates a new JSONNumber instance for reading JSON input or writing JSON output.  
+Creates a new JSONNumber instance for reading JSON input or writing JSON output.
 
 _Parameters_
 
@@ -1147,35 +1109,33 @@ _Parameters_
 
 __public Number toNumber()__
 
->  Returns the number as a Number. 
+Returns the number as a Number.
 
 __public double toDouble()__
 
->  Returns the number as a double value. 
+Returns the number as a double value.
 
 __public float toFloat()__
 
->  Returns the number as a float value. 
+Returns the number as a float value.
 
 __public int toInt()__
 
->  Returns the number as an int value. 
+Returns the number as an int value.
 
 __public long toLong()__
 
->  Returns the number as a long value. 
+Returns the number as a long value.
 
 __public short toShort()__
 
->  Returns the number as a short value. 
+Returns the number as a short value.
 
 __public byte toByte()__
 
->  Returns the number as a byte value. 
+Returns the number as a byte value.
 
 __public String toString()__
-
->  
 
 _Returns_
 
@@ -1183,7 +1143,7 @@ _Returns_
 
 __public Object to(Class type)__
 
->  Returns the number as a value of the type specified by the type parameter.  
+Returns the number as a value of the type specified by the type parameter.
 
 _Parameters_
 
@@ -1201,32 +1161,33 @@ _Parameters_
 
 public _class_ __JSONObject__ extends  JSONValue    [se.natusoft.osgi.aps.json] {
 
->  This class is based on the structure defined on http://www.json.org/. 
+This class is based on the structure defined on http://www.json.org/.
 
-> It represents the "object" diagram on the above mentioned web page: 
+It represents the "object" diagram on the above mentioned web page:
 
-                 ________________________________________
-                /                                        \
-    |___ ({) __/_____ (string) ____ (:) ____ (value) _____\___ (}) ____|
-    |           /                                        \             |
-                \__________________ (,) _________________/
-    
+                     ________________________________________
+                    /                                        \
+        |___ ({) __/_____ (string) ____ (:) ____ (value) _____\___ (}) ____|
+        |           /                                        \             |
+                    \__________________ (,) _________________/
 
-> This is also the starting point. 
+This is also the starting point.
 
-> To write JSON, create a new JSONObject (new JSONObject()) and call addProperty(name, value) for children. Then do jsonObj.writeJSON(outputStream). 
+To write JSON, create a new _JSONObject_ (`new JSONObject()`) and call `addProperty(name`,`value)` for children. Then do jsonObj.writeJSON(outputStream)`.`
 
-> To read JSON, create a new JSONObject (new JSONObject(jsonErrorHandler)) and then do jsonObj.readJSON(inputStream). Then use getProperty(name) to extract children.    @author Tommy Svensson 
+To read JSON, create a new _JSONObject_ (`new JSONObject(jsonErrorHandler)`) and then do `jsonObj.readJSON(inputStream)`. Then use `getProperty(name)` to extract children.
+
+@author Tommy Svensson
 
 
 
 __public JSONObject()__
 
->  Creates a JSONObject instance for writing JSON output. 
+Creates a JSONObject instance for writing JSON output.
 
 __public JSONObject(JSONErrorHandler errorHandler)__
 
->  Creates a new JSONObject instance for reading JSON input or writing JSON output.  
+Creates a new JSONObject instance for reading JSON input or writing JSON output.
 
 _Parameters_
 
@@ -1238,11 +1199,11 @@ _Parameters_
 
 __public Set<JSONString> getPropertyNames()__
 
->  Returns the names of the available properties. 
+Returns the names of the available properties.
 
 __public JSONValue getProperty(JSONString name)__
 
->  Returns the named property.  
+Returns the named property.
 
 _Parameters_
 
@@ -1250,7 +1211,7 @@ _Parameters_
 
 __public JSONValue getProperty(String name)__
 
->  Returns the named property.  
+Returns the named property.
 
 _Parameters_
 
@@ -1258,7 +1219,7 @@ _Parameters_
 
 __public void addProperty(JSONString name, JSONValue value)__
 
->  Adds a property to this JSONObject instance.  
+Adds a property to this JSONObject instance.
 
 _Parameters_
 
@@ -1268,7 +1229,7 @@ _Parameters_
 
 __public void addProperty(String name, JSONValue value)__
 
->  Adds a property to this JSONObject instance.  
+Adds a property to this JSONObject instance.
 
 _Parameters_
 
@@ -1288,33 +1249,35 @@ _Parameters_
 
 public _class_ __JSONString__ extends  JSONValue    [se.natusoft.osgi.aps.json] {
 
->  This class is based on the structure defined on http://www.json.org/. 
+This class is based on the structure defined on http://www.json.org/.
 
-> This represents the "string" diagram on the above mentioned web page: 
+This represents the "string" diagram on the above mentioned web page:
 
-               __________________________________________________________________________
-              /    ___________________________________________________________________   \
-              |   /                                                                   \  |
-    |___ (") _|___|___ (Any UNICODE character except " or \ or control character) ____|__|_ (") ___|
-    |           \                                                                  /               |
-                 |                                                                 |
-                 \__ (\) ___ (") (quotation mark) _________________________________|
-                         |__ (\) (reverse solidus) ________________________________|
-                         |__ (/) (solidus) ________________________________________|
-                         |__ (b) (backspace) ______________________________________|
-                         |__ (f) (formfeed) _______________________________________|
-                         |__ (n) (newline) ________________________________________|
-                         |__ (r) (carriage return) ________________________________|
-                         |__ (t) (orizontal tab) __________________________________|
-                         \__ (u) (4 hexadecimal digits) ___________________________/
+                   ___________________________________________________________
+                  /    ____________________________________________________   \
+                  |   /                                                    \  |
+        |___ (") _|___|___ (*1)                                        ____|__|_ (") ___|
+        |           \                                                   /               |
+                     |                                                  |
+                     \__ (\) ___ (") (quotation mark) __________________|
+                             |__ (\) (reverse solidus) _________________|
+                             |__ (/) (solidus) _________________________|
+                             |__ (b) (backspace) _______________________|
+                             |__ (f) (formfeed) ________________________|
+                             |__ (n) (newline) _________________________|
+                             |__ (r) (carriage return) _________________|
+                             |__ (t) (orizontal tab) ___________________|
+                             \__ (u) (4 hexadecimal digits) ____________/
+        
+        *1: Any UNICODE character except " or \ or control character
 
->   @author Tommy Svensson 
+@author Tommy Svensson
 
 
 
 __public JSONString(String value)__
 
->  Creates a new JSONString for writing JSON output.  
+Creates a new JSONString for writing JSON output.
 
 _Parameters_
 
@@ -1322,7 +1285,7 @@ _Parameters_
 
 __public JSONString(JSONErrorHandler errorHandler)__
 
->  Creates a new JSONString for reading JSON input and writing JSON output.  
+Creates a new JSONString for reading JSON input and writing JSON output.
 
 _Parameters_
 
@@ -1350,22 +1313,21 @@ _Parameters_
 
 public _abstract_ _class_ __JSONValue__   [se.natusoft.osgi.aps.json] {
 
->  This class is based on the structure defined on http://www.json.org/. 
+This class is based on the structure defined on http://www.json.org/.
 
-> This is a base class for all other JSON* classes. It represents the "value" diagram on the above mentioned web page: 
+This is a base class for all other JSON* classes. It represents the "value" diagram on the above mentioned web page:
 
-                                                      Subclasses
-                                                      ----------
-    |________________ (STRING) ________________|      JSONString
-    |  |_____________ (NUMBER) _____________|  |      JSONNumber
-       |_____________ (OBJECT) _____________|         JSONObject
-       |_____________ (ARRAY)  _____________|         JSONArray
-       |_____________ (true)   _____________|     \__ JSONBoolean
-       |_____________ (false)  _____________|     /
-       \_____________ (null)   _____________/         JSONNull
-    
+                                                          Subclasses
+                                                          ----------
+        |________________ (STRING) ________________|      JSONString
+        |  |_____________ (NUMBER) _____________|  |      JSONNumber
+           |_____________ (OBJECT) _____________|         JSONObject
+           |_____________ (ARRAY)  _____________|         JSONArray
+           |_____________ (true)   _____________|     \__ JSONBoolean
+           |_____________ (false)  _____________|     /
+           \_____________ (null)   _____________/         JSONNull
 
->    @author Tommy Svensson 
+@author Tommy Svensson
 
 
 
@@ -1373,15 +1335,15 @@ public _abstract_ _class_ __JSONValue__   [se.natusoft.osgi.aps.json] {
 
 __protected JSONValue()__
 
->  Creates a new JSONValue. 
+Creates a new JSONValue.
 
 __protected JSONValue(JSONErrorHandler errorHandler)__
 
->  Creates a new JSONValue 
+Creates a new JSONValue
 
 __protected abstract void readJSON(char c, JSONReader reader) throws IOException__
 
->  This will read the vale from an input stream.  
+This will read the vale from an input stream.
 
 _Returns_
 
@@ -1399,7 +1361,7 @@ _Throws_
 
 __protected abstract void writeJSON(JSONWriter writer, boolean compact) throws IOException__
 
->  This will write the data held by this JSON value in JSON format on the specified stream.  
+This will write the data held by this JSON value in JSON format on the specified stream.
 
 _Parameters_
 
@@ -1413,8 +1375,6 @@ _Throws_
 
 __protected JSONErrorHandler getErrorHandler()__
 
->  
-
 _Returns_
 
 > The user supplied error handler.
@@ -1427,7 +1387,7 @@ _Returns_
 
 __protected void warn(String message)__
 
->  Provide a warning.  
+Provide a warning.
 
 _Parameters_
 
@@ -1435,7 +1395,7 @@ _Parameters_
 
 __protected void fail(String message, Throwable cause)__
 
->  Fails the job.  
+Fails the job.
 
 _Parameters_
 
@@ -1445,7 +1405,7 @@ _Parameters_
 
 __protected void fail(String message)__
 
->  Fails the job.  
+Fails the job.
 
 _Parameters_
 
@@ -1453,7 +1413,7 @@ _Parameters_
 
 __public void readJSON(InputStream is) throws IOException__
 
->  This will read the value from an input stream.  
+This will read the value from an input stream.
 
 _Parameters_
 
@@ -1465,7 +1425,7 @@ _Throws_
 
 __public void writeJSON(OutputStream os) throws IOException__
 
->  This writes JSON to the specified OutputStream.  
+This writes JSON to the specified OutputStream.
 
 _Parameters_
 
@@ -1477,7 +1437,7 @@ _Throws_
 
 __public void writeJSON(OutputStream os, boolean compact) throws IOException__
 
->  This writes JSON to the specified OutputStream.  
+This writes JSON to the specified OutputStream.
 
 _Parameters_
 
@@ -1511,7 +1471,7 @@ _Throws_
 
 __protected JSONReader(PushbackReader reader, JSONErrorHandler errorHandler)__
 
->  Creates a new JSONReader instance.  
+Creates a new JSONReader instance.
 
 _Parameters_
 
@@ -1521,7 +1481,7 @@ _Parameters_
 
 __protected char getChar() throws IOException__
 
->  Returns the next character on the specified input stream, setting EOF state checkable with isEOF().  
+Returns the next character on the specified input stream, setting EOF state checkable with isEOF().
 
 _Throws_
 
@@ -1529,7 +1489,7 @@ _Throws_
 
 __protected char getChar(boolean handleEscapes) throws IOException__
 
->  Returns the next character on the specified input stream, setting EOF state checkable with isEOF().  
+Returns the next character on the specified input stream, setting EOF state checkable with isEOF().
 
 _Parameters_
 
@@ -1541,7 +1501,7 @@ _Throws_
 
 __protected void ungetChar(char c) throws IOException__
 
->  Unreads the specified character so that the next call to getNextChar() will return it again.  
+Unreads the specified character so that the next call to getNextChar() will return it again.
 
 _Parameters_
 
@@ -1549,7 +1509,7 @@ _Parameters_
 
 __protected char skipWhitespace(char c) throws IOException__
 
->  Skips whitespace returning the first non whitespace character. This also sets the EOF flag.  
+Skips whitespace returning the first non whitespace character. This also sets the EOF flag.
 
 _Parameters_
 
@@ -1561,7 +1521,7 @@ _Throws_
 
 __protected char skipWhitespace() throws IOException__
 
->  Skips whitespace returning the first non whitespace character. This also sets the EOF flag.  
+Skips whitespace returning the first non whitespace character. This also sets the EOF flag.
 
 _Throws_
 
@@ -1571,7 +1531,7 @@ _Throws_
 
 __protected char readUntil(String until, char c, StringBuilder sb, boolean handleEscapes) throws IOException__
 
->  Reads until any of a specified set of characters occur.  
+Reads until any of a specified set of characters occur.
 
 _Returns_
 
@@ -1593,7 +1553,7 @@ _Throws_
 
 __protected char readUntil(String until, StringBuilder sb, boolean string) throws IOException__
 
->  Reads until any of a specified set of characters occur.  
+Reads until any of a specified set of characters occur.
 
 _Parameters_
 
@@ -1609,7 +1569,7 @@ _Throws_
 
 __protected char readUntil(String until, StringBuilder sb) throws IOException__
 
->  Reads until any of a specified set of characters occur.  
+Reads until any of a specified set of characters occur.
 
 _Parameters_
 
@@ -1623,7 +1583,7 @@ _Throws_
 
 __protected boolean checkValidChar(char c, String validChars)__
 
->  Returns true if c is one of the characters in validChars.  
+Returns true if c is one of the characters in validChars.
 
 _Parameters_
 
@@ -1633,7 +1593,7 @@ _Parameters_
 
 __protected void assertChar(char a, char e, String message)__
 
->  Asserts that char a equals expected char c.  
+Asserts that char a equals expected char c.
 
 _Parameters_
 
@@ -1645,7 +1605,7 @@ _Parameters_
 
 __protected void assertChar(char a, String expected, String message)__
 
->  Asserts that char a equals expected char c.  
+Asserts that char a equals expected char c.
 
 _Parameters_
 
@@ -1657,13 +1617,13 @@ _Parameters_
 
 protected _static_ _class_ __JSONWriter__   [se.natusoft.osgi.aps.json] {
 
->  For subclasses to use in writeJSON(JSONWriter writer). 
+For subclasses to use in writeJSON(JSONWriter writer).
 
 
 
 __protected JSONWriter(Writer writer)__
 
->  Creates a new JSONWriter instance.  
+Creates a new JSONWriter instance.
 
 _Parameters_
 
@@ -1671,7 +1631,7 @@ _Parameters_
 
 __protected void write(String json) throws IOException__
 
->  Writes JSON output.  
+Writes JSON output.
 
 _Parameters_
 
@@ -1683,7 +1643,7 @@ _Throws_
 
 __protected void writeln(String json) throws  IOException__
 
->  Writes JSON output plus a newline.  
+Writes JSON output plus a newline.
 
 _Parameters_
 
@@ -1701,13 +1661,13 @@ _Throws_
 
 public _class_ __BeanInstance__   [se.natusoft.osgi.aps.json.tools] {
 
->  This wraps a Java Bean instance allowing it to be populated with data using setProperty(String, Object) methods handling all reflection calls. 
+This wraps a Java Bean instance allowing it to be populated with data using _setProperty(String_,_Object)_ methods handling all reflection calls.
 
 
 
 __public BeanInstance(Object modelInstance)__
 
->  Creates a new ModelInstance.  
+Creates a new ModelInstance.
 
 _Parameters_
 
@@ -1715,19 +1675,19 @@ _Parameters_
 
 __public Object getModelInstance()__
 
->  Returns the test model instance held by this object. 
+Returns the test model instance held by this object.
 
 __public List<String> getSettableProperties()__
 
->  Returns a list of settable properties. 
+Returns a list of settable properties.
 
 __public List<String> getGettableProperties()__
 
->  Returns a list of gettable properties. 
+Returns a list of gettable properties.
 
 __public void setProperty(String property, Object value) throws JSONConvertionException__
 
->  Sets a property  
+Sets a property
 
 _Parameters_
 
@@ -1741,7 +1701,7 @@ _Throws_
 
 __public Object getProperty(String property) throws JSONConvertionException__
 
->  Returns the value of the specified property.  
+Returns the value of the specified property.
 
 _Returns_
 
@@ -1759,7 +1719,7 @@ _Throws_
 
 __public Class getPropertyType(String property) throws JSONConvertionException__
 
->  Returns the type of the specified property.  
+Returns the type of the specified property.
 
 _Returns_
 
@@ -1781,11 +1741,11 @@ _Throws_
 
 public _class_ __JavaToJSON__   [se.natusoft.osgi.aps.json.tools] {
 
->  Takes a JavaBean and produces a JSONObject. 
+Takes a JavaBean and produces a JSONObject.
 
 __public static JSONObject convertObject(Object javaBean) throws JSONConvertionException__
 
->  Converts a JavaBean object into a JSONObject.  
+Converts a JavaBean object into a _JSONObject_.
 
 _Returns_
 
@@ -1801,7 +1761,7 @@ _Throws_
 
 __public static JSONObject convertObject(JSONObject jsonObject, Object javaBean) throws JSONConvertionException__
 
->  Converts a JavaBean object into a JSONObject.  
+Converts a JavaBean object into a _JSONObject_.
 
 _Returns_
 
@@ -1819,7 +1779,7 @@ _Throws_
 
 __public static JSONValue convertValue(Object value)__
 
->  Converts a value from a java value to a JSONValue.  
+Converts a value from a java value to a _JSONValue_.
 
 _Returns_
 
@@ -1837,13 +1797,13 @@ _Parameters_
 
 public _class_ __JSONConvertionException__ extends  RuntimeException    [se.natusoft.osgi.aps.json.tools] {
 
->  This exception is thrown on failure to convert from JSON to Java or Java to JSON. 
+This exception is thrown on failure to convert from JSON to Java or Java to JSON.
 
-> Almost all exceptions within the APS services and libraries extend either APSException or APSRuntimeException. I decided to just extend RuntimeException here to avoid any other dependencies for this library since it can be useful outside of APS and can be used as any jar if not deployed in OSGi container. 
+Almost all exceptions within the APS services and libraries extend either _APSException_ or _APSRuntimeException_. I decided to just extend RuntimeException here to avoid any other dependencies for this library since it can be useful outside of APS and can be used as any jar if not deployed in OSGi container.
 
 __public JSONConvertionException(final String message)__
 
->  Creates a new JSONConvertionException.  
+Creates a new _JSONConvertionException_.
 
 _Parameters_
 
@@ -1851,7 +1811,7 @@ _Parameters_
 
 __public JSONConvertionException(final String message, final Throwable cause)__
 
->  Creates a new JSONConvertionException.  
+Creates a new _JSONConvertionException_.
 
 _Parameters_
 
@@ -1867,13 +1827,19 @@ _Parameters_
 
 public _class_ __JSONToJava__   [se.natusoft.osgi.aps.json.tools] {
 
->  Creates a JavaBean instance and copies data from a JSON value to it. 
+Creates a JavaBean instance and copies data from a JSON value to it.
 
-> The following mappings are made in addition to the expected ones: <ul  <li JSONArray only maps to an array property. li  <li Date properties in bean are mapped from JSONString "yyyy-MM-dd HH:mm:ss" li  <li Enum properties in bean are mapped from JSONString which have to contain enum constant name. li  ul 
+The following mappings are made in addition to the expected ones:
+
+* _JSONArray_ only maps to an array property.
+
+* Date properties in bean are mapped from _JSONString_ "yyyy-MM-dd HH:mm:ss".
+
+* Enum properties in bean are mapped from _JSONString_ which have to contain enum constant name.
 
 __public static <T> T convert(InputStream jsonStream, Class<T> javaClass) throws IOException, JSONConvertionException__
 
->  Returns an instance of a java class populated with data from a json object value read from a stream.  
+Returns an instance of a java class populated with data from a json object value read from a stream.
 
 _Returns_
 
@@ -1893,7 +1859,7 @@ _Throws_
 
 __public static <T> T convert(String json, Class<T> javaClass) throws IOException, JSONConvertionException__
 
->  Returns an instance of a java class populated with data from a json object value read from a String containing JSON.  
+Returns an instance of a java class populated with data from a json object value read from a String containing JSON.
 
 _Returns_
 
@@ -1913,7 +1879,7 @@ _Throws_
 
 __public static <T> T convert(JSONValue json, Class<T> javaClass) throws JSONConvertionException__
 
->  Returns an instance of java class populated with data from json.   
+Returns an instance of java class populated with data from json.
 
 _Returns_
 
@@ -1943,7 +1909,7 @@ _Throws_
 
 public _class_ __SystemOutErrorHandler__ implements  JSONErrorHandler    [se.natusoft.osgi.aps.json.tools] {
 
->  A simple implementation of JSONErrorHandler that simply displays messages on System.out and throws a RuntimeException on fail. This is used by the tests. In a non test case another implementation is probably preferred. 
+A simple implementation of _JSONErrorHandler_ that simply displays messages on System.out and throws a _RuntimeException_ on fail. This is used by the tests. In a non test case another implementation is probably preferred.
 
 
 
@@ -2156,6 +2122,10 @@ that have 2 implementations:
 
 * UUID - Produces java.util.UUID Ids.
 
+## Javadoc
+
+The javadoc for this can be found at [http://apidoc.natusoft.se/APSToolsLib/](http://apidoc.natusoft.se/APSToolsLib/).
+
 # APSWebTools
 
 This is not an OSGi bundle! This is a plain jar containing utilities for web applications. Specifically APS administration web applications. This jar has to be included in each web application that wants to use it.
@@ -2164,19 +2134,19 @@ Among other things it provides support for being part of the APS administration 
 
 ## APIs
 
-The following are the APIs for a few selected classes. The complete javadoc for this library can be found at [http://apidoc.natusoft.se/APSWebTools](http://apidoc.natusoft.se/APSWebTools).
+The following are the APIs for a few selected classes. The complete javadoc for this library can be found at [http://apidoc.natusoft.se/APSWebTools/](http://apidoc.natusoft.se/APSWebTools/).
 
 ----
 
 public _class_ __APSAdminWebLoginHandler__ extends  APSLoginHandler  implements  APSLoginHandler.HandlerInfo    [se.natusoft.osgi.aps.tools.web] {
 
->  This is a login handler to use by any admin web registering with the APSAdminWeb to validate that there is a valid login available. 
+This is a login handler to use by any admin web registering with the _APSAdminWeb_ to validate that there is a valid login available.
 
 
 
 __public APSAdminWebLoginHandler(BundleContext context)__
 
->  Creates a new APSAdminWebLoginHandler.  
+Creates a new _APSAdminWebLoginHandler_.
 
 _Parameters_
 
@@ -2184,7 +2154,7 @@ _Parameters_
 
 __public void setSessionIdFromRequestCookie(HttpServletRequest request)__
 
->  Sets the session id from a cookie in the specified request.  
+Sets the session id from a cookie in the specified request.
 
 _Parameters_
 
@@ -2192,7 +2162,7 @@ _Parameters_
 
 __public void saveSessionIdOnResponse(HttpServletResponse response)__
 
->  Saves the current session id on the specified response.  
+Saves the current session id on the specified response.
 
 _Parameters_
 
@@ -2214,16 +2184,14 @@ _Parameters_
 
 public _class_ __APSLoginHandler__ implements  LoginHandler    [se.natusoft.osgi.aps.tools.web] {
 
->  This class validates if there is a valid logged in user and also provides a simple login if no valid logged in user exists. 
+This class validates if there is a valid logged in user and also provides a simple login if no valid logged in user exists.
 
-> This utility makes use of APSAuthService to login auth and APSSessionService for session handling. Trackers for these services are created internally which requires the shutdown() method to be called when no longer used to cleanup. 
+This utility makes use of APSAuthService to login auth and APSSessionService for session handling. Trackers for these services are created internally which requires the shutdown() method to be called when no longer used to cleanup.
 
-> The bundle needs to import the following packages for this class to work: 
+The bundle needs to import the following packages for this class to work:
 
-       se.natusoft.osgi.aps.api.auth.user;version="[0.9,2)",
-       se.natusoft.osgi.aps.api.misc.session;version="[0.9,2)"
-
-> 
+         se.natusoft.osgi.aps.api.auth.user;version="[0.9,2)",
+         se.natusoft.osgi.aps.api.misc.session;version="[0.9,2)"
 
 
 
@@ -2245,7 +2213,7 @@ public _class_ __APSLoginHandler__ implements  LoginHandler    [se.natusoft.osgi
 
 __public APSLoginHandler(BundleContext context, HandlerInfo handlerInfo)__
 
->  Creates a new VaadinLoginDialogHandler.  
+Creates a new VaadinLoginDialogHandler.
 
 _Parameters_
 
@@ -2253,7 +2221,7 @@ _Parameters_
 
 __protected void setHandlerInfo(HandlerInfo handlerInfo)__
 
->  Sets the handler info when not provided in constructor.  
+Sets the handler info when not provided in constructor.
 
 _Parameters_
 
@@ -2261,23 +2229,23 @@ _Parameters_
 
 __public void shutdown()__
 
->  Since this class internally creates and starts service trackers this method needs to be called on shutdown to cleanup! 
+Since this class internally creates and starts service trackers this method needs to be called on shutdown to cleanup!
 
 __public String getLoggedInUser()__
 
->  This returns the currently logged in user or null if none are logged in. 
+This returns the currently logged in user or null if none are logged in.
 
 
 
 __public boolean hasValidLogin()__
 
->  Returns true if this handler sits on a valid login. 
+Returns true if this handler sits on a valid login.
 
 __public boolean login(String userId, String pw)__
 
->  Logs in with a userid and a password. 
+Logs in with a userid and a password.
 
-> This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the APSAuthService when this object is already available due to the code also being an APSAdminWeb member. It is basically a convenience.  
+This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the _APSAuthService_ when this object is already available due to the code also being an _APSAdminWeb_ member. It is basically a convenience.
 
 _Returns_
 
@@ -2291,9 +2259,9 @@ _Parameters_
 
 __public boolean login(String userId, String pw, String requiredRole)__
 
->  Logs in with a userid and a password, and a required role. 
+Logs in with a userid and a password, and a required role.
 
-> This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the APSAuthService when this object is already available due to the code also being an APSAdminWeb member. It is basically a convenience.  
+This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the _APSAuthService_ when this object is already available due to the code also being an _APSAdminWeb_ member. It is basically a convenience.
 
 _Returns_
 
@@ -2309,11 +2277,9 @@ _Parameters_
 
 public _static_ _interface_ __HandlerInfo__   [se.natusoft.osgi.aps.tools.web] {
 
->  Config values for the login handler. 
+Config values for the login handler.
 
 __String getSessionId()__
-
->  
 
 _Returns_
 
@@ -2321,7 +2287,7 @@ _Returns_
 
 __void setSessionId(String sessionId)__
 
->  Sets a new session id.  
+Sets a new session id.
 
 _Parameters_
 
@@ -2329,15 +2295,11 @@ _Parameters_
 
 __String getUserSessionName()__
 
->  
-
 _Returns_
 
 > The name of the session data containing the logged in user if any.
 
 __String getRequiredRole()__
-
->  
 
 _Returns_
 
@@ -2351,15 +2313,15 @@ _Returns_
 
 public _interface_ __LoginHandler__   [se.natusoft.osgi.aps.tools.web] {
 
->  This is a simple API for doing a login. 
+This is a simple API for doing a login.
 
 __public boolean hasValidLogin()__
 
->  Returns true if this handler sits on a valid login. 
+Returns true if this handler sits on a valid login.
 
 __boolean login(String userId, String pw)__
 
->  Logs in with a userid and a password.  
+Logs in with a userid and a password.
 
 _Returns_
 
@@ -2373,7 +2335,7 @@ _Parameters_
 
 __public void shutdown()__
 
->  If the handler creates service trackers or other things that needs to be shutdown when no longer used this method needs to be called when the handler is no longer needed. 
+If the handler creates service trackers or other things that needs to be shutdown when no longer used this method needs to be called when the handler is no longer needed.
 
 }
 
@@ -2399,15 +2361,15 @@ This provides an APSAuthService that uses the APSSimpleUserService to authentica
 
 public _interface_ __APSAuthService<Credential>__   [se.natusoft.osgi.aps.api.auth.user] {
 
->  This is intended to be used as a wrapper to other means of authentication. Things in APS that needs authentication uses this service. 
+This is intended to be used as a wrapper to other means of authentication. Things in APS that needs authentication uses this service.
 
-> Implementations can lookup the user in an LDAP for example, or use some other user service. 
+Implementations can lookup the user in an LDAP for example, or use some other user service.
 
-> APS supplies an APSSimpleUserServiceAuthServiceProvider that uses the APSSimpleUserService to authenticate. It is provided in its own bundle. 
+APS supplies an _APSSimpleUserServiceAuthServiceProvider_ that uses the _APSSimpleUserService_ to authenticate. It is provided in its own bundle.
 
 __Properties authUser(String userId, Credential credentials, AuthMethod authMethod) throws APSAuthMethodNotSupportedException__
 
->  This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!  
+This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!
 
 _Returns_
 
@@ -2427,7 +2389,7 @@ _Throws_
 
 __Properties authUser(String userId, Credential credentials, AuthMethod authMethod, String role) throws APSAuthMethodNotSupportedException__
 
->  This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!  
+This authenticates a user. A Properties object is returned on successful authentication. _null_ is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!
 
 _Returns_
 
@@ -2449,35 +2411,35 @@ _Throws_
 
 __AuthMethod[] getSupportedAuthMethods()__
 
->  Returns an array of the AuthMethods supported by the implementation. 
+Returns an array of the AuthMethods supported by the implementation.
 
 public _static_ _enum_ __AuthMethod__   [se.natusoft.osgi.aps.api.auth.user] {
 
->  This hints at how to use the credentials. 
+This hints at how to use the credentials.
 
 __NONE__
 
->  Only userid is required. 
+Only userid is required.
 
 __PASSWORD__
 
->  toString() on the credentials object should return a password. 
+toString() on the credentials object should return a password.
 
 __KEY__
 
->  The credential object is a key of some sort. 
+The credential object is a key of some sort.
 
 __CERTIFICATE__
 
->  The credential object is a certificate of some sort. 
+The credential object is a certificate of some sort.
 
 __DIGEST__
 
->  The credential object is a digest password. 
+The credential object is a digest password.
 
 __SSO__
 
->  The credential object contains information for participating in a single sign on. 
+The credential object contains information for participating in a single sign on.
 
 }
 
@@ -2640,17 +2602,17 @@ to _false_ instead. Then restart the server. Also se the APSFilesystemService do
 
 public _interface_ __APSSimpleUserService__   [se.natusoft.osgi.aps.api.auth.user] {
 
->  This is the API of a simple user service that provide basic user handling that will probably be enough in many cases, but not all. 
+This is the API of a simple user service that provide basic user handling that will probably be enough in many cases, but not all.
 
-> Please note that this API does not declare any exceptions! In the case of an exception being needed the APSSimpleUserServiceException should be thrown. This is a runtime exception. 
+Please note that this API does not declare any exceptions! In the case of an exception being needed the APSSimpleUserServiceException should be thrown. This is a runtime exception.
 
 __public static final String AUTH_METHOD_PASSWORD = "password"__
 
->  Password authentication method for authenticateUser(). 
+Password authentication method for authenticateUser().
 
 __public Role getRole(String roleId)__
 
->  Gets a role by its id.  
+Gets a role by its id.
 
 _Returns_
 
@@ -2662,7 +2624,7 @@ _Parameters_
 
 __public User getUser(String userId)__
 
->  Gets a user by its id.  
+Gets a user by its id.
 
 _Returns_
 
@@ -2674,7 +2636,7 @@ _Parameters_
 
 __public boolean authenticateUser(User user, Object authentication, String authMethod)__
 
->  Authenticates a user using its user id and user provided authentication.  
+Authenticates a user using its user id and user provided authentication.
 
 _Returns_
 
@@ -2684,7 +2646,7 @@ _Parameters_
 
 > _user_ - The User object representing the user to authenticate. 
 
-> _authentication_ - The user provided authentication data. For example if AuthMethod is AUTH_METHOD_PASSWORD 
+> _authentication_ - The user provided authentication data. For example if AuthMethod is AUTH\_METHOD\_PASSWORD 
 
 > _authMethod_ - Specifies what authentication method is wanted. 
 
@@ -2696,11 +2658,11 @@ _Parameters_
 
 public _interface_ __APSSimpleUserServiceAdmin__ extends  APSSimpleUserService    [se.natusoft.osgi.aps.api.auth.user] {
 
->  Admin API for APSSimpleUserService. 
+Admin API for APSSimpleUserService.
 
 __public RoleAdmin createRole(String name, String description)__
 
->  Creates a new role.  
+Creates a new role.
 
 _Returns_
 
@@ -2714,7 +2676,7 @@ _Parameters_
 
 __public void updateRole(Role role)__
 
->  Updates a role.  
+Updates a role.
 
 _Parameters_
 
@@ -2722,7 +2684,7 @@ _Parameters_
 
 __public void deleteRole(Role role)__
 
->  Deletes a role.  
+Deletes a role.
 
 _Parameters_
 
@@ -2730,11 +2692,11 @@ _Parameters_
 
 __public List<RoleAdmin> getRoles()__
 
->  Returns all available roles. 
+Returns all available roles.
 
 __public UserAdmin createUser(String id)__
 
->  Creates a new user. Please note that you get an empty user back. You probably want to add roles and also possibly properties to the user. After you have done that call updateUser(user).  
+Creates a new user. Please note that you get an empty user back. You probably want to add roles and also possibly properties to the user. After you have done that call _updateUser(user)_.
 
 _Returns_
 
@@ -2746,7 +2708,7 @@ _Parameters_
 
 __public void updateUser(User user)__
 
->  Updates a user.  
+Updates a user.
 
 _Parameters_
 
@@ -2754,7 +2716,7 @@ _Parameters_
 
 __public void deleteUser(User user)__
 
->  Deletes a user.  
+Deletes a user.
 
 _Parameters_
 
@@ -2762,11 +2724,11 @@ _Parameters_
 
 __public List<UserAdmin> getUsers()__
 
->  Returns all users. 
+Returns all users.
 
 __public void setUserAuthentication(User user, String authentication)__
 
->  Sets authentication for the user.  
+Sets authentication for the user.
 
 _Parameters_
 
@@ -2782,11 +2744,11 @@ _Parameters_
 
 public _class_ __APSAuthMethodNotSupportedException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.auth.user.exceptions] {
 
->  This is thrown by APSAuthService when the implementation does not support the selected auth method. 
+This is thrown by APSAuthService when the implementation does not support the selected auth method.
 
 __public APSAuthMethodNotSupportedException(String message)__
 
->  Creates a new APSAuthMethodNotSupportedException instance.  
+Creates a new APSAuthMethodNotSupportedException instance.
 
 _Parameters_
 
@@ -2794,7 +2756,7 @@ _Parameters_
 
 __public APSAuthMethodNotSupportedException(String message, Throwable cause)__
 
->  Creates a new APSAuthMethodNotSupportedException instance.  
+Creates a new APSAuthMethodNotSupportedException instance.
 
 _Parameters_
 
@@ -2810,11 +2772,11 @@ _Parameters_
 
 public _class_ __APSSimpleUserServiceException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.auth.user.exceptions] {
 
->  Indicates a problem with the APSSimpleUserService. 
+Indicates a problem with the APSSimpleUserService.
 
 __public APSSimpleUserServiceException(String message)__
 
->  Creates a new APSSimpleUserServiceException instance.  
+Creates a new APSSimpleUserServiceException instance.
 
 _Parameters_
 
@@ -2822,7 +2784,7 @@ _Parameters_
 
 __public APSSimpleUserServiceException(String message, Throwable cause)__
 
->  Creates a new APSSimpleUserServiceException instance.  
+Creates a new APSSimpleUserServiceException instance.
 
 _Parameters_
 
@@ -2838,11 +2800,9 @@ _Parameters_
 
 public _interface_ __Role__ extends  Comparable<Role>    [se.natusoft.osgi.aps.api.auth.user.model] {
 
->  This defines a role. 
+This defines a role.
 
 __public String getId()__
-
->  
 
 _Returns_
 
@@ -2850,23 +2810,19 @@ _Returns_
 
 __public String getDescription()__
 
->  
-
 _Returns_
 
 > A description of the role.
 
 __public boolean hasRole(String roleName)__
 
->  Returns true if the role has the specified sub role name.  
+Returns true if the role has the specified sub role name.
 
 _Parameters_
 
 > _roleName_ - The name of the role to check for. 
 
 __boolean isMasterRole()__
-
->  
 
 _Returns_
 
@@ -2880,11 +2836,11 @@ _Returns_
 
 public _interface_ __RoleAdmin__ extends  Role    [se.natusoft.osgi.aps.api.auth.user.model] {
 
->  Provides update API for Role. 
+Provides update API for Role.
 
 __public void setDescription(String description)__
 
->  Changes the description of the role.  
+Changes the description of the role.
 
 _Parameters_
 
@@ -2892,11 +2848,11 @@ _Parameters_
 
 __public List<Role> getRoles()__
 
->  Returns all sub roles for this role. 
+Returns all sub roles for this role.
 
 __public void addRole(Role role)__
 
->  Adds a sub role to this role.  
+Adds a sub role to this role.
 
 _Parameters_
 
@@ -2904,7 +2860,7 @@ _Parameters_
 
 __public void removeRole(Role role)__
 
->  Removes a sub role from this role.  
+Removes a sub role from this role.
 
 _Parameters_
 
@@ -2912,7 +2868,7 @@ _Parameters_
 
 __public void setMasterRole(boolean masterRole)__
 
->  Sets whether this is a master role or not.  
+Sets whether this is a master role or not.
 
 _Parameters_
 
@@ -2926,19 +2882,19 @@ _Parameters_
 
 public _interface_ __User__ extends  Comparable<User>    [se.natusoft.osgi.aps.api.auth.user.model] {
 
->  This defines a User. 
+This defines a User.
 
 __public String getId()__
 
->  Returns the unique id of the user. 
+Returns the unique id of the user.
 
 __public boolean isAuthenticated()__
 
->  Returns true if this user is authenticated. 
+Returns true if this user is authenticated.
 
 __public boolean hasRole(String roleName)__
 
->  Returns true if the user has the specified role name.  
+Returns true if the user has the specified role name.
 
 _Parameters_
 
@@ -2946,29 +2902,29 @@ _Parameters_
 
 __public Properties getUserProperties()__
 
->  This provides whatever extra information about the user you want. How to use this is upp to the user of the service. There are some constants in this class that provide potential keys for the user properties. 
+This provides whatever extra information about the user you want. How to use this is upp to the user of the service. There are some constants in this class that provide potential keys for the user properties.
 
-> Please note that the returned properties are read only! 
+Please note that the returned properties are read only!
 
 __public static final String USER_NAME = "name"__
 
->  Optional suggestion for user properties key. 
+Optional suggestion for user properties key.
 
 __public static final String USER_PHONE = "phone"__
 
->  Optional suggestion for user properties key. 
+Optional suggestion for user properties key.
 
 __public static final String USER_PHONE_WORK = "phone.work"__
 
->  Optional suggestion for user properties key. 
+Optional suggestion for user properties key.
 
 __public static final String USER_PHONE_HOME = "phone.home"__
 
->  Optional suggestion for user properties key. 
+Optional suggestion for user properties key.
 
 __public static final String USER_EMAIL = "email"__
 
->  Optional suggestion for user properties key. 
+Optional suggestion for user properties key.
 
 }
 
@@ -2978,15 +2934,15 @@ __public static final String USER_EMAIL = "email"__
 
 public _interface_ __UserAdmin__ extends  User    [se.natusoft.osgi.aps.api.auth.user.model] {
 
->  Provides update API for the User. 
+Provides update API for the User.
 
 __public List<Role> getRoles()__
 
->  Returns all roles for this user. 
+Returns all roles for this user.
 
 __public void addRole(Role role)__
 
->  Adds a role to this user.  
+Adds a role to this user.
 
 _Parameters_
 
@@ -2994,7 +2950,7 @@ _Parameters_
 
 __public void removeRole(Role role)__
 
->  Removes a role from this user.  
+Removes a role from this user.
 
 _Parameters_
 
@@ -3002,7 +2958,7 @@ _Parameters_
 
 __public void addUserProperty(String key, String value)__
 
->  Adds a user property.  
+Adds a user property.
 
 _Parameters_
 
@@ -3012,7 +2968,7 @@ _Parameters_
 
 __public void removeUserProperty(String key)__
 
->  Removes a user property.  
+Removes a user property.
 
 _Parameters_
 
@@ -3020,9 +2976,9 @@ _Parameters_
 
 __public void setUserProperties(Properties properties)__
 
->  Sets properties for the user. 
+Sets properties for the user.
 
-> To update the user properties either first do getProperties() do your changes, and then call this method with the changed properties or just use the addUserProperty() and removeUserProperty() methods.  
+To update the user properties either first do _getProperties()_, do your changes, and then call this method with the changed properties or just use the _addUserProperty()_ and _removeUserProperty()_ methods.
 
 _Parameters_
 
@@ -3051,11 +3007,9 @@ The complete APS javadoc can be found at [http://apidoc.natusoft.se/APS/](http:/
 
 public _interface_ __DataSourceDef__   [se.natusoft.osgi.aps.api.data.jdbc.model] {
 
->  This represents information required for setting upp a JDBC data source. 
+This represents information required for setting upp a JDBC data source.
 
 __String getName()__
-
->  
 
 _Returns_
 
@@ -3063,15 +3017,11 @@ _Returns_
 
 __String getConnectionURL()__
 
->  
-
 _Returns_
 
 > The JDBC connection URL. Ex: jdbc:provider://host:port/database[;properties].
 
 __String getConnectionDriveName()__
-
->  
 
 _Returns_
 
@@ -3079,15 +3029,11 @@ _Returns_
 
 __String getConnectionUserName()__
 
->  
-
 _Returns_
 
 > The name of the database user to login as.
 
 __String getConnectionPassword()__
-
->  
 
 _Returns_
 
@@ -3101,11 +3047,11 @@ _Returns_
 
 public _interface_ __APSDataSourceDefService__   [se.natusoft.osgi.aps.api.data.jdbc.service] {
 
->  This service provides lookup of configured data source definitions. These can be used to setup connection pools, JPA, ... 
+This service provides lookup of configured data source definitions. These can be used to setup connection pools, JPA, ...
 
 __DataSourceDef lookupByName(String name)__
 
->  Looks up a data source definition by its configured name.  
+Looks up a data source definition by its configured name.
 
 _Returns_
 
@@ -3116,8 +3062,6 @@ _Parameters_
 > _name_ - The name to lookup. 
 
 __List<DataSourceDef> getAllDefinitions()__
-
->  
 
 _Returns_
 
@@ -3179,17 +3123,19 @@ This code example handles the APSJPAService having been restared or redeployed. 
 
 public _interface_ __APSJPAService__   [se.natusoft.osgi.aps.api.data.jpa.service] {
 
->  This service allows an JPA EntityManager to be gotten for a persistent unit name. 
+This service allows an JPA _EntityManager_ to be gotten for a persistent unit name.
 
-> So why is this done this way ? Why is not an EntityManagerFactory returned? 
+So why is this done this way ? Why is not an _EntityManagerFactory_ returned?
 
-> The answer to that is that the EntityManagerFactory is internal to the service who is responsible for creating it and for closing it at sometime (stopping of bundle). The client only needs an EntityManager for which the client is responsible after its creation. 
+The answer to that is that the _EntityManagerFactory_ is internal to the service who is responsible for creating it and for closing it at sometime (stopping of bundle). The client only needs an _EntityManager_ for which the client is responsible after its creation.
 
-> The creation of the EntityManagerFactory is delayed until the call to initialize(...). Creating the EMF along with the persistence provider at persistence bundle discovery would limit database connection properties to the persistence.xml file which is less than optimal to put it mildly. The whole point with the APS project is to provide a configured platform into which you can drop applications and they adapt to their surrounding. Not unlike what JEE does, but does it milder and more flexibly being OSGi and also provides application and service specific configuration with a web gui for editing configuration. Thereby providing database connection properties from clients allows clients more flexibility in how they want to handle that. The APSDataSourceDef service can for example be used to lookup a JDBC connection definition. The default provider implementation of this service uses OpenJPA which provides its own connection pooling. 
+The creation of the _EntityManagerFactory_ is delayed until the call to _initialize(...)_. Creating the EMF along with the persistence provider at persistence bundle discovery would limit database connection properties to the persistence.xml file which is less than optimal to put it mildly. This way a client can make use of the _APSDataSourceDefService_ to get the JDBC properties which it can pass along to this service.
+
+The default provider implementation of this service uses OpenJPA which provides its own connection pooling.
 
 __APSJPAEntityManagerProvider initialize(BundleContext bundleContext, String persistenceUnitName, Map<String, String> props) throws APSResourceNotFoundException__
 
->  Initializes and returns a provider from the specified properties.  
+Initializes and returns a provider from the specified properties.
 
 _Returns_
 
@@ -3205,17 +3151,17 @@ _Parameters_
 
 public _static_ _interface_ __APSJPAEntityManagerProvider__   [se.natusoft.osgi.aps.api.data.jpa.service] {
 
->  Once you get this it is valid until the APSJPAService is stopped (which will happen if the service is redeployed!). 
+Once you get this it is valid until the _APSJPAService_ is stopped (which will happen if the service is redeployed!).
 
 __public boolean isValid()__
 
->  Returns true if this instance is valid. If not call APSJPAService.initialize(...) again to get a new instance. It will be invalid if the APSJPAService provider have been restarted. 
+Returns true if this instance is valid. If not call APSJPAService.initialize(...) again to get a new instance. It will be invalid if the APSJPAService provider have been restarted.
 
 __EntityManager createEntityManager()__
 
->  Creates a new EntityManager. You are responsible for closing it! 
+Creates a new _EntityManager_. You are responsible for closing it!
 
-> Please note that the EntityManager caches all referenced entities. If you keep and reuse it for a longer time it can use more memory. For example at <a href='http://docs.jboss.org/ejb3/app-server/tutorial/extended_pc/extended.html' http://docs.jboss.org/ejb3/app-server/tutorial/extended_pc/extended.html a it says that "Usually, an EntityManager in JBoss EJB 3.0 lives and dies within a JTA transaction". This indicates how long-lived the EntityManager should preferably be.  
+Please note that the _EntityManager_ caches all referenced entities. If you keep and reuse it for a longer time it can use more memory. For example at [http://docs.jboss.org/ejb3/app-server/tutorial/extended_pc/extended.html](http://docs.jboss.org/ejb3/app-server/tutorial/extended_pc/extended.html) it says that "Usually, an _EntityManager_ in JBoss EJB 3.0 lives and dies within a JTA transaction". This indicates how long-lived the _EntityManager_ should preferably be.
 
 _Returns_
 
@@ -3223,7 +3169,9 @@ _Returns_
 
 __EntityManagerFactory getEntityManagerFactory()__
 
->  Returns the underlaying entity manager factory. This will return null if isValid() return false! 
+Returns the underlying _EntityManagerFactory_. This will return null if isValid() return false!
+
+Be very careful what you do with this! It is managed by this service!
 
 }
 
@@ -3265,11 +3213,9 @@ Why a session service ? To begin with, this is not an HttpSession! That said, it
 
 public _interface_ __APSSession__   [se.natusoft.osgi.aps.api.misc.session] {
 
->  This represents an active session. 
+This represents an active session.
 
 __String getId()__
-
->  
 
 _Returns_
 
@@ -3277,15 +3223,13 @@ _Returns_
 
 __boolean isValid()__
 
->  
-
 _Returns_
 
 > true if this session is still valid.
 
 __void saveObject(String name, Object object)__
 
->  Saves an object in the session. Will do nothing if the session is no longer valid.  
+Saves an object in the session. Will do nothing if the session is no longer valid.
 
 _Parameters_
 
@@ -3295,9 +3239,9 @@ _Parameters_
 
 __Object retrieveObject(String name)__
 
->  Returns a object stored under the specified name or null if no object is stored under that name. 
+Returns a object stored under the specified name or null if no object is stored under that name.
 
-> If isValid() returns false then this will always return null.  
+If isValid() returns false then this will always return null.
 
 _Parameters_
 
@@ -3311,7 +3255,7 @@ _Parameters_
 
 public _interface_ __APSSessionService__   [se.natusoft.osgi.aps.api.misc.session] {
 
->  This is not a http session! It is a simple session that can be used by any code running in the same OSGi server. 
+This is not a http session! It is a simple session that can be used by any code running in the same OSGi server.
 
 
 
@@ -3325,7 +3269,7 @@ public _interface_ __APSSessionService__   [se.natusoft.osgi.aps.api.misc.sessio
 
 __APSSession createSession(int timeoutInMinutes)__
 
->  Creates a new session.  
+Creates a new session.
 
 _Parameters_
 
@@ -3333,9 +3277,9 @@ _Parameters_
 
 __APSSession createSession(String sessionId, int timeoutInMinutes)__
 
->  Creates a new session. 
+Creates a new session.
 
-> The idea behind this variant is to support distributed sessions. The implementation must use a session id that is unique enough to support this. The APS implementation uses java.util.UUID.  
+The idea behind this variant is to support distributed sessions. The implementation must use a session id that is unique enough to support this. The APS implementation uses java.util.UUID.
 
 _Parameters_
 
@@ -3345,7 +3289,7 @@ _Parameters_
 
 __APSSession getSession(String sessionId)__
 
->  Looks up an existing session by its id.  
+Looks up an existing session by its id.
 
 _Returns_
 
@@ -3357,7 +3301,7 @@ _Parameters_
 
 __void closeSession(String sessionId)__
 
->  Closes the session represented by the specified id. After this call APSSession.isValid() on an APSSession representing this session will return false.  
+Closes the session represented by the specified id. After this call APSSession.isValid() on an _APSSession_ representing this session will return false.
 
 _Parameters_
 
@@ -3379,11 +3323,11 @@ A _service_ here means anything that can be called either with an URL or a host 
 
 public _class_ __APSDiscoveryPublishException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.discovery.exception] {
 
->  Thrown on service publish problems. 
+Thrown on service publish problems.
 
 __public APSDiscoveryPublishException(String message)__
 
->  Creates a new APSRuntimeException instance.  
+Creates a new _APSDiscoveryPublishException_ instance.
 
 _Parameters_
 
@@ -3391,7 +3335,7 @@ _Parameters_
 
 __public APSDiscoveryPublishException(String message, Throwable cause)__
 
->  Creates a new APSRuntimeException instance.  
+Creates a new _APSDiscoveryPublishException_ instance.
 
 _Parameters_
 
@@ -3407,31 +3351,31 @@ _Parameters_
 
 public _interface_ __ServiceDescription__   [se.natusoft.osgi.aps.api.net.discovery.model] {
 
->  Describes a service. 
+Describes a service.
 
 __String getDescription()__
 
->  A short description of the service. 
+A short description of the service.
 
 __String getServiceId()__
 
->  An id/name of the service. 
+An id/name of the service.
 
 __String getVersion()__
 
->  The version of the service. 
+The version of the service.
 
 __String getServiceHost()__
 
->  The targetHost of the service. 
+The targetHost of the service.
 
 __int getServicePort()__
 
->  The targetPort of the service. 
+The targetPort of the service.
 
 __String getServiceURL()__
 
->  An optional URL to the service. 
+An optional URL to the service.
 
 }
 
@@ -3441,7 +3385,7 @@ __String getServiceURL()__
 
 public _class_ __ServiceDescriptionProvider__ implements  ServiceDescription    [se.natusoft.osgi.aps.api.net.discovery.model] {
 
->  Describes a service. 
+Describes a service.
 
 
 
@@ -3457,19 +3401,19 @@ public _class_ __ServiceDescriptionProvider__ implements  ServiceDescription    
 
 __public ServiceDescriptionProvider()__
 
->  Creates a new ServiceDescirption. 
+Creates a new ServiceDescirption.
 
 __public String toString()__
 
->  Returns a string representation of this object. 
+Returns a string representation of this object.
 
 __public String getDescription()__
 
->  A short description of the service. 
+A short description of the service.
 
 __public void setDescription(String description)__
 
->  Sets a short description of the service.  
+Sets a short description of the service.
 
 _Parameters_
 
@@ -3479,7 +3423,7 @@ _Parameters_
 
 __public void setServiceId(String serviceId)__
 
->  Sets the id of the service.  
+Sets the id of the service.
 
 _Parameters_
 
@@ -3489,7 +3433,7 @@ _Parameters_
 
 __public void setVersion(String version)__
 
->  Sets the version of the service.  
+Sets the version of the service.
 
 _Parameters_
 
@@ -3499,7 +3443,7 @@ _Parameters_
 
 __public void setServiceHost(String serviceHost)__
 
->  Sets the targetHost of the service.  
+Sets the targetHost of the service.
 
 _Parameters_
 
@@ -3509,7 +3453,7 @@ _Parameters_
 
 __public void setServicePort(int servicePort)__
 
->  Sets the targetPort of the servcie.  
+Sets the targetPort of the service.
 
 _Parameters_
 
@@ -3519,11 +3463,11 @@ _Parameters_
 
 ____
 
->  Sets an url to the service.  
+Sets an url to the service.
 
 _Parameters_
 
-> _serviceURL_ - The servcie url to set. 
+> _serviceURL_ - The service url to set. 
 
 
 
@@ -3537,23 +3481,23 @@ _Parameters_
 
 public _interface_ __APSSimpleDiscoveryService__   [se.natusoft.osgi.aps.api.net.discovery.service] {
 
->  A network service discovery. 
+A network service discovery.
 
 __public List<ServiceDescription> getRemotelyDiscoveredServices()__
 
->  Returns all remotely discovered services. 
+Returns all remotely discovered services.
 
 __public List<ServiceDescription> getLocallyRegisteredServices()__
 
->  Returns the locally registered services. 
+Returns the locally registered services.
 
 __public List<ServiceDescription> getAllServices()__
 
->  Returns all known services, both locally registered and remotely discovered. 
+Returns all known services, both locally registered and remotely discovered.
 
 __public List<ServiceDescription> getService(String serviceId, String version)__
 
->  Returns all discovered services with the specified id.  
+Returns all discovered services with the specified id.
 
 _Parameters_
 
@@ -3563,7 +3507,7 @@ _Parameters_
 
 __public void publishService(ServiceDescription service) throws APSDiscoveryPublishException__
 
->  Publishes a local service. This will announce it to other known APSSimpleDiscoveryService instances.  
+Publishes a local service. This will announce it to other known APSSimpleDiscoveryService instances.
 
 _Parameters_
 
@@ -3575,7 +3519,7 @@ _Throws_
 
 __public void unpublishService(ServiceDescription service) throws APSDiscoveryPublishException__
 
->  Recalls the locally published service, announcing to other known APSSimpleDiscoveryService instances that this service is no longer available.  
+Recalls the locally published service, announcing to other known APSSimpleDiscoveryService instances that this service is no longer available.
 
 _Parameters_
 
@@ -3613,11 +3557,11 @@ The flow is like this:
 
 2. Transport gets some user selected protocol (The APSExtProtocolHTTPTransportProvider allows specification of both protocol, protocol version, and service to call in the URL).
 
-3. Transport calls APSExternalProtocolService to get requested protocol.
+3. Transport calls _APSExternalProtocolService_ to get requested protocol.
 
-4. Transport calls protocol to parse InputStream and it returns an RPCRequest.
+4. Transport calls protocol to parse InputStream and it returns an _RPCRequest_.
 
-5. Transport uses the information in the RPCRequest to call a service using APSExternalProtocolService.
+5. Transport uses the information in the RPCRequest to call a service using _APSExternalProtocolService_.
 
 6. Transport takes the result from the call and passes to the protocol along with an OutputStream to write response on.
 
@@ -3627,9 +3571,9 @@ This bundle registers an _APSExternalProtocolService_ that will provide all _APS
 
 ### Protocols
 
-There is a base API for protocols: RPCProtocol. APIs for different types of protocols should extend this. The protocol type APIs are service APIs and services implementing them must be provided by other bundles. This bundle looks for and keeps track of all such service providers.
+There is a base API for protocols: _RPCProtocol_. APIs for different types of protocols should extend this. The protocol type APIs are service APIs and services implementing them must be provided by other bundles. This bundle looks for and keeps track of all such service providers.
 
-The _StreamedRPCProtocol_ extends _RPCPROTOCOL_ and provides a method for parsing a request from an InputStream returning an RPCRequest object. This request object contains the name of the service, the method, and the parameters. This is enough for using _APSExternalProtocolService_ to do a call to the service. The request object is also used to write the call response on an OutputStream. There is also a method to write an error response.
+The _StreamedRPCProtocol_ extends _RPCProtocol_ and provides a method for parsing a request from an _InputStream_ returning an _RPCRequest_ object. This request object contains the name of the service, the method, and the parameters. This is enough for using _APSExternalProtocolService_ to do a call to the service. The request object is also used to write the call response on an OutputStream. There is also a method to write an error response.
 
 The _StreamedHTTPProtocol_ extends _StreamedRPCProtocol_ and indicates that the protocol should probably only be supported by http transports. It also provides a _supportsREST()_ method that transports can use to make decicions on how the call should be interpreted.
 
@@ -3643,21 +3587,23 @@ A transport provider can register themselves with the _APSExternalProtocolServic
 
 _APSExtProtocolHTTPTransportProvider_ - Provides a HTTP transport.
 
-_APSStreamedJSONRPCProtocolProvider_ - Provides version 1.0 and 2.0 of JSONRPC.
+_APSStreamedJSONRPCProtocolProvider_ - Provides version 1.0 and 2.0 of JSONRPC, JSONHTTP and JSONREST.
 
 ## APIs
 
 public _interface_ __APSExternalProtocolService__   [se.natusoft.osgi.aps.api.external.extprotocolsvc] {
 
->  This service makes the currently available externalizable services available for calling. It should be used by a bundle providing an externally available way of calling a service (JSON over http for example) to translate and forward calls to the local service. The locally called service is not required to be aware that it is called externally.  __Never cache any result of this service!__ Always make a new call to get the current state. Also note that it is possible that the service represented by an APSExternallyCallable have gone away after it was returned, but before you do call() on it! In that case an APSNoServiceAvailableException will be thrown. Note that you can register as an APSExternalProtocolListener to receive notifications about externalizable services coming and going, and also protocols coming and going to keep up to date with the current state of things. 
+This service makes the currently available externalizable services available for calling. It should be used by a bundle providing an externally available way of calling a service (JSON over http for example) to translate and forward calls to the local service. The locally called service is not required to be aware that it is called externally.
+
+__Never cache any result of this service!__ Always make a new call to get the current state. Also note that it is possible that the service represented by an APSExternallyCallable have gone away after it was returned, but before you do call() on it! In that case an APSNoServiceAvailableException will be thrown. Note that you can register as an APSExternalProtocolListener to receive notifications about externalizable services coming and going, and also protocols coming and going to keep up to date with the current state of things.
 
 __public Set<String> getAvailableServices()__
 
->  Returns all currently available services. 
+Returns all currently available services.
 
 __public List<APSExternallyCallable> getCallables(String serviceName) throws RuntimeException__
 
->  Returns all APSExternallyCallable for the named service object.  
+Returns all APSExternallyCallable for the named service object.
 
 _Parameters_
 
@@ -3669,7 +3615,7 @@ _Throws_
 
 __public boolean isRESTCallable(String serviceName) throws RuntimeException__
 
->  Returns true if the service has _put*(...)_, _get*(...)_, and/or _delete*(...)_ methods. This is to help HTTP transports support REST calls.  
+Returns true if the service has _post*(...)_, _put*(...)_, _get*(...)_, and/or _delete*(...)_ methods. This is to help HTTP transports support REST calls.
 
 _Parameters_
 
@@ -3677,7 +3623,7 @@ _Parameters_
 
 __public APSRESTCallable getRESTCallable(String serviceName)__
 
->  Returns an APSRESTCallable containing one or more of post, put.get, and delete methods. This is to help HTTP transports support REST calls.  
+Returns an APSRESTCallable containing one or more of post, put, get, and delete methods. This is to help HTTP transports support REST calls.
 
 _Parameters_
 
@@ -3685,7 +3631,7 @@ _Parameters_
 
 __public Set<String> getAvailableServiceFunctionNames(String serviceName)__
 
->  Returns the names of all available functions of the specified service.  
+Returns the names of all available functions of the specified service.
 
 _Parameters_
 
@@ -3693,7 +3639,7 @@ _Parameters_
 
 __public APSExternallyCallable getCallable(String serviceName, String serviceFunctionName)__
 
->  Gets an APSExternallyCallable for a specified service name and service function name.  
+Gets an APSExternallyCallable for a specified service name and service function name.
 
 _Returns_
 
@@ -3707,15 +3653,13 @@ _Parameters_
 
 __public List<RPCProtocol> getAllProtocols()__
 
->  
-
 _Returns_
 
 > All currently deployed providers of RPCProtocol.
 
 __public RPCProtocol getProtocolByNameAndVersion(String name, String version)__
 
->  Returns an RPCProtocol provider by protocol name and version.  
+Returns an RPCProtocol provider by protocol name and version.
 
 _Returns_
 
@@ -3729,15 +3673,13 @@ _Parameters_
 
 __public List<StreamedRPCProtocol> getAllStreamedProtocols()__
 
->  
-
 _Returns_
 
 > All currently deployed providers of StreamedRPCProtocol.
 
 __public StreamedRPCProtocol getStreamedProtocolByNameAndVersion(String name, String version)__
 
->  Returns a StreamedRPCProtocol provider by protocol name and version.  
+Returns a StreamedRPCProtocol provider by protocol name and version.
 
 _Returns_
 
@@ -3751,7 +3693,7 @@ _Parameters_
 
 __public void addExternalProtocolListener(APSExternalProtocolListener externalServiceListener)__
 
->  Add a listener for externally available services.  
+Add a listener for externally available services.
 
 _Parameters_
 
@@ -3759,7 +3701,7 @@ _Parameters_
 
 __public void removeExternalProtocolListener(APSExternalProtocolListener externalServiceListener)__
 
->  Removes a listener for externally available services.  
+Removes a listener for externally available services.
 
 _Parameters_
 
@@ -3773,11 +3715,9 @@ _Parameters_
 
 public _interface_ __APSExternallyCallable<ReturnType>__ extends  Callable<ReturnType>    [se.natusoft.osgi.aps.api.external.extprotocolsvc.model] {
 
->  This API represents one callable service method. 
+This API represents one callable service method.
 
 __public String getServiceName()__
-
->  
 
 _Returns_
 
@@ -3785,15 +3725,11 @@ _Returns_
 
 __public String getServiceFunctionName()__
 
->  
-
 _Returns_
 
 > The name of the service function this callable represents.
 
 __public DataTypeDescription getReturnDataDescription()__
-
->  
 
 _Returns_
 
@@ -3801,15 +3737,11 @@ _Returns_
 
 __public List<ParameterDataTypeDescription> getParameterDataDescriptions()__
 
->  
-
 _Returns_
 
 > A description of each parameter type.
 
 __public Bundle getServiceBundle()__
-
->  
 
 _Returns_
 
@@ -3817,7 +3749,7 @@ _Returns_
 
 __public void setArguments(Object... value)__
 
->  Provides parameters to the callable using a varags list of parameter values.  
+Provides parameters to the callable using a varags list of parameter values.
 
 _Parameters_
 
@@ -3825,7 +3757,7 @@ _Parameters_
 
 __ReturnType call() throws Exception__
 
->  Calls the service method represented by this APSExternallyCallable.  
+Calls the service method represented by this APSExternallyCallable.
 
 _Returns_
 
@@ -3843,11 +3775,11 @@ _Throws_
 
 public _interface_ __APSExternalProtocolListener__   [se.natusoft.osgi.aps.api.external.extprotocolsvc.model] {
 
->  A listener for externally available services. Please note that this means that the service is available for potential external protocol exposure! For it to be truly available there also has to be a protocol and transport available. It is probably only transports that are interested in this information! 
+A listener for externally available services. Please note that this means that the service is available for potential external protocol exposure! For it to be truly available there also has to be a protocol and transport available. It is probably only transports that are interested in this information!
 
 __public void externalServiceAvailable(String service, String version)__
 
->  This gets called when a new externally available service becomes available.  
+This gets called when a new externally available service becomes available.
 
 _Parameters_
 
@@ -3857,7 +3789,7 @@ _Parameters_
 
 __public void externalServiceLeaving(String service, String version)__
 
->  This gets called when an externally available service no longer is available.  
+This gets called when an externally available service no longer is available.
 
 _Parameters_
 
@@ -3867,7 +3799,7 @@ _Parameters_
 
 __public void protocolAvailable(String protocolName, String protocolVersion)__
 
->  This gets called when a new protocol becomes available.  
+This gets called when a new protocol becomes available.
 
 _Parameters_
 
@@ -3877,7 +3809,7 @@ _Parameters_
 
 __public void protocolLeaving(String protocolName, String protocolVersion)__
 
->  This gets called when a new protocol is leaving.  
+This gets called when a new protocol is leaving.
 
 _Parameters_
 
@@ -3891,6 +3823,52 @@ _Parameters_
 
     
 
+public _interface_ __APSRESTCallable__ extends  APSExternallyCallable    [se.natusoft.osgi.aps.api.external.extprotocolsvc.model] {
+
+This is a special variant of APSExternallyCallable that supports a HTTP REST call.
+
+This is only available when a service have zero or one method whose name starts with put, zero or one method whose name starts with post, and so on. There has to be at least one method of put, post, get or delete.
+
+APSExternalProtocolService can provide an instance of this is a service matches the criteria.
+
+This is only of use for HTTP transports! aps-ext-protocol-http-transport-provider does make use of this for protocols that indicate they support REST.
+
+__public boolean supportsPut()__
+
+_Returns_
+
+> true if the service supports the PUT method.
+
+__public boolean supportsPost()__
+
+_Returns_
+
+> true if the service supports the POST method.
+
+__public boolean supportsGet()__
+
+_Returns_
+
+> true if the service supports the GET method.
+
+__public boolean supportsDelete()__
+
+_Returns_
+
+> true if the service supports the DELETE method.
+
+__public void selectMethod(HttpMethod method)__
+
+This selects the method to call with this callable.
+
+_Parameters_
+
+> _method_ - The selected method to call. 
+
+public _static_ _enum_ __HttpMethod__   [se.natusoft.osgi.aps.api.external.extprotocolsvc.model] {
+
+This defines the valid choices for selectMethod(...).
+
 }
 
 ----
@@ -3899,13 +3877,13 @@ _Parameters_
 
 public _class_ __APSRESTException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.rpc.errors] {
 
->  This is a special exception that services can throw if they are intended to be available as REST services through the APSExternalProtocolExtender + APSRPCHTTPTransportProvider. This allows for better control over status codes returned by the service call. 
+This is a special exception that services can throw if they are intended to be available as REST services through the aps-external-protocol-extender + aps-ext-protocol-http-transport-provider. This allows for better control over status codes returned by the service call.
 
 
 
 __public APSRESTException(int httpStatusCode)__
 
->  Creates a new APSRESTException.  
+Creates a new _APSRESTException_.
 
 _Parameters_
 
@@ -3913,7 +3891,7 @@ _Parameters_
 
 __public APSRESTException(int httpStatusCode, String message)__
 
->  Creates a new APSRESTException.  
+Creates a new _APSRESTException_.
 
 _Parameters_
 
@@ -3923,7 +3901,7 @@ _Parameters_
 
 __public int getHttpStatusCode()__
 
->  Returns the http status code. 
+Returns the http status code.
 
 }
 
@@ -3933,35 +3911,35 @@ __public int getHttpStatusCode()__
 
 public _enum_ __ErrorType__   [se.natusoft.osgi.aps.api.net.rpc.errors] {
 
->  This defines what I think is a rather well though through set of error types applicable for an RPC call. No they are not mine, they come from Matt Morley in his JSONRPC 2.0 specification at http://jsonrpc.org/spec.html. I did add SERVICE_NOT_FOUND since it is fully possible to try to call a service that does not exist. 
+This defines what I think is a rather well though through set of error types applicable for an RPC call. No they are not mine, they come from Matt Morley in his JSONRPC 2.0 specification at [http://jsonrpc.org/spec.html](http://jsonrpc.org/spec.html). I did add SERVICE_NOT_FOUND since it is fully possible to try to call a service that does not exist.
 
 __PARSE_ERROR__
 
->  Invalid input was received by the server. An error occurred on the server while parsing request data. 
+Invalid input was received by the server. An error occurred on the server while parsing request data.
 
 __INVALID_REQUEST__
 
->  The request data sent is not a valid. 
+The request data sent is not a valid.
 
 __METHOD_NOT_FOUND__
 
->  The called method does not exist / is not available. 
+The called method does not exist / is not available.
 
 __SERVICE_NOT_FOUND__
 
->  The called service does not exist / is not available. 
+The called service does not exist / is not available.
 
 __INVALID_PARAMS__
 
->  The parameters to the method are invalid. 
+The parameters to the method are invalid.
 
 __INTERNAL_ERROR__
 
->  Internal protocol error. 
+Internal protocol error.
 
 __SERVER_ERROR__
 
->  Server related error. 
+Server related error.
 
 }
 
@@ -3971,11 +3949,9 @@ __SERVER_ERROR__
 
 public _interface_ __HTTPError__ extends  RPCError    [se.natusoft.osgi.aps.api.net.rpc.errors] {
 
->  Extends RPCError with an HTTP status code. HTTP transports can make use of this information. 
+Extends _RPCError_ with an HTTP status code. HTTP transports can make use of this information.
 
 __public int getHttpStatusCode()__
-
->  
 
 _Returns_
 
@@ -3989,27 +3965,27 @@ _Returns_
 
 public _interface_ __RPCError__   [se.natusoft.osgi.aps.api.net.rpc.errors] {
 
->  This represents an error in servicing an RPC request. 
+This represents an error in servicing an RPC request.
 
 __public ErrorType getErrorType()__
 
->  The type of the error. 
+The type of the error.
 
 __public String getErrorCode()__
 
->  A potential error code. 
+A potential error code.
 
 __public String getMessage()__
 
->  Returns an error message. This is also optional. 
+Returns an error message. This is also optional.
 
 __public boolean hasOptionalData()__
 
->  True if there is optional data available. An example of optional data would be a stack trace for example. 
+True if there is optional data available. An example of optional data would be a stack trace for example.
 
 __public String getOptionalData()__
 
->  The optional data. 
+The optional data.
 
 }
 
@@ -4019,11 +3995,11 @@ __public String getOptionalData()__
 
 public _class_ __RequestedParamNotAvailableException__ extends  APSException    [se.natusoft.osgi.aps.api.net.rpc.exceptions] {
 
->  This exception is thrown when a parameter request cannot be fulfilled. 
+This exception is thrown when a parameter request cannot be fulfilled.
 
 __public RequestedParamNotAvailableException(String message)__
 
->  Creates a new APSException instance.  
+Creates a new _RequestedParamNotAvailableException_ instance.
 
 _Parameters_
 
@@ -4031,7 +4007,7 @@ _Parameters_
 
 __public RequestedParamNotAvailableException(String message, Throwable cause)__
 
->  Creates a new APSException instance.  
+Creates a new _RequestedParamNotAvailableException_ instance.
 
 _Parameters_
 
@@ -4047,7 +4023,7 @@ _Parameters_
 
 public _abstract_ _class_ __AbstractRPCRequest__ implements  RPCRequest    [se.natusoft.osgi.aps.api.net.rpc.model] {
 
->  This contains a parsed JSONRPC request. 
+This provides a partial implementation of RPCRequest.
 
 
 
@@ -4063,7 +4039,7 @@ public _abstract_ _class_ __AbstractRPCRequest__ implements  RPCRequest    [se.n
 
 __public AbstractRPCRequest(String method)__
 
->  Creates a new AbstractRPCRequest.  
+Creates a new AbstractRPCRequest.
 
 _Parameters_
 
@@ -4071,7 +4047,7 @@ _Parameters_
 
 __public AbstractRPCRequest(RPCError error)__
 
->  Creates a new AbstractRPCRequest.  
+Creates a new AbstractRPCRequest.
 
 _Parameters_
 
@@ -4079,7 +4055,7 @@ _Parameters_
 
 __public AbstractRPCRequest(String method, Object callId)__
 
->  Creates a new AbstractRPCRequest.  
+Creates a new AbstractRPCRequest.
 
 _Parameters_
 
@@ -4089,15 +4065,11 @@ _Parameters_
 
 __protected Map<String, Object> getNamedParameters()__
 
->  
-
 _Returns_
 
 > The named parameters.
 
 __protected List<Object> getParameters()__
-
->  
 
 _Returns_
 
@@ -4111,7 +4083,7 @@ _Returns_
 
 __public void setServiceQName(String serviceQName)__
 
->  Sets the fully qualified name of the service to call. This is optional since not all protocol delivers a service name this way.  
+Sets the fully qualified name of the service to call. This is optional since not all protocol delivers a service name this way.
 
 _Parameters_
 
@@ -4127,7 +4099,7 @@ _Parameters_
 
 __public void addParameter(Object parameter)__
 
->  Adds a parameter. This is mutually exclusive with addParameter(name, parameter)!  
+Adds a parameter. This is mutually exclusive with addParameter(name, parameter)!
 
 _Parameters_
 
@@ -4141,51 +4113,43 @@ _Parameters_
 
 public _interface_ __RPCRequest__   [se.natusoft.osgi.aps.api.net.rpc.model] {
 
->  
+This represents a request returned by protocol implementations.
 
 __boolean isValid()__
 
->  Returns true if this request is valid. If this returns false all information except getError() is invalid, and getError() should return a valid RPCError object. 
+Returns true if this request is valid. If this returns false all information except _getError()_ is invalid, and _getError()_ should return a valid _RPCError_ object.
 
 __RPCError getError()__
 
->  Returns an RPCError object if isValid() == false, null otherwise. 
+Returns an _RPCError_ object if `isValid() == false`, _null_ otherwise.
 
 __String getServiceQName()__
 
->  Returns a fully qualified name of service to call. This will be null for protocols where service name is not provided this way. So this cannot be taken for given! 
+Returns a fully qualified name of service to call. This will be null for protocols where service name is not provided this way. So this cannot be taken for given!
 
 __String getMethod()__
 
->  REST protocol where it will be part of the URL. 
-
-_Returns_
-
-> The method to call. This can return null if the method is provided by other means, for example a
+Returns the method to call. This can return _null_ if the method is provided by other means, for example a REST protocol where it will be part of the URL.
 
 __boolean hasCallId()__
 
->  Returns true if there is a call id available in the request. 
+Returns true if there is a call id available in the request.
 
-> A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont. 
+A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont.
 
 __Object getCallId()__
 
->  Returns the method call call Id. 
+Returns the method call call Id.
 
-> A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont. 
+A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont.
 
 __int getNumberOfParameters()__
 
->  
-
-_Returns_
-
-> The number of parameters available.
+Return the number of parameters available.
 
 __<T> T getIndexedParameter(int index, Class<T> paramClass) throws RequestedParamNotAvailableException__
 
->  Returns the parameter at the specified index.  
+Returns the parameter at the specified index.
 
 _Returns_
 
@@ -4209,11 +4173,9 @@ _Throws_
 
 public _interface_ __RPCProtocol__   [se.natusoft.osgi.aps.api.net.rpc.service] {
 
->  This represents an RPC protocol provider. This API is not enough in itself, it is a common base for different protocols. 
+This represents an RPC protocol provider. This API is not enough in itself, it is a common base for different protocols.
 
 __String getServiceProtocolName()__
-
->  
 
 _Returns_
 
@@ -4221,15 +4183,11 @@ _Returns_
 
 __String getServiceProtocolVersion()__
 
->  
-
 _Returns_
 
 > The version of the implemented protocol.
 
 __String getRequestContentType()__
-
->  
 
 _Returns_
 
@@ -4237,15 +4195,11 @@ _Returns_
 
 __String getResponseContentType()__
 
->  
-
 _Returns_
 
 > The content type of the response for when such can be provided.
 
 __String getRPCProtocolDescription()__
-
->  
 
 _Returns_
 
@@ -4253,7 +4207,7 @@ _Returns_
 
 __RPCError createRPCError(ErrorType errorType, String errorCode, String message, String optionalData, Throwable cause)__
 
->  Factory method to create an error object.  
+Factory method to create an error object.
 
 _Returns_
 
@@ -4279,11 +4233,11 @@ _Parameters_
 
 public _interface_ __StreamedHTTPProtocol__ extends  StreamedRPCProtocol    [se.natusoft.osgi.aps.api.net.rpc.service] {
 
->  This is a marker interface indicating that the protocol is really assuming a HTTP transport and is expecting to be able to return http status codes. This also means it will be returning an HTTPError (which extends RPCError) from _createError(...)_.  It might be difficult for non HTTP transports to support this kind of protocol, and such should probably ignore these protocols. For example a REST implementation of this protocol will not be writing any error response back, but rather expect the transport to deliver the http status code it provides. A non HTTP transport will not be able to know how to communicate back errors in this case since it will not know anything about the protocol itself. 
+This is a marker interface indicating that the protocol is really assuming a HTTP transport and is expecting to be able to return http status codes. This also means it will be returning an HTTPError (which extends RPCError) from _createError(...)_.
+
+It might be difficult for non HTTP transports to support this kind of protocol, and such should probably ignore these protocols. For example a REST implementation of this protocol will not be writing any error response back, but rather expect the transport to deliver the http status code it provides. A non HTTP transport will not be able to know how to communicate back errors in this case since it will not know anything about the protocol itself.
 
 __boolean supportsREST()__
-
->  
 
 _Returns_
 
@@ -4297,11 +4251,13 @@ _Returns_
 
 public _interface_ __StreamedRPCProtocol__ extends  RPCProtocol    [se.natusoft.osgi.aps.api.net.rpc.service] {
 
->  This represents an RPC protocol provider that provide client/service calls with requests read from an InputStream or having parameters passes as strings and responses written to an OutputStream.  HTTP transports can support both _parseRequests(...)_ and _parseRequest(...)_ while other transports probably can handle only _parseRequests(...)_. __A protocol provider can return null for either of these!__ Most protocol providers will support _parseRequests(...)_ and some also _parseRequest(...)_. 
+This represents an RPC protocol provider that provide client/service calls with requests read from an InputStream or having parameters passes as strings and responses written to an OutputStream.
+
+HTTP transports can support both _parseRequests(...)_ and _parseRequest(...)_ while other transports probably can handle only _parseRequests(...)_. __A protocol provider can return null for either of these!__ Most protocol providers will support _parseRequests(...)_ and some also _parseRequest(...)_.
 
 __List<RPCRequest> parseRequests(String serviceQName, String method, InputStream requestStream) throws IOException__
 
->  Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.  
+Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.
 
 _Returns_
 
@@ -4321,7 +4277,7 @@ _Throws_
 
 __RPCRequest parseRequest(String serviceQName, String method, Map<String, String> parameters) throws IOException__
 
->  Provides an RPCRequest based on in-parameters. This variant supports HTTP transports.  
+Provides an RPCRequest based on in-parameters. This variant supports HTTP transports.
 
 _Returns_
 
@@ -4341,7 +4297,7 @@ _Throws_
 
 __void writeResponse(Object result, RPCRequest request, OutputStream responseStream) throws IOException__
 
->  Writes a successful response to the specified OutputStream.  
+Writes a successful response to the specified OutputStream.
 
 _Parameters_
 
@@ -4357,7 +4313,7 @@ _Throws_
 
 __boolean writeErrorResponse(RPCError error, RPCRequest request, OutputStream responseStream) throws IOException__
 
->  Writes an error response.  
+Writes an error response.
 
 _Returns_
 
@@ -4548,11 +4504,11 @@ The library wants an implementation of the APSGroupsConfig interface as its firs
 
 public _interface_ __APSGroupsService__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
->  A service that lets clients send data reliable to all members of a group on any host. There is no limit on the size of the data sent, but that said I wouldn't send MB:s of data! 
+A service that lets clients send data reliable to all members of a group on any host. There is no limit on the size of the data sent, but that said I wouldn't send MB:s of data!
 
 __GroupMember joinGroup(String name) throws IOException__
 
->  Joins a group.  
+Joins a group.
 
 _Returns_
 
@@ -4568,7 +4524,7 @@ _Throws_
 
 __void leaveGroup(GroupMember groupMember) throws IOException__
 
->  Leaves as member of group.  
+Leaves as member of group.
 
 _Parameters_
 
@@ -4586,11 +4542,11 @@ _Throws_
 
 public _interface_ __GroupMember__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
->  This is the API for APSGroupsService members received when they join a group. It is used to send and receive data messages to/from the group. 
+This is the API for _APSGroupsService_ members received when they join a group. It is used to send and receive data messages to/from the group.
 
 __void addMessageListener(MessageListener listener)__
 
->  Adds a listener for incoming messages. 
+Adds a listener for incoming messages.
 
 _Parameters_
 
@@ -4598,7 +4554,7 @@ _Parameters_
 
 __void removeMessageListener(MessageListener listener)__
 
->  Removes a listener for incoming messages.  
+Removes a listener for incoming messages.
 
 _Parameters_
 
@@ -4606,11 +4562,11 @@ _Parameters_
 
 __Message createNewMessage()__
 
->  Creates a new Message to send. Use the sendMessage() method when ready to send it. 
+Creates a new Message to send. Use the sendMessage() method when ready to send it.
 
 __void sendMessage(Message message) throws IOException__
 
->  Sends a previously created message to all current members of the group. If this returns without an exception then all members have received the message.  
+Sends a previously created message to all current members of the group. If this returns without an exception then all members have received the message.
 
 _Parameters_
 
@@ -4622,19 +4578,15 @@ _Throws_
 
 __UUID getMemberId()__
 
->  
-
 _Returns_
 
 > The ID of the member.
 
 __List<String> getMemberInfo()__
 
->  Returns information about members. 
+Returns information about members.
 
 __NetTime getNow()__
-
->  
 
 _Returns_
 
@@ -4642,7 +4594,7 @@ _Returns_
 
 __NetTime createFromNetTime(long netTimeMillis)__
 
->  Creates from milliseconds in net time.  
+Creates from milliseconds in net time.
 
 _Parameters_
 
@@ -4650,7 +4602,7 @@ _Parameters_
 
 __NetTime createFromNetTime(Date netTimeDate)__
 
->  Creates from a Date in net time.  
+Creates from a Date in net time.
 
 _Parameters_
 
@@ -4658,7 +4610,7 @@ _Parameters_
 
 __NetTime createFromLocalTime(long localTimeMillis)__
 
->  Creates from milliseconds in local time.  
+Creates from milliseconds in local time.
 
 _Parameters_
 
@@ -4666,7 +4618,7 @@ _Parameters_
 
 __NetTime createFromLocalTime(Date localTimeDate)__
 
->  Creates from a Date in local time.  
+Creates from a Date in local time.
 
 _Parameters_
 
@@ -4680,31 +4632,27 @@ _Parameters_
 
 public _interface_ __Message__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
->  This represents a complete message containing any data you want to send to the group. You provide the message with data using the OutputStream, and read message data using the InputStream. 
+This represents a complete message containing any data you want to send to the group. You provide the message with data using the _OutputStream_, and read message data using the _InputStream_.
 
 __OutputStream getOutputStream()__
 
->  Returns an OutputStream to write message on. Multiple calls to this will return the same OutputStream! 
+Returns an _OutputStream_ to write message on. Multiple calls to this will return the same _OutputStream_!
 
 __InputStream getInputStream()__
 
->  Returns an InputStream for reading the message. Multiple calls to this will return new InputStream:s starting from the beginning! 
+Returns an _InputStream_ for reading the message. Multiple calls to this will return new _InputStream_:s starting from the beginning!
 
 __UUID getId()__
 
->  Returns the id of this message. 
+Returns the id of this message.
 
 __String getMemberId()__
-
->  
 
 _Returns_
 
 > id of member as a string.
 
 __String getGroupName()__
-
->  
 
 _Returns_
 
@@ -4718,11 +4666,11 @@ _Returns_
 
 public _interface_ __MessageListener__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
->  For listening on messages from the group. 
+For listening on messages from the group.
 
 __public void messageReceived(Message message)__
 
->  Notification of received message.  
+Notification of received message.
 
 _Parameters_
 
@@ -4736,23 +4684,23 @@ _Parameters_
 
 public _interface_ __NetTime__ extends  Serializable    [se.natusoft.osgi.aps.api.net.groups.service] {
 
->  This represents a common network time between members for handling date and time data. The net time is synchronized between all members. Each receiver of net time diffs it with local time and stores the diff so that they can convert to/from local/net time. 
+This represents a common network time between members for handling date and time data. The net time is synchronized between all members. Each receiver of net time diffs it with local time and stores the diff so that they can convert to/from local/net time.
 
 __public long getNetTime()__
 
->  Returns the number of milliseconds since Januray 1, 1970 in net time. 
+Returns the number of milliseconds since January 1, 1970 in net time.
 
 __public Date getNetTimeDate()__
 
->  Returns the net time as a Date. 
+Returns the net time as a Date.
 
 __public Calendar getNetTimeCalendar()__
 
->  Returns the net time as a Calendar. 
+Returns the net time as a Calendar.
 
 __public Calendar getNetTimeCalendar(Locale locale)__
 
->  Returns the net time as a Calendar.  
+Returns the net time as a Calendar.
 
 _Parameters_
 
@@ -4760,15 +4708,15 @@ _Parameters_
 
 __public Date getLocalTimeDate()__
 
->  Converts the net time to local time and returns as a Date. 
+Converts the net time to local time and returns as a Date.
 
 __public Calendar getLocalTimeCalendar()__
 
->  Converts the net time to local time and returns as a Calendar. 
+Converts the net time to local time and returns as a Calendar.
 
 __public Calendar getLocalTimeCalendar(Locale locale)__
 
->  Converts the net time to local time and returns as a Calendar.  
+Converts the net time to local time and returns as a Calendar.
 
 _Parameters_
 
@@ -4878,11 +4826,11 @@ Then to validate that there is a valid login do:
 
 public _interface_ __APSAdminWebService__   [se.natusoft.osgi.aps.apsadminweb.service] {
 
->  This service registers other specific administration web applications to make them available under a common administration gui. 
+This service registers other specific administration web applications to make them available under a common administration gui.
 
 __public void registerAdminWeb(AdminWebReg adminWebReg) throws IllegalArgumentException__
 
->  Registers an admin web application.  
+Registers an admin web application.
 
 _Parameters_
 
@@ -4894,15 +4842,13 @@ _Throws_
 
 __public void unregisterAdminWeb(AdminWebReg adminWebReg)__
 
->  Unregisters a previously registered admin web. This is failsafe. If it has not been registered nothing happens.  
+Unregisters a previously registered admin web. This is failsafe. If it has not been registered nothing happens.
 
 _Parameters_
 
 > _adminWebReg_ - Registration information for the admin web. Use the same as registered with. 
 
 __public List<AdminWebReg> getRegisteredAdminWebs()__
-
->  
 
 _Returns_
 
@@ -4916,7 +4862,7 @@ _Returns_
 
 public _class_ __AdminWebReg__   [se.natusoft.osgi.aps.apsadminweb.service.model] {
 
->  This model holds information about a registered admin web application. 
+This model holds information about a registered admin web application.
 
 
 
@@ -4928,7 +4874,7 @@ public _class_ __AdminWebReg__   [se.natusoft.osgi.aps.apsadminweb.service.model
 
 __public AdminWebReg(String name, String version, String description, String url)__
 
->  Creates a new AdminWebReg instance.  
+Creates a new AdminWebReg instance.
 
 _Parameters_
 
@@ -4942,15 +4888,11 @@ _Parameters_
 
 __public String getName()__
 
->  
-
 _Returns_
 
 > The (short) name of the admin web.
 
 __public String getVersion()__
-
->  
 
 _Returns_
 
@@ -4958,15 +4900,11 @@ _Returns_
 
 __public String getDescription()__
 
->  
-
 _Returns_
 
 > The description of the admin web.
 
 __public String getUrl()__
-
->  
 
 _Returns_
 

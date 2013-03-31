@@ -46,7 +46,7 @@ import java.io.InputStreamReader;
 /**
  * This is a Label that takes a classpath relative path to an html file and loads it as label content.
  * Please note that it required XHTML!
- * <p/>
+ *
  * Any comment blocks in the html are skipped when loading.
  */
 public class HTMLFileLabel extends Label {

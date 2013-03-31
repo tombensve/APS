@@ -42,15 +42,15 @@ import java.util.Set;
 
 /**
  * This is a model describing a subclass of APSConfig, modeling its structure. The annotated config classes
- * extending APSConfig is used for both describing the configuration and to provide configuration values.
- * Since such a class can contain both APSConfigValue members and other subclass of APSConfig members and
+ * extending _APSConfig_ is used for both describing the configuration and to provide configuration values.
+ * Since such a class can contain both _APSConfigValue_ members and other subclass of _APSConfig_ members and
  * lists of both the configuration can have a structure. Internally however the configuration is stored
  * with key and value for each value where keys are automatically built and are internal to the implementation.
- * <p/>
- * Implementations of this interface describes/models a specific APSConfig subclass. The getValues() method
+ *
+ * Implementations of this interface describes/models a specific APSConfig subclass. The _getValues()_ method
  * returns a list of the values held by the modelled config class. The entries in the list is either an
- * APSConfigValueModel or another APSConfigModel depending on the value type.
- * <p/>
+ * _APSConfigValueModel_ or another _APSConfigModel_ depending on the value type.
+ *
  * This is intended for configuration editors using APSConfigAdminService to edit configuration. This models
  * the structure of the original and makes it easier to any editor to represent and edit this structure.
  */
@@ -74,8 +74,8 @@ public interface APSConfigEditModel extends APSConfigValueEditModel {
 
     /**
      * Gets a value by its name (java bean property name but in all lowercase).
-     * <p/>
-     * To make this a bit clearer: (the returned value).getKey().equals(getKey() + "." + name) should be true.
+     *
+     * To make this a bit clearer: _(the returned value).getKey().equals(getKey() + "." + name)_ should be true.
      *
      * @param name The name of the value to get.
      *

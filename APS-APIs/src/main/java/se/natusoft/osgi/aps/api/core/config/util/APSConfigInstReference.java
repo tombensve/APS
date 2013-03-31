@@ -41,13 +41,13 @@ import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 
 /**
  * This references a unique configuration instance.
- * <ul>
- *     <li><b>APSConfigValueEditModel</b> - This represents the basic value in the configuration store.</li>
- *     <li><b>index (int)</b> - For values of 'many' type that needs an index to make the reference unique.</li>
- *     <li><b>APSConfigEnvironment</b> - A configuration environment which is needed for values that are specified as configuration environment specific.</li>
- * </ul>
+ *
+ * * __APSConfigValueEditModel__ - This represents the basic value in the configuration store.
+ * * __index (int)__ - For values of 'many' type that needs an index to make the reference unique.
+ * * __APSConfigEnvironment__ - A configuration environment which is needed for values that are specified as configuration environment specific.
+ *
  * Some values only need the model to make the reference unique, some need the model and an index and some need all 3.
- * <p/>
+ *
  * One point of this little model is to be able to pass a complete reference to a value as one object.
  */
 public class APSConfigInstReference {
@@ -83,7 +83,7 @@ public class APSConfigInstReference {
     }
 
     /**
-     * Creates a new APSConfigInstReference referencing a 'many' type value.
+     * Creates a new _APSConfigInstReference_ referencing a 'many' type value.
      *
      * @param valueEditModel The model that identifies a specific configuration value.
      * @param index The index of the value to make the reference unique.

@@ -18,9 +18,9 @@ The flow is like this:
 
 1. Transport gets some request and an InputStream. 
 2. Transport gets some user selected protocol (The APSExtProtocolHTTPTransportProvider allows specification of both protocol, protocol version, and service to call in the URL).
-3. Transport calls APSExternalProtocolService to get requested protocol. 
-4. Transport calls protocol to parse InputStream and it returns an RPCRequest.
-5. Transport uses the information in the RPCRequest to call a service using APSExternalProtocolService.
+3. Transport calls _APSExternalProtocolService_ to get requested protocol. 
+4. Transport calls protocol to parse InputStream and it returns an _RPCRequest_.
+5. Transport uses the information in the RPCRequest to call a service using _APSExternalProtocolService_.
 6. Transport takes the result from the call and passes to the protocol along with an OutputStream to write response on.
 
 ## APSExternalProtocolService
@@ -29,9 +29,9 @@ This bundle registers an _APSExternalProtocolService_ that will provide all _APS
 
 ### Protocols
 
-There is a base API for protocols: RPCProtocol. APIs for different types of protocols should extend this. The protocol type APIs are service APIs and services implementing them must be provided by other bundles. This bundle looks for and keeps track of all such service providers.
+There is a base API for protocols: _RPCProtocol_. APIs for different types of protocols should extend this. The protocol type APIs are service APIs and services implementing them must be provided by other bundles. This bundle looks for and keeps track of all such service providers.
 
-The _StreamedRPCProtocol_ extends _RPCPROTOCOL_ and provides a method for parsing a request from an InputStream returning an RPCRequest object.  This request object contains the name of the service, the method, and the parameters. This is enough for using _APSExternalProtocolService_ to do a call to the service. The request object is also used to write the call response on an OutputStream. There is also a method to write an error response. 
+The _StreamedRPCProtocol_ extends _RPCProtocol_ and provides a method for parsing a request from an _InputStream_ returning an _RPCRequest_ object.  This request object contains the name of the service, the method, and the parameters. This is enough for using _APSExternalProtocolService_ to do a call to the service. The request object is also used to write the call response on an OutputStream. There is also a method to write an error response. 
 
 The _StreamedHTTPProtocol_ extends _StreamedRPCProtocol_ and indicates that the protocol should probably only be supported by http transports. It also provides a _supportsREST()_ method that transports can use to make decicions on how the call should be interpreted.
 
@@ -45,6 +45,6 @@ A transport provider can register themselves with the _APSExternalProtocolServic
 
 _APSExtProtocolHTTPTransportProvider_ - Provides a HTTP transport.
 
- _APSStreamedJSONRPCProtocolProvider_ - Provides version 1.0 and 2.0 of JSONRPC.
+ _APSStreamedJSONRPCProtocolProvider_ - Provides version 1.0 and 2.0 of JSONRPC, JSONHTTP and JSONREST.
 
 ## APIs

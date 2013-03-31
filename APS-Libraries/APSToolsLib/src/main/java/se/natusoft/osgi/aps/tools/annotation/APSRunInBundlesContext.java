@@ -42,7 +42,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * When this annotation is used in conjunction with the APSContextWrapper then
+ * When this annotation is used in conjunction with the _APSContextWrapper_ then
  * the service method call will execute with the bundles classpath, not the callers.
  */
 @Retention(RetentionPolicy.RUNTIME)

@@ -376,21 +376,7 @@ __APSDirectory getRootDirectory()__
 
 public _interface_ __APSFilesystemService__   [se.natusoft.osgi.aps.api.core.filesystem.service] {
 
->  This provides a filesystem for use by services/applications. Each filesystem has its own root that cannot be navigated outside of. 
-
-> Services or application using this should do something like this in their activators: 
-
-        APSFilesystemService fss;
-        APSFilesystemImpl fs;
-    
-        if (fss.hasFilesystem("my.file.system")) {
-            fs = fss.getFilsystem("my.file.system");
-        }
-        else {
-            fs = fss.createFilesystem("my.file.system");
-        }
-
-> 
+>  This provides a filesystem for use by services/applications. Each filesystem has its own root that cannot be navigated outside of.  Services or application _using_ this should do something like this in their activators:   APSFilesystemService fss;  APSFilesystem fs;   if (fss.hasFilesystem("my.file.system")) {  fs = fss.getFilsystem("my.file.system");  }  else {  fs = fss.createFilesystem("my.file.system");  }  
 
 
 

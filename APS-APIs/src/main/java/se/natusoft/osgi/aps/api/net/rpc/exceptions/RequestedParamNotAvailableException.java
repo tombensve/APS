@@ -44,7 +44,7 @@ import se.natusoft.osgi.aps.exceptions.APSException;
 public class RequestedParamNotAvailableException extends APSException {
 
     /**
-     * Creates a new APSException instance.
+     * Creates a new _RequestedParamNotAvailableException_ instance.
      *
      * @param message The exception message.
      */
@@ -53,7 +53,7 @@ public class RequestedParamNotAvailableException extends APSException {
     }
 
     /**
-     * Creates a new APSException instance.
+     * Creates a new _RequestedParamNotAvailableException_ instance.
      *
      * @param message The exception message.
      * @param cause   The cause of this exception.

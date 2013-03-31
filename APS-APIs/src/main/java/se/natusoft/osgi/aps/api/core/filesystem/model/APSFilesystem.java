@@ -39,7 +39,7 @@ package se.natusoft.osgi.aps.api.core.filesystem.model;
 import java.io.IOException;
 
 /**
- * This represents an APSFilesystemService filesytem.
+ * This represents an _APSFilesystemService_ filesystem.
  */
 public interface APSFilesystem {
 
@@ -53,7 +53,7 @@ public interface APSFilesystem {
     APSDirectory getDirectory(String path) throws IOException;
 
     /**
-     * Returns the file or folder of the specifeid path.
+     * Returns the file or folder of the specified path.
      *
      * @param path The path of the file.
      */

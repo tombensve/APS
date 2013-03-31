@@ -49,21 +49,21 @@ import javax.servlet.http.HttpSession;
 
 /**
  * APS base class for Vaadin application providing OSGi support.
- * <p/>
+ *
  * This does the following:
- * <ul>
- *     <li>Looks up the bundle context in the servlet context and informs the user that it must be
- *     deployed in an OSGi server to function if not found.</li>
  *
- *     <li>Creates a ClientContext containing the BundleContext, but can also be used to store
- *     services in.</li>
+ * * Looks up the bundle context in the servlet context and informs the user that it must be
+ *   deployed in an OSGi server to function if not found.
  *
- *     <li>Calls overridable initServices(ClientContext), initGUI() in that order to setup.</li>
+ * * Creates a ClientContext containing the BundleContext, but can also be used to store
+ *   services in.
  *
- *     <li>Registers a session listener and calls overridable cleanupServices() when the session dies.</li>
+ * * Calls overridable initServices(ClientContext), initGUI() in that order to setup.
  *
- *     <li>provides getters for both the BundleContext and the ClientContext.</li>
- * </ul>
+ * * Registers a session listener and calls overridable cleanupServices() when the session dies.
+ *
+ * * Provides getters for both the BundleContext and the ClientContext.
+ *
  */
 public abstract class APSVaadinOSGiApplication
         extends com.vaadin.Application
@@ -100,7 +100,7 @@ public abstract class APSVaadinOSGiApplication
     }
 
     /**
-     * This will return this war bundles BundleContext. This is only available if this war is
+     * This will return this war bundles _BundleContext_. This is only available if this war is
      * deployed in an R4.2+ compliant OSGi container. 
      * 
      * @return The OSGi bundle context. 
@@ -151,8 +151,8 @@ public abstract class APSVaadinOSGiApplication
     protected void initServices(ClientContext clientContext) {}
 
     /**
-     * Called when the session is about to die to cleanup anything setup in initServices().
-     * <p/>
+     * Called when the session is about to die to cleanup anything setup in _initServices()_.
+     *
      * This method should be overriden by subclasses who need cleanup.
      *
      * @param clientContext The client cntext for accessing services.
@@ -160,7 +160,7 @@ public abstract class APSVaadinOSGiApplication
     protected void cleanupServices(ClientContext clientContext) {}
 
     /**
-     * Intercepts setMainWindow() and supplies it to the VaadinUserMessager created in init() and used to
+     * Intercepts _setMainWindow()_ and supplies it to the _VaadinUserMessager_ created in _init()_ and used to
      * display user messages.
      *
      * @param mainWindow

@@ -40,8 +40,8 @@ import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
 
 /**
  * This is a special exception that services can throw if they are intended to be available as REST services
- * through the APSExternalProtocolExtender + APSRPCHTTPTransportProvider. This allows for better control over
- * status codes returned by the service call.
+ * through the aps-external-protocol-extender + aps-ext-protocol-http-transport-provider. This allows for
+ * better control over status codes returned by the service call.
  */
 public class APSRESTException extends APSRuntimeException {
     //
@@ -56,7 +56,7 @@ public class APSRESTException extends APSRuntimeException {
     //
 
     /**
-     * Creates a new APSRESTException.
+     * Creates a new _APSRESTException_.
      *
      * @param httpStatusCode The http status code to return.
      */
@@ -66,7 +66,7 @@ public class APSRESTException extends APSRuntimeException {
     }
 
     /**
-     * Creates a new APSRESTException.
+     * Creates a new _APSRESTException_.
      *
      * @param httpStatusCode The http status code to return.
      * @param message An error message.

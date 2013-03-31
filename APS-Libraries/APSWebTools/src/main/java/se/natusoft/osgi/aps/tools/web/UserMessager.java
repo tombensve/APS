@@ -38,7 +38,7 @@ package se.natusoft.osgi.aps.tools.web;
 
 /**
  * Handles presenting user with messages.
- * <p/>
+ *
  * Different GUI choices needs different implementations of this. The basic idea
  * behind this is to make message handling less dependent on GUI. Unit tests can
  * also supply own implementation of this.

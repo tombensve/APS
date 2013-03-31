@@ -75,7 +75,7 @@ public class APSLogger {
     //
 
     /**
-     * Creates a new APSLogger instance. This will logg to the specified stream when no LogService is available.
+     * Creates a new _APSLogger_ instance. This will log to the specified stream when no LogService is available.
      *
      * @param outStream The stream to log to when no LogService is available. Set to null to not log at all when no LogService is available.
      */

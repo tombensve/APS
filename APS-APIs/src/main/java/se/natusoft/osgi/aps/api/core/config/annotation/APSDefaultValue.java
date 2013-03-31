@@ -42,7 +42,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This is uses to provide a default value of a specific configuaration environment.
+ * This is uses to provide a default value of a specific configuration environment.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})

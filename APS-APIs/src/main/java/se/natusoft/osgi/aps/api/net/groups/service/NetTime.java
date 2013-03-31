@@ -49,7 +49,7 @@ import java.util.Locale;
 public interface NetTime extends Serializable {
 
     /**
-     * Returns the number of milliseconds since Januray 1, 1970 in net time.
+     * Returns the number of milliseconds since January 1, 1970 in net time.
      */
     public long getNetTime();
 
