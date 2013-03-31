@@ -27,29 +27,21 @@
     <p>
       public <em>interface</em> <strong>APSAuthService&lt;Credential&gt; </strong>   [se.natusoft.osgi.aps.api.auth.user] {      
     </p>
-    <blockquote>
-      <p>
-         This is intended to be used as a wrapper to other means of authentication. Things in APS that needs authentication uses this service.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        Implementations can lookup the user in an LDAP for example, or use some other user service.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        APS supplies an APSSimpleUserServiceAuthServiceProvider that uses the APSSimpleUserService to authenticate. It is provided in its own bundle.         
-      </p>
-    </blockquote>
+    <p>
+      This is intended to be used as a wrapper to other means of authentication. Things in APS that needs authentication uses this service.      
+    </p>
+    <p>
+      Implementations can lookup the user in an LDAP for example, or use some other user service.      
+    </p>
+    <p>
+      APS supplies an <em>APSSimpleUserServiceAuthServiceProvider</em> that uses the <em>APSSimpleUserService</em> to authenticate. It is provided in its own bundle.      
+    </p>
     <p>
       <strong>Properties authUser(String userId, Credential credentials, AuthMethod authMethod) throws APSAuthMethodNotSupportedException</strong>      
     </p>
-    <blockquote>
-      <p>
-         This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!          
-      </p>
-    </blockquote>
+    <p>
+      This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -87,11 +79,9 @@
     <p>
       <strong>Properties authUser(String userId, Credential credentials, AuthMethod authMethod, String role) throws APSAuthMethodNotSupportedException</strong>      
     </p>
-    <blockquote>
-      <p>
-         This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!          
-      </p>
-    </blockquote>
+    <p>
+      This authenticates a user. A Properties object is returned on successful authentication. <em>null</em> is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -134,67 +124,51 @@
     <p>
       <strong>AuthMethod[] getSupportedAuthMethods()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns an array of the AuthMethods supported by the implementation.         
-      </p>
-    </blockquote>
+    <p>
+      Returns an array of the AuthMethods supported by the implementation.      
+    </p>
     <p>
       public <em>static</em> <em>enum</em> <strong>AuthMethod </strong>   [se.natusoft.osgi.aps.api.auth.user] {      
     </p>
-    <blockquote>
-      <p>
-         This hints at how to use the credentials.         
-      </p>
-    </blockquote>
+    <p>
+      This hints at how to use the credentials.      
+    </p>
     <p>
       <strong>NONE</strong>      
     </p>
-    <blockquote>
-      <p>
-         Only userid is required.         
-      </p>
-    </blockquote>
+    <p>
+      Only userid is required.      
+    </p>
     <p>
       <strong>PASSWORD</strong>      
     </p>
-    <blockquote>
-      <p>
-         toString() on the credentials object should return a password.         
-      </p>
-    </blockquote>
+    <p>
+      toString() on the credentials object should return a password.      
+    </p>
     <p>
       <strong>KEY</strong>      
     </p>
-    <blockquote>
-      <p>
-         The credential object is a key of some sort.         
-      </p>
-    </blockquote>
+    <p>
+      The credential object is a key of some sort.      
+    </p>
     <p>
       <strong>CERTIFICATE</strong>      
     </p>
-    <blockquote>
-      <p>
-         The credential object is a certificate of some sort.         
-      </p>
-    </blockquote>
+    <p>
+      The credential object is a certificate of some sort.      
+    </p>
     <p>
       <strong>DIGEST</strong>      
     </p>
-    <blockquote>
-      <p>
-         The credential object is a digest password.         
-      </p>
-    </blockquote>
+    <p>
+      The credential object is a digest password.      
+    </p>
     <p>
       <strong>SSO</strong>      
     </p>
-    <blockquote>
-      <p>
-         The credential object contains information for participating in a single sign on.         
-      </p>
-    </blockquote>
+    <p>
+      The credential object contains information for participating in a single sign on.      
+    </p>
     <p>
       }      
     </p>

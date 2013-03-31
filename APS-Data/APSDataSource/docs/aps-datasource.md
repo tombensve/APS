@@ -15,11 +15,9 @@ The complete APS javadoc can be found at [http://apidoc.natusoft.se/APS/](http:/
 
 public _interface_ __DataSourceDef__   [se.natusoft.osgi.aps.api.data.jdbc.model] {
 
->  This represents information required for setting upp a JDBC data source. 
+This represents information required for setting upp a JDBC data source.
 
 __String getName()__
-
->  
 
 _Returns_
 
@@ -27,15 +25,11 @@ _Returns_
 
 __String getConnectionURL()__
 
->  
-
 _Returns_
 
 > The JDBC connection URL. Ex: jdbc:provider://host:port/database[;properties].
 
 __String getConnectionDriveName()__
-
->  
 
 _Returns_
 
@@ -43,15 +37,11 @@ _Returns_
 
 __String getConnectionUserName()__
 
->  
-
 _Returns_
 
 > The name of the database user to login as.
 
 __String getConnectionPassword()__
-
->  
 
 _Returns_
 
@@ -65,11 +55,11 @@ _Returns_
 
 public _interface_ __APSDataSourceDefService__   [se.natusoft.osgi.aps.api.data.jdbc.service] {
 
->  This service provides lookup of configured data source definitions. These can be used to setup connection pools, JPA, ... 
+This service provides lookup of configured data source definitions. These can be used to setup connection pools, JPA, ...
 
 __DataSourceDef lookupByName(String name)__
 
->  Looks up a data source definition by its configured name.  
+Looks up a data source definition by its configured name.
 
 _Returns_
 
@@ -80,8 +70,6 @@ _Parameters_
 > _name_ - The name to lookup. 
 
 __List<DataSourceDef> getAllDefinitions()__
-
->  
 
 _Returns_
 

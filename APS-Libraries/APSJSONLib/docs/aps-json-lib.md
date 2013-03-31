@@ -8,13 +8,15 @@ This does not try to be an alternative to Jackson! This is used internally by ot
 
 ## APIs
 
+Complete javadocs can be found at [http://apidoc.natusoft.se/APSJSONLib/](http://apidoc.natusoft.se/APSJSONLib/).
+
 public _class_ __JSON__   [se.natusoft.osgi.aps.json] {
 
->  This is the official API for reading and writing JSON values. 
+This is the official API for reading and writing JSON values.
 
 __public static JSONValue read(InputStream jsonIn, JSONErrorHandler errorHandler) throws IOException__
 
->  Reads any JSON object from the specified InputStream.  
+Reads any JSON object from the specified _InputStream_.
 
 _Returns_
 
@@ -32,7 +34,7 @@ _Throws_
 
 __public static void write(OutputStream jsonOut, JSONValue value) throws IOException__
 
->  Writes a JSONValue to an OutputStream. This will write compact output by default.  
+Writes a _JSONValue_ to an _OutputStream_. This will write compact output by default.
 
 _Parameters_
 
@@ -46,7 +48,7 @@ _Throws_
 
 __public static void write(OutputStream jsonOut, JSONValue value, boolean compact) throws IOException__
 
->  Writes a JSONValue to an OutputStream.  
+Writes a _JSONValue_ to an _OutputStream_.
 
 _Parameters_
 
@@ -68,29 +70,29 @@ _Throws_
 
 public _class_ __JSONArray__ extends  JSONValue  [se.natusoft.osgi.aps.json] {
 
->  This class is based on the structure defined on http://www.json.org/. 
+This class is based on the structure defined on http://www.json.org/.
 
-> This represents the "array" diagram on the above mentioned web page: 
+This represents the "array" diagram on the above mentioned web page:
 
-                  _______________________
-                 /                       \
-                 |                       |
-    |_____ ([) __/_______ (value) _______\__ (]) _____|
-    |              /                   \              |
-                   |                   |
-                   \_______ (,) _______/
+                      _______________________
+                     /                       \
+                     |                       |
+        |_____ ([) __/_______ (value) _______\__ (]) _____|
+        |              /                   \              |
+                       |                   |
+                       \_______ (,) _______/
 
->  @author Tommy Svensson 
+@author Tommy Svensson
 
 
 
 __public JSONArray()__
 
->  Creates a new JSONArray for wrinting JSON output. 
+Creates a new JSONArray for wrinting JSON output.
 
 __public JSONArray(JSONErrorHandler errorHandler)__
 
->  Creates a new JSONArray for reading JSON input and writing JSON output.  
+Creates a new JSONArray for reading JSON input and writing JSON output.
 
 _Parameters_
 
@@ -102,7 +104,7 @@ _Parameters_
 
 __public void addValue(JSONValue value)__
 
->  Adds a value to the array.  
+Adds a value to the array.
 
 _Parameters_
 
@@ -110,11 +112,11 @@ _Parameters_
 
 __public List<JSONValue> getAsList()__
 
->  Returns the array values as a List. 
+Returns the array values as a List.
 
 __public <T extends JSONValue> List<T> getAsList(Class<T> type)__
 
->  Returns the array values as a list of a specific type.  
+Returns the array values as a list of a specific type.
 
 _Returns_
 
@@ -138,13 +140,15 @@ _Parameters_
 
 public _class_ __JSONBoolean__ extends  JSONValue    [se.natusoft.osgi.aps.json] {
 
->  This class is based on the structure defined on http://www.json.org/.   @author Tommy Svensson 
+This class is based on the structure defined on [http://www.json.org/](http://www.json.org/).
+
+@author Tommy Svensson
 
 
 
 __public JSONBoolean(boolean value)__
 
->  Creates a new JSONBoolean instance for writing JSON output.  
+Creates a new JSONBoolean instance for writing JSON output.
 
 _Parameters_
 
@@ -152,7 +156,7 @@ _Parameters_
 
 __public JSONBoolean(JSONErrorHandler errorHandler)__
 
->  Creates a new JSONBoolean instance for reading JSON input or writing JSON output.  
+Creates a new JSONBoolean instance for reading JSON input or writing JSON output.
 
 _Parameters_
 
@@ -162,7 +166,7 @@ _Parameters_
 
 __public void setBooleanValue(boolean value)__
 
->  Sets the value of this boolean.  
+Sets the value of this boolean.
 
 _Parameters_
 
@@ -170,11 +174,11 @@ _Parameters_
 
 __public boolean getAsBoolean()__
 
->  Returns the value of this boolean. 
+Returns the value of this boolean.
 
 __public String toString()__
 
->  Returns the value of this boolean as a String. 
+Returns the value of this boolean as a String.
 
 
 
@@ -188,11 +192,13 @@ __public String toString()__
 
 public _interface_ __JSONErrorHandler__   [se.natusoft.osgi.aps.json] {
 
->  This is called on warnings or failures.   @author Tommy Svensson 
+This is called on warnings or failures.
+
+@author Tommy Svensson
 
 __void warning(String message)__
 
->  Warns about something.  
+Warns about something.
 
 _Parameters_
 
@@ -200,7 +206,7 @@ _Parameters_
 
 __void fail(String message, Throwable cause) throws RuntimeException__
 
->  Indicate failure.  
+Indicate failure.
 
 _Parameters_
 
@@ -220,15 +226,17 @@ _Throws_
 
 public _class_ __JSONNull__ extends  JSONValue    [se.natusoft.osgi.aps.json] {
 
->  This class is based on the structure defined on http://www.json.org/.   @author Tommy Svensson 
+This class is based on the structure defined on [http://www.json.org/](http://www.json.org/).
+
+@author Tommy Svensson
 
 __public JSONNull()__
 
->  Creates a new JSONNull instance for writing JSON output. 
+Creates a new JSONNull instance for writing JSON output.
 
 __public JSONNull(JSONErrorHandler errorHandler)__
 
->  Creates a new JSONNull instance for reading JSON input or writing JSON output.  
+Creates a new JSONNull instance for reading JSON input or writing JSON output.
 
 _Parameters_
 
@@ -237,8 +245,6 @@ _Parameters_
 
 
 __public String toString()__
-
->  
 
 _Returns_
 
@@ -256,31 +262,31 @@ _Returns_
 
 public _class_ __JSONNumber__ extends  JSONValue    [se.natusoft.osgi.aps.json] {
 
->  This class is based on the structure defined on http://www.json.org/. 
+This class is based on the structure defined on http://www.json.org/.
 
-> This represents the "number" diagram on the above mentioned web page: 
+This represents the "number" diagram on the above mentioned web page:
 
-                                          ______________________
-                                         /                      \
-                                         |                      |
-    |_|______________ (0) _______________/__ (.) ___ (digit) ___\_________________________|_|
-    | | \       /  \                    /         /           \  \                      / | |
-        |       |  |                   /          \___________/  |                      |
-        \_ (-) _/  \_ (digit 1-9) ____/_______                   |                      |
-                                   /          \                  |                      |
-                                   \_ (digit) /           _ (e) _|                      |
-                                                         |_ (E) _|           ___________|
-                                                         |        _ (+) _   /           |
-                                                         \_______/_______\__\_ (digit) _/
-                                                                 \_ (-) _/
+                                              ______________________
+                                             /                      \
+                                             |                      |
+        |_|______________ (0) _______________/__ (.) ___ (digit) ___\_________________________|_|
+        | | \       /  \                    /         /           \  \                      / | |
+            |       |  |                   /          \___________/  |                      |
+            \_ (-) _/  \_ (digit 1-9) ____/_______                   |                      |
+                                       /          \                  |                      |
+                                       \_ (digit) /           _ (e) _|                      |
+                                                             |_ (E) _|           ___________|
+                                                             |        _ (+) _   /           |
+                                                             \_______/_______\__\_ (digit) _/
+                                                                     \_ (-) _/
 
->  @author Tommy Svesson 
+@author Tommy Svesson
 
 
 
 __public JSONNumber(Number value)__
 
->  Creates a new JSONNumber instance for writing JSON output.  
+Creates a new JSONNumber instance for writing JSON output.
 
 _Parameters_
 
@@ -288,7 +294,7 @@ _Parameters_
 
 __public JSONNumber(JSONErrorHandler errorHandler)__
 
->  Creates a new JSONNumber instance for reading JSON input or writing JSON output.  
+Creates a new JSONNumber instance for reading JSON input or writing JSON output.
 
 _Parameters_
 
@@ -298,35 +304,33 @@ _Parameters_
 
 __public Number toNumber()__
 
->  Returns the number as a Number. 
+Returns the number as a Number.
 
 __public double toDouble()__
 
->  Returns the number as a double value. 
+Returns the number as a double value.
 
 __public float toFloat()__
 
->  Returns the number as a float value. 
+Returns the number as a float value.
 
 __public int toInt()__
 
->  Returns the number as an int value. 
+Returns the number as an int value.
 
 __public long toLong()__
 
->  Returns the number as a long value. 
+Returns the number as a long value.
 
 __public short toShort()__
 
->  Returns the number as a short value. 
+Returns the number as a short value.
 
 __public byte toByte()__
 
->  Returns the number as a byte value. 
+Returns the number as a byte value.
 
 __public String toString()__
-
->  
 
 _Returns_
 
@@ -334,7 +338,7 @@ _Returns_
 
 __public Object to(Class type)__
 
->  Returns the number as a value of the type specified by the type parameter.  
+Returns the number as a value of the type specified by the type parameter.
 
 _Parameters_
 
@@ -352,32 +356,33 @@ _Parameters_
 
 public _class_ __JSONObject__ extends  JSONValue    [se.natusoft.osgi.aps.json] {
 
->  This class is based on the structure defined on http://www.json.org/. 
+This class is based on the structure defined on http://www.json.org/.
 
-> It represents the "object" diagram on the above mentioned web page: 
+It represents the "object" diagram on the above mentioned web page:
 
-                 ________________________________________
-                /                                        \
-    |___ ({) __/_____ (string) ____ (:) ____ (value) _____\___ (}) ____|
-    |           /                                        \             |
-                \__________________ (,) _________________/
-    
+                     ________________________________________
+                    /                                        \
+        |___ ({) __/_____ (string) ____ (:) ____ (value) _____\___ (}) ____|
+        |           /                                        \             |
+                    \__________________ (,) _________________/
 
-> This is also the starting point. 
+This is also the starting point.
 
-> To write JSON, create a new JSONObject (new JSONObject()) and call addProperty(name, value) for children. Then do jsonObj.writeJSON(outputStream). 
+To write JSON, create a new _JSONObject_ (`new JSONObject()`) and call `addProperty(name`,`value)` for children. Then do jsonObj.writeJSON(outputStream)`.`
 
-> To read JSON, create a new JSONObject (new JSONObject(jsonErrorHandler)) and then do jsonObj.readJSON(inputStream). Then use getProperty(name) to extract children.    @author Tommy Svensson 
+To read JSON, create a new _JSONObject_ (`new JSONObject(jsonErrorHandler)`) and then do `jsonObj.readJSON(inputStream)`. Then use `getProperty(name)` to extract children.
+
+@author Tommy Svensson
 
 
 
 __public JSONObject()__
 
->  Creates a JSONObject instance for writing JSON output. 
+Creates a JSONObject instance for writing JSON output.
 
 __public JSONObject(JSONErrorHandler errorHandler)__
 
->  Creates a new JSONObject instance for reading JSON input or writing JSON output.  
+Creates a new JSONObject instance for reading JSON input or writing JSON output.
 
 _Parameters_
 
@@ -389,11 +394,11 @@ _Parameters_
 
 __public Set<JSONString> getPropertyNames()__
 
->  Returns the names of the available properties. 
+Returns the names of the available properties.
 
 __public JSONValue getProperty(JSONString name)__
 
->  Returns the named property.  
+Returns the named property.
 
 _Parameters_
 
@@ -401,7 +406,7 @@ _Parameters_
 
 __public JSONValue getProperty(String name)__
 
->  Returns the named property.  
+Returns the named property.
 
 _Parameters_
 
@@ -409,7 +414,7 @@ _Parameters_
 
 __public void addProperty(JSONString name, JSONValue value)__
 
->  Adds a property to this JSONObject instance.  
+Adds a property to this JSONObject instance.
 
 _Parameters_
 
@@ -419,7 +424,7 @@ _Parameters_
 
 __public void addProperty(String name, JSONValue value)__
 
->  Adds a property to this JSONObject instance.  
+Adds a property to this JSONObject instance.
 
 _Parameters_
 
@@ -439,33 +444,35 @@ _Parameters_
 
 public _class_ __JSONString__ extends  JSONValue    [se.natusoft.osgi.aps.json] {
 
->  This class is based on the structure defined on http://www.json.org/. 
+This class is based on the structure defined on http://www.json.org/.
 
-> This represents the "string" diagram on the above mentioned web page: 
+This represents the "string" diagram on the above mentioned web page:
 
-               __________________________________________________________________________
-              /    ___________________________________________________________________   \
-              |   /                                                                   \  |
-    |___ (") _|___|___ (Any UNICODE character except " or \ or control character) ____|__|_ (") ___|
-    |           \                                                                  /               |
-                 |                                                                 |
-                 \__ (\) ___ (") (quotation mark) _________________________________|
-                         |__ (\) (reverse solidus) ________________________________|
-                         |__ (/) (solidus) ________________________________________|
-                         |__ (b) (backspace) ______________________________________|
-                         |__ (f) (formfeed) _______________________________________|
-                         |__ (n) (newline) ________________________________________|
-                         |__ (r) (carriage return) ________________________________|
-                         |__ (t) (orizontal tab) __________________________________|
-                         \__ (u) (4 hexadecimal digits) ___________________________/
+                   ___________________________________________________________
+                  /    ____________________________________________________   \
+                  |   /                                                    \  |
+        |___ (") _|___|___ (*1)                                        ____|__|_ (") ___|
+        |           \                                                   /               |
+                     |                                                  |
+                     \__ (\) ___ (") (quotation mark) __________________|
+                             |__ (\) (reverse solidus) _________________|
+                             |__ (/) (solidus) _________________________|
+                             |__ (b) (backspace) _______________________|
+                             |__ (f) (formfeed) ________________________|
+                             |__ (n) (newline) _________________________|
+                             |__ (r) (carriage return) _________________|
+                             |__ (t) (orizontal tab) ___________________|
+                             \__ (u) (4 hexadecimal digits) ____________/
+        
+        *1: Any UNICODE character except " or \ or control character
 
->   @author Tommy Svensson 
+@author Tommy Svensson
 
 
 
 __public JSONString(String value)__
 
->  Creates a new JSONString for writing JSON output.  
+Creates a new JSONString for writing JSON output.
 
 _Parameters_
 
@@ -473,7 +480,7 @@ _Parameters_
 
 __public JSONString(JSONErrorHandler errorHandler)__
 
->  Creates a new JSONString for reading JSON input and writing JSON output.  
+Creates a new JSONString for reading JSON input and writing JSON output.
 
 _Parameters_
 
@@ -501,22 +508,21 @@ _Parameters_
 
 public _abstract_ _class_ __JSONValue__   [se.natusoft.osgi.aps.json] {
 
->  This class is based on the structure defined on http://www.json.org/. 
+This class is based on the structure defined on http://www.json.org/.
 
-> This is a base class for all other JSON* classes. It represents the "value" diagram on the above mentioned web page: 
+This is a base class for all other JSON* classes. It represents the "value" diagram on the above mentioned web page:
 
-                                                      Subclasses
-                                                      ----------
-    |________________ (STRING) ________________|      JSONString
-    |  |_____________ (NUMBER) _____________|  |      JSONNumber
-       |_____________ (OBJECT) _____________|         JSONObject
-       |_____________ (ARRAY)  _____________|         JSONArray
-       |_____________ (true)   _____________|     \__ JSONBoolean
-       |_____________ (false)  _____________|     /
-       \_____________ (null)   _____________/         JSONNull
-    
+                                                          Subclasses
+                                                          ----------
+        |________________ (STRING) ________________|      JSONString
+        |  |_____________ (NUMBER) _____________|  |      JSONNumber
+           |_____________ (OBJECT) _____________|         JSONObject
+           |_____________ (ARRAY)  _____________|         JSONArray
+           |_____________ (true)   _____________|     \__ JSONBoolean
+           |_____________ (false)  _____________|     /
+           \_____________ (null)   _____________/         JSONNull
 
->    @author Tommy Svensson 
+@author Tommy Svensson
 
 
 
@@ -524,15 +530,15 @@ public _abstract_ _class_ __JSONValue__   [se.natusoft.osgi.aps.json] {
 
 __protected JSONValue()__
 
->  Creates a new JSONValue. 
+Creates a new JSONValue.
 
 __protected JSONValue(JSONErrorHandler errorHandler)__
 
->  Creates a new JSONValue 
+Creates a new JSONValue
 
 __protected abstract void readJSON(char c, JSONReader reader) throws IOException__
 
->  This will read the vale from an input stream.  
+This will read the vale from an input stream.
 
 _Returns_
 
@@ -550,7 +556,7 @@ _Throws_
 
 __protected abstract void writeJSON(JSONWriter writer, boolean compact) throws IOException__
 
->  This will write the data held by this JSON value in JSON format on the specified stream.  
+This will write the data held by this JSON value in JSON format on the specified stream.
 
 _Parameters_
 
@@ -564,8 +570,6 @@ _Throws_
 
 __protected JSONErrorHandler getErrorHandler()__
 
->  
-
 _Returns_
 
 > The user supplied error handler.
@@ -578,7 +582,7 @@ _Returns_
 
 __protected void warn(String message)__
 
->  Provide a warning.  
+Provide a warning.
 
 _Parameters_
 
@@ -586,7 +590,7 @@ _Parameters_
 
 __protected void fail(String message, Throwable cause)__
 
->  Fails the job.  
+Fails the job.
 
 _Parameters_
 
@@ -596,7 +600,7 @@ _Parameters_
 
 __protected void fail(String message)__
 
->  Fails the job.  
+Fails the job.
 
 _Parameters_
 
@@ -604,7 +608,7 @@ _Parameters_
 
 __public void readJSON(InputStream is) throws IOException__
 
->  This will read the value from an input stream.  
+This will read the value from an input stream.
 
 _Parameters_
 
@@ -616,7 +620,7 @@ _Throws_
 
 __public void writeJSON(OutputStream os) throws IOException__
 
->  This writes JSON to the specified OutputStream.  
+This writes JSON to the specified OutputStream.
 
 _Parameters_
 
@@ -628,7 +632,7 @@ _Throws_
 
 __public void writeJSON(OutputStream os, boolean compact) throws IOException__
 
->  This writes JSON to the specified OutputStream.  
+This writes JSON to the specified OutputStream.
 
 _Parameters_
 
@@ -662,7 +666,7 @@ _Throws_
 
 __protected JSONReader(PushbackReader reader, JSONErrorHandler errorHandler)__
 
->  Creates a new JSONReader instance.  
+Creates a new JSONReader instance.
 
 _Parameters_
 
@@ -672,7 +676,7 @@ _Parameters_
 
 __protected char getChar() throws IOException__
 
->  Returns the next character on the specified input stream, setting EOF state checkable with isEOF().  
+Returns the next character on the specified input stream, setting EOF state checkable with isEOF().
 
 _Throws_
 
@@ -680,7 +684,7 @@ _Throws_
 
 __protected char getChar(boolean handleEscapes) throws IOException__
 
->  Returns the next character on the specified input stream, setting EOF state checkable with isEOF().  
+Returns the next character on the specified input stream, setting EOF state checkable with isEOF().
 
 _Parameters_
 
@@ -692,7 +696,7 @@ _Throws_
 
 __protected void ungetChar(char c) throws IOException__
 
->  Unreads the specified character so that the next call to getNextChar() will return it again.  
+Unreads the specified character so that the next call to getNextChar() will return it again.
 
 _Parameters_
 
@@ -700,7 +704,7 @@ _Parameters_
 
 __protected char skipWhitespace(char c) throws IOException__
 
->  Skips whitespace returning the first non whitespace character. This also sets the EOF flag.  
+Skips whitespace returning the first non whitespace character. This also sets the EOF flag.
 
 _Parameters_
 
@@ -712,7 +716,7 @@ _Throws_
 
 __protected char skipWhitespace() throws IOException__
 
->  Skips whitespace returning the first non whitespace character. This also sets the EOF flag.  
+Skips whitespace returning the first non whitespace character. This also sets the EOF flag.
 
 _Throws_
 
@@ -722,7 +726,7 @@ _Throws_
 
 __protected char readUntil(String until, char c, StringBuilder sb, boolean handleEscapes) throws IOException__
 
->  Reads until any of a specified set of characters occur.  
+Reads until any of a specified set of characters occur.
 
 _Returns_
 
@@ -744,7 +748,7 @@ _Throws_
 
 __protected char readUntil(String until, StringBuilder sb, boolean string) throws IOException__
 
->  Reads until any of a specified set of characters occur.  
+Reads until any of a specified set of characters occur.
 
 _Parameters_
 
@@ -760,7 +764,7 @@ _Throws_
 
 __protected char readUntil(String until, StringBuilder sb) throws IOException__
 
->  Reads until any of a specified set of characters occur.  
+Reads until any of a specified set of characters occur.
 
 _Parameters_
 
@@ -774,7 +778,7 @@ _Throws_
 
 __protected boolean checkValidChar(char c, String validChars)__
 
->  Returns true if c is one of the characters in validChars.  
+Returns true if c is one of the characters in validChars.
 
 _Parameters_
 
@@ -784,7 +788,7 @@ _Parameters_
 
 __protected void assertChar(char a, char e, String message)__
 
->  Asserts that char a equals expected char c.  
+Asserts that char a equals expected char c.
 
 _Parameters_
 
@@ -796,7 +800,7 @@ _Parameters_
 
 __protected void assertChar(char a, String expected, String message)__
 
->  Asserts that char a equals expected char c.  
+Asserts that char a equals expected char c.
 
 _Parameters_
 
@@ -808,13 +812,13 @@ _Parameters_
 
 protected _static_ _class_ __JSONWriter__   [se.natusoft.osgi.aps.json] {
 
->  For subclasses to use in writeJSON(JSONWriter writer). 
+For subclasses to use in writeJSON(JSONWriter writer).
 
 
 
 __protected JSONWriter(Writer writer)__
 
->  Creates a new JSONWriter instance.  
+Creates a new JSONWriter instance.
 
 _Parameters_
 
@@ -822,7 +826,7 @@ _Parameters_
 
 __protected void write(String json) throws IOException__
 
->  Writes JSON output.  
+Writes JSON output.
 
 _Parameters_
 
@@ -834,7 +838,7 @@ _Throws_
 
 __protected void writeln(String json) throws  IOException__
 
->  Writes JSON output plus a newline.  
+Writes JSON output plus a newline.
 
 _Parameters_
 
@@ -852,13 +856,13 @@ _Throws_
 
 public _class_ __BeanInstance__   [se.natusoft.osgi.aps.json.tools] {
 
->  This wraps a Java Bean instance allowing it to be populated with data using setProperty(String, Object) methods handling all reflection calls. 
+This wraps a Java Bean instance allowing it to be populated with data using _setProperty(String_,_Object)_ methods handling all reflection calls.
 
 
 
 __public BeanInstance(Object modelInstance)__
 
->  Creates a new ModelInstance.  
+Creates a new ModelInstance.
 
 _Parameters_
 
@@ -866,19 +870,19 @@ _Parameters_
 
 __public Object getModelInstance()__
 
->  Returns the test model instance held by this object. 
+Returns the test model instance held by this object.
 
 __public List<String> getSettableProperties()__
 
->  Returns a list of settable properties. 
+Returns a list of settable properties.
 
 __public List<String> getGettableProperties()__
 
->  Returns a list of gettable properties. 
+Returns a list of gettable properties.
 
 __public void setProperty(String property, Object value) throws JSONConvertionException__
 
->  Sets a property  
+Sets a property
 
 _Parameters_
 
@@ -892,7 +896,7 @@ _Throws_
 
 __public Object getProperty(String property) throws JSONConvertionException__
 
->  Returns the value of the specified property.  
+Returns the value of the specified property.
 
 _Returns_
 
@@ -910,7 +914,7 @@ _Throws_
 
 __public Class getPropertyType(String property) throws JSONConvertionException__
 
->  Returns the type of the specified property.  
+Returns the type of the specified property.
 
 _Returns_
 
@@ -932,11 +936,11 @@ _Throws_
 
 public _class_ __JavaToJSON__   [se.natusoft.osgi.aps.json.tools] {
 
->  Takes a JavaBean and produces a JSONObject. 
+Takes a JavaBean and produces a JSONObject.
 
 __public static JSONObject convertObject(Object javaBean) throws JSONConvertionException__
 
->  Converts a JavaBean object into a JSONObject.  
+Converts a JavaBean object into a _JSONObject_.
 
 _Returns_
 
@@ -952,7 +956,7 @@ _Throws_
 
 __public static JSONObject convertObject(JSONObject jsonObject, Object javaBean) throws JSONConvertionException__
 
->  Converts a JavaBean object into a JSONObject.  
+Converts a JavaBean object into a _JSONObject_.
 
 _Returns_
 
@@ -970,7 +974,7 @@ _Throws_
 
 __public static JSONValue convertValue(Object value)__
 
->  Converts a value from a java value to a JSONValue.  
+Converts a value from a java value to a _JSONValue_.
 
 _Returns_
 
@@ -988,13 +992,13 @@ _Parameters_
 
 public _class_ __JSONConvertionException__ extends  RuntimeException    [se.natusoft.osgi.aps.json.tools] {
 
->  This exception is thrown on failure to convert from JSON to Java or Java to JSON. 
+This exception is thrown on failure to convert from JSON to Java or Java to JSON.
 
-> Almost all exceptions within the APS services and libraries extend either APSException or APSRuntimeException. I decided to just extend RuntimeException here to avoid any other dependencies for this library since it can be useful outside of APS and can be used as any jar if not deployed in OSGi container. 
+Almost all exceptions within the APS services and libraries extend either _APSException_ or _APSRuntimeException_. I decided to just extend RuntimeException here to avoid any other dependencies for this library since it can be useful outside of APS and can be used as any jar if not deployed in OSGi container.
 
 __public JSONConvertionException(final String message)__
 
->  Creates a new JSONConvertionException.  
+Creates a new _JSONConvertionException_.
 
 _Parameters_
 
@@ -1002,7 +1006,7 @@ _Parameters_
 
 __public JSONConvertionException(final String message, final Throwable cause)__
 
->  Creates a new JSONConvertionException.  
+Creates a new _JSONConvertionException_.
 
 _Parameters_
 
@@ -1018,13 +1022,19 @@ _Parameters_
 
 public _class_ __JSONToJava__   [se.natusoft.osgi.aps.json.tools] {
 
->  Creates a JavaBean instance and copies data from a JSON value to it. 
+Creates a JavaBean instance and copies data from a JSON value to it.
 
-> The following mappings are made in addition to the expected ones: <ul  <li JSONArray only maps to an array property. li  <li Date properties in bean are mapped from JSONString "yyyy-MM-dd HH:mm:ss" li  <li Enum properties in bean are mapped from JSONString which have to contain enum constant name. li  ul 
+The following mappings are made in addition to the expected ones:
+
+* _JSONArray_ only maps to an array property.
+
+* Date properties in bean are mapped from _JSONString_ "yyyy-MM-dd HH:mm:ss".
+
+* Enum properties in bean are mapped from _JSONString_ which have to contain enum constant name.
 
 __public static <T> T convert(InputStream jsonStream, Class<T> javaClass) throws IOException, JSONConvertionException__
 
->  Returns an instance of a java class populated with data from a json object value read from a stream.  
+Returns an instance of a java class populated with data from a json object value read from a stream.
 
 _Returns_
 
@@ -1044,7 +1054,7 @@ _Throws_
 
 __public static <T> T convert(String json, Class<T> javaClass) throws IOException, JSONConvertionException__
 
->  Returns an instance of a java class populated with data from a json object value read from a String containing JSON.  
+Returns an instance of a java class populated with data from a json object value read from a String containing JSON.
 
 _Returns_
 
@@ -1064,7 +1074,7 @@ _Throws_
 
 __public static <T> T convert(JSONValue json, Class<T> javaClass) throws JSONConvertionException__
 
->  Returns an instance of java class populated with data from json.   
+Returns an instance of java class populated with data from json.
 
 _Returns_
 
@@ -1094,7 +1104,7 @@ _Throws_
 
 public _class_ __SystemOutErrorHandler__ implements  JSONErrorHandler    [se.natusoft.osgi.aps.json.tools] {
 
->  A simple implementation of JSONErrorHandler that simply displays messages on System.out and throws a RuntimeException on fail. This is used by the tests. In a non test case another implementation is probably preferred. 
+A simple implementation of _JSONErrorHandler_ that simply displays messages on System.out and throws a _RuntimeException_ on fail. This is used by the tests. In a non test case another implementation is probably preferred.
 
 
 

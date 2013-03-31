@@ -153,17 +153,17 @@ to _false_ instead. Then restart the server. Also se the APSFilesystemService do
 
 public _interface_ __APSSimpleUserService__   [se.natusoft.osgi.aps.api.auth.user] {
 
->  This is the API of a simple user service that provide basic user handling that will probably be enough in many cases, but not all. 
+This is the API of a simple user service that provide basic user handling that will probably be enough in many cases, but not all.
 
-> Please note that this API does not declare any exceptions! In the case of an exception being needed the APSSimpleUserServiceException should be thrown. This is a runtime exception. 
+Please note that this API does not declare any exceptions! In the case of an exception being needed the APSSimpleUserServiceException should be thrown. This is a runtime exception.
 
 __public static final String AUTH_METHOD_PASSWORD = "password"__
 
->  Password authentication method for authenticateUser(). 
+Password authentication method for authenticateUser().
 
 __public Role getRole(String roleId)__
 
->  Gets a role by its id.  
+Gets a role by its id.
 
 _Returns_
 
@@ -175,7 +175,7 @@ _Parameters_
 
 __public User getUser(String userId)__
 
->  Gets a user by its id.  
+Gets a user by its id.
 
 _Returns_
 
@@ -187,7 +187,7 @@ _Parameters_
 
 __public boolean authenticateUser(User user, Object authentication, String authMethod)__
 
->  Authenticates a user using its user id and user provided authentication.  
+Authenticates a user using its user id and user provided authentication.
 
 _Returns_
 
@@ -197,7 +197,7 @@ _Parameters_
 
 > _user_ - The User object representing the user to authenticate. 
 
-> _authentication_ - The user provided authentication data. For example if AuthMethod is AUTH_METHOD_PASSWORD 
+> _authentication_ - The user provided authentication data. For example if AuthMethod is AUTH\_METHOD\_PASSWORD 
 
 > _authMethod_ - Specifies what authentication method is wanted. 
 
@@ -209,11 +209,11 @@ _Parameters_
 
 public _interface_ __APSSimpleUserServiceAdmin__ extends  APSSimpleUserService    [se.natusoft.osgi.aps.api.auth.user] {
 
->  Admin API for APSSimpleUserService. 
+Admin API for APSSimpleUserService.
 
 __public RoleAdmin createRole(String name, String description)__
 
->  Creates a new role.  
+Creates a new role.
 
 _Returns_
 
@@ -227,7 +227,7 @@ _Parameters_
 
 __public void updateRole(Role role)__
 
->  Updates a role.  
+Updates a role.
 
 _Parameters_
 
@@ -235,7 +235,7 @@ _Parameters_
 
 __public void deleteRole(Role role)__
 
->  Deletes a role.  
+Deletes a role.
 
 _Parameters_
 
@@ -243,11 +243,11 @@ _Parameters_
 
 __public List<RoleAdmin> getRoles()__
 
->  Returns all available roles. 
+Returns all available roles.
 
 __public UserAdmin createUser(String id)__
 
->  Creates a new user. Please note that you get an empty user back. You probably want to add roles and also possibly properties to the user. After you have done that call updateUser(user).  
+Creates a new user. Please note that you get an empty user back. You probably want to add roles and also possibly properties to the user. After you have done that call _updateUser(user)_.
 
 _Returns_
 
@@ -259,7 +259,7 @@ _Parameters_
 
 __public void updateUser(User user)__
 
->  Updates a user.  
+Updates a user.
 
 _Parameters_
 
@@ -267,7 +267,7 @@ _Parameters_
 
 __public void deleteUser(User user)__
 
->  Deletes a user.  
+Deletes a user.
 
 _Parameters_
 
@@ -275,11 +275,11 @@ _Parameters_
 
 __public List<UserAdmin> getUsers()__
 
->  Returns all users. 
+Returns all users.
 
 __public void setUserAuthentication(User user, String authentication)__
 
->  Sets authentication for the user.  
+Sets authentication for the user.
 
 _Parameters_
 
@@ -295,11 +295,11 @@ _Parameters_
 
 public _class_ __APSAuthMethodNotSupportedException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.auth.user.exceptions] {
 
->  This is thrown by APSAuthService when the implementation does not support the selected auth method. 
+This is thrown by APSAuthService when the implementation does not support the selected auth method.
 
 __public APSAuthMethodNotSupportedException(String message)__
 
->  Creates a new APSAuthMethodNotSupportedException instance.  
+Creates a new APSAuthMethodNotSupportedException instance.
 
 _Parameters_
 
@@ -307,7 +307,7 @@ _Parameters_
 
 __public APSAuthMethodNotSupportedException(String message, Throwable cause)__
 
->  Creates a new APSAuthMethodNotSupportedException instance.  
+Creates a new APSAuthMethodNotSupportedException instance.
 
 _Parameters_
 
@@ -323,11 +323,11 @@ _Parameters_
 
 public _class_ __APSSimpleUserServiceException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.auth.user.exceptions] {
 
->  Indicates a problem with the APSSimpleUserService. 
+Indicates a problem with the APSSimpleUserService.
 
 __public APSSimpleUserServiceException(String message)__
 
->  Creates a new APSSimpleUserServiceException instance.  
+Creates a new APSSimpleUserServiceException instance.
 
 _Parameters_
 
@@ -335,7 +335,7 @@ _Parameters_
 
 __public APSSimpleUserServiceException(String message, Throwable cause)__
 
->  Creates a new APSSimpleUserServiceException instance.  
+Creates a new APSSimpleUserServiceException instance.
 
 _Parameters_
 
@@ -351,11 +351,9 @@ _Parameters_
 
 public _interface_ __Role__ extends  Comparable<Role>    [se.natusoft.osgi.aps.api.auth.user.model] {
 
->  This defines a role. 
+This defines a role.
 
 __public String getId()__
-
->  
 
 _Returns_
 
@@ -363,23 +361,19 @@ _Returns_
 
 __public String getDescription()__
 
->  
-
 _Returns_
 
 > A description of the role.
 
 __public boolean hasRole(String roleName)__
 
->  Returns true if the role has the specified sub role name.  
+Returns true if the role has the specified sub role name.
 
 _Parameters_
 
 > _roleName_ - The name of the role to check for. 
 
 __boolean isMasterRole()__
-
->  
 
 _Returns_
 
@@ -393,11 +387,11 @@ _Returns_
 
 public _interface_ __RoleAdmin__ extends  Role    [se.natusoft.osgi.aps.api.auth.user.model] {
 
->  Provides update API for Role. 
+Provides update API for Role.
 
 __public void setDescription(String description)__
 
->  Changes the description of the role.  
+Changes the description of the role.
 
 _Parameters_
 
@@ -405,11 +399,11 @@ _Parameters_
 
 __public List<Role> getRoles()__
 
->  Returns all sub roles for this role. 
+Returns all sub roles for this role.
 
 __public void addRole(Role role)__
 
->  Adds a sub role to this role.  
+Adds a sub role to this role.
 
 _Parameters_
 
@@ -417,7 +411,7 @@ _Parameters_
 
 __public void removeRole(Role role)__
 
->  Removes a sub role from this role.  
+Removes a sub role from this role.
 
 _Parameters_
 
@@ -425,7 +419,7 @@ _Parameters_
 
 __public void setMasterRole(boolean masterRole)__
 
->  Sets whether this is a master role or not.  
+Sets whether this is a master role or not.
 
 _Parameters_
 
@@ -439,19 +433,19 @@ _Parameters_
 
 public _interface_ __User__ extends  Comparable<User>    [se.natusoft.osgi.aps.api.auth.user.model] {
 
->  This defines a User. 
+This defines a User.
 
 __public String getId()__
 
->  Returns the unique id of the user. 
+Returns the unique id of the user.
 
 __public boolean isAuthenticated()__
 
->  Returns true if this user is authenticated. 
+Returns true if this user is authenticated.
 
 __public boolean hasRole(String roleName)__
 
->  Returns true if the user has the specified role name.  
+Returns true if the user has the specified role name.
 
 _Parameters_
 
@@ -459,29 +453,29 @@ _Parameters_
 
 __public Properties getUserProperties()__
 
->  This provides whatever extra information about the user you want. How to use this is upp to the user of the service. There are some constants in this class that provide potential keys for the user properties. 
+This provides whatever extra information about the user you want. How to use this is upp to the user of the service. There are some constants in this class that provide potential keys for the user properties.
 
-> Please note that the returned properties are read only! 
+Please note that the returned properties are read only!
 
 __public static final String USER_NAME = "name"__
 
->  Optional suggestion for user properties key. 
+Optional suggestion for user properties key.
 
 __public static final String USER_PHONE = "phone"__
 
->  Optional suggestion for user properties key. 
+Optional suggestion for user properties key.
 
 __public static final String USER_PHONE_WORK = "phone.work"__
 
->  Optional suggestion for user properties key. 
+Optional suggestion for user properties key.
 
 __public static final String USER_PHONE_HOME = "phone.home"__
 
->  Optional suggestion for user properties key. 
+Optional suggestion for user properties key.
 
 __public static final String USER_EMAIL = "email"__
 
->  Optional suggestion for user properties key. 
+Optional suggestion for user properties key.
 
 }
 
@@ -491,15 +485,15 @@ __public static final String USER_EMAIL = "email"__
 
 public _interface_ __UserAdmin__ extends  User    [se.natusoft.osgi.aps.api.auth.user.model] {
 
->  Provides update API for the User. 
+Provides update API for the User.
 
 __public List<Role> getRoles()__
 
->  Returns all roles for this user. 
+Returns all roles for this user.
 
 __public void addRole(Role role)__
 
->  Adds a role to this user.  
+Adds a role to this user.
 
 _Parameters_
 
@@ -507,7 +501,7 @@ _Parameters_
 
 __public void removeRole(Role role)__
 
->  Removes a role from this user.  
+Removes a role from this user.
 
 _Parameters_
 
@@ -515,7 +509,7 @@ _Parameters_
 
 __public void addUserProperty(String key, String value)__
 
->  Adds a user property.  
+Adds a user property.
 
 _Parameters_
 
@@ -525,7 +519,7 @@ _Parameters_
 
 __public void removeUserProperty(String key)__
 
->  Removes a user property.  
+Removes a user property.
 
 _Parameters_
 
@@ -533,9 +527,9 @@ _Parameters_
 
 __public void setUserProperties(Properties properties)__
 
->  Sets properties for the user. 
+Sets properties for the user.
 
-> To update the user properties either first do getProperties() do your changes, and then call this method with the changed properties or just use the addUserProperty() and removeUserProperty() methods.  
+To update the user properties either first do _getProperties()_, do your changes, and then call this method with the changed properties or just use the _addUserProperty()_ and _removeUserProperty()_ methods.
 
 _Parameters_
 

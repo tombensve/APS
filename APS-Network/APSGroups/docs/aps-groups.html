@@ -153,19 +153,15 @@
     <p>
       public <em>interface</em> <strong>APSGroupsService </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
     </p>
-    <blockquote>
-      <p>
-         A service that lets clients send data reliable to all members of a group on any host. There is no limit on the size of the data sent, but that said I wouldn't send MB:s of data!         
-      </p>
-    </blockquote>
+    <p>
+      A service that lets clients send data reliable to all members of a group on any host. There is no limit on the size of the data sent, but that said I wouldn't send MB:s of data!      
+    </p>
     <p>
       <strong>GroupMember joinGroup(String name) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Joins a group.          
-      </p>
-    </blockquote>
+    <p>
+      Joins a group.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -193,11 +189,9 @@
     <p>
       <strong>void leaveGroup(GroupMember groupMember) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Leaves as member of group.          
-      </p>
-    </blockquote>
+    <p>
+      Leaves as member of group.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -223,19 +217,15 @@
     <p>
       public <em>interface</em> <strong>GroupMember </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
     </p>
-    <blockquote>
-      <p>
-         This is the API for APSGroupsService members received when they join a group. It is used to send and receive data messages to/from the group.         
-      </p>
-    </blockquote>
+    <p>
+      This is the API for <em>APSGroupsService</em> members received when they join a group. It is used to send and receive data messages to/from the group.      
+    </p>
     <p>
       <strong>void addMessageListener(MessageListener listener)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Adds a listener for incoming messages.         
-      </p>
-    </blockquote>
+    <p>
+      Adds a listener for incoming messages.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -247,11 +237,9 @@
     <p>
       <strong>void removeMessageListener(MessageListener listener)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Removes a listener for incoming messages.          
-      </p>
-    </blockquote>
+    <p>
+      Removes a listener for incoming messages.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -263,19 +251,15 @@
     <p>
       <strong>Message createNewMessage()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new Message to send. Use the sendMessage() method when ready to send it.         
-      </p>
-    </blockquote>
+    <p>
+      Creates a new Message to send. Use the sendMessage() method when ready to send it.      
+    </p>
     <p>
       <strong>void sendMessage(Message message) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sends a previously created message to all current members of the group. If this returns without an exception then all members have received the message.          
-      </p>
-    </blockquote>
+    <p>
+      Sends a previously created message to all current members of the group. If this returns without an exception then all members have received the message.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -295,11 +279,6 @@
     <p>
       <strong>UUID getMemberId()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -311,19 +290,12 @@
     <p>
       <strong>List&lt;String&gt; getMemberInfo()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns information about members.         
-      </p>
-    </blockquote>
+    <p>
+      Returns information about members.      
+    </p>
     <p>
       <strong>NetTime getNow()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -335,11 +307,9 @@
     <p>
       <strong>NetTime createFromNetTime(long netTimeMillis)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates from milliseconds in net time.          
-      </p>
-    </blockquote>
+    <p>
+      Creates from milliseconds in net time.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -351,11 +321,9 @@
     <p>
       <strong>NetTime createFromNetTime(Date netTimeDate)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates from a Date in net time.          
-      </p>
-    </blockquote>
+    <p>
+      Creates from a Date in net time.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -367,11 +335,9 @@
     <p>
       <strong>NetTime createFromLocalTime(long localTimeMillis)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates from milliseconds in local time.          
-      </p>
-    </blockquote>
+    <p>
+      Creates from milliseconds in local time.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -383,11 +349,9 @@
     <p>
       <strong>NetTime createFromLocalTime(Date localTimeDate)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates from a Date in local time.          
-      </p>
-    </blockquote>
+    <p>
+      Creates from a Date in local time.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -405,43 +369,30 @@
     <p>
       public <em>interface</em> <strong>Message </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
     </p>
-    <blockquote>
-      <p>
-         This represents a complete message containing any data you want to send to the group. You provide the message with data using the OutputStream, and read message data using the InputStream.         
-      </p>
-    </blockquote>
+    <p>
+      This represents a complete message containing any data you want to send to the group. You provide the message with data using the <em>OutputStream</em>, and read message data using the <em>InputStream</em>.      
+    </p>
     <p>
       <strong>OutputStream getOutputStream()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns an OutputStream to write message on. Multiple calls to this will return the same OutputStream!         
-      </p>
-    </blockquote>
+    <p>
+      Returns an <em>OutputStream</em> to write message on. Multiple calls to this will return the same <em>OutputStream</em>!      
+    </p>
     <p>
       <strong>InputStream getInputStream()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns an InputStream for reading the message. Multiple calls to this will return new InputStream:s starting from the beginning!         
-      </p>
-    </blockquote>
+    <p>
+      Returns an <em>InputStream</em> for reading the message. Multiple calls to this will return new <em>InputStream</em>:s starting from the beginning!      
+    </p>
     <p>
       <strong>UUID getId()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the id of this message.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the id of this message.      
+    </p>
     <p>
       <strong>String getMemberId()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -453,11 +404,6 @@
     <p>
       <strong>String getGroupName()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -475,19 +421,15 @@
     <p>
       public <em>interface</em> <strong>MessageListener </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
     </p>
-    <blockquote>
-      <p>
-         For listening on messages from the group.         
-      </p>
-    </blockquote>
+    <p>
+      For listening on messages from the group.      
+    </p>
     <p>
       <strong>public void messageReceived(Message message)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Notification of received message.          
-      </p>
-    </blockquote>
+    <p>
+      Notification of received message.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -505,43 +447,33 @@
     <p>
       public <em>interface</em> <strong>NetTime </strong> extends  Serializable    [se.natusoft.osgi.aps.api.net.groups.service] {      
     </p>
-    <blockquote>
-      <p>
-         This represents a common network time between members for handling date and time data. The net time is synchronized between all members. Each receiver of net time diffs it with local time and stores the diff so that they can convert to/from local/net time.         
-      </p>
-    </blockquote>
+    <p>
+      This represents a common network time between members for handling date and time data. The net time is synchronized between all members. Each receiver of net time diffs it with local time and stores the diff so that they can convert to/from local/net time.      
+    </p>
     <p>
       <strong>public long getNetTime()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the number of milliseconds since Januray 1, 1970 in net time.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the number of milliseconds since January 1, 1970 in net time.      
+    </p>
     <p>
       <strong>public Date getNetTimeDate()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the net time as a Date.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the net time as a Date.      
+    </p>
     <p>
       <strong>public Calendar getNetTimeCalendar()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the net time as a Calendar.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the net time as a Calendar.      
+    </p>
     <p>
       <strong>public Calendar getNetTimeCalendar(Locale locale)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the net time as a Calendar.          
-      </p>
-    </blockquote>
+    <p>
+      Returns the net time as a Calendar.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -553,27 +485,21 @@
     <p>
       <strong>public Date getLocalTimeDate()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Converts the net time to local time and returns as a Date.         
-      </p>
-    </blockquote>
+    <p>
+      Converts the net time to local time and returns as a Date.      
+    </p>
     <p>
       <strong>public Calendar getLocalTimeCalendar()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Converts the net time to local time and returns as a Calendar.         
-      </p>
-    </blockquote>
+    <p>
+      Converts the net time to local time and returns as a Calendar.      
+    </p>
     <p>
       <strong>public Calendar getLocalTimeCalendar(Locale locale)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Converts the net time to local time and returns as a Calendar.          
-      </p>
-    </blockquote>
+    <p>
+      Converts the net time to local time and returns as a Calendar.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>

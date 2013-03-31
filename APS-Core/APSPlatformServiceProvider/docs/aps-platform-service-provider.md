@@ -8,7 +8,7 @@ The returned information is configured in the _/apsadminweb_.
 
 public _class_ __PlatformDescription__   [se.natusoft.osgi.aps.api.core.platform.model] {
 
->  This model provides information about a platform installation. 
+This model provides information about a platform installation.
 
 
 
@@ -18,11 +18,11 @@ public _class_ __PlatformDescription__   [se.natusoft.osgi.aps.api.core.platform
 
 __public PlatformDescription()__
 
->  Creates a new PlatformDescription. 
+Creates a new PlatformDescription.
 
 __public PlatformDescription(String identifier, String type, String description)__
 
->  Creates a new PlatformDescription.  
+Creates a new PlatformDescription.
 
 _Parameters_
 
@@ -34,15 +34,15 @@ _Parameters_
 
 __public String getIdentifier()__
 
->  Returns the platform identifier. 
+Returns the platform identifier.
 
 __public String getType()__
 
->  Returns the type of the platform. 
+Returns the type of the platform.
 
 __public String getDescription()__
 
->  Returns the description of the platform. 
+Returns the description of the platform.
 
 }
 
@@ -52,11 +52,11 @@ __public String getDescription()__
 
 public _interface_ __APSPlatformService__   [se.natusoft.osgi.aps.api.core.platform.service] {
 
->  Provides information about the platform instance. 
+Provides information about the platform instance.
 
 __public PlatformDescription getPlatformDescription()__
 
->  Returns a description of the platform instance / installation. 
+Returns a description of the platform instance / installation.
 
 }
 

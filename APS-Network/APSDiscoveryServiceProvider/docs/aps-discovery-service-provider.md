@@ -8,11 +8,11 @@ A _service_ here means anything that can be called either with an URL or a host 
 
 public _class_ __APSDiscoveryPublishException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.discovery.exception] {
 
->  Thrown on service publish problems. 
+Thrown on service publish problems.
 
 __public APSDiscoveryPublishException(String message)__
 
->  Creates a new APSRuntimeException instance.  
+Creates a new _APSDiscoveryPublishException_ instance.
 
 _Parameters_
 
@@ -20,7 +20,7 @@ _Parameters_
 
 __public APSDiscoveryPublishException(String message, Throwable cause)__
 
->  Creates a new APSRuntimeException instance.  
+Creates a new _APSDiscoveryPublishException_ instance.
 
 _Parameters_
 
@@ -36,31 +36,31 @@ _Parameters_
 
 public _interface_ __ServiceDescription__   [se.natusoft.osgi.aps.api.net.discovery.model] {
 
->  Describes a service. 
+Describes a service.
 
 __String getDescription()__
 
->  A short description of the service. 
+A short description of the service.
 
 __String getServiceId()__
 
->  An id/name of the service. 
+An id/name of the service.
 
 __String getVersion()__
 
->  The version of the service. 
+The version of the service.
 
 __String getServiceHost()__
 
->  The targetHost of the service. 
+The targetHost of the service.
 
 __int getServicePort()__
 
->  The targetPort of the service. 
+The targetPort of the service.
 
 __String getServiceURL()__
 
->  An optional URL to the service. 
+An optional URL to the service.
 
 }
 
@@ -70,7 +70,7 @@ __String getServiceURL()__
 
 public _class_ __ServiceDescriptionProvider__ implements  ServiceDescription    [se.natusoft.osgi.aps.api.net.discovery.model] {
 
->  Describes a service. 
+Describes a service.
 
 
 
@@ -86,19 +86,19 @@ public _class_ __ServiceDescriptionProvider__ implements  ServiceDescription    
 
 __public ServiceDescriptionProvider()__
 
->  Creates a new ServiceDescirption. 
+Creates a new ServiceDescirption.
 
 __public String toString()__
 
->  Returns a string representation of this object. 
+Returns a string representation of this object.
 
 __public String getDescription()__
 
->  A short description of the service. 
+A short description of the service.
 
 __public void setDescription(String description)__
 
->  Sets a short description of the service.  
+Sets a short description of the service.
 
 _Parameters_
 
@@ -108,7 +108,7 @@ _Parameters_
 
 __public void setServiceId(String serviceId)__
 
->  Sets the id of the service.  
+Sets the id of the service.
 
 _Parameters_
 
@@ -118,7 +118,7 @@ _Parameters_
 
 __public void setVersion(String version)__
 
->  Sets the version of the service.  
+Sets the version of the service.
 
 _Parameters_
 
@@ -128,7 +128,7 @@ _Parameters_
 
 __public void setServiceHost(String serviceHost)__
 
->  Sets the targetHost of the service.  
+Sets the targetHost of the service.
 
 _Parameters_
 
@@ -138,7 +138,7 @@ _Parameters_
 
 __public void setServicePort(int servicePort)__
 
->  Sets the targetPort of the servcie.  
+Sets the targetPort of the service.
 
 _Parameters_
 
@@ -148,11 +148,11 @@ _Parameters_
 
 ____
 
->  Sets an url to the service.  
+Sets an url to the service.
 
 _Parameters_
 
-> _serviceURL_ - The servcie url to set. 
+> _serviceURL_ - The service url to set. 
 
 
 
@@ -166,23 +166,23 @@ _Parameters_
 
 public _interface_ __APSSimpleDiscoveryService__   [se.natusoft.osgi.aps.api.net.discovery.service] {
 
->  A network service discovery. 
+A network service discovery.
 
 __public List<ServiceDescription> getRemotelyDiscoveredServices()__
 
->  Returns all remotely discovered services. 
+Returns all remotely discovered services.
 
 __public List<ServiceDescription> getLocallyRegisteredServices()__
 
->  Returns the locally registered services. 
+Returns the locally registered services.
 
 __public List<ServiceDescription> getAllServices()__
 
->  Returns all known services, both locally registered and remotely discovered. 
+Returns all known services, both locally registered and remotely discovered.
 
 __public List<ServiceDescription> getService(String serviceId, String version)__
 
->  Returns all discovered services with the specified id.  
+Returns all discovered services with the specified id.
 
 _Parameters_
 
@@ -192,7 +192,7 @@ _Parameters_
 
 __public void publishService(ServiceDescription service) throws APSDiscoveryPublishException__
 
->  Publishes a local service. This will announce it to other known APSSimpleDiscoveryService instances.  
+Publishes a local service. This will announce it to other known APSSimpleDiscoveryService instances.
 
 _Parameters_
 
@@ -204,7 +204,7 @@ _Throws_
 
 __public void unpublishService(ServiceDescription service) throws APSDiscoveryPublishException__
 
->  Recalls the locally published service, announcing to other known APSSimpleDiscoveryService instances that this service is no longer available.  
+Recalls the locally published service, announcing to other known APSSimpleDiscoveryService instances that this service is no longer available.
 
 _Parameters_
 

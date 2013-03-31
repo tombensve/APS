@@ -176,32 +176,24 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>APSSimpleUserService </strong>   [se.natusoft.osgi.aps.api.auth.user] {      
     </p>
-    <blockquote>
-      <p>
-         This is the API of a simple user service that provide basic user handling that will probably be enough in many cases, but not all.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        Please note that this API does not declare any exceptions! In the case of an exception being needed the APSSimpleUserServiceException should be thrown. This is a runtime exception.         
-      </p>
-    </blockquote>
+    <p>
+      This is the API of a simple user service that provide basic user handling that will probably be enough in many cases, but not all.      
+    </p>
+    <p>
+      Please note that this API does not declare any exceptions! In the case of an exception being needed the APSSimpleUserServiceException should be thrown. This is a runtime exception.      
+    </p>
     <p>
       <strong>public static final String AUTH_METHOD_PASSWORD = "password"</strong>      
     </p>
-    <blockquote>
-      <p>
-         Password authentication method for authenticateUser().         
-      </p>
-    </blockquote>
+    <p>
+      Password authentication method for authenticateUser().      
+    </p>
     <p>
       <strong>public Role getRole(String roleId)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Gets a role by its id.          
-      </p>
-    </blockquote>
+    <p>
+      Gets a role by its id.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -221,11 +213,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public User getUser(String userId)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Gets a user by its id.          
-      </p>
-    </blockquote>
+    <p>
+      Gets a user by its id.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -245,11 +235,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public boolean authenticateUser(User user, Object authentication, String authMethod)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Authenticates a user using its user id and user provided authentication.          
-      </p>
-    </blockquote>
+    <p>
+      Authenticates a user using its user id and user provided authentication.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -268,7 +256,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </blockquote>
     <blockquote>
       <p>
-        <em>authentication</em> - The user provided authentication data. For example if AuthMethod is AUTH_METHOD_PASSWORD         
+        <em>authentication</em> - The user provided authentication data. For example if AuthMethod is AUTH\_METHOD\_PASSWORD         
       </p>
     </blockquote>
     <blockquote>
@@ -285,19 +273,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>APSSimpleUserServiceAdmin </strong> extends  APSSimpleUserService    [se.natusoft.osgi.aps.api.auth.user] {      
     </p>
-    <blockquote>
-      <p>
-         Admin API for APSSimpleUserService.         
-      </p>
-    </blockquote>
+    <p>
+      Admin API for APSSimpleUserService.      
+    </p>
     <p>
       <strong>public RoleAdmin createRole(String name, String description)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new role.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new role.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -322,11 +306,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void updateRole(Role role)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Updates a role.          
-      </p>
-    </blockquote>
+    <p>
+      Updates a role.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -338,11 +320,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void deleteRole(Role role)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Deletes a role.          
-      </p>
-    </blockquote>
+    <p>
+      Deletes a role.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -354,19 +334,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public List&lt;RoleAdmin&gt; getRoles()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns all available roles.         
-      </p>
-    </blockquote>
+    <p>
+      Returns all available roles.      
+    </p>
     <p>
       <strong>public UserAdmin createUser(String id)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new user. Please note that you get an empty user back. You probably want to add roles and also possibly properties to the user. After you have done that call updateUser(user).          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new user. Please note that you get an empty user back. You probably want to add roles and also possibly properties to the user. After you have done that call <em>updateUser(user)</em>.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -386,11 +362,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void updateUser(User user)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Updates a user.          
-      </p>
-    </blockquote>
+    <p>
+      Updates a user.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -402,11 +376,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void deleteUser(User user)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Deletes a user.          
-      </p>
-    </blockquote>
+    <p>
+      Deletes a user.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -418,19 +390,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public List&lt;UserAdmin&gt; getUsers()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns all users.         
-      </p>
-    </blockquote>
+    <p>
+      Returns all users.      
+    </p>
     <p>
       <strong>public void setUserAuthentication(User user, String authentication)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets authentication for the user.          
-      </p>
-    </blockquote>
+    <p>
+      Sets authentication for the user.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -453,19 +421,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>class</em> <strong>APSAuthMethodNotSupportedException </strong> extends  APSRuntimeException    [se.natusoft.osgi.aps.api.auth.user.exceptions] {      
     </p>
-    <blockquote>
-      <p>
-         This is thrown by APSAuthService when the implementation does not support the selected auth method.         
-      </p>
-    </blockquote>
+    <p>
+      This is thrown by APSAuthService when the implementation does not support the selected auth method.      
+    </p>
     <p>
       <strong>public APSAuthMethodNotSupportedException(String message)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new APSAuthMethodNotSupportedException instance.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new APSAuthMethodNotSupportedException instance.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -477,11 +441,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public APSAuthMethodNotSupportedException(String message, Throwable cause)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new APSAuthMethodNotSupportedException instance.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new APSAuthMethodNotSupportedException instance.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -504,19 +466,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>class</em> <strong>APSSimpleUserServiceException </strong> extends  APSRuntimeException    [se.natusoft.osgi.aps.api.auth.user.exceptions] {      
     </p>
-    <blockquote>
-      <p>
-         Indicates a problem with the APSSimpleUserService.         
-      </p>
-    </blockquote>
+    <p>
+      Indicates a problem with the APSSimpleUserService.      
+    </p>
     <p>
       <strong>public APSSimpleUserServiceException(String message)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new APSSimpleUserServiceException instance.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new APSSimpleUserServiceException instance.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -528,11 +486,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public APSSimpleUserServiceException(String message, Throwable cause)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new APSSimpleUserServiceException instance.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new APSSimpleUserServiceException instance.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -555,19 +511,12 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>Role </strong> extends  Comparable&lt;Role&gt;    [se.natusoft.osgi.aps.api.auth.user.model] {      
     </p>
-    <blockquote>
-      <p>
-         This defines a role.         
-      </p>
-    </blockquote>
+    <p>
+      This defines a role.      
+    </p>
     <p>
       <strong>public String getId()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -579,11 +528,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public String getDescription()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -595,11 +539,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public boolean hasRole(String roleName)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns true if the role has the specified sub role name.          
-      </p>
-    </blockquote>
+    <p>
+      Returns true if the role has the specified sub role name.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -611,11 +553,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>boolean isMasterRole()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -633,19 +570,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>RoleAdmin </strong> extends  Role    [se.natusoft.osgi.aps.api.auth.user.model] {      
     </p>
-    <blockquote>
-      <p>
-         Provides update API for Role.         
-      </p>
-    </blockquote>
+    <p>
+      Provides update API for Role.      
+    </p>
     <p>
       <strong>public void setDescription(String description)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Changes the description of the role.          
-      </p>
-    </blockquote>
+    <p>
+      Changes the description of the role.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -657,19 +590,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public List&lt;Role&gt; getRoles()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns all sub roles for this role.         
-      </p>
-    </blockquote>
+    <p>
+      Returns all sub roles for this role.      
+    </p>
     <p>
       <strong>public void addRole(Role role)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Adds a sub role to this role.          
-      </p>
-    </blockquote>
+    <p>
+      Adds a sub role to this role.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -681,11 +610,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void removeRole(Role role)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Removes a sub role from this role.          
-      </p>
-    </blockquote>
+    <p>
+      Removes a sub role from this role.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -697,11 +624,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void setMasterRole(boolean masterRole)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets whether this is a master role or not.          
-      </p>
-    </blockquote>
+    <p>
+      Sets whether this is a master role or not.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -719,35 +644,27 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>User </strong> extends  Comparable&lt;User&gt;    [se.natusoft.osgi.aps.api.auth.user.model] {      
     </p>
-    <blockquote>
-      <p>
-         This defines a User.         
-      </p>
-    </blockquote>
+    <p>
+      This defines a User.      
+    </p>
     <p>
       <strong>public String getId()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the unique id of the user.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the unique id of the user.      
+    </p>
     <p>
       <strong>public boolean isAuthenticated()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns true if this user is authenticated.         
-      </p>
-    </blockquote>
+    <p>
+      Returns true if this user is authenticated.      
+    </p>
     <p>
       <strong>public boolean hasRole(String roleName)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns true if the user has the specified role name.          
-      </p>
-    </blockquote>
+    <p>
+      Returns true if the user has the specified role name.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -759,56 +676,42 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public Properties getUserProperties()</strong>      
     </p>
-    <blockquote>
-      <p>
-         This provides whatever extra information about the user you want. How to use this is upp to the user of the service. There are some constants in this class that provide potential keys for the user properties.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        Please note that the returned properties are read only!         
-      </p>
-    </blockquote>
+    <p>
+      This provides whatever extra information about the user you want. How to use this is upp to the user of the service. There are some constants in this class that provide potential keys for the user properties.      
+    </p>
+    <p>
+      Please note that the returned properties are read only!      
+    </p>
     <p>
       <strong>public static final String USER_NAME = "name"</strong>      
     </p>
-    <blockquote>
-      <p>
-         Optional suggestion for user properties key.         
-      </p>
-    </blockquote>
+    <p>
+      Optional suggestion for user properties key.      
+    </p>
     <p>
       <strong>public static final String USER_PHONE = "phone"</strong>      
     </p>
-    <blockquote>
-      <p>
-         Optional suggestion for user properties key.         
-      </p>
-    </blockquote>
+    <p>
+      Optional suggestion for user properties key.      
+    </p>
     <p>
       <strong>public static final String USER_PHONE_WORK = "phone.work"</strong>      
     </p>
-    <blockquote>
-      <p>
-         Optional suggestion for user properties key.         
-      </p>
-    </blockquote>
+    <p>
+      Optional suggestion for user properties key.      
+    </p>
     <p>
       <strong>public static final String USER_PHONE_HOME = "phone.home"</strong>      
     </p>
-    <blockquote>
-      <p>
-         Optional suggestion for user properties key.         
-      </p>
-    </blockquote>
+    <p>
+      Optional suggestion for user properties key.      
+    </p>
     <p>
       <strong>public static final String USER_EMAIL = "email"</strong>      
     </p>
-    <blockquote>
-      <p>
-         Optional suggestion for user properties key.         
-      </p>
-    </blockquote>
+    <p>
+      Optional suggestion for user properties key.      
+    </p>
     <p>
       }      
     </p>
@@ -818,27 +721,21 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       public <em>interface</em> <strong>UserAdmin </strong> extends  User    [se.natusoft.osgi.aps.api.auth.user.model] {      
     </p>
-    <blockquote>
-      <p>
-         Provides update API for the User.         
-      </p>
-    </blockquote>
+    <p>
+      Provides update API for the User.      
+    </p>
     <p>
       <strong>public List&lt;Role&gt; getRoles()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns all roles for this user.         
-      </p>
-    </blockquote>
+    <p>
+      Returns all roles for this user.      
+    </p>
     <p>
       <strong>public void addRole(Role role)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Adds a role to this user.          
-      </p>
-    </blockquote>
+    <p>
+      Adds a role to this user.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -850,11 +747,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void removeRole(Role role)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Removes a role from this user.          
-      </p>
-    </blockquote>
+    <p>
+      Removes a role from this user.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -866,11 +761,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void addUserProperty(String key, String value)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Adds a user property.          
-      </p>
-    </blockquote>
+    <p>
+      Adds a user property.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -887,11 +780,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void removeUserProperty(String key)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Removes a user property.          
-      </p>
-    </blockquote>
+    <p>
+      Removes a user property.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -903,16 +794,12 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <strong>public void setUserProperties(Properties properties)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets properties for the user.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        To update the user properties either first do getProperties() do your changes, and then call this method with the changed properties or just use the addUserProperty() and removeUserProperty() methods.          
-      </p>
-    </blockquote>
+    <p>
+      Sets properties for the user.      
+    </p>
+    <p>
+      To update the user properties either first do <em>getProperties()</em>, do your changes, and then call this method with the changed properties or just use the <em>addUserProperty()</em> and <em>removeUserProperty()</em> methods.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>

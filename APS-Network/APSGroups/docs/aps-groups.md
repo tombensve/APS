@@ -115,11 +115,11 @@ The library wants an implementation of the APSGroupsConfig interface as its firs
 
 public _interface_ __APSGroupsService__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
->  A service that lets clients send data reliable to all members of a group on any host. There is no limit on the size of the data sent, but that said I wouldn't send MB:s of data! 
+A service that lets clients send data reliable to all members of a group on any host. There is no limit on the size of the data sent, but that said I wouldn't send MB:s of data!
 
 __GroupMember joinGroup(String name) throws IOException__
 
->  Joins a group.  
+Joins a group.
 
 _Returns_
 
@@ -135,7 +135,7 @@ _Throws_
 
 __void leaveGroup(GroupMember groupMember) throws IOException__
 
->  Leaves as member of group.  
+Leaves as member of group.
 
 _Parameters_
 
@@ -153,11 +153,11 @@ _Throws_
 
 public _interface_ __GroupMember__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
->  This is the API for APSGroupsService members received when they join a group. It is used to send and receive data messages to/from the group. 
+This is the API for _APSGroupsService_ members received when they join a group. It is used to send and receive data messages to/from the group.
 
 __void addMessageListener(MessageListener listener)__
 
->  Adds a listener for incoming messages. 
+Adds a listener for incoming messages.
 
 _Parameters_
 
@@ -165,7 +165,7 @@ _Parameters_
 
 __void removeMessageListener(MessageListener listener)__
 
->  Removes a listener for incoming messages.  
+Removes a listener for incoming messages.
 
 _Parameters_
 
@@ -173,11 +173,11 @@ _Parameters_
 
 __Message createNewMessage()__
 
->  Creates a new Message to send. Use the sendMessage() method when ready to send it. 
+Creates a new Message to send. Use the sendMessage() method when ready to send it.
 
 __void sendMessage(Message message) throws IOException__
 
->  Sends a previously created message to all current members of the group. If this returns without an exception then all members have received the message.  
+Sends a previously created message to all current members of the group. If this returns without an exception then all members have received the message.
 
 _Parameters_
 
@@ -189,19 +189,15 @@ _Throws_
 
 __UUID getMemberId()__
 
->  
-
 _Returns_
 
 > The ID of the member.
 
 __List<String> getMemberInfo()__
 
->  Returns information about members. 
+Returns information about members.
 
 __NetTime getNow()__
-
->  
 
 _Returns_
 
@@ -209,7 +205,7 @@ _Returns_
 
 __NetTime createFromNetTime(long netTimeMillis)__
 
->  Creates from milliseconds in net time.  
+Creates from milliseconds in net time.
 
 _Parameters_
 
@@ -217,7 +213,7 @@ _Parameters_
 
 __NetTime createFromNetTime(Date netTimeDate)__
 
->  Creates from a Date in net time.  
+Creates from a Date in net time.
 
 _Parameters_
 
@@ -225,7 +221,7 @@ _Parameters_
 
 __NetTime createFromLocalTime(long localTimeMillis)__
 
->  Creates from milliseconds in local time.  
+Creates from milliseconds in local time.
 
 _Parameters_
 
@@ -233,7 +229,7 @@ _Parameters_
 
 __NetTime createFromLocalTime(Date localTimeDate)__
 
->  Creates from a Date in local time.  
+Creates from a Date in local time.
 
 _Parameters_
 
@@ -247,31 +243,27 @@ _Parameters_
 
 public _interface_ __Message__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
->  This represents a complete message containing any data you want to send to the group. You provide the message with data using the OutputStream, and read message data using the InputStream. 
+This represents a complete message containing any data you want to send to the group. You provide the message with data using the _OutputStream_, and read message data using the _InputStream_.
 
 __OutputStream getOutputStream()__
 
->  Returns an OutputStream to write message on. Multiple calls to this will return the same OutputStream! 
+Returns an _OutputStream_ to write message on. Multiple calls to this will return the same _OutputStream_!
 
 __InputStream getInputStream()__
 
->  Returns an InputStream for reading the message. Multiple calls to this will return new InputStream:s starting from the beginning! 
+Returns an _InputStream_ for reading the message. Multiple calls to this will return new _InputStream_:s starting from the beginning!
 
 __UUID getId()__
 
->  Returns the id of this message. 
+Returns the id of this message.
 
 __String getMemberId()__
-
->  
 
 _Returns_
 
 > id of member as a string.
 
 __String getGroupName()__
-
->  
 
 _Returns_
 
@@ -285,11 +277,11 @@ _Returns_
 
 public _interface_ __MessageListener__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
->  For listening on messages from the group. 
+For listening on messages from the group.
 
 __public void messageReceived(Message message)__
 
->  Notification of received message.  
+Notification of received message.
 
 _Parameters_
 
@@ -303,23 +295,23 @@ _Parameters_
 
 public _interface_ __NetTime__ extends  Serializable    [se.natusoft.osgi.aps.api.net.groups.service] {
 
->  This represents a common network time between members for handling date and time data. The net time is synchronized between all members. Each receiver of net time diffs it with local time and stores the diff so that they can convert to/from local/net time. 
+This represents a common network time between members for handling date and time data. The net time is synchronized between all members. Each receiver of net time diffs it with local time and stores the diff so that they can convert to/from local/net time.
 
 __public long getNetTime()__
 
->  Returns the number of milliseconds since Januray 1, 1970 in net time. 
+Returns the number of milliseconds since January 1, 1970 in net time.
 
 __public Date getNetTimeDate()__
 
->  Returns the net time as a Date. 
+Returns the net time as a Date.
 
 __public Calendar getNetTimeCalendar()__
 
->  Returns the net time as a Calendar. 
+Returns the net time as a Calendar.
 
 __public Calendar getNetTimeCalendar(Locale locale)__
 
->  Returns the net time as a Calendar.  
+Returns the net time as a Calendar.
 
 _Parameters_
 
@@ -327,15 +319,15 @@ _Parameters_
 
 __public Date getLocalTimeDate()__
 
->  Converts the net time to local time and returns as a Date. 
+Converts the net time to local time and returns as a Date.
 
 __public Calendar getLocalTimeCalendar()__
 
->  Converts the net time to local time and returns as a Calendar. 
+Converts the net time to local time and returns as a Calendar.
 
 __public Calendar getLocalTimeCalendar(Locale locale)__
 
->  Converts the net time to local time and returns as a Calendar.  
+Converts the net time to local time and returns as a Calendar.
 
 _Parameters_
 

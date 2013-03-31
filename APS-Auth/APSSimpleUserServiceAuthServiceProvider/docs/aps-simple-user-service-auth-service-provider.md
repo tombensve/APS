@@ -16,15 +16,15 @@ This provides an APSAuthService that uses the APSSimpleUserService to authentica
 
 public _interface_ __APSAuthService<Credential>__   [se.natusoft.osgi.aps.api.auth.user] {
 
->  This is intended to be used as a wrapper to other means of authentication. Things in APS that needs authentication uses this service. 
+This is intended to be used as a wrapper to other means of authentication. Things in APS that needs authentication uses this service.
 
-> Implementations can lookup the user in an LDAP for example, or use some other user service. 
+Implementations can lookup the user in an LDAP for example, or use some other user service.
 
-> APS supplies an APSSimpleUserServiceAuthServiceProvider that uses the APSSimpleUserService to authenticate. It is provided in its own bundle. 
+APS supplies an _APSSimpleUserServiceAuthServiceProvider_ that uses the _APSSimpleUserService_ to authenticate. It is provided in its own bundle.
 
 __Properties authUser(String userId, Credential credentials, AuthMethod authMethod) throws APSAuthMethodNotSupportedException__
 
->  This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!  
+This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!
 
 _Returns_
 
@@ -44,7 +44,7 @@ _Throws_
 
 __Properties authUser(String userId, Credential credentials, AuthMethod authMethod, String role) throws APSAuthMethodNotSupportedException__
 
->  This authenticates a user. A Properties object is returned on successful authentication. null is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!  
+This authenticates a user. A Properties object is returned on successful authentication. _null_ is returned on failure. The Properties object returned contains misc information about the user. It can contain anything or nothing at all. There can be no assumptions about its contents!
 
 _Returns_
 
@@ -66,35 +66,35 @@ _Throws_
 
 __AuthMethod[] getSupportedAuthMethods()__
 
->  Returns an array of the AuthMethods supported by the implementation. 
+Returns an array of the AuthMethods supported by the implementation.
 
 public _static_ _enum_ __AuthMethod__   [se.natusoft.osgi.aps.api.auth.user] {
 
->  This hints at how to use the credentials. 
+This hints at how to use the credentials.
 
 __NONE__
 
->  Only userid is required. 
+Only userid is required.
 
 __PASSWORD__
 
->  toString() on the credentials object should return a password. 
+toString() on the credentials object should return a password.
 
 __KEY__
 
->  The credential object is a key of some sort. 
+The credential object is a key of some sort.
 
 __CERTIFICATE__
 
->  The credential object is a certificate of some sort. 
+The credential object is a certificate of some sort.
 
 __DIGEST__
 
->  The credential object is a digest password. 
+The credential object is a digest password.
 
 __SSO__
 
->  The credential object contains information for participating in a single sign on. 
+The credential object contains information for participating in a single sign on.
 
 }
 

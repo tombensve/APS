@@ -18,15 +18,15 @@ The javadoc for the [APSFilesystemService](http://apidoc.natusoft.se/APS/se/natu
 
 public _interface_ __APSDirectory__ extends  APSFile    [se.natusoft.osgi.aps.api.core.filesystem.model] {
 
->  This represents a directory in an APSFilesystem. 
+This represents a directory in an _APSFilesystem_.
 
-> Use this to create or get directories and files and list contents of directories. 
+Use this to create or get directories and files and list contents of directories.
 
-> Personal comment: I do prefer the term "folder" over "directory" since I think that is less ambigous, but since Java uses the term "directory" I decided to stick with that name. 
+Personal comment: I do prefer the term "folder" over "directory" since I think that is less ambiguous, but since Java uses the term "directory" I decided to stick with that name.
 
 __APSDirectory createDir(String name) throws IOException__
 
->  Returns a newly created directory with the specified name.  
+Returns a newly created directory with the specified name.
 
 _Parameters_
 
@@ -38,7 +38,7 @@ _Throws_
 
 __APSDirectory createDir(String name, String duplicateMessage) throws IOException__
 
->  Returns a newly created directory with the specified name.  
+Returns a newly created directory with the specified name.
 
 _Parameters_
 
@@ -52,7 +52,7 @@ _Throws_
 
 __APSFile createFile(String name) throws IOException__
 
->  Creates a new file in the directory represented by the current APSDirectory.  
+Creates a new file in the directory represented by the current _APSDirectory_.
 
 _Parameters_
 
@@ -64,7 +64,7 @@ _Throws_
 
 __APSDirectory getDir(String dirname) throws FileNotFoundException__
 
->  Returns the specified directory.  
+Returns the specified directory.
 
 _Parameters_
 
@@ -76,7 +76,7 @@ _Throws_
 
 __APSFile getFile(String name)__
 
->  Returns the named file in this directory.  
+Returns the named file in this directory.
 
 _Parameters_
 
@@ -84,7 +84,7 @@ _Parameters_
 
 __void recursiveDelete() throws IOException__
 
->  Performs a recursive delete of the directory represented by this APSDirectory and all subdirectories and files.  
+Performs a recursive delete of the directory represented by this _APSDirectory_ and all subdirectories and files.
 
 _Throws_
 
@@ -92,15 +92,11 @@ _Throws_
 
 __String[] list()__
 
->  
-
 _See_
 
 > java.io.File.list()
 
 __APSFile[] listFiles()__
-
->  
 
 _See_
 
@@ -114,13 +110,13 @@ _See_
 
 public _interface_ __APSFile__   [se.natusoft.osgi.aps.api.core.filesystem.model] {
 
->  This represents a file in an APSFilesystemService provided filsystem. It provides most of the API of java.io.File but is not a File! It never discloses the full path in the host filesystem, only paths relative to its APSFilesystem root. 
+This represents a file in an _APSFilesystemService_ provided filesystem. It provides most of the API of _java.io.File_ but is not a _java.io.File_! It never discloses the full path in the host filesystem, only paths relative to its _APSFilesystem_ root.
 
-> Use the createInputStream/OutputStream/Reader/Writer to read and write the file. 
+Use the createInputStream/OutputStream/Reader/Writer to read and write the file.
 
 __InputStream createInputStream() throws IOException__
 
->  Creates a new InputStream to this file.  
+Creates a new _InputStream_ to this file.
 
 _Throws_
 
@@ -128,7 +124,7 @@ _Throws_
 
 __OutputStream createOutputStream() throws IOException__
 
->  Creates a new OutputStream to this file.  
+Creates a new _OutputStream_ to this file.
 
 _Throws_
 
@@ -136,7 +132,7 @@ _Throws_
 
 __Reader createReader() throws IOException__
 
->  Creates a new Reader to this file.  
+Creates a new _Reader_ to this file.
 
 _Throws_
 
@@ -144,7 +140,7 @@ _Throws_
 
 __Writer createWriter() throws IOException__
 
->  Creates a new Writer to this file.  
+Creates a new _Writer_ to this file.
 
 _Throws_
 
@@ -152,7 +148,7 @@ _Throws_
 
 __Properties loadProperties() throws IOException__
 
->  If this file denotes a properties file it is loaded and returned.  
+If this file denotes a properties file it is loaded and returned.
 
 _Throws_
 
@@ -160,7 +156,7 @@ _Throws_
 
 __void saveProperties(Properties properties) throws IOException__
 
->  If this file denotes a properties file it is written with the specified properties.  
+If this file denotes a properties file it is written with the specified properties.
 
 _Parameters_
 
@@ -172,11 +168,9 @@ _Throws_
 
 __APSDirectory toDirectory()__
 
->  If this APSFile represents a directory an APSDirectory instance will be returned. Otherwise null will be returned. 
+If this _APSFile_ represents a directory an _APSDirectory_ instance will be returned. Otherwise _null_ will be returned.
 
 __APSFile getAbsoluteFile()__
-
->  
 
 _See_
 
@@ -184,11 +178,9 @@ _See_
 
 __String getAbsolutePath()__
 
->  Returns the absolute path relative to filesystem root. 
+Returns the absolute path relative to filesystem root.
 
 __APSFile getCanonicalFile() throws IOException__
-
->  
 
 _See_
 
@@ -196,15 +188,11 @@ _See_
 
 __String getCanonicalPath() throws IOException__
 
->  
-
 _See_
 
 > java.io.File.getCanonicalPath()
 
 __String getParent()__
-
->  
 
 _See_
 
@@ -212,15 +200,11 @@ _See_
 
 __APSDirectory getParentFile()__
 
->  
-
 _See_
 
 > java.io.File.getParentFile()
 
 __String getPath()__
-
->   
 
 _See_
 
@@ -228,15 +212,11 @@ _See_
 
 __boolean renameTo(APSFile dest)__
 
->  
-
 _See_
 
 > java.io.File.renameTo(File)
 
 __String getName()__
-
->  
 
 _See_
 
@@ -244,15 +224,11 @@ _See_
 
 __boolean canRead()__
 
->  
-
 _See_
 
 > java.io.File.canRead()
 
 __boolean canWrite()__
-
->  
 
 _See_
 
@@ -260,15 +236,11 @@ _See_
 
 __boolean exists()__
 
->  
-
 _See_
 
 > java.io.File.exists()
 
 __boolean isDirectory()__
-
->  
 
 _See_
 
@@ -276,15 +248,11 @@ _See_
 
 __boolean isFile()__
 
->  
-
 _See_
 
 > java.io.File.isFile()
 
 __boolean isHidden()__
-
->  
 
 _See_
 
@@ -292,15 +260,11 @@ _See_
 
 __long lastModified()__
 
->  
-
 _See_
 
 > java.io.File.lastModified()
 
 __long length()__
-
->  
 
 _See_
 
@@ -308,15 +272,11 @@ _See_
 
 __boolean createNewFile() throws IOException__
 
->  
-
 _See_
 
 > java.io.File.createNewFile()
 
 __boolean delete()__
-
->  
 
 _See_
 
@@ -324,15 +284,13 @@ _See_
 
 __void deleteOnExit()__
 
->  
-
 _See_
 
 > java.io.File.deleteOnExit()
 
 __String toString()__
 
->  Returns a string representation of this APSFileImpl. 
+Returns a string representation of this _APSFile_.
 
 }
 
@@ -342,11 +300,11 @@ __String toString()__
 
 public _interface_ __APSFilesystem__   [se.natusoft.osgi.aps.api.core.filesystem.model] {
 
->  This represents an APSFilesystemService filesytem. 
+This represents an _APSFilesystemService_ filesystem.
 
 __APSDirectory getDirectory(String path) throws IOException__
 
->  Returns a folder at the specified path.  
+Returns a folder at the specified path.
 
 _Parameters_
 
@@ -358,7 +316,7 @@ _Throws_
 
 __APSFile getFile(String path)__
 
->  Returns the file or folder of the specifeid path.  
+Returns the file or folder of the specified path.
 
 _Parameters_
 
@@ -366,7 +324,7 @@ _Parameters_
 
 __APSDirectory getRootDirectory()__
 
->  Returns the root directory. 
+Returns the root directory.
 
 }
 
@@ -376,17 +334,29 @@ __APSDirectory getRootDirectory()__
 
 public _interface_ __APSFilesystemService__   [se.natusoft.osgi.aps.api.core.filesystem.service] {
 
->  This provides a filesystem for use by services/applications. Each filesystem has its own root that cannot be navigated outside of.  Services or application _using_ this should do something like this in their activators:   APSFilesystemService fss;  APSFilesystem fs;   if (fss.hasFilesystem("my.file.system")) {  fs = fss.getFilsystem("my.file.system");  }  else {  fs = fss.createFilesystem("my.file.system");  }  
+This provides a filesystem for use by services/applications. Each filesystem has its own root that cannot be navigated outside of.
+
+Services or application using this should do something like this in their activators:
+
+        APSFilesystemService fss;
+        APSFilesystem fs;
+        
+        if (fss.hasFilesystem("my.file.system")) {
+            fs = fss.getFilsystem("my.file.system");
+        }
+        else {
+            fs = fss.createFilesystem("my.file.system");
+        }
 
 
 
 __APSFilesystem createFilesystem(String owner) throws IOException__
 
->  Creates a new filesystem for use by an application or service. Where on disk this filesystem resides is irellevant. It is accessed using the "owner", and will exist until it is removed.  
+Creates a new filesystem for use by an application or service. Where on disk this filesystem resides is irrelevant. It is accessed using the "owner", and will exist until it is removed.
 
 _Parameters_
 
-> _owner_ - The owner of the filesystem or rather a unique identifier of it. Concider using application or service package. 
+> _owner_ - The owner of the filesystem or rather a unique identifier of it. Consider using application or service package. 
 
 _Throws_
 
@@ -394,19 +364,19 @@ _Throws_
 
 __boolean hasFilesystem(String owner)__
 
->  Returns true if the specified owner has a fileystem.  
+Returns true if the specified owner has a filesystem.
 
 _Parameters_
 
-> _owner_ - The owner of the fileystem or rather a unique identifier of it. 
+> _owner_ - The owner of the filesystem or rather a unique identifier of it. 
 
 __APSFilesystem getFilesystem(String owner) throws IOException__
 
->  Returns the filesystem for the specified owner.  
+Returns the filesystem for the specified owner.
 
 _Parameters_
 
-> _owner_ - The owner of the filesystem or rahter a unique identifier of it. 
+> _owner_ - The owner of the filesystem or rather a unique identifier of it. 
 
 _Throws_
 
@@ -414,7 +384,7 @@ _Throws_
 
 __void deleteFilesystem(String owner) throws IOException__
 
->  Removes the filesystem and all files in it.  
+Removes the filesystem and all files in it.
 
 _Parameters_
 

@@ -15,27 +15,23 @@
     </p>
     <H2>APIs</H2>
     <p>
-      The following are the APIs for a few selected classes. The complete javadoc for this library can be found at <a href='http://apidoc.natusoft.se/APSWebTools' title=''>http://apidoc.natusoft.se/APSWebTools</a>.      
+      The following are the APIs for a few selected classes. The complete javadoc for this library can be found at <a href='http://apidoc.natusoft.se/APSWebTools/' title=''>http://apidoc.natusoft.se/APSWebTools/</a>.      
     </p>
     <hr/>    <p>
       public <em>class</em> <strong>APSAdminWebLoginHandler </strong> extends  APSLoginHandler  implements  APSLoginHandler.HandlerInfo    [se.natusoft.osgi.aps.tools.web] {      
     </p>
-    <blockquote>
-      <p>
-         This is a login handler to use by any admin web registering with the APSAdminWeb to validate that there is a valid login available.         
-      </p>
-    </blockquote>
+    <p>
+      This is a login handler to use by any admin web registering with the <em>APSAdminWeb</em> to validate that there is a valid login available.      
+    </p>
     <p>
             
     </p>
     <p>
       <strong>public APSAdminWebLoginHandler(BundleContext context)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new APSAdminWebLoginHandler.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>APSAdminWebLoginHandler</em>.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -47,11 +43,9 @@
     <p>
       <strong>public void setSessionIdFromRequestCookie(HttpServletRequest request)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets the session id from a cookie in the specified request.          
-      </p>
-    </blockquote>
+    <p>
+      Sets the session id from a cookie in the specified request.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -63,11 +57,9 @@
     <p>
       <strong>public void saveSessionIdOnResponse(HttpServletResponse response)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Saves the current session id on the specified response.          
-      </p>
-    </blockquote>
+    <p>
+      Saves the current session id on the specified response.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -97,32 +89,21 @@
     <p>
       public <em>class</em> <strong>APSLoginHandler </strong> implements  LoginHandler    [se.natusoft.osgi.aps.tools.web] {      
     </p>
-    <blockquote>
-      <p>
-         This class validates if there is a valid logged in user and also provides a simple login if no valid logged in user exists.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        This utility makes use of APSAuthService to login auth and APSSessionService for session handling. Trackers for these services are created internally which requires the shutdown() method to be called when no longer used to cleanup.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        The bundle needs to import the following packages for this class to work:         
-      </p>
-    </blockquote>
+    <p>
+      This class validates if there is a valid logged in user and also provides a simple login if no valid logged in user exists.      
+    </p>
+    <p>
+      This utility makes use of APSAuthService to login auth and APSSessionService for session handling. Trackers for these services are created internally which requires the shutdown() method to be called when no longer used to cleanup.      
+    </p>
+    <p>
+      The bundle needs to import the following packages for this class to work:      
+    </p>
     <pre>
       <code>
-   se.natusoft.osgi.aps.api.auth.user;version="[0.9,2)",
-   se.natusoft.osgi.aps.api.misc.session;version="[0.9,2)"
+     se.natusoft.osgi.aps.api.auth.user;version="[0.9,2)",
+     se.natusoft.osgi.aps.api.misc.session;version="[0.9,2)"
       </code>
     </pre>
-    <blockquote>
-      <p>
-                
-      </p>
-    </blockquote>
     <p>
             
     </p>
@@ -153,11 +134,9 @@
     <p>
       <strong>public APSLoginHandler(BundleContext context, HandlerInfo handlerInfo)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new VaadinLoginDialogHandler.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new VaadinLoginDialogHandler.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -169,11 +148,9 @@
     <p>
       <strong>protected void setHandlerInfo(HandlerInfo handlerInfo)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets the handler info when not provided in constructor.          
-      </p>
-    </blockquote>
+    <p>
+      Sets the handler info when not provided in constructor.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -185,43 +162,33 @@
     <p>
       <strong>public void shutdown()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Since this class internally creates and starts service trackers this method needs to be called on shutdown to cleanup!         
-      </p>
-    </blockquote>
+    <p>
+      Since this class internally creates and starts service trackers this method needs to be called on shutdown to cleanup!      
+    </p>
     <p>
       <strong>public String getLoggedInUser()</strong>      
     </p>
-    <blockquote>
-      <p>
-         This returns the currently logged in user or null if none are logged in.         
-      </p>
-    </blockquote>
+    <p>
+      This returns the currently logged in user or null if none are logged in.      
+    </p>
     <p>
             
     </p>
     <p>
       <strong>public boolean hasValidLogin()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns true if this handler sits on a valid login.         
-      </p>
-    </blockquote>
+    <p>
+      Returns true if this handler sits on a valid login.      
+    </p>
     <p>
       <strong>public boolean login(String userId, String pw)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Logs in with a userid and a password.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the APSAuthService when this object is already available due to the code also being an APSAdminWeb member. It is basically a convenience.          
-      </p>
-    </blockquote>
+    <p>
+      Logs in with a userid and a password.      
+    </p>
+    <p>
+      This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the <em>APSAuthService</em> when this object is already available due to the code also being an <em>APSAdminWeb</em> member. It is basically a convenience.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -246,16 +213,12 @@
     <p>
       <strong>public boolean login(String userId, String pw, String requiredRole)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Logs in with a userid and a password, and a required role.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the APSAuthService when this object is already available due to the code also being an APSAdminWeb member. It is basically a convenience.          
-      </p>
-    </blockquote>
+    <p>
+      Logs in with a userid and a password, and a required role.      
+    </p>
+    <p>
+      This method does not use or modify any internal state of this object! It only uses the APSAuthService that this object sits on. This allows code sitting on an instance of this class to use this method for validating a user without having to setup its own service tracker for the <em>APSAuthService</em> when this object is already available due to the code also being an <em>APSAdminWeb</em> member. It is basically a convenience.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -285,19 +248,12 @@
     <p>
       public <em>static</em> <em>interface</em> <strong>HandlerInfo </strong>   [se.natusoft.osgi.aps.tools.web] {      
     </p>
-    <blockquote>
-      <p>
-         Config values for the login handler.         
-      </p>
-    </blockquote>
+    <p>
+      Config values for the login handler.      
+    </p>
     <p>
       <strong>String getSessionId()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -309,11 +265,9 @@
     <p>
       <strong>void setSessionId(String sessionId)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Sets a new session id.          
-      </p>
-    </blockquote>
+    <p>
+      Sets a new session id.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -325,11 +279,6 @@
     <p>
       <strong>String getUserSessionName()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -341,11 +290,6 @@
     <p>
       <strong>String getRequiredRole()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>Returns</em>      
     </p>
@@ -363,27 +307,21 @@
     <p>
       public <em>interface</em> <strong>LoginHandler </strong>   [se.natusoft.osgi.aps.tools.web] {      
     </p>
-    <blockquote>
-      <p>
-         This is a simple API for doing a login.         
-      </p>
-    </blockquote>
+    <p>
+      This is a simple API for doing a login.      
+    </p>
     <p>
       <strong>public boolean hasValidLogin()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns true if this handler sits on a valid login.         
-      </p>
-    </blockquote>
+    <p>
+      Returns true if this handler sits on a valid login.      
+    </p>
     <p>
       <strong>boolean login(String userId, String pw)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Logs in with a userid and a password.          
-      </p>
-    </blockquote>
+    <p>
+      Logs in with a userid and a password.      
+    </p>
     <p>
       <em>Returns</em>      
     </p>
@@ -408,11 +346,9 @@
     <p>
       <strong>public void shutdown()</strong>      
     </p>
-    <blockquote>
-      <p>
-         If the handler creates service trackers or other things that needs to be shutdown when no longer used this method needs to be called when the handler is no longer needed.         
-      </p>
-    </blockquote>
+    <p>
+      If the handler creates service trackers or other things that needs to be shutdown when no longer used this method needs to be called when the handler is no longer needed.      
+    </p>
     <p>
       }      
     </p>

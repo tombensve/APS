@@ -8,11 +8,9 @@ Why a session service ? To begin with, this is not an HttpSession! That said, it
 
 public _interface_ __APSSession__   [se.natusoft.osgi.aps.api.misc.session] {
 
->  This represents an active session. 
+This represents an active session.
 
 __String getId()__
-
->  
 
 _Returns_
 
@@ -20,15 +18,13 @@ _Returns_
 
 __boolean isValid()__
 
->  
-
 _Returns_
 
 > true if this session is still valid.
 
 __void saveObject(String name, Object object)__
 
->  Saves an object in the session. Will do nothing if the session is no longer valid.  
+Saves an object in the session. Will do nothing if the session is no longer valid.
 
 _Parameters_
 
@@ -38,9 +34,9 @@ _Parameters_
 
 __Object retrieveObject(String name)__
 
->  Returns a object stored under the specified name or null if no object is stored under that name. 
+Returns a object stored under the specified name or null if no object is stored under that name.
 
-> If isValid() returns false then this will always return null.  
+If isValid() returns false then this will always return null.
 
 _Parameters_
 
@@ -54,7 +50,7 @@ _Parameters_
 
 public _interface_ __APSSessionService__   [se.natusoft.osgi.aps.api.misc.session] {
 
->  This is not a http session! It is a simple session that can be used by any code running in the same OSGi server. 
+This is not a http session! It is a simple session that can be used by any code running in the same OSGi server.
 
 
 
@@ -68,7 +64,7 @@ public _interface_ __APSSessionService__   [se.natusoft.osgi.aps.api.misc.sessio
 
 __APSSession createSession(int timeoutInMinutes)__
 
->  Creates a new session.  
+Creates a new session.
 
 _Parameters_
 
@@ -76,9 +72,9 @@ _Parameters_
 
 __APSSession createSession(String sessionId, int timeoutInMinutes)__
 
->  Creates a new session. 
+Creates a new session.
 
-> The idea behind this variant is to support distributed sessions. The implementation must use a session id that is unique enough to support this. The APS implementation uses java.util.UUID.  
+The idea behind this variant is to support distributed sessions. The implementation must use a session id that is unique enough to support this. The APS implementation uses java.util.UUID.
 
 _Parameters_
 
@@ -88,7 +84,7 @@ _Parameters_
 
 __APSSession getSession(String sessionId)__
 
->  Looks up an existing session by its id.  
+Looks up an existing session by its id.
 
 _Returns_
 
@@ -100,7 +96,7 @@ _Parameters_
 
 __void closeSession(String sessionId)__
 
->  Closes the session represented by the specified id. After this call APSSession.isValid() on an APSSession representing this session will return false.  
+Closes the session represented by the specified id. After this call APSSession.isValid() on an _APSSession_ representing this session will return false.
 
 _Parameters_
 

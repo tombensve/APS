@@ -28,29 +28,21 @@
     <p>
       public <em>interface</em> <strong>APSDirectory </strong> extends  APSFile    [se.natusoft.osgi.aps.api.core.filesystem.model] {      
     </p>
-    <blockquote>
-      <p>
-         This represents a directory in an APSFilesystem.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        Use this to create or get directories and files and list contents of directories.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        Personal comment: I do prefer the term "folder" over "directory" since I think that is less ambigous, but since Java uses the term "directory" I decided to stick with that name.         
-      </p>
-    </blockquote>
+    <p>
+      This represents a directory in an <em>APSFilesystem</em>.      
+    </p>
+    <p>
+      Use this to create or get directories and files and list contents of directories.      
+    </p>
+    <p>
+      Personal comment: I do prefer the term "folder" over "directory" since I think that is less ambiguous, but since Java uses the term "directory" I decided to stick with that name.      
+    </p>
     <p>
       <strong>APSDirectory createDir(String name) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns a newly created directory with the specified name.          
-      </p>
-    </blockquote>
+    <p>
+      Returns a newly created directory with the specified name.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -70,11 +62,9 @@
     <p>
       <strong>APSDirectory createDir(String name, String duplicateMessage) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns a newly created directory with the specified name.          
-      </p>
-    </blockquote>
+    <p>
+      Returns a newly created directory with the specified name.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -99,11 +89,9 @@
     <p>
       <strong>APSFile createFile(String name) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new file in the directory represented by the current APSDirectory.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new file in the directory represented by the current <em>APSDirectory</em>.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -123,11 +111,9 @@
     <p>
       <strong>APSDirectory getDir(String dirname) throws FileNotFoundException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the specified directory.          
-      </p>
-    </blockquote>
+    <p>
+      Returns the specified directory.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -147,11 +133,9 @@
     <p>
       <strong>APSFile getFile(String name)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the named file in this directory.          
-      </p>
-    </blockquote>
+    <p>
+      Returns the named file in this directory.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -163,11 +147,9 @@
     <p>
       <strong>void recursiveDelete() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Performs a recursive delete of the directory represented by this APSDirectory and all subdirectories and files.          
-      </p>
-    </blockquote>
+    <p>
+      Performs a recursive delete of the directory represented by this <em>APSDirectory</em> and all subdirectories and files.      
+    </p>
     <p>
       <em>Throws</em>      
     </p>
@@ -179,11 +161,6 @@
     <p>
       <strong>String[] list()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -195,11 +172,6 @@
     <p>
       <strong>APSFile[] listFiles()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -217,24 +189,18 @@
     <p>
       public <em>interface</em> <strong>APSFile </strong>   [se.natusoft.osgi.aps.api.core.filesystem.model] {      
     </p>
-    <blockquote>
-      <p>
-         This represents a file in an APSFilesystemService provided filsystem. It provides most of the API of java.io.File but is not a File! It never discloses the full path in the host filesystem, only paths relative to its APSFilesystem root.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        Use the createInputStream/OutputStream/Reader/Writer to read and write the file.         
-      </p>
-    </blockquote>
+    <p>
+      This represents a file in an <em>APSFilesystemService</em> provided filesystem. It provides most of the API of <em>java.io.File</em> but is not a <em>java.io.File</em>! It never discloses the full path in the host filesystem, only paths relative to its <em>APSFilesystem</em> root.      
+    </p>
+    <p>
+      Use the createInputStream/OutputStream/Reader/Writer to read and write the file.      
+    </p>
     <p>
       <strong>InputStream createInputStream() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new InputStream to this file.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>InputStream</em> to this file.      
+    </p>
     <p>
       <em>Throws</em>      
     </p>
@@ -246,11 +212,9 @@
     <p>
       <strong>OutputStream createOutputStream() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new OutputStream to this file.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>OutputStream</em> to this file.      
+    </p>
     <p>
       <em>Throws</em>      
     </p>
@@ -262,11 +226,9 @@
     <p>
       <strong>Reader createReader() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new Reader to this file.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>Reader</em> to this file.      
+    </p>
     <p>
       <em>Throws</em>      
     </p>
@@ -278,11 +240,9 @@
     <p>
       <strong>Writer createWriter() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new Writer to this file.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new <em>Writer</em> to this file.      
+    </p>
     <p>
       <em>Throws</em>      
     </p>
@@ -294,11 +254,9 @@
     <p>
       <strong>Properties loadProperties() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         If this file denotes a properties file it is loaded and returned.          
-      </p>
-    </blockquote>
+    <p>
+      If this file denotes a properties file it is loaded and returned.      
+    </p>
     <p>
       <em>Throws</em>      
     </p>
@@ -310,11 +268,9 @@
     <p>
       <strong>void saveProperties(Properties properties) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         If this file denotes a properties file it is written with the specified properties.          
-      </p>
-    </blockquote>
+    <p>
+      If this file denotes a properties file it is written with the specified properties.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -334,19 +290,12 @@
     <p>
       <strong>APSDirectory toDirectory()</strong>      
     </p>
-    <blockquote>
-      <p>
-         If this APSFile represents a directory an APSDirectory instance will be returned. Otherwise null will be returned.         
-      </p>
-    </blockquote>
+    <p>
+      If this <em>APSFile</em> represents a directory an <em>APSDirectory</em> instance will be returned. Otherwise <em>null</em> will be returned.      
+    </p>
     <p>
       <strong>APSFile getAbsoluteFile()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -358,19 +307,12 @@
     <p>
       <strong>String getAbsolutePath()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the absolute path relative to filesystem root.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the absolute path relative to filesystem root.      
+    </p>
     <p>
       <strong>APSFile getCanonicalFile() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -382,11 +324,6 @@
     <p>
       <strong>String getCanonicalPath() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -398,11 +335,6 @@
     <p>
       <strong>String getParent()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -414,11 +346,6 @@
     <p>
       <strong>APSDirectory getParentFile()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -430,11 +357,6 @@
     <p>
       <strong>String getPath()</strong>      
     </p>
-    <blockquote>
-      <p>
-                  
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -446,11 +368,6 @@
     <p>
       <strong>boolean renameTo(APSFile dest)</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -462,11 +379,6 @@
     <p>
       <strong>String getName()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -478,11 +390,6 @@
     <p>
       <strong>boolean canRead()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -494,11 +401,6 @@
     <p>
       <strong>boolean canWrite()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -510,11 +412,6 @@
     <p>
       <strong>boolean exists()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -526,11 +423,6 @@
     <p>
       <strong>boolean isDirectory()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -542,11 +434,6 @@
     <p>
       <strong>boolean isFile()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -558,11 +445,6 @@
     <p>
       <strong>boolean isHidden()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -574,11 +456,6 @@
     <p>
       <strong>long lastModified()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -590,11 +467,6 @@
     <p>
       <strong>long length()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -606,11 +478,6 @@
     <p>
       <strong>boolean createNewFile() throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -622,11 +489,6 @@
     <p>
       <strong>boolean delete()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -638,11 +500,6 @@
     <p>
       <strong>void deleteOnExit()</strong>      
     </p>
-    <blockquote>
-      <p>
-                 
-      </p>
-    </blockquote>
     <p>
       <em>See</em>      
     </p>
@@ -654,11 +511,9 @@
     <p>
       <strong>String toString()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns a string representation of this APSFileImpl.         
-      </p>
-    </blockquote>
+    <p>
+      Returns a string representation of this <em>APSFile</em>.      
+    </p>
     <p>
       }      
     </p>
@@ -668,19 +523,15 @@
     <p>
       public <em>interface</em> <strong>APSFilesystem </strong>   [se.natusoft.osgi.aps.api.core.filesystem.model] {      
     </p>
-    <blockquote>
-      <p>
-         This represents an APSFilesystemService filesytem.         
-      </p>
-    </blockquote>
+    <p>
+      This represents an <em>APSFilesystemService</em> filesystem.      
+    </p>
     <p>
       <strong>APSDirectory getDirectory(String path) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns a folder at the specified path.          
-      </p>
-    </blockquote>
+    <p>
+      Returns a folder at the specified path.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -700,11 +551,9 @@
     <p>
       <strong>APSFile getFile(String path)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the file or folder of the specifeid path.          
-      </p>
-    </blockquote>
+    <p>
+      Returns the file or folder of the specified path.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
@@ -716,11 +565,9 @@
     <p>
       <strong>APSDirectory getRootDirectory()</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the root directory.         
-      </p>
-    </blockquote>
+    <p>
+      Returns the root directory.      
+    </p>
     <p>
       }      
     </p>
@@ -730,28 +577,40 @@
     <p>
       public <em>interface</em> <strong>APSFilesystemService </strong>   [se.natusoft.osgi.aps.api.core.filesystem.service] {      
     </p>
-    <blockquote>
-      <p>
-         This provides a filesystem for use by services/applications. Each filesystem has its own root that cannot be navigated outside of.  Services or application _using_ this should do something like this in their activators:   APSFilesystemService fss;  APSFilesystem fs;   if (fss.hasFilesystem("my.file.system")) {  fs = fss.getFilsystem("my.file.system");  }  else {  fs = fss.createFilesystem("my.file.system");  }          
-      </p>
-    </blockquote>
+    <p>
+      This provides a filesystem for use by services/applications. Each filesystem has its own root that cannot be navigated outside of.      
+    </p>
+    <p>
+      Services or application using this should do something like this in their activators:      
+    </p>
+    <pre>
+      <code>
+    APSFilesystemService fss;
+    APSFilesystem fs;
+    
+    if (fss.hasFilesystem("my.file.system")) {
+        fs = fss.getFilsystem("my.file.system");
+    }
+    else {
+        fs = fss.createFilesystem("my.file.system");
+    }
+      </code>
+    </pre>
     <p>
             
     </p>
     <p>
       <strong>APSFilesystem createFilesystem(String owner) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Creates a new filesystem for use by an application or service. Where on disk this filesystem resides is irellevant. It is accessed using the "owner", and will exist until it is removed.          
-      </p>
-    </blockquote>
+    <p>
+      Creates a new filesystem for use by an application or service. Where on disk this filesystem resides is irrelevant. It is accessed using the "owner", and will exist until it is removed.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>owner</em> - The owner of the filesystem or rather a unique identifier of it. Concider using application or service package.         
+        <em>owner</em> - The owner of the filesystem or rather a unique identifier of it. Consider using application or service package.         
       </p>
     </blockquote>
     <p>
@@ -765,33 +624,29 @@
     <p>
       <strong>boolean hasFilesystem(String owner)</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns true if the specified owner has a fileystem.          
-      </p>
-    </blockquote>
+    <p>
+      Returns true if the specified owner has a filesystem.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>owner</em> - The owner of the fileystem or rather a unique identifier of it.         
+        <em>owner</em> - The owner of the filesystem or rather a unique identifier of it.         
       </p>
     </blockquote>
     <p>
       <strong>APSFilesystem getFilesystem(String owner) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Returns the filesystem for the specified owner.          
-      </p>
-    </blockquote>
+    <p>
+      Returns the filesystem for the specified owner.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>owner</em> - The owner of the filesystem or rahter a unique identifier of it.         
+        <em>owner</em> - The owner of the filesystem or rather a unique identifier of it.         
       </p>
     </blockquote>
     <p>
@@ -805,11 +660,9 @@
     <p>
       <strong>void deleteFilesystem(String owner) throws IOException</strong>      
     </p>
-    <blockquote>
-      <p>
-         Removes the filesystem and all files in it.          
-      </p>
-    </blockquote>
+    <p>
+      Removes the filesystem and all files in it.      
+    </p>
     <p>
       <em>Parameters</em>      
     </p>

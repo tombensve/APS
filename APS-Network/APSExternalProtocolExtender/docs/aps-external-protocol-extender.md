@@ -20,11 +20,11 @@ The flow is like this:
 
 2. Transport gets some user selected protocol (The APSExtProtocolHTTPTransportProvider allows specification of both protocol, protocol version, and service to call in the URL).
 
-3. Transport calls APSExternalProtocolService to get requested protocol.
+3. Transport calls _APSExternalProtocolService_ to get requested protocol.
 
-4. Transport calls protocol to parse InputStream and it returns an RPCRequest.
+4. Transport calls protocol to parse InputStream and it returns an _RPCRequest_.
 
-5. Transport uses the information in the RPCRequest to call a service using APSExternalProtocolService.
+5. Transport uses the information in the RPCRequest to call a service using _APSExternalProtocolService_.
 
 6. Transport takes the result from the call and passes to the protocol along with an OutputStream to write response on.
 
@@ -34,9 +34,9 @@ This bundle registers an _APSExternalProtocolService_ that will provide all _APS
 
 ### Protocols
 
-There is a base API for protocols: RPCProtocol. APIs for different types of protocols should extend this. The protocol type APIs are service APIs and services implementing them must be provided by other bundles. This bundle looks for and keeps track of all such service providers.
+There is a base API for protocols: _RPCProtocol_. APIs for different types of protocols should extend this. The protocol type APIs are service APIs and services implementing them must be provided by other bundles. This bundle looks for and keeps track of all such service providers.
 
-The _StreamedRPCProtocol_ extends _RPCPROTOCOL_ and provides a method for parsing a request from an InputStream returning an RPCRequest object. This request object contains the name of the service, the method, and the parameters. This is enough for using _APSExternalProtocolService_ to do a call to the service. The request object is also used to write the call response on an OutputStream. There is also a method to write an error response.
+The _StreamedRPCProtocol_ extends _RPCProtocol_ and provides a method for parsing a request from an _InputStream_ returning an _RPCRequest_ object. This request object contains the name of the service, the method, and the parameters. This is enough for using _APSExternalProtocolService_ to do a call to the service. The request object is also used to write the call response on an OutputStream. There is also a method to write an error response.
 
 The _StreamedHTTPProtocol_ extends _StreamedRPCProtocol_ and indicates that the protocol should probably only be supported by http transports. It also provides a _supportsREST()_ method that transports can use to make decicions on how the call should be interpreted.
 
@@ -50,21 +50,23 @@ A transport provider can register themselves with the _APSExternalProtocolServic
 
 _APSExtProtocolHTTPTransportProvider_ - Provides a HTTP transport.
 
-_APSStreamedJSONRPCProtocolProvider_ - Provides version 1.0 and 2.0 of JSONRPC.
+_APSStreamedJSONRPCProtocolProvider_ - Provides version 1.0 and 2.0 of JSONRPC, JSONHTTP and JSONREST.
 
 ## APIs
 
 public _interface_ __APSExternalProtocolService__   [se.natusoft.osgi.aps.api.external.extprotocolsvc] {
 
->  This service makes the currently available externalizable services available for calling. It should be used by a bundle providing an externally available way of calling a service (JSON over http for example) to translate and forward calls to the local service. The locally called service is not required to be aware that it is called externally.  __Never cache any result of this service!__ Always make a new call to get the current state. Also note that it is possible that the service represented by an APSExternallyCallable have gone away after it was returned, but before you do call() on it! In that case an APSNoServiceAvailableException will be thrown. Note that you can register as an APSExternalProtocolListener to receive notifications about externalizable services coming and going, and also protocols coming and going to keep up to date with the current state of things. 
+This service makes the currently available externalizable services available for calling. It should be used by a bundle providing an externally available way of calling a service (JSON over http for example) to translate and forward calls to the local service. The locally called service is not required to be aware that it is called externally.
+
+__Never cache any result of this service!__ Always make a new call to get the current state. Also note that it is possible that the service represented by an APSExternallyCallable have gone away after it was returned, but before you do call() on it! In that case an APSNoServiceAvailableException will be thrown. Note that you can register as an APSExternalProtocolListener to receive notifications about externalizable services coming and going, and also protocols coming and going to keep up to date with the current state of things.
 
 __public Set<String> getAvailableServices()__
 
->  Returns all currently available services. 
+Returns all currently available services.
 
 __public List<APSExternallyCallable> getCallables(String serviceName) throws RuntimeException__
 
->  Returns all APSExternallyCallable for the named service object.  
+Returns all APSExternallyCallable for the named service object.
 
 _Parameters_
 
@@ -76,7 +78,7 @@ _Throws_
 
 __public boolean isRESTCallable(String serviceName) throws RuntimeException__
 
->  Returns true if the service has _put*(...)_, _get*(...)_, and/or _delete*(...)_ methods. This is to help HTTP transports support REST calls.  
+Returns true if the service has _post*(...)_, _put*(...)_, _get*(...)_, and/or _delete*(...)_ methods. This is to help HTTP transports support REST calls.
 
 _Parameters_
 
@@ -84,7 +86,7 @@ _Parameters_
 
 __public APSRESTCallable getRESTCallable(String serviceName)__
 
->  Returns an APSRESTCallable containing one or more of post, put.get, and delete methods. This is to help HTTP transports support REST calls.  
+Returns an APSRESTCallable containing one or more of post, put, get, and delete methods. This is to help HTTP transports support REST calls.
 
 _Parameters_
 
@@ -92,7 +94,7 @@ _Parameters_
 
 __public Set<String> getAvailableServiceFunctionNames(String serviceName)__
 
->  Returns the names of all available functions of the specified service.  
+Returns the names of all available functions of the specified service.
 
 _Parameters_
 
@@ -100,7 +102,7 @@ _Parameters_
 
 __public APSExternallyCallable getCallable(String serviceName, String serviceFunctionName)__
 
->  Gets an APSExternallyCallable for a specified service name and service function name.  
+Gets an APSExternallyCallable for a specified service name and service function name.
 
 _Returns_
 
@@ -114,15 +116,13 @@ _Parameters_
 
 __public List<RPCProtocol> getAllProtocols()__
 
->  
-
 _Returns_
 
 > All currently deployed providers of RPCProtocol.
 
 __public RPCProtocol getProtocolByNameAndVersion(String name, String version)__
 
->  Returns an RPCProtocol provider by protocol name and version.  
+Returns an RPCProtocol provider by protocol name and version.
 
 _Returns_
 
@@ -136,15 +136,13 @@ _Parameters_
 
 __public List<StreamedRPCProtocol> getAllStreamedProtocols()__
 
->  
-
 _Returns_
 
 > All currently deployed providers of StreamedRPCProtocol.
 
 __public StreamedRPCProtocol getStreamedProtocolByNameAndVersion(String name, String version)__
 
->  Returns a StreamedRPCProtocol provider by protocol name and version.  
+Returns a StreamedRPCProtocol provider by protocol name and version.
 
 _Returns_
 
@@ -158,7 +156,7 @@ _Parameters_
 
 __public void addExternalProtocolListener(APSExternalProtocolListener externalServiceListener)__
 
->  Add a listener for externally available services.  
+Add a listener for externally available services.
 
 _Parameters_
 
@@ -166,7 +164,7 @@ _Parameters_
 
 __public void removeExternalProtocolListener(APSExternalProtocolListener externalServiceListener)__
 
->  Removes a listener for externally available services.  
+Removes a listener for externally available services.
 
 _Parameters_
 
@@ -180,11 +178,9 @@ _Parameters_
 
 public _interface_ __APSExternallyCallable<ReturnType>__ extends  Callable<ReturnType>    [se.natusoft.osgi.aps.api.external.extprotocolsvc.model] {
 
->  This API represents one callable service method. 
+This API represents one callable service method.
 
 __public String getServiceName()__
-
->  
 
 _Returns_
 
@@ -192,15 +188,11 @@ _Returns_
 
 __public String getServiceFunctionName()__
 
->  
-
 _Returns_
 
 > The name of the service function this callable represents.
 
 __public DataTypeDescription getReturnDataDescription()__
-
->  
 
 _Returns_
 
@@ -208,15 +200,11 @@ _Returns_
 
 __public List<ParameterDataTypeDescription> getParameterDataDescriptions()__
 
->  
-
 _Returns_
 
 > A description of each parameter type.
 
 __public Bundle getServiceBundle()__
-
->  
 
 _Returns_
 
@@ -224,7 +212,7 @@ _Returns_
 
 __public void setArguments(Object... value)__
 
->  Provides parameters to the callable using a varags list of parameter values.  
+Provides parameters to the callable using a varags list of parameter values.
 
 _Parameters_
 
@@ -232,7 +220,7 @@ _Parameters_
 
 __ReturnType call() throws Exception__
 
->  Calls the service method represented by this APSExternallyCallable.  
+Calls the service method represented by this APSExternallyCallable.
 
 _Returns_
 
@@ -250,11 +238,11 @@ _Throws_
 
 public _interface_ __APSExternalProtocolListener__   [se.natusoft.osgi.aps.api.external.extprotocolsvc.model] {
 
->  A listener for externally available services. Please note that this means that the service is available for potential external protocol exposure! For it to be truly available there also has to be a protocol and transport available. It is probably only transports that are interested in this information! 
+A listener for externally available services. Please note that this means that the service is available for potential external protocol exposure! For it to be truly available there also has to be a protocol and transport available. It is probably only transports that are interested in this information!
 
 __public void externalServiceAvailable(String service, String version)__
 
->  This gets called when a new externally available service becomes available.  
+This gets called when a new externally available service becomes available.
 
 _Parameters_
 
@@ -264,7 +252,7 @@ _Parameters_
 
 __public void externalServiceLeaving(String service, String version)__
 
->  This gets called when an externally available service no longer is available.  
+This gets called when an externally available service no longer is available.
 
 _Parameters_
 
@@ -274,7 +262,7 @@ _Parameters_
 
 __public void protocolAvailable(String protocolName, String protocolVersion)__
 
->  This gets called when a new protocol becomes available.  
+This gets called when a new protocol becomes available.
 
 _Parameters_
 
@@ -284,7 +272,7 @@ _Parameters_
 
 __public void protocolLeaving(String protocolName, String protocolVersion)__
 
->  This gets called when a new protocol is leaving.  
+This gets called when a new protocol is leaving.
 
 _Parameters_
 
@@ -298,6 +286,52 @@ _Parameters_
 
     
 
+public _interface_ __APSRESTCallable__ extends  APSExternallyCallable    [se.natusoft.osgi.aps.api.external.extprotocolsvc.model] {
+
+This is a special variant of APSExternallyCallable that supports a HTTP REST call.
+
+This is only available when a service have zero or one method whose name starts with put, zero or one method whose name starts with post, and so on. There has to be at least one method of put, post, get or delete.
+
+APSExternalProtocolService can provide an instance of this is a service matches the criteria.
+
+This is only of use for HTTP transports! aps-ext-protocol-http-transport-provider does make use of this for protocols that indicate they support REST.
+
+__public boolean supportsPut()__
+
+_Returns_
+
+> true if the service supports the PUT method.
+
+__public boolean supportsPost()__
+
+_Returns_
+
+> true if the service supports the POST method.
+
+__public boolean supportsGet()__
+
+_Returns_
+
+> true if the service supports the GET method.
+
+__public boolean supportsDelete()__
+
+_Returns_
+
+> true if the service supports the DELETE method.
+
+__public void selectMethod(HttpMethod method)__
+
+This selects the method to call with this callable.
+
+_Parameters_
+
+> _method_ - The selected method to call. 
+
+public _static_ _enum_ __HttpMethod__   [se.natusoft.osgi.aps.api.external.extprotocolsvc.model] {
+
+This defines the valid choices for selectMethod(...).
+
 }
 
 ----
@@ -306,13 +340,13 @@ _Parameters_
 
 public _class_ __APSRESTException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.rpc.errors] {
 
->  This is a special exception that services can throw if they are intended to be available as REST services through the APSExternalProtocolExtender + APSRPCHTTPTransportProvider. This allows for better control over status codes returned by the service call. 
+This is a special exception that services can throw if they are intended to be available as REST services through the aps-external-protocol-extender + aps-ext-protocol-http-transport-provider. This allows for better control over status codes returned by the service call.
 
 
 
 __public APSRESTException(int httpStatusCode)__
 
->  Creates a new APSRESTException.  
+Creates a new _APSRESTException_.
 
 _Parameters_
 
@@ -320,7 +354,7 @@ _Parameters_
 
 __public APSRESTException(int httpStatusCode, String message)__
 
->  Creates a new APSRESTException.  
+Creates a new _APSRESTException_.
 
 _Parameters_
 
@@ -330,7 +364,7 @@ _Parameters_
 
 __public int getHttpStatusCode()__
 
->  Returns the http status code. 
+Returns the http status code.
 
 }
 
@@ -340,35 +374,35 @@ __public int getHttpStatusCode()__
 
 public _enum_ __ErrorType__   [se.natusoft.osgi.aps.api.net.rpc.errors] {
 
->  This defines what I think is a rather well though through set of error types applicable for an RPC call. No they are not mine, they come from Matt Morley in his JSONRPC 2.0 specification at http://jsonrpc.org/spec.html. I did add SERVICE_NOT_FOUND since it is fully possible to try to call a service that does not exist. 
+This defines what I think is a rather well though through set of error types applicable for an RPC call. No they are not mine, they come from Matt Morley in his JSONRPC 2.0 specification at [http://jsonrpc.org/spec.html](http://jsonrpc.org/spec.html). I did add SERVICE_NOT_FOUND since it is fully possible to try to call a service that does not exist.
 
 __PARSE_ERROR__
 
->  Invalid input was received by the server. An error occurred on the server while parsing request data. 
+Invalid input was received by the server. An error occurred on the server while parsing request data.
 
 __INVALID_REQUEST__
 
->  The request data sent is not a valid. 
+The request data sent is not a valid.
 
 __METHOD_NOT_FOUND__
 
->  The called method does not exist / is not available. 
+The called method does not exist / is not available.
 
 __SERVICE_NOT_FOUND__
 
->  The called service does not exist / is not available. 
+The called service does not exist / is not available.
 
 __INVALID_PARAMS__
 
->  The parameters to the method are invalid. 
+The parameters to the method are invalid.
 
 __INTERNAL_ERROR__
 
->  Internal protocol error. 
+Internal protocol error.
 
 __SERVER_ERROR__
 
->  Server related error. 
+Server related error.
 
 }
 
@@ -378,11 +412,9 @@ __SERVER_ERROR__
 
 public _interface_ __HTTPError__ extends  RPCError    [se.natusoft.osgi.aps.api.net.rpc.errors] {
 
->  Extends RPCError with an HTTP status code. HTTP transports can make use of this information. 
+Extends _RPCError_ with an HTTP status code. HTTP transports can make use of this information.
 
 __public int getHttpStatusCode()__
-
->  
 
 _Returns_
 
@@ -396,27 +428,27 @@ _Returns_
 
 public _interface_ __RPCError__   [se.natusoft.osgi.aps.api.net.rpc.errors] {
 
->  This represents an error in servicing an RPC request. 
+This represents an error in servicing an RPC request.
 
 __public ErrorType getErrorType()__
 
->  The type of the error. 
+The type of the error.
 
 __public String getErrorCode()__
 
->  A potential error code. 
+A potential error code.
 
 __public String getMessage()__
 
->  Returns an error message. This is also optional. 
+Returns an error message. This is also optional.
 
 __public boolean hasOptionalData()__
 
->  True if there is optional data available. An example of optional data would be a stack trace for example. 
+True if there is optional data available. An example of optional data would be a stack trace for example.
 
 __public String getOptionalData()__
 
->  The optional data. 
+The optional data.
 
 }
 
@@ -426,11 +458,11 @@ __public String getOptionalData()__
 
 public _class_ __RequestedParamNotAvailableException__ extends  APSException    [se.natusoft.osgi.aps.api.net.rpc.exceptions] {
 
->  This exception is thrown when a parameter request cannot be fulfilled. 
+This exception is thrown when a parameter request cannot be fulfilled.
 
 __public RequestedParamNotAvailableException(String message)__
 
->  Creates a new APSException instance.  
+Creates a new _RequestedParamNotAvailableException_ instance.
 
 _Parameters_
 
@@ -438,7 +470,7 @@ _Parameters_
 
 __public RequestedParamNotAvailableException(String message, Throwable cause)__
 
->  Creates a new APSException instance.  
+Creates a new _RequestedParamNotAvailableException_ instance.
 
 _Parameters_
 
@@ -454,7 +486,7 @@ _Parameters_
 
 public _abstract_ _class_ __AbstractRPCRequest__ implements  RPCRequest    [se.natusoft.osgi.aps.api.net.rpc.model] {
 
->  This contains a parsed JSONRPC request. 
+This provides a partial implementation of RPCRequest.
 
 
 
@@ -470,7 +502,7 @@ public _abstract_ _class_ __AbstractRPCRequest__ implements  RPCRequest    [se.n
 
 __public AbstractRPCRequest(String method)__
 
->  Creates a new AbstractRPCRequest.  
+Creates a new AbstractRPCRequest.
 
 _Parameters_
 
@@ -478,7 +510,7 @@ _Parameters_
 
 __public AbstractRPCRequest(RPCError error)__
 
->  Creates a new AbstractRPCRequest.  
+Creates a new AbstractRPCRequest.
 
 _Parameters_
 
@@ -486,7 +518,7 @@ _Parameters_
 
 __public AbstractRPCRequest(String method, Object callId)__
 
->  Creates a new AbstractRPCRequest.  
+Creates a new AbstractRPCRequest.
 
 _Parameters_
 
@@ -496,15 +528,11 @@ _Parameters_
 
 __protected Map<String, Object> getNamedParameters()__
 
->  
-
 _Returns_
 
 > The named parameters.
 
 __protected List<Object> getParameters()__
-
->  
 
 _Returns_
 
@@ -518,7 +546,7 @@ _Returns_
 
 __public void setServiceQName(String serviceQName)__
 
->  Sets the fully qualified name of the service to call. This is optional since not all protocol delivers a service name this way.  
+Sets the fully qualified name of the service to call. This is optional since not all protocol delivers a service name this way.
 
 _Parameters_
 
@@ -534,7 +562,7 @@ _Parameters_
 
 __public void addParameter(Object parameter)__
 
->  Adds a parameter. This is mutually exclusive with addParameter(name, parameter)!  
+Adds a parameter. This is mutually exclusive with addParameter(name, parameter)!
 
 _Parameters_
 
@@ -548,51 +576,43 @@ _Parameters_
 
 public _interface_ __RPCRequest__   [se.natusoft.osgi.aps.api.net.rpc.model] {
 
->  
+This represents a request returned by protocol implementations.
 
 __boolean isValid()__
 
->  Returns true if this request is valid. If this returns false all information except getError() is invalid, and getError() should return a valid RPCError object. 
+Returns true if this request is valid. If this returns false all information except _getError()_ is invalid, and _getError()_ should return a valid _RPCError_ object.
 
 __RPCError getError()__
 
->  Returns an RPCError object if isValid() == false, null otherwise. 
+Returns an _RPCError_ object if `isValid() == false`, _null_ otherwise.
 
 __String getServiceQName()__
 
->  Returns a fully qualified name of service to call. This will be null for protocols where service name is not provided this way. So this cannot be taken for given! 
+Returns a fully qualified name of service to call. This will be null for protocols where service name is not provided this way. So this cannot be taken for given!
 
 __String getMethod()__
 
->  REST protocol where it will be part of the URL. 
-
-_Returns_
-
-> The method to call. This can return null if the method is provided by other means, for example a
+Returns the method to call. This can return _null_ if the method is provided by other means, for example a REST protocol where it will be part of the URL.
 
 __boolean hasCallId()__
 
->  Returns true if there is a call id available in the request. 
+Returns true if there is a call id available in the request.
 
-> A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont. 
+A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont.
 
 __Object getCallId()__
 
->  Returns the method call call Id. 
+Returns the method call call Id.
 
-> A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont. 
+A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont.
 
 __int getNumberOfParameters()__
 
->  
-
-_Returns_
-
-> The number of parameters available.
+Return the number of parameters available.
 
 __<T> T getIndexedParameter(int index, Class<T> paramClass) throws RequestedParamNotAvailableException__
 
->  Returns the parameter at the specified index.  
+Returns the parameter at the specified index.
 
 _Returns_
 
@@ -616,11 +636,9 @@ _Throws_
 
 public _interface_ __RPCProtocol__   [se.natusoft.osgi.aps.api.net.rpc.service] {
 
->  This represents an RPC protocol provider. This API is not enough in itself, it is a common base for different protocols. 
+This represents an RPC protocol provider. This API is not enough in itself, it is a common base for different protocols.
 
 __String getServiceProtocolName()__
-
->  
 
 _Returns_
 
@@ -628,15 +646,11 @@ _Returns_
 
 __String getServiceProtocolVersion()__
 
->  
-
 _Returns_
 
 > The version of the implemented protocol.
 
 __String getRequestContentType()__
-
->  
 
 _Returns_
 
@@ -644,15 +658,11 @@ _Returns_
 
 __String getResponseContentType()__
 
->  
-
 _Returns_
 
 > The content type of the response for when such can be provided.
 
 __String getRPCProtocolDescription()__
-
->  
 
 _Returns_
 
@@ -660,7 +670,7 @@ _Returns_
 
 __RPCError createRPCError(ErrorType errorType, String errorCode, String message, String optionalData, Throwable cause)__
 
->  Factory method to create an error object.  
+Factory method to create an error object.
 
 _Returns_
 
@@ -686,11 +696,11 @@ _Parameters_
 
 public _interface_ __StreamedHTTPProtocol__ extends  StreamedRPCProtocol    [se.natusoft.osgi.aps.api.net.rpc.service] {
 
->  This is a marker interface indicating that the protocol is really assuming a HTTP transport and is expecting to be able to return http status codes. This also means it will be returning an HTTPError (which extends RPCError) from _createError(...)_.  It might be difficult for non HTTP transports to support this kind of protocol, and such should probably ignore these protocols. For example a REST implementation of this protocol will not be writing any error response back, but rather expect the transport to deliver the http status code it provides. A non HTTP transport will not be able to know how to communicate back errors in this case since it will not know anything about the protocol itself. 
+This is a marker interface indicating that the protocol is really assuming a HTTP transport and is expecting to be able to return http status codes. This also means it will be returning an HTTPError (which extends RPCError) from _createError(...)_.
+
+It might be difficult for non HTTP transports to support this kind of protocol, and such should probably ignore these protocols. For example a REST implementation of this protocol will not be writing any error response back, but rather expect the transport to deliver the http status code it provides. A non HTTP transport will not be able to know how to communicate back errors in this case since it will not know anything about the protocol itself.
 
 __boolean supportsREST()__
-
->  
 
 _Returns_
 
@@ -704,11 +714,13 @@ _Returns_
 
 public _interface_ __StreamedRPCProtocol__ extends  RPCProtocol    [se.natusoft.osgi.aps.api.net.rpc.service] {
 
->  This represents an RPC protocol provider that provide client/service calls with requests read from an InputStream or having parameters passes as strings and responses written to an OutputStream.  HTTP transports can support both _parseRequests(...)_ and _parseRequest(...)_ while other transports probably can handle only _parseRequests(...)_. __A protocol provider can return null for either of these!__ Most protocol providers will support _parseRequests(...)_ and some also _parseRequest(...)_. 
+This represents an RPC protocol provider that provide client/service calls with requests read from an InputStream or having parameters passes as strings and responses written to an OutputStream.
+
+HTTP transports can support both _parseRequests(...)_ and _parseRequest(...)_ while other transports probably can handle only _parseRequests(...)_. __A protocol provider can return null for either of these!__ Most protocol providers will support _parseRequests(...)_ and some also _parseRequest(...)_.
 
 __List<RPCRequest> parseRequests(String serviceQName, String method, InputStream requestStream) throws IOException__
 
->  Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.  
+Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.
 
 _Returns_
 
@@ -728,7 +740,7 @@ _Throws_
 
 __RPCRequest parseRequest(String serviceQName, String method, Map<String, String> parameters) throws IOException__
 
->  Provides an RPCRequest based on in-parameters. This variant supports HTTP transports.  
+Provides an RPCRequest based on in-parameters. This variant supports HTTP transports.
 
 _Returns_
 
@@ -748,7 +760,7 @@ _Throws_
 
 __void writeResponse(Object result, RPCRequest request, OutputStream responseStream) throws IOException__
 
->  Writes a successful response to the specified OutputStream.  
+Writes a successful response to the specified OutputStream.
 
 _Parameters_
 
@@ -764,7 +776,7 @@ _Throws_
 
 __boolean writeErrorResponse(RPCError error, RPCRequest request, OutputStream responseStream) throws IOException__
 
->  Writes an error response.  
+Writes an error response.
 
 _Returns_
 

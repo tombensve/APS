@@ -199,3 +199,7 @@ that have 2 implementations:
 
 * UUID - Produces java.util.UUID Ids.
 
+## Javadoc
+
+The javadoc for this can be found at [http://apidoc.natusoft.se/APSToolsLib/](http://apidoc.natusoft.se/APSToolsLib/).
+

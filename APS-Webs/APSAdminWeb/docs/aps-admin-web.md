@@ -43,11 +43,11 @@ Then to validate that there is a valid login do:
 
 public _interface_ __APSAdminWebService__   [se.natusoft.osgi.aps.apsadminweb.service] {
 
->  This service registers other specific administration web applications to make them available under a common administration gui. 
+This service registers other specific administration web applications to make them available under a common administration gui.
 
 __public void registerAdminWeb(AdminWebReg adminWebReg) throws IllegalArgumentException__
 
->  Registers an admin web application.  
+Registers an admin web application.
 
 _Parameters_
 
@@ -59,15 +59,13 @@ _Throws_
 
 __public void unregisterAdminWeb(AdminWebReg adminWebReg)__
 
->  Unregisters a previously registered admin web. This is failsafe. If it has not been registered nothing happens.  
+Unregisters a previously registered admin web. This is failsafe. If it has not been registered nothing happens.
 
 _Parameters_
 
 > _adminWebReg_ - Registration information for the admin web. Use the same as registered with. 
 
 __public List<AdminWebReg> getRegisteredAdminWebs()__
-
->  
 
 _Returns_
 
@@ -81,7 +79,7 @@ _Returns_
 
 public _class_ __AdminWebReg__   [se.natusoft.osgi.aps.apsadminweb.service.model] {
 
->  This model holds information about a registered admin web application. 
+This model holds information about a registered admin web application.
 
 
 
@@ -93,7 +91,7 @@ public _class_ __AdminWebReg__   [se.natusoft.osgi.aps.apsadminweb.service.model
 
 __public AdminWebReg(String name, String version, String description, String url)__
 
->  Creates a new AdminWebReg instance.  
+Creates a new AdminWebReg instance.
 
 _Parameters_
 
@@ -107,15 +105,11 @@ _Parameters_
 
 __public String getName()__
 
->  
-
 _Returns_
 
 > The (short) name of the admin web.
 
 __public String getVersion()__
-
->  
 
 _Returns_
 
@@ -123,15 +117,11 @@ _Returns_
 
 __public String getDescription()__
 
->  
-
 _Returns_
 
 > The description of the admin web.
 
 __public String getUrl()__
-
->  
 
 _Returns_
 
