@@ -123,7 +123,7 @@ public class ValueComponentListEditor extends VerticalLayout {
         this.editLine.enableNullValues();
         this.editLine.getComponent().setWidth("100%");
         this.editLine.getComponent().setEnabled(true);
-        this.editLine.setComponentValue("");
+        this.editLine.setComponentValue("", false);
         this.editLine.addListener(this.editLineListener);
         addComponent(this.editLine.getComponent());
 
@@ -235,7 +235,7 @@ public class ValueComponentListEditor extends VerticalLayout {
      */
     private void setEditLineValue(String value) {
         this.editLine.removeListener(this.editLineListener);
-        this.editLine.setComponentValue(value);
+        this.editLine.setComponentValue(value, false);
         this.editLine.addListener(this.editLineListener);
     }
 

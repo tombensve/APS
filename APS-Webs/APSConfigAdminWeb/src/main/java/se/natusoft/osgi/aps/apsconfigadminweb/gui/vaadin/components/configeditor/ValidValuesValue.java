@@ -61,6 +61,8 @@ public class ValidValuesValue extends ListSelect implements ValueComponent {
     /** The config value edit model representing the config value. */
     private APSConfigValueEditModel valueEditModel = null;
 
+    private boolean doFireEvent = true;
+
     //
     // Constructors
     //
@@ -82,7 +84,7 @@ public class ValidValuesValue extends ListSelect implements ValueComponent {
         addListener(new ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
-                fireEvent((String)event.getProperty().getValue());
+                if (doFireEvent) fireEvent((String)event.getProperty().getValue());
             }
         });
     }
@@ -115,9 +117,11 @@ public class ValidValuesValue extends ListSelect implements ValueComponent {
      * Sets the value for this component.
      *
      * @param value The value to set.
+     * @param fireEvent True to fire value update event.
      */
     @Override
-    public void setComponentValue(String value) {
+    public void setComponentValue(String value, boolean fireEvent) {
+        this.doFireEvent = fireEvent;
         if (value == null || value.trim().length() == 0) {
             setValue(null);
         }
@@ -129,6 +133,7 @@ public class ValidValuesValue extends ListSelect implements ValueComponent {
                 }
             }
         }
+        this.doFireEvent = true;
     }
 
     /**

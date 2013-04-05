@@ -60,6 +60,8 @@ public class TextValue extends TextField implements ValueComponent {
     /** The config value edit model representing the config value. */
     private APSConfigValueEditModel valueEditModel = null;
 
+    private boolean doFireEvent = true;
+
     //
     // Constructors
     //
@@ -77,7 +79,7 @@ public class TextValue extends TextField implements ValueComponent {
         addListener(new ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
-                fireEvent((String)event.getProperty().getValue());
+                if (doFireEvent) fireEvent((String)event.getProperty().getValue());
             }
         });
     }
@@ -110,12 +112,15 @@ public class TextValue extends TextField implements ValueComponent {
      * Sets the value for this component.
      *
      * @param value The value to set.
+     * @param fireEvent True to fire value update event.
      */
     @Override
-    public void setComponentValue(String value) {
+    public void setComponentValue(String value, boolean fireEvent) {
+        this.doFireEvent = fireEvent;
         if (value != null) {
             super.setValue(value);
         }
+        this.doFireEvent = true;
     }
 
     /**

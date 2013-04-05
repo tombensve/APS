@@ -60,6 +60,8 @@ public class BooleanValue extends CheckBox implements ValueComponent {
     /** The config value edit model representing the config value. */
     private APSConfigValueEditModel valueEditModel = null;
 
+    private boolean doFireEvent = true;
+
     //
     // Constructors
     //
@@ -77,7 +79,7 @@ public class BooleanValue extends CheckBox implements ValueComponent {
         addListener(new ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
-                fireEvent((Boolean)event.getProperty().getValue());
+                if (doFireEvent) fireEvent((Boolean)event.getProperty().getValue());
             }
         });
     }
@@ -112,13 +114,15 @@ public class BooleanValue extends CheckBox implements ValueComponent {
      * @param value The value to set.
      */
     @Override
-    public void setComponentValue(String value) {
+    public void setComponentValue(String value, boolean fireEvent) {
+        this.doFireEvent = fireEvent;
         if (value != null && value.trim().toLowerCase().equals("true")) {
             super.setValue(Boolean.TRUE);
         }
         else {
             super.setValue(Boolean.FALSE);
         }
+        this.doFireEvent = true;
     }
 
     /**

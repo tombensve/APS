@@ -66,6 +66,8 @@ public class DateValue extends PopupDateField implements ValueComponent {
     /** The date format to use for this date value. */
     private SimpleDateFormat dateFormat = null;
 
+    private boolean doFireEvent = true;
+
     //
     // Constructors
     //
@@ -88,7 +90,7 @@ public class DateValue extends PopupDateField implements ValueComponent {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (event.getProperty().getValue() != null) {
-                    fireEvent((String)event.getProperty().getValue().toString());
+                    if (doFireEvent) fireEvent((String)event.getProperty().getValue().toString());
                 }
             }
         });
@@ -122,9 +124,11 @@ public class DateValue extends PopupDateField implements ValueComponent {
      * Sets the value for this component.
      *
      * @param value The value to set.
+     * @param fireEvent True to fire update event.
      */
     @Override
-    public void setComponentValue(String value) {
+    public void setComponentValue(String value, boolean fireEvent) {
+        this.doFireEvent = fireEvent;
         Date dateValue = null;
         if (value != null && value.trim().length() > 0) {
             try {
@@ -136,6 +140,8 @@ public class DateValue extends PopupDateField implements ValueComponent {
         }
 
         setValue(dateValue);
+
+        this.doFireEvent = true;
     }
 
     /**

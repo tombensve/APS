@@ -160,7 +160,7 @@ public class ConfigNodeValuesEditor extends Panel {
                 }
                 else {
                     valueComponent.addListener(this.valueChangedListener);
-                    valueComponent.setComponentValue(this.dataSource.getValue(valueModel));
+                    valueComponent.setComponentValue(this.dataSource.getValue(valueModel), false);
                     valueComponent.getComponent().setWidth("95%");
                     addComponent(valueComponent.getComponent());
                 }

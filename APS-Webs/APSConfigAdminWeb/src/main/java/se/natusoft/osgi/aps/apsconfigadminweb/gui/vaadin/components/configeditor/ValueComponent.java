@@ -62,8 +62,9 @@ public interface ValueComponent {
      * Sets the value for this component.
      *
      * @param value The value to set.
+     * @param fireChangeEvent If true change events are fired.
      */
-    public void setComponentValue(String value);
+    public void setComponentValue(String value, boolean fireChangeEvent);
 
     /**
      * Returns the value of this component.
