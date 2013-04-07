@@ -119,6 +119,15 @@ public class ConfigValueKey {
     }
 
     /**
+     * Returns key addition for timestamp.
+     *
+     * @return A string to be added to the current key when creating a new timestamp key.
+     */
+    private static String getTimestampKeyAddition() {
+        return "_time";
+    }
+
+    /**
      * Returns the key addition for version.
      *
      * @param version The version to be added to the key.
@@ -181,6 +190,20 @@ public class ConfigValueKey {
      */
     public ConfigValueKey getManyValueSizeKey(APSConfigEnvironment configEnv) {
         return new ConfigValueKey(this.key + getConfigEnvKeyAddition(configEnv) + getSizeKeyAddition());
+    }
+
+    /**
+     * Gets a new key for the timestamp of the config value.
+     *
+     * @param configEnv The configuration environment to get the key for. For values that are configuration environment specific
+     *                  a key including the configuration environment will be produced. For other values the specified config
+     *                  environment has no effect. If null is passed the key is treated as a non config environment specific.
+     *                  Only pass null if you are absolutely sure or you might end up with a bad key!
+     *
+     * @return A new ConfigValueKey.
+     */
+    public ConfigValueKey getTimestampKey(APSConfigEnvironment configEnv) {
+        return new ConfigValueKey(this.key + getConfigEnvKeyAddition(configEnv) + getTimestampKeyAddition());
     }
 
     /**

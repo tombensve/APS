@@ -175,6 +175,26 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
     }
 
     /**
+     * Returns the timestamp for the specified config value.
+     *
+     * @param valueEditModel The value model holding the key to the value.
+     * @param configEnvironment This argument can always be null. If the config value is not config env specific then this argument has no effect.
+     *                          If the config value is config env specific then the value is gotten for the specific config env when this argument
+     *                          is non null, and for first that have a value if this is null. It is however strongly recommended to always pass
+     *                          a valid config env for this.
+     * @return The timestamp of the config value which will be 0 if not set (January 1, 1970 00:00:00).
+     */
+    public long getConfigValueTimestamp(APSConfigValueEditModel valueEditModel, APSConfigEnvironment configEnvironment) {
+        long timestamp = 0;
+        String ts = this.configInstanceMemoryStore.getConfigValue(valueEditModel.getTimestampKey(configEnvironment));
+        if (ts != null) {
+            timestamp = Long.valueOf(ts);
+        }
+
+        return timestamp;
+    }
+
+    /**
      * Sets a configuration value.
      *
      * @param valueEditModel The value model holding the key to the value.
@@ -187,6 +207,7 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
     @Override
     public synchronized void setConfigValue(APSConfigValueEditModel valueEditModel, String value, APSConfigEnvironment configEnvironment) {
         this.configInstanceMemoryStore.setConfigValue(valueEditModel.getKey(configEnvironment), value);
+        this.configInstanceMemoryStore.setConfigValue(valueEditModel.getTimestampKey(configEnvironment), "" + new Date().getTime());
     }
 
     /**
@@ -200,6 +221,7 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
      */
     @Override
     public synchronized String removeConfigValue(APSConfigValueEditModel valueEditModel, APSConfigEnvironment configEnvironment) {
+        this.configInstanceMemoryStore.setConfigValue(valueEditModel.getTimestampKey(configEnvironment), "" + new Date().getTime());
         return this.configInstanceMemoryStore.removeConfigValue(valueEditModel.getKey(configEnvironment));
     }
 
@@ -235,6 +257,7 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
     @Override
     public synchronized void setConfigValue(APSConfigValueEditModel valueEditModel, int index, String value, APSConfigEnvironment configEnvironment) {
         this.configInstanceMemoryStore.setConfigValue(valueEditModel.getKey(configEnvironment, index), value);
+        this.configInstanceMemoryStore.setConfigValue(valueEditModel.getTimestampKey(configEnvironment), "" + new Date().getTime());
     }
 
     /**
@@ -285,6 +308,7 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
                 addConfigValue(valueEditModel, val, configEnvironment);
             }
         }
+        this.configInstanceMemoryStore.setConfigValue(valueEditModel.getTimestampKey(configEnvironment), "" + new Date().getTime());
 
         return value;
     }
@@ -336,32 +360,32 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
      *                          is non null, and for all config envs if this argument is null, making null a more useful value in this case.
      */
     public synchronized void removeConfigListEntry(APSConfigEditModel configModel, int index, APSConfigEnvironment configEnvironment) {
-        String key = configModel.getKey(configEnvironment);
+        ConfigValueKey key = new ConfigValueKey(configModel.getKey(configEnvironment));
         int size = getSize(configModel, configEnvironment);
         
-        List<Map<String, String>> removeListValues = new LinkedList<Map<String, String>>();
+        List<Map<String, String>> keepListValues = new LinkedList<Map<String, String>>();
         for (int i = 0; i < size; i++) {
-            String indexKey = key + "[" + i + "]";
+            ConfigValueKey indexKey = key.getNodeKey(i);
             int indexKeyLen = indexKey.length();
-            
+
             Map<String, String> indexValues = new HashMap<String, String>();
             for (String confKey : this.configInstanceMemoryStore.getKeys()) {
-                if (confKey.startsWith(indexKey)) {
+                if (confKey.startsWith(indexKey.toString())) {
                     String value = this.configInstanceMemoryStore.removeConfigValue(confKey);
                     // We only save the part after our index key, or in other words, a relative key.
                     String relKey = confKey.substring(indexKeyLen);
                     indexValues.put(relKey, value);
                 }
             }
-            
-            if (i != index) { // We dont save the one we want to remove.
-                removeListValues.add(indexValues);
+
+            if (i != index) { // We don't save the one we want to remove.
+                keepListValues.add(indexValues);
             }
         }
 
         int ix = 0;
-        for (Map<String, String> indexValue : removeListValues) {
-            String indexKey = key + "[" + ix++ + "]";
+        for (Map<String, String> indexValue : keepListValues) {
+            ConfigValueKey indexKey = key.getNodeKey(ix++);
             
             for (String valueKey : indexValue.keySet()) {
                 String value = indexValue.get(valueKey);
@@ -382,6 +406,8 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
      */
     private void setSize(int size, APSConfigValueEditModel valueEditModel, APSConfigEnvironment configEnvironment) {
         this.configInstanceMemoryStore.setConfigValue(valueEditModel.getManyValueSizeKey(configEnvironment), "" + size);
+        this.configInstanceMemoryStore.setConfigValue(valueEditModel.getManyValueSizeKey(configEnvironment) + "_time",
+                "" + new Date().getTime());
     }
 
     /**

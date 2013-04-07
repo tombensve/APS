@@ -57,7 +57,7 @@ public class APSConfigValueEditModelImpl implements APSConfigValueEditModel {
     //
 
     /** The default config environment when none have been given. */
-    private static final APSConfigEnvironment DEFAULT_CONFIG_ENV = new APSConfigEnvironmentImpl("default", "default");
+    private static final APSConfigEnvironment DEFAULT_CONFIG_ENV = new APSConfigEnvironmentImpl("default", "default", 0);
 
     //
     // Private Members
@@ -308,6 +308,20 @@ public class APSConfigValueEditModelImpl implements APSConfigValueEditModel {
     @Override
     public String getKey(APSConfigEnvironment configEnv, int index) {
         return this.key.getValueKey(this.configEnvSpecific ? configEnv : null, index).toString();
+    }
+
+    /**
+     * The timestamp key for this value.
+     *
+     * @param configEnv The configuration environment to get the key for. For values that are configuration environment specific
+     *                  a key including the configuration environment will be produced. For other values the specified config
+     *                  environment has no effect. If null is passed the key is treated as a non config environment specific.
+     *                  Only pass null if you are absolutely sure or you might end up with a bad key!
+     *
+     * @return The key.
+     */
+    public String getTimestampKey(APSConfigEnvironment configEnv) {
+        return this.key.getTimestampKey(this.configEnvSpecific ? configEnv : null).toString();
     }
 
     /**

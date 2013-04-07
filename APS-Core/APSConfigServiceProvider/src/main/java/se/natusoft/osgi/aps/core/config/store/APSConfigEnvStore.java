@@ -61,16 +61,22 @@ public class APSConfigEnvStore implements ConfigEnvironmentProvider {
     //
 
     /** The APSFileTool instance to use for reading and writing environment data. */
-    private APSFileTool fileTool;
+    private APSFileTool fileTool = null;
 
     /** The available enviornments */
-    private List<APSConfigEnvironment> environments = new ArrayList<APSConfigEnvironment>();
+    private List<APSConfigEnvironment> environments = null;
 
     /** Holds the environments by name. */
-    private Map<String, APSConfigEnvironment> environmentsByName = new HashMap<String, APSConfigEnvironment>();
+    private Map<String, APSConfigEnvironment> environmentsByName = null;
 
     /** The current active configuration environment. */
     private APSConfigEnvironment activeConfigEnvironment = null;
+
+    /** The timestamp of last update. */
+    private long activeConfigEnvironmentTimestamp = 0;
+
+    /** The registered listeners for updates to config env store. */
+    private List<ConfigEnvUpdateListener> updateListeners = new LinkedList<>();
 
     //
     // Constructors
@@ -88,34 +94,14 @@ public class APSConfigEnvStore implements ConfigEnvironmentProvider {
 
         if (this.fileTool.fileExists(ENVS_FILE)) {
             Properties envProps = this.fileTool.loadProperties(ENVS_FILE);
-
-            int noEnvs = Integer.valueOf(envProps.getProperty("envs"));
-            for (int i = 0; i < noEnvs; i++) {
-                String name = envProps.getProperty("name_" + i);
-                String desc = envProps.getProperty("desc_" + i);
-                APSConfigEnvironmentImpl configEnv = new APSConfigEnvironmentImpl(name, desc);
-                addEnvironment(configEnv);
-            }
-            String activeIdProp = envProps.getProperty("active");
-            if (activeIdProp != null) {
-                int activeid = -1;
-                try {
-                    activeid = Integer.valueOf(activeIdProp);
-                }
-                catch (NumberFormatException nfe) { /* OK */ }
-                if (activeid >= 0 && activeid < this.environments.size()) {
-                    this.activeConfigEnvironment = this.environments.get(activeid);
-                }
-            }
+            setFromProperties(envProps);
+        }
+        else {
+            Properties envProps = new Properties();
+            envProps.setProperty("envs", "0");
+            setFromProperties(envProps);
         }
 
-        if (this.activeConfigEnvironment == null) {
-            if (this.environments.size() == 0) {
-                APSConfigEnvironment defaultEnv = new APSConfigEnvironmentImpl("default", "This is created when env is asked for and none have been created!");
-                addEnvironment(defaultEnv);
-            }
-            setActiveConfigEnvironment(this.environments.get(0));
-        }
     }
 
     //
@@ -123,30 +109,102 @@ public class APSConfigEnvStore implements ConfigEnvironmentProvider {
     //
 
     /**
-     * Saves the environments.
+     * Provides a complete config env store as a java.util.Properties.
      *
-     * @throws se.natusoft.osgi.aps.api.core.config.service.APSConfigException on failure to save environment configuration.
+     * This will reset any earlier stored values.
+     *
+     * @param envProps The config env properties to provide.
      */
-    private void saveConfigEnvironments() throws APSConfigException {
-        Properties props = new Properties();
+    public void setFromProperties(Properties envProps) {
+        this.environments = new LinkedList<>();
+        this.environmentsByName = new HashMap<>();
+        this.activeConfigEnvironment = null;
+
+        int noEnvs = Integer.valueOf(envProps.getProperty("envs"));
+        for (int i = 0; i < noEnvs; i++) {
+            String name = envProps.getProperty("name_" + i);
+            String desc = envProps.getProperty("desc_" + i);
+            String ts = envProps.getProperty("time_" + i);
+            if (name != null && name.trim().length() > 0) {
+                APSConfigEnvironmentImpl configEnv = new APSConfigEnvironmentImpl(name, desc, ts != null ? Long.valueOf(ts) : 0);
+                if (!this.environments.contains(configEnv)) {
+                    this.environments.add(configEnv);
+                }
+            }
+        }
+        String activeIdProp = envProps.getProperty("active");
+        if (activeIdProp != null) {
+            int activeid = -1;
+            try {
+                activeid = Integer.valueOf(activeIdProp);
+            }
+            catch (NumberFormatException nfe) { /* OK */ }
+            if (activeid >= 0 && activeid < noEnvs) {
+                String activeName = envProps.getProperty("name_" + activeid);
+                if (activeName == null || activeName.trim().length() == 0) {
+                    throw new IllegalStateException("BUG: The config environment specified as active (" + activeid + ") has no name!");
+                }
+                for (APSConfigEnvironment configEnvironment : this.environments) {
+                    if (activeName.equals(configEnvironment.getName())) {
+                        this.activeConfigEnvironment = configEnvironment;
+                        break;
+                    }
+                }
+
+                try {
+                    this.activeConfigEnvironmentTimestamp = Long.valueOf(envProps.getProperty("active_time")).longValue();
+                }
+                catch (NumberFormatException nfe2) {}
+            }
+        }
+
+        if (this.activeConfigEnvironment == null) {
+            if (this.environments.size() == 0) {
+                APSConfigEnvironment defaultEnv =
+                        new APSConfigEnvironmentImpl("default", "This is created when env is asked for and none have been created!", 0);
+                if (!this.environments.contains(defaultEnv)) {
+                    this.environments.add(defaultEnv);
+                }
+            }
+            this.activeConfigEnvironment = this.environments.get(0);
+            this.activeConfigEnvironmentTimestamp = new Date().getTime();
+        }
+    }
+
+    /**
+     * Returns the stored config environments as a java.util.Properties.
+     */
+    public Properties getAsProperties() {
+        Properties envProps = new Properties();
         int envSize = this.environments.size();
-        props.setProperty("envs", "" + envSize);
+        envProps.setProperty("envs", "" + envSize);
         int activeid = -1;
 
         for (int i = 0; i < envSize; i++) {
             APSConfigEnvironment ce = this.environments.get(i);
-            props.setProperty("name_" + i, ce.getName());
-            props.setProperty("desc_" + i, ce.getDescription());
+            envProps.setProperty("name_" + i, ce.getName());
+            envProps.setProperty("desc_" + i, ce.getDescription() != null ? ce.getDescription() : "");
+            envProps.setProperty("time_" + i, "" + ce.getTimestamp());
 
             if (this.activeConfigEnvironment != null && ce.equals(this.activeConfigEnvironment)) {
                 activeid = i;
             }
         }
         if (this.environments.size() > 0 && activeid >= 0) {
-            props.setProperty("active", "" + activeid);
+            envProps.setProperty("active", "" + activeid);
+            envProps.setProperty("time_active", "" + this.activeConfigEnvironmentTimestamp);
         }
 
-        this.fileTool.saveProperties("environments", props);
+        return envProps;
+    }
+
+    /**
+     * Saves the environments.
+     *
+     * @throws se.natusoft.osgi.aps.api.core.config.service.APSConfigException on failure to save environment configuration.
+     */
+    public void saveConfigEnvironments() throws APSConfigException {
+        this.fileTool.saveProperties("environments", getAsProperties());
     }
 
     /**
@@ -175,7 +233,13 @@ public class APSConfigEnvStore implements ConfigEnvironmentProvider {
      * @throws APSConfigException on failure to set active config environment. Most likely due to save failure.
      */
     public void setActiveConfigEnvironment(APSConfigEnvironment configEnvironment) throws APSConfigException {
-        this.activeConfigEnvironment = configEnvironment;
+        for (APSConfigEnvironment cenv : this.environments) {
+            if (configEnvironment.getName().equals(cenv.getName())) {
+                this.activeConfigEnvironment = cenv;
+                this.activeConfigEnvironmentTimestamp = new Date().getTime();
+                break;
+            }
+        }
         saveConfigEnvironments();
     }
 
@@ -188,7 +252,7 @@ public class APSConfigEnvStore implements ConfigEnvironmentProvider {
                 this.activeConfigEnvironment = this.environments.get(0);
             }
             else {
-                this.activeConfigEnvironment = new APSConfigEnvironmentImpl("default", "Default (created when asked for and none available!)");
+                this.activeConfigEnvironment = new APSConfigEnvironmentImpl("default", "Default (created when asked for and none available!)", 0);
                 this.environments.add(this.activeConfigEnvironment);
             }
         }
@@ -204,21 +268,41 @@ public class APSConfigEnvStore implements ConfigEnvironmentProvider {
      * @throws se.natusoft.osgi.aps.api.core.config.service.APSConfigException on failure to add environment.
      */
     public void addEnvironment(APSConfigEnvironment environment) throws APSConfigException {
-        if (!this.environments.contains(environment)) {
-            this.environments.add(environment);
-            saveConfigEnvironments();
-        }
-        this.environmentsByName.put(environment.getName(), environment);
+        addOrUpdateEnvironment(environment, true);
     }
 
     /**
-     * Removes an environement.
+     * Adds (or updates) an environment.
+     *
+     * @param environment The environment to add.
+     * @param fireEvent Will only fire change event if this is true.
+     *
+     * @throws se.natusoft.osgi.aps.api.core.config.service.APSConfigException on failure to add environment.
+     */
+    private void addOrUpdateEnvironment(APSConfigEnvironment environment, boolean fireEvent) throws APSConfigException {
+        APSConfigEnvironment ce = new APSConfigEnvironmentImpl(environment.getName(), environment.getDescription(), new Date().getTime());
+        if (!this.environments.contains(environment)) {
+            this.environments.add(ce);
+        }
+        else {
+            this.environments.remove(environment);
+            this.environments.add(ce);
+        }
+        this.environmentsByName.put(environment.getName(), ce);
+        saveConfigEnvironments();
+
+        if (fireEvent) fireUpdateEvents();
+    }
+
+    /**
+     * Removes an environment.
      *
      * @param environment The environment to remove.
      *
      * @throws se.natusoft.osgi.aps.api.core.config.service.APSConfigException on failure to remove environment.
      */
     public void removeEnvironment(APSConfigEnvironment environment) throws APSConfigException {
+        this.environments.remove(environment);
         if (this.activeConfigEnvironment != null && this.activeConfigEnvironment.equals(environment)) {
             if (this.environments.size() > 0) {
                 this.activeConfigEnvironment = this.environments.get(0);
@@ -227,14 +311,15 @@ public class APSConfigEnvStore implements ConfigEnvironmentProvider {
                 this.activeConfigEnvironment = null;
             }
         }
-        this.environments.remove(environment);
         saveConfigEnvironments();
 
         this.environmentsByName.remove(environment.getName());
+
+        fireUpdateEvents();
     }
 
     /**
-     * Removes all environmetns.
+     * Removes all environments.
      *
      * @throws se.natusoft.osgi.aps.api.core.config.service.APSConfigException on failure to do so.
      */
@@ -243,5 +328,51 @@ public class APSConfigEnvStore implements ConfigEnvironmentProvider {
         this.activeConfigEnvironment = null;
         saveConfigEnvironments();
         this.environmentsByName = new HashMap<String, APSConfigEnvironment>();
+        fireUpdateEvents();
+    }
+
+    /**
+     * Adds an update listener.
+     *
+     * @param listener The listener to add.
+     */
+    public void addUpdateListener(ConfigEnvUpdateListener listener) {
+        this.updateListeners.add(listener);
+    }
+
+    /**
+     * Removes an update listener.
+     *
+     * @param listener The listener to remove.
+     */
+    public void removeUpdateListener(ConfigEnvUpdateListener listener) {
+        this.updateListeners.remove(listener);
+    }
+
+    /**
+     * Fires an update event to all listeners.
+     */
+    private void fireUpdateEvents() {
+        for (ConfigEnvUpdateListener listener : this.updateListeners) {
+            listener.updated(this);
+        }
+    }
+
+    //
+    // Inner Classes
+    //
+
+    /**
+     * Classes that want to be notified of a config update to the memory store implements
+     * this.
+     */
+    public interface ConfigEnvUpdateListener {
+
+        /**
+         * Receives updated configuration.
+         *
+         * @param configEnvStore The config env store holding the updated value(s).
+         */
+        public void updated(APSConfigEnvStore configEnvStore);
     }
 }

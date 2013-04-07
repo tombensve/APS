@@ -44,6 +44,7 @@ import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
+import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
 import se.natusoft.osgi.aps.core.config.service.APSConfigAdminServiceProvider;
 import se.natusoft.osgi.aps.core.config.service.APSConfigServiceExtender;
 import se.natusoft.osgi.aps.core.config.service.APSConfigServiceProvider;
@@ -51,6 +52,7 @@ import se.natusoft.osgi.aps.core.config.store.APSConfigEnvStore;
 import se.natusoft.osgi.aps.core.config.store.APSConfigMemoryStore;
 import se.natusoft.osgi.aps.core.config.store.APSConfigPersistentStore;
 import se.natusoft.osgi.aps.core.config.store.APSFileTool;
+import se.natusoft.osgi.aps.core.config.sync.Synchronizer;
 import se.natusoft.osgi.aps.tools.APSLogger;
 import se.natusoft.osgi.aps.tools.APSServiceTracker;
 import se.natusoft.osgi.aps.tools.tracker.OnServiceAvailable;
@@ -81,6 +83,9 @@ public class APSConfigServiceActivator implements BundleActivator {
     /** The APS filesystem service used for storing config data. */
     private APSServiceTracker<APSFilesystemService> fsServiceTracker = null;
 
+    /** Tracker for the APSGroupsService. */
+    private APSServiceTracker<APSGroupsService> groupsServiceTracker = null;
+
     //
     // Other Members
     //
@@ -103,6 +108,9 @@ public class APSConfigServiceActivator implements BundleActivator {
     /** The auto config extender. */
     private APSConfigServiceExtender configServiceExtender = null;
 
+    /** Used for sychronizing between installations. */
+    private Synchronizer synchronizer = null;
+
     //
     // Bundle Management
     //
@@ -118,6 +126,10 @@ public class APSConfigServiceActivator implements BundleActivator {
         this.configLogger = new APSLogger(System.out);
         this.configLogger.start(context);
         this.configLogger.setLoggingFor("aps-config-service-provider(APSConfigService)");
+
+        // Setup sychronization tracker
+        this.groupsServiceTracker = new APSServiceTracker<APSGroupsService>(context, APSGroupsService.class, APSServiceTracker.LARGE_TIMEOUT);
+        this.groupsServiceTracker.start();
 
         // Setup ConfigurationAdmin
         this.configurationAdminTracker = new APSServiceTracker<ConfigurationAdmin>(context, ConfigurationAdmin.class, APSServiceTracker.LARGE_TIMEOUT);
@@ -180,10 +192,17 @@ public class APSConfigServiceActivator implements BundleActivator {
 
         this.configServiceExtender = new APSConfigServiceExtender(this.configServiceProvider, this.configLogger);
         this.context.addBundleListener(this.configServiceExtender);
+
         // Check already started bundles that we might have missed.
         for (Bundle bundle : this.context.getBundles()) {
             this.configServiceExtender.handleBundleStart(bundle);
         }
+
+        // Setup synchronizer
+        APSGroupsService groupsService = this.groupsServiceTracker.getWrappedService();
+        this.synchronizer =
+                new Synchronizer(this.configAdminLogger, configAdminProvider, envStore, memoryStore, configStore, groupsService);
+        this.synchronizer.start();
     }
 
     @Override
@@ -191,25 +210,32 @@ public class APSConfigServiceActivator implements BundleActivator {
         takedownServices(context);
     }
 
-    private  void takedownServices(BundleContext context) {
+    private  void takedownServices(BundleContext context) throws Exception {
         if (this.configServiceExtender != null) {
             this.context.removeBundleListener(this.configServiceExtender);
             this.configServiceExtender = null;
         }
 
         if (this.configured) {
+            if (this.synchronizer != null) {
+                this.synchronizer.stop();
+                this.groupsServiceTracker.stop(context);
+            }
             if (this.configAdminService != null) {this.configAdminService.unregister();}
             if (this.configAdminLogger != null) {
                 this.configAdminLogger.info("APSConfigAdminServiceProvider have been unregistered!");
                 this.configAdminLogger.stop(context);
             }
-            if (this.configService != null) {this.configService.unregister();}
+            if (this.configService != null) {
+                this.configService.unregister();
+            }
             if (this.configLogger != null) {
                 this.configLogger.info("APSConfigServiceProvider havve been unregistered!");
                 this.configLogger.stop(context);
             }
             this.fsServiceTracker.stop(context);
             this.configurationAdminTracker.stop(context);
+            this.groupsServiceTracker.stop(context);
 
             // Let these be garbage collected.
             this.configAdminService = null;
@@ -218,6 +244,8 @@ public class APSConfigServiceActivator implements BundleActivator {
             this.configurationAdminTracker = null;
             this.configAdminLogger = null;
             this.configLogger = null;
+            this.synchronizer = null;
+            this.groupsServiceTracker = null;
         }
     }
 }

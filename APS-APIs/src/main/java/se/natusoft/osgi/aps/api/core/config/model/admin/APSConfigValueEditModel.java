@@ -37,6 +37,8 @@
  */
 package se.natusoft.osgi.aps.api.core.config.model.admin;
 
+import java.io.Serializable;
+
 /**
  * This is a model describing/modelling a configuration value (_APSConfigValue_).
  *
@@ -45,7 +47,7 @@ package se.natusoft.osgi.aps.api.core.config.model.admin;
  *
  * @see APSConfigEditModel
  */
-public interface APSConfigValueEditModel {
+public interface APSConfigValueEditModel extends Serializable {
 
     /**
      * The description of this value.
@@ -128,6 +130,18 @@ public interface APSConfigValueEditModel {
      * @return the key
      */
     String getKey(APSConfigEnvironment configEnv);
+
+    /**
+     * The timestamp key for this value.
+     *
+     * @param configEnv The configuration environment to get the key for. For values that are configuration environment specific
+     *                  a key including the configuration environment will be produced. For other values the specified config
+     *                  environment has no effect. If null is passed the key is treated as a non config environment specific.
+     *                  Only pass null if you are absolutely sure or you might end up with a bad key!
+     *
+     * @return The key.
+     */
+    String getTimestampKey(APSConfigEnvironment configEnv);
 
     /**
      * If isMany() is true then use this method to get the key for a specific index.

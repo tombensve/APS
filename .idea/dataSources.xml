@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DataSourceManagerImpl" compressed="false" hash="4131544185" />
+  <component name="DataSourceManagerImpl" format="xml" hash="4131544185">
+    <data-source source="LOCAL" name="Local Derby" product="Apache Derby" version="10.9.1.0 - (1344872)" jdbc-version="4.1" driver-name="Apache Derby Network Client JDBC Driver" driver-version="10.9.1.0 - (1344872)" uuid="a36f84fc-ebe7-4b04-9280-71c4116b3158">
+      <identifier-quote-string>&quot;</identifier-quote-string>
+      <jdbc-driver>org.apache.derby.jdbc.ClientDriver</jdbc-driver>
+      <jdbc-url>jdbc:derby://localhost:1527/dbs/JPATestDB</jdbc-url>
+      <user-name>derby</user-name>
+      <user-password>dfdadfcbdfd9dfd9</user-password>
+      <libraries>
+        <library>
+          <url>jar://$MAVEN_REPOSITORY$/org/apache/derby/derbyclient/10.9.1.0/derbyclient-10.9.1.0.jar!/</url>
+        </library>
+      </libraries>
+    </data-source>
+  </component>
 </project>
 

@@ -122,7 +122,7 @@ public class APSConfigAdminServiceProvider implements APSConfigAdminService, APS
      */
     @Override
     public void addConfigEnvironment(String name, String description) throws APSConfigException {
-        this.envStore.addEnvironment(new APSConfigEnvironmentImpl(name, description));
+        this.envStore.addEnvironment(new APSConfigEnvironmentImpl(name, description, 0));
     }
 
     /**

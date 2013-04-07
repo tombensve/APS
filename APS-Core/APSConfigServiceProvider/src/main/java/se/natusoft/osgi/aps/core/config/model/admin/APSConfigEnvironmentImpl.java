@@ -61,6 +61,9 @@ public class APSConfigEnvironmentImpl implements APSConfigEnvironment {
     
     /** A description of the environment. */    
     private String description;
+
+    /** The timestamp of this config env. */
+    private long timestamp = 0;
     
     //
     // Constructors
@@ -68,13 +71,15 @@ public class APSConfigEnvironmentImpl implements APSConfigEnvironment {
     
     /**
      * Creates a new APSConfigEnvironmentImpl insance.
-     * 
+     *
      * @param name The name of the environment.
      * @param description The description of the environment.
+     * @param timestamp
      */
-    public APSConfigEnvironmentImpl(String name, String description) {
+    public APSConfigEnvironmentImpl(String name, String description, long timestamp) {
         this.name = name;
         this.description = description;
+        this.timestamp = timestamp;
     }
     
     //
@@ -95,6 +100,14 @@ public class APSConfigEnvironmentImpl implements APSConfigEnvironment {
     @Override
     public String getDescription() {
         return this.description;
+    }
+
+    /**
+     * Returns the timestamp of the environment.
+     */
+    @Override
+    public long getTimestamp() {
+        return this.timestamp;
     }
 
     /**

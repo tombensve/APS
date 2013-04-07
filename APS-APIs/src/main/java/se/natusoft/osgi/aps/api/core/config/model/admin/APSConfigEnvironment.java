@@ -37,6 +37,8 @@
  */
 package se.natusoft.osgi.aps.api.core.config.model.admin;
 
+import java.io.Serializable;
+
 /**
  * This represents a configuration environment. For example: Development, Systemtest, Acceptancetest, Production.
  *
@@ -49,7 +51,7 @@ package se.natusoft.osgi.aps.api.core.config.model.admin;
  * Any configuration value annotated with _@APSConfigItemDescription(environmentSpecific=true)_ will have different values for
  * each config environment. Those values that are not ignores the config environment even when provided.
  */
-public interface APSConfigEnvironment {
+public interface APSConfigEnvironment extends Serializable {
 
     /**
      * Returns the description of the environment.
@@ -60,6 +62,11 @@ public interface APSConfigEnvironment {
      * Returns the name of the environment.
      */
     String getName();
+
+    /**
+     * Returns the timestamp of the environment.
+     */
+    long getTimestamp();
 
     /**
      * Compares for equality.

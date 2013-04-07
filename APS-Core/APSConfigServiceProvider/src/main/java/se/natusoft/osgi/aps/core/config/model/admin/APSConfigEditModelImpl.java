@@ -441,7 +441,7 @@ public class APSConfigEditModelImpl<APSConfigSubclass extends APSConfig> extends
         if (APSConfigValue.class.isAssignableFrom(type)) {
             List<APSConfigDefaultValue> defValues = new ArrayList<APSConfigDefaultValue>();
             for (APSDefaultValue defValue : configItem.defaultValue()) {
-                APSConfigDefaultValue defaultValue = new APSConfigDefaultValue(new APSConfigEnvironmentImpl(defValue.configEnv(), ""),
+                APSConfigDefaultValue defaultValue = new APSConfigDefaultValue(new APSConfigEnvironmentImpl(defValue.configEnv(), "", 0),
                         defValue.value());
                 defValues.add(defaultValue);
             }

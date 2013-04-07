@@ -36,12 +36,13 @@
  */
 package se.natusoft.osgi.aps.api.core.config.model.admin;
 
+import java.io.Serializable;
 import java.util.Set;
 
 /**
  * The actual configuration values are stored in an implementation of this.
  */
-public interface APSConfigValueStore {
+public interface APSConfigValueStore extends Serializable {
 
     /**
      * Returns a configuration value by its key.

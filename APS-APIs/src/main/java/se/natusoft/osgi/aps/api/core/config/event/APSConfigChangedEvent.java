@@ -47,6 +47,8 @@ public class APSConfigChangedEvent {
     /** The id of the configuration that changed. */
     private String configId;
 
+    //private APSConfig
+
     //
     // Constructors
     //

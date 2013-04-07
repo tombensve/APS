@@ -37,6 +37,8 @@
  */
 package se.natusoft.osgi.aps.api.core.config.model.admin;
 
+import java.io.Serializable;
+
 /**
  * This represents a specific configuration.
  *
@@ -52,7 +54,7 @@ package se.natusoft.osgi.aps.api.core.config.model.admin;
  * a value. This information is available in _APSConfigValueModel.isConfigEnvironmentSpecific()_. The _APSConfigAdminService_ also
  * provides all defined configuration environments since it is also used for defining the configuration environments.
  */
-public interface APSConfigAdmin {
+public interface APSConfigAdmin extends Serializable {
 
     /**
      * Returns the configuration id.
@@ -80,6 +82,18 @@ public interface APSConfigAdmin {
      * @return The referenced config value or a default value.
      */
     String getConfigValue(APSConfigValueEditModel valueEditModel, APSConfigEnvironment configEnvironment);
+
+    /**
+     * Returns the timestamp for the specified config value.
+     *
+     * @param valueEditModel The value model holding the key to the value.
+     * @param configEnvironment This argument can always be null. If the config value is not config env specific then this argument has no effect.
+     *                          If the config value is config env specific then the value is gotten for the specific config env when this argument
+     *                          is non null, and for first that have a value if this is null. It is however strongly recommended to always pass
+     *                          a valid config env for this.
+     * @return The timestamp of the config value which will be 0 if not set (January 1, 1970 00:00:00).
+     */
+    long getConfigValueTimestamp(APSConfigValueEditModel valueEditModel, APSConfigEnvironment configEnvironment);
 
     /**
      * Sets a configuration value.

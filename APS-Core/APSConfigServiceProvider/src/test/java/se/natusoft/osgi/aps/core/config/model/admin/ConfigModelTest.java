@@ -68,12 +68,12 @@ public class ConfigModelTest extends TestCase {
 
         Properties props = new Properties();
         APSConfigInstanceMemoryStoreImpl configValueStore = new APSConfigInstanceMemoryStoreImpl(props);
-        APSConfigEnvironment testConfigEnvironment = new APSConfigEnvironmentImpl("test", "For test.");
-        APSConfigEnvironment defaultConfigEnvironment = new APSConfigEnvironmentImpl("default", "For test.");
+        APSConfigEnvironment testConfigEnvironment = new APSConfigEnvironmentImpl("test", "For test.", 0);
+        APSConfigEnvironment defaultConfigEnvironment = new APSConfigEnvironmentImpl("default", "For test.", 0);
         APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(new ConfigEnvironmentProvider() {
             @Override
             public APSConfigEnvironment getActiveConfigEnvironment() {
-                return new APSConfigEnvironmentImpl("test", "For test.");
+                return new APSConfigEnvironmentImpl("test", "For test.", 0);
             }
         }, configValueStore);
 
@@ -99,11 +99,11 @@ public class ConfigModelTest extends TestCase {
         Properties props = new Properties();
         APSConfigInstanceMemoryStoreImpl configValueStore = new APSConfigInstanceMemoryStoreImpl(props);
         // Please note that we provide a different config environment than the default values in the config class!
-        APSConfigEnvironment configEnvironment = new APSConfigEnvironmentImpl("whatever", "For test.");
+        APSConfigEnvironment configEnvironment = new APSConfigEnvironmentImpl("whatever", "For test.", 0);
         APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(new ConfigEnvironmentProvider() {
             @Override
             public APSConfigEnvironment getActiveConfigEnvironment() {
-                return new APSConfigEnvironmentImpl("whatever", "For test.");
+                return new APSConfigEnvironmentImpl("whatever", "For test.", 0);
             }
         }, configValueStore);
 

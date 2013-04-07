@@ -113,8 +113,8 @@ public class APSConfigPersistentStoreTest {
         this.fileTool = new APSFileTool(fs);
         this.envStore = new APSConfigEnvStore(fileTool);
         this.envStore.removeAllEnvironments();
-        this.envStore.addEnvironment(new APSConfigEnvironmentImpl("devel", "The development configuration environment"));
-        this.envStore.addEnvironment(new APSConfigEnvironmentImpl("systest", "The system test configuration environment"));
+        this.envStore.addEnvironment(new APSConfigEnvironmentImpl("devel", "The development configuration environment", 0));
+        this.envStore.addEnvironment(new APSConfigEnvironmentImpl("systest", "The system test configuration environment", 0));
         this.envStore.setActiveConfigEnvironment(this.envStore.getConfigEnvironments().get(0));
     }
 

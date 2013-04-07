@@ -103,8 +103,8 @@ public class APSConfigEnvStoreTest {
         APSConfigEnvStore envStore = new APSConfigEnvStore(fileTool);
         envStore.removeEnvironment(envStore.getConfigEnvironments().get(0)); // Remove default
 
-        envStore.addEnvironment(new APSConfigEnvironmentImpl("devel", "The development configuration environment"));
-        envStore.addEnvironment(new APSConfigEnvironmentImpl("systest", "The system test configuration environment"));
+        envStore.addEnvironment(new APSConfigEnvironmentImpl("devel", "The development configuration environment", 0));
+        envStore.addEnvironment(new APSConfigEnvironmentImpl("systest", "The system test configuration environment", 0));
 
         assertEquals(envStore.getConfigEnvironments().size(), 2);
         assertEquals(envStore.getConfigEnvironments().get(0).getName(), "devel");

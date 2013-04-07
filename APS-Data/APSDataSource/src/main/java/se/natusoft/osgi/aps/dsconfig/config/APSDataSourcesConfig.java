@@ -76,7 +76,7 @@ public class APSDataSourcesConfig extends APSConfig {
 
         @APSConfigItemDescription(
                 description = "The name of the data source for referencing it.",
-                environmentSpecific = true
+                environmentSpecific = false
         )
         public APSConfigValue name;
 

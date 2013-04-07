@@ -43,7 +43,7 @@
     <groupId>se.natusoft.osgi.aps</groupId>
     <artifactId>APS</artifactId>
     <packaging>pom</packaging>
-    <version><!--APSVER-->0.9.1</version>
+    <version><!--APSVER-->0.9.2</version>
 
     <name>OSGi Application Platform Services</name>
 
