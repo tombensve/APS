@@ -214,6 +214,6 @@ public class APSConfigMemoryStore implements ConfigStoreInfo {
          *
          * @param configuration The updated configuration.
          */
-        public void updated(APSConfigAdminImpl configuration);
+        public void updated(APSConfigAdmin configuration);
     }
 }

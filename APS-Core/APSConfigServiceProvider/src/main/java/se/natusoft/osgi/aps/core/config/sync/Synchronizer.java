@@ -1,5 +1,6 @@
 package se.natusoft.osgi.aps.core.config.sync;
 
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigAdmin;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
 import se.natusoft.osgi.aps.api.net.groups.service.GroupMember;
@@ -79,6 +80,7 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
         this.groupMember.addMessageListener(this);
         this.configEnvStore.addUpdateListener(this);
         this.configMemoryStore.addUpdateListener(this);
+        sendFeedMe();
         this.logger.info("Started synchronizer!");
     }
 
@@ -88,6 +90,25 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
         this.groupMember.removeMessageListener(this);
         this.groupsService.leaveGroup(this.groupMember);
         this.logger.info("Stopped synchronizer!");
+    }
+
+    /**
+     * Sends a "FEED_ME" message to all other installation which will trigger then to send all their configuration which
+     * will be received and merged by all other. The more installations the more messages will be received and in the end
+     * all should have the same data.
+     */
+    private void sendFeedMe() {
+        try {
+            Message message = this.groupMember.createNewMessage();
+            ObjectOutputStream msgStream = new ObjectOutputStream(message.getOutputStream());
+            msgStream.writeObject(MessageType.FEED_ME);
+            msgStream.close();
+            MessageSendThread mst = new MessageSendThread(this.groupMember, message, this.logger, "Send of feed me message failed: ");
+            mst.start();
+        }
+        catch (IOException ioe) {
+            this.logger.error("Send of config env message failed: " + ioe.getMessage(), ioe);
+        }
     }
 
     /**
@@ -117,14 +138,14 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
      * @param configuration The updated configuration.
      */
     @Override
-    public void updated(APSConfigAdminImpl configuration) {
+    public void updated(APSConfigAdmin configuration) {
         try {
             Message message = this.groupMember.createNewMessage();
             ObjectOutputStream msgStream = new ObjectOutputStream(message.getOutputStream());
             msgStream.writeObject(MessageType.CONFIG);
             msgStream.writeUTF(configuration.getConfigId());
             msgStream.writeUTF(configuration.getVersion());
-            msgStream.writeObject(configuration.getConfigInstanceMemoryStore().getProperties());
+            msgStream.writeObject(((APSConfigAdminImpl)configuration).getConfigInstanceMemoryStore().getProperties());
             msgStream.close();
             MessageSendThread mst = new MessageSendThread(this.groupMember, message, this.logger, "Send of config value message failed: ");
             mst.start();
@@ -141,17 +162,24 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
      */
     @Override
     public void messageReceived(Message message) {
+        this.logger.debug("Received message from '" + message.getMemberId() + "' with id '" + message.getId() + "'!");
         if (!message.getMemberId().equals(this.groupMember.getMemberId())) {
             ObjectInputStream msgStream = null;
 
             try {
                 msgStream = new ObjectInputStream(message.getInputStream());
                 MessageType messageType = (MessageType)msgStream.readObject();
-                if (messageType == MessageType.CONFIG) {
-                    handleConfigValueMessage(msgStream);
-                }
-                else {
-                    handleConfigEnvMessage(msgStream);
+                switch(messageType) {
+                    case CONFIG:
+                        handleConfigValueMessage(msgStream);
+                        break;
+
+                    case CONFIG_ENV:
+                        handleConfigEnvMessage(msgStream);
+                        break;
+
+                    case FEED_ME:
+                        handleFeedMeMessage();
                 }
             }
             catch (IOException ioe) {
@@ -321,13 +349,29 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
         }
     }
 
+    /**
+     * Send all config data to all members.
+     */
+    private void handleFeedMeMessage() {
+        updated(this.configEnvStore);
+        for (APSConfigAdmin configAdmin : this.configAdminService.getAllConfigurations()) {
+            updated(configAdmin);
+        }
+    }
+
     //
     // Inner Classes
     //
 
     private enum MessageType {
+        /** The message is a configuration environment.  */
         CONFIG_ENV,
-        CONFIG
+
+        /** The message is a configuration. */
+        CONFIG,
+
+        /** The message is a request to get all data. */
+        FEED_ME
     }
 
     private class MessageSendThread extends Thread {

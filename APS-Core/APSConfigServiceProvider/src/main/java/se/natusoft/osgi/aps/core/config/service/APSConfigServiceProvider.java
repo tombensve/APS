@@ -246,11 +246,11 @@ public class APSConfigServiceProvider implements APSConfigService, ConfigUpdateL
      * @param config The updated config.
      */
     @Override
-    public void updated(APSConfigAdminImpl config) {
+    public void updated(APSConfigAdmin config) {
         Configuration configuration = this.configAdminSynced.get(config);
         if (configuration != null) {
             try {
-                configuration.update(config.getConfigInstanceMemoryStore().getProperties());
+                configuration.update(((APSConfigAdminImpl)config).getConfigInstanceMemoryStore().getProperties());
             }
             catch (IOException ioe) {
                 this.logger.error("Failed to update ConfigurationAdmin config!", ioe);
