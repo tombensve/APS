@@ -162,7 +162,7 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
      */
     @Override
     public void messageReceived(Message message) {
-        this.logger.debug("Received message from '" + message.getMemberId() + "' with id '" + message.getId() + "'!");
+        this.logger.info("Received message from '" + message.getMemberId() + "' with id '" + message.getId() + "'!");
         if (!message.getMemberId().equals(this.groupMember.getMemberId())) {
             ObjectInputStream msgStream = null;
 
