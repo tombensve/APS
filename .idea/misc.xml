@@ -422,6 +422,9 @@
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" assert-keyword="true" jdk-15="true" project-jdk-name="1.7 (1)" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
+  <component name="TaskProjectConfiguration">
+    <server type="Redmine" url="http://redmine.natusoft.private/redmine" />
+  </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
 </project>
 

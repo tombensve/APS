@@ -1351,7 +1351,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             return toTypeName(callable.getReturnDataDescription()) + " <a href=\"" + service + "/" + method + "\">" + method +
                     "</a>;";
         } else {
-            return toTypeName(callable.getReturnDataDescription()) + " " + method + " (" + params + ");";
+            return toTypeName(callable.getReturnDataDescription()) + " " + method + ";";
         }
     }
 
