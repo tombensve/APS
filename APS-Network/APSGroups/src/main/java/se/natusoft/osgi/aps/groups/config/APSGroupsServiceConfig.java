@@ -92,6 +92,6 @@ public class APSGroupsServiceConfig extends APSConfig {
 
     @APSConfigItemDescription(description = "The interval in seconds that members announce that they are (still) members. If a member has " +
             "not announced itself again within this time other members of the group will drop the member.",
-             defaultValue = {@APSDefaultValue("10")})
+             defaultValue = {@APSDefaultValue("20")})
     public APSConfigValue memberAnnounceInterval;
 }

@@ -59,9 +59,11 @@ import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import se.natusoft.apsgroups.config.APSGroupsConfig;
 import se.natusoft.apsgroups.logging.APSGroupsLogger;
+import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsInfoService;
 import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
 import se.natusoft.osgi.aps.groups.config.APSGroupsConfigRelay;
 import se.natusoft.osgi.aps.groups.logging.APSGroupsLoggerRelay;
+import se.natusoft.osgi.aps.groups.service.APSGroupsInfoServiceProvider;
 import se.natusoft.osgi.aps.groups.service.APSGroupsServiceProvider;
 import se.natusoft.osgi.aps.tools.APSLogger;
 
@@ -78,11 +80,17 @@ public class APSGroupsActivator implements BundleActivator {
     
     // Provided Services
     
-    /** The service registration. */
+    /** The APSGroupsService registration. */
     private ServiceRegistration groupsServiceReg = null;
 
-    /** The service provider instance. */
+    /** The APSGroupsInfoService registration. */
+    private ServiceRegistration groupsInfoServiceReg = null;
+
+    /** The APSGroupsService provider instance. */
     private APSGroupsServiceProvider apsGroupsServiceProvider = null;
+
+    /** The APSGroupsInfoService provider instance. */
+    private APSGroupsInfoServiceProvider apsGroupsInfoServiceProvider = null;
 
     // Other Members
 
@@ -114,6 +122,16 @@ public class APSGroupsActivator implements BundleActivator {
                 this.apsGroupsServiceProvider,
                 serviceProps
         );
+
+        Dictionary infoServiceProps = new Properties();
+        serviceProps.put(Constants.SERVICE_PID, APSGroupsInfoServiceProvider.class.getName());
+        this.apsGroupsInfoServiceProvider =
+                new APSGroupsInfoServiceProvider(this.config);
+        this.groupsInfoServiceReg = context.registerService(
+                APSGroupsInfoService.class.getName(),
+                this.apsGroupsInfoServiceProvider,
+                infoServiceProps
+        );
     }
 
     //
@@ -130,8 +148,14 @@ public class APSGroupsActivator implements BundleActivator {
                 this.groupsServiceReg = null;
             }
             catch (IllegalStateException ise) { /* This is OK! */ }
+            this.apsGroupsServiceProvider = null;
         }
-        this.apsGroupsServiceProvider = null;
+
+        if (this.groupsInfoServiceReg != null) {
+            this.groupsInfoServiceReg.unregister();
+            this.groupsInfoServiceReg = null;
+            this.apsGroupsInfoServiceProvider = null;
+        }
 
         if (this.logger != null) {
             ((APSGroupsLoggerRelay)this.logger).getLogger().stop(context);

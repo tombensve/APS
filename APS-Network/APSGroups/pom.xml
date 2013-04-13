@@ -144,6 +144,7 @@
         <!--
             APS properties.
         -->
+
         <!-- We register our configuration for auto registration and management. -->
         <aps.config.classes>se.natusoft.osgi.aps.groups.config.APSGroupsServiceConfig</aps.config.classes>
 
@@ -162,13 +163,13 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-apis</artifactId>
-            <version>0.9.0</version>
+            <version><!--APSVER-->0.9.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tools-lib</artifactId>
-            <version>0.9.0</version>
+            <version><!--APSVER-->0.9.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

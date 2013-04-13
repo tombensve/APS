@@ -150,6 +150,13 @@ public class Member {
     }
 
     /**
+     * Returns the last time heard from if this is a remote member.
+     */
+    public Time getLastHeardFrom() {
+        return this.lastHeardFromTime;
+    }
+
+    /**
      * Returns true if we believe this member is still kicking (we can never be absolutely sure).
      *
      * @param memberAnnounceInterval The configured member announce interval.
@@ -181,7 +188,7 @@ public class Member {
     }
 
     /**
-     * @return timestamp of when this was last announced.
+     * @return timestamp of when this was last announced if this is a local member.
      */
     public long lastAnnounced() {
         return this.lastAnnounced;

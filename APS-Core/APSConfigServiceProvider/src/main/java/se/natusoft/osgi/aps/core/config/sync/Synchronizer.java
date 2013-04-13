@@ -111,6 +111,63 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
         }
     }
 
+    /** Matches time properties for config env properties. */
+    private static final TimePropertyMatcher Config_Env_Matcher = new TimePropertyMatcher() {
+        @Override
+        public boolean isTimeProperty(String propName) {
+            return propName.startsWith("time_");
+        }
+    };
+
+    /** Matches time properties for config value properties. */
+    private static final TimePropertyMatcher Config_Value_Matcher = new TimePropertyMatcher() {
+        @Override
+        public boolean isTimeProperty(String propName) {
+            return propName.endsWith("_time");
+        }
+    };
+
+    /** Converts from local to net time. */
+    private final TimePropertyConverter Local_2_Net_Time_Converter = new TimePropertyConverter() {
+        @Override
+        public long convertTime(long time) {
+            return Synchronizer.this.groupMember.createFromLocalTime(time).getNetTimeDate().getTime();
+        }
+    };
+
+    /** Converts from net to local time. */
+    private final TimePropertyConverter Net_2_Local_Time_Converter = new TimePropertyConverter() {
+        @Override
+        public long convertTime(long time) {
+            return Synchronizer.this.groupMember.createFromNetTime(time).getLocalTimeDate().getTime();
+        }
+    };
+
+    /**
+     * Converts all time properties in a whole Properties set from local to net time or net to local time.
+     *
+     * @param props The properties to convert.
+     * @param timePropMatcher The matcher to use for identifying time properties.
+     * @param timePropConverter The converter to use for converting properties.
+     * @return
+     */
+    private Properties convertPropTime(Properties props, TimePropertyMatcher timePropMatcher, TimePropertyConverter timePropConverter) {
+        Properties newProps = new Properties();
+
+        for (String propName : props.stringPropertyNames()) {
+            String propValue = props.getProperty(propName);
+            newProps.put(propName, propValue);
+
+            if (timePropMatcher.isTimeProperty(propName)) {
+                long value = Long.valueOf(propValue);
+                newProps.setProperty(propName, "" + timePropConverter.convertTime(value));
+            }
+        }
+
+        return newProps;
+    }
+
+
     /**
      * Receives updated configuration.
      *
@@ -122,7 +179,7 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
             Message message = this.groupMember.createNewMessage();
             ObjectOutputStream msgStream = new ObjectOutputStream(message.getOutputStream());
             msgStream.writeObject(MessageType.CONFIG_ENV);
-            msgStream.writeObject(configEnvStore.getAsProperties());
+            msgStream.writeObject(convertPropTime(configEnvStore.getAsProperties(), Config_Env_Matcher, Local_2_Net_Time_Converter));
             msgStream.close();
             MessageSendThread mst = new MessageSendThread(this.groupMember, message, this.logger, "Send of config env message failed: ");
             mst.start();
@@ -145,7 +202,13 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
             msgStream.writeObject(MessageType.CONFIG);
             msgStream.writeUTF(configuration.getConfigId());
             msgStream.writeUTF(configuration.getVersion());
-            msgStream.writeObject(((APSConfigAdminImpl)configuration).getConfigInstanceMemoryStore().getProperties());
+            msgStream.writeObject(
+                convertPropTime(
+                        ((APSConfigAdminImpl) configuration).getConfigInstanceMemoryStore().getProperties(),
+                        Config_Value_Matcher,
+                        Local_2_Net_Time_Converter
+                )
+            );
             msgStream.close();
             MessageSendThread mst = new MessageSendThread(this.groupMember, message, this.logger, "Send of config value message failed: ");
             mst.start();
@@ -214,7 +277,7 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
     private void handleConfigValueMessage(ObjectInputStream msgStream) throws IOException, ClassNotFoundException {
         String configId = msgStream.readUTF();
         String version = msgStream.readUTF();
-        Properties props = (Properties)msgStream.readObject();
+        Properties props = convertPropTime((Properties)msgStream.readObject(), Config_Value_Matcher, Net_2_Local_Time_Converter);
 
         mergeConfigValues(configId, version, props);
     }
@@ -292,26 +355,26 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
      * @throws ClassNotFoundException
      */
     private void handleConfigEnvMessage(ObjectInputStream msgStream) throws IOException, ClassNotFoundException {
-        Properties envProps = (Properties)msgStream.readObject();
-        mergeConfigEnvs(envProps);
+        Properties msgProps = convertPropTime((Properties)msgStream.readObject(), Config_Env_Matcher, Net_2_Local_Time_Converter);
+        mergeConfigEnvs(msgProps);
     }
 
     /**
      * Merge received config env with local.
-     * @param envProps
+     * @param msgProps
      */
-    private void mergeConfigEnvs(Properties envProps) {
+    private void mergeConfigEnvs(Properties msgProps) {
         Properties localEnvProps = this.configEnvStore.getAsProperties();
         String localEnvsStr = localEnvProps.getProperty("envs");
         int localEnvs = localEnvsStr != null ? Integer.valueOf(localEnvsStr) : 0;
 
-        String envsStr = envProps.getProperty("envs");
+        String envsStr = msgProps.getProperty("envs");
         int envs = envsStr != null ? Integer.valueOf(envsStr).intValue() : 0;
         boolean updated = false;
         for (int i = 0; i < envs; i++) {
-            String name = envProps.getProperty("name_" + i);
-            String time = envProps.getProperty("time_" + i);
-            long ts = time != null ? Long.valueOf(time) : 0;
+            String name = msgProps.getProperty("name_" + i);
+            String time = msgProps.getProperty("time_" + i);
+            long msgTs = time != null ? Long.valueOf(time) : 0;
 
             int localIx = -1;
             for (int ix = 0; ix < localEnvs; ix++) {
@@ -325,8 +388,8 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
             if (localIx == -1) {
                 localEnvs += 1;
                 localEnvProps.setProperty("name_" + localEnvs, name);
-                localEnvProps.setProperty("desc_" + localEnvs, envProps.getProperty("desc_" + i));
-                localEnvProps.setProperty("time_" + localEnvs, "" + ts);
+                localEnvProps.setProperty("desc_" + localEnvs, msgProps.getProperty("desc_" + i));
+                localEnvProps.setProperty("time_" + localEnvs, "" + msgTs);
                 localEnvProps.setProperty("envs", "" + localEnvs + 1);
                 updated = true;
             }
@@ -334,10 +397,10 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
                 String localTime = localEnvProps.getProperty("time_" + localIx);
                 long localTs = localTime != null ? Long.valueOf(localTime) : 0;
 
-                if (ts > localTs || localTs == 0) {
+                if (msgTs > localTs || localTs == 0) {
                     localEnvProps.setProperty("name_" + localIx, name);
-                    localEnvProps.setProperty("desc_" + localIx, envProps.getProperty("desc_" + i));
-                    localEnvProps.setProperty("time_" + localIx, "" + ts);
+                    localEnvProps.setProperty("desc_" + localIx, msgProps.getProperty("desc_" + i));
+                    localEnvProps.setProperty("time_" + localIx, "" + msgTs);
                     updated = true;
                 }
             }
@@ -363,6 +426,9 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
     // Inner Classes
     //
 
+    /**
+     * Defines the different message types.
+     */
     private enum MessageType {
         /** The message is a configuration environment.  */
         CONFIG_ENV,
@@ -374,6 +440,32 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
         FEED_ME
     }
 
+    /**
+     * API for identifying time properties.
+     */
+    private interface TimePropertyMatcher {
+        /**
+         * Should return true if the specified property name is a time property.
+         *
+         * @param propName The property to check.
+         */
+        public boolean isTimeProperty(String propName);
+    }
+    /**
+     * API for converting time back and forth between local and net time.
+     */
+    private interface TimePropertyConverter {
+        /**
+         * Converts the passed time and returns the converted time.
+         *
+         * @param time The time value to convert.
+         */
+        public long convertTime(long time);
+    }
+
+    /**
+     * Sends messages off in the background.
+     */
     private class MessageSendThread extends Thread {
         //
         // Private Members

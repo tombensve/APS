@@ -108,6 +108,18 @@ public class APSConfigServiceActivator implements BundleActivator {
     /** The auto config extender. */
     private APSConfigServiceExtender configServiceExtender = null;
 
+    /** Provider of APSConfigAdmin service. Also needed by the synchronizer. */
+    private APSConfigAdminServiceProvider configAdminProvider = null;
+
+    /** Storage for configuration environments. Also needed by the synchronizer. */
+    private APSConfigEnvStore envStore = null;
+
+    /** In memory configuration storage. Also needed by the synchronizer. */
+    private APSConfigMemoryStore memoryStore = null;
+
+    /** Persistent configuration storage. Also needed by the synchronizer. */
+    private APSConfigPersistentStore configStore = null;
+
     /** Used for sychronizing between installations. */
     private Synchronizer synchronizer = null;
 
@@ -126,10 +138,6 @@ public class APSConfigServiceActivator implements BundleActivator {
         this.configLogger = new APSLogger(System.out);
         this.configLogger.start(context);
         this.configLogger.setLoggingFor("aps-config-service-provider(APSConfigService)");
-
-        // Setup sychronization tracker
-        this.groupsServiceTracker = new APSServiceTracker<APSGroupsService>(context, APSGroupsService.class, APSServiceTracker.LARGE_TIMEOUT);
-        this.groupsServiceTracker.start();
 
         // Setup ConfigurationAdmin
         this.configurationAdminTracker = new APSServiceTracker<ConfigurationAdmin>(context, ConfigurationAdmin.class, APSServiceTracker.LARGE_TIMEOUT);
@@ -165,16 +173,16 @@ public class APSConfigServiceActivator implements BundleActivator {
         APSFileTool fileTool = new APSFileTool(fs);
 
         // Create the different config data stores.
-        APSConfigEnvStore envStore = new APSConfigEnvStore(fileTool);
-        APSConfigMemoryStore memoryStore = new APSConfigMemoryStore();
-        APSConfigPersistentStore configStore = new APSConfigPersistentStore(fileTool, envStore, configLogger);
+        this.envStore = new APSConfigEnvStore(fileTool);
+        this.memoryStore = new APSConfigMemoryStore();
+        this.configStore = new APSConfigPersistentStore(fileTool, envStore, configLogger);
 
         // Register APSConfigAdminService
-        APSConfigAdminServiceProvider configAdminProvider = new APSConfigAdminServiceProvider(this.configAdminLogger,
+        this.configAdminProvider = new APSConfigAdminServiceProvider(this.configAdminLogger,
                 memoryStore, envStore, configStore);
         Dictionary adminProps = new Properties();
         adminProps.put(Constants.SERVICE_PID, APSConfigAdminServiceProvider.class.getName());
-        this.configAdminService = this.context.registerService(APSConfigAdminService.class.getName(), configAdminProvider,
+        this.configAdminService = this.context.registerService(APSConfigAdminService.class.getName(), this.configAdminProvider,
                 adminProps);
         this.configAdminLogger.setServiceReference(this.configAdminService.getReference());
         this.configAdminLogger.info("APSConfigAdminServiceProvider have been registered!");
@@ -198,11 +206,36 @@ public class APSConfigServiceActivator implements BundleActivator {
             this.configServiceExtender.handleBundleStart(bundle);
         }
 
-        // Setup synchronizer
-        APSGroupsService groupsService = this.groupsServiceTracker.getWrappedService();
-        this.synchronizer =
-                new Synchronizer(this.configAdminLogger, configAdminProvider, envStore, memoryStore, configStore, groupsService);
-        this.synchronizer.start();
+        // Setup sychronization tracker
+        this.groupsServiceTracker = new APSServiceTracker<APSGroupsService>(context, APSGroupsService.class, APSServiceTracker.LARGE_TIMEOUT);
+        this.groupsServiceTracker.start();
+
+        // We create and start a new Synchronizer when an active APSGroupsService becomes available, and stop it when the
+        // active APSGroupsService leaves. This because the Synchronizer need to rejoin the group when there is a new
+        // APSGroupsService since membership is automatically removed when the service goes away.
+
+        this.groupsServiceTracker.onActiveServiceAvailable(new OnServiceAvailable<APSGroupsService> () {
+            public void onServiceAvailable(APSGroupsService groupsService, ServiceReference serviceReference) throws Exception {
+                APSConfigServiceActivator.this.synchronizer =
+                        new Synchronizer(configAdminLogger, configAdminProvider, envStore, memoryStore, configStore, groupsService);
+                APSConfigServiceActivator.this.synchronizer.start();
+            }
+        });
+
+        this.groupsServiceTracker.onActiveServiceLeaving(new OnServiceLeaving<APSGroupsService>() {
+            @Override
+            public void onServiceLeaving(ServiceReference service, Class serviceAPI) throws Exception {
+                // We have to synchronize here since there will be a potential shutdown conflict if the
+                // whole server is taken down. In that case it is possible that this executes at the same
+                // time as takedownServcies(context), which also shuts down the synchronizer.
+                synchronized (APSConfigServiceActivator.this) {
+                    if (APSConfigServiceActivator.this.synchronizer != null) {
+                        APSConfigServiceActivator.this.synchronizer.stop();
+                        APSConfigServiceActivator.this.synchronizer = null;
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -216,11 +249,19 @@ public class APSConfigServiceActivator implements BundleActivator {
             this.configServiceExtender = null;
         }
 
-        if (this.configured) {
+        synchronized (this) {
             if (this.synchronizer != null) {
                 this.synchronizer.stop();
-                this.groupsServiceTracker.stop(context);
+                this.synchronizer = null;
             }
+        }
+
+        if (this.groupsServiceTracker != null) {
+            this.groupsServiceTracker.stop(context);
+            this.groupsServiceTracker = null;
+        }
+
+        if (this.configured) {
             if (this.configAdminService != null) {this.configAdminService.unregister();}
             if (this.configAdminLogger != null) {
                 this.configAdminLogger.info("APSConfigAdminServiceProvider have been unregistered!");
@@ -235,7 +276,6 @@ public class APSConfigServiceActivator implements BundleActivator {
             }
             this.fsServiceTracker.stop(context);
             this.configurationAdminTracker.stop(context);
-            this.groupsServiceTracker.stop(context);
 
             // Let these be garbage collected.
             this.configAdminService = null;
@@ -244,8 +284,7 @@ public class APSConfigServiceActivator implements BundleActivator {
             this.configurationAdminTracker = null;
             this.configAdminLogger = null;
             this.configLogger = null;
-            this.synchronizer = null;
-            this.groupsServiceTracker = null;
         }
     }
+
 }

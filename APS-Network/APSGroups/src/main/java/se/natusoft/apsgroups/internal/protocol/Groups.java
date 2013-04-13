@@ -55,6 +55,7 @@ package se.natusoft.apsgroups.internal.protocol;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This represents all locally known groups.
@@ -84,5 +85,12 @@ public class Groups {
         }
 
         return group;
+    }
+
+    /**
+     * Returns the name of the available groups.
+     */
+    public synchronized static Set<String> getAvailableGroups() {
+        return Groups.groups.keySet();
     }
 }

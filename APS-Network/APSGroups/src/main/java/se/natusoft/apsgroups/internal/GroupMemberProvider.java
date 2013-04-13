@@ -200,9 +200,9 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
                 this.dataReceiver.removeMessagePacketListener(sender);
             }
         }
-        else {
-            this.logger.warn("I'm so lonely! I have no one to talk to.");
-        }
+//        else {
+//            this.logger.warn("I'm so lonely! I have no one to talk to!");
+//        }
     }
 
     /**
