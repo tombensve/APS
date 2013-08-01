@@ -36,7 +36,7 @@
  */
 package se.natusoft.osgi.aps.jpa.xml;
 
-import xob.XMLObject;
+import se.natusoft.tools.xob.XMLObject;
 
 import java.util.Iterator;
 

@@ -38,10 +38,6 @@
     <file url="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Webs/APSUserAdminWeb" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Test/APSConfigTest" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/../../ThirdParty/markdownj" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/../../ThirdParty/markdownj/ant-utils" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/../../ThirdParty/markdownj/core" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/../../ThirdParty/markdownj/www" charset="UTF-8" />
   </component>
 </project>
 

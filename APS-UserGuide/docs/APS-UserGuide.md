@@ -4508,6 +4508,32 @@ The library wants an implementation of the APSGroupsConfig interface as its firs
 
 ## APIs
 
+public _interface_ __APSGroupsInfoService__   [se.natusoft.osgi.aps.api.net.groups.service] {
+
+This service provides information about current groups and members.
+
+__List<String> getGroupNames()__
+
+Returns the names of all available groups.
+
+__List<String> getGroupMembers(String groupName)__
+
+Returns a list of member ids for the specified group.
+
+_Parameters_
+
+> _groupName_ - The name of the group to get member ids for. 
+
+__List<String> getGroupsAndMembers()__
+
+Returns a list of "groupName : groupMember" for all groups and members.
+
+}
+
+----
+
+    
+
 public _interface_ __APSGroupsService__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
 A service that lets clients send data reliable to all members of a group on any host. There is no limit on the size of the data sent, but that said I wouldn't send MB:s of data!

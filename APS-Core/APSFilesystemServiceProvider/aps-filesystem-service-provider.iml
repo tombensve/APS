@@ -4,9 +4,6 @@
     <facet type="Osmorc" name="OSGi">
       <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-filesystem-service-provider-0.9.2.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.core.filesystem.APSFilesystemActivator" bundleSymbolicName="aps-filesystem-service-provider" bundleVersion="0.9.2" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
-          <property key="Bundle-Description" value="Provides access to a service/application private filesystem that remains until theservice/application specifically deletes it. This is independent of the OSGi serverit is running in (if configured)." />
-          <property key="Bundle-Vendor" value="Natusoft AB" />
-          <property key="Bundle-DocURL" value="http://www.natusoft.se/" />
           <property key="Import-Package" value="*" />
           <property key="Private-Package" value="se.natusoft.osgi.aps.core.filesystem,se.natusoft.osgi.aps.core.filesystem.service,se.natusoft.osgi.aps.core.filesystem.model" />
           <property key="Embed-Directory" value="lib" />

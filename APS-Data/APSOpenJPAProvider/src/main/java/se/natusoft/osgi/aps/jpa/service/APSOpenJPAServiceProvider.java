@@ -47,9 +47,9 @@ import se.natusoft.osgi.aps.exceptions.APSResourceNotFoundException;
 import se.natusoft.osgi.aps.jpa.xml.Persistence;
 import se.natusoft.osgi.aps.jpa.xml.PersistenceUnit;
 import se.natusoft.osgi.aps.tools.APSLogger;
-import xob.Factory;
-import xob.XMLObjectBinder;
-import xob.XMLUnmarshaller;
+import se.natusoft.tools.xob.Factory;
+import se.natusoft.tools.xob.XMLObjectBinder;
+import se.natusoft.tools.xob.XMLUnmarshaller;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

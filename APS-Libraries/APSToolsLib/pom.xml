@@ -110,6 +110,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>aps-apis</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -37,19 +37,28 @@ import se.natusoft.osgi.aps.api.auth.user.APSAuthService;
 import se.natusoft.osgi.aps.api.auth.user.APSSimpleUserService;
 import se.natusoft.osgi.aps.api.auth.user.exceptions.APSAuthMethodNotSupportedException;
 import se.natusoft.osgi.aps.api.auth.user.model.User;
+import se.natusoft.osgi.aps.tools.APSLogger;
+import se.natusoft.osgi.aps.tools.annotation.APSInject;
+import se.natusoft.osgi.aps.tools.annotation.APSOSGiService;
+import se.natusoft.osgi.aps.tools.annotation.APSOSGiServiceProvider;
 
 import java.util.Properties;
 
 /**
  * Provides an implementation that uses APSSimpleUserService.
  */
+@APSOSGiServiceProvider
 public class APSSimpleUserServiceAuthServiceProvider implements APSAuthService<String> {
     //
     // Private Members
     //
 
     /** The user service we authenticate against. */
-    private APSSimpleUserService userService = null;
+    @APSOSGiService(timeout = "30 seconds")
+    private APSSimpleUserService userService;
+
+    @APSInject(loggingFor = "aps-user-service-auth-service")
+    private APSLogger authLogger;
 
     //
     // Constructors
@@ -57,12 +66,8 @@ public class APSSimpleUserServiceAuthServiceProvider implements APSAuthService<S
 
     /**
      * Creates a new instance.
-     *
-     * @param userService The user service we will use to authenticate users.
      */
-    public APSSimpleUserServiceAuthServiceProvider(APSSimpleUserService userService) {
-        this.userService = userService;
-    }
+    public APSSimpleUserServiceAuthServiceProvider() {}
 
     //
     // Methods
@@ -82,6 +87,7 @@ public class APSSimpleUserServiceAuthServiceProvider implements APSAuthService<S
     @Override
     public Properties authUser(String userId, String credentials, AuthMethod authMethod) throws APSAuthMethodNotSupportedException {
         if (authMethod != AuthMethod.PASSWORD) {
+            this.authLogger.error("Unsupported auth method: " + authMethod.name() + "!");
             throw new APSAuthMethodNotSupportedException("This APSAuthService provider only supports password authentication!");
         }
 
@@ -91,6 +97,11 @@ public class APSSimpleUserServiceAuthServiceProvider implements APSAuthService<S
             if (this.userService.authenticateUser(user, credentials, APSSimpleUserService.AUTH_METHOD_PASSWORD)) {
                 userProps = new Properties(user.getUserProperties());
                 userProps.setProperty("userid", user.getId());
+
+                this.authLogger.info("Successfully authenticated user '" + userId + "'!");
+            }
+            else {
+                this.authLogger.warn("User '" + userId + "' failed authentication!");
             }
         }
 

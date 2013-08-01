@@ -106,6 +106,8 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     /** Can be used for String timeout value. */
     public static final String NO_TIMEOUT = "forever";
 
+    public static final String DEFAULT_TIMEOUT = MEDIUM_TIMEOUT;
+
     //
     // Private Members
     //
@@ -137,6 +139,9 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     /** If true the active service instance is fetched and cached until it goes away. */
     private boolean cacheActiveService = false;
 
+    /** Any additional search criteria supplied by the tracker user. */
+    private String additionalSearchCriteria = null;
+
     //
     // Constructors
     //
@@ -164,6 +169,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      *                    reason for the ServiceReference! But if you insist in ignoring my warning you can set this to true. It does
      *                    have the side effect of a missed releaseService() not being as bad as when this is false.
      */
+    @Deprecated
     public APSServiceTracker(BundleContext context, Class<Service> serviceClass, boolean cacheActive) {
         this(context, serviceClass);
         this.cacheActiveService = cacheActive;
@@ -193,6 +199,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      *                    reason for the ServiceReference! But if you insist in ignoring my warning you can set this to true. It does
      *                    have the side effect of a missed releaseService() not being as bad as when this is false.
      */
+    @Deprecated
     public APSServiceTracker(BundleContext context, Class<Service> serviceClass, int timeout, boolean cacheActive) {
         this(context, serviceClass, timeout);
         this.cacheActiveService = cacheActive;
@@ -215,6 +222,23 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      *
      * @param context The bundles context.
      * @param serviceClass The class of the service to track.
+     * @param additionalSearchCriteria An LDAP search string not including the service! The final search string will
+     *                                 be "(&(objectClass=service)additionalSearchCriteria)". This parameter should
+     *                                 thereby always start with an '(' and end with an ')'!
+     * @param timeout The time to wait for a service to become available. Formats: "5 min[utes]" / "300 sec[onds]" /
+     *                "300000 mili[seconds]" / "forever".
+     */
+    public APSServiceTracker(BundleContext context, Class<Service> serviceClass, String additionalSearchCriteria, String timeout) {
+        this(context, serviceClass);
+        this.additionalSearchCriteria = additionalSearchCriteria;
+        setTimeout(timeout);
+    }
+
+    /**
+     * Creates a new _APSServiceTracker_ instance.
+     *
+     * @param context The bundles context.
+     * @param serviceClass The class of the service to track.
      * @param timeout The time to wait for a service to become available. Formats: "5 min[utes]" / "300 sec[onds]" / "300000 mili[seconds]" / "forever".
      * @param cacheActive If true then the active service instance will be fetched and kept until the service goes away instead
      *                    of fetching it for every call. This is not a recommended thing to do since I'm not sure of the side effects
@@ -222,6 +246,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      *                    reason for the ServiceReference! But if you insist in ignoring my warning you can set this to true. It does
      *                    have the side effect of a missed releaseService() not being as bad as when this is false.
      */
+    @Deprecated
     public APSServiceTracker(BundleContext context, Class<Service> serviceClass, String timeout, boolean cacheActive) {
         this(context, serviceClass, timeout);
         this.cacheActiveService = cacheActive;
@@ -275,6 +300,9 @@ public class APSServiceTracker<Service>  implements ServiceListener{
         // A note to yourself: The reason we don't specify versions here is that they are already specified
         // in bundle manifest import.
         String filter = "(" + Constants.OBJECTCLASS + "=" + this.serviceClass.getName() + ")";
+        if (this.additionalSearchCriteria != null) {
+            filter = "(&" + filter + this.additionalSearchCriteria + ")";
+        }
         try {
             ServiceReference[] svcRefs = this.context.getServiceReferences(this.serviceClass.getName(), filter);
             if (svcRefs != null) {
@@ -481,8 +509,8 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * @param withService The callback to run and provide service to.
      * @param args Optional arguments to pass to the callback.
      *
-     * @throws WithServiceException Wraps any exception thrown by the callback.
-     * @throws APSNoServiceAvailableException thrown if there are no services available.
+     * @throws se.natusoft.osgi.aps.tools.tracker.WithServiceException Wraps any exception thrown by the callback.
+     * @throws se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException thrown if there are no services available.
      */
     public void withService(WithService withService, Object... args) throws WithServiceException, APSNoServiceAvailableException {
 
@@ -520,7 +548,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * @param withService The callback to run and provide service to.
      * @param args Optional arguments to pass to the callback.
      *
-     * @throws WithServiceException Wraps any exception thrown by the callback.
+     * @throws se.natusoft.osgi.aps.tools.tracker.WithServiceException Wraps any exception thrown by the callback.
      */
     public void withServiceIfAvailable(WithService withService, Object... args) throws WithServiceException {
         Object service = this.active.allocateActiveService();
@@ -547,7 +575,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * @param withService The callback to run and provide service to.
      * @param args Optional arguments to pass to the callback.
      *
-     * @throws WithServiceException Wraps any exception thrown by the callback.
+     * @throws se.natusoft.osgi.aps.tools.tracker.WithServiceException Wraps any exception thrown by the callback.
      */
     public void withAllAvailableServices(WithService withService, Object... args) throws WithServiceException {
         for (ServiceReference svc : this.trackedServices.getServices()) {
@@ -590,7 +618,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      *
      * @return The active service.
      *
-     * @throws APSNoServiceAvailableException if no service is available.
+     * @throws se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException if no service is available.
      */
     public Service allocateService() throws APSNoServiceAvailableException {
         if (!this.active.hasActiveService()) {
@@ -872,7 +900,8 @@ public class APSServiceTracker<Service>  implements ServiceListener{
                     try {
                         APSServiceTracker.this.context.ungetService(oldActive); // It might be too late for this, but what the heck.
                     }
-                    catch (IllegalArgumentException | IllegalStateException ie) {}
+                    catch (IllegalArgumentException iae) {}
+                    catch ( IllegalStateException ise) {}
                 }
                 if (this.onActiveServiceLeaving != null) {
                     OnServiceRunnerThread osrt = new OnServiceRunnerThread(oldActive, this.onActiveServiceLeaving);

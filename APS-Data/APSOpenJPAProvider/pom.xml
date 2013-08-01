@@ -113,9 +113,9 @@
         </dependency>
 
         <dependency>
-            <groupId>net.sf.xob</groupId>
+            <groupId>se.natusoft.tools.xob</groupId>
             <artifactId>xob</artifactId>
-            <version>4.0</version>
+            <version>5.0</version>
             <scope>provided</scope>
         </dependency>
 

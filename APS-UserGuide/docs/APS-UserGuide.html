@@ -7147,6 +7147,44 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <H2>APIs</H2>
     <p>
+      public <em>interface</em> <strong>APSGroupsInfoService </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
+    </p>
+    <p>
+      This service provides information about current groups and members.      
+    </p>
+    <p>
+      <strong>List&lt;String&gt; getGroupNames()</strong>      
+    </p>
+    <p>
+      Returns the names of all available groups.      
+    </p>
+    <p>
+      <strong>List&lt;String&gt; getGroupMembers(String groupName)</strong>      
+    </p>
+    <p>
+      Returns a list of member ids for the specified group.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>groupName</em> - The name of the group to get member ids for.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>List&lt;String&gt; getGroupsAndMembers()</strong>      
+    </p>
+    <p>
+      Returns a list of "groupName : groupMember" for all groups and members.      
+    </p>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
       public <em>interface</em> <strong>APSGroupsService </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
     </p>
     <p>

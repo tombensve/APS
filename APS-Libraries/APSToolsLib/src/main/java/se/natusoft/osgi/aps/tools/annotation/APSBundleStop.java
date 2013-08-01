@@ -2,13 +2,13 @@
  * 
  * PROJECT
  *     Name
- *         APS OpenJPA Provider
+ *         APS Tools Library
  *     
  *     Code Version
  *         0.9.1
  *     
  *     Description
- *         Provides an implementation of APSJPAService using OpenJPA.
+ *         Provides a library of utilities, among them APSServiceTracker used by all other APS bundles.
  *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
@@ -29,27 +29,23 @@
  *     limitations under the License.
  *     
  * AUTHORS
- *     Tommy Svensson (tommy@natusoft.se)
+ *     Tommy Svensson (tommy.svensson@biltmore.se)
  *         Changes:
- *         2012-08-20: Created!
+ *         2012-08-19: Created!
  *         
  */
-package se.natusoft.osgi.aps.jpa.xml;
+package se.natusoft.osgi.aps.tools.annotation;
 
-import se.natusoft.tools.xob.XMLObject;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * This represents a property element.
+ * This annotation indicates that the annotated method should be called on bundle stop.
+ *
+ * This only works when APSActivator is used as bundle activator!
  */
-public interface Property extends XMLObject {
-
-    /**
-     * Returns the name of the property.
-     */
-    public String getName();
-
-    /**
-     * Returns the value of the property.
-     */
-    public String getValue();
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface APSBundleStop {}
