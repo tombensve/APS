@@ -94,11 +94,25 @@ public class APSOpenJPAServiceProvider implements BundleListener, APSJPAService,
     public APSOpenJPAServiceProvider(APSLogger logger, BundleContext context) {
         this.logger = logger;
         this.thisBundle = context.getBundle();
+        scanCurrentBundles(context);
     }
 
     //
     // Methods
     //
+
+    /**
+     * Resolves any persistence bundles already deployed before this service is started.
+     *
+     * @param context The bundle context.
+     */
+    private void scanCurrentBundles(BundleContext context) {
+        for (Bundle bundle : context.getBundles()) {
+            if (isPersistenceUsingBundle(bundle)) {
+                addPersistenceProviderForBundle(bundle);
+            }
+        }
+    }
 
     /**
      * Returns true if the specified bundle has a META-INF/persistence.xml.

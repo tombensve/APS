@@ -4,6 +4,7 @@
     <facet type="Osmorc" name="OSGi">
       <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-log-service-provider-1.0.0.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.logservice.Activator" bundleSymbolicName="${osgi.bundle.symbolic.name}" bundleVersion="1.0.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
+          <property key="Bundle-Description" value="Provides an implementation of the standard OSGi LogService." />
           <property key="Export-Package" value="se.natusoft.osgi.aps.core.filesystem.service" />
           <property key="Import-Package" value="${osgi.import.package}" />
           <property key="Include-Resource" value="${osgi.include.resource}" />
