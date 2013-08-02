@@ -164,12 +164,12 @@ public class APSExternalProtocolExtenderActivator implements BundleActivator {
                 new APSServiceTracker<StreamedRPCProtocol>(this.context, StreamedRPCProtocol.class, APSServiceTracker.LARGE_TIMEOUT);
         this.rpcProtocolProviderTracker = new RPCProtocolProviderTracker(this.context);
         trivialDataBus.addMember(this.rpcProtocolProviderTracker);
-        rpcProtocolTracker.onServiceAvailable(this.rpcProtocolProviderTracker);
-        rpcProtocolTracker.onServiceLeaving(this.rpcProtocolProviderTracker);
-        rpcStreamedProtocolTracker.onServiceAvailable(this.rpcProtocolProviderTracker);
-        rpcStreamedProtocolTracker.onServiceLeaving(this.rpcProtocolProviderTracker);
-        rpcProtocolTracker.start();
-        rpcStreamedProtocolTracker.start();
+        this.rpcProtocolTracker.onServiceAvailable(this.rpcProtocolProviderTracker);
+        this.rpcProtocolTracker.onServiceLeaving(this.rpcProtocolProviderTracker);
+        this.rpcStreamedProtocolTracker.onServiceAvailable(this.rpcProtocolProviderTracker);
+        this.rpcStreamedProtocolTracker.onServiceLeaving(this.rpcProtocolProviderTracker);
+        this.rpcProtocolTracker.start();
+        this.rpcStreamedProtocolTracker.start();
 
         // Register our service.
         Properties platformServiceProps = new Properties();

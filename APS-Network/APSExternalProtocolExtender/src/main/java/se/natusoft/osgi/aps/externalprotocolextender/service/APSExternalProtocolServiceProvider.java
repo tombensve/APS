@@ -119,7 +119,7 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
     }
 
     /**
-     * Returns all APSExternallyCallable for the names service object.
+     * Returns all APSExternallyCallable for the named service object.
      *
      * @param serviceName The name of the service to get callables for.
      *
@@ -293,7 +293,7 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
      * Data is received on the bus.
      *
      * @param serviceDataReason The reason for the data.
-     * @param data            The data received.
+     * @param data              The data received.
      */
     @Override
     public void dataReceived(ServiceDataReason serviceDataReason, Object data) {

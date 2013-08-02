@@ -62,6 +62,8 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * APSActivator has been added to aps-tools-lib and can be used as bundle activator. It uses annotations to register services and inject tracked services and other things.
 
+* A service can now be registered with an _aps-externalizable_ property with value _true_ to be made externally available by aps-external-protocol-extender.
+
 ### What is new in version 0.9.1
 
 * Now have full REST support in aps-external-protocol-extender and aps-ext-protocol-http-transport-provider.

@@ -186,7 +186,13 @@ public class ExternalizableServiceTracker implements ServiceListener, TrivialBus
      */
     public boolean checkExternalizationPermission(ServiceReference serviceReference) {
 
-        // Check bundle for permission first.
+        //  First check the service itself if it is externalizable.
+        String aps_externalizable = (String)serviceReference.getProperty("aps-externalizable");
+        if (aps_externalizable != null && aps_externalizable.toLowerCase().equals("true")) {
+            return true;
+        }
+
+        // Secondly, check bundle for permission.
         String externalizable = (String)serviceReference.getBundle().getHeaders().get("APS-Externalizable");
         if (externalizable != null) {
             if (externalizable.trim().toLowerCase().equals("true")) {
@@ -197,7 +203,7 @@ public class ExternalizableServiceTracker implements ServiceListener, TrivialBus
             }
         }
 
-        // If we get here the bundle doesn't say anything about this, and we have to look at configuration.
+        // Thirdly, check if the service is externalizable in configuration.
         boolean permitted = false;
         try {
             Object service = this.context.getService(serviceReference);

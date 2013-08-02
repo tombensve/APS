@@ -139,6 +139,11 @@
           APSActivator has been added to aps-tools-lib and can be used as bundle activator. It uses annotations to register services and inject tracked services and other things.          
         </p>
       </li>
+      <li>
+        <p>
+          A service can now be registered with an <em>aps-externalizable</em> property with value <em>true</em> to be made externally available by aps-external-protocol-extender.          
+        </p>
+      </li>
     </ul>
     <H3>What is new in version 0.9.1</H3>
     <ul>
@@ -5674,7 +5679,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <H1>APSExternalProtocolExtender</H1>
     <p>
-      This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles <em>MANIFEST.MF</em> contains ”APS-Externalizable: true” the service is made externally available. If the <em>MANIFEST.MF</em> contains ”APS-Externalizable: false” however making the service externally available is forbidden.      
+      This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles <em>MANIFEST.MF</em> contains ”APS-Externalizable: true” the service is made externally available. If the <em>MANIFEST.MF</em> contains ”APS-Externalizable: false” however making the service externally available is forbidden. A specific service can also be registered containing an <em>aps-externalizable</em> property with value <em>true</em> to be externalizable. This overrides any other specification.      
     </p>
     <p>
       The exernal protocol extender also provides a configuration where services can be specified with their fully qualified name to be made externally available. If a bundle however have specifically specified false for the above manifest entry then the config entry will be ignored.      
