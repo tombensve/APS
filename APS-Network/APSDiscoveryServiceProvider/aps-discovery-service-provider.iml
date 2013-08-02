@@ -4,6 +4,9 @@
     <facet type="Osmorc" name="OSGi">
       <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-discovery-service-provider-0.9.2.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.discovery.APSDiscoveryActivator" bundleSymbolicName="aps-discovery-service-provider" bundleVersion="0.9.2" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
+          <property key="Bundle-Description" value="This is a simple discovery service to discover other services on the network." />
+          <property key="Bundle-Vendor" value="Natusoft AB" />
+          <property key="Bundle-DocURL" value="http://www.natusoft.se/" />
           <property key="Export-Package" value="se.natusoft.osgi.aps.discovery.config" />
           <property key="Import-Package" value="*" />
           <property key="Private-Package" value="se.natusoft.osgi.aps.discovery,se.natusoft.osgi.aps.discovery.model,se.natusoft.osgi.aps.discovery.service,se.natusoft.osgi.aps.discovery.service.protocol,se.natusoft.osgi.aps.discovery.service.provider" />

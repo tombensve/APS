@@ -5,7 +5,7 @@
  *         APS Session Service Provider
  *     
  *     Code Version
- *         0.9.1
+ *         0.9.2
  *     
  *     Description
  *         Provides an OSGi server wide session.

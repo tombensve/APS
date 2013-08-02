@@ -5,7 +5,7 @@
  *         APS Streamed JSONRPC Protocol Provider
  *     
  *     Code Version
- *         0.9.1
+ *         0.9.2
  *     
  *     Description
  *         Provides JSONRPC implementations for version 1.0 and 2.0.

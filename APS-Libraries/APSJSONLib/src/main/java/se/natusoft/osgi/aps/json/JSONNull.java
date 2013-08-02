@@ -5,7 +5,7 @@
  *         APS JSON Library
  *     
  *     Code Version
- *         0.9.1
+ *         0.9.2
  *     
  *     Description
  *         Provides a JSON parser and creator. Please note that this bundle has no dependencies to any

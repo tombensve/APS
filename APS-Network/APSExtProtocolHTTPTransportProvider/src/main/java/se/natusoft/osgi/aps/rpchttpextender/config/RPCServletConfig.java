@@ -5,7 +5,7 @@
  *         APS External Protocol HTTP Transport Provider
  *     
  *     Code Version
- *         0.9.1
+ *         0.9.2
  *     
  *     Description
  *         This uses aps-external-protocol-extender to provide remote calls over HTTP. It makes

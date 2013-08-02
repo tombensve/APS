@@ -4,6 +4,9 @@
     <facet type="Osmorc" name="OSGi">
       <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-resolving-bundle-deployer-0.9.2.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.bundledeployer.APSResolvingBundleDeployerActivator" bundleSymbolicName="aps-resolving-bundle-deployer" bundleVersion="0.9.2" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
+          <property key="Bundle-Description" value="Deploys bundles resolving dependencies as automatically as possible by accepting a fewdeploy failures and retrying until it works or a fail threshold has been reached.Unless the server deployed on supports WABs using the extender pattern, no war fileswill deploy correctly." />
+          <property key="Bundle-Vendor" value="Natusoft AB" />
+          <property key="Bundle-DocURL" value="http://www.natusoft.se/" />
           <property key="Import-Package" value="*" />
           <property key="Private-Package" value="se.natusoft.osgi.aps.bundledeployer,se.natusoft.osgi.aps.bundledeployer.config,se.natusoft.osgi.aps.bundledeployer.deploy" />
           <property key="Embed-Directory" value="lib" />
