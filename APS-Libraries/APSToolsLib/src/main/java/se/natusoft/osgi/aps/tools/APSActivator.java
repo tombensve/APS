@@ -21,7 +21,8 @@ import java.util.*;
  * * **@APSOSGiService** -
  *   This should be specified on a field having a type of a service interface to have a service of that type
  *   injected, and continuously tracked. Any call to the service will throw an APSNoServiceAvailableException
- *   (runtime) if no service has become available before the specified timeout.
+ *   (runtime) if no service has become available before the specified timeout. It is also possible to have
+ *   APSServiceTracker as field type in which case the underlying configured tracker will be injected instead.
  *
  * * **@APSInject** -
  *   This will have an instance injected. There will be a unique instance for each name specified with the
@@ -43,6 +44,8 @@ import java.util.*;
  * All injected service instances for @APSOSGiService will be APSServiceTracker wrapped
  * service instances that will automatically handle services leaving and coming. They will throw
  * APSNoServiceAvailableException on timeout!
+ *
+ * Most methods are protected making it easy to subclass this class and expand on its functionality.
  */
 public class APSActivator implements BundleActivator {
 
@@ -186,7 +189,7 @@ public class APSActivator implements BundleActivator {
 
     // ---- Service Registration ---- //
 
-    private void handleServiceRegistrations(Class managedClass, BundleContext context) {
+    protected void handleServiceRegistrations(Class managedClass, BundleContext context) {
         APSOSGiServiceProvider serviceProvider = (APSOSGiServiceProvider)managedClass.getAnnotation(APSOSGiServiceProvider.class);
         if (serviceProvider != null) {
             Properties serviceProps = new Properties();
@@ -213,14 +216,14 @@ public class APSActivator implements BundleActivator {
 
     // ---- Field Injections ---- //
 
-    private void handleFieldInjections(Class managedClass, BundleContext context) {
+    protected void handleFieldInjections(Class managedClass, BundleContext context) {
         for (Field field : managedClass.getDeclaredFields()) {
             handleServiceInjections(field, managedClass, context);
             handleInstanceInjections(field, managedClass, context);
         }
     }
 
-    private void handleServiceInjections(Field field, Class managedClass, BundleContext context) {
+    protected void handleServiceInjections(Field field, Class managedClass, BundleContext context) {
         APSOSGiService service = field.getAnnotation(APSOSGiService.class);
         if (service != null) {
             String trackerKey = field.getType().getName() + service.additionalSearchCriteria();
@@ -232,7 +235,12 @@ public class APSActivator implements BundleActivator {
             }
             tracker.start();
             Object managedInstance = getManagedInstance(managedClass);
-            injectObject(managedInstance, tracker.getWrappedService(), field);
+            if (field.getType().equals(APSServiceTracker.class)) {
+                injectObject(managedInstance, tracker, field);
+            }
+            else {
+                injectObject(managedInstance, tracker.getWrappedService(), field);
+            }
 
             this.activatorLogger.info("Injected tracked service '" + field.getType().getName() +
                     (service.additionalSearchCriteria().length() > 0 ? " " + service.additionalSearchCriteria() : "") +
@@ -241,7 +249,7 @@ public class APSActivator implements BundleActivator {
         }
     }
 
-    private void handleInstanceInjections(Field field, Class managedClass, BundleContext context) {
+    protected void handleInstanceInjections(Field field, Class managedClass, BundleContext context) {
         APSInject log = field.getAnnotation(APSInject.class);
         if (log != null) {
             String namedInstanceKey = log.name() + field.getType().getName();
@@ -280,14 +288,14 @@ public class APSActivator implements BundleActivator {
 
     // ---- Methods ---- //
 
-    private void handleMethods(Class managedClass, BundleContext context) {
+    protected void handleMethods(Class managedClass, BundleContext context) {
         for (Method method : managedClass.getDeclaredMethods()) {
             handleStartupMethods(method, managedClass, context);
             handleShutdownMethods(method, managedClass, context);
         }
     }
 
-    private void handleStartupMethods(Method method, Class managedClass, BundleContext context) {
+    protected void handleStartupMethods(Method method, Class managedClass, BundleContext context) {
         APSBundleStart bundleStart = method.getAnnotation(APSBundleStart.class);
         if (bundleStart != null) {
             if (method.getParameterTypes().length > 0) {
@@ -313,7 +321,7 @@ public class APSActivator implements BundleActivator {
         }
     }
 
-    private void handleShutdownMethods(Method method, Class managedClass, BundleContext context) {
+    protected void handleShutdownMethods(Method method, Class managedClass, BundleContext context) {
         APSBundleStop bundleStop = method.getAnnotation(APSBundleStop.class);
         if (bundleStop != null) {
             ShutdownMethod shutdownMethod = new ShutdownMethod();
@@ -334,7 +342,7 @@ public class APSActivator implements BundleActivator {
      *
      * @param managedClass The managed class to get instance for.
      */
-    public Object getManagedInstance(Class managedClass) {
+    protected Object getManagedInstance(Class managedClass) {
         Object managedInstance = this.managedInstances.get(managedClass);
         if (managedInstance == null) {
             try {
@@ -350,7 +358,7 @@ public class APSActivator implements BundleActivator {
         return managedInstance;
     }
 
-    private void injectObject(Object injectTo, Object toInject, Field field) {
+    protected void injectObject(Object injectTo, Object toInject, Field field) {
         try {
             field.setAccessible(true);
             field.set(injectTo, toInject);
@@ -368,7 +376,7 @@ public class APSActivator implements BundleActivator {
      * @param entries The list to add the class entries to.
      * @param startPath The start path to look for entries.
      */
-    private void getClassEntries(Bundle bundle, List<String> entries, String startPath) {
+    protected void getClassEntries(Bundle bundle, List<String> entries, String startPath) {
         Enumeration<String> entryPathEnumeration = bundle.getEntryPaths(startPath);
         while (entryPathEnumeration.hasMoreElements()) {
             String entryPath = entryPathEnumeration.nextElement();

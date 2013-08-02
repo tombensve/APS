@@ -12,11 +12,11 @@ This does the same thing as the standard service tracker included with OSGi, but
 
 There are several variants of constructors, but here is an example of one of the most used ones within the APS services:
 
-        APSServiceTracker<Service> tracker = new APSServiceTracker<Service>(context, Service.class, ”20 seconds”);
+        APSServiceTracker<Service> tracker = new APSServiceTracker<Service>(context, Service.class, "20 seconds");
         tracker.start();
         
 
-Note that the third argument, which is a timeout can also be specified as an int in which case it is always in miliseconds. The string variant supports the a second word of ”sec[onds]” and ”min[utes]” which indicates the type of the first numeric value. ”forever” means just that and requires just one word. Any other second words than those will be treated as milliseconds. The APSServiceTracker also has a set of constants for the timeout string value:
+Note that the third argument, which is a timeout that can also be specified as an int in which case it is always in miliseconds. The string variant supports the a second word of "sec\[onds\]" and "min\[utes\]" which indicates the type of the first numeric value. "forever" means just that and requires just one word. Any other second words than those will be treated as milliseconds. The APSServiceTracker also has a set of constants for the timeout string value:
 
         public static final String SHORT_TIMEOUT = "3 seconds";
         public static final String MEDIUM_TIMEOUT = "30 seconds";
@@ -34,7 +34,7 @@ So that the tracker unregisters itself from receiving bundle/service events.
 
 ### Services and active service
 
-The tracker tracks all instances of the service being tracked. It however have the notion of an active service. The active service is the service instance that will be returned by allocateService() (which is internally used by all other access methods also). On startup it will be the first service instance received. It will keep tracking other instances comming in, but as long as the active service does not go away it will be the one used. If the active service goes away then the the one that is at the beginning of the list of the other tracked instances will become active. If that list is empty there will be no active, which will trigger a wait for a service to become available again if allocateService() is called.
+The tracker tracks all instances of the service being tracked. It however have the notion of an active service. The active service is the service instance that will be returned by allocateService() (which is internally used by all other access methods also). On startup it will be the first service instance received. It will keep tracking other instances comming in, but as long as the active service does not go away it will be the one used. If the active service goes away then the the one that is at the beginning of the list of the other tracked instances will become active. If that list is empty there will be no active, which will trigger a wait for a service to become available again if allocateService() is called. If no service becomes active withing the timeout time APSNoServiceAvailableException will be thrown. This is a runtime exception!
 
 ### Providing a logger
 
@@ -117,7 +117,7 @@ Don't use this in an activator start() method! onActiveServiceAvailable() and on
                 }
             }, arg1, arg2);
 
-If you don’t have any arguments this will also work:
+If you don't have any arguments this will also work:
 
             tracker.withService(new WithService<Service>() {
                 @Override
@@ -147,6 +147,62 @@ The APSLogger can be used by just creating an instance and then start using the 
 then the logger will try to get hold of the standard OSGi LogService and if that is available log to that. If the log service is not available it will fallback to the OutputStream.
 
 If you call the `setServiceRefrence(serviceRef);` method on the logger then information about that service will be provied with each log.
+
+## APSActivator
+
+This is a BundleActivator implementation that uses annotations to register services and inject tracked services. Any bundle can use this activator by just importing the _se.natusoft.osgi.aps.tools_ package. 
+
+This is actually a trivial not very large class that just scans the bundle for files ending in _.class_, removes the _.class_ from the path and translates the separator char to '.' and then passes it to bundle.getClass(...) to get the Class instance for it. After that it can inspect the bundles all classes for annotations and act on them. Most methods are protected making it easy to subclass this class and expand on its functionality. 
+
+The following annotations are available:
+
+**@APSOSGiServiceProvider** - This should be specified on a class that implements a service interface and should be registered as an OSGi service. _Please note_ that the first declared implemented interface is used as service interface!
+
+    public @interface OSGiProperty {
+        String name();
+        String value();
+    }
+
+    public @interface APSOSGiServiceProvider {
+
+        /** Extra properties to register the service with. */
+        OSGiProperty[] properties() default {};
+    }
+
+**@APSOSGiService** - This should be specified on a field having a type of a service interface to have a service of that type injected, and continuously tracked. Any call to the service will throw an APSNoServiceAvailableException (runtime) if no service has become available before the specified timeout. It is also possible to have APSServiceTracker as field type in which case the underlying configured tracker will be injected instead.
+
+    public @interface APSOSGiService {
+    
+        /** The timeout for a service to become available. Defaults to 30 seconds. */
+        String timeout() default "30 seconds";
+    
+        /** Any additional search criteria. Should start with '(' and end with ')'. Defaults to none. */
+        String additionalSearchCriteria() default "";
+    }
+
+**@APSInject** - This will have an instance injected. There will be a unique instance for each name specified with the default name of "default" being used in none is specified. There are 2 field types handled specially: BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger instance the 'loggingFor' annotation property can be specified. Please note that any other type must have a default constructor to be instantiated and injected!
+
+    public @interface APSInject {
+        /**
+         * The name of the instance to inject. If the same is used in multiple classes the same instance will
+         * be injected.
+         */
+        String name() default "default";
+    
+        /**
+         * A label indicating who is logging. If not specified the bundle name will be used. This is only
+         * relevant if the injected type is APSLogger.
+         */
+        String loggingFor() default "";
+    }
+
+**@APSBundleStart** - This should be used on a method and will be called on bundle start. The method should take no arguments. If you need a BundleContext just inject it with @APSInejct. The use of this annotation is only needed for things not supported by this activator. Please note that a method annotated with this annotation can be static (in which case the class it belongs to will not be instantiaded -- due to this!). You can provide this annotation on as many methods in as many classes as you want. They will all be called (in the order classes are discovered in the bundle).
+
+    public @interface APSBundleStart {}
+
+**@APSBundleStop** - This should be used on a method and will be called on bundle stop. The method should take no arguments. This should probably be used if @APSBundleStart is used. Please note that a method annotated with this annotation can be static!
+
+    public @interface APSBundleStop {}
 
 ## APSContextWrapper
 

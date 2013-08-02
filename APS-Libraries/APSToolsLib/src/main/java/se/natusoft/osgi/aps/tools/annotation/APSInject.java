@@ -52,7 +52,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface APSInject {
-
     /**
      * The name of the instance to inject. If the same is used in multiple classes the same instance will
      * be injected.

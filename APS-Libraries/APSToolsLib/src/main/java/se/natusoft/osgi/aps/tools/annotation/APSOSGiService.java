@@ -53,6 +53,6 @@ public @interface APSOSGiService {
     /** The timeout for a service to become available. Defaults to 30 seconds. */
     String timeout() default "30 seconds";
 
-    /** Any additional search criteria. Defaults to none. */
+    /** Any additional search criteria. Should start with '(' and end with ')'. Defaults to none. */
     String additionalSearchCriteria() default "";
 }
