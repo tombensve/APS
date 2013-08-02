@@ -95,7 +95,7 @@
             <plugin>
                 <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
                 <artifactId>markdowndoc-maven-plugin</artifactId>
-                <version>1.2.5</version>
+                <version>1.2.6</version>
 
                 <executions>
                     <execution>

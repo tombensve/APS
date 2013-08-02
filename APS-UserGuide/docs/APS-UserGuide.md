@@ -54,9 +54,13 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A JCR (Java Content Repository) service and a content publishing GUI (following the general APS ambition - reasonable functionality and flexibility, ease of use. Will fit many, but not everyone).
 
-* Since JBoss is apparently having trouble getting WABs to work (they are still using PAX, but claim that they have solved this in 7.2 that will not build when checked out from GitHub and don't seem to be released anytime soon) I am considering to add support for their WAR->OSGi service bridge though I haven't had much luck in getting that to work either so far.
+* Support for being able to redeploy a web application and services live without loosing session nor user transactions. With OSGi it should be teoretically possible. For a limited number of redeployments at least. It is very easy to run into the "perm gen space" problem, but according to Frank Kieviet ([Classloader leaks: The dreaded permgen space](http://frankkieviet.blogspot.se/2006/10/classloader-leaks-dreaded-permgen-space.html)) it is caused by bad code and can be avoided.
 
-* Support for being able to redeploy a web application and services live without loosing session nor user transactions. With OSGi it should be teoretically possible. For a limited number of redeployments at least. It is very easy to run into the ”perm gen space” problem, but according to Frank Kieviet ([Classloader leaks: The dreaded permgen space](http://frankkieviet.blogspot.se/2006/10/classloader-leaks-dreaded-permgen-space.html)) it is caused by bad code and can be avoided.
+### What is new in version 0.9.2
+
+* Small bug fixes.
+
+* APSActivator has been added to aps-tools-lib and can be used as bundle activator. It uses annotations to register services and inject tracked services and other things.
 
 ### What is new in version 0.9.1
 
@@ -78,9 +82,9 @@ How to do this differs between servers. In Glassfish you can supply system prope
 
 If this system property is not set the default root will be BundleContext.getFile(). This can work for development setup, but not for more serious installations!
 
-After this path has been setup and the server started, all other configuration can be done in http://…/apsadminweb/.
+After this path has been setup and the server started, all other configuration can be done in http://.../apsadminweb/.
 
-__Please note__ that the /apsadminweb by default require no login! This so that _”Configurations tab_,_Configurations/persistence/datasources”_ can be used to setup a datasource called ”APSSimpleUserServiceDS” needed by APSSimpleUserService. If you use the provided APSAuthService implementation that uses APSSimpleUserService then you need to configure this datasource before APSSimpleUserService can be used. See the documentation for APSSimpleUserService further down in this document for more information on the datasource configuration. After that is setup go to _”Configurations tab_,_Configurations/aps/adminweb”_ and enable the ”requireauthentication” config. After having enabled this and saved, do a browser refresh and then provide userid and password when prompted.
+__Please note__ that the /apsadminweb by default require no login! This so that _"Configurations tab_,_Configurations/persistence/datasources"_ can be used to setup a datasource called "APSSimpleUserServiceDS" needed by APSSimpleUserService. If you use the provided APSAuthService implementation that uses APSSimpleUserService then you need to configure this datasource before APSSimpleUserService can be used. See the documentation for APSSimpleUserService further down in this document for more information on the datasource configuration. After that is setup go to _"Configurations tab_,_Configurations/aps/adminweb"_ and enable the "requireauthentication" config. After having enabled this and saved, do a browser refresh and then provide userid and password when prompted.
 
 ## Javadoc
 
@@ -2076,6 +2080,62 @@ The APSLogger can be used by just creating an instance and then start using the 
 then the logger will try to get hold of the standard OSGi LogService and if that is available log to that. If the log service is not available it will fallback to the OutputStream.
 
 If you call the `setServiceRefrence(serviceRef);` method on the logger then information about that service will be provied with each log.
+
+## APSActivator
+
+This is a BundleActivator implementation that uses annotations to register services and inject tracked services. Any bundle can use this activator by just importing the _se.natusoft.osgi.aps.tools_ package.
+
+This is actually a trivial not very large class that just scans the bundle for files ending in _.class_, removes the _.class_ from the path and translates the separator char to '.' and then passes it to bundle.getClass(...) to get the Class instance for it. After that it can inspect the bundles all classes for annotations and act on them. Most methods are protected making it easy to subclass this class and expand on its functionality.
+
+The following annotations are available:
+
+__@APSOSGiServiceProvider__ - This should be specified on a class that implements a service interface and should be registered as an OSGi service. _Please note_ that the first declared implemented interface is used as service interface!
+
+        public @interface OSGiProperty {
+            String name();
+            String value();
+        }
+        
+        public @interface APSOSGiServiceProvider {
+        
+            /** Extra properties to register the service with. */
+            OSGiProperty[] properties() default {};
+        }
+
+__@APSOSGiService__ - This should be specified on a field having a type of a service interface to have a service of that type injected, and continuously tracked. Any call to the service will throw an APSNoServiceAvailableException (runtime) if no service has become available before the specified timeout. It is also possible to have APSServiceTracker as field type in which case the underlying configured tracker will be injected instead.
+
+        public @interface APSOSGiService {
+        
+            /** The timeout for a service to become available. Defaults to 30 seconds. */
+            String timeout() default "30 seconds";
+        
+            /** Any additional search criteria. Should start with '(' and end with ')'. Defaults to none. */
+            String additionalSearchCriteria() default "";
+        }
+
+__@APSInject__ - This will have an instance injected. There will be a unique instance for each name specified with the default name of "default" being used in none is specified. There are 2 field types handled specially: BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger instance the 'loggingFor' annotation property can be specified. Please note that any other type must have a default constructor to be instantiated and injected!
+
+        public @interface APSInject {
+            /**
+             * The name of the instance to inject. If the same is used in multiple classes the same instance will
+             * be injected.
+             */
+            String name() default "default";
+        
+            /**
+             * A label indicating who is logging. If not specified the bundle name will be used. This is only
+             * relevant if the injected type is APSLogger.
+             */
+            String loggingFor() default "";
+        }
+
+__@APSBundleStart__ - This should be used on a method and will be called on bundle start. The method should take no arguments. If you need a BundleContext just inject it with @APSInejct. The use of this annotation is only needed for things not supported by this activator. Please note that a method annotated with this annotation can be static (in which case the class it belongs to will not be instantiaded -- due to this!). You can provide this annotation on as many methods in as many classes as you want. They will all be called (in the order classes are discovered in the bundle).
+
+        public @interface APSBundleStart {}
+
+__@APSBundleStop__ - This should be used on a method and will be called on bundle stop. The method should take no arguments. This should probably be used if @APSBundleStart is used. Please note that a method annotated with this annotation can be static!
+
+        public @interface APSBundleStop {}
 
 ## APSContextWrapper
 

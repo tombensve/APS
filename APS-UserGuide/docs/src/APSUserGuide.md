@@ -54,9 +54,13 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A JCR (Java Content Repository) service and a content publishing GUI (following the general APS ambition - reasonable functionality and flexibility, ease of use. Will fit many, but not everyone).
 
-* Since JBoss is apparently having trouble getting WABs to work (they are still using PAX, but claim that they have solved this in 7.2 that will not build when checked out from GitHub and don't seem to be released anytime soon) I am considering to add support for their WAR->OSGi service bridge though I haven't had much luck in getting that to work either so far. 
+* Support for being able to redeploy a web application and services live without loosing session nor user transactions. With OSGi it should be teoretically possible. For a limited number of redeployments at least. It is very easy to run into the "perm gen space" problem, but according to Frank Kieviet ([Classloader leaks: The dreaded permgen space](http://frankkieviet.blogspot.se/2006/10/classloader-leaks-dreaded-permgen-space.html)) it is caused by bad code and can be avoided. 
 
-* Support for being able to redeploy a web application and services live without loosing session nor user transactions. With OSGi it should be teoretically possible. For a limited number of redeployments at least. It is very easy to run into the ”perm gen space” problem, but according to Frank Kieviet ([Classloader leaks: The dreaded permgen space](http://frankkieviet.blogspot.se/2006/10/classloader-leaks-dreaded-permgen-space.html)) it is caused by bad code and can be avoided. 
+### What is new in version 0.9.2
+
+* Small bug fixes.
+
+* APSActivator has been added to aps-tools-lib and can be used as bundle activator. It uses annotations to register services and inject tracked services and other things.
 
 ### What is new in version 0.9.1
 
@@ -78,9 +82,9 @@ How to do this differs between servers. In Glassfish you can supply system prope
 
 If this system property is not set the default root will be BundleContext.getFile(). This can work for development setup, but not for more serious installations!
 
-After this path has been setup and the server started, all other configuration can be done in http://…/apsadminweb/. 
+After this path has been setup and the server started, all other configuration can be done in http://.../apsadminweb/. 
 
-__Please note__ that the /apsadminweb by default require no login! This so that _”Configurations tab, Configurations/persistence/datasources”_ can be used to setup a datasource called ”APSSimpleUserServiceDS” needed by APSSimpleUserService. If you use the provided APSAuthService implementation that uses APSSimpleUserService then you need to configure this datasource before APSSimpleUserService can be used. See the documentation for APSSimpleUserService further down in this document for more information on the datasource configuration. After that is setup go to _”Configurations tab, Configurations/aps/adminweb”_ and enable the ”requireauthentication” config. After having enabled this and saved, do a browser refresh and then provide userid and password when prompted.
+__Please note__ that the /apsadminweb by default require no login! This so that _"Configurations tab, Configurations/persistence/datasources"_ can be used to setup a datasource called "APSSimpleUserServiceDS" needed by APSSimpleUserService. If you use the provided APSAuthService implementation that uses APSSimpleUserService then you need to configure this datasource before APSSimpleUserService can be used. See the documentation for APSSimpleUserService further down in this document for more information on the datasource configuration. After that is setup go to _"Configurations tab, Configurations/aps/adminweb"_ and enable the "requireauthentication" config. After having enabled this and saved, do a browser refresh and then provide userid and password when prompted.
 
 ## Javadoc
 
