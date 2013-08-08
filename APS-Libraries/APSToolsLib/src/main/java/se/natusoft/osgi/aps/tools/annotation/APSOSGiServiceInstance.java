@@ -36,32 +36,22 @@
  */
 package se.natusoft.osgi.aps.tools.annotation;
 
-import se.natusoft.osgi.aps.tools.APSActivator;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation indicates that the annotated class is an OSGi service to be made available by the
- * APSActivator.
+ * This annotation represents one instance of an an OSGi service and is used in @APSOSGiServiceProvider.
  *
  * This only works when APSActivator is used as bundle activator!
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface APSOSGiServiceProvider {
+public @interface APSOSGiServiceInstance {
 
     /** Extra properties to register the service with. */
     OSGiProperty[] properties() default {};
 
-    /** This can be used as an alternative to properties() and also supports several instances. */
-    APSOSGiServiceInstance[] instances() default {};
 
-    /**
-     * This can be used as an alternative and will instantiate the specified factory class which will deliver
-     * one set of Properties per instance.
-     */
-    Class<? extends APSActivator.InstanceFactory> instanceFactoryClass() default APSActivator.InstanceFactory.class;
 }

@@ -225,27 +225,57 @@ public class APSActivator implements BundleActivator {
 
     // ---- Service Registration ---- //
 
-    protected void handleServiceRegistrations(Class managedClass, BundleContext context) {
+    protected Properties osgiPropertiesToProperties(OSGiProperty[] osgiProperties) {
+        Properties props = new Properties();
+        for (OSGiProperty prop : osgiProperties) {
+            props.setProperty(prop.name(), prop.value());
+        }
+        return props;
+    }
+
+    protected void handleServiceRegistrations(Class managedClass, BundleContext context) throws Exception {
         APSOSGiServiceProvider serviceProvider = (APSOSGiServiceProvider)managedClass.getAnnotation(APSOSGiServiceProvider.class);
         if (serviceProvider != null) {
-            Properties serviceProps = new Properties();
-            for (OSGiProperty prop : serviceProvider.properties()) {
-                serviceProps.setProperty(prop.name(), prop.value());
+            List<Properties> instanceProps = null;
+
+            if (serviceProvider.properties().length > 0) {
+                instanceProps = new LinkedList<>();
+                instanceProps.add(osgiPropertiesToProperties(serviceProvider.properties()));
+            }
+            else if (serviceProvider.instances().length > 0) {
+                instanceProps = new LinkedList<>();
+                for (APSOSGiServiceInstance serviceInst : serviceProvider.instances()) {
+                    instanceProps.add(osgiPropertiesToProperties(serviceInst.properties()));
+                }
+            }
+            else if (!serviceProvider.instanceFactoryClass().equals(InstanceFactory.class)) {
+                InstanceFactory instanceFactory = serviceProvider.instanceFactoryClass().newInstance();
+                instanceProps = instanceFactory.getPropertiesPerInstance();
+            }
+            else {
+                instanceProps = new LinkedList<>();
+                instanceProps.add(new Properties());
             }
 
-            serviceProps.put(Constants.SERVICE_PID, managedClass.getName());
-            Class[] interfaces = managedClass.getInterfaces();
-            if (interfaces != null && interfaces.length >= 1) {
-                ServiceRegistration serviceReg =
-                        context.registerService(
-                                interfaces[0].getName(),
-                                getManagedInstance(managedClass),
-                                serviceProps
-                        );
+            for (Properties serviceProps : instanceProps) {
+                serviceProps.put(Constants.SERVICE_PID, managedClass.getName());
+                Class[] interfaces = managedClass.getInterfaces();
+                if (interfaces != null && interfaces.length >= 1) {
+                    ServiceRegistration serviceReg =
+                            context.registerService(
+                                    interfaces[0].getName(),
+                                    getManagedInstance(managedClass),
+                                    serviceProps
+                            );
 
-                this.services.add(serviceReg);
-                this.activatorLogger.info("Registered '" + managedClass.getName() + "' as a service provider of '" +
-                        interfaces[0].getName() + "' for bundle: " + context.getBundle().getSymbolicName() + "!");
+                    this.services.add(serviceReg);
+                    this.activatorLogger.info("Registered '" + managedClass.getName() + "' as a service provider of '" +
+                            interfaces[0].getName() + "' for bundle: " + context.getBundle().getSymbolicName() + "!");
+                }
+                else {
+                    throw new IllegalArgumentException("The @APSOSGiServiceProvider annotated service of class '" +
+                        managedClass.getName() + "' does not implement a service interface!");
+                }
             }
         }
     }
@@ -432,5 +462,12 @@ public class APSActivator implements BundleActivator {
     private class ShutdownMethod {
         private Method method;
         private Object object;
+    }
+
+    public interface InstanceFactory {
+        /**
+         * Returns a set of Properties for each instance.
+         */
+        List<Properties> getPropertiesPerInstance();
     }
 }

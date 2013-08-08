@@ -2,12 +2,12 @@
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Osmorc" name="OSGi">
-      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-tools-lib-0.9.2.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="" bundleSymbolicName="aps-tools-lib" bundleVersion="0.9.2" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
+      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-tools-lib-0.9.3.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="" bundleSymbolicName="aps-tools-lib" bundleVersion="0.9.3" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
           <property key="Bundle-Description" value="Provides a library of utilities, among them APSServiceTracker used by all other APS bundles." />
           <property key="Bundle-Vendor" value="Natusoft AB" />
           <property key="Bundle-DocURL" value="http://www.natusoft.se/" />
-          <property key="Export-Package" value="se.natusoft.osgi.aps.tools;version=&quot;0.9.2&quot;,se.natusoft.osgi.aps.tools.tracker;version=&quot;0.9.2&quot;,se.natusoft.osgi.aps.tools.models;version=&quot;0.9.2&quot;,se.natusoft.osgi.aps.tools.data;version=&quot;0.9.2&quot;,se.natusoft.osgi.aps.tools.annotation;version=&quot;0.9.2&quot;,se.natusoft.osgi.aps.tools.exceptions;version=&quot;0.9.2&quot;" />
+          <property key="Export-Package" value="se.natusoft.osgi.aps.tools;version=&quot;0.9.3&quot;,se.natusoft.osgi.aps.tools.tracker;version=&quot;0.9.3&quot;,se.natusoft.osgi.aps.tools.models;version=&quot;0.9.3&quot;,se.natusoft.osgi.aps.tools.data;version=&quot;0.9.3&quot;,se.natusoft.osgi.aps.tools.annotation;version=&quot;0.9.3&quot;,se.natusoft.osgi.aps.tools.exceptions;version=&quot;0.9.3&quot;" />
           <property key="Import-Package" value="*" />
           <property key="Embed-Directory" value="lib" />
           <property key="Embed-Dependency" value="*;scope=compile" />
@@ -25,7 +25,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/${project.build.directory}/classes" />
       <excludeFolder url="file://$MODULE_DIR$/${project.build.directory}/test-classes" />
-      <excludeFolder url="file://$MODULE_DIR$/target" />
+      <excludeFolder url="file://$MODULE_DIR$/target/classes" />
+      <excludeFolder url="file://$MODULE_DIR$/target/test-classes" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
