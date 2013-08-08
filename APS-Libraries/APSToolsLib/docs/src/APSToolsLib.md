@@ -161,6 +161,16 @@ The following annotations are available:
 
         /** Extra properties to register the service with. */
         OSGiProperty[] properties() default {};
+
+        /** This can be used as an alternative to properties() and also supports several instances. */
+        APSOSGiServiceInstance[] instances() default {};
+
+        /**
+         * This can be used as an alternative and will instantiate the specified factory class which will deliver
+         * one set of Properties per instance.
+         */
+        Class<? extends APSActivator.InstanceFactory> instanceFactoryClass() default APSActivator.InstanceFactory.class;
+
     }
 
 **@APSOSGiService** - This should be specified on a field having a type of a service interface to have a service of that type injected, and continuously tracked. Any call to the service will throw an APSNoServiceAvailableException (runtime) if no service has become available before the specified timeout. It is also possible to have APSServiceTracker as field type in which case the underlying configured tracker will be injected instead.
