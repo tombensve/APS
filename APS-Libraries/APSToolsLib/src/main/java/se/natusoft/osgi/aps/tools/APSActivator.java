@@ -39,6 +39,10 @@ package se.natusoft.osgi.aps.tools;
 import org.osgi.framework.*;
 import se.natusoft.osgi.aps.tools.annotation.*;
 import se.natusoft.osgi.aps.tools.exceptions.APSActivatorException;
+import se.natusoft.osgi.aps.tools.tracker.OnServiceAvailable;
+import se.natusoft.osgi.aps.tools.tracker.OnTimeout;
+import se.natusoft.osgi.aps.tools.tuples.Tuple2;
+import se.natusoft.osgi.aps.tools.tuples.Tuple4;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -53,6 +57,8 @@ import java.util.*;
  * * **@APSOSGiServiceProvider** -
  *   This should be specified on a class that implements a service interface and should be registered as
  *   an OSGi service. _Please note_ that the first declared implemented interface is used as service interface!
+ *   If any fields of this service class is annotated with @APSOSGiService(required=true) then the registration
+ *   of the service will be delayed until the required service becomes available.
  *
  * * **@APSOSGiService** -
  *   This should be specified on a field having a type of a service interface to have a service of that type
@@ -83,7 +89,7 @@ import java.util.*;
  *
  * Most methods are protected making it easy to subclass this class and expand on its functionality.
  */
-public class APSActivator implements BundleActivator {
+public class APSActivator implements BundleActivator, OnServiceAvailable, OnTimeout {
 
     //
     // Private Members
@@ -94,9 +100,11 @@ public class APSActivator implements BundleActivator {
     private List<ServiceRegistration> services;
     private Map<String, APSServiceTracker> trackers;
     private Map<String, Object> namedInstances;
-    private List<ShutdownMethod> shutdownMethods;
-
+    private List<Tuple2<Method, Object>> shutdownMethods;
+    private List<Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>>> requiredServices;
     private Map<Class, Object> managedInstances;
+
+    private BundleContext context;
 
     //
     // Methods
@@ -118,11 +126,13 @@ public class APSActivator implements BundleActivator {
      */
     @Override
     public void start(BundleContext context) throws Exception {
+        this.context = context;
         this.services = new LinkedList<>();
         this.trackers = new HashMap<>();
         this.namedInstances = new HashMap<>();
         this.shutdownMethods = new LinkedList<>();
         this.managedInstances = new HashMap<>();
+        this.requiredServices = new LinkedList<>();
 
         this.activatorLogger = new APSLogger(System.out);
         this.activatorLogger.setLoggingFor("APSActivator");
@@ -170,12 +180,12 @@ public class APSActivator implements BundleActivator {
 
         Exception failure = null;
 
-        for (ShutdownMethod shutdownMethod : this.shutdownMethods) {
+        for (Tuple2<Method, Object> shutdownMethod : this.shutdownMethods) {
             try {
-                shutdownMethod.method.invoke(shutdownMethod.object, null);
+                shutdownMethod.t1.invoke(shutdownMethod.t2, null);
 
-                this.activatorLogger.info("Called bundle shutdown method '" + shutdownMethod.object.getClass() +
-                        "." + shutdownMethod.method.getName() + "() for bundle: " +
+                this.activatorLogger.info("Called bundle shutdown method '" + shutdownMethod.t2.getClass() +
+                        "." + shutdownMethod.t1.getName() + "() for bundle: " +
                         context.getBundle().getSymbolicName() + "!");
             }
             catch (Exception e) {
@@ -225,6 +235,11 @@ public class APSActivator implements BundleActivator {
 
     // ---- Service Registration ---- //
 
+    /**
+     * Converts from annotation properties to a java.util.Properties instance.
+     *
+     * @param osgiProperties The annotation properties to convert.
+     */
     protected Properties osgiPropertiesToProperties(OSGiProperty[] osgiProperties) {
         Properties props = new Properties();
         for (OSGiProperty prop : osgiProperties) {
@@ -233,7 +248,122 @@ public class APSActivator implements BundleActivator {
         return props;
     }
 
+    /**
+     * Handles publishing of bundle services. If a published service has any dependencies to
+     * other services that are marked as required then the publishing is delayed until all required
+     * services are available. In this case the service will be unpublished if any of the required
+     * services times out.
+     *
+     * @param managedClass The managed service class to instantiate and register as a service.
+     * @param context The bundles context.
+     * @throws Exception
+     */
     protected void handleServiceRegistrations(Class managedClass, BundleContext context) throws Exception {
+        if (this.requiredServices.isEmpty()) {
+            registerServices(managedClass, context, this.services);
+        }
+        else {
+            for (Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService : this.requiredServices) {
+                requiredService.t1.onActiveServiceAvailable(this);
+                requiredService.t1.setOnTimeout(this);
+            }
+        }
+    }
+
+    /**
+     * This is used to start delayed service publishing. Each tracker of a required service will be calling
+     * this method on first service becoming available. When all required services are available the delayed
+     * service will be published.
+     *
+     * @param service The received service.
+     * @param serviceReference The reference to the received service.
+     *
+     * @throws Exception
+     */
+    @Override
+    public void onServiceAvailable(Object service, ServiceReference serviceReference) throws Exception {
+        List<Class> uniqueClasses = new LinkedList<>();
+        for (Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService : this.requiredServices) {
+            if (!uniqueClasses.contains(requiredService.t2)) {
+                uniqueClasses.add(requiredService.t2);
+            }
+        }
+
+        for (Class managedClass : uniqueClasses) {
+            boolean allRequiredAvailable = true;
+            for (Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService : this.requiredServices) {
+                if (requiredService.t2.equals(managedClass) && !requiredService.t1.hasTrackedService()) {
+                    allRequiredAvailable = false;
+                    break;
+                }
+            }
+
+            if (allRequiredAvailable) {
+                for (Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService : this.requiredServices) {
+                    if (requiredService.t2.equals(managedClass) && requiredService.t3 == false) {
+                        registerServices(requiredService.t2, this.context, requiredService.t4);
+                        this.services.addAll(requiredService.t4);
+                        requiredService.t3 = true;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * This gets called for required services when the tracker have timed out waiting for a service to become
+     * available and is about to throw an APSNoServiceAvailableException. This will unpublish all published
+     * services that have a requirement on the timed out service. The service will be republished later when
+     * it becomes available again by onServiceAvailable() above.
+     *
+     * @throws RuntimeException
+     */
+    @Override
+    public void onTimeout() throws RuntimeException {
+        List<Class> uniqueClasses = new LinkedList<>();
+        for (Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService : this.requiredServices) {
+            if (!uniqueClasses.contains(requiredService.t2)) {
+                uniqueClasses.add(requiredService.t2);
+            }
+        }
+
+        for (Class managedClass : uniqueClasses) {
+            boolean allRequiredAvailable = true;
+            for (Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService : this.requiredServices) {
+                if (requiredService.t2.equals(managedClass) && !requiredService.t1.hasTrackedService()) {
+                    allRequiredAvailable = false;
+                    break;
+                }
+            }
+
+            if (!allRequiredAvailable) {
+                for (Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService : this.requiredServices) {
+                    if (requiredService.t2.equals(managedClass)) {
+                        for (ServiceRegistration serviceRegistration : requiredService.t4) {
+                            try {
+                                serviceRegistration.unregister();
+                                requiredService.t3 = false;
+                                this.services.remove(serviceRegistration);
+                            }
+                            catch (Exception e) {
+                                this.activatorLogger.error("Bundle stop problem!", e);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Registers/publishes services annotated with @APSOSGiServiceProvider.
+     *
+     * @param managedClass The managed class to instantiate and register as an OSGi service.
+     * @param context The bundle context.
+     * @param serviceRegs The list to save all service registrations to for later unregistration.
+     * @throws Exception
+     */
+    protected void registerServices(Class managedClass, BundleContext context, List<ServiceRegistration> serviceRegs) throws Exception {
         APSOSGiServiceProvider serviceProvider = (APSOSGiServiceProvider)managedClass.getAnnotation(APSOSGiServiceProvider.class);
         if (serviceProvider != null) {
             List<Properties> instanceProps = null;
@@ -268,7 +398,7 @@ public class APSActivator implements BundleActivator {
                                     serviceProps
                             );
 
-                    this.services.add(serviceReg);
+                    serviceRegs.add(serviceReg);
                     this.activatorLogger.info("Registered '" + managedClass.getName() + "' as a service provider of '" +
                             interfaces[0].getName() + "' for bundle: " + context.getBundle().getSymbolicName() + "!");
                 }
@@ -282,6 +412,12 @@ public class APSActivator implements BundleActivator {
 
     // ---- Field Injections ---- //
 
+    /**
+     * This handles all field injections by delegating to handlers of specific types of field injections.
+     *
+     * @param managedClass The managed class to inject into.
+     * @param context The bundles context.
+     */
     protected void handleFieldInjections(Class managedClass, BundleContext context) {
         for (Field field : managedClass.getDeclaredFields()) {
             handleServiceInjections(field, managedClass, context);
@@ -289,11 +425,20 @@ public class APSActivator implements BundleActivator {
         }
     }
 
+    /**
+     * Tracks and injects APSServiceTracker directly or as wrapped service instance using the tracker to
+     * call the service depending on the field type.
+     *
+     * @param field The field to inject.
+     * @param managedClass Used to lookup or create an instance of this class to inject into.
+     * @param context The bundle context.
+     */
     protected void handleServiceInjections(Field field, Class managedClass, BundleContext context) {
         APSOSGiService service = field.getAnnotation(APSOSGiService.class);
         if (service != null) {
             String trackerKey = field.getType().getName() + service.additionalSearchCriteria();
             APSServiceTracker tracker = this.trackers.get(trackerKey);
+
             if (tracker == null) {
                 tracker = new APSServiceTracker<>(context, field.getType(), service.additionalSearchCriteria(),
                         service.timeout());
@@ -308,6 +453,12 @@ public class APSActivator implements BundleActivator {
                 injectObject(managedInstance, tracker.getWrappedService(), field);
             }
 
+            if (service.required()) {
+                Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService =
+                        new Tuple4<>(tracker, managedClass, false, (List<ServiceRegistration>)new LinkedList<ServiceRegistration>());
+                this.requiredServices.add(requiredService);
+            }
+
             this.activatorLogger.info("Injected tracked service '" + field.getType().getName() +
                     (service.additionalSearchCriteria().length() > 0 ? " " + service.additionalSearchCriteria() : "") +
                     "' " + "into '" + managedClass.getName() + "." + field.getName() + "' for bundle: " +
@@ -315,16 +466,23 @@ public class APSActivator implements BundleActivator {
         }
     }
 
+    /**
+     * Handles injections of APSLogger, BundleContext, or other class types with default constructor.
+     *
+     * @param field The field to inject into.
+     * @param managedClass Used to lookup or create an instance of this class to inject into.
+     * @param context The bundle context.
+     */
     protected void handleInstanceInjections(Field field, Class managedClass, BundleContext context) {
-        APSInject log = field.getAnnotation(APSInject.class);
-        if (log != null) {
-            String namedInstanceKey = log.name() + field.getType().getName();
+        APSInject inject = field.getAnnotation(APSInject.class);
+        if (inject != null) {
+            String namedInstanceKey = inject.name() + field.getType().getName();
             Object namedInstance = this.namedInstances.get(namedInstanceKey);
             if (namedInstance == null) {
                 if (field.getType().equals(APSLogger.class)) {
                     namedInstance = new APSLogger(System.out);
-                    if (log.loggingFor().length() > 0) {
-                        ((APSLogger)namedInstance).setLoggingFor(log.loggingFor());
+                    if (inject.loggingFor().length() > 0) {
+                        ((APSLogger)namedInstance).setLoggingFor(inject.loggingFor());
                     }
                     ((APSLogger)namedInstance).start(context);
                 }
@@ -346,7 +504,7 @@ public class APSActivator implements BundleActivator {
             injectObject(managedInstance, namedInstance, field);
 
             this.activatorLogger.info("Injected '" + namedInstance.getClass().getName() +
-                    "' instance for name '" + log.name() + "' " +
+                    "' instance for name '" + inject.name() + "' " +
                     "into '" + managedClass.getName() + "." + field.getName() + "' for bundle: " +
                     context.getBundle().getSymbolicName() + "!");
         }
@@ -354,6 +512,12 @@ public class APSActivator implements BundleActivator {
 
     // ---- Methods ---- //
 
+    /**
+     * Handles annotated methods.
+     *
+     * @param managedClass Used to lookup or create an instance of this class containing the method to call.
+     * @param context The bundle context.
+     */
     protected void handleMethods(Class managedClass, BundleContext context) {
         for (Method method : managedClass.getDeclaredMethods()) {
             handleStartupMethods(method, managedClass, context);
@@ -361,6 +525,13 @@ public class APSActivator implements BundleActivator {
         }
     }
 
+    /**
+     * Handles methods annotated with @APSBundleStartup.
+     *
+     * @param method The annotated method to call.
+     * @param managedClass Used to lookup or create an instance of this class containing the method to call.
+     * @param context The bundle context.
+     */
     protected void handleStartupMethods(Method method, Class managedClass, BundleContext context) {
         APSBundleStart bundleStart = method.getAnnotation(APSBundleStart.class);
         if (bundleStart != null) {
@@ -387,14 +558,19 @@ public class APSActivator implements BundleActivator {
         }
     }
 
+    /**
+     * Handles methods annotated with @APSBundleStop.
+     *
+     * @param method The annotated method to call.
+     * @param managedClass Used to lookup or create an instance of this class containing the method to call.
+     * @param context The bundle context.
+     */
     protected void handleShutdownMethods(Method method, Class managedClass, BundleContext context) {
         APSBundleStop bundleStop = method.getAnnotation(APSBundleStop.class);
         if (bundleStop != null) {
-            ShutdownMethod shutdownMethod = new ShutdownMethod();
-            shutdownMethod.method = method;
-            shutdownMethod.object = null;
+            Tuple2<Method, Object> shutdownMethod = new Tuple2<>(method, null);
             if (!Modifier.isStatic(method.getModifiers())) {
-                shutdownMethod.object = getManagedInstance(managedClass);
+                shutdownMethod.t2 = getManagedInstance(managedClass);
             }
 
             this.shutdownMethods.add(shutdownMethod);
@@ -424,6 +600,13 @@ public class APSActivator implements BundleActivator {
         return managedInstance;
     }
 
+    /**
+     * Support method to do injections.
+     *
+     * @param injectTo The instance to inject into.
+     * @param toInject The instance to inject.
+     * @param field The field to inject to.
+     */
     protected void injectObject(Object injectTo, Object toInject, Field field) {
         try {
             field.setAccessible(true);
@@ -459,11 +642,9 @@ public class APSActivator implements BundleActivator {
     // Inner Classes
     //
 
-    private class ShutdownMethod {
-        private Method method;
-        private Object object;
-    }
-
+    /**
+     * Implementations of this provide properties for each instance of a service to publish.
+     */
     public interface InstanceFactory {
         /**
          * Returns a set of Properties for each instance.

@@ -29,33 +29,24 @@
  *     limitations under the License.
  *     
  * AUTHORS
- *     Tommy Svensson (tommy.svensson@biltmore.se)
+ *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
- *         2012-08-19: Created!
+ *         2011-10-17: Created!
  *         
  */
-package se.natusoft.osgi.aps.tools.annotation;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package se.natusoft.osgi.aps.tools.tracker;
 
 /**
- * This annotation indicates that the annotated field is a service that the class depends on.
- *
- * This only works when APSActivator is used as bundle activator!
+ * This interface is used in conjunction with _APSServiceTracker_ and provides callback code to run when a service becomes
+ * unavailable.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface APSOSGiService {
+public interface OnTimeout<Service> {
 
-    /** The timeout for a service to become available. Defaults to 30 seconds. */
-    String timeout() default "30 seconds";
-
-    /** Any additional search criteria. Should start with '(' and end with ')'. Defaults to none. */
-    String additionalSearchCriteria() default "";
-
-    /** If set to true the service using this service will not be registered until the service becomes available. */
-    boolean required() default false;
+    /**
+     * This gets called on timeout if registered with tracker.onTimeout(...). The call is done before throwing
+     * APSNoServiceAvailableException.
+     *
+     * @throws RuntimeException If an Exception is thrown it will replace the APSNoServiceAvailableException!
+     */
+    public void onTimeout() throws RuntimeException;
 }

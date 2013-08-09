@@ -37,7 +37,7 @@
     <parent>
         <artifactId>APS-Auth</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version><!--APSVER-->0.9.2</version>
+        <version><!--APSVER-->0.9.3</version>
     </parent>
 
     <artifactId>aps-simple-user-service-provider</artifactId>
@@ -58,6 +58,9 @@
 
         <!-- The bundle activator class -->
         <osgi.bundle.activator>se.natusoft.osgi.aps.userservice.APSSimpleUserAdminActivator</osgi.bundle.activator>
+
+        <!-- Configuration models -->
+        <aps.config.classes>se.natusoft.osgi.aps.userservice.config.UserServiceInstConfig</aps.config.classes>
 
         <!-- The bundle packages to export. -->
         <osgi.export.package>
@@ -218,6 +221,7 @@
                         <manifestEntries>
                             <!--APS-Externalizable>true</APS-Externalizable-->
                             <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
+                            <APS-Configs>${aps.config.classes}</APS-Configs>
                         </manifestEntries>
                     </archive>
                     <instructions>

@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
   <artifact type="war" name="aps-admin-web:war">
     <output-path>$PROJECT_DIR$/APS-Webs/APSAdminWeb/target</output-path>
-    <root id="archive" name="aps-admin-web-0.9.2.war">
+    <root id="archive" name="aps-admin-web-0.9.3.war">
       <element id="artifact" artifact-name="aps-admin-web:war exploded" />
     </root>
   </artifact>

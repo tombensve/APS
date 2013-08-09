@@ -52,6 +52,4 @@ public @interface APSOSGiServiceInstance {
 
     /** Extra properties to register the service with. */
     OSGiProperty[] properties() default {};
-
-
 }

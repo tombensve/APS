@@ -38,10 +38,7 @@ package se.natusoft.osgi.aps.tools;
 
 import org.osgi.framework.*;
 import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException;
-import se.natusoft.osgi.aps.tools.tracker.OnServiceAvailable;
-import se.natusoft.osgi.aps.tools.tracker.OnServiceLeaving;
-import se.natusoft.osgi.aps.tools.tracker.WithService;
-import se.natusoft.osgi.aps.tools.tracker.WithServiceException;
+import se.natusoft.osgi.aps.tools.tracker.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -141,6 +138,9 @@ public class APSServiceTracker<Service>  implements ServiceListener{
 
     /** Any additional search criteria supplied by the tracker user. */
     private String additionalSearchCriteria = null;
+
+    /** If this is provided it will be called before APSNoServiceAvailableException is thrown. */
+    private OnTimeout onTimeout = null;
 
     //
     // Constructors
@@ -291,6 +291,15 @@ public class APSServiceTracker<Service>  implements ServiceListener{
         else {
             this.timeout = this.timeout * 1000;
         }
+    }
+
+    /**
+     * Sets an on timeout handler.
+     *
+     * @param onTimeout The timeout handler to set.
+     */
+    public void setOnTimeout(OnTimeout onTimeout) {
+        this.onTimeout = onTimeout;
     }
 
     /**
@@ -626,6 +635,9 @@ public class APSServiceTracker<Service>  implements ServiceListener{
                 waitForService(this.timeout);
             }
             if (!this.active.hasActiveService()) {
+                if (this.onTimeout != null) {
+                    onTimeout.onTimeout();
+                }
                 throw new APSNoServiceAvailableException("No '" + this.serviceClass.getName() + "' service is available!");
             }
         }

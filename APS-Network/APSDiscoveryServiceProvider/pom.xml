@@ -41,7 +41,7 @@
     <parent>
         <artifactId>APS-Network</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version><!--APSVER-->0.9.2</version>
+        <version><!--APSVER-->0.9.3</version>
         <relativePath>..</relativePath>
     </parent>
 

@@ -65,7 +65,7 @@
 
     <groupId>se.natusoft.osgi.aps</groupId>
     <artifactId>DocTile</artifactId>
-    <version><!--APSVER-->0.9.2</version>
+    <version><!--APSVER-->0.9.3</version>
     <packaging>pom</packaging>
 
     <!--

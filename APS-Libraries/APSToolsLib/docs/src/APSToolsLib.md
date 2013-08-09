@@ -105,7 +105,7 @@ Runs the specified callback providing it with a service to use. This will wait f
 
 Don't use this in an activator start() method! onActiveServiceAvailable() and onActiveServiceLeaving() are safe in a start() method, this is not!
 
-	    tracker.withService(new WithService<Service>() {
+        tracker.withService(new WithService<Service>() {
             @Override
             public void withService(Service service, Object... args) throws Exception {
                 // do something here.
@@ -117,7 +117,7 @@ If you don’t have any arguments this will also work:
         tracker.withService(new WithService<Service>() {
             @Override
             public void withService(Service service) throws Exception {
-				// do something here
+                // do something here
             }
         });
 
@@ -128,6 +128,17 @@ This does the same as withService(...) but without waiting for a service to beco
 #### withAllAvailableServices
 
 This is used exactly the same way as withService(...), but the callback will be done for each tracked service instance, not only the active. 
+
+#### onTimeout (since 0.9.3)
+
+This allows for a callback when the tracker times out waiting for a service. This callback will be called just before the _APSNoServiceAvailableException_ is about to be thrown.
+
+    tracker.onTimeout(new OnTimeout() {
+        @Override
+        public void onTimeout() {
+            // do something here
+        }
+    }); 
 
 ## APSLogger
 
@@ -157,6 +168,12 @@ The following annotations are available:
         String value();
     }
 
+    public @interface APSOSGiServiceInstance {
+
+        /** Extra properties to register the service with. */
+        OSGiProperty[] properties() default {};
+    }
+
     public @interface APSOSGiServiceProvider {
 
         /** Extra properties to register the service with. */
@@ -175,6 +192,8 @@ The following annotations are available:
 
 **@APSOSGiService** - This should be specified on a field having a type of a service interface to have a service of that type injected, and continuously tracked. Any call to the service will throw an APSNoServiceAvailableException (runtime) if no service has become available before the specified timeout. It is also possible to have APSServiceTracker as field type in which case the underlying configured tracker will be injected instead.
 
+If required=true is specified and this field is in a class annotated with @APSOSGiServiceProvider then the class will not be registered as a service until the service dependency is actually available, and will also be unregistered if the tracker for the service does a timeout waiting for a service to become available. It will then be reregistered again when the dependent service becomes available again. Please note that unlike iPOJO the bundle is never stopped on dependent service unavailability, only the actual service is unregistered as an OSGi service. A bundle might have more than one service registered and when a dependency that is only required by one service goes away the other service is still available.
+
     public @interface APSOSGiService {
 
         /** The timeout for a service to become available. Defaults to 30 seconds. */
@@ -182,6 +201,10 @@ The following annotations are available:
 
         /** Any additional search criteria. Should start with '(' and end with ')'. Defaults to none. */
         String additionalSearchCriteria() default "";
+
+        /** If set to true the service using this service will not be registered until the service becomes available. */
+        boolean required() default false;
+
     }
 
 **@APSInject** - This will have an instance injected. There will be a unique instance for each name specified with the default name of "default" being used in none is specified. There are 2 field types handled specially: BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger instance the 'loggingFor' annotation property can be specified. Please note that any other type must have a default constructor to be instantiated and injected!
