@@ -3,7 +3,7 @@ package se.natusoft.osgi.aps.tools.tuples;
 /**
  * A tuple with four values.
  */
-public class Tuple4<T1, T2, T3, T4> extends Tuple3 {
+public class Tuple4<T1, T2, T3, T4> extends Tuple3<T1, T2, T3> {
 
     public T4 t4;
 

@@ -3,7 +3,7 @@ package se.natusoft.osgi.aps.tools.tuples;
 /**
  * A tuple with two values.
  */
-public class Tuple2<T1, T2> extends Tuple {
+public class Tuple2<T1, T2> extends Tuple<T1> {
 
     public T2 t2;
 
