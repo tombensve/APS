@@ -42,10 +42,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation indicates that the annotated method should be called on bundle start.
+ * This annotation represents one instance of an an OSGi service and is used in @OSGiServiceProvider.
  *
  * This only works when APSActivator is used as bundle activator!
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface APSBundleStart {}
+@Target(ElementType.TYPE)
+public @interface OSGiServiceInstance {
+
+    /** Extra properties to register the service with. */
+    OSGiProperty[] properties() default {};
+}

@@ -54,36 +54,36 @@ import java.util.*;
 /**
  * This class can be specified as bundle activator in which case you use the following annotations:
  *
- * * **@APSOSGiServiceProvider** -
+ * * **@OSGiServiceProvider** -
  *   This should be specified on a class that implements a service interface and should be registered as
  *   an OSGi service. _Please note_ that the first declared implemented interface is used as service interface!
- *   If any fields of this service class is annotated with @APSOSGiService(required=true) then the registration
+ *   If any fields of this service class is annotated with @OSGiService(required=true) then the registration
  *   of the service will be delayed until the required service becomes available.
  *
- * * **@APSOSGiService** -
+ * * **@OSGiService** -
  *   This should be specified on a field having a type of a service interface to have a service of that type
  *   injected, and continuously tracked. Any call to the service will throw an APSNoServiceAvailableException
  *   (runtime) if no service has become available before the specified timeout. It is also possible to have
  *   APSServiceTracker as field type in which case the underlying configured tracker will be injected instead.
  *
- * * **@APSInject** -
+ * * **@Inject** -
  *   This will have an instance injected. There will be a unique instance for each name specified with the
  *   default name of "default" being used in none is specified. There are 2 field types handled specially:
  *   BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger
  *   instance the 'loggingFor' annotation property can be specified.
  *
- * * **@APSBundleStart** -
+ * * **@BundleStart** -
  *   This should be used on a method and will be called on bundle start. The method should take no arguments.
  *   If you need a BundleContext just declare a field of BundleContext type and it will be injected. The use
  *   of this annotation is only needed for things not supported by this activator. Please note that a method
  *   annotated with this annotation can be static!
  *
- * * **@APSBundleStop** -
+ * * **@BundleStop** -
  *   This should be used on a method and will be called on bundle stop. The method should take no arguments.
- *   This should probably be used if @APSBundleStart is used. Please note that a method annotated with this
+ *   This should probably be used if @BundleStart is used. Please note that a method annotated with this
  *   annotation can be static!
  *
- * All injected service instances for @APSOSGiService will be APSServiceTracker wrapped
+ * All injected service instances for @OSGiService will be APSServiceTracker wrapped
  * service instances that will automatically handle services leaving and coming. They will throw
  * APSNoServiceAvailableException on timeout!
  *
@@ -356,7 +356,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     }
 
     /**
-     * Registers/publishes services annotated with @APSOSGiServiceProvider.
+     * Registers/publishes services annotated with @OSGiServiceProvider.
      *
      * @param managedClass The managed class to instantiate and register as an OSGi service.
      * @param context The bundle context.
@@ -364,7 +364,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @throws Exception
      */
     protected void registerServices(Class managedClass, BundleContext context, List<ServiceRegistration> serviceRegs) throws Exception {
-        APSOSGiServiceProvider serviceProvider = (APSOSGiServiceProvider)managedClass.getAnnotation(APSOSGiServiceProvider.class);
+        OSGiServiceProvider serviceProvider = (OSGiServiceProvider)managedClass.getAnnotation(OSGiServiceProvider.class);
         if (serviceProvider != null) {
             List<Properties> instanceProps = null;
 
@@ -374,7 +374,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             }
             else if (serviceProvider.instances().length > 0) {
                 instanceProps = new LinkedList<>();
-                for (APSOSGiServiceInstance serviceInst : serviceProvider.instances()) {
+                for (OSGiServiceInstance serviceInst : serviceProvider.instances()) {
                     instanceProps.add(osgiPropertiesToProperties(serviceInst.properties()));
                 }
             }
@@ -403,7 +403,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                             interfaces[0].getName() + "' for bundle: " + context.getBundle().getSymbolicName() + "!");
                 }
                 else {
-                    throw new IllegalArgumentException("The @APSOSGiServiceProvider annotated service of class '" +
+                    throw new IllegalArgumentException("The @OSGiServiceProvider annotated service of class '" +
                         managedClass.getName() + "' does not implement a service interface!");
                 }
             }
@@ -434,7 +434,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param context The bundle context.
      */
     protected void handleServiceInjections(Field field, Class managedClass, BundleContext context) {
-        APSOSGiService service = field.getAnnotation(APSOSGiService.class);
+        OSGiService service = field.getAnnotation(OSGiService.class);
         if (service != null) {
             String trackerKey = field.getType().getName() + service.additionalSearchCriteria();
             APSServiceTracker tracker = this.trackers.get(trackerKey);
@@ -474,7 +474,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param context The bundle context.
      */
     protected void handleInstanceInjections(Field field, Class managedClass, BundleContext context) {
-        APSInject inject = field.getAnnotation(APSInject.class);
+        Inject inject = field.getAnnotation(Inject.class);
         if (inject != null) {
             String namedInstanceKey = inject.name() + field.getType().getName();
             Object namedInstance = this.namedInstances.get(namedInstanceKey);
@@ -533,10 +533,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param context The bundle context.
      */
     protected void handleStartupMethods(Method method, Class managedClass, BundleContext context) {
-        APSBundleStart bundleStart = method.getAnnotation(APSBundleStart.class);
+        BundleStart bundleStart = method.getAnnotation(BundleStart.class);
         if (bundleStart != null) {
             if (method.getParameterTypes().length > 0) {
-                throw new APSActivatorException("An @APSBundleStart method must take no parameters! [" +
+                throw new APSActivatorException("An @BundleStart method must take no parameters! [" +
                     managedClass.getName() + "." + method.getName() + "(?)]");
             }
             Object managedInstance = null;
@@ -559,14 +559,14 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     }
 
     /**
-     * Handles methods annotated with @APSBundleStop.
+     * Handles methods annotated with @BundleStop.
      *
      * @param method The annotated method to call.
      * @param managedClass Used to lookup or create an instance of this class containing the method to call.
      * @param context The bundle context.
      */
     protected void handleShutdownMethods(Method method, Class managedClass, BundleContext context) {
-        APSBundleStop bundleStop = method.getAnnotation(APSBundleStop.class);
+        BundleStop bundleStop = method.getAnnotation(BundleStop.class);
         if (bundleStop != null) {
             Tuple2<Method, Object> shutdownMethod = new Tuple2<>(method, null);
             if (!Modifier.isStatic(method.getModifiers())) {

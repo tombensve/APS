@@ -42,14 +42,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation represents one instance of an an OSGi service and is used in @APSOSGiServiceProvider.
+ * This annotation indicates that the annotated field is a service that the class depends on.
  *
  * This only works when APSActivator is used as bundle activator!
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface APSOSGiServiceInstance {
+@Target(ElementType.FIELD)
+public @interface OSGiService {
 
-    /** Extra properties to register the service with. */
-    OSGiProperty[] properties() default {};
+    /** The timeout for a service to become available. Defaults to 30 seconds. */
+    String timeout() default "30 seconds";
+
+    /** Any additional search criteria. Should start with '(' and end with ')'. Defaults to none. */
+    String additionalSearchCriteria() default "";
+
+    /** If set to true the service using this service will not be registered until the service becomes available. */
+    boolean required() default false;
 }

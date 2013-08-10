@@ -12,10 +12,10 @@ This does the same thing as the standard service tracker included with OSGi, but
 
 There are several variants of constructors, but here is an example of one of the most used ones within the APS services:
 
-	APSServiceTracker<Service> tracker = new APSServiceTracker<Service>(context, Service.class, ”20 seconds”);
+	APSServiceTracker<Service> tracker = new APSServiceTracker<Service>(context, Service.class, "20 seconds");
 	tracker.start();
 	
-Note that the third argument, which is a timeout can also be specified as an int in which case it is always in miliseconds. The string variant supports the a second word of ”sec\[onds\]” and ”min\[utes\]” which indicates the type of the first numeric value. ”forever” means just that and requires just one word. Any other second words than those will be treated as milliseconds. The APSServiceTracker also has a set of constants for the timeout string value:
+Note that the third argument, which is a timeout can also be specified as an int in which case it is always in miliseconds. The string variant supports the a second word of "sec\[onds\]" and "min\[utes\]" which indicates the type of the first numeric value. "forever" means just that and requires just one word. Any other second words than those will be treated as milliseconds. The APSServiceTracker also has a set of constants for the timeout string value:
 
     public static final String SHORT_TIMEOUT = "3 seconds";
     public static final String MEDIUM_TIMEOUT = "30 seconds";
@@ -161,26 +161,26 @@ This is actually a trivial not very large class that just scans the bundle for f
 
 The following annotations are available:
 
-**@APSOSGiServiceProvider** - This should be specified on a class that implements a service interface and should be registered as an OSGi service. _Please note_ that the first declared implemented interface is used as service interface!
+**@OSGiServiceProvider** - This should be specified on a class that implements a service interface and should be registered as an OSGi service. _Please note_ that the first declared implemented interface is used as service interface!
 
     public @interface OSGiProperty {
         String name();
         String value();
     }
 
-    public @interface APSOSGiServiceInstance {
+    public @interface OSGiServiceInstance {
 
         /** Extra properties to register the service with. */
         OSGiProperty[] properties() default {};
     }
 
-    public @interface APSOSGiServiceProvider {
+    public @interface OSGiServiceProvider {
 
         /** Extra properties to register the service with. */
         OSGiProperty[] properties() default {};
 
         /** This can be used as an alternative to properties() and also supports several instances. */
-        APSOSGiServiceInstance[] instances() default {};
+        OSGiServiceInstance[] instances() default {};
 
         /**
          * This can be used as an alternative and will instantiate the specified factory class which will deliver
@@ -190,11 +190,11 @@ The following annotations are available:
 
     }
 
-**@APSOSGiService** - This should be specified on a field having a type of a service interface to have a service of that type injected, and continuously tracked. Any call to the service will throw an APSNoServiceAvailableException (runtime) if no service has become available before the specified timeout. It is also possible to have APSServiceTracker as field type in which case the underlying configured tracker will be injected instead.
+**@OSGiService** - This should be specified on a field having a type of a service interface to have a service of that type injected, and continuously tracked. Any call to the service will throw an APSNoServiceAvailableException (runtime) if no service has become available before the specified timeout. It is also possible to have APSServiceTracker as field type in which case the underlying configured tracker will be injected instead.
 
-If required=true is specified and this field is in a class annotated with @APSOSGiServiceProvider then the class will not be registered as a service until the service dependency is actually available, and will also be unregistered if the tracker for the service does a timeout waiting for a service to become available. It will then be reregistered again when the dependent service becomes available again. Please note that unlike iPOJO the bundle is never stopped on dependent service unavailability, only the actual service is unregistered as an OSGi service. A bundle might have more than one service registered and when a dependency that is only required by one service goes away the other service is still available.
+If _required=true_ is specified and this field is in a class annotated with _@OSGiServiceProvider_ then the class will not be registered as a service until the service dependency is actually available, and will also be unregistered if the tracker for the service does a timeout waiting for a service to become available. It will then be reregistered again when the dependent service becomes available again. Please note that unlike iPOJO the bundle is never stopped on dependent service unavailability, only the actual service is unregistered as an OSGi service. A bundle might have more than one service registered and when a dependency that is only required by one service goes away the other service is still available.
 
-    public @interface APSOSGiService {
+    public @interface OSGiService {
 
         /** The timeout for a service to become available. Defaults to 30 seconds. */
         String timeout() default "30 seconds";
@@ -207,9 +207,9 @@ If required=true is specified and this field is in a class annotated with @APSOS
 
     }
 
-**@APSInject** - This will have an instance injected. There will be a unique instance for each name specified with the default name of "default" being used in none is specified. There are 2 field types handled specially: BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger instance the 'loggingFor' annotation property can be specified. Please note that any other type must have a default constructor to be instantiated and injected!
+**@Inject** - This will have an instance injected. There will be a unique instance for each name specified with the default name of "default" being used in none is specified. There are 2 field types handled specially: BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger instance the 'loggingFor' annotation property can be specified. Please note that any other type must have a default constructor to be instantiated and injected!
 
-    public @interface APSInject {
+    public @interface Inject {
         /**
          * The name of the instance to inject. If the same is used in multiple classes the same instance will
          * be injected.
@@ -223,13 +223,13 @@ If required=true is specified and this field is in a class annotated with @APSOS
         String loggingFor() default "";
     }
 
-**@APSBundleStart** - This should be used on a method and will be called on bundle start. The method should take no arguments. If you need a BundleContext just inject it with @APSInejct. The use of this annotation is only needed for things not supported by this activator. Please note that a method annotated with this annotation can be static (in which case the class it belongs to will not be instantiaded -- due to this!). You can provide this annotation on as many methods in as many classes as you want. They will all be called (in the order classes are discovered in the bundle).
+**@BundleStart** - This should be used on a method and will be called on bundle start. The method should take no arguments. If you need a BundleContext just inject it with @APSInejct. The use of this annotation is only needed for things not supported by this activator. Please note that a method annotated with this annotation can be static (in which case the class it belongs to will not be instantiaded -- due to this!). You can provide this annotation on as many methods in as many classes as you want. They will all be called (in the order classes are discovered in the bundle).
 
-    public @interface APSBundleStart {}
+    public @interface BundleStart {}
 
-**@APSBundleStop** - This should be used on a method and will be called on bundle stop. The method should take no arguments. This should probably be used if @APSBundleStart is used. Please note that a method annotated with this annotation can be static!
+**@BundleStop** - This should be used on a method and will be called on bundle stop. The method should take no arguments. This should probably be used if @APSBundleStart is used. Please note that a method annotated with this annotation can be static!
 
-    public @interface APSBundleStop {}
+    public @interface BundleStop {}
 
 ## APSContextWrapper
 

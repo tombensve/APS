@@ -42,7 +42,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation represents an OSGi service property and is used in @APSOSGiServiceProvider.
+ * This annotation represents an OSGi service property and is used in @OSGiServiceProvider.
  *
  * This only works when APSActivator is used as bundle activator!
  */

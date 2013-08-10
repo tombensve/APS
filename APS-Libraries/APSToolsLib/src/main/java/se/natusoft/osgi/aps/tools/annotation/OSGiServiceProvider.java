@@ -51,13 +51,13 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface APSOSGiServiceProvider {
+public @interface OSGiServiceProvider {
 
     /** Extra properties to register the service with. */
     OSGiProperty[] properties() default {};
 
     /** This can be used as an alternative to properties() and also supports several instances. */
-    APSOSGiServiceInstance[] instances() default {};
+    OSGiServiceInstance[] instances() default {};
 
     /**
      * This can be used as an alternative and will instantiate the specified factory class which will deliver

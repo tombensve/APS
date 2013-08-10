@@ -42,20 +42,25 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation indicates that the annotated field is a service that the class depends on.
+ * This annotation indicates that the annotated field should have an instance injected.
+ *
+ * Using this annotation on a class not annotated with @OSGiServiceProvider will still be
+ * instantiated by APSActivator.
  *
  * This only works when APSActivator is used as bundle activator!
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface APSOSGiService {
+public @interface Inject {
+    /**
+     * The name of the instance to inject. If the same is used in multiple classes the same instance will
+     * be injected.
+     */
+    String name() default "default";
 
-    /** The timeout for a service to become available. Defaults to 30 seconds. */
-    String timeout() default "30 seconds";
-
-    /** Any additional search criteria. Should start with '(' and end with ')'. Defaults to none. */
-    String additionalSearchCriteria() default "";
-
-    /** If set to true the service using this service will not be registered until the service becomes available. */
-    boolean required() default false;
+    /**
+     * A label indicating who is logging. If not specified the bundle name will be used. This is only
+     * relevant if the injected type is APSLogger.
+     */
+    String loggingFor() default "";
 }
