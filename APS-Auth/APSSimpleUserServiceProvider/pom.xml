@@ -57,7 +57,7 @@
         <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
 
         <!-- The bundle activator class -->
-        <osgi.bundle.activator>se.natusoft.osgi.aps.userservice.APSSimpleUserAdminActivator</osgi.bundle.activator>
+        <osgi.bundle.activator>se.natusoft.osgi.aps.tools.APSActivator</osgi.bundle.activator>
 
         <!-- Configuration models -->
         <aps.config.classes>se.natusoft.osgi.aps.userservice.config.UserServiceInstConfig</aps.config.classes>
@@ -80,6 +80,7 @@
         <!-- The private packages. -->
         <osgi.private.package>
             se.natusoft.osgi.aps.userservice,
+            se.natusoft.osgi.aps.userservice.config,
             se.natusoft.osgi.aps.userservice.entities,
             se.natusoft.osgi.aps.userservice.util,
             se.natusoft.osgi.aps.userservice.service
@@ -95,7 +96,7 @@
         </osgi.include.resource>
 
         <!-- The default for embedding dependencies in bundle. -->
-        <osgi.embed.dependency>*;scope=compile</osgi.embed.dependency>
+        <osgi.embed.dependency>*;scope=compile,system</osgi.embed.dependency>
 
         <!-- The directory whose content should be embeded into the bundle jar. -->
         <osgi.embed.directory>lib</osgi.embed.directory>
@@ -149,6 +150,14 @@
             <artifactId>derbyclient</artifactId>
             <version>10.9.1.0</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysqldriver</artifactId>
+            <version>5.1.26</version>
+            <scope>compile</scope>
+
         </dependency>
 
     </dependencies>

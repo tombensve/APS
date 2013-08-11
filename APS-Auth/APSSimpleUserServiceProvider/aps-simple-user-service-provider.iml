@@ -12,19 +12,19 @@
       </configuration>
     </facet>
     <facet type="Osmorc" name="OSGi">
-      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-simple-user-service-provider-0.9.3.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.userservice.APSSimpleUserAdminActivator" bundleSymbolicName="aps-simple-user-service-provider" bundleVersion="0.9.3" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
+      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-simple-user-service-provider-0.9.3.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.tools.APSActivator" bundleSymbolicName="aps-simple-user-service-provider" bundleVersion="0.9.3" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
           <property key="Bundle-Vendor" value="Natusoft AB" />
           <property key="Bundle-DocURL" value="http://www.natusoft.se/" />
           <property key="JPA-PersistenceUnits" value="UserAdmin" />
           <property key="Import-Package" value="*" />
-          <property key="Private-Package" value="se.natusoft.osgi.aps.userservice,se.natusoft.osgi.aps.userservice.entities,se.natusoft.osgi.aps.userservice.util,se.natusoft.osgi.aps.userservice.service" />
-          <property key="Include-Resource" value="lib/derbyclient-10.9.1.0.jar=$MAVEN_REPOSITORY$/org/apache/derby/derbyclient/10.9.1.0/derbyclient-10.9.1.0.jar,META-INF/persistence.xml=$MODULE_DIR$/src/main/resources/META-INF/persistence.xml,META-INF/persistence.xml=$MODULE_DIR$/target/classes/META-INF/persistence.xml" />
+          <property key="Private-Package" value="se.natusoft.osgi.aps.userservice,se.natusoft.osgi.aps.userservice.config,se.natusoft.osgi.aps.userservice.entities,se.natusoft.osgi.aps.userservice.util,se.natusoft.osgi.aps.userservice.service" />
+          <property key="Include-Resource" value="lib/derbyclient-10.9.1.0.jar=$MAVEN_REPOSITORY$/org/apache/derby/derbyclient/10.9.1.0/derbyclient-10.9.1.0.jar,lib/mysqldriver-5.1.26.jar=$MAVEN_REPOSITORY$/com/mysql/mysqldriver/5.1.26/mysqldriver-5.1.26.jar,META-INF/persistence.xml=$MODULE_DIR$/src/main/resources/META-INF/persistence.xml,META-INF/persistence.xml=$MODULE_DIR$/target/classes/META-INF/persistence.xml" />
           <property key="Embed-Directory" value="lib" />
-          <property key="Embed-Dependency" value="*;scope=compile" />
+          <property key="Embed-Dependency" value="*;scope=compile,system" />
           <property key="Bundle-Name" value="APS Simple User Service Provider" />
-          <property key="Bundle-ClassPath" value=".,lib/derbyclient-10.9.1.0.jar" />
-          <property key="Embedded-Artifacts" value="lib/derbyclient-10.9.1.0.jar;g=&quot;org.apache.derby&quot;;a=&quot;derbyclient&quot;;v=&quot;10.9.1.0&quot;" />
+          <property key="Bundle-ClassPath" value=".,lib/derbyclient-10.9.1.0.jar,lib/mysqldriver-5.1.26.jar" />
+          <property key="Embedded-Artifacts" value="lib/derbyclient-10.9.1.0.jar;g=&quot;org.apache.derby&quot;;a=&quot;derbyclient&quot;;v=&quot;10.9.1.0&quot;,lib/mysqldriver-5.1.26.jar;g=&quot;com.mysql&quot;;a=&quot;mysqldriver&quot;;v=&quot;5.1.26&quot;" />
         </additionalProperties>
         <additionalJARContents />
       </configuration>
@@ -48,6 +48,7 @@
     <orderEntry type="module" module-name="aps-tools-lib" scope="PROVIDED" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.openjpa:openjpa-all:2.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.derby:derbyclient:10.9.1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.mysql:mysqldriver:5.1.26" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.osgi:org.osgi.core:4.2.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.osgi:org.osgi.compendium:4.2.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.8.2" level="project" />

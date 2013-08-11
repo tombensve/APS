@@ -48,4 +48,11 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface BundleStart {}
+public @interface BundleStart {
+
+    /**
+     * If true the start method will run in a new thread. Any failures in this case will not fail
+     * the bundle startup, but will be logged.
+     */
+    boolean thread() default false;
+}

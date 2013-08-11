@@ -34,46 +34,69 @@
 package se.natusoft.osgi.aps.userservice.service;
 
 import org.osgi.framework.BundleContext;
+import se.natusoft.osgi.aps.api.auth.user.APSSimpleUserService;
 import se.natusoft.osgi.aps.api.auth.user.APSSimpleUserServiceAdmin;
 import se.natusoft.osgi.aps.api.auth.user.model.Role;
 import se.natusoft.osgi.aps.api.auth.user.model.RoleAdmin;
 import se.natusoft.osgi.aps.api.auth.user.model.User;
 import se.natusoft.osgi.aps.api.auth.user.model.UserAdmin;
+import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
 import se.natusoft.osgi.aps.api.data.jdbc.model.DataSourceDef;
 import se.natusoft.osgi.aps.api.data.jdbc.service.APSDataSourceDefService;
 import se.natusoft.osgi.aps.api.data.jpa.service.APSJPAService;
 import se.natusoft.osgi.aps.exceptions.APSPersistenceException;
+import se.natusoft.osgi.aps.tools.APSActivator;
 import se.natusoft.osgi.aps.tools.APSLogger;
+import se.natusoft.osgi.aps.tools.annotation.Inject;
+import se.natusoft.osgi.aps.tools.annotation.OSGiService;
+import se.natusoft.osgi.aps.tools.annotation.OSGiServiceProvider;
+import se.natusoft.osgi.aps.userservice.config.UserServiceInstConfig;
 import se.natusoft.osgi.aps.userservice.entities.RoleEntity;
 import se.natusoft.osgi.aps.userservice.entities.UserEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Provides an implementation of the APSSimpleUserService.
  */
-public class APSSimpleUserServiceProvider implements APSSimpleUserServiceAdmin {
+@OSGiServiceProvider(instanceFactoryClass = APSSimpleUserServiceProvider.class)
+public class APSSimpleUserServiceProvider implements APSSimpleUserServiceAdmin, APSActivator.InstanceFactory {
     //
     // Private Members
     //
 
+    @Inject
     private BundleContext bundleContext = null;
 
+    @Inject(name = "userServiceLogger", loggingFor = "aps-simple-user-service")
     private APSLogger logger = null;
 
+    @OSGiService
     private APSDataSourceDefService dataSourceDefService = null;
 
+    @OSGiService
     private APSJPAService jpaService = null;
 
+    // This is required for the instance factory method.
+    @OSGiService(required = true)
+    private APSConfigService configService;
+
     private APSJPAService.APSJPAEntityManagerProvider entityManagerProvider = null;
+
+    // First field of properties type will automatically be injected with the service instance properties
+    // registered with the OSGi server.
+    private Properties instProps = null;
 
     //
     // Constructors
     //
+
+    /**
+     * Creates a new APSSimpleUserServiceProvider instance.
+     */
+    public APSSimpleUserServiceProvider() {}
 
     /**
      * Creates a new APSSimpleUserServiceProvider instance.
@@ -83,16 +106,50 @@ public class APSSimpleUserServiceProvider implements APSSimpleUserServiceAdmin {
      * @param dataSourceDefService Needed to get data source data.
      * @param jpaService For using JPA.
      */
-    public APSSimpleUserServiceProvider(
-            BundleContext bundleContext,
-            APSLogger logger,
-            APSDataSourceDefService dataSourceDefService,
-            APSJPAService jpaService
-    ) {
-        this.bundleContext = bundleContext;
-        this.logger = logger;
-        this.dataSourceDefService = dataSourceDefService;
-        this.jpaService = jpaService;
+//    public APSSimpleUserServiceProvider(
+//            BundleContext bundleContext,
+//            APSLogger logger,
+//            APSDataSourceDefService dataSourceDefService,
+//            APSJPAService jpaService
+//    ) {
+//        this.bundleContext = bundleContext;
+//        this.logger = logger;
+//        this.dataSourceDefService = dataSourceDefService;
+//        this.jpaService = jpaService;
+//    }
+
+    /**
+     * Returns a set of Properties for each instance.
+     */
+    @Override
+    public List<Properties> getPropertiesPerInstance() {
+        List<Properties> props = new LinkedList<>();
+        if (UserServiceInstConfig.get().dataSourceDefinitions.isEmpty()) {
+            Properties instProps = new Properties();
+            instProps.setProperty("instance", "aps-admin-web");
+            instProps.setProperty("dsRef", "APSSimpleUserServiceDS");
+            instProps.setProperty(APSActivator.InstanceFactory.SERVICE_API_CLASSES_PROPERTY,
+                    APSSimpleUserService.class.getName()  +
+                    ":" +
+                    APSSimpleUserServiceAdmin.class.getName()
+            );
+            props.add(instProps);
+        }
+        else {
+            for (UserServiceInstConfig.UserServiceInstance inst : UserServiceInstConfig.get().dataSourceDefinitions) {
+                Properties instProps = new Properties();
+                instProps.setProperty("instance", inst.name.toString());
+                instProps.setProperty("dsRef", inst.dsRef.toString());
+                instProps.setProperty(APSActivator.InstanceFactory.SERVICE_API_CLASSES_PROPERTY,
+                        APSSimpleUserService.class.getName()  +
+                                ":" +
+                                APSSimpleUserServiceAdmin.class.getName()
+                );
+                props.add(instProps);
+            }
+        }
+
+        return props;
     }
 
     //
@@ -104,7 +161,8 @@ public class APSSimpleUserServiceProvider implements APSSimpleUserServiceAdmin {
      */
     private APSJPAService.APSJPAEntityManagerProvider getEMP() {
         if (this.entityManagerProvider == null || !this.entityManagerProvider.isValid()) {
-            DataSourceDef dsDef = this.dataSourceDefService.lookupByName("APSSimpleUserServiceDS");
+            String dsRef = this.instProps.getProperty("dsRef");
+            DataSourceDef dsDef = this.dataSourceDefService.lookupByName(dsRef);
             if (dsDef == null) {
                 throw new APSPersistenceException("Could not find an 'APSSimpleUserServiceDS' in 'persistence/datasources' configuration!");
             }
@@ -404,4 +462,5 @@ public class APSSimpleUserServiceProvider implements APSSimpleUserServiceAdmin {
 
         return false;
     }
+
 }

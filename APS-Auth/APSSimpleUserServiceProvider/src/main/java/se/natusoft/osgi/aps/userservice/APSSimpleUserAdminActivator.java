@@ -100,8 +100,8 @@ public class APSSimpleUserAdminActivator implements BundleActivator {
 
         Properties serviceProps = new Properties();
         serviceProps.put(Constants.SERVICE_PID, APSSimpleUserServiceProvider.class.getName());
-        APSSimpleUserServiceProvider apsSimpleUserServiceProvider =
-                new APSSimpleUserServiceProvider(context, this.logger, dataSourceDefService, apsJPAService);
+        APSSimpleUserServiceProvider apsSimpleUserServiceProvider = null;
+//                new APSSimpleUserServiceProvider(context, this.logger, dataSourceDefService, apsJPAService);
 
         this.simpleUserServiceReg = context.registerService(
                 APSSimpleUserService.class.getName(),

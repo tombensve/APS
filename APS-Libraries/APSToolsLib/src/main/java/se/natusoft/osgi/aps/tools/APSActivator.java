@@ -42,6 +42,7 @@ import se.natusoft.osgi.aps.tools.exceptions.APSActivatorException;
 import se.natusoft.osgi.aps.tools.tracker.OnServiceAvailable;
 import se.natusoft.osgi.aps.tools.tracker.OnTimeout;
 import se.natusoft.osgi.aps.tools.tuples.Tuple2;
+import se.natusoft.osgi.aps.tools.tuples.Tuple3;
 import se.natusoft.osgi.aps.tools.tuples.Tuple4;
 
 import java.io.File;
@@ -102,7 +103,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     private Map<String, Object> namedInstances;
     private List<Tuple2<Method, Object>> shutdownMethods;
     private List<Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>>> requiredServices;
-    private Map<Class, Object> managedInstances;
+    private Map<Class, List<Object>> managedInstances;
 
     private BundleContext context;
 
@@ -149,6 +150,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                         bundle.loadClass(
                                 entryPath.substring(0, entryPath.length() - 6).replace(File.separatorChar, '.')
                         );
+                handleServiceInstances(entryClass, context);
                 handleFieldInjections(entryClass, context);
                 handleServiceRegistrations(entryClass, context);
                 handleMethods(entryClass, context);
@@ -249,6 +251,35 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     }
 
     /**
+     * This is the first thing done to instantiate all service instances needed, so that they all can be injected later.
+     *
+     * @param managedClass The manages class to create instances of.
+     * @param context The bundles context.
+     * @throws Exception
+     */
+    protected void handleServiceInstances(Class managedClass, BundleContext context) throws Exception {
+        OSGiServiceProvider serviceProvider = (OSGiServiceProvider)managedClass.getAnnotation(OSGiServiceProvider.class);
+        if (serviceProvider != null) {
+            int noInstances = 1;
+
+            if (serviceProvider.instances().length > 0) {
+                noInstances = serviceProvider.instances().length;
+            }
+            else if (!serviceProvider.instanceFactoryClass().equals(InstanceFactory.class)) {
+                InstanceFactory instanceFactory = (InstanceFactory)getManagedInstance(serviceProvider.instanceFactoryClass());
+                if (instanceFactory == null) {
+                    instanceFactory = serviceProvider.instanceFactoryClass().newInstance();
+                }
+                noInstances = instanceFactory.getPropertiesPerInstance().size();
+            }
+
+            // This will just instantiate and cache the number of instances. Right now we don't care
+            // about the instances themselves.
+            getManagedInstances(managedClass, noInstances);
+        }
+    }
+
+    /**
      * Handles publishing of bundle services. If a published service has any dependencies to
      * other services that are marked as required then the publishing is delayed until all required
      * services are available. In this case the service will be unpublished if any of the required
@@ -258,14 +289,36 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param context The bundles context.
      * @throws Exception
      */
-    protected void handleServiceRegistrations(Class managedClass, BundleContext context) throws Exception {
-        if (this.requiredServices.isEmpty()) {
-            registerServices(managedClass, context, this.services);
-        }
-        else {
-            for (Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService : this.requiredServices) {
-                requiredService.t1.onActiveServiceAvailable(this);
-                requiredService.t1.setOnTimeout(this);
+    protected void handleServiceRegistrations(final Class managedClass, final BundleContext context) throws Exception {
+        OSGiServiceProvider serviceProvider = (OSGiServiceProvider)managedClass.getAnnotation(OSGiServiceProvider.class);
+
+        if (serviceProvider != null) {
+            if (serviceProvider.threadStart()) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            registerServices(managedClass, context, APSActivator.this.services);
+                        }
+                        catch (Exception e) {
+                            APSActivator.this.activatorLogger.error("Failed threaded startup for '" +
+                                    managedClass.getName() + "'! [" + e.getMessage() +"]", e);
+                        }
+                    }
+                }).start();
+            }
+            else {
+                if (this.requiredServices.isEmpty()) {
+                        registerServices(managedClass, context, this.services);
+                }
+                else {
+                    for (Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService : this.requiredServices) {
+                        this.activatorLogger.info("Registering for delayed start of '" + managedClass.getName() + "' " +
+                            "due to service '" + requiredService.t1.getServiceClass().getName() + "'!");
+                        requiredService.t1.onActiveServiceAvailable(this);
+                        requiredService.t1.setOnTimeout(this);
+                    }
+                }
             }
         }
     }
@@ -282,6 +335,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      */
     @Override
     public void onServiceAvailable(Object service, ServiceReference serviceReference) throws Exception {
+        this.activatorLogger.info("Received service: " + service.getClass().getName());
         List<Class> uniqueClasses = new LinkedList<>();
         for (Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService : this.requiredServices) {
             if (!uniqueClasses.contains(requiredService.t2)) {
@@ -294,13 +348,16 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             for (Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService : this.requiredServices) {
                 if (requiredService.t2.equals(managedClass) && !requiredService.t1.hasTrackedService()) {
                     allRequiredAvailable = false;
+                    this.activatorLogger.info("Not all required services are available yet for: " + managedClass.getName());
                     break;
                 }
             }
 
             if (allRequiredAvailable) {
+                this.activatorLogger.info("All required services are now available for: " + managedClass.getName());
                 for (Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService : this.requiredServices) {
                     if (requiredService.t2.equals(managedClass) && requiredService.t3 == false) {
+                        this.activatorLogger.info("Registering services for: " + managedClass.getName());
                         registerServices(requiredService.t2, this.context, requiredService.t4);
                         this.services.addAll(requiredService.t4);
                         requiredService.t3 = true;
@@ -320,6 +377,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      */
     @Override
     public void onTimeout() throws RuntimeException {
+        this.activatorLogger.warn("A required service have gone away!");
         List<Class> uniqueClasses = new LinkedList<>();
         for (Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService : this.requiredServices) {
             if (!uniqueClasses.contains(requiredService.t2)) {
@@ -344,6 +402,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                                 serviceRegistration.unregister();
                                 requiredService.t3 = false;
                                 this.services.remove(serviceRegistration);
+                                this.activatorLogger.warn("Removed registration for: " + serviceRegistration.getReference());
                             }
                             catch (Exception e) {
                                 this.activatorLogger.error("Bundle stop problem!", e);
@@ -366,46 +425,112 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     protected void registerServices(Class managedClass, BundleContext context, List<ServiceRegistration> serviceRegs) throws Exception {
         OSGiServiceProvider serviceProvider = (OSGiServiceProvider)managedClass.getAnnotation(OSGiServiceProvider.class);
         if (serviceProvider != null) {
-            List<Properties> instanceProps = null;
+            List<Tuple3<Properties, Object, List<String>>> serviceInstData = new LinkedList<>();
 
             if (serviceProvider.properties().length > 0) {
-                instanceProps = new LinkedList<>();
-                instanceProps.add(osgiPropertiesToProperties(serviceProvider.properties()));
+                Tuple3<Properties, Object, List<String>> sd = new Tuple3<>();
+                sd.t1 = osgiPropertiesToProperties(serviceProvider.properties());
+                serviceInstData.add(sd);
             }
             else if (serviceProvider.instances().length > 0) {
-                instanceProps = new LinkedList<>();
                 for (OSGiServiceInstance serviceInst : serviceProvider.instances()) {
-                    instanceProps.add(osgiPropertiesToProperties(serviceInst.properties()));
+                    Tuple3<Properties, Object, List<String>> sd = new Tuple3<>();
+                    sd.t1 = osgiPropertiesToProperties(serviceInst.properties());
+                    serviceInstData.add(sd);
                 }
             }
             else if (!serviceProvider.instanceFactoryClass().equals(InstanceFactory.class)) {
-                InstanceFactory instanceFactory = serviceProvider.instanceFactoryClass().newInstance();
-                instanceProps = instanceFactory.getPropertiesPerInstance();
+                InstanceFactory instanceFactory = (InstanceFactory)getManagedInstance(serviceProvider.instanceFactoryClass());
+                if (instanceFactory == null) {
+                    instanceFactory = serviceProvider.instanceFactoryClass().newInstance();
+                }
+                for (Properties props : instanceFactory.getPropertiesPerInstance()) {
+                    Tuple3<Properties, Object, List<String>> sd = new Tuple3<>();
+                    sd.t1 = props;
+                    serviceInstData.add(sd);
+                }
             }
             else {
-                instanceProps = new LinkedList<>();
-                instanceProps.add(new Properties());
+                Tuple3<Properties, Object, List<String>> sd = new Tuple3<>();
+                sd.t1 = new Properties();
+                serviceInstData.add(sd);
             }
 
-            for (Properties serviceProps : instanceProps) {
-                serviceProps.put(Constants.SERVICE_PID, managedClass.getName());
-                Class[] interfaces = managedClass.getInterfaces();
-                if (interfaces != null && interfaces.length >= 1) {
-                    ServiceRegistration serviceReg =
-                            context.registerService(
-                                    interfaces[0].getName(),
-                                    getManagedInstance(managedClass),
-                                    serviceProps
-                            );
+            // The number of managedInstances and serviceInstData will always be the same. They both originate
+            // from the same information.
+            List<Object> managedInstances = getManagedInstances(managedClass);
+            for (int i = 0; i < serviceInstData.size(); i++) {
 
-                    serviceRegs.add(serviceReg);
-                    this.activatorLogger.info("Registered '" + managedClass.getName() + "' as a service provider of '" +
-                            interfaces[0].getName() + "' for bundle: " + context.getBundle().getSymbolicName() + "!");
+                List<String> serviceAPIs = new LinkedList<>();
+
+                if (serviceProvider.serviceAPIs().length > 0) {
+                    for (Class svcAPI : serviceProvider.serviceAPIs()) {
+                        serviceAPIs.add(svcAPI.getName());
+                    }
+                }
+                else if (serviceProvider.instances().length > 0) {
+                    OSGiServiceInstance svsInstAnn = serviceProvider.instances()[i];
+                    for (Class svcAPI : svsInstAnn.serviceAPIs()) {
+                        serviceAPIs.add(svcAPI.getName());
+                    }
+                }
+                else if (!serviceProvider.instanceFactoryClass().equals(InstanceFactory.class)) {
+                    String svcAPIList = serviceInstData.get(i).t1.getProperty(InstanceFactory.SERVICE_API_CLASSES_PROPERTY);
+                    if (svcAPIList != null) {
+                        for (String svcAPI : svcAPIList.split(":")) {
+                            serviceAPIs.add(svcAPI);
+                        }
+                    }
+                    else {
+                        Class[] interfaces = managedClass.getInterfaces();
+                        if (interfaces != null && interfaces.length > 0) {
+                            serviceAPIs.add(interfaces[0].getName());
+                        }
+                    }
+                }
+                else {
+                    Class[] interfaces = managedClass.getInterfaces();
+                    if (interfaces != null && interfaces.length > 0) {
+                        serviceAPIs.add(interfaces[0].getName());
+                    }
+                }
+
+                Tuple3<Properties, Object, List<String>> sd = serviceInstData.get(i);
+                sd.t3 = serviceAPIs;
+                sd.t2 = managedInstances.get(i);
+            }
+
+            for (Tuple3<Properties, Object, List<String>> sd : serviceInstData) {
+                sd.t1.put(Constants.SERVICE_PID, managedClass.getName());
+                if (!sd.t3.isEmpty()) {
+                    injectInstanceProps(sd.t2, sd.t1);
+                    for (String svcAPI : sd.t3) {
+                        ServiceRegistration serviceReg =
+                                context.registerService(
+                                        svcAPI,
+                                        sd.t2,
+                                        sd.t1
+                                );
+
+                        serviceRegs.add(serviceReg);
+                        this.activatorLogger.info("Registered '" + managedClass.getName() + "' as a service provider of '" +
+                                svcAPI + "' for bundle: " + context.getBundle().getSymbolicName() + "!");
+                    }
                 }
                 else {
                     throw new IllegalArgumentException("The @OSGiServiceProvider annotated service of class '" +
                         managedClass.getName() + "' does not implement a service interface!");
                 }
+            }
+        }
+    }
+
+    protected void injectInstanceProps(Object instance, Properties props) throws Exception {
+        for (Field field : instance.getClass().getDeclaredFields()) {
+            if (field.getType().equals(java.util.Properties.class)) {
+                field.setAccessible(true);
+                field.set(instance, props);
+                break;
             }
         }
     }
@@ -445,12 +570,15 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 this.trackers.put(trackerKey, tracker);
             }
             tracker.start();
-            Object managedInstance = getManagedInstance(managedClass);
-            if (field.getType().equals(APSServiceTracker.class)) {
-                injectObject(managedInstance, tracker, field);
-            }
-            else {
-                injectObject(managedInstance, tracker.getWrappedService(), field);
+
+            List<Object> managedInstances = getManagedInstances(managedClass);
+            for (Object managedInstance : managedInstances) {
+                if (field.getType().equals(APSServiceTracker.class)) {
+                    injectObject(managedInstance, tracker, field);
+                }
+                else {
+                    injectObject(managedInstance, tracker.getWrappedService(), field);
+                }
             }
 
             if (service.required()) {
@@ -462,7 +590,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             this.activatorLogger.info("Injected tracked service '" + field.getType().getName() +
                     (service.additionalSearchCriteria().length() > 0 ? " " + service.additionalSearchCriteria() : "") +
                     "' " + "into '" + managedClass.getName() + "." + field.getName() + "' for bundle: " +
-                    context.getBundle().getSymbolicName() + "!");
+                    context.getBundle().getSymbolicName() + " for " + managedInstances.size() + " instance(s)!");
         }
     }
 
@@ -500,8 +628,11 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 }
                 this.namedInstances.put(namedInstanceKey, namedInstance);
             }
-            Object managedInstance = getManagedInstance(managedClass);
-            injectObject(managedInstance, namedInstance, field);
+
+            List<Object> managedInstances = getManagedInstances(managedClass);
+            for (Object managedInstance : managedInstances) {
+                injectObject(managedInstance, namedInstance, field);
+            }
 
             this.activatorLogger.info("Injected '" + namedInstance.getClass().getName() +
                     "' instance for name '" + inject.name() + "' " +
@@ -532,28 +663,60 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param managedClass Used to lookup or create an instance of this class containing the method to call.
      * @param context The bundle context.
      */
-    protected void handleStartupMethods(Method method, Class managedClass, BundleContext context) {
+    protected void handleStartupMethods(final Method method, final Class managedClass, final BundleContext context) {
         BundleStart bundleStart = method.getAnnotation(BundleStart.class);
         if (bundleStart != null) {
             if (method.getParameterTypes().length > 0) {
                 throw new APSActivatorException("An @BundleStart method must take no parameters! [" +
                     managedClass.getName() + "." + method.getName() + "(?)]");
             }
-            Object managedInstance = null;
-            if (!Modifier.isStatic(method.getModifiers())) {
-                managedInstance = getManagedInstance(managedClass);
-            }
-            try {
-                method.invoke(managedInstance, null);
 
-                this.activatorLogger.info("Called bundle start method '" + managedClass.getName() +
-                        "." + method.getName() + "()' for bundle: " + context.getBundle().getSymbolicName() + "!");
-            } catch (IllegalAccessException e) {
-                throw new APSActivatorException("Failed to call start method! [" +
-                           managedClass.getName() + "." + method.getName() + "()]", e);
+            if (bundleStart.thread()) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Object managedInstance = null;
+                            if (!Modifier.isStatic(method.getModifiers())) {
+                                managedInstance = getManagedInstance(managedClass);
+                            }
+                            method.invoke(managedInstance, null);
+
+                            APSActivator.this.activatorLogger.info("Called bundle start method '" + managedClass.getName() +
+                                    "." + method.getName() + "()' for bundle: " + context.getBundle().getSymbolicName() + "!");
+                        } catch (IllegalAccessException iae) {
+                            APSActivator.this.activatorLogger.error("Failed to call start method! [" +
+                                    managedClass.getName() + "." + method.getName() + "()]", iae);
+                        }
+                        catch (InvocationTargetException ite) {
+                            APSActivator.this.activatorLogger.error("Failed to call start method! [" +
+                                    managedClass.getName() + "." + method.getName() + "()]", ite.getCause());
+                        }
+                        catch (Exception e) {
+                            APSActivator.this.activatorLogger.error("Failed to call start method! [" +
+                                    managedClass.getName() + "." + method.getName() + "()]", e);
+                        }
+                    }
+                }).start();
             }
-            catch (InvocationTargetException ite) {
-                throw new APSActivatorException("Called start method failed!", ite.getCause());
+            else {
+                try {
+                    Object managedInstance = null;
+                    if (!Modifier.isStatic(method.getModifiers())) {
+                        managedInstance = getManagedInstance(managedClass);
+                    }
+                    method.invoke(managedInstance, null);
+
+                    this.activatorLogger.info("Called bundle start method '" + managedClass.getName() +
+                            "." + method.getName() + "()' for bundle: " + context.getBundle().getSymbolicName() + "!");
+                } catch (IllegalAccessException iae) {
+                    throw new APSActivatorException("Failed to call start method! [" +
+                               managedClass.getName() + "." + method.getName() + "()]", iae);
+                }
+                catch (InvocationTargetException ite) {
+                    throw new APSActivatorException("Failed to call start method! [" +
+                            managedClass.getName() + "." + method.getName() + "()]", ite.getCause());
+                }
             }
         }
     }
@@ -585,19 +748,47 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param managedClass The managed class to get instance for.
      */
     protected Object getManagedInstance(Class managedClass) {
-        Object managedInstance = this.managedInstances.get(managedClass);
-        if (managedInstance == null) {
+        return getManagedInstances(managedClass, 1).get(0);
+    }
+
+    /**
+     * Returns previously created instances.
+     *
+     * @param managedClass The managed class to get instances for.
+     */
+    protected List<Object> getManagedInstances(Class managedClass) {
+        return getManagedInstances(managedClass, -1);
+    }
+
+    /**
+     * Returns a managed instance of a class.
+     *
+     * @param managedClass The managed class to get instance for.
+     * @param size The number of instances.
+     */
+    protected List<Object> getManagedInstances(Class managedClass, int size) {
+        List<Object> managedInstances = this.managedInstances.get(managedClass);
+        if (managedInstances == null) {
+            if (size == -1) throw new IllegalStateException("Expected instances are not available!");
+            managedInstances = new LinkedList<>();
+        }
+
+        if (managedInstances.isEmpty()) {
+            if (size == -1) throw new IllegalStateException("Expected instances are not available!");
             try {
-                managedInstance = managedClass.newInstance();
-                this.managedInstances.put(managedClass, managedInstance);
-                this.activatorLogger.info("Instantiated '" + managedClass.getName() + "': "+ managedInstance);
+                for (int i = 0; i < size; i++) {
+                    Object managedInstance = managedClass.newInstance();
+                    managedInstances.add(managedInstance);
+                    this.managedInstances.put(managedClass, managedInstances);
+                    this.activatorLogger.info("Instantiated '" + managedClass.getName() + "': "+ managedInstance);
+                }
             }
             catch (InstantiationException | IllegalAccessException e) {
                 throw new APSActivatorException("Failed to instantiate activator managed class!", e);
             }
         }
 
-        return managedInstance;
+        return managedInstances;
     }
 
     /**
@@ -646,6 +837,20 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * Implementations of this provide properties for each instance of a service to publish.
      */
     public interface InstanceFactory {
+        //
+        // Constants
+        //
+
+        /**
+         * This property should be set with a colon separated list of fully qualified names of the service interfaces
+         * to register the service instance with.
+         */
+        public static final String SERVICE_API_CLASSES_PROPERTY = "aps.service.api.class";
+
+        //
+        // Methods
+        //
+
         /**
          * Returns a set of Properties for each instance.
          */

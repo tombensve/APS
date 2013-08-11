@@ -56,6 +56,9 @@ public @interface OSGiServiceProvider {
     /** Extra properties to register the service with. */
     OSGiProperty[] properties() default {};
 
+    /** The service API to register instance with. If not specified the first implemented interface will be used. */
+    Class[] serviceAPIs() default {};
+
     /** This can be used as an alternative to properties() and also supports several instances. */
     OSGiServiceInstance[] instances() default {};
 
@@ -64,4 +67,13 @@ public @interface OSGiServiceProvider {
      * one set of Properties per instance.
      */
     Class<? extends APSActivator.InstanceFactory> instanceFactoryClass() default APSActivator.InstanceFactory.class;
+
+    /**
+     * If true this service will be stared in a separate thread. This means the bundle start
+     * will continue in parallel and that any failures in startup will be logged, but will
+     * not stop the bundle from being started. If this is true it wins over required service
+     * dependencies of the service class.
+     */
+    boolean threadStart() default false;
+
 }

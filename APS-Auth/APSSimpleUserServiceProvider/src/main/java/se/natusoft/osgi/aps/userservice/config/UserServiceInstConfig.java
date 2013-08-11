@@ -57,8 +57,15 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
 )
 public class UserServiceInstConfig extends APSConfig {
 
-    /** Injected by aps-config-service-provider due to APS-Configs manifest header entry! */
-    public static ManagedConfig<UserServiceInstConfig> managed;
+    public static ManagedConfig<UserServiceInstConfig> managed = new ManagedConfig<>();
+
+    public static UserServiceInstConfig get() {
+        if (!managed.isManaged()) {
+            managed.waitUtilManaged();
+        }
+
+        return managed.get();
+    }
 
     @APSConfigItemDescription(
             description = "A set of data source definitions. Add one for each definition you want to create."

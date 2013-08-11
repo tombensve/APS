@@ -1,8 +1,8 @@
 # APSSimpleUserService
 
-This is an simple, easy to use service for handling logged in users. It provides two services: APSSimpleUserService and APSSimpleUserServiceAdmin. The latter handles all creation, editing, and deletion of roles and users. This service in itself does not require any authentication to use! Thereby you have to trust all code in the server! The APSUserAdminWeb WAB bundle however does require a user with role ’apsadmin’ to be logged in or it will simply repsond with a 401 (UNAUTHORIZED). 
+This is an simple, easy to use service for handling logged in users. It provides two services: APSSimpleUserService and APSSimpleUserServiceAdmin. The latter handles all creation, editing, and deletion of roles and users. This service in itself does not require any authentication to use! Thereby you have to trust all code in the server! The APSUserAdminWeb WAB bundle however does require a user with role _apsadmin_ to be logged in or it will simply repsond with a 401 (UNAUTHORIZED). 
 
-So why this and not org.osgi.service.useradmin ? Well, maybe I’m just stupid, but _useradmin_ does not make sense to me. It seems to be missing things, specially for creating. You can create a role, but you cannot create a user. There is no obvious authentication of users. Maybee that should be done via the credentials Dictionary, but what are the expected keys in there ? This service is intended to make user and role handling simple and clear.
+So why this and not org.osgi.service.useradmin ? Well, maybe I'm just stupid, but _useradmin_ does not make sense to me. It seems to be missing things, specially for creating. You can create a role, but you cannot create a user. There is no obvious authentication of users. Maybee that should be done via the credentials Dictionary, but what are the expected keys in there ? APSSimpleUserService is intended to make user and role handling simple and clear.
 
 ## Basic example
 
@@ -12,13 +12,13 @@ To login a user do something like this:
 	...
 	User user = userService.getUser(userId);
 	if (user == null) {
-		throw new AuthException(”Bad login!”);
+		throw new AuthException("Bad login!");
 	}
 	if (!userService.authenticateUser(user, password, APSSimpleUserService.AUTH_METHOD_PASSWORD)) {
-		throw new AuthException(”Bad login!”);
+		throw new AuthException("Bad login!");
 	}
 	...
-	if (user.isAuthenticated() && user.hasRole(”apsadmin”)) {
+	if (user.isAuthenticated() && user.hasRole("apsadmin")) {
 		...
 	}
 	
@@ -26,7 +26,7 @@ To login a user do something like this:
 
 The following SQL is needed to create the database tables used by the service.
 
-	/*
+    /*
      * This represents one role.
      */
     create table role (
@@ -134,9 +134,9 @@ After the tables have been created you need to configure a datasource for it in 
 
 ![Picture of datasource config gui.](http://download.natusoft.se/Images/APS/APS-Auth/APSSimpleUserServiceProvider/docs/images/DataSourceConfig.png)
 
-Please note that the above picture is just an example. The data source name  __APSSimpleUserServiceDS__ is however important. The service will be looking up the entry with that name! The rest of the entry depends on your database and where it is running. Also note that the ”(default)” after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.
+Please note that the above picture is just an example. The data source name  _APSSimpleUserServiceDS_ in this example should be configured in the _persistence/dsRefs_ config. The service will be looking up the entry with that name! The rest of the datasource entry depends on your database and where it is running. Also note that the "(default)" after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.
 
-When the datasource is configured and saved then you can go to _”Configuration tab, Configurations/aps/adminweb”_ and enable the ”requireauthentication” config. If you do this before setting up the datasource and you have choosen to use the provided implementation of APSAuthService that uses APSSimpleUserService to login then you will be completely locked out. 
+When the datasource is configured and saved then you can go to _"Configuration tab, Configurations/aps/adminweb"_ and enable the "requireauthentication" config. **If you do this before setting up the datasource and you have choosen to use the provided implementation of APSAuthService that uses APSSimpleUserService to login then you will be completely locked out!** 
 
 ## Troubleshooting
 
@@ -145,5 +145,14 @@ If you have managed to lock yourself out of /apsadminweb as described above then
 	se.natusoft.aps.adminweb_1.0_requireauthentication=true
 	
 to _false_ instead. Then restart the server. Also se the APSFilesystemService documentation for more information. The APSConfigService is using that service to store its configurations.
+
+## JDBC Drivers
+
+There is a catch with OSGi and its classpath isolation. JDBC drivers for the databases that can be used for this service must be packaged into the bundle. JDBC drivers for the following databases are currently included:
+
+* Derby 10.9.1.0
+* MySQL 5.1.26
+
+I will try to increase this list unless I can find a smarter workaround.
 
 ## APIs

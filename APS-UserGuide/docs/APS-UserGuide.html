@@ -3189,13 +3189,13 @@
     </p>
     <pre>
       <code>
-    APSServiceTracker&lt;Service&gt; tracker = new APSServiceTracker&lt;Service&gt;(context, Service.class, ”20 seconds”);
+    APSServiceTracker&lt;Service&gt; tracker = new APSServiceTracker&lt;Service&gt;(context, Service.class, "20 seconds");
     tracker.start();
     
       </code>
     </pre>
     <p>
-      Note that the third argument, which is a timeout can also be specified as an int in which case it is always in miliseconds. The string variant supports the a second word of ”sec[onds]” and ”min[utes]” which indicates the type of the first numeric value. ”forever” means just that and requires just one word. Any other second words than those will be treated as milliseconds. The APSServiceTracker also has a set of constants for the timeout string value:      
+      Note that the third argument, which is a timeout can also be specified as an int in which case it is always in miliseconds. The string variant supports the a second word of "sec[onds]" and "min[utes]" which indicates the type of the first numeric value. "forever" means just that and requires just one word. Any other second words than those will be treated as milliseconds. The APSServiceTracker also has a set of constants for the timeout string value:      
     </p>
     <pre>
       <code>
@@ -3352,6 +3352,20 @@
     <p>
       This is used exactly the same way as withService(...), but the callback will be done for each tracked service instance, not only the active.      
     </p>
+    <H4>onTimeout (since 0.9.3)</H4>
+    <p>
+      This allows for a callback when the tracker times out waiting for a service. This callback will be called just before the <em>APSNoServiceAvailableException</em> is about to be thrown.      
+    </p>
+    <pre>
+      <code>
+    tracker.onTimeout(new OnTimeout() {
+        @Override
+        public void onTimeout() {
+            // do something here
+        }
+    }); 
+      </code>
+    </pre>
     <H2>APSLogger</H2>
     <p>
       This provides logging functionality. The no args constructor will log to System.out by default. The OutputStream constructor will logg to the specified output stream by default.      
@@ -3383,7 +3397,7 @@
       The following annotations are available:      
     </p>
     <p>
-      <strong>@APSOSGiServiceProvider</strong> - This should be specified on a class that implements a service interface and should be registered as an OSGi service. <em>Please note</em> that the first declared implemented interface is used as service interface!      
+      <strong>@OSGiServiceProvider</strong> - This should be specified on a class that implements a service interface and should be registered as an OSGi service. <em>Please note</em> that the first declared implemented interface is used as service interface!      
     </p>
     <pre>
       <code>
@@ -3392,34 +3406,57 @@
         String value();
     }
     
-    public @interface APSOSGiServiceProvider {
+    public @interface OSGiServiceInstance {
     
         /** Extra properties to register the service with. */
         OSGiProperty[] properties() default {};
     }
+    
+    public @interface OSGiServiceProvider {
+    
+        /** Extra properties to register the service with. */
+        OSGiProperty[] properties() default {};
+    
+        /** This can be used as an alternative to properties() and also supports several instances. */
+        OSGiServiceInstance[] instances() default {};
+    
+        /**
+         * This can be used as an alternative and will instantiate the specified factory class which will deliver
+         * one set of Properties per instance.
+         */
+        Class&lt;? extends APSActivator.InstanceFactory&gt; instanceFactoryClass() default APSActivator.InstanceFactory.class;
+    
+    }
       </code>
     </pre>
     <p>
-      <strong>@APSOSGiService</strong> - This should be specified on a field having a type of a service interface to have a service of that type injected, and continuously tracked. Any call to the service will throw an APSNoServiceAvailableException (runtime) if no service has become available before the specified timeout. It is also possible to have APSServiceTracker as field type in which case the underlying configured tracker will be injected instead.      
+      <strong>@OSGiService</strong> - This should be specified on a field having a type of a service interface to have a service of that type injected, and continuously tracked. Any call to the service will throw an APSNoServiceAvailableException (runtime) if no service has become available before the specified timeout. It is also possible to have APSServiceTracker as field type in which case the underlying configured tracker will be injected instead.      
+    </p>
+    <p>
+      If <em>required=true</em> is specified and this field is in a class annotated with <em>@OSGiServiceProvider</em> then the class will not be registered as a service until the service dependency is actually available, and will also be unregistered if the tracker for the service does a timeout waiting for a service to become available. It will then be reregistered again when the dependent service becomes available again. Please note that unlike iPOJO the bundle is never stopped on dependent service unavailability, only the actual service is unregistered as an OSGi service. A bundle might have more than one service registered and when a dependency that is only required by one service goes away the other service is still available.      
     </p>
     <pre>
       <code>
-    public @interface APSOSGiService {
+    public @interface OSGiService {
     
         /** The timeout for a service to become available. Defaults to 30 seconds. */
         String timeout() default "30 seconds";
     
         /** Any additional search criteria. Should start with '(' and end with ')'. Defaults to none. */
         String additionalSearchCriteria() default "";
+    
+        /** If set to true the service using this service will not be registered until the service becomes available. */
+        boolean required() default false;
+    
     }
       </code>
     </pre>
     <p>
-      <strong>@APSInject</strong> - This will have an instance injected. There will be a unique instance for each name specified with the default name of "default" being used in none is specified. There are 2 field types handled specially: BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger instance the 'loggingFor' annotation property can be specified. Please note that any other type must have a default constructor to be instantiated and injected!      
+      <strong>@Inject</strong> - This will have an instance injected. There will be a unique instance for each name specified with the default name of "default" being used in none is specified. There are 2 field types handled specially: BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger instance the 'loggingFor' annotation property can be specified. Please note that any other type must have a default constructor to be instantiated and injected!      
     </p>
     <pre>
       <code>
-    public @interface APSInject {
+    public @interface Inject {
         /**
          * The name of the instance to inject. If the same is used in multiple classes the same instance will
          * be injected.
@@ -3435,19 +3472,19 @@
       </code>
     </pre>
     <p>
-      <strong>@APSBundleStart</strong> - This should be used on a method and will be called on bundle start. The method should take no arguments. If you need a BundleContext just inject it with @APSInejct. The use of this annotation is only needed for things not supported by this activator. Please note that a method annotated with this annotation can be static (in which case the class it belongs to will not be instantiaded -- due to this!). You can provide this annotation on as many methods in as many classes as you want. They will all be called (in the order classes are discovered in the bundle).      
+      <strong>@BundleStart</strong> - This should be used on a method and will be called on bundle start. The method should take no arguments. If you need a BundleContext just inject it with @APSInejct. The use of this annotation is only needed for things not supported by this activator. Please note that a method annotated with this annotation can be static (in which case the class it belongs to will not be instantiaded -- due to this!). You can provide this annotation on as many methods in as many classes as you want. They will all be called (in the order classes are discovered in the bundle).      
     </p>
     <pre>
       <code>
-    public @interface APSBundleStart {}
+    public @interface BundleStart {}
       </code>
     </pre>
     <p>
-      <strong>@APSBundleStop</strong> - This should be used on a method and will be called on bundle stop. The method should take no arguments. This should probably be used if @APSBundleStart is used. Please note that a method annotated with this annotation can be static!      
+      <strong>@BundleStop</strong> - This should be used on a method and will be called on bundle stop. The method should take no arguments. This should probably be used if @APSBundleStart is used. Please note that a method annotated with this annotation can be static!      
     </p>
     <pre>
       <code>
-    public @interface APSBundleStop {}
+    public @interface BundleStop {}
       </code>
     </pre>
     <H2>APSContextWrapper</H2>
