@@ -105,11 +105,28 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     private List<Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>>> requiredServices;
     private Map<Class, List<Object>> managedInstances;
 
+    private boolean supportsRequired = true;
+
     private BundleContext context;
 
     //
     // Methods
     //
+
+    protected void initMembers() {
+        if (this.services == null) {
+            this.services = new LinkedList<>();
+            this.trackers = new HashMap<>();
+            this.namedInstances = new HashMap<>();
+            this.shutdownMethods = new LinkedList<>();
+            this.managedInstances = new HashMap<>();
+            this.requiredServices = new LinkedList<>();
+
+            this.activatorLogger = new APSLogger(System.out);
+            this.activatorLogger.setLoggingFor("APSActivator");
+            this.activatorLogger.start(context);
+        }
+    }
 
     /**
      * Called when this bundle is started so the Framework can perform the
@@ -128,17 +145,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     @Override
     public void start(BundleContext context) throws Exception {
         this.context = context;
-        this.services = new LinkedList<>();
-        this.trackers = new HashMap<>();
-        this.namedInstances = new HashMap<>();
-        this.shutdownMethods = new LinkedList<>();
-        this.managedInstances = new HashMap<>();
-        this.requiredServices = new LinkedList<>();
-
-        this.activatorLogger = new APSLogger(System.out);
-        this.activatorLogger.setLoggingFor("APSActivator");
-        this.activatorLogger.start(context);
-
+        initMembers();
         Bundle bundle = context.getBundle();
 
         List<String> classEntryPaths = new LinkedList<>();
@@ -232,6 +239,39 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
         if (failure != null) {
             throw new APSActivatorException("Bundle stop not entirely successful!", failure);
+        }
+    }
+
+    // ---- Special non activator usage ----- //
+
+    /**
+     * This is a special variant that can be used on servlets, and vaadin apps, etc to do the inject
+     * part on fields of the specified instance only.
+     *
+     * This can be called for more than one object, but do it with the same instance of APSActivator
+     * in which case cleanupFieldsOnly(...) will cleanup all.
+     *
+     * @param context The bundles context.
+     * @param injectTo The instance to inject to.
+     * @throws Exception
+     */
+    public void injectFieldsOnly(BundleContext context, Object injectTo) throws Exception {
+        initMembers();
+        this.supportsRequired = false;
+
+        List<Object> instances = new LinkedList<>();
+        instances.add(injectTo);
+        this.managedInstances.put(injectTo.getClass(), instances);
+        handleFieldInjections(injectTo.getClass(), context);
+    }
+
+    /**
+     * This should be called to cleanup after injectFieldsOnly(...).
+     * @param context
+     */
+    public void cleanupFieldsOnly(BundleContext context) {
+        try {stop(context);} catch (Exception e) {
+            this.activatorLogger.error("Failed fields only cleanup!", e);
         }
     }
 
@@ -581,7 +621,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 }
             }
 
-            if (service.required()) {
+            if (service.required() && this.supportsRequired) {
                 Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService =
                         new Tuple4<>(tracker, managedClass, false, (List<ServiceRegistration>)new LinkedList<ServiceRegistration>());
                 this.requiredServices.add(requiredService);

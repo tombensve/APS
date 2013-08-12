@@ -41,6 +41,7 @@ import com.vaadin.terminal.gwt.server.WebApplicationContext;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import org.osgi.framework.BundleContext;
+import se.natusoft.osgi.aps.tools.APSActivator;
 import se.natusoft.osgi.aps.tools.web.ClientContext;
 import se.natusoft.osgi.aps.tools.web.OSGiBundleContextProvider;
 import se.natusoft.osgi.aps.tools.web.UserMessager;
@@ -58,9 +59,14 @@ import javax.servlet.http.HttpSession;
  * * Creates a ClientContext containing the BundleContext, but can also be used to store
  *   services in.
  *
- * * Calls overridable initServices(ClientContext), initGUI() in that order to setup.
+ * * Uses APSActivator to inject and manage the subclass fields annotated with @OSGiService and @Inject.
+ *   Also provides a public `injectToInstance(Object instance)` method to manage injections of other
+ *   instances. This is an alternative to initServices() and cleanupServices(). See APSActivator for
+ *   more information.
  *
- * * Registers a session listener and calls overridable cleanupServices() when the session dies.
+ * * Calls overrideable initServices(ClientContext), initGUI() in that order to setup.
+ *
+ * * Registers a session listener and calls overrideable cleanupServices() when the session dies.
  *
  * * Provides getters for both the BundleContext and the ClientContext.
  *
@@ -86,6 +92,9 @@ public abstract class APSVaadinOSGiApplication
     /** The client context. */
     private ClientContext clientContext;
 
+    /** We use part of the APSActivator functionality to inject into @OSGiService and @Inject annotated fields. */
+    private APSActivator injector = new APSActivator();
+
     //
     // Methods
     //
@@ -93,7 +102,7 @@ public abstract class APSVaadinOSGiApplication
     /**
      * @return The http session.
      */
-    private HttpSession getHttpSession() {
+    protected HttpSession getHttpSession() {
         ApplicationContext ctx = getContext();
         WebApplicationContext webCtx = (WebApplicationContext) ctx;
         return webCtx.getHttpSession();
@@ -127,6 +136,8 @@ public abstract class APSVaadinOSGiApplication
         UserMessager messager = new VaadinUserMessager();
         this.clientContext = new ClientContext(messager, this);
 
+        injectToInstance(this);
+
         initServices(this.clientContext);
 
         // For the following to return an APSSessionListener instance it has to be specified as a listener in web.xml!
@@ -136,6 +147,21 @@ public abstract class APSVaadinOSGiApplication
         }
 
         initGUI();
+    }
+
+    /**
+     * Injects @OSGiService and @Inject annotated fields of the specified instance.
+     *
+     * @param instance The instance to inject into.
+     */
+    public void injectToInstance(Object instance) {
+        try {
+            this.injector.injectFieldsOnly(this.clientContext.getBundleContext(), instance);
+        }
+        catch (Exception e) {
+            // We have no logger now so print to stderr. It should appear in some log!
+            e.printStackTrace(System.err);
+        }
     }
 
     /**
@@ -182,6 +208,7 @@ public abstract class APSVaadinOSGiApplication
      */
     @Override
     public void sessionDestroyed() {
+        this.injector.cleanupFieldsOnly(this.clientContext.getBundleContext());
         cleanupServices(this.clientContext);
     }
 }
