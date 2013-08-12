@@ -72,7 +72,9 @@ public @interface OSGiServiceProvider {
      * If true this service will be stared in a separate thread. This means the bundle start
      * will continue in parallel and that any failures in startup will be logged, but will
      * not stop the bundle from being started. If this is true it wins over required service
-     * dependencies of the service class.
+     * dependencies of the service class. Specifying this as true allows you to do things that
+     * cannot be done in a bunde activator start method, like calling a service tracked by
+     * APSServiceTracker, without causing a deadlock.
      */
     boolean threadStart() default false;
 

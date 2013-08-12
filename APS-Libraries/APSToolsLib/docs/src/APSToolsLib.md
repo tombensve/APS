@@ -12,8 +12,9 @@ This does the same thing as the standard service tracker included with OSGi, but
 
 There are several variants of constructors, but here is an example of one of the most used ones within the APS services:
 
-	APSServiceTracker<Service> tracker = new APSServiceTracker<Service>(context, Service.class, "20 seconds");
-	tracker.start();
+    APSServiceTracker<Service> tracker = 
+        new APSServiceTracker<Service>(context, Service.class, "20 seconds");
+    tracker.start();
 	
 Note that the third argument, which is a timeout can also be specified as an int in which case it is always in miliseconds. The string variant supports the a second word of "sec\[onds\]" and "min\[utes\]" which indicates the type of the first numeric value. "forever" means just that and requires just one word. Any other second words than those will be treated as milliseconds. The APSServiceTracker also has a set of constants for the timeout string value:
 
@@ -26,7 +27,7 @@ Note that the third argument, which is a timeout can also be specified as an int
 
 On bundle stop you should do:
 
-	tracker.stop(context);
+    tracker.stop(context);
 	
 So that the tracker unregisters itself from receiving bundle/service events. 
 
@@ -157,11 +158,11 @@ If you call the `setServiceRefrence(serviceRef);` method on the logger then info
 
 This is a BundleActivator implementation that uses annotations to register services and inject tracked services. Any bundle can use this activator by just importing the _se.natusoft.osgi.aps.tools_ package.
 
-This is actually a trivial not very large class that just scans the bundle for files ending in _.class_, removes the _.class_ from the path and translates the separator char to '.' and then passes it to bundle.getClass(...) to get the Class instance for it. After that it can inspect the bundles all classes for annotations and act on them. Most methods are protected making it easy to subclass this class and expand on its functionality.
+This is actually a rather trivial class that just scans the bundle for files ending in _.class_, removes the _.class_ from the path and translates the separator char to '.' and then passes it to bundle.getClass(...) to get the Class instance for it. After that it can inspect the bundles all classes for annotations and act on them. Most methods are protected making it easy to subclass this class and expand on its functionality.
 
 The following annotations are available:
 
-**@OSGiServiceProvider** - This should be specified on a class that implements a service interface and should be registered as an OSGi service. _Please note_ that the first declared implemented interface is used as service interface!
+**@OSGiServiceProvider** - This should be specified on a class that implements a service interface and should be registered as an OSGi service. _Please note_ that the first declared implemented interface is used as service interface unless you specify serviceAPIs={Svc.class, ...}.
 
     public @interface OSGiProperty {
         String name();
@@ -172,12 +173,18 @@ The following annotations are available:
 
         /** Extra properties to register the service with. */
         OSGiProperty[] properties() default {};
+
+        /** The service API to register instance with. If not specified the first implemented interface will be used. */
+        Class[] serviceAPIs() default {};
     }
 
     public @interface OSGiServiceProvider {
 
         /** Extra properties to register the service with. */
         OSGiProperty[] properties() default {};
+
+        /** The service API to register instance with. If not specified the first implemented interface will be used. */
+        Class[] serviceAPIs() default {};
 
         /** This can be used as an alternative to properties() and also supports several instances. */
         OSGiServiceInstance[] instances() default {};
@@ -187,6 +194,16 @@ The following annotations are available:
          * one set of Properties per instance.
          */
         Class<? extends APSActivator.InstanceFactory> instanceFactoryClass() default APSActivator.InstanceFactory.class;
+
+        /**
+         * If true this service will be stared in a separate thread. This means the bundle start
+         * will continue in parallel and that any failures in startup will be logged, but will
+         * not stop the bundle from being started. If this is true it wins over required service
+         * dependencies of the service class. Specifying this as true allows you to do things that
+         * cannot be done in a bunde activator start method, like calling a service tracked by 
+         * APSServiceTracker, without causing a deadlock.
+         */
+        boolean threadStart() default false;
 
     }
 
@@ -225,7 +242,14 @@ If _required=true_ is specified and this field is in a class annotated with _@OS
 
 **@BundleStart** - This should be used on a method and will be called on bundle start. The method should take no arguments. If you need a BundleContext just inject it with @APSInejct. The use of this annotation is only needed for things not supported by this activator. Please note that a method annotated with this annotation can be static (in which case the class it belongs to will not be instantiaded -- due to this!). You can provide this annotation on as many methods in as many classes as you want. They will all be called (in the order classes are discovered in the bundle).
 
-    public @interface BundleStart {}
+    public @interface BundleStart {
+
+        /**
+         * If true the start method will run in a new thread. Any failures in this case will not fail
+         * the bundle startup, but will be logged.
+         */
+        boolean thread() default false;
+    }
 
 **@BundleStop** - This should be used on a method and will be called on bundle stop. The method should take no arguments. This should probably be used if @APSBundleStart is used. Please note that a method annotated with this annotation can be static!
 
