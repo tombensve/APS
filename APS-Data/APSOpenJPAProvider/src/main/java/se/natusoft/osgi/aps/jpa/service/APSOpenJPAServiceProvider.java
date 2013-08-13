@@ -47,6 +47,7 @@ import se.natusoft.osgi.aps.exceptions.APSResourceNotFoundException;
 import se.natusoft.osgi.aps.jpa.xml.Persistence;
 import se.natusoft.osgi.aps.jpa.xml.PersistenceUnit;
 import se.natusoft.osgi.aps.tools.APSLogger;
+import se.natusoft.osgi.aps.tools.MultiBundleClassLoader;
 import se.natusoft.tools.xob.Factory;
 import se.natusoft.tools.xob.XMLObjectBinder;
 import se.natusoft.tools.xob.XMLUnmarshaller;
@@ -271,8 +272,15 @@ public class APSOpenJPAServiceProvider implements BundleListener, APSJPAService,
         }
 
         ClassLoader origContextClassLoader = Thread.currentThread().getContextClassLoader();
+        MultiBundleClassLoader mbClassLoader = (MultiBundleClassLoader)persistenceReg.getContextClassloader();
+        if (origContextClassLoader instanceof MultiBundleClassLoader) {
+            for (Bundle bundle : ((MultiBundleClassLoader)origContextClassLoader).getBundles()) {
+                mbClassLoader.addBundle(bundle);
+            }
+        }
+
         try {
-            Thread.currentThread().setContextClassLoader(persistenceReg.getContextClassloader());
+            Thread.currentThread().setContextClassLoader(mbClassLoader);
 
             EntityManagerFactory emf = persistenceReg.getPersistenceProvider().createEntityManagerFactory(persistenceUnitName, props);
             EntityManagerFactory cemf = new ContextEntityManagerFactory(persistenceReg.contextClassloader, emf);
@@ -365,9 +373,15 @@ public class APSOpenJPAServiceProvider implements BundleListener, APSJPAService,
         }
 
         ClassLoader origContextClassLoader = Thread.currentThread().getContextClassLoader();
+        MultiBundleClassLoader mbClassLoader = (MultiBundleClassLoader)persistenceReg.getContextClassloader();
+        if (origContextClassLoader instanceof MultiBundleClassLoader) {
+            for (Bundle bundle : ((MultiBundleClassLoader)origContextClassLoader).getBundles()) {
+                mbClassLoader.addBundle(bundle);
+            }
+        }
         EntityManagerFactory cemf = null;
         try {
-            Thread.currentThread().setContextClassLoader(persistenceReg.getContextClassloader());
+            Thread.currentThread().setContextClassLoader(mbClassLoader);
 
             EntityManagerFactory emf = persistenceReg.getPersistenceProvider().createEntityManagerFactory(persistenceUnitName, props);
             cemf = new ContextEntityManagerFactory(persistenceReg.contextClassloader, emf);

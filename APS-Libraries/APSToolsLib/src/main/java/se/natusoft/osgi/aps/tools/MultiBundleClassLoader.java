@@ -2,7 +2,7 @@
  * 
  * PROJECT
  *     Name
- *         APS OpenJPA Provider
+ *         APS Tools Library
  *     
  *     Code Version
  *         0.9.2
@@ -34,13 +34,15 @@
  *         2012-08-19: Created!
  *         
  */
-package se.natusoft.osgi.aps.jpa.service;
+package se.natusoft.osgi.aps.tools;
 
 import org.osgi.framework.Bundle;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This is a class loader that wraps one or more bundles providing classpath for all wrapped bundles.
@@ -52,7 +54,7 @@ public class MultiBundleClassLoader extends ClassLoader {
     //
 
     /** The bundles we are wrapping. */
-    private Bundle[] bundles = null;
+    private List<Bundle> bundles = null;
 
     //
     // Constructors
@@ -64,12 +66,37 @@ public class MultiBundleClassLoader extends ClassLoader {
      * @param bundles The bundles to wrap and provide classpath for.
      */
     public MultiBundleClassLoader(Bundle... bundles) {
-        this.bundles = bundles;
+        this.bundles = new LinkedList<>();
+        for (Bundle bundle : bundles) {
+            this.bundles.add(bundle);
+        }
     }
 
     //
     // Methods
     //
+
+    /**
+     * Adds one more bundle to load from. The specified bundle will only be
+     * added it its not already in the list of bundles.
+     *
+     * @param bundle The bundle to add.
+     */
+    public void addBundle(Bundle bundle) {
+        for (Bundle existingBundle : this.bundles) {
+            if (bundle.getBundleId() == existingBundle.getBundleId()) {
+                return;
+            }
+        }
+        this.bundles.add(bundle);
+    }
+
+    /**
+     * Returns the current bundles of this class loader.
+     */
+    public List<Bundle> getBundles() {
+        return this.bundles;
+    }
 
     /**
      * Finds a class of a specific name.
@@ -128,7 +155,7 @@ public class MultiBundleClassLoader extends ClassLoader {
      *
      * @return The found resource or null if not found.
      *
-     * @throws IOException on IO errors.
+     * @throws java.io.IOException on IO errors.
      */
     @Override
     public Enumeration<URL> findResources(String resource) throws IOException {
@@ -141,7 +168,7 @@ public class MultiBundleClassLoader extends ClassLoader {
                     if (found != null && found.hasMoreElements()) break;
                 }
                 catch (IOException ioe) {
-                    if (bundle == this.bundles[this.bundles.length - 1]) {
+                    if (bundle == this.bundles.get(this.bundles.size() - 1)) {
                         throw ioe;
                     }
                 }

@@ -134,7 +134,14 @@ After the tables have been created you need to configure a datasource for it in 
 
 ![Picture of datasource config gui.](http://download.natusoft.se/Images/APS/APS-Auth/APSSimpleUserServiceProvider/docs/images/DataSourceConfig.png)
 
-Please note that the above picture is just an example. The data source name  _APSSimpleUserServiceDS_ in this example should be configured in the _persistence/dsRefs_ config. The service will be looking up the entry with that name! The rest of the datasource entry depends on your database and where it is running. Also note that the "(default)" after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.
+Please note that the above picture is just an example. The data source name  _APSSimpleUserServiceDS_ in this example should be configured in the _persistence/dsRefs_ config where you provide a name and a datasource reference. The service will be looking up the entry with that name, and use the specified datasource! For example:
+
+    name: aps-admin-web
+    dsRef: APSSimpleUserServiceDS
+
+This example happens to be the default if no instances have been configured and is required if you want to use authentication for the APS admin web. You should probably define your own instance if you are going to use this service. The _dsRef_ part is exactly the same name as defined in the data source configuration (_persistence/datasources_).
+
+The rest of the datasource entry in the picture above depends on your database and where it is running. Also note that the "(default)" after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.
 
 When the datasource is configured and saved then you can go to _"Configuration tab, Configurations/aps/adminweb"_ and enable the "requireauthentication" config. **If you do this before setting up the datasource and you have choosen to use the provided implementation of APSAuthService that uses APSSimpleUserService to login then you will be completely locked out!** 
 
@@ -148,11 +155,25 @@ to _false_ instead. Then restart the server. Also se the APSFilesystemService do
 
 ## JDBC Drivers
 
-There is a catch with OSGi and its classpath isolation. JDBC drivers for the databases that can be used for this service must be packaged into the bundle. JDBC drivers for the following databases are currently included:
+There is a catch with OSGi and its classpath isolation. The _APSSimpleUserService_ makes use of the _APSJPAService_ whose implementation _APSOpenJPAProvider_ cheats OSGi a bit by using _MultiBundleClassLoader_ (is available in aps-tools-library bundle) and merges the service classpath with the client classpath which is a requirement for the JPA framework to work (it needs access to both framework code in the service classpath and client entities in the client classpath). This also has the side effect that the client can provide a JDBC driver in its bundle. The _APSSimpleUserService_ do provide a JDBC driver for _Derby 10.9.1.0_. 
 
-* Derby 10.9.1.0
-* MySQL 5.1.26
+Another catch with this is that users of _APSSimpleUserService_ are not part of this collective classpath and can thereby not make drivers available in their bundles, or at least not right off, there is however a workaround to this. There is a natsty way that you can pass on the client bundle class loader right through the _APSSimpleUserService_ to _APSJPAService_ by creating an instance of _MultiBundleClassLoader_ and set it as context classloader:
 
-I will try to increase this list unless I can find a smarter workaround.
+    MultiBundleClassLoader mbClassLoader = new MultiBundleClassLoader(bundleContext.getBundle());
+    Thread.currentThread().setContextClassLoader(mbClassLoader);
+
+Do this before the first call to _APSSimpleUserService_. The _APSJPAService_ will check if the current context class loader is a MultiBundleClassLoader and if so extract the bundles from it and add to its own MultiBundleClassLoader. This way you have extended the classpath that the JPA framework will se to 3 bundles: aps-openjpa-provider, aps-simple-user-service-provider, and your client bundle, which can then contain a JDBC driver.
+
+The catches are unfortunately not over yet! You also need to configure your own instance of _APSSimpleUserService_ with its own data source in the configuration, and your client needs to add the name of this configuration to the tracker for the _APSSimpleUserService_ :
+
+    APSServiceTracker<APSSimpleUserService> userServiceTracker = 
+        new APSServiceTracker<>(bundleContext, APSSimpleUserService.class, "(instance=instName)", "30 seconds");
+
+or
+
+    @OSGiService(additionalSearchCriteria="(instance=instName)", timeout="30 seconds")
+    APSSimpleUserService userService;
+
+where _instName_ is whatever name you gave the instance in the configuration. Then try to have only one bundle call this service since each different bundle calling the service will extend the service classpath with that bundle!
 
 ## APIs
