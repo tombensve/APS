@@ -2,11 +2,8 @@
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Osmorc" name="OSGi">
-      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-tools-lib-0.9.3.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.tools.APSActivator" bundleSymbolicName="aps-tools-lib" bundleVersion="0.9.3" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
+      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-tools-lib-0.9.3.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="" bundleSymbolicName="aps-tools-lib" bundleVersion="0.9.3" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
-          <property key="Bundle-Description" value="Provides a library of utilities, among them APSServiceTracker used by all other APS bundles." />
-          <property key="Bundle-Vendor" value="Natusoft AB" />
-          <property key="Bundle-DocURL" value="http://www.natusoft.se/" />
           <property key="Export-Package" value="se.natusoft.osgi.aps.tools;version=&quot;0.9.3&quot;,se.natusoft.osgi.aps.tools.tracker;version=&quot;0.9.3&quot;,se.natusoft.osgi.aps.tools.models;version=&quot;0.9.3&quot;,se.natusoft.osgi.aps.tools.data;version=&quot;0.9.3&quot;,se.natusoft.osgi.aps.tools.annotation;version=&quot;0.9.3&quot;,se.natusoft.osgi.aps.tools.exceptions;version=&quot;0.9.3&quot;,se.natusoft.osgi.aps.tools.tuples;version=&quot;0.9.3&quot;" />
           <property key="Import-Package" value="*" />
           <property key="Embed-Directory" value="lib" />

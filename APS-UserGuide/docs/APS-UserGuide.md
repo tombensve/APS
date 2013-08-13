@@ -1947,7 +1947,8 @@ This does the same thing as the standard service tracker included with OSGi, but
 
 There are several variants of constructors, but here is an example of one of the most used ones within the APS services:
 
-        APSServiceTracker<Service> tracker = new APSServiceTracker<Service>(context, Service.class, "20 seconds");
+        APSServiceTracker<Service> tracker = 
+            new APSServiceTracker<Service>(context, Service.class, "20 seconds");
         tracker.start();
         
 
@@ -2098,11 +2099,11 @@ If you call the `setServiceRefrence(serviceRef);` method on the logger then info
 
 This is a BundleActivator implementation that uses annotations to register services and inject tracked services. Any bundle can use this activator by just importing the _se.natusoft.osgi.aps.tools_ package.
 
-This is actually a trivial not very large class that just scans the bundle for files ending in _.class_, removes the _.class_ from the path and translates the separator char to '.' and then passes it to bundle.getClass(...) to get the Class instance for it. After that it can inspect the bundles all classes for annotations and act on them. Most methods are protected making it easy to subclass this class and expand on its functionality.
+This is actually a rather trivial class that just scans the bundle for files ending in _.class_, removes the _.class_ from the path and translates the separator char to '.' and then passes it to bundle.getClass(...) to get the Class instance for it. After that it can inspect the bundles all classes for annotations and act on them. Most methods are protected making it easy to subclass this class and expand on its functionality.
 
 The following annotations are available:
 
-__@OSGiServiceProvider__ - This should be specified on a class that implements a service interface and should be registered as an OSGi service. _Please note_ that the first declared implemented interface is used as service interface!
+__@OSGiServiceProvider__ - This should be specified on a class that implements a service interface and should be registered as an OSGi service. _Please note_ that the first declared implemented interface is used as service interface unless you specify serviceAPIs={Svc.class, ...}.
 
         public @interface OSGiProperty {
             String name();
@@ -2113,12 +2114,18 @@ __@OSGiServiceProvider__ - This should be specified on a class that implements a
         
             /** Extra properties to register the service with. */
             OSGiProperty[] properties() default {};
+        
+            /** The service API to register instance with. If not specified the first implemented interface will be used. */
+            Class[] serviceAPIs() default {};
         }
         
         public @interface OSGiServiceProvider {
         
             /** Extra properties to register the service with. */
             OSGiProperty[] properties() default {};
+        
+            /** The service API to register instance with. If not specified the first implemented interface will be used. */
+            Class[] serviceAPIs() default {};
         
             /** This can be used as an alternative to properties() and also supports several instances. */
             OSGiServiceInstance[] instances() default {};
@@ -2128,6 +2135,16 @@ __@OSGiServiceProvider__ - This should be specified on a class that implements a
              * one set of Properties per instance.
              */
             Class<? extends APSActivator.InstanceFactory> instanceFactoryClass() default APSActivator.InstanceFactory.class;
+        
+            /**
+             * If true this service will be stared in a separate thread. This means the bundle start
+             * will continue in parallel and that any failures in startup will be logged, but will
+             * not stop the bundle from being started. If this is true it wins over required service
+             * dependencies of the service class. Specifying this as true allows you to do things that
+             * cannot be done in a bunde activator start method, like calling a service tracked by 
+             * APSServiceTracker, without causing a deadlock.
+             */
+            boolean threadStart() default false;
         
         }
 
@@ -2166,7 +2183,14 @@ __@Inject__ - This will have an instance injected. There will be a unique instan
 
 __@BundleStart__ - This should be used on a method and will be called on bundle start. The method should take no arguments. If you need a BundleContext just inject it with @APSInejct. The use of this annotation is only needed for things not supported by this activator. Please note that a method annotated with this annotation can be static (in which case the class it belongs to will not be instantiaded -- due to this!). You can provide this annotation on as many methods in as many classes as you want. They will all be called (in the order classes are discovered in the bundle).
 
-        public @interface BundleStart {}
+        public @interface BundleStart {
+        
+            /**
+             * If true the start method will run in a new thread. Any failures in this case will not fail
+             * the bundle startup, but will be logged.
+             */
+            boolean thread() default false;
+        }
 
 __@BundleStop__ - This should be used on a method and will be called on bundle stop. The method should take no arguments. This should probably be used if @APSBundleStart is used. Please note that a method annotated with this annotation can be static!
 
@@ -2456,7 +2480,9 @@ The APS web applications that use this only uses password authentication.
 
 ## APSSimpleUserServiceAuthServiceProvider
 
-This provides an APSAuthService that uses the APSSimpleUserService to authenticate users. It only supports password authentication. If you don’t have your own implementation of APSAuthService then you can deploy this one along with APSSimpleUserService, and probably APSUserAdminWeb.
+This provides an APSAuthService that uses the APSSimpleUserService to authenticate users. It only supports password authentication. If you don't have your own implementation of APSAuthService then you can deploy this one along with APSSimpleUserService, and probably APSUserAdminWeb.
+
+__Please note__ however that the standard implementation of APSSimpleUserService can register several instances with an "instance=name" property where name is unique for each instance, and each instance can reference a different data source. This is configured under _persistence/dsrefs_ in the configuration. If no instances are configured an instance of "aps-admin-web" will be created by default. If instances are configured the default will not be created. And now the the point: APSSimpleuserServiceAuthServiceProvider will as of now track the "aps-admin-web" instance of APSSimpleUserService! If no such instance is configured it will fail after a timeout of not finding a service!
 
 ## API
 
@@ -2550,9 +2576,9 @@ The credential object contains information for participating in a single sign on
 
 # APSSimpleUserService
 
-This is an simple, easy to use service for handling logged in users. It provides two services: APSSimpleUserService and APSSimpleUserServiceAdmin. The latter handles all creation, editing, and deletion of roles and users. This service in itself does not require any authentication to use! Thereby you have to trust all code in the server! The APSUserAdminWeb WAB bundle however does require a user with role ’apsadmin’ to be logged in or it will simply repsond with a 401 (UNAUTHORIZED).
+This is an simple, easy to use service for handling logged in users. It provides two services: APSSimpleUserService and APSSimpleUserServiceAdmin. The latter handles all creation, editing, and deletion of roles and users. This service in itself does not require any authentication to use! Thereby you have to trust all code in the server! The APSUserAdminWeb WAB bundle however does require a user with role _apsadmin_ to be logged in or it will simply repsond with a 401 (UNAUTHORIZED).
 
-So why this and not org.osgi.service.useradmin ? Well, maybe I’m just stupid, but _useradmin_ does not make sense to me. It seems to be missing things, specially for creating. You can create a role, but you cannot create a user. There is no obvious authentication of users. Maybee that should be done via the credentials Dictionary, but what are the expected keys in there ? This service is intended to make user and role handling simple and clear.
+So why this and not org.osgi.service.useradmin ? Well, maybe I'm just stupid, but _useradmin_ does not make sense to me. It seems to be missing things, specially for creating. You can create a role, but you cannot create a user. There is no obvious authentication of users. Maybee that should be done via the credentials Dictionary, but what are the expected keys in there ? APSSimpleUserService is intended to make user and role handling simple and clear.
 
 ## Basic example
 
@@ -2562,13 +2588,13 @@ To login a user do something like this:
         ...
         User user = userService.getUser(userId);
         if (user == null) {
-            throw new AuthException(”Bad login!”);
+            throw new AuthException("Bad login!");
         }
         if (!userService.authenticateUser(user, password, APSSimpleUserService.AUTH_METHOD_PASSWORD)) {
-            throw new AuthException(”Bad login!”);
+            throw new AuthException("Bad login!");
         }
         ...
-        if (user.isAuthenticated() && user.hasRole(”apsadmin”)) {
+        if (user.isAuthenticated() && user.hasRole("apsadmin")) {
             ...
         }
         
@@ -2686,9 +2712,9 @@ After the tables have been created you need to configure a datasource for it in 
 
 ![Picture of datasource config gui.](http://download.natusoft.se/Images/APS/APS-Auth/APSSimpleUserServiceProvider/docs/images/DataSourceConfig.png)
 
-Please note that the above picture is just an example. The data source name __APSSimpleUserServiceDS__ is however important. The service will be looking up the entry with that name! The rest of the entry depends on your database and where it is running. Also note that the ”(default)” after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.
+Please note that the above picture is just an example. The data source name _APSSimpleUserServiceDS_ in this example should be configured in the _persistence/dsRefs_ config. The service will be looking up the entry with that name! The rest of the datasource entry depends on your database and where it is running. Also note that the "(default)" after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.
 
-When the datasource is configured and saved then you can go to _”Configuration tab_,_Configurations/aps/adminweb”_ and enable the ”requireauthentication” config. If you do this before setting up the datasource and you have choosen to use the provided implementation of APSAuthService that uses APSSimpleUserService to login then you will be completely locked out.
+When the datasource is configured and saved then you can go to _"Configuration tab_,_Configurations/aps/adminweb"_ and enable the "requireauthentication" config. __If you do this before setting up the datasource and you have choosen to use the provided implementation of APSAuthService that uses APSSimpleUserService to login then you will be completely locked out!__
 
 ## Troubleshooting
 
@@ -2698,6 +2724,16 @@ If you have managed to lock yourself out of /apsadminweb as described above then
         
 
 to _false_ instead. Then restart the server. Also se the APSFilesystemService documentation for more information. The APSConfigService is using that service to store its configurations.
+
+## JDBC Drivers
+
+There is a catch with OSGi and its classpath isolation. JDBC drivers for the databases that can be used for this service must be packaged into the bundle. JDBC drivers for the following databases are currently included:
+
+* Derby 10.9.1.0
+
+* MySQL 5.1.26
+
+I will try to increase this list unless I can find a smarter workaround.
 
 ## APIs
 
@@ -5348,6 +5384,313 @@ All Recipient's rights under this Agreement shall terminate if it fails to compl
 Everyone is permitted to copy and distribute copies of this Agreement, but in order to avoid inconsistency the Agreement is copyrighted and may only be modified in the following manner. The Agreement Steward reserves the right to publish new versions (including revisions) of this Agreement from time to time. No one other than the Agreement Steward has the right to modify this Agreement. The Eclipse Foundation is the initial Agreement Steward. The Eclipse Foundation may assign the responsibility to serve as the Agreement Steward to a suitable separate entity. Each new version of the Agreement will be given a distinguishing version number. The Program (including Contributions) may always be distributed subject to the version of the Agreement under which it was received. In addition, after a new version of the Agreement is published, Contributor may elect to distribute the Program (including its Contributions) under the new version. Except as expressly stated in Sections 2(a) and 2(b) above, Recipient receives no rights or licenses to the intellectual property of any Contributor under this Agreement, whether expressly, by implication, estoppel or otherwise. All rights in the Program not expressly granted under this Agreement are reserved.
 
 This Agreement is governed by the laws of the State of New York and the intellectual property laws of the United States of America. No party to this Agreement will bring a legal action under this Agreement more than one year after the cause of action arose. Each party waives its rights to a jury trial in any resulting litigation.
+
+<!--
+  
+  This was created by CodeLicenseManager
+-->
+## GNU Lesser General Public License version 2.1
+
+Skip to content |
+
+Skip to navigation | Accessibility
+
+&nbsp;English[en]() &nbsp; &nbsp; &nbsp; català[ca]() &nbsp; &nbsp; &nbsp; Deutsch[de]() &nbsp; &nbsp; &nbsp; français[fr]() &nbsp; &nbsp; &nbsp; 日本語[ja]() &nbsp; &nbsp; &nbsp; русский[ru]() &nbsp; &nbsp;
+
+            The GNU Operating System
+
+&nbsp; &nbsp;JointheFSF! Sign up for the Free Software Supporter A monthly email newsletter about GNU and Free Software
+
+Enter your email address (e.g. &nbsp; address@hidden) 
+
+        Search:
+        
+        
+
+&nbsp;About GNU Philosophy Licenses Education Software Documentation HelpGNU
+
+GNU Lesser General Public License
+
+Why you shouldn't use the Lesser GPL for your next library Frequently Asked Questions about the GNU licenses How to use GNU licenses for your own software Translations of the LGPL The GNU LGPL in other formats: plain text, Docbook, standalone HTML, LaTeX, Texinfo LGPLv3 logos to use with your project Old versions of the GNU LGPL What to do if you see a possible LGPL violation
+
+This license is a set of additional permissions added to version 3 of the GNU General Public License. For more information about how to release your own software under this license, please see our page of instructions.
+
+GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007
+
+Copyright &copy; 2007 Free Software Foundation, Inc. [http://fsf.org/](http://fsf.org/) Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
+
+This version of the GNU Lesser General Public License incorporates the terms and conditions of version 3 of the GNU General Public License, supplemented by the additional permissions listed below.
+
+1. Additional Definitions.
+
+As used herein, &ldquo;this License&rdquo; refers to version 3 of the GNU Lesser General Public License, and the &ldquo;GNU GPL&rdquo; refers to version 3 of the GNU General Public License.
+
+&ldquo;The Library&rdquo; refers to a covered work governed by this License, other than an Application or a Combined Work as defined below.
+
+An &ldquo;Application&rdquo; is any work that makes use of an interface provided by the Library, but which is not otherwise based on the Library. Defining a subclass of a class defined by the Library is deemed a mode of using an interface provided by the Library.
+
+A &ldquo;Combined Work&rdquo; is a work produced by combining or linking an Application with the Library. The particular version of the Library with which the Combined Work was made is also called the &ldquo;Linked Version&rdquo;.
+
+The &ldquo;Minimal Corresponding Source&rdquo; for a Combined Work means the Corresponding Source for the Combined Work, excluding any source code for portions of the Combined Work that, considered in isolation, are based on the Application, and not on the Linked Version.
+
+The &ldquo;Corresponding Application Code&rdquo; for a Combined Work means the object code and/or source code for the Application, including any data and utility programs needed for reproducing the Combined Work from the Application, but excluding the System Libraries of the Combined Work.
+
+1. Exception to Section 3 of the GNU GPL.
+
+You may convey a covered work under sections 3 and 4 of this License without being bound by section 3 of the GNU GPL.
+
+1. Conveying Modified Versions.
+
+If you modify a copy of the Library, and, in your modifications, a facility refers to a function or data to be supplied by an Application that uses the facility (other than as an argument passed when the facility is invoked), then you may convey a copy of the modified version:
+
+a) under this License, provided that you make a good faith effort to ensure that, in the event an Application does not supply the function or data, the facility still operates, and performs whatever part of its purpose remains meaningful, or
+
+b) under the GNU GPL, with none of the additional permissions of this License applicable to that copy.
+
+1. Object Code Incorporating Material from Library Header Files.
+
+The object code form of an Application may incorporate material from a header file that is part of the Library. You may convey such object code under terms of your choice, provided that, if the incorporated material is not limited to numerical parameters, data structure layouts and accessors, or small macros, inline functions and templates (ten or fewer lines in length), you do both of the following:
+
+a) Give prominent notice with each copy of the object code that the Library is used in it and that the Library and its use are covered by this License.
+
+b) Accompany the object code with a copy of the GNU GPL and this license document.
+
+1. Combined Works.
+
+You may convey a Combined Work under terms of your choice that, taken together, effectively do not restrict modification of the portions of the Library contained in the Combined Work and reverse engineering for debugging such modifications, if you also do each of the following:
+
+a) Give prominent notice with each copy of the Combined Work that the Library is used in it and that the Library and its use are covered by this License.
+
+b) Accompany the Combined Work with a copy of the GNU GPL and this license document.
+
+c) For a Combined Work that displays copyright notices during execution, include the copyright notice for the Library among these notices, as well as a reference directing the user to the copies of the GNU GPL and this license document.
+
+d) Do one of the following:
+
+0) Convey the Minimal Corresponding Source under the terms of this License, and the Corresponding Application Code in a form suitable for, and under terms that permit, the user to recombine or relink the Application with a modified version of the Linked Version to produce a modified Combined Work, in the manner specified by section 6 of the GNU GPL for conveying Corresponding Source.
+
+1) Use a suitable shared library mechanism for linking with the Library. A suitable mechanism is one that (a) uses at run time a copy of the Library already present on the user's computer system, and (b) will operate properly with a modified version of the Library that is interface-compatible with the Linked Version.
+
+e) Provide Installation Information, but only if you would otherwise be required to provide such information under section 6 of the GNU GPL, and only to the extent that such information is necessary to install and execute a modified version of the Combined Work produced by recombining or relinking the Application with a modified version of the Linked Version. (If you use option 4d0, the Installation Information must accompany the Minimal Corresponding Source and Corresponding Application Code. If you use option 4d1, you must provide the Installation Information in the manner specified by section 6 of the GNU GPL for conveying Corresponding Source.)
+
+1. Combined Libraries.
+
+You may place library facilities that are a work based on the Library side by side in a single library together with other library facilities that are not Applications and are not covered by this License, and convey such a combined library under terms of your choice, if you do both of the following:
+
+a) Accompany the combined library with a copy of the same work based on the Library, uncombined with any other library facilities, conveyed under the terms of this License.
+
+b) Give prominent notice with the combined library that part of it is a work based on the Library, and explaining where to find the accompanying uncombined form of the same work.
+
+1. Revised Versions of the GNU Lesser General Public License.
+
+The Free Software Foundation may publish revised and/or new versions of the GNU Lesser General Public License from time to time. Such new versions will be similar in spirit to the present version, but may differ in detail to address new problems or concerns.
+
+Each version is given a distinguishing version number. If the Library as you received it specifies that a certain numbered version of the GNU Lesser General Public License &ldquo;or any later version&rdquo; applies to it, you have the option of following the terms and conditions either of that published version or of any later version published by the Free Software Foundation. If the Library as you received it does not specify a version number of the GNU Lesser General Public License, you may choose any version of the GNU Lesser General Public License ever published by the Free Software Foundation.
+
+If the Library as you received it specifies that a proxy can decide whether future versions of the GNU Lesser General Public License shall apply, that proxy's public statement of acceptance of any version is permanent authorization for you to choose that version for the Library.
+
+            GNU&nbsp;home&nbsp;page
+            FSF&nbsp;home&nbsp;page
+            GNU&nbsp;Art
+            GNU&nbsp;Fun
+            GNU's&nbsp;Who?
+            Free&nbsp;Software&nbsp;Directory
+            Site&nbsp;map
+        
+
+The Free Software Foundation is the principal organizational sponsor of the GNU Operating System. Our mission is to preserve, protect and promote the freedom to use, study, copy, modify, and redistribute computer software, and to defend the rights of Free Software users. Support GNU and the FSF by buying manuals and gear, joining the FSF as an associate member or by making a donation, either directly to the FSF or via Flattr.
+
+back to top
+
+Please send FSF &amp; GNU inquiries to gnu@gnu.org. There are also other ways to contact the FSF.
+
+Please send broken links and other corrections or suggestions to webmasters@gnu.org.
+
+Please see the Translations README for information on coordinating and submitting translations of this article.
+
+Copyright notice above.
+
+51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+
+Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
+
+Copyright Infringement Notification
+
+Updated:
+
+$Date: 2013/02/28 17:09:29 $
+
+<!--
+  
+  This was created by CodeLicenseManager
+-->
+## GNU LESSER GENERAL PUBLIC version LICENSE
+
+                           GNU LESSER GENERAL PUBLIC LICENSE
+                               Version 3, 29 June 2007
+        
+         Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
+         Everyone is permitted to copy and distribute verbatim copies
+         of this license document, but changing it is not allowed.
+        
+        
+          This version of the GNU Lesser General Public License incorporates
+        the terms and conditions of version 3 of the GNU General Public
+        License, supplemented by the additional permissions listed below.
+        
+          0. Additional Definitions.
+        
+          As used herein, "this License" refers to version 3 of the GNU Lesser
+        General Public License, and the "GNU GPL" refers to version 3 of the GNU
+        General Public License.
+        
+          "The Library" refers to a covered work governed by this License,
+        other than an Application or a Combined Work as defined below.
+        
+          An "Application" is any work that makes use of an interface provided
+        by the Library, but which is not otherwise based on the Library.
+        Defining a subclass of a class defined by the Library is deemed a mode
+        of using an interface provided by the Library.
+        
+          A "Combined Work" is a work produced by combining or linking an
+        Application with the Library.  The particular version of the Library
+        with which the Combined Work was made is also called the "Linked
+        Version".
+        
+          The "Minimal Corresponding Source" for a Combined Work means the
+        Corresponding Source for the Combined Work, excluding any source code
+        for portions of the Combined Work that, considered in isolation, are
+        based on the Application, and not on the Linked Version.
+        
+          The "Corresponding Application Code" for a Combined Work means the
+        object code and/or source code for the Application, including any data
+        and utility programs needed for reproducing the Combined Work from the
+        Application, but excluding the System Libraries of the Combined Work.
+        
+          1. Exception to Section 3 of the GNU GPL.
+        
+          You may convey a covered work under sections 3 and 4 of this License
+        without being bound by section 3 of the GNU GPL.
+        
+          2. Conveying Modified Versions.
+        
+          If you modify a copy of the Library, and, in your modifications, a
+        facility refers to a function or data to be supplied by an Application
+        that uses the facility (other than as an argument passed when the
+        facility is invoked), then you may convey a copy of the modified
+        version:
+        
+           a) under this License, provided that you make a good faith effort to
+           ensure that, in the event an Application does not supply the
+           function or data, the facility still operates, and performs
+           whatever part of its purpose remains meaningful, or
+        
+           b) under the GNU GPL, with none of the additional permissions of
+           this License applicable to that copy.
+        
+          3. Object Code Incorporating Material from Library Header Files.
+        
+          The object code form of an Application may incorporate material from
+        a header file that is part of the Library.  You may convey such object
+        code under terms of your choice, provided that, if the incorporated
+        material is not limited to numerical parameters, data structure
+        layouts and accessors, or small macros, inline functions and templates
+        (ten or fewer lines in length), you do both of the following:
+        
+           a) Give prominent notice with each copy of the object code that the
+           Library is used in it and that the Library and its use are
+           covered by this License.
+        
+           b) Accompany the object code with a copy of the GNU GPL and this license
+           document.
+        
+          4. Combined Works.
+        
+          You may convey a Combined Work under terms of your choice that,
+        taken together, effectively do not restrict modification of the
+        portions of the Library contained in the Combined Work and reverse
+        engineering for debugging such modifications, if you also do each of
+        the following:
+        
+           a) Give prominent notice with each copy of the Combined Work that
+           the Library is used in it and that the Library and its use are
+           covered by this License.
+        
+           b) Accompany the Combined Work with a copy of the GNU GPL and this license
+           document.
+        
+           c) For a Combined Work that displays copyright notices during
+           execution, include the copyright notice for the Library among
+           these notices, as well as a reference directing the user to the
+           copies of the GNU GPL and this license document.
+        
+           d) Do one of the following:
+        
+               0) Convey the Minimal Corresponding Source under the terms of this
+               License, and the Corresponding Application Code in a form
+               suitable for, and under terms that permit, the user to
+               recombine or relink the Application with a modified version of
+               the Linked Version to produce a modified Combined Work, in the
+               manner specified by section 6 of the GNU GPL for conveying
+               Corresponding Source.
+        
+               1) Use a suitable shared library mechanism for linking with the
+               Library.  A suitable mechanism is one that (a) uses at run time
+               a copy of the Library already present on the user's computer
+               system, and (b) will operate properly with a modified version
+               of the Library that is interface-compatible with the Linked
+               Version.
+        
+           e) Provide Installation Information, but only if you would otherwise
+           be required to provide such information under section 6 of the
+           GNU GPL, and only to the extent that such information is
+           necessary to install and execute a modified version of the
+           Combined Work produced by recombining or relinking the
+           Application with a modified version of the Linked Version. (If
+           you use option 4d0, the Installation Information must accompany
+           the Minimal Corresponding Source and Corresponding Application
+           Code. If you use option 4d1, you must provide the Installation
+           Information in the manner specified by section 6 of the GNU GPL
+           for conveying Corresponding Source.)
+        
+          5. Combined Libraries.
+        
+          You may place library facilities that are a work based on the
+        Library side by side in a single library together with other library
+        facilities that are not Applications and are not covered by this
+        License, and convey such a combined library under terms of your
+        choice, if you do both of the following:
+        
+           a) Accompany the combined library with a copy of the same work based
+           on the Library, uncombined with any other library facilities,
+           conveyed under the terms of this License.
+        
+           b) Give prominent notice with the combined library that part of it
+           is a work based on the Library, and explaining where to find the
+           accompanying uncombined form of the same work.
+        
+          6. Revised Versions of the GNU Lesser General Public License.
+        
+          The Free Software Foundation may publish revised and/or new versions
+        of the GNU Lesser General Public License from time to time. Such new
+        versions will be similar in spirit to the present version, but may
+        differ in detail to address new problems or concerns.
+        
+          Each version is given a distinguishing version number. If the
+        Library as you received it specifies that a certain numbered version
+        of the GNU Lesser General Public License "or any later version"
+        applies to it, you have the option of following the terms and
+        conditions either of that published version or of any later version
+        published by the Free Software Foundation. If the Library as you
+        received it does not specify a version number of the GNU Lesser
+        General Public License, you may choose any version of the GNU Lesser
+        General Public License ever published by the Free Software Foundation.
+        
+          If the Library as you received it specifies that a proxy can decide
+        whether future versions of the GNU Lesser General Public License shall
+        apply, that proxy's public statement of acceptance of any version is
+        permanent authorization for you to choose that version for the
+        Library.
 
 <!--
   
