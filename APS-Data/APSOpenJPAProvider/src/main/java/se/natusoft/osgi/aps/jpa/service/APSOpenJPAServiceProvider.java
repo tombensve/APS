@@ -224,12 +224,16 @@ public class APSOpenJPAServiceProvider implements BundleListener, APSJPAService,
 
                     if (this.openFactories != null) {
                         APSJPAEntityManagerProviderImpl emp = this.openFactories.remove(factoryKey(puName, bundle.getBundleId()));
-                        EntityManagerFactory emf = emp.removeEntityManagerFactory();
-                        if (emf instanceof ContextEntityManagerFactory) {
-                            emf = ((ContextEntityManagerFactory)emf).getEntityManagerFactory();
-                        }
-                        if (emf != null && emf.isOpen()) {
-                            emf.close();
+                        if (emp != null) {
+                            EntityManagerFactory emf = emp.removeEntityManagerFactory();
+                            if (emf != null) {
+                                if (emf instanceof ContextEntityManagerFactory) {
+                                    emf = ((ContextEntityManagerFactory)emf).getEntityManagerFactory();
+                                }
+                                if (emf != null && emf.isOpen()) {
+                                    emf.close();
+                                }
+                            }
                         }
                     }
                     this.logger.info("aps-openjpa-provider: Closed JPA provider for bundle '" +
@@ -289,17 +293,24 @@ public class APSOpenJPAServiceProvider implements BundleListener, APSJPAService,
             Map<String, PersistenceReg> persistenceUnits = this.persistentBundles.get(bundleId);
             for (String persistenceUnit : persistenceUnits.keySet()) {
                 String factoryKey = factoryKey(persistenceUnit, bundleId);
-                APSJPAEntityManagerProviderImpl emp = this.openFactories.remove(factoryKey);
 
-                // A client might still sit on this, but we make it invalid which should
-                // make the client release it and create a new one instead when and if the
-                // service becomes available again.
-                EntityManagerFactory emf = emp.removeEntityManagerFactory();
-                if (emf instanceof ContextEntityManagerFactory) {
-                    emf = ((ContextEntityManagerFactory)emf).getEntityManagerFactory();
-                }
-                if (emf.isOpen()) {
-                    emf.close();
+                if (this.openFactories != null) {
+                    APSJPAEntityManagerProviderImpl emp = this.openFactories.remove(factoryKey);
+
+                    if (emp != null) {
+                        // A client might still sit on this, but we make it invalid which should
+                        // make the client release it and create a new one instead when and if the
+                        // service becomes available again.
+                        EntityManagerFactory emf = emp.removeEntityManagerFactory();
+                        if (emf != null) {
+                            if (emf instanceof ContextEntityManagerFactory) {
+                                emf = ((ContextEntityManagerFactory)emf).getEntityManagerFactory();
+                            }
+                            if (emf.isOpen()) {
+                                emf.close();
+                            }
+                        }
+                    }
                 }
             }
         }
