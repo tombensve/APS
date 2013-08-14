@@ -158,7 +158,9 @@ If you call the `setServiceRefrence(serviceRef);` method on the logger then info
 
 This is a BundleActivator implementation that uses annotations to register services and inject tracked services. Any bundle can use this activator by just importing the _se.natusoft.osgi.aps.tools_ package.
 
-This is actually a rather trivial class that just scans the bundle for files ending in _.class_, removes the _.class_ from the path and translates the separator char to '.' and then passes it to bundle.getClass(...) to get the Class instance for it. After that it can inspect the bundles all classes for annotations and act on them. Most methods are protected making it easy to subclass this class and expand on its functionality.
+This is actually a rather trivial class that just scans the bundle for classes and inspects all classes for annotations and act on them. Most methods are protected making it easy to subclass this class and expand on its functionality. 
+
+**Please note** that it does _class.getDeclaredFields()_ and _class.getDeclaredMethods()_! This means that it will only see the bottom class of an inheritance hiearchy!
 
 The following annotations are available:
 

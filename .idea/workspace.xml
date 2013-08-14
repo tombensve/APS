@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/APSActivator.java" afterPath="$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/APSActivator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSOSGiSupport.java" afterPath="$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSOSGiSupport.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/vaadin/APSVaadinOSGiApplication.java" afterPath="$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/vaadin/APSVaadinOSGiApplication.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/MultiBundleClassLoader.java" afterPath="$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/MultiBundleClassLoader.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lics/licenses.md" afterPath="$PROJECT_DIR$/lics/licenses.md" />
+    <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="APSActivator now supports 2 modes: Activator mode where it just scans all the bundles classes and manages any annotations. This is achieved by using the default constructor of APSActivator. &#10;&#10;The second mode is the existing instances mode. This requires the constructor where you pass at least one instance to the constructor.  Calls to addManagedInstance(instance) can also be done before start(BundleContext) is done. In this case it will just add the provided instances as managed instances, and then scan the bundle classes skipping any class that already has a provided managed instance. This way web-container created instances like servlets can be managed by the activator also. In a WAB you mostly want to inject tracked services, but it is possible to provide service instances also. &#10;&#10;APSVaadinOSGiApplication and APSOSGiSupport (for servlets, etc) creates an APSActivator and adds itself/its caller to it thus handling annotations.">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSToolsLib/docs/src/APSToolsLib.md" afterPath="$PROJECT_DIR$/APS-Libraries/APSToolsLib/docs/src/APSToolsLib.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="93ee55a5-7aeb-46b4-befc-da110c6bd63a" name="Failed commit: Default" comment="Dev commit." />
@@ -15,7 +11,7 @@
     <ignored path=".idea/workspace.xml" />
     <ignored mask="*.iml" />
     <file path="/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376402593309" ignored="false" />
-    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376420139304" ignored="false" />
+    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376500922735" ignored="false" />
     <file path="/a.dummy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376128280564" ignored="false" />
     <file path="/testclient.sh" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355064160118" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/wip-clones/MarkdownDoc/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355420755980" ignored="false" />
@@ -670,7 +666,7 @@
     <file path="$PROJECT_DIR$/APS-Core/APSLogServiceProvider/src/main/java/se/natusoft/osgi/aps/log/sevice/Activator.java" changelist="06b13bc3-1d3d-4a4b-a140-0787da2c2ef4" time="1365862677188" ignored="false" />
     <file path="/Properties.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1375284421048" ignored="false" />
     <file path="/Persistence.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1375284571457" ignored="false" />
-    <file path="/APSActivator.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376497093477" ignored="false" />
+    <file path="/APSActivator.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376498890377" ignored="false" />
     <file path="/APSActivatorException.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1375367369374" ignored="false" />
     <file path="/BundleStartup.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1375368334005" ignored="false" />
     <file path="/TestActivator.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1375377736069" ignored="false" />
@@ -933,7 +929,7 @@
       <file leaf-file-name="APSActivator.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/APSActivator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="870" column="27" selection-start="38832" selection-end="38832" vertical-scroll-proportion="0.40054497">
+            <state line="613" column="52" selection-start="27168" selection-end="27168" vertical-scroll-proportion="0.386921">
               <folding>
                 <element signature="e#0#41024#0" expanded="true" />
                 <element signature="imports" expanded="true" />
@@ -949,7 +945,7 @@
       <file leaf-file-name="APSVaadinOSGiApplication.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/vaadin/APSVaadinOSGiApplication.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="161" column="0" selection-start="5793" selection-end="5793" vertical-scroll-proportion="0.0">
+            <state line="155" column="17" selection-start="5499" selection-end="5499" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -967,8 +963,10 @@
       <file leaf-file-name="APSOSGiSupport.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSOSGiSupport.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="130" column="42" selection-start="4611" selection-end="4611" vertical-scroll-proportion="0.0">
-              <folding />
+            <state line="129" column="42" selection-start="4566" selection-end="4566" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -2728,6 +2726,80 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="OSGiServiceInstance" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Libraries and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSToolsLib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="docs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Libraries and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSToolsLib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="docs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Libraries and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSToolsLib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="docs" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="filesets" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -5573,7 +5645,11 @@
       <created>1376420151312</created>
       <updated>1376420151312</updated>
     </task>
-    <option name="localTasksCounter" value="353" />
+    <task id="LOCAL-00353" summary="APSActivator now supports 2 modes: Activator mode where it just scans all the bundles classes and manages any annotations. This is achieved by using the default constructor of APSActivator. &#10;&#10;The second mode is the existing instances mode. This requires the constructor where you pass at least one instance to the constructor.  Calls to addManagedInstance(instance) can also be done before start(BundleContext) is done. In this case it will just add the provided instances as managed instances, and then scan the bundle classes skipping any class that already has a provided managed instance. This way web-container created instances like servlets can be managed by the activator also. In a WAB you mostly want to inject tracked services, but it is possible to provide service instances also. &#10;&#10;APSVaadinOSGiApplication and APSOSGiSupport (for servlets, etc) creates an APSActivator and adds itself/its caller to it thus handling annotations.">
+      <created>1376497996779</created>
+      <updated>1376497996779</updated>
+    </task>
+    <option name="localTasksCounter" value="354" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="true" url="http://redmine.natusoft.private/redmine">
@@ -5611,7 +5687,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1200" extended-state="0" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31941923" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -5632,7 +5708,7 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32700247" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24813233" sideWeight="0.2876588" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39956957" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18036287" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="true" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18036287" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24813233" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -5700,7 +5776,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="- The MultiBundleClassLoader of APSOpenJPAProvider has now been moved to APSToolsLib.&#10;- APSOpenJPAProvider now uses new features in MultiBundleClassLoader to extends the JPA framework classpath to clients of clients to more easily be able to provide JDBC drivers." />
+    <option name="LAST_COMMIT_MESSAGE" value="APSActivator now supports 2 modes: Activator mode where it just scans all the bundles classes and manages any annotations. This is achieved by using the default constructor of APSActivator. &#10;&#10;The second mode is the existing instances mode. This requires the constructor where you pass at least one instance to the constructor.  Calls to addManagedInstance(instance) can also be done before start(BundleContext) is done. In this case it will just add the provided instances as managed instances, and then scan the bundle classes skipping any class that already has a provided managed instance. This way web-container created instances like servlets can be managed by the activator also. In a WAB you mostly want to inject tracked services, but it is possible to provide service instances also. &#10;&#10;APSVaadinOSGiApplication and APSOSGiSupport (for servlets, etc) creates an APSActivator and adds itself/its caller to it thus handling annotations." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -5714,7 +5790,6 @@
     <option name="UPDATE_FILTER_BY_SCOPE" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="Regenerated source headers with new version number." />
     <MESSAGE value="- Converted all APS-APIs javadoc to markdown since I'm now using a markdown doclet.&#10;- Inspected and corrected documentation." />
     <MESSAGE value="Added a whats new in 0.9.1 section." />
     <MESSAGE value="Oops, wrong version number in README.md." />
@@ -5739,6 +5814,7 @@
     <MESSAGE value="Fixed some stupid NPEs." />
     <MESSAGE value="Updated APSToolsLib documentation." />
     <MESSAGE value="- The MultiBundleClassLoader of APSOpenJPAProvider has now been moved to APSToolsLib.&#10;- APSOpenJPAProvider now uses new features in MultiBundleClassLoader to extends the JPA framework classpath to clients of clients to more easily be able to provide JDBC drivers." />
+    <MESSAGE value="APSActivator now supports 2 modes: Activator mode where it just scans all the bundles classes and manages any annotations. This is achieved by using the default constructor of APSActivator. &#10;&#10;The second mode is the existing instances mode. This requires the constructor where you pass at least one instance to the constructor.  Calls to addManagedInstance(instance) can also be done before start(BundleContext) is done. In this case it will just add the provided instances as managed instances, and then scan the bundle classes skipping any class that already has a provided managed instance. This way web-container created instances like servlets can be managed by the activator also. In a WAB you mostly want to inject tracked services, but it is possible to provide service instances also. &#10;&#10;APSVaadinOSGiApplication and APSOSGiSupport (for servlets, etc) creates an APSActivator and adds itself/its caller to it thus handling annotations." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -5907,17 +5983,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/vaadin/APSVaadinOSGiApplication.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="161" column="0" selection-start="5793" selection-end="5793" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSOSGiSupport.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="130" column="42" selection-start="4611" selection-end="4611" vertical-scroll-proportion="0.0">
-          <folding />
+        <state line="129" column="42" selection-start="4566" selection-end="4566" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -5928,9 +5999,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/vaadin/APSVaadinOSGiApplication.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="155" column="17" selection-start="5499" selection-end="5499" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/APSActivator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="870" column="27" selection-start="38832" selection-end="38832" vertical-scroll-proportion="0.40054497">
+        <state line="613" column="52" selection-start="27168" selection-end="27168" vertical-scroll-proportion="0.386921">
           <folding>
             <element signature="e#0#41024#0" expanded="true" />
             <element signature="imports" expanded="true" />
