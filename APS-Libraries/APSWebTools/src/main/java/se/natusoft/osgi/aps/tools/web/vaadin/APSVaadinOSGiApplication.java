@@ -42,6 +42,7 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
 import org.osgi.framework.BundleContext;
 import se.natusoft.osgi.aps.tools.APSActivator;
+import se.natusoft.osgi.aps.tools.APSLogger;
 import se.natusoft.osgi.aps.tools.web.ClientContext;
 import se.natusoft.osgi.aps.tools.web.OSGiBundleContextProvider;
 import se.natusoft.osgi.aps.tools.web.UserMessager;
@@ -84,16 +85,23 @@ public abstract class APSVaadinOSGiApplication
     /** The long message for non OSGi deployment. */
     private static final String NON_OSGI_DEPLOYMENT_LONG_MESSAGE = "This application is an OSGi bundle and must be deployed as such in " +
             "an OSGi container for it to be able to do its work!";
+
+    private static final String ACTIVATOR_FAIL_SHORT_MESSAGE = "APSActivator failed!";
+
+    private static final String ACTIVATOR_FAIL_LONG_MESSAGE = "APSActivator management of this application and bundle failed! " +
+            "Things will likely not work!";
     
     //
     // Private Members
     //
 
+    APSLogger logger;
+
     /** The client context. */
     private ClientContext clientContext;
 
     /** We use part of the APSActivator functionality to inject into @OSGiService and @Inject annotated fields. */
-    private APSActivator injector = new APSActivator();
+    private APSActivator activator;
 
     //
     // Methods
@@ -123,7 +131,7 @@ public abstract class APSVaadinOSGiApplication
                    NON_OSGI_DEPLOYMENT_SHORT_MESSAGE,
                    NON_OSGI_DEPLOYMENT_LONG_MESSAGE,
                                 Notification.TYPE_ERROR_MESSAGE);
-            System.err.println(NON_OSGI_DEPLOYMENT_SHORT_MESSAGE + " " + NON_OSGI_DEPLOYMENT_LONG_MESSAGE);
+            this.logger.error(NON_OSGI_DEPLOYMENT_SHORT_MESSAGE + " " + NON_OSGI_DEPLOYMENT_LONG_MESSAGE);
         }
         
         return bundleContext;
@@ -133,10 +141,24 @@ public abstract class APSVaadinOSGiApplication
      * Initializes the vaadin application.
      */
     public void init() {
+        this.logger = new APSLogger(System.err);
+        this.logger.setLoggingFor("APSVaadinOSGiApplication/" + getClass().getSimpleName());
+        this.logger.start(getBundleContext());
+
         UserMessager messager = new VaadinUserMessager();
         this.clientContext = new ClientContext(messager, this);
 
-        injectToInstance(this);
+        this.activator = new APSActivator(this);
+        try {
+            this.activator.start(getBundleContext());
+        }
+        catch (Exception e) {
+            this.getMainWindow().showNotification(
+                    ACTIVATOR_FAIL_SHORT_MESSAGE,
+                    ACTIVATOR_FAIL_LONG_MESSAGE,
+                    Notification.TYPE_ERROR_MESSAGE);
+            this.logger.error(ACTIVATOR_FAIL_SHORT_MESSAGE + " " + ACTIVATOR_FAIL_LONG_MESSAGE);
+        }
 
         initServices(this.clientContext);
 
@@ -147,21 +169,6 @@ public abstract class APSVaadinOSGiApplication
         }
 
         initGUI();
-    }
-
-    /**
-     * Injects @OSGiService and @Inject annotated fields of the specified instance.
-     *
-     * @param instance The instance to inject into.
-     */
-    public void injectToInstance(Object instance) {
-        try {
-            this.injector.injectFieldsOnly(this.clientContext.getBundleContext(), instance);
-        }
-        catch (Exception e) {
-            // We have no logger now so print to stderr. It should appear in some log!
-            e.printStackTrace(System.err);
-        }
     }
 
     /**
@@ -208,7 +215,26 @@ public abstract class APSVaadinOSGiApplication
      */
     @Override
     public void sessionDestroyed() {
-        this.injector.cleanupFieldsOnly(this.clientContext.getBundleContext());
-        cleanupServices(this.clientContext);
+        if (this.activator != null) {
+            try {
+                this.activator.stop(getBundleContext());
+            }
+            catch (Exception e) {
+                if (this.logger != null) {
+                    this.logger.error("Failed to stop activator!", e);
+                }
+                else {
+                    e.printStackTrace(System.err);
+                }
+            }
+        }
+        try {
+            cleanupServices(this.clientContext);
+        }
+        finally {
+            if (this.logger != null) {
+                this.logger.stop(getBundleContext());
+            }
+        }
     }
 }

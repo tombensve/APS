@@ -93,6 +93,22 @@ import java.util.*;
 public class APSActivator implements BundleActivator, OnServiceAvailable, OnTimeout {
 
     //
+    // Constants
+    //
+
+    /** This means that this class will find all annotated classes in a bundle and manage those. */
+    public static final boolean ACTIVATOR_MODE = true;
+
+    /**
+     * This means that already existing instances are provided in constructor and/or addManagedInstance(...).
+     * This way you can manage injections in a servlet for example. Please note that in addition to the
+     * already provided instances like servlets or other framework instances all classes in the bundle
+     * will still be scanned and handled! It will ofcourse sort out any duplicates due to the already
+     * passed instances can be of an instance of a bundle class.
+     */
+    public static final boolean EXISTING_INSTANCES_MODE = false;
+
+    //
     // Private Members
     //
 
@@ -109,17 +125,55 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
     private BundleContext context;
 
+    private boolean activatorMode = ACTIVATOR_MODE;
+
+    //
+    // Constructors
+    //
+
+    /**
+     * Creates a new APSActivator instance for activator usage.
+     */
+    public APSActivator() {}
+
+    /**
+     * Creates a new APSActivator instance for non activator usage.
+     *
+     * @param instances Instances to manage.
+     */
+    public APSActivator(Object... instances) {
+        this.managedInstances = new HashMap<>();
+        this.activatorMode = EXISTING_INSTANCES_MODE;
+        for (Object inst : instances) {
+            addManagedInstance(inst);
+        }
+    }
+
     //
     // Methods
     //
 
+    /**
+     * Adds an instance to manage.
+     *
+     * @param instance The instance to add.
+     */
+    public void addManagedInstance(Object instance) {
+        List<Object> instances = new LinkedList<>();
+        instances.add(instance);
+        this.managedInstances.put(instance.getClass(), instances);
+    }
+
+    /**
+     * Called on start() to reset internal instances.
+     */
     protected void initMembers() {
         if (this.services == null) {
             this.services = new LinkedList<>();
             this.trackers = new HashMap<>();
             this.namedInstances = new HashMap<>();
             this.shutdownMethods = new LinkedList<>();
-            this.managedInstances = new HashMap<>();
+            if (this.activatorMode) this.managedInstances = new HashMap<>();
             this.requiredServices = new LinkedList<>();
 
             this.activatorLogger = new APSLogger(System.out);
@@ -148,15 +202,14 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         initMembers();
         Bundle bundle = context.getBundle();
 
-        List<String> classEntryPaths = new LinkedList<>();
-        getClassEntries(bundle, classEntryPaths, "/");
+        List<Class> classEntries = new LinkedList<>();
+        if (!this.activatorMode) {
+            classEntries.addAll(this.managedInstances.keySet());
+        }
+        collectClassEntries(bundle, classEntries, "/");
 
-        for (String entryPath : classEntryPaths) {
+        for (Class entryClass : classEntries) {
             try {
-                Class entryClass =
-                        bundle.loadClass(
-                                entryPath.substring(0, entryPath.length() - 6).replace(File.separatorChar, '.')
-                        );
                 handleServiceInstances(entryClass, context);
                 handleFieldInjections(entryClass, context);
                 handleServiceRegistrations(entryClass, context);
@@ -186,7 +239,6 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      */
     @Override
     public void stop(BundleContext context) throws Exception {
-
         Exception failure = null;
 
         for (Tuple2<Method, Object> shutdownMethod : this.shutdownMethods) {
@@ -239,39 +291,6 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
         if (failure != null) {
             throw new APSActivatorException("Bundle stop not entirely successful!", failure);
-        }
-    }
-
-    // ---- Special non activator usage ----- //
-
-    /**
-     * This is a special variant that can be used on servlets, and vaadin apps, etc to do the inject
-     * part on fields of the specified instance only.
-     *
-     * This can be called for more than one object, but do it with the same instance of APSActivator
-     * in which case cleanupFieldsOnly(...) will cleanup all.
-     *
-     * @param context The bundles context.
-     * @param injectTo The instance to inject to.
-     * @throws Exception
-     */
-    public void injectFieldsOnly(BundleContext context, Object injectTo) throws Exception {
-        initMembers();
-        this.supportsRequired = false;
-
-        List<Object> instances = new LinkedList<>();
-        instances.add(injectTo);
-        this.managedInstances.put(injectTo.getClass(), instances);
-        handleFieldInjections(injectTo.getClass(), context);
-    }
-
-    /**
-     * This should be called to cleanup after injectFieldsOnly(...).
-     * @param context
-     */
-    public void cleanupFieldsOnly(BundleContext context) {
-        try {stop(context);} catch (Exception e) {
-            this.activatorLogger.error("Failed fields only cleanup!", e);
         }
     }
 
@@ -658,13 +677,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     namedInstance = context;
                 }
                 else {
-                    try {
-                        namedInstance = field.getType().newInstance();
-                    }
-                    catch (InstantiationException | IllegalAccessException e) {
-                        throw new APSActivatorException("Failed to instantiate: " + managedClass.getName() +
-                                "." + field.getName() + "!", e);
-                    }
+                    namedInstance = getManagedInstance(field.getType());
                 }
                 this.namedInstances.put(namedInstanceKey, namedInstance);
             }
@@ -809,7 +822,6 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     protected List<Object> getManagedInstances(Class managedClass, int size) {
         List<Object> managedInstances = this.managedInstances.get(managedClass);
         if (managedInstances == null) {
-            if (size == -1) throw new IllegalStateException("Expected instances are not available!");
             managedInstances = new LinkedList<>();
         }
 
@@ -856,15 +868,32 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param entries The list to add the class entries to.
      * @param startPath The start path to look for entries.
      */
-    protected void getClassEntries(Bundle bundle, List<String> entries, String startPath) {
+    protected void collectClassEntries(Bundle bundle, List<Class> entries, String startPath) {
         Enumeration<String> entryPathEnumeration = bundle.getEntryPaths(startPath);
         while (entryPathEnumeration.hasMoreElements()) {
             String entryPath = entryPathEnumeration.nextElement();
             if (entryPath.endsWith("/")) {
-                getClassEntries(bundle, entries, entryPath);
+                collectClassEntries(bundle, entries, entryPath);
             }
             else if (entryPath.endsWith(".class")) {
-                entries.add(entryPath);
+                try {
+                    String classQName = entryPath.substring(0, entryPath.length() - 6).replace(File.separatorChar, '.');
+                    if (classQName.startsWith("WEB-INF.classes.")) {
+                        classQName = classQName.substring(16);
+                    }
+                    Class entryClass = bundle.loadClass(classQName);
+                    // If not activatorMode is true then there will be classes in this list already on the first
+                    // call to this method. Therefore we skip duplicates.
+                    if (!entries.contains(entryClass)) {
+                        entries.add(entryClass);
+                    }
+                }
+                catch (ClassNotFoundException cnfe) {
+                    this.activatorLogger.warn("Failed to load bundle class!", cnfe);
+                }
+                catch (NoClassDefFoundError ncdfe) {
+                    this.activatorLogger.warn("Failed to load bundle class!", ncdfe);
+                }
             }
         }
     }

@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="">
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/src/main/java/se/natusoft/osgi/aps/jpa/service/MultiBundleClassLoader.java" afterPath="$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/MultiBundleClassLoader.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/src/main/java/se/natusoft/osgi/aps/jpa/service/APSOpenJPAServiceProvider.java" afterPath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/src/main/java/se/natusoft/osgi/aps/jpa/service/APSOpenJPAServiceProvider.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/docs/src/APSSimpleUserService.md" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/docs/src/APSSimpleUserService.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/APSActivator.java" afterPath="$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/APSActivator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSOSGiSupport.java" afterPath="$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSOSGiSupport.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/vaadin/APSVaadinOSGiApplication.java" afterPath="$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/vaadin/APSVaadinOSGiApplication.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/MultiBundleClassLoader.java" afterPath="$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/MultiBundleClassLoader.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lics/licenses.md" afterPath="$PROJECT_DIR$/lics/licenses.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="93ee55a5-7aeb-46b4-befc-da110c6bd63a" name="Failed commit: Default" comment="Dev commit." />
@@ -13,7 +15,7 @@
     <ignored path=".idea/workspace.xml" />
     <ignored mask="*.iml" />
     <file path="/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376402593309" ignored="false" />
-    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376413023802" ignored="false" />
+    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376420139304" ignored="false" />
     <file path="/a.dummy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376128280564" ignored="false" />
     <file path="/testclient.sh" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355064160118" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/wip-clones/MarkdownDoc/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355420755980" ignored="false" />
@@ -639,7 +641,7 @@
     <file path="/APSContextWrapper.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1364649196962" ignored="false" />
     <file path="/APSTrackerWrapper.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1364654356679" ignored="false" />
     <file path="/MenuActionProvider.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1364654460992" ignored="false" />
-    <file path="/APSVaadinOSGiApplication.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376322986214" ignored="false" />
+    <file path="/APSVaadinOSGiApplication.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376488495862" ignored="false" />
     <file path="/APSSessionListener.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1364654737754" ignored="false" />
     <file path="/VaadinUserMessager.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1364654789323" ignored="false" />
     <file path="$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/docs/aps-ext-protocol-http-transport-provider.html" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1364748821051" ignored="false" />
@@ -668,7 +670,7 @@
     <file path="$PROJECT_DIR$/APS-Core/APSLogServiceProvider/src/main/java/se/natusoft/osgi/aps/log/sevice/Activator.java" changelist="06b13bc3-1d3d-4a4b-a140-0787da2c2ef4" time="1365862677188" ignored="false" />
     <file path="/Properties.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1375284421048" ignored="false" />
     <file path="/Persistence.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1375284571457" ignored="false" />
-    <file path="/APSActivator.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376314658270" ignored="false" />
+    <file path="/APSActivator.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376497093477" ignored="false" />
     <file path="/APSActivatorException.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1375367369374" ignored="false" />
     <file path="/BundleStartup.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1375368334005" ignored="false" />
     <file path="/TestActivator.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1375377736069" ignored="false" />
@@ -742,9 +744,9 @@
     <file path="/BundleStart.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376242028450" ignored="false" />
     <file path="/APSSOSGiServlet.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376322636730" ignored="false" />
     <file path="/APSSOSGiSupport.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376321702379" ignored="false" />
-    <file path="/APSOSGiSupport.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376321845883" ignored="false" />
+    <file path="/APSOSGiSupport.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376489273121" ignored="false" />
     <file path="$MAVEN_REPOSITORY$/se/natusoft/tools/xob/xob/5.0/xob-5.0.jar!/META-INF/MANIFEST.MF" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376401304303" ignored="false" />
-    <file path="/MultiBundleClassLoader.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376415047122" ignored="false" />
+    <file path="/MultiBundleClassLoader.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376481095445" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -832,7 +834,7 @@
       <file leaf-file-name="APSAdminWebApp.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/src/main/java/se/natusoft/osgi/aps/apsadminweb/app/gui/vaadin/APSAdminWebApp.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="154" column="33" selection-start="5782" selection-end="5782" vertical-scroll-proportion="0.0">
+            <state line="73" column="45" selection-start="2748" selection-end="2748" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -854,9 +856,9 @@
       <file leaf-file-name="MultiBundleClassLoader.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/MultiBundleClassLoader.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="56" column="40" selection-start="1568" selection-end="1568" vertical-scroll-proportion="0.0">
+            <state line="49" column="52" selection-start="1442" selection-end="1442" vertical-scroll-proportion="0.0">
               <folding>
-                <element signature="e#0#4746#0" expanded="true" />
+                <element signature="e#0#4802#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -889,10 +891,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="OSGiService.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="OSGiService.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/annotation/OSGiService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="56" column="35" selection-start="1835" selection-end="1859" vertical-scroll-proportion="0.24523161">
+            <state line="61" column="0" selection-start="2032" selection-end="2032" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -911,7 +913,10 @@
         <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/auth/user/APSSimpleUserServiceAdmin.java">
           <provider selected="true" editor-type-id="text-editor">
             <state line="48" column="17" selection-start="1426" selection-end="1426" vertical-scroll-proportion="0.0">
-              <folding />
+              <folding>
+                <element signature="e#0#3228#0" expanded="false" />
+                <element signature="imports" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -920,6 +925,49 @@
         <entry file="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/APSServiceTracker.java">
           <provider selected="true" editor-type-id="text-editor">
             <state line="214" column="11" selection-start="8997" selection-end="8997" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="APSActivator.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/APSActivator.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="870" column="27" selection-start="38832" selection-end="38832" vertical-scroll-proportion="0.40054497">
+              <folding>
+                <element signature="e#0#41024#0" expanded="true" />
+                <element signature="imports" expanded="true" />
+                <element signature="e#14482#15030#0" expanded="true" />
+                <element signature="e#15011#15012#0" expanded="true" />
+                <element signature="e#32628#34220#0" expanded="true" />
+                <element signature="e#34201#34202#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="APSVaadinOSGiApplication.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/vaadin/APSVaadinOSGiApplication.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="161" column="0" selection-start="5793" selection-end="5793" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="APSLogger.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/APSLogger.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="96" column="11" selection-start="2902" selection-end="2902" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="APSOSGiSupport.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSOSGiSupport.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="130" column="42" selection-start="4611" selection-end="4611" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -959,15 +1007,15 @@
         <option value="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/src/main/java/se/natusoft/osgi/aps/auth/service/APSSimpleUserServiceAuthServiceProvider.java" />
         <option value="$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/annotation/BundleStart.java" />
         <option value="$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/annotation/OSGiServiceProvider.java" />
-        <option value="$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/APSActivator.java" />
         <option value="$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSSOSGiServlet.java" />
         <option value="$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSSOSGiSupport.java" />
-        <option value="$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSOSGiSupport.java" />
-        <option value="$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/vaadin/APSVaadinOSGiApplication.java" />
         <option value="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/src/main/java/com/mchange/v2/c3p0/DummyForMySQL.java" />
         <option value="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/pom.xml" />
-        <option value="$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/MultiBundleClassLoader.java" />
         <option value="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/src/main/java/se/natusoft/osgi/aps/jpa/service/APSOpenJPAServiceProvider.java" />
+        <option value="$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/MultiBundleClassLoader.java" />
+        <option value="$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/vaadin/APSVaadinOSGiApplication.java" />
+        <option value="$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSOSGiSupport.java" />
+        <option value="$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/APSActivator.java" />
       </list>
     </option>
   </component>
@@ -1092,12 +1140,86 @@
           <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
         </PATH_ELEMENT>
         <PATH_ELEMENT>
+          <option name="myItemId" value="APS Web Applications" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Web Applications" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Lifecycle" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$LifecycleNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
           <option name="myItemId" value="APS Libraries" />
           <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
         </PATH_ELEMENT>
         <PATH_ELEMENT>
           <option name="myItemId" value="Modules" />
           <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Web Tools" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Libraries" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Web Tools" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Lifecycle" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$LifecycleNode" />
         </PATH_ELEMENT>
       </PATH>
       <PATH>
@@ -1154,6 +1276,28 @@
         <PATH_ELEMENT>
           <option name="myItemId" value="Lifecycle" />
           <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$LifecycleNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Libraries" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
         </PATH_ELEMENT>
       </PATH>
       <PATH>
@@ -5425,7 +5569,11 @@
       <created>1376413057836</created>
       <updated>1376413057836</updated>
     </task>
-    <option name="localTasksCounter" value="352" />
+    <task id="LOCAL-00352" summary="- The MultiBundleClassLoader of APSOpenJPAProvider has now been moved to APSToolsLib.&#10;- APSOpenJPAProvider now uses new features in MultiBundleClassLoader to extends the JPA framework classpath to clients of clients to more easily be able to provide JDBC drivers.">
+      <created>1376420151312</created>
+      <updated>1376420151312</updated>
+    </task>
+    <option name="localTasksCounter" value="353" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="true" url="http://redmine.natusoft.private/redmine">
@@ -5463,7 +5611,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1200" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31941923" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -5484,9 +5632,9 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32700247" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24813233" sideWeight="0.2876588" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39956957" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.18036287" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18036287" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24813233" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24813233" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Problems" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3297162" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hudson Information" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
@@ -5552,7 +5700,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated APSToolsLib documentation." />
+    <option name="LAST_COMMIT_MESSAGE" value="- The MultiBundleClassLoader of APSOpenJPAProvider has now been moved to APSToolsLib.&#10;- APSOpenJPAProvider now uses new features in MultiBundleClassLoader to extends the JPA framework classpath to clients of clients to more easily be able to provide JDBC drivers." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -5566,7 +5714,6 @@
     <option name="UPDATE_FILTER_BY_SCOPE" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="Documentation." />
     <MESSAGE value="Regenerated source headers with new version number." />
     <MESSAGE value="- Converted all APS-APIs javadoc to markdown since I'm now using a markdown doclet.&#10;- Inspected and corrected documentation." />
     <MESSAGE value="Added a whats new in 0.9.1 section." />
@@ -5591,6 +5738,7 @@
     <MESSAGE value="- Debugged and added functionality to APSActivator.&#10;- APSSimpleUserServiceProvider now uses the APSActivator using instance factory.&#10;" />
     <MESSAGE value="Fixed some stupid NPEs." />
     <MESSAGE value="Updated APSToolsLib documentation." />
+    <MESSAGE value="- The MultiBundleClassLoader of APSOpenJPAProvider has now been moved to APSToolsLib.&#10;- APSOpenJPAProvider now uses new features in MultiBundleClassLoader to extends the JPA framework classpath to clients of clients to more easily be able to provide JDBC drivers." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -5666,32 +5814,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/tracker/OnTimeout.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="0" selection-start="1680" selection-end="1680" vertical-scroll-proportion="0.7220709">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/tracker/OnServiceLeaving.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="44" column="17" selection-start="1365" selection-end="1365" vertical-scroll-proportion="0.613079">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Data/APSDataSource/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="178" column="0" selection-start="6460" selection-end="6537" vertical-scroll-proportion="0.49860725">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/data/jpa/service/APSJPAService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="63" column="17" selection-start="2372" selection-end="2372" vertical-scroll-proportion="0.0">
@@ -5702,14 +5824,10 @@
     <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/auth/user/APSSimpleUserServiceAdmin.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="48" column="17" selection-start="1426" selection-end="1426" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/src/main/java/se/natusoft/osgi/aps/apsadminweb/app/gui/vaadin/APSAdminWebApp.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="154" column="33" selection-start="5782" selection-end="5782" vertical-scroll-proportion="0.0">
-          <folding />
+          <folding>
+            <element signature="e#0#3228#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -5731,15 +5849,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="4" column="28" selection-start="42" selection-end="59" vertical-scroll-proportion="0.0">
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/MultiBundleClassLoader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="56" column="40" selection-start="1568" selection-end="1568" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#0#4746#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -5777,8 +5886,59 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/annotation/OSGiService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="56" column="35" selection-start="1835" selection-end="1859" vertical-scroll-proportion="0.24523161">
+        <state line="61" column="0" selection-start="2032" selection-end="2032" vertical-scroll-proportion="0.0">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/MultiBundleClassLoader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="49" column="52" selection-start="1442" selection-end="1442" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#0#4802#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/APSLogger.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="96" column="11" selection-start="2902" selection-end="2902" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/vaadin/APSVaadinOSGiApplication.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="161" column="0" selection-start="5793" selection-end="5793" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Libraries/APSWebTools/src/main/java/se/natusoft/osgi/aps/tools/web/APSOSGiSupport.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="130" column="42" selection-start="4611" selection-end="4611" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/src/main/java/se/natusoft/osgi/aps/apsadminweb/app/gui/vaadin/APSAdminWebApp.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="73" column="45" selection-start="2748" selection-end="2748" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Libraries/APSToolsLib/src/main/java/se/natusoft/osgi/aps/tools/APSActivator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="870" column="27" selection-start="38832" selection-end="38832" vertical-scroll-proportion="0.40054497">
+          <folding>
+            <element signature="e#0#41024#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#14482#15030#0" expanded="true" />
+            <element signature="e#15011#15012#0" expanded="true" />
+            <element signature="e#32628#34220#0" expanded="true" />
+            <element signature="e#34201#34202#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -46,6 +46,8 @@ import java.util.List;
 
 /**
  * This is a class loader that wraps one or more bundles providing classpath for all wrapped bundles.
+ *
+ * Install as context class loader on thread to use.
  */
 public class MultiBundleClassLoader extends ClassLoader {
 

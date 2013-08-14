@@ -89,7 +89,7 @@ public class APSOSGiSupport implements OSGiBundleContextProvider, APSSessionList
     private APSOSGiSupportCallbacks callbacks;
 
     /** We use part of the APSActivator functionality to inject into @OSGiService and @Inject annotated fields. */
-    private APSActivator injector = new APSActivator();
+    private APSActivator activator;
 
     private BundleContext bundleContext;
 
@@ -100,21 +100,41 @@ public class APSOSGiSupport implements OSGiBundleContextProvider, APSSessionList
     /**
      * Creates a new Instance and stores in in the session.
      *
-     * @param callbacks Callbacks to call to init and cleanup.
+     * @param callbacks Callbacks to call to init and cleanup. This should be a container created instance like a
+     *                  servlet.
      * @param session The session.
      */
     public APSOSGiSupport(APSOSGiSupportCallbacks callbacks, HttpSession session) {
         this.callbacks = callbacks;
 
+        this.activator = new APSActivator(callbacks);
+
         this.bundleContext = (BundleContext)session.getServletContext().getAttribute("osgi-bundlecontext");
 
-        if (bundleContext == null) {
+        if (this.bundleContext == null) {
             System.err.println(NON_OSGI_DEPLOYMENT_SHORT_MESSAGE + " " + NON_OSGI_DEPLOYMENT_LONG_MESSAGE);
         }
+        else {
+            try {
+                this.activator.start(this.bundleContext);
+            }
+            catch (Exception e) {
+                System.err.println("Failed to start activator! Things might not work as expected!");
+                e.printStackTrace(System.err);
+            }
 
-        init(session);
+            this.callbacks.initServices(this.getBundleContext());
 
-        session.setAttribute(APSOSGiSupport.class.getName(), this);
+            // For the following to return an APSSessionListener instance it has to be specified as a listener in web.xml!
+            APSSessionListener sessionListener = (APSSessionListener)session.getAttribute(APSSessionListener.class.getName());
+            if (sessionListener != null) {
+                sessionListener.addDestroyedListener(this);
+            }
+
+            this.callbacks.initGUI();
+
+            session.setAttribute(APSOSGiSupport.class.getName(), this);
+        }
     }
 
     //
@@ -131,23 +151,6 @@ public class APSOSGiSupport implements OSGiBundleContextProvider, APSSessionList
     }
 
     /**
-     * Initializes the vaadin application.
-     */
-    protected void init(HttpSession session) {
-        injectToInstance(this.callbacks);
-
-        this.callbacks.initServices(this.getBundleContext());
-
-        // For the following to return an APSSessionListener instance it has to be specified as a listener in web.xml!
-        APSSessionListener sessionListener = (APSSessionListener)session.getAttribute(APSSessionListener.class.getName());
-        if (sessionListener != null) {
-            sessionListener.addDestroyedListener(this);
-        }
-
-        this.callbacks.initGUI();
-    }
-
-    /**
      * This will return this war bundles _BundleContext_. This is only available if this war is
      * deployed in an R4.2+ compliant OSGi container. 
      * 
@@ -157,27 +160,17 @@ public class APSOSGiSupport implements OSGiBundleContextProvider, APSSessionList
         return this.bundleContext;
     }
 
-    /**
-     * Injects @OSGiService and @Inject annotated fields of the specified instance.
-     *
-     * @param instance The instance to inject into.
-     */
-    public void injectToInstance(Object instance) {
-        try {
-            this.injector.injectFieldsOnly(getBundleContext(), instance);
-        }
-        catch (Exception e) {
-            // We have no logger now so print to stderr. It should appear in some log!
-            e.printStackTrace(System.err);
-        }
-    }
 
     /**
      * Called when session is destroyed.
      */
     @Override
     public void sessionDestroyed() {
-        this.injector.cleanupFieldsOnly(getBundleContext());
+        try {
+            this.activator.stop(getBundleContext());
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
         this.callbacks.cleanupServices(getBundleContext());
     }
 
