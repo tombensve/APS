@@ -153,11 +153,7 @@ public abstract class APSVaadinOSGiApplication
             this.activator.start(getBundleContext());
         }
         catch (Exception e) {
-            this.getMainWindow().showNotification(
-                    ACTIVATOR_FAIL_SHORT_MESSAGE,
-                    ACTIVATOR_FAIL_LONG_MESSAGE,
-                    Notification.TYPE_ERROR_MESSAGE);
-            this.logger.error(ACTIVATOR_FAIL_SHORT_MESSAGE + " " + ACTIVATOR_FAIL_LONG_MESSAGE);
+            this.logger.error("Failed to start activator!", e);
         }
 
         initServices(this.clientContext);

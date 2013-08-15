@@ -41,8 +41,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import se.natusoft.osgi.aps.apsadminweb.service.APSAdminWebService;
-import se.natusoft.osgi.aps.tools.APSServiceTracker;
+import se.natusoft.osgi.aps.tools.annotation.Inject;
 import se.natusoft.osgi.aps.tools.web.APSAdminWebLoginHandler;
 import se.natusoft.osgi.aps.tools.web.ClientContext;
 import se.natusoft.osgi.aps.tools.web.vaadin.APSTheme;
@@ -68,13 +67,14 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
     private Window main = null;
 
     /** The application tabs. */
-    private TabPanel tabPanel = null;
+    @Inject
+    private TabPanel tabPanel;
 
     /** The main window layout. */
     private VerticalLayout mainLayout = null;
 
-    /** A tracker for the APSAdminWebService. */
-    private APSServiceTracker<APSAdminWebService> adminWebServiceTracker = null;
+//    /** A tracker for the APSAdminWebService. */
+//    private APSServiceTracker<APSAdminWebService> adminWebServiceTracker = null;
 
     /** A login handler. */
     private APSAdminWebLoginHandler loginHandler = null;
@@ -96,15 +96,6 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
      */
     @Override
     public void initServices(ClientContext clientContext) {
-        this.adminWebServiceTracker = new APSServiceTracker<APSAdminWebService>(clientContext.getBundleContext(), APSAdminWebService.class, "2 minutes");
-        this.adminWebServiceTracker.start();
-
-        // This might seem unflexible, but it isn't! The getWrappedService() call returns a proxied implementation of the service
-        // that uses the service tracker to get the service and forwards calls to it. It handles services coming and going. If a
-        // service is not available it will wait for the specified timeout before failing with an APSNoServiceAvailableException
-        // which is a runtime exception. This is a convenient use of the APSServiceTracker if you don't need more control over
-        // service management yourself.
-        clientContext.addService(APSAdminWebService.class, this.adminWebServiceTracker.getWrappedService());
 
         this.loginHandler = new APSAdminWebLoginHandler(clientContext.getBundleContext()) {
 
@@ -130,7 +121,6 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
      */
     @Override
     public void cleanupServices(ClientContext clientContex) {
-        this.adminWebServiceTracker.stop(clientContex.getBundleContext());
         if (this.loginHandler != null) {
             this.loginHandler.shutdown();
         }
@@ -152,7 +142,7 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
 
         SidesAndCenterLayout layout = new SidesAndCenterLayout();
         layout.setTop(new LogoPanel(this));
-        this.tabPanel = new TabPanel(getClientContext());
+        this.tabPanel.refreshTabs();
         layout.setCenter(this.tabPanel);
 
         layout.doLayout();

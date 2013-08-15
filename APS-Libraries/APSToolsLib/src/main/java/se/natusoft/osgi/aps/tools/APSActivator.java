@@ -145,6 +145,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         this.managedInstances = new HashMap<>();
         this.activatorMode = EXISTING_INSTANCES_MODE;
         for (Object inst : instances) {
+            System.out.println("[APSActivator] Adding instance of '" + inst.getClass().getName() + "' as already " +
+                    "existing instance to managed!");
             addManagedInstance(inst);
         }
     }
@@ -200,6 +202,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     public void start(BundleContext context) throws Exception {
         this.context = context;
         initMembers();
+        this.activatorLogger.info("Starting APSActivator for bundle '" + context.getBundle().getSymbolicName() +
+                "' with activatorMode: " + this.activatorMode);
         Bundle bundle = context.getBundle();
 
         List<Class> classEntries = new LinkedList<>();
@@ -209,15 +213,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         collectClassEntries(bundle, classEntries, "/");
 
         for (Class entryClass : classEntries) {
-            try {
-                handleServiceInstances(entryClass, context);
-                handleFieldInjections(entryClass, context);
-                handleServiceRegistrations(entryClass, context);
-                handleMethods(entryClass, context);
-            }
-            catch (ClassNotFoundException cnfe) {
-                this.activatorLogger.error("Failed to get class for bundle class entry!", cnfe);
-            }
+            handleServiceInstances(entryClass, context);
+            handleFieldInjections(entryClass, context);
+            handleServiceRegistrations(entryClass, context);
+            handleMethods(entryClass, context);
         }
     }
 
@@ -240,6 +239,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     @Override
     public void stop(BundleContext context) throws Exception {
         Exception failure = null;
+
+        this.activatorLogger.info("Stopping APSActivator for bundle '" + context.getBundle().getSymbolicName() +
+                "' with activatorMode: " + this.activatorMode);
 
         for (Tuple2<Method, Object> shutdownMethod : this.shutdownMethods) {
             try {
@@ -288,6 +290,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 }
             }
         }
+
+        this.activatorLogger.stop(context);
 
         if (failure != null) {
             throw new APSActivatorException("Bundle stop not entirely successful!", failure);
@@ -680,6 +684,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     namedInstance = getManagedInstance(field.getType());
                 }
                 this.namedInstances.put(namedInstanceKey, namedInstance);
+            }
+            else {
+                this.activatorLogger.info("Got named instance for key '" + namedInstanceKey + "': " +
+                    namedInstance.getClass().getName());
             }
 
             List<Object> managedInstances = getManagedInstances(managedClass);

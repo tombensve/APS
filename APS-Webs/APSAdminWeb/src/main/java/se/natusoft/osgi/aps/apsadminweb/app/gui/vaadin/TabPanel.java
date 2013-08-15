@@ -43,7 +43,7 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import se.natusoft.osgi.aps.apsadminweb.service.APSAdminWebService;
 import se.natusoft.osgi.aps.apsadminweb.service.model.AdminWebReg;
-import se.natusoft.osgi.aps.tools.web.ClientContext;
+import se.natusoft.osgi.aps.tools.annotation.OSGiService;
 import se.natusoft.osgi.aps.tools.web.vaadin.APSTheme;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.HTMLFileLabel;
 
@@ -57,15 +57,14 @@ public class TabPanel extends TabSheet {
     // Private Members
     //
 
-    /** The client context. */
-    private ClientContext clientContext = null;
+    @OSGiService(timeout = "2 minutes")
+    private APSAdminWebService adminWebService;
 
     //
     // Constructors
     //
 
-    public TabPanel(ClientContext clientContext) {
-        this.clientContext = clientContext;
+    public TabPanel() {
 
         this.setSizeFull();
         this.setStyleName("asp-tabsheet");
@@ -78,7 +77,7 @@ public class TabPanel extends TabSheet {
         aboutTabLayout.addComponent(aboutText);
         addTab(aboutTabLayout, "About", null).setDescription("Information about APS Admin Web tool.");
         // Create tab for each registered admin web.
-        refreshTabs();
+        //refreshTabs();
     }
 
     //
@@ -89,7 +88,7 @@ public class TabPanel extends TabSheet {
      * Recreates all tabs.
      */
     public void refreshTabs() {
-        List<AdminWebReg> currentAdminWebs = this.clientContext.getService(APSAdminWebService.class).getRegisteredAdminWebs();
+        List<AdminWebReg> currentAdminWebs = this.adminWebService.getRegisteredAdminWebs();
 
         // Remove old
         removeAllComponents();
