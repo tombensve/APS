@@ -62,6 +62,7 @@ import se.natusoft.apsgroups.internal.protocol.message.PacketType;
 import se.natusoft.apsgroups.logging.APSGroupsLogger;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -170,6 +171,9 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
      */
     private void announceMember(Member member) throws IOException {
         MessagePacket mp = new MessagePacket(member.getGroup(), member, UUID.randomUUID(),0 , PacketType.MEMBER_ANNOUNCEMENT);
+        ObjectOutputStream oos = new ObjectOutputStream(mp.getOutputStream());
+        oos.writeObject(member.getMemberUserData());
+        oos.close();
         this.transport.send(mp.getPacketBytes());
         member.announced();
     }

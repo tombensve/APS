@@ -58,6 +58,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import se.natusoft.apsgroups.config.APSGroupsConfig;
+import se.natusoft.apsgroups.internal.StaticLogger;
 import se.natusoft.apsgroups.logging.APSGroupsLogger;
 import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsInfoService;
 import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
@@ -110,6 +111,7 @@ public class APSGroupsActivator implements BundleActivator {
         apsLogger.setLoggingFor("APSGroups");
         apsLogger.start(context);
         this.logger = new APSGroupsLoggerRelay(apsLogger);
+        StaticLogger.setLogger(this.logger);
 
         this.config = new APSGroupsConfigRelay();
 

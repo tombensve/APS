@@ -62,6 +62,7 @@ import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
 import se.natusoft.osgi.aps.api.net.groups.service.GroupMember;
 
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * This is the service API implementation.
@@ -203,6 +204,19 @@ public class APSGroupsServiceProvider implements APSGroupsService {
      */
     @Override
     public GroupMember joinGroup(String name) throws IOException {
+        return joinGroup(name, new Properties());
+    }
+
+    /**
+     * Joins a group.
+     *
+     * @param name           The name of the group to join.
+     * @param memberUserData Data provided by users of the service.
+     * @return A GroupMember that provides the API for sending and receiving data in the group.
+     * @throws java.io.IOException The unavoidable one!
+     */
+    @Override
+    public GroupMember joinGroup(String name, Properties memberUserData) throws IOException {
         if (name.equals("[net time]")) {
             throw new IOException("The group name '[net time]' is reserved for internal use and cannot be used.");
         }
@@ -211,7 +225,7 @@ public class APSGroupsServiceProvider implements APSGroupsService {
 
         Group group = Groups.getGroup(name);
         group.setNetTime(this.netTime);
-        Member member = new Member();
+        Member member = new Member(memberUserData);
         group.addMember(member);
         this.memberManagerThread.addMember(member);
         GroupMemberProvider groupMember = new GroupMemberProvider(member, this.dataReceiverThread, logger);

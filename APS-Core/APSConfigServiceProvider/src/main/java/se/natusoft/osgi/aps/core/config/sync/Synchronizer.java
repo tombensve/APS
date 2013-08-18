@@ -39,6 +39,8 @@
 package se.natusoft.osgi.aps.core.config.sync;
 
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigAdmin;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
 import se.natusoft.osgi.aps.api.net.groups.service.GroupMember;
@@ -65,6 +67,13 @@ import java.util.Properties;
  */
 public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemoryStore.ConfigUpdateListener, APSConfigEnvStore.ConfigEnvUpdateListener, MessageListener {
     //
+    // Constants
+    //
+
+    private static final String NEWEST_CONFIG_TIMESTAMP = "newest-config-timestamp";
+
+
+    //
     // Private Members
     //
 
@@ -82,7 +91,11 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
 
     private GroupMember groupMember = null;
 
+    private LongTimeNoSeeThread longTimeNoSeeThread = null;
+
     private Date lastGroupMsgTimestamp = null;
+
+    private long newestConfigTimestamp = -1;
 
     //
     // Constructors
@@ -119,21 +132,46 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
     //
 
     public void start() throws IOException {
-        this.groupMember = this.groupsService.joinGroup("aps-config-synchronizer");
+        Properties memberProps = new Properties();
+        memberProps.setProperty(NEWEST_CONFIG_TIMESTAMP, "" + resolveNewestConfigTimestamp());
+        this.groupMember = this.groupsService.joinGroup("aps-config-synchronizer", memberProps);
         this.groupMember.addMessageListener(this);
         this.configEnvStore.addUpdateListener(this);
         this.configMemoryStore.addUpdateListener(this);
         sendFeedMe();
         updateLastGroupMsgTimestamp();
+        this.longTimeNoSeeThread = new LongTimeNoSeeThread();
+        this.longTimeNoSeeThread.start();
         this.logger.info("Started synchronizer!");
     }
 
     public void stop() throws IOException {
+        this.longTimeNoSeeThread.stopThread();
         this.configEnvStore.removeUpdateListener(this);
         this.configMemoryStore.removeUpdateListener(this);
         this.groupMember.removeMessageListener(this);
         this.groupsService.leaveGroup(this.groupMember);
         this.logger.info("Stopped synchronizer!");
+    }
+
+    private long resolveNewestConfigTimestamp() {
+        if (this.newestConfigTimestamp == -1) {
+            long newestConfigTimestamp = 0;
+
+            for (APSConfigAdmin configAdmin : this.configMemoryStore.getAllConfigurations()) {
+                for (APSConfigValueEditModel valueEditModel : configAdmin.getConfigModel().getValues()) {
+                    for (APSConfigEnvironment configEnv : this.configEnvStore.getConfigEnvironments()) {
+                        long ts = configAdmin.getConfigValueTimestamp(valueEditModel, configEnv);
+                        if (ts > newestConfigTimestamp) {
+                            newestConfigTimestamp = ts;
+                        }
+                    }
+                }
+            }
+            this.newestConfigTimestamp = newestConfigTimestamp;
+        }
+
+        return this.newestConfigTimestamp;
     }
 
     private Date getLastGroupMsgTimestamp() {
@@ -592,15 +630,10 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
         }
     }
 
-    // Not entirely convinced this is a good idea. I'll leave this here for now, but
-    // currently this thread is not started.
-
     /**
-     * Sends a new FEED_ME message if nothing is received for 4 hours.
+     * Sends a new FEED_ME message if we have older config than other members.
      */
     private class LongTimeNoSeeThread extends Thread {
-
-        private static final long timeout = 1000 * 60 * 60 * 4;
 
         private boolean done = false;
 
@@ -613,19 +646,43 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
         }
 
         public void run() {
+            int count = 0;
             while (!isDone()) {
+
                 try {
                     Thread.sleep(1000 * 15);
                 }
                 catch (InterruptedException ie) {
                     Synchronizer.this.logger.error("Unexpected interrupt of sleep!", ie);
                 }
+                ++count;
 
-                Date now = new Date();
-                Date lastMessage = getLastGroupMsgTimestamp();
-                if (now.getTime() - lastMessage.getTime() >= timeout) {
-                    updateLastGroupMsgTimestamp();
-                    sendFeedMe();
+                if (count >= 20 && !isDone()) {
+                    count = 0;
+                    long localNewestTimestamp = resolveNewestConfigTimestamp();
+                    long newestTimestamp = 0;
+
+                    for (Properties memberProps : Synchronizer.this.groupMember.getMembersUserProperties()) {
+                        String val = memberProps.getProperty(NEWEST_CONFIG_TIMESTAMP);
+                        if (val != null) {
+                            try {
+                                long ts = Long.valueOf(val);
+                                if (ts > newestTimestamp) {
+                                    newestTimestamp = ts;
+                                }
+                            }
+                            catch (NumberFormatException nfe) {}
+                        }
+                    }
+
+                    if (newestTimestamp > localNewestTimestamp) {
+                        // This to avoid this always happening due to time difference. Since the timestamp is
+                        // calculated before we join our group and this value is passed on join we cannot use
+                        // net time to remove time differences!
+                        Synchronizer.this.newestConfigTimestamp = newestTimestamp;
+                        Synchronizer.this.logger.info("Found fresher config at other members!");
+                        sendFeedMe();
+                    }
                 }
             }
         }

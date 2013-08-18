@@ -70,10 +70,7 @@ import se.natusoft.osgi.aps.api.net.groups.service.GroupMember;
 import se.natusoft.osgi.aps.groups.config.APSGroupsConfigRelay;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * This provides the API for a member.
@@ -238,7 +235,21 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
         for (Member membr : this.member.getGroup().getListOfMembers()) {
             memberInfo.add(membr.getId().toString()+ ", status:" + (membr.stillKicking(this.config.getMemberAnnounceInterval()) ? "alive" : "dead"));
         }
+
         return memberInfo;
+    }
+
+    /**
+     * Returns the user properties for the members.
+     */
+    @Override
+    public List<Properties> getMembersUserProperties() {
+        List<Properties> memberProperties = new LinkedList<Properties>();
+        for (Member membr : this.member.getGroup().getListOfMembers()) {
+            memberProperties.add(membr.getMemberUserData());
+        }
+
+        return memberProperties;
     }
 
     /**

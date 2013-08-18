@@ -54,6 +54,7 @@
 package se.natusoft.apsgroups.internal.protocol.message;
 
 import se.natusoft.apsgroups.Debug;
+import se.natusoft.apsgroups.internal.StaticLogger;
 import se.natusoft.apsgroups.internal.net.Transport;
 import se.natusoft.apsgroups.internal.protocol.Group;
 import se.natusoft.apsgroups.internal.protocol.Groups;
@@ -194,12 +195,6 @@ public class MessagePacket {
             this.group = Groups.getGroup(groupName);
 
             UUID memberId = (UUID)objStream.readObject();
-            this.member = this.group.getMemberById(memberId);
-            if (this.member == null) {
-                // This means it is a new member not in the group yet!
-                this.member = new Member(memberId);
-            }
-
             this.messageId = (UUID)objStream.readObject();
 
             this.packetNumber = objStream.readInt();
@@ -217,6 +212,25 @@ public class MessagePacket {
             objStream.close();
             byteStream.close();
 
+            this.member = this.group.getMemberById(memberId);
+            if (this.member == null) {
+                Properties memberUserProps = null;
+                if (this.type == PacketType.MEMBER_ANNOUNCEMENT) {
+                    try {
+                        ObjectInputStream ois = new ObjectInputStream(getInputStream());
+                        memberUserProps = (Properties)ois.readObject();
+                    }
+                    catch (Exception e) {
+                        StaticLogger.getLogger().error("Failed to get member properties for a member announcement!", e);
+                        memberUserProps = new Properties();
+                    }
+                }
+                else {
+                    memberUserProps = new Properties();
+                }
+                // This means it is a new member not in the group yet!
+                this.member = new Member(memberId, memberUserProps);
+            }
         }
         catch (ClassNotFoundException cnfe) {
             throw new IOException(cnfe.getMessage(), cnfe);

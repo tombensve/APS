@@ -40,6 +40,7 @@ package se.natusoft.osgi.aps.api.net.groups.service;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.UUID;
 
 /**
@@ -84,6 +85,11 @@ public interface GroupMember {
      * Returns information about members.
      */
     List<String> getMemberInfo();
+
+    /**
+     * Returns the user properties for the members.
+     */
+    List<Properties> getMembersUserProperties();
 
     /**
      * @return The current time as net time.

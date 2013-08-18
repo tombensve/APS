@@ -79,7 +79,7 @@ public interface Transport {
 
 
     /**
-     * Sets up the multicast socket.
+     * Sets up the transport.
      *
      * @throws java.net.UnknownHostException
      * @throws java.net.SocketException

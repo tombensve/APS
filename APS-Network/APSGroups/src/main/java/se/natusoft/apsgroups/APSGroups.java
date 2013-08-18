@@ -56,6 +56,7 @@ package se.natusoft.apsgroups;
 import se.natusoft.apsgroups.config.APSGroupsConfig;
 import se.natusoft.apsgroups.config.APSGroupsConfigProvider;
 import se.natusoft.apsgroups.internal.GroupMemberProvider;
+import se.natusoft.apsgroups.internal.StaticLogger;
 import se.natusoft.apsgroups.internal.net.MulticastTransport;
 import se.natusoft.apsgroups.internal.net.Transport;
 import se.natusoft.apsgroups.internal.protocol.*;
@@ -63,6 +64,7 @@ import se.natusoft.apsgroups.logging.APSGroupsLogger;
 import se.natusoft.apsgroups.logging.APSGroupsSystemOutLogger;
 
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * This is the main API when using APSGroups as a library.
@@ -113,6 +115,7 @@ public class APSGroups {
     public APSGroups() {
         this.config = new APSGroupsConfigProvider();
         this.logger = new APSGroupsSystemOutLogger();
+        StaticLogger.setLogger(this.logger);
     }
 
     //
@@ -179,6 +182,20 @@ public class APSGroups {
      * @throws java.io.IOException The unavoidable one!
      */
     public GroupMember joinGroup(String name) throws IOException {
+        return joinGroup(name, new Properties());
+    }
+
+    /**
+     * Joins a group.
+     *
+     * @param name The name of the group to join.
+     * @param memberUserData Member data provided by user of APSGroups.
+     *
+     * @return A GroupMember that provides the API for sending and receiving data in the group.
+     *
+     * @throws java.io.IOException The unavoidable one!
+     */
+    public GroupMember joinGroup(String name, Properties memberUserData) throws IOException {
         if (name.equals("[net time]")) {
             throw new IOException("The group name '[net time]' is reserved for internal use and cannot be used.");
         }
@@ -189,7 +206,7 @@ public class APSGroups {
         if (group.getConfig() == null) {
             group.setConfig(this.config);
         }
-        Member member = new Member();
+        Member member = new Member(memberUserData);
         group.addMember(member);
         this.memberManagerThread.addMember(member);
         GroupMemberProvider groupMember = new GroupMemberProvider(member, this.dataReceiverThread, logger, this.config);

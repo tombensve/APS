@@ -37,6 +37,7 @@
 package se.natusoft.osgi.aps.api.net.groups.service;
 
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * A service that lets clients send data reliable to all members of a group on any host. There is
@@ -53,6 +54,18 @@ public interface APSGroupsService {
      * @throws java.io.IOException The unavoidable one!
      */
     GroupMember joinGroup(String name) throws IOException;
+
+    /**
+     * Joins a group.
+     *
+     * @param name The name of the group to join.
+     * @param memberUserData Data provided by users of the service.
+     *
+     * @return A GroupMember that provides the API for sending and receiving data in the group.
+     *
+     * @throws java.io.IOException The unavoidable one!
+     */
+    GroupMember joinGroup(String name, Properties memberUserData) throws IOException;
 
     /**
      * Leaves as member of group.
