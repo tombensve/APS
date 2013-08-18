@@ -45,6 +45,7 @@ import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
 import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
+import se.natusoft.osgi.aps.core.config.api.APSConfigSyncMgmtService;
 import se.natusoft.osgi.aps.core.config.service.APSConfigAdminServiceProvider;
 import se.natusoft.osgi.aps.core.config.service.APSConfigServiceExtender;
 import se.natusoft.osgi.aps.core.config.service.APSConfigServiceProvider;
@@ -72,6 +73,9 @@ public class APSConfigServiceActivator implements BundleActivator {
 
     /** The APS configuration service. */
     private ServiceRegistration configService = null;
+
+    /** Publish a bundle provided APSConfigSyncMgmtService. */
+    private ServiceRegistration syncMgmtService = null;
 
     //
     // Required services
@@ -207,18 +211,26 @@ public class APSConfigServiceActivator implements BundleActivator {
         }
 
         // Setup sychronization tracker
-        this.groupsServiceTracker = new APSServiceTracker<APSGroupsService>(context, APSGroupsService.class, APSServiceTracker.LARGE_TIMEOUT);
+        this.groupsServiceTracker = new APSServiceTracker<APSGroupsService>(context, APSGroupsService.class,
+                APSServiceTracker.LARGE_TIMEOUT);
         this.groupsServiceTracker.start();
 
-        // We create and start a new Synchronizer when an active APSGroupsService becomes available, and stop it when the
-        // active APSGroupsService leaves. This because the Synchronizer need to rejoin the group when there is a new
-        // APSGroupsService since membership is automatically removed when the service goes away.
+        // We create and start a new Synchronizer when an active APSGroupsService becomes available, and stop it when
+        // the active APSGroupsService leaves. This because the Synchronizer need to rejoin the group when there is a
+        // new APSGroupsService since membership is automatically removed when the service goes away.
 
         this.groupsServiceTracker.onActiveServiceAvailable(new OnServiceAvailable<APSGroupsService> () {
             public void onServiceAvailable(APSGroupsService groupsService, ServiceReference serviceReference) throws Exception {
                 APSConfigServiceActivator.this.synchronizer =
-                        new Synchronizer(configAdminLogger, configAdminProvider, envStore, memoryStore, configStore, groupsService);
+                        new Synchronizer(configAdminLogger, configAdminProvider, envStore, memoryStore,
+                                configStore, groupsService);
                 APSConfigServiceActivator.this.synchronizer.start();
+
+                Dictionary props = new Properties();
+                props.put(Constants.SERVICE_PID, Synchronizer.class.getName());
+                APSConfigServiceActivator.this.syncMgmtService =
+                        APSConfigServiceActivator.this.context.registerService(APSConfigSyncMgmtService.class.getName(),
+                        APSConfigServiceActivator.this.synchronizer, props);
             }
         });
 
@@ -229,6 +241,7 @@ public class APSConfigServiceActivator implements BundleActivator {
                 // whole server is taken down. In that case it is possible that this executes at the same
                 // time as takedownServcies(context), which also shuts down the synchronizer.
                 synchronized (APSConfigServiceActivator.this) {
+                    APSConfigServiceActivator.this.syncMgmtService.unregister();
                     if (APSConfigServiceActivator.this.synchronizer != null) {
                         APSConfigServiceActivator.this.synchronizer.stop();
                         APSConfigServiceActivator.this.synchronizer = null;

@@ -44,6 +44,7 @@ import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
 import se.natusoft.osgi.aps.api.net.groups.service.GroupMember;
 import se.natusoft.osgi.aps.api.net.groups.service.Message;
 import se.natusoft.osgi.aps.api.net.groups.service.MessageListener;
+import se.natusoft.osgi.aps.core.config.api.APSConfigSyncMgmtService;
 import se.natusoft.osgi.aps.core.config.model.admin.APSConfigAdminImpl;
 import se.natusoft.osgi.aps.core.config.store.APSConfigEnvStore;
 import se.natusoft.osgi.aps.core.config.store.APSConfigMemoryStore;
@@ -53,6 +54,8 @@ import se.natusoft.osgi.aps.tools.APSLogger;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -60,7 +63,7 @@ import java.util.Properties;
 /**
  * Responsible for synchronizing with other installations.
  */
-public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, APSConfigEnvStore.ConfigEnvUpdateListener, MessageListener {
+public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemoryStore.ConfigUpdateListener, APSConfigEnvStore.ConfigEnvUpdateListener, MessageListener {
     //
     // Private Members
     //
@@ -78,6 +81,8 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
     private APSGroupsService groupsService = null;
 
     private GroupMember groupMember = null;
+
+    private Date lastGroupMsgTimestamp = null;
 
     //
     // Constructors
@@ -119,6 +124,7 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
         this.configEnvStore.addUpdateListener(this);
         this.configMemoryStore.addUpdateListener(this);
         sendFeedMe();
+        updateLastGroupMsgTimestamp();
         this.logger.info("Started synchronizer!");
     }
 
@@ -128,6 +134,14 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
         this.groupMember.removeMessageListener(this);
         this.groupsService.leaveGroup(this.groupMember);
         this.logger.info("Stopped synchronizer!");
+    }
+
+    private Date getLastGroupMsgTimestamp() {
+        return this.lastGroupMsgTimestamp;
+    }
+
+    private void updateLastGroupMsgTimestamp() {
+        this.lastGroupMsgTimestamp = new Date();
     }
 
     /**
@@ -143,6 +157,7 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
             msgStream.close();
             MessageSendThread mst = new MessageSendThread(this.groupMember, message, this.logger, "Send of feed me message failed: ");
             mst.start();
+            this.logger.info("Sent 'FEED_ME' message!");
         }
         catch (IOException ioe) {
             this.logger.error("Send of config env message failed: " + ioe.getMessage(), ioe);
@@ -194,7 +209,7 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
 
         for (String propName : props.stringPropertyNames()) {
             String propValue = props.getProperty(propName);
-            newProps.put(propName, propValue);
+            newProps.setProperty(propName, propValue);
 
             if (timePropMatcher.isTimeProperty(propName)) {
                 long value = Long.valueOf(propValue);
@@ -263,6 +278,8 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
      */
     @Override
     public void messageReceived(Message message) {
+        updateLastGroupMsgTimestamp();
+
         this.logger.info("Received message from '" + message.getMemberId() + "' with id '" + message.getId() + "'!");
         if (!message.getMemberId().equals(this.groupMember.getMemberId())) {
             ObjectInputStream msgStream = null;
@@ -328,7 +345,12 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
      * @param msgProps The received configuration properties.
      */
     private void mergeConfigValues(String configId, String version, Properties msgProps) {
-        APSConfigAdminImpl localConfigAdmin = (APSConfigAdminImpl)this.configAdminService.getConfiguration(configId, version);
+        APSConfigAdminImpl localConfigAdmin = null;
+
+        synchronized (this.configAdminService) {
+            localConfigAdmin = (APSConfigAdminImpl)this.configAdminService.getConfiguration(configId, version);
+        }
+
         if (localConfigAdmin != null) {
             Map<String,String> listPropKeys = new HashMap<>();
 
@@ -376,7 +398,11 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
                 }
             }
 
-            if (updated) this.configPersistentStore.saveConfiguration(localConfigAdmin);
+            // We go directly to the underlaying store rather than use the APSConfigAdmin service API
+            // since that API would trigger a configuration update event.
+            synchronized (this.configPersistentStore) {
+                if (updated) this.configPersistentStore.saveConfiguration(localConfigAdmin);
+            }
         }
         else {
             this.logger.warn("Received update for configuration '" + configId + ":" + version + "' but I don't have that configuration " +
@@ -402,7 +428,12 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
      * @param msgProps
      */
     private void mergeConfigEnvs(Properties msgProps) {
-        Properties localEnvProps = this.configEnvStore.getAsProperties();
+        Properties localEnvProps = null;
+
+        synchronized (this.configEnvStore) {
+            localEnvProps = this.configEnvStore.getAsProperties();
+        }
+
         String localEnvsStr = localEnvProps.getProperty("envs");
         int localEnvs = localEnvsStr != null ? Integer.valueOf(localEnvsStr) : 0;
 
@@ -445,8 +476,10 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
         }
 
         if (updated) {
-            this.configEnvStore.setFromProperties(localEnvProps);
-            this.configEnvStore.saveConfigEnvironments();
+            synchronized (this.configEnvStore) {
+                this.configEnvStore.setFromProperties(localEnvProps);
+                this.configEnvStore.saveConfigEnvironments();
+            }
         }
     }
 
@@ -457,6 +490,30 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
         updated(this.configEnvStore);
         for (APSConfigAdmin configAdmin : this.configAdminService.getAllConfigurations()) {
             updated(configAdmin);
+        }
+    }
+
+    /**
+     * Returns the time of the last sync message received.
+     */
+    @Override
+    public String getLastMessageTimestamp() {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(getLastGroupMsgTimestamp());
+    }
+
+    /**
+     * Trigger this service to request updates from other nodes.
+     * <p/>
+     * A response or potential error message is returned.
+     */
+    @Override
+    public String requestUpdate() {
+        try {
+            sendFeedMe();
+            return "Sent request to be updated!";
+        }
+        catch (Exception e) {
+            return "ERROR: " + e.getMessage();
         }
     }
 
@@ -531,6 +588,45 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener, 
             }
             catch (IOException ioe ) {
                 this.logger.error(this.errorText + ioe.getMessage(), ioe);
+            }
+        }
+    }
+
+    // Not entirely convinced this is a good idea. I'll leave this here for now, but
+    // currently this thread is not started.
+
+    /**
+     * Sends a new FEED_ME message if nothing is received for 4 hours.
+     */
+    private class LongTimeNoSeeThread extends Thread {
+
+        private static final long timeout = 1000 * 60 * 60 * 4;
+
+        private boolean done = false;
+
+        public synchronized void stopThread() {
+            this.done = true;
+        }
+
+        private synchronized boolean isDone() {
+            return this.done;
+        }
+
+        public void run() {
+            while (!isDone()) {
+                try {
+                    Thread.sleep(1000 * 15);
+                }
+                catch (InterruptedException ie) {
+                    Synchronizer.this.logger.error("Unexpected interrupt of sleep!", ie);
+                }
+
+                Date now = new Date();
+                Date lastMessage = getLastGroupMsgTimestamp();
+                if (now.getTime() - lastMessage.getTime() >= timeout) {
+                    updateLastGroupMsgTimestamp();
+                    sendFeedMe();
+                }
             }
         }
     }
