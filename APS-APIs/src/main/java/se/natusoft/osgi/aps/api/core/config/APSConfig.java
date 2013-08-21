@@ -136,15 +136,24 @@ public class APSConfig implements ManagedService {
     /**
      * Adds a config changed event listener to this config.
      */
-    public void addConfigChangedListener(APSConfigChangedListener listener) {
+    public synchronized void addConfigChangedListener(APSConfigChangedListener listener) {
         this.listeners.add(listener);
     }
 
     /**
      * Removes a previously added config changed event listener from this config.
      */
-    public void removeConfigChangedListener(APSConfigChangedListener listener) {
+    public synchronized void removeConfigChangedListener(APSConfigChangedListener listener) {
         this.listeners.remove(listener);
+    }
+
+    /**
+     * Returns the current listeners.
+     */
+    private synchronized List<APSConfigChangedListener> getListeners() {
+        List<APSConfigChangedListener> listenersCopy = new LinkedList<>();
+        listenersCopy.addAll(this.listeners);
+        return listenersCopy;
     }
 
     /**
@@ -154,7 +163,7 @@ public class APSConfig implements ManagedService {
      */
     public void triggerConfigChangedEvent(String configId) {
         APSConfigChangedEvent event = new APSConfigChangedEvent(configId);
-        for (APSConfigChangedListener listener : this.listeners) {
+        for (APSConfigChangedListener listener : getListeners()) {
             listener.apsConfigChanged(event);
         }
     }

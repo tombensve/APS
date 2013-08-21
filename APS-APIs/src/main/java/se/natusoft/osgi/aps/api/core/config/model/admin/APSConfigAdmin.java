@@ -178,10 +178,11 @@ public interface APSConfigAdmin extends Serializable {
      *
      * @param configModel The original config model representing its structural place.
      * @param index The index the get a version for.
+     * @param configEnvironment This argument can always be null. If the config value is not config env specific then this argument has no effect.
      *
      * @return A config model representing the specified index.
      */
-    APSConfigEditModel getConfigListEntry(APSConfigEditModel configModel, int index);
+    APSConfigEditModel getConfigListEntry(APSConfigEditModel configModel, int index, APSConfigEnvironment configEnvironment);
 
     /**
      * The APSConfigModel that represents an APSConfigList represents just the list itself. This creates a new list entry and
@@ -193,8 +194,7 @@ public interface APSConfigAdmin extends Serializable {
      *
      * @param configModel The config model representing the APSConfigList.
      * @param configEnvironment This argument can always be null. If the config value is not config env specific then this argument has no effect.
-     *                          If the config value is config env specific then the value is removed for the specific config env when this argument
-     *                          is non null, and for all config envs if this argument is null, making null a more useful value in this case.
+     *
      * @return A new config model representing the created list entry.
      */
     APSConfigEditModel createConfigListEntry(APSConfigEditModel configModel, APSConfigEnvironment configEnvironment);
