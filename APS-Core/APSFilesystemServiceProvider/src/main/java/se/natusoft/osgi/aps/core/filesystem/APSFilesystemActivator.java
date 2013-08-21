@@ -42,13 +42,9 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
 import se.natusoft.osgi.aps.core.filesystem.service.APSFilesystemServiceProvider;
 import se.natusoft.osgi.aps.tools.APSLogger;
-import se.natusoft.osgi.aps.tools.APSServiceTracker;
-import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException;
 
 import java.io.File;
 import java.util.Dictionary;
@@ -102,39 +98,7 @@ public class APSFilesystemActivator implements BundleActivator {
         this.logger = new APSLogger();
         this.logger.start(context);
         
-        // Initialize ConfigurationAdmin.
-        APSServiceTracker<ConfigurationAdmin> configAdminTracker = new APSServiceTracker<ConfigurationAdmin>(context, ConfigurationAdmin.class, "5 seconds");
-        configAdminTracker.start();
-
-        // Create a default configuration if none exist.
-        Dictionary initConf = null;
-        try {
-            ConfigurationAdmin configAdmin = configAdminTracker.allocateService();
-            Configuration conf = configAdmin.getConfiguration(FS_SVC_PID);
-            if (conf == null) {
-                conf = configAdmin.createFactoryConfiguration(FS_SVC_PID);
-                initConf = getDefaultConfigProps(context.getDataFile("."));
-                conf.update(initConf);
-            }
-            else {
-                Dictionary defaultProps = conf.getProperties();
-                if (defaultProps == null || defaultProps.get(APSFilesystemService.CONF_APS_FILESYSTEM_ROOT) == null) {
-                    initConf = getDefaultConfigProps(context.getDataFile("."));
-                    conf.update(initConf);
-                }
-                else {
-                    initConf = defaultProps;
-                }
-            }
-        }
-        catch (APSNoServiceAvailableException nsae) {
-            initConf = getDefaultConfigProps(context.getDataFile("."));
-        }
-        finally {
-            configAdminTracker.releaseService();
-            configAdminTracker.stop(context);
-        }
-        String fsRoot = (String)initConf.get(APSFilesystemService.CONF_APS_FILESYSTEM_ROOT);
+        String fsRoot = getFSRoot(context);
 
         // Register APSFilesystemService implementation.
         Dictionary props = new Properties();
@@ -145,31 +109,34 @@ public class APSFilesystemActivator implements BundleActivator {
         // Allow the logger to pass the service reference to the log service to identify it as logger.
         logger.setServiceReference(this.filesytemService.getReference());
         
-        logger.info("APSFilesystemService Activator: Bundle started!");
+        logger.info("APSFilesystemService Activator: Bundle started with filesystem root: " + fsRoot);
     }
 
     /**
-     * Returns the default configuraiton properties.
+     * Returns the file system root.
+     * @param context
      */
-    private Dictionary getDefaultConfigProps(File frameworkFileArea) {
-        Properties props = new Properties();
-
-        if (System.getProperty(APSFilesystemService.CONF_APS_FILESYSTEM_ROOT) != null) {
-            props.setProperty(APSFilesystemService.CONF_APS_FILESYSTEM_ROOT, System.getProperty(APSFilesystemService.CONF_APS_FILESYSTEM_ROOT));
+    private String getFSRoot(BundleContext context) {
+        String fsRoot = System.getProperty(APSFilesystemService.CONF_APS_FILESYSTEM_ROOT);
+        if (fsRoot == null) {
+            String userHome = System.getProperty("user.home");
+            if (userHome != null) {
+                fsRoot = userHome + File.separator + ".apsHome" + File.separator + "filesystems";
+                this.logger.info("The system property '" + APSFilesystemService.CONF_APS_FILESYSTEM_ROOT +
+                        "' was not found so we look in '" + fsRoot + "' instead!");
+            }
+            else {
+                fsRoot = context.getDataFile(".").getAbsolutePath();
+                this.logger.error("The '" + APSFilesystemService.CONF_APS_FILESYSTEM_ROOT + "' system property " +
+                        "was not found and system property 'user.home' was not found either so I default to " +
+                        "the file path provided by the bundle context: '" + fsRoot + "'! PLEASE NOTE THAT THIS " +
+                        "PATH IS NOT VERY PERSISTENT!");
+            }
         }
-        else {
-            // This is a bad default!
-            //props.setProperty(APSFilesystemService.CONF_APS_FILESYSTEM_ROOT, frameworkFileArea.getAbsolutePath());
 
-            // This is a safer default!
-            props.setProperty(APSFilesystemService.CONF_APS_FILESYSTEM_ROOT, System.getProperty("user.home") +
-                    File.pathSeparator + ".aps" + File.pathSeparator + "apsfs");
-            File fsDir = new File(props.getProperty(APSFilesystemService.CONF_APS_FILESYSTEM_ROOT));
-            fsDir.mkdirs();
-        }
-        return props;
+        return fsRoot;
     }
-    
+
     /**
      * Stops the bundle.
      * 
