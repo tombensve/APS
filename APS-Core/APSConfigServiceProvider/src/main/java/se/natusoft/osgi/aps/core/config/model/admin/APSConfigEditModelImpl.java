@@ -56,6 +56,7 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigList;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValueList;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEditModel;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigException;
 import se.natusoft.osgi.aps.core.config.model.APSConfigObjectFactory;
@@ -150,7 +151,7 @@ public class APSConfigEditModelImpl<APSConfigSubclass extends APSConfig> extends
             Class<APSConfigSubclass> configClass,
             APSConfigObjectFactory configObjectFactory
     ) throws APSConfigException {
-        this(configClass, "", null, configObjectFactory);
+        this(configClass, "", null, null, configObjectFactory);
     }
 
     /**
@@ -171,10 +172,50 @@ public class APSConfigEditModelImpl<APSConfigSubclass extends APSConfig> extends
             APSConfigObjectFactory configObjectFactory,
             int index
     ) throws APSConfigException {
+        this(configClass, key, parent, null, configObjectFactory, index, null);
+    }
+
+    /**
+     * Creates a new APSConfigModelImpl instance for representing an entry in a list.
+     *
+     * This model represents a configuration class. When there is only one instance only
+     * one model is needed to represent it. However in this case we are dealing with a
+     * specific instance that is part of a list of instances of this config.
+     *
+     * @param configClass The configClass interface class.
+     * @param key The key of this model. For top level model this should be "" or null.
+     * @param parent The parent of this config model. For top level model this should be null.
+     * @param instanceType This is the model representing the basic type of the indexed instance.
+     * @param configObjectFactory A factory for APSConfig* objects.
+     * @param index The list entry index to represent.
+     *
+     * @throws APSConfigException on bad configClass.
+     */
+    public APSConfigEditModelImpl(
+            Class<APSConfigSubclass> configClass,
+            String key,
+            APSConfigEditModel parent,
+            APSConfigEditModel instanceType,
+            APSConfigObjectFactory configObjectFactory,
+            int index,
+            APSConfigEnvironment configEnvironment
+    ) throws APSConfigException {
         super(parent, key, NO_DEFAULTS);
         this.configClass = configClass;
         this.configObjectFactory = configObjectFactory;
         this.index = index;
+
+        // Bug fix: 2013-08-21:
+        // This handles the special situation where the config value is another APSConfig
+        // subclass, and that happens to be environment specific.
+        if (instanceType != null && instanceType.isConfigEnvironmentSpecific()) {
+            String configEnvName = configObjectFactory.getActiveConfigEnvironment().getName();
+            if (configEnvironment != null) {
+                configEnvName = configEnvironment.getName();
+            }
+            key = key + "_" + configEnvName;
+            setInternalKey(key);
+        }
 
         try {
             this.instance = this.configClass.newInstance();
@@ -214,6 +255,27 @@ public class APSConfigEditModelImpl<APSConfigSubclass extends APSConfig> extends
      * @param configClass The configClass interface class.
      * @param key The key of this model. For top level model this should be "" or null.
      * @param parent The parent of this config model. For top level model this should be null.
+     * @param instanceType This is the model representing the basic type of the indexed instance.
+     * @param configObjectFactory A factory for APSConfig* objects.
+     *
+     * @throws APSConfigException on bad configClass.
+     */
+    public APSConfigEditModelImpl(
+            Class<APSConfigSubclass> configClass,
+            String key,
+            APSConfigEditModel parent,
+            APSConfigEditModel instanceType,
+            APSConfigObjectFactory configObjectFactory
+    ) throws APSConfigException {
+        this(configClass, key, parent, instanceType, configObjectFactory, NO_INDEX, null);
+    }
+
+    /**
+     * Creates a new APSConfigModelImpl instance.
+     *
+     * @param configClass The configClass interface class.
+     * @param key The key of this model. For top level model this should be "" or null.
+     * @param parent The parent of this config model. For top level model this should be null.
      * @param configObjectFactory A factory for APSConfig* objects.
      *
      * @throws APSConfigException on bad configClass.
@@ -224,7 +286,7 @@ public class APSConfigEditModelImpl<APSConfigSubclass extends APSConfig> extends
             APSConfigEditModel parent,
             APSConfigObjectFactory configObjectFactory
     ) throws APSConfigException {
-        this(configClass, key, parent, configObjectFactory, NO_INDEX);
+        this(configClass, key, parent, null, configObjectFactory);
     }
 
     //
@@ -236,14 +298,17 @@ public class APSConfigEditModelImpl<APSConfigSubclass extends APSConfig> extends
      * at that index in an APSConfigList.
      *
      * @param index The index to add to the key.
+     * @param instanceType This is the model representing the basic type of the indexed instance.
+     * @param configEnvironment The config environment for the indexed model.
      *
      * @return The new indexed model. This model version should only be used to set values at that index.
      */
-    public APSConfigEditModel createIndexVersion(int index) {
-        APSConfigEditModelImpl indexeConfigdEditModel =
-                new APSConfigEditModelImpl(this.configClass, this.getInternalKey(), this.getParent(), this.configObjectFactory, index);
+    public APSConfigEditModel createIndexVersion(int index, APSConfigEditModel instanceType, APSConfigEnvironment configEnvironment) {
+        APSConfigEditModelImpl indexedConfigEditModel =
+                new APSConfigEditModelImpl(this.configClass, this.getInternalKey(), this.getParent(), instanceType,
+                        this.configObjectFactory, index, configEnvironment);
 
-        return indexeConfigdEditModel;
+        return indexedConfigEditModel;
     }
 
     /**

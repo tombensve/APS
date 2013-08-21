@@ -57,10 +57,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Responsible for synchronizing with other installations.
@@ -146,10 +143,10 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
     }
 
     public void stop() throws IOException {
-        this.longTimeNoSeeThread.stopThread();
+        if (this.longTimeNoSeeThread != null) this.longTimeNoSeeThread.stopThread();
         this.configEnvStore.removeUpdateListener(this);
         this.configMemoryStore.removeUpdateListener(this);
-        this.groupMember.removeMessageListener(this);
+        if (this.groupMember != null) this.groupMember.removeMessageListener(this);
         this.groupsService.leaveGroup(this.groupMember);
         this.logger.info("Stopped synchronizer!");
     }
@@ -182,12 +179,68 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
         this.lastGroupMsgTimestamp = new Date();
     }
 
+    // ---- FEED_ME handling start ---- //
+
     /**
      * Sends a "FEED_ME" message to all other installation which will trigger then to send all their configuration which
      * will be received and merged by all other. The more installations the more messages will be received and in the end
      * all should have the same data.
      */
     private void sendFeedMe() {
+        this.sendFeedMeThread = new SendFeedMeThread();
+        this.sendFeedMeThread.start();
+    }
+
+    private SendFeedMeThread sendFeedMeThread = null;
+
+    private void cancelFeedMe() {
+        if (this.sendFeedMeThread != null) {
+            this.sendFeedMeThread.cancel();
+        }
+    }
+
+    /**
+     * This sends the FEED_ME message in a separate thread with some delay.
+     */
+    private class SendFeedMeThread extends Thread {
+        private boolean run = true;
+
+        public synchronized void cancel() {
+            this.run = false;
+        }
+
+        private synchronized boolean isRun() {
+            return this.run;
+        }
+
+        public void run() {
+            try {
+                Random random = new Random(new Date().getTime());
+                try {
+                    // Wait between 5 to 15 seconds. This is an attempt to avoid several nodes sending a "feed me"
+                    // simultaneously. When a "feed me" message is received cancel is done on this thread.
+                    Thread.sleep(random.nextInt(10000) + 5000);
+                }
+                catch (InterruptedException ie) {
+                    Synchronizer.this.logger.error("Unexpectedly interrupted from sleep!", ie);
+                }
+
+                if (isRun()) {
+                    _sendFeedMe();
+                }
+            }
+            catch (Exception e) {
+                Synchronizer.this.logger.error("Failed to send FEED_ME message!", e);
+            }
+        }
+    }
+
+    /**
+     * Sends a "FEED_ME" message to all other installation which will trigger then to send all their configuration which
+     * will be received and merged by all other. The more installations the more messages will be received and in the end
+     * all should have the same data.
+     */
+    private void _sendFeedMe() {
         try {
             Message message = this.groupMember.createNewMessage();
             ObjectOutputStream msgStream = new ObjectOutputStream(message.getOutputStream());
@@ -201,6 +254,8 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
             this.logger.error("Send of config env message failed: " + ioe.getMessage(), ioe);
         }
     }
+
+    // ---- FEED_ME handling end ---- //
 
     /** Matches time properties for config env properties. */
     private static final TimePropertyMatcher Config_Env_Matcher = new TimePropertyMatcher() {
@@ -335,6 +390,11 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
                         break;
 
                     case FEED_ME:
+                        // If some other node came first with a "feed me" then we don't need to do it too
+                        // since whoever sent it will not have the latest and we will receive the updates
+                        // from the other nodes too.
+                        cancelFeedMe();
+
                         handleFeedMeMessage();
                 }
             }

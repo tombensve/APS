@@ -86,7 +86,7 @@ public class ConfigValueKey {
     /**
      * Returns key addition for config environment.
      *
-     * @param configEnv The confing environment to add to key or null if none.
+     * @param configEnv The config environment to add to key or null if none.
      *
      * @return A string to be added to current key when creating a new key.
      */

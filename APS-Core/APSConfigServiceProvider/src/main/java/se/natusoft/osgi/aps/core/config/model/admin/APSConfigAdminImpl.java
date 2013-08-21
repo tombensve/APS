@@ -323,11 +323,12 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
      *
      * @param configModel The original config model representing its structural place.
      * @param index The index the get a version for.
+     * @param configEnvironment This argument can always be null. If the config value is not config env specific then this argument has no effect.
      *
      * @return A config model representing the specified index.
      */
-    public synchronized APSConfigEditModel getConfigListEntry(APSConfigEditModel configModel, int index) {
-        return ((APSConfigEditModelImpl)configModel).createIndexVersion(index);
+    public synchronized APSConfigEditModel getConfigListEntry(APSConfigEditModel configModel, int index, APSConfigEnvironment configEnvironment) {
+        return ((APSConfigEditModelImpl)configModel).createIndexVersion(index, configModel, configEnvironment);
     }
 
     /**
@@ -347,7 +348,7 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
     public synchronized APSConfigEditModel createConfigListEntry(APSConfigEditModel configModel, APSConfigEnvironment configEnvironment) {
         int size = getSize(configModel, configEnvironment);
         setSize(size + 1, configModel, configEnvironment);
-        return ((APSConfigEditModelImpl)configModel).createIndexVersion(size);
+        return ((APSConfigEditModelImpl)configModel).createIndexVersion(size, configModel, configEnvironment);
     }
 
     /**
