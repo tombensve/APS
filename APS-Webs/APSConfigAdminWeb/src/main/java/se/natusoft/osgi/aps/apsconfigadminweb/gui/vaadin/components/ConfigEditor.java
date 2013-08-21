@@ -121,7 +121,8 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
      * @param configAdminService The config admin service for getting config envs and updating edited configs.
      * @param logger The logger to log to.
      */
-    public ConfigEditor(APSConfigEditModel configEditModel, APSConfigAdmin configAdmin, APSConfigAdminService configAdminService, APSLogger logger) {
+    public ConfigEditor(APSConfigEditModel configEditModel, APSConfigAdmin configAdmin,
+                        APSConfigAdminService configAdminService, APSLogger logger) {
         this.logger = logger;
         this.liveConfigAdmin = configAdmin;
         this.editedConfigAdmin = configAdmin.cloneConfig();
@@ -231,8 +232,8 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
                             }
                         });
                         nodesAndButtonsLayout.addComponent(this.nodeSelector);
-                        nodesAndButtonsLayout.setExpandRatio(this.nodeSelector, 92.0f); // This works for iPad screen size and upp.
-
+                        nodesAndButtonsLayout.setExpandRatio(this.nodeSelector, 92.0f); // This works for iPad screen
+                                                                                        // size and upp.
                         HorizontalLayout buttonsLayout = new HorizontalLayout(); {
                             buttonsLayout.setMargin(false);
                             buttonsLayout.setSpacing(false);
@@ -338,6 +339,9 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
      */
     private void handleChangedConfigEnv(APSConfigEnvironment selectedConfigEnv) {
         refresh();
+        if (this.nodeSelector != null) {
+            this.nodeSelector.refreshData();
+        }
 
         showNotification("Now editing for configuration environment", selectedConfigEnv.getName());
     }
@@ -356,7 +360,8 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
 
             // We need to get a correctly indexed node! Please note that the returned APSConfigEditModel
             // will return false for isMany()! This because it is now representing a specific entry.
-            APSConfigEditModel configInstanceNode = this.editedConfigAdmin.getConfigListEntry(configNode, index);
+            APSConfigEditModel configInstanceNode = this.editedConfigAdmin.getConfigListEntry(configNode, index,
+                    this.editForConfigEnvSelect.getSelectedConfigEnvironment());
 
             this.currentConfigNode.setCurrentInstanceNode(configInstanceNode);
             this.currentConfigNode.setDescription(configInstanceNode.getDescription());
@@ -392,11 +397,13 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
     private void addNodeInstance() {
         APSConfigEditModel selectedNode = this.currentConfigNode.getCurrentNode();
         if (selectedNode.isMany()) {
-            this.editedConfigAdmin.createConfigListEntry(selectedNode, this.editForConfigEnvSelect.getSelectedConfigEnvironment());
+            this.editedConfigAdmin.createConfigListEntry(selectedNode,
+                    this.editForConfigEnvSelect.getSelectedConfigEnvironment());
             this.nodeSelector.refreshData();
         }
         else {
-            showNotification("Operation on bad node type!", "This node has only one static instance!", Notification.TYPE_ERROR_MESSAGE);
+            showNotification("Operation on bad node type!", "This node has only one static instance!",
+                    Notification.TYPE_ERROR_MESSAGE);
         }
     }
 
@@ -430,7 +437,8 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
             this.nodeSelector.refreshData();
         }
         else {
-            showNotification("Operation on bad node type!", "This node has only one static instance!", Notification.TYPE_ERROR_MESSAGE);
+            showNotification("Operation on bad node type!", "This node has only one static instance!",
+                    Notification.TYPE_ERROR_MESSAGE);
         }
     }
 
@@ -441,12 +449,14 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
         try {
             this.configAdminService.updateConfiguration(this.editedConfigAdmin);
             this.editedConfigAdmin.sendConfigModifiedEvent();
-            showNotification("Saved!", "Saved config for '" + this.editedConfigAdmin.getConfigId() + "'!", Notification.TYPE_TRAY_NOTIFICATION);
+            showNotification("Saved!", "Saved config for '" + this.editedConfigAdmin.getConfigId() + "'!",
+                    Notification.TYPE_TRAY_NOTIFICATION);
         }
         catch (APSNoServiceAvailableException nsae) {
             this.logger.error("Faled to save config for '" + this.editedConfigAdmin.getConfigId() + "'!", nsae);
 
-            showNotification("Save Faield!", "The configuration service is currently not available on the server! Please try again later.",
+            showNotification("Save Faield!",
+                    "The configuration service is currently not available on the server! Please try again later.",
                     Notification.TYPE_ERROR_MESSAGE);
         }
     }
@@ -462,7 +472,8 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
             this.nodeSelector.refreshData();
         }
 
-        showNotification("Cancelled!", "Cancelled changes for '" + this.editedConfigAdmin.getConfigId() + "'!", Notification.TYPE_TRAY_NOTIFICATION);
+        showNotification("Cancelled!", "Cancelled changes for '" + this.editedConfigAdmin.getConfigId() + "'!",
+                Notification.TYPE_TRAY_NOTIFICATION);
     }
 
     //
