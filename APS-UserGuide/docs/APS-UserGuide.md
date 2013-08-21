@@ -2099,7 +2099,9 @@ If you call the `setServiceRefrence(serviceRef);` method on the logger then info
 
 This is a BundleActivator implementation that uses annotations to register services and inject tracked services. Any bundle can use this activator by just importing the _se.natusoft.osgi.aps.tools_ package.
 
-This is actually a rather trivial class that just scans the bundle for files ending in _.class_, removes the _.class_ from the path and translates the separator char to '.' and then passes it to bundle.getClass(...) to get the Class instance for it. After that it can inspect the bundles all classes for annotations and act on them. Most methods are protected making it easy to subclass this class and expand on its functionality.
+This is actually a rather trivial class that just scans the bundle for classes and inspects all classes for annotations and act on them. Most methods are protected making it easy to subclass this class and expand on its functionality.
+
+__Please note__ that it does _class.getDeclaredFields()_ and _class.getDeclaredMethods()_! This means that it will only see the bottom class of an inheritance hiearchy!
 
 The following annotations are available:
 
@@ -2195,6 +2197,26 @@ __@BundleStart__ - This should be used on a method and will be called on bundle 
 __@BundleStop__ - This should be used on a method and will be called on bundle stop. The method should take no arguments. This should probably be used if @APSBundleStart is used. Please note that a method annotated with this annotation can be static!
 
         public @interface BundleStop {}
+
+### Usage as BundleActivator
+
+The _APSActivator_ class has 2 constructors. The default constructor without arguments are used for BundleActivator usage. In this case you just specify this class as your bundles activator, and then use the annotations described above. Thats it!
+
+### Other Usage
+
+Since the activator usage will manage and create instances of all annotated classes this will not always work in all situations. One example is web applications where the web container is responsible for creating servlets. If you specifiy APSActivator as an activator for a WAB bundle and then use the annotations in a servlet then APSActivator will have a managed instance of the servlet, but it will not be the same instance as the web contatiner will run.
+
+Therefore APSActivator has another constructor that takes a vararg of instances: `public APSActivator(Object..`.`instances)`. There is also a `public void addManagedInstance(Object instance)` method. These allow you to add an already existing instance to be managed by APSActivator. In addition to the provided existing instances it will still scan the bundle for classes to manage. It will however not double manage any class for which an existing instance of has already been provided. Any annotated class for which existing instances has not been provided will be instantiated by APSActivator.
+
+__Please note__ that if you create an instance of APSActivator in a servlet and provide the servlet instance to it and start it (you still need to do _start(BundleContext)_ and _stop(BundleContext)_ when used this way!), then you need to catch the close of the servlet and do _stop_ then.
+
+There are 2 support classes in _APSWebTools_:
+
+* APSVaadinOSGiApplication - This is subclassed by your Vaading application.
+
+* APSOSGiSupport - You create an instance of this in a servlet and let your servlet implement the _APSOSGiSupportCallbacks_ interface which is then passed to the constructor of APSOSGiSupport.
+
+Both of these creates and manages an APSActivator internally and catches shutdown to take it down. They also provide other utilities like providing the BundleContext. See _APSWebTools_ for more information.
 
 ## APSContextWrapper
 
@@ -2712,7 +2734,14 @@ After the tables have been created you need to configure a datasource for it in 
 
 ![Picture of datasource config gui.](http://download.natusoft.se/Images/APS/APS-Auth/APSSimpleUserServiceProvider/docs/images/DataSourceConfig.png)
 
-Please note that the above picture is just an example. The data source name _APSSimpleUserServiceDS_ in this example should be configured in the _persistence/dsRefs_ config. The service will be looking up the entry with that name! The rest of the datasource entry depends on your database and where it is running. Also note that the "(default)" after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.
+Please note that the above picture is just an example. The data source name _APSSimpleUserServiceDS_ in this example should be configured in the _persistence/dsRefs_ config where you provide a name and a datasource reference. The service will be looking up the entry with that name, and use the specified datasource! For example:
+
+        name: aps-admin-web
+        dsRef: APSSimpleUserServiceDS
+
+This example happens to be the default if no instances have been configured and is required if you want to use authentication for the APS admin web. You should probably define your own instance if you are going to use this service. The _dsRef_ part is exactly the same name as defined in the data source configuration (_persistence/datasources_).
+
+The rest of the datasource entry in the picture above depends on your database and where it is running. Also note that the "(default)" after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.
 
 When the datasource is configured and saved then you can go to _"Configuration tab_,_Configurations/aps/adminweb"_ and enable the "requireauthentication" config. __If you do this before setting up the datasource and you have choosen to use the provided implementation of APSAuthService that uses APSSimpleUserService to login then you will be completely locked out!__
 
@@ -2727,13 +2756,26 @@ to _false_ instead. Then restart the server. Also se the APSFilesystemService do
 
 ## JDBC Drivers
 
-There is a catch with OSGi and its classpath isolation. JDBC drivers for the databases that can be used for this service must be packaged into the bundle. JDBC drivers for the following databases are currently included:
+There is a catch with OSGi and its classpath isolation. The _APSSimpleUserService_ makes use of the _APSJPAService_ whose implementation _APSOpenJPAProvider_ cheats OSGi a bit by using _MultiBundleClassLoader_ (is available in aps-tools-library bundle) and merges the service classpath with the client classpath which is a requirement for the JPA framework to work (it needs access to both framework code in the service classpath and client entities in the client classpath). This also has the side effect that the client can provide a JDBC driver in its bundle. The _APSSimpleUserService_ do provide a JDBC driver for _Derby 10.9.1.0_.
 
-* Derby 10.9.1.0
+Another catch with this is that users of _APSSimpleUserService_ are not part of this collective classpath and can thereby not make drivers available in their bundles, or at least not right off, there is however a workaround to this. There is a natsty way that you can pass on the client bundle class loader right through the _APSSimpleUserService_ to _APSJPAService_ by creating an instance of _MultiBundleClassLoader_ and set it as context classloader:
 
-* MySQL 5.1.26
+        MultiBundleClassLoader mbClassLoader = new MultiBundleClassLoader(bundleContext.getBundle());
+        Thread.currentThread().setContextClassLoader(mbClassLoader);
 
-I will try to increase this list unless I can find a smarter workaround.
+Do this before the first call to _APSSimpleUserService_. The _APSJPAService_ will check if the current context class loader is a MultiBundleClassLoader and if so extract the bundles from it and add to its own MultiBundleClassLoader. This way you have extended the classpath that the JPA framework will se to 3 bundles: aps-openjpa-provider, aps-simple-user-service-provider, and your client bundle, which can then contain a JDBC driver.
+
+The catches are unfortunately not over yet! You also need to configure your own instance of _APSSimpleUserService_ with its own data source in the configuration, and your client needs to add the name of this configuration to the tracker for the _APSSimpleUserService_ :
+
+        APSServiceTracker<APSSimpleUserService> userServiceTracker = 
+            new APSServiceTracker<>(bundleContext, APSSimpleUserService.class, "(instance=instName)", "30 seconds");
+
+or
+
+        @OSGiService(additionalSearchCriteria="(instance=instName)", timeout="30 seconds")
+        APSSimpleUserService userService;
+
+where _instName_ is whatever name you gave the instance in the configuration. Then try to have only one bundle call this service since each different bundle calling the service will extend the service classpath with that bundle!
 
 ## APIs
 
@@ -4685,6 +4727,24 @@ _Throws_
 
 > _java.io.IOException_ - The unavoidable one! 
 
+__GroupMember joinGroup(String name, Properties memberUserData) throws IOException__
+
+Joins a group.
+
+_Returns_
+
+> A GroupMember that provides the API for sending and receiving data in the group.
+
+_Parameters_
+
+> _name_ - The name of the group to join. 
+
+> _memberUserData_ - Data provided by users of the service. 
+
+_Throws_
+
+> _java.io.IOException_ - The unavoidable one! 
+
 __void leaveGroup(GroupMember groupMember) throws IOException__
 
 Leaves as member of group.
@@ -4748,6 +4808,10 @@ _Returns_
 __List<String> getMemberInfo()__
 
 Returns information about members.
+
+__List<Properties> getMembersUserProperties()__
+
+Returns the user properties for the members.
 
 __NetTime getNow()__
 

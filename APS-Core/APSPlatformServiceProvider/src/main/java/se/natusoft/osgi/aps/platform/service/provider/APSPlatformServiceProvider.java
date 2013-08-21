@@ -37,7 +37,6 @@
  */
 package se.natusoft.osgi.aps.platform.service.provider;
 
-import se.natusoft.osgi.aps.api.core.config.service.APSConfigException;
 import se.natusoft.osgi.aps.api.core.platform.model.PlatformDescription;
 import se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService;
 import se.natusoft.osgi.aps.platform.config.APSPlatformConfig;
@@ -71,14 +70,17 @@ public class APSPlatformServiceProvider implements APSPlatformService {
     public PlatformDescription getPlatformDescription() {
         try {
             PlatformDescription pd = new PlatformDescription();
-            APSPlatformConfig config = APSPlatformConfig.get;
+            if (!APSPlatformConfig.managed.isManaged()) {
+                APSPlatformConfig.managed.waitUtilManaged();
+            }
+            APSPlatformConfig config = APSPlatformConfig.managed.get();
 
             pd.setIdentifier(config.platformID.toString());
             pd.setType(config.platformType.toString());
             pd.setDescription(config.description.toString());
             return pd;
         }
-        catch (APSConfigException ce) {
+        catch (Exception e) {
             return new PlatformDescription("<unknown>", "<unknown>", "<unknown>");
         }
     }

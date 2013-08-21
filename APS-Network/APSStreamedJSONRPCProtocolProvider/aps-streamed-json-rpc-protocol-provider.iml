@@ -4,9 +4,6 @@
     <facet type="Osmorc" name="OSGi">
       <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-streamed-json-rpc-protocol-provider-0.9.3.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.jsonrpc.APSStreamedJSONRPCServiceActivator" bundleSymbolicName="aps-streamed-json-rpc-protocol-provider" bundleVersion="0.9.3" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
-          <property key="Bundle-Description" value="Provides JSONRPC implementations for version 1.0 and 2.0." />
-          <property key="Bundle-Vendor" value="Natusoft AB" />
-          <property key="Bundle-DocURL" value="http://www.natusoft.se/" />
           <property key="Import-Package" value="*" />
           <property key="Private-Package" value="se.natusoft.osgi.aps.jsonrpc;version=&quot;0.9.3&quot;,se.natusoft.osgi.aps.jsonrpc.errors;version=&quot;0.9.3&quot;,se.natusoft.osgi.aps.jsonrpc.model;version=&quot;0.9.3&quot;,se.natusoft.osgi.aps.jsonrpc.protocols;version=&quot;0.9.3&quot;" />
           <property key="Embed-Directory" value="lib" />

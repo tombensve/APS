@@ -38,6 +38,7 @@
 package se.natusoft.osgi.aps.platform.config;
 
 import se.natusoft.osgi.aps.api.core.config.APSConfig;
+import se.natusoft.osgi.aps.api.core.config.ManagedConfig;
 import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigDescription;
 import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigItemDescription;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
@@ -53,15 +54,24 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
 public class APSPlatformConfig extends APSConfig {
 
     /** This will be autopopulated. */
-    public static APSPlatformConfig get;
+    public static final ManagedConfig<APSPlatformConfig> managed = new ManagedConfig<APSPlatformConfig>();
     
-    @APSConfigItemDescription(description="A unique specific id for this installation. Ex: \"Sys-Test-1\", \"Dev-2\", etc.")
+    @APSConfigItemDescription(
+            description="A unique specific id for this installation. Ex: \"Sys-Test-1\", \"Dev-2\", etc.",
+            environmentSpecific = true
+    )
     public APSConfigValue platformID;
 
-    @APSConfigItemDescription(description="A general type of the platform. Ex: \"SysTest\", \"Development\".")
+    @APSConfigItemDescription(
+            description="A general type of the platform. Ex: \"SysTest\", \"Development\".",
+            environmentSpecific = true
+    )
     public APSConfigValue platformType;
 
-    @APSConfigItemDescription(description="A description of the platform installation.")
+    @APSConfigItemDescription(
+            description="A description of the platform installation.",
+            environmentSpecific = true
+    )
     public APSConfigValue description;
     
 }
