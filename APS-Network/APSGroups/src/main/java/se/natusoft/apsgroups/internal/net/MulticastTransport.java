@@ -81,7 +81,7 @@ public class MulticastTransport implements Transport {
     private APSGroupsLogger logger;
 
     /** Our config. */
-    private APSGroupsConfig config = null;
+    private APSGroupsConfig.TransportConfig config = null;
 
     //
     // Constructors
@@ -93,7 +93,7 @@ public class MulticastTransport implements Transport {
      * @param logger The logger to log to.
      * @param config The config to use.
      */
-    public MulticastTransport(APSGroupsLogger logger, APSGroupsConfig config) {
+    public MulticastTransport(APSGroupsLogger logger, APSGroupsConfig.TransportConfig config) {
         this.logger = logger;
         this.config = config;
     }
@@ -110,8 +110,10 @@ public class MulticastTransport implements Transport {
      * @throws java.io.IOException
      */
     public void open() throws IOException {
-        String multicastAddress = this.config.getMulticastAddress();
-        this.port = this.config.getMulticastPort();
+        this.logger.info("Opening MulticastTransport on address " + this.config.getHost() +
+                " and port " + this.config.getPort() + "!");
+        String multicastAddress = this.config.getHost();
+        this.port = this.config.getPort();
         this.group = InetAddress.getByName(multicastAddress);
         this.msocket = new MulticastSocket(this.port);
         this.msocket.setLoopbackMode(false);
@@ -129,6 +131,8 @@ public class MulticastTransport implements Transport {
      * @throws IOException
      */
     public void close() throws IOException {
+        this.logger.info("Closing MulticastTransport on address " + this.config.getHost() +
+                " and port " + this.config.getPort() + "!");
         this.msocket.leaveGroup(this.group);
         this.msocket.close();
     }

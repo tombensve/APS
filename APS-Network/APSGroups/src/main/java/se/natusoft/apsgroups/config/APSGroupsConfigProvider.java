@@ -53,6 +53,8 @@
  */
 package se.natusoft.apsgroups.config;
 
+import java.util.List;
+
 /**
  * Provides an implementation of APSGroupsConfig and also setters for the config values.
  */
@@ -61,8 +63,6 @@ public class APSGroupsConfigProvider implements APSGroupsConfig {
     // Private Members
     //
 
-    private String multicastAddress = "224.0.0.1";
-    private int multicastPort = 58100;
     private int sendTimeout = 20;
     private int resendInterval = 5;
     private int memberAnnounceInterval = 5;
@@ -83,21 +83,15 @@ public class APSGroupsConfigProvider implements APSGroupsConfig {
      * <p/>
      * All times are in seconds!
      *
-     * @param multicastAddress The multicast address to use.
-     * @param multicastPort The multicast port to use.
      * @param sendTimeout How long to wait for a send to succeed before timeout.
      * @param resendInterval How long to wait for an acknowledgement before doing a resend of a packet.
      * @param memberAnnounceInterval The interval at which members announce themselves.
      */
     public APSGroupsConfigProvider(
-            String multicastAddress,
-            int multicastPort,
             int sendTimeout,
             int resendInterval,
             int memberAnnounceInterval
     ) {
-        this.multicastAddress = multicastAddress;
-        this.multicastPort = multicastPort;
         this.sendTimeout = sendTimeout;
         this.resendInterval = resendInterval;
         this.memberAnnounceInterval = memberAnnounceInterval;
@@ -106,40 +100,6 @@ public class APSGroupsConfigProvider implements APSGroupsConfig {
     //
     // Members
     //
-
-    /**
-     * Sets the multicast address to use.
-     *
-     * @param multicastAddress The address to set.
-     */
-    public void setMulticastAddress(String multicastAddress) {
-        this.multicastAddress = multicastAddress;
-    }
-
-    /**
-     * The multicast address to use.
-     */
-    @Override
-    public String getMulticastAddress() {
-        return this.multicastAddress;
-    }
-
-    /**
-     * Sets the multicast port to use.
-     *
-     * @param multicastPort The port to set.
-     */
-    public void setMulticastPort(int multicastPort) {
-        this.multicastPort = multicastPort;
-    }
-
-    /**
-     * The multicast target port to use.
-     */
-    @Override
-    public int getMulticastPort() {
-        return this.multicastPort;
-    }
 
     /**
      * Sets how long to wait for a send to succeed before timeout.
@@ -191,5 +151,106 @@ public class APSGroupsConfigProvider implements APSGroupsConfig {
     @Override
     public int getMemberAnnounceInterval() {
         return this.memberAnnounceInterval;
+    }
+
+    /**
+     * Returns the configured transports.
+     */
+    @Override
+    public List<TransportConfig> getTransports() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    //
+    // Inner Classes
+    //
+
+    public static class APSTransportConfigProvider implements TransportConfig {
+        //
+        // Private Members
+        //
+
+        private TransportType transportType = TransportType.MULTICAST;
+
+        private String host = "224.0.0.1";
+
+        private int port = 58100;
+
+        //
+        // Constructors
+        //
+
+        /**
+         * Creates a new APSTransportConfigProvider.
+         */
+        public APSTransportConfigProvider() {}
+
+        /**
+         * Creates a new APSTransportConfigProvider.
+         *
+         * @param transportType The type of transport configured.
+         * @param host The host to talk to.
+         * @param port The port on the host to talk to.
+         */
+        public APSTransportConfigProvider(TransportType transportType, String host, int port) {
+            this.transportType = transportType;
+            this.host = host;
+            this.port = port;
+        }
+
+        //
+        // Methods
+        //
+
+        /**
+         * Sets the transport type.
+         *
+         * @param transportType The transport type to set.
+         */
+        public void setTransportType(TransportType transportType) {
+            this.transportType = transportType;
+        }
+
+        /**
+         * Returns the type of the transport.
+         */
+        @Override
+        public TransportType getTransportType() {
+            return this.transportType;
+        }
+
+        /**
+         * Sets the host to communicate with.
+         *
+         * @param host The host to set.
+         */
+        public void setHost(String host) {
+            this.host = host;
+        }
+
+        /**
+         * Returns the host of the transport. IP address or hostname. This is only required for TCP_SENDER.
+         */
+        @Override
+        public String getHost() {
+            return this.host;
+        }
+
+        /**
+         * Sets the port to use.
+         *
+         * @param port The port to set.
+         */
+        public void setPort(int port) {
+            this.port = port;
+        }
+
+        /**
+         * Returns the port to talk on.
+         */
+        @Override
+        public int getPort() {
+            return this.port;
+        }
     }
 }

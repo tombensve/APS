@@ -55,6 +55,9 @@ package se.natusoft.osgi.aps.groups.config;
 
 import se.natusoft.apsgroups.config.APSGroupsConfig;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Provides an implementation of APSGroupsConfig that relays to APSGroupsServiceConfig.
  */
@@ -67,24 +70,6 @@ public class APSGroupsConfigRelay implements APSGroupsConfig {
         if (!APSGroupsServiceConfig.managed.isManaged()) {
             APSGroupsServiceConfig.managed.waitUtilManaged();
         }
-    }
-
-    /**
-     * The multicast address to use.
-     */
-    @Override
-    public String getMulticastAddress() {
-        checkManaged();
-        return APSGroupsServiceConfig.managed.get().multicastAddress.toString();
-    }
-
-    /**
-     * The multicast target port to use.
-     */
-    @Override
-    public int getMulticastPort() {
-        checkManaged();
-        return APSGroupsServiceConfig.managed.get().multicastPort.toInt();
     }
 
     /**
@@ -113,5 +98,69 @@ public class APSGroupsConfigRelay implements APSGroupsConfig {
     public int getMemberAnnounceInterval() {
         checkManaged();
         return APSGroupsServiceConfig.managed.get().memberAnnounceInterval.toInt();
+    }
+
+    /**
+     * Returns the configured transports.
+     */
+    @Override
+    public List<TransportConfig> getTransports() {
+        List<TransportConfig> transportConfigs = new LinkedList<>();
+        for (APSGroupsServiceConfig.APSGroupsTransportConfig transportConfig : APSGroupsServiceConfig.managed.get().transports) {
+            transportConfigs.add(new TransportConfigRelay(transportConfig));
+        }
+
+        return transportConfigs;
+    }
+
+    //
+    // Inner Classes
+    //
+
+    /**
+     * Wraps a APSGroupsTransportConfig and provides a TransportConfig.
+     */
+    public static class TransportConfigRelay implements TransportConfig {
+        //
+        // Private Members
+        //
+
+        private APSGroupsServiceConfig.APSGroupsTransportConfig transportConfig;
+
+        //
+        // Constructors
+        //
+
+        public TransportConfigRelay(APSGroupsServiceConfig.APSGroupsTransportConfig transportConfig) {
+            this.transportConfig = transportConfig;
+        }
+
+        //
+        // Methods
+        //
+
+        /**
+         * Returns the type of the transport.
+         */
+        @Override
+        public TransportType getTransportType() {
+            return TransportType.valueOf(this.transportConfig.type.toString());
+        }
+
+        /**
+         * Returns the host of the transport. IP address or hostname. This is only required for TCP_SENDER.
+         */
+        @Override
+        public String getHost() {
+            return this.transportConfig.host.toString();
+        }
+
+        /**
+         * Returns the port to talk on.
+         */
+        @Override
+        public int getPort() {
+            return this.transportConfig.port.toInt();
+        }
     }
 }

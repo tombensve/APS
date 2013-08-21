@@ -58,6 +58,7 @@ import se.natusoft.osgi.aps.api.core.config.ManagedConfig;
 import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigDescription;
 import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigItemDescription;
 import se.natusoft.osgi.aps.api.core.config.annotation.APSDefaultValue;
+import se.natusoft.osgi.aps.api.core.config.model.APSConfigList;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
 
 /**
@@ -66,7 +67,7 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
 @APSConfigDescription(
     configId="se.natusoft.osgi.aps.groups",
     group = "network",
-    description="Network specific configuration for APSGroups.",
+    description="Network configuration for APSGroups.",
     version="1.0.0"
 )
 public class APSGroupsServiceConfig extends APSConfig {
@@ -74,24 +75,62 @@ public class APSGroupsServiceConfig extends APSConfig {
     /** This config is auto-managed and will be accessed through this. */
     public static final ManagedConfig<APSGroupsServiceConfig> managed = new ManagedConfig<APSGroupsServiceConfig>();
 
-
-    @APSConfigItemDescription(description = "The multicast address to use.", defaultValue = {@APSDefaultValue("224.0.0.1")})
-    public APSConfigValue multicastAddress;
-
-    @APSConfigItemDescription(description = "The multicast target port to use.", defaultValue = {@APSDefaultValue("58100")})
-    public APSConfigValue multicastPort;
-
-    @APSConfigItemDescription(description = "The number of seconds to allow for a send of a message before timeout.",
-            defaultValue = {@APSDefaultValue("120")})
+    @APSConfigItemDescription(
+            description = "The number of seconds to allow for a send of a message before timeout.",
+            defaultValue = {@APSDefaultValue("120")}
+    )
     public APSConfigValue sendTimeout;
 
-    @APSConfigItemDescription(description = "The number of seconds to wait before a packet is resent if not acknowledged. " +
+    @APSConfigItemDescription(
+            description = "The number of seconds to wait before a packet is resent if not acknowledged. " +
             "sendTimeout / resendInterval = the number or resends before giving up.",
-            defaultValue = {@APSDefaultValue("5")})
+            defaultValue = {@APSDefaultValue("5")}
+    )
     public APSConfigValue resendInterval;
 
-    @APSConfigItemDescription(description = "The interval in seconds that members announce that they are (still) members. If a member has " +
+    @APSConfigItemDescription(
+            description = "The interval in seconds that members announce that they are (still) members. If a member has " +
             "not announced itself again within this time other members of the group will drop the member.",
-             defaultValue = {@APSDefaultValue("20")})
+             defaultValue = {@APSDefaultValue("20")}
+    )
     public APSConfigValue memberAnnounceInterval;
+
+    @APSConfigItemDescription(
+            description = "A set of transports to use.",
+            environmentSpecific = true
+    )
+    public APSConfigList<APSGroupsTransportConfig> transports;
+
+
+    @APSConfigDescription(
+            configId = "se.natusoft.osgi.aps.groups.transport",
+            description = "This sets up one transport to use with APSGroups.",
+            version = "1.0.0"
+    )
+    public static class APSGroupsTransportConfig extends APSConfig {
+
+        public static final String MULTICAST = "MULTICAST";
+        public static final String TCP_SENDER = "TCP_SENDER";
+        public static final String TCP_RECEIVER = "TCP_RECEIVER";
+
+        @APSConfigItemDescription(
+                description = "The type of transport",
+                validValues = {MULTICAST, TCP_SENDER, TCP_RECEIVER},
+                defaultValue = {@APSDefaultValue("MULTICAST")}
+        )
+        public APSConfigValue type;
+
+        @APSConfigItemDescription(
+                description = "The host to talk with. (224.0.0.1 or all-systems.mcast.net for multicast!)",
+                defaultValue = {@APSDefaultValue("224.0.0.1")}
+        )
+        public APSConfigValue host;
+
+        @APSConfigItemDescription(
+                description = "The port to talk on.",
+                defaultValue = {@APSDefaultValue("58100")}
+        )
+        public APSConfigValue port;
+
+    }
 }

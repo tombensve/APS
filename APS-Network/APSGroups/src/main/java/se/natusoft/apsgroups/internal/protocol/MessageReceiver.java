@@ -53,7 +53,7 @@
  */
 package se.natusoft.apsgroups.internal.protocol;
 
-import se.natusoft.apsgroups.internal.net.Transport;
+import se.natusoft.apsgroups.internal.net.Transports;
 import se.natusoft.apsgroups.internal.protocol.message.*;
 import se.natusoft.apsgroups.logging.APSGroupsLogger;
 
@@ -72,7 +72,7 @@ public class MessageReceiver implements MessagePacketListener {
     private Map<UUID, Message> messages = new HashMap<>();
 
     /** The transport to use for sending acknowledgements. */
-    private Transport transport = null;
+    private Transports transports = null;
 
     /** The member this receiver belongs to. */
     private Member member = null;
@@ -90,12 +90,12 @@ public class MessageReceiver implements MessagePacketListener {
     /**
      * Creates a new MessageReceiver.
      *
-     * @param transport The transport to use.
+     * @param transports The transports to use.
      * @param member The member this receiver belongs to.
      * @param logger The logger to log to.
      */
-    public MessageReceiver(Transport transport, Member member, APSGroupsLogger logger) {
-        this.transport = transport;
+    public MessageReceiver(Transports transports, Member member, APSGroupsLogger logger) {
+        this.transports = transports;
         this.member = member;
         this.logger = logger;
     }
@@ -108,8 +108,8 @@ public class MessageReceiver implements MessagePacketListener {
      * This to avoid having to save the transport outside of this class just to be able to
      * close it again.
      */
-    public Transport getTransport() {
-        return this.transport;
+    public Transports getTransports() {
+        return this.transports;
     }
 
     /**
@@ -146,7 +146,7 @@ public class MessageReceiver implements MessagePacketListener {
             PacketType.ACKNOWLEDGEMENT
         );
         ackPacket.getOutputStream().close();
-        this.transport.send(ackPacket.getPacketBytes());
+        this.transports.send(ackPacket.getPacketBytes());
     }
 
     /**

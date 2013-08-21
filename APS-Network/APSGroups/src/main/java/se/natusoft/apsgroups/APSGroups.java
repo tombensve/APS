@@ -57,8 +57,7 @@ import se.natusoft.apsgroups.config.APSGroupsConfig;
 import se.natusoft.apsgroups.config.APSGroupsConfigProvider;
 import se.natusoft.apsgroups.internal.GroupMemberProvider;
 import se.natusoft.apsgroups.internal.StaticLogger;
-import se.natusoft.apsgroups.internal.net.MulticastTransport;
-import se.natusoft.apsgroups.internal.net.Transport;
+import se.natusoft.apsgroups.internal.net.*;
 import se.natusoft.apsgroups.internal.protocol.*;
 import se.natusoft.apsgroups.logging.APSGroupsLogger;
 import se.natusoft.apsgroups.logging.APSGroupsSystemOutLogger;
@@ -79,9 +78,6 @@ public class APSGroups {
     /** Manages members. */
     private MemberManagerThread memberManagerThread = null;
 
-    /** Handles receiving of all network packets. */
-    private DataReceiverThread dataReceiverThread = null;
-
     /** Manages net time with other groups on possible other hosts. */
     private NetTimeThread netTimeThread = null;
 
@@ -93,6 +89,12 @@ public class APSGroups {
 
     /** This instance holds our copy of net time. This gets updated by the NetTimeThread. */
     private NetTime netTime = null;
+
+    /** Instances of configured transports. */
+    private Transports transports = null;
+
+    /** A set of DataReceiver instances. */
+    private DataReceivers receivers = null;
 
     //
     // Constructors
@@ -129,22 +131,38 @@ public class APSGroups {
      * @throws IOException on failure to connect.
      */
     public void connect() throws IOException {
-        Transport transport = new MulticastTransport(this.logger, this.config);
-        transport.open();
-        this.dataReceiverThread = new DataReceiverThread(this.logger, transport, this.config);
-        this.dataReceiverThread.start();
+        this.transports = new Transports(this.logger);
+        for (APSGroupsConfig.TransportConfig transportConfig : this.config.getTransports()) {
+            switch (transportConfig.getTransportType()) {
+                case MULTICAST:
+                    this.transports.addMulticastTransport(new MulticastTransport(this.logger, transportConfig));
+                    break;
 
-        Transport memberTransport = new MulticastTransport(this.logger, this.config);
-        memberTransport.open();
-        this.memberManagerThread = new MemberManagerThread(this.logger, memberTransport, this.config);
-        this.dataReceiverThread.addMessagePacketListener(this.memberManagerThread);
+                case TCP_SENDER:
+                    this.transports.addSendingTCPTransport(new TCPSendTransport(this.logger, transportConfig));
+                    break;
+
+                case TCP_RECEIVER:
+                    this.transports.addReceivingTCPTransport(new TCPReceiveTransport(this.logger, transportConfig));
+                    break;
+            }
+        }
+        this.transports.openTransports();
+
+        this.receivers = new DataReceivers();
+        for (Transport transport : this.transports.getReceivingTransports()) {
+            DataReceiverThread receiver = new DataReceiverThread(this.logger, transport, this.config);
+            receiver.start();
+            this.receivers.add(receiver);
+        }
+
+        this.memberManagerThread = new MemberManagerThread(this.logger, this.transports, this.config);
+        this.receivers.addMessagePacketListener(this.memberManagerThread);
         this.memberManagerThread.start();
 
-        Transport netTimeTransport = new MulticastTransport(this.logger, this.config);
-        netTimeTransport.open();
         this.netTime = new NetTime();
-        this.netTimeThread = new NetTimeThread(this.netTime, this.logger, netTimeTransport);
-        this.dataReceiverThread.addMessagePacketListener(this.netTimeThread);
+        this.netTimeThread = new NetTimeThread(this.netTime, this.logger, this.transports);
+        this.receivers.addMessagePacketListener(this.netTimeThread);
         this.netTimeThread.start();
 
     }
@@ -155,21 +173,13 @@ public class APSGroups {
      *
      * @throws IOException
      */
-    public void disconnect() {
-        this.dataReceiverThread.terminate();
-        try {this.dataReceiverThread.getTransport().close();} catch (IOException ioe) {
-            this.logger.error("Failed to close data receiver transport!", ioe);
+    public void disconnect() throws IOException {
+        for (DataReceiver receiver : this.receivers) {
+            ((DataReceiverThread)receiver).terminate();
         }
-
         this.memberManagerThread.terminate();
-        try {this.memberManagerThread.getTransport().close();} catch (IOException ioe) {
-            this.logger.error("Failed to close member manager transport!", ioe);
-        }
-
         this.netTimeThread.terminate();
-        try {this.netTimeThread.getTransport().close();} catch (IOException ioe) {
-            this.logger.error("Failed to close net time transport!", ioe);
-        }
+        this.transports.closeTransports();
     }
 
     /**
@@ -209,7 +219,7 @@ public class APSGroups {
         Member member = new Member(memberUserData);
         group.addMember(member);
         this.memberManagerThread.addMember(member);
-        GroupMemberProvider groupMember = new GroupMemberProvider(member, this.dataReceiverThread, logger, this.config);
+        GroupMemberProvider groupMember = new GroupMemberProvider(member, this.receivers, this.transports, logger, this.config);
         groupMember.open();
 
         return groupMember;

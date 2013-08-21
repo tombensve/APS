@@ -53,35 +53,59 @@
  */
 package se.natusoft.apsgroups.config;
 
+import java.util.List;
+
 /**
- * This respresents the configuration values needed by netgroups.
+ * This represents the configuration values needed by netgroups.
  */
 public interface APSGroupsConfig {
 
     /**
-     * The multicast address to use.
-     */
-    public String getMulticastAddress();
-
-    /**
-     * The multicast target port to use.
-     */
-    public int getMulticastPort();
-
-    /**
      * The number of seconds to allow for a send of a message before timeout.
      */
-    public int getSendTimeout();
+    int getSendTimeout();
 
     /**
      * The number of seconds to wait before a packet is resent if not acknowledged.
      */
-    public int getResendInterval();
+    int getResendInterval();
 
     /**
      * The interval in seconds that members announce that they are (sill) members. If a member has
      * not announced itself again within this time other members of the group will drop the member.
      */
-    public int getMemberAnnounceInterval();
+    int getMemberAnnounceInterval();
+
+    /**
+     * Returns the configured transports.
+     */
+    List<TransportConfig> getTransports();
+
+    /**
+     * Defines configuration for a specific transport.
+     */
+    interface TransportConfig {
+
+        enum TransportType {
+            MULTICAST,
+            TCP_SENDER,
+            TCP_RECEIVER
+        }
+
+        /**
+         * Returns the type of the transport.
+         */
+        TransportType getTransportType();
+
+        /**
+         * Returns the host of the transport. IP address or hostname. This is only required for TCP_SENDER.
+         */
+        String getHost();
+
+        /**
+         * Returns the port to talk on.
+         */
+        int getPort();
+    }
 
 }

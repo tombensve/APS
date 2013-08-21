@@ -54,7 +54,7 @@
 package se.natusoft.apsgroups.internal.protocol;
 
 import se.natusoft.apsgroups.Debug;
-import se.natusoft.apsgroups.internal.net.Transport;
+import se.natusoft.apsgroups.internal.net.Transports;
 import se.natusoft.apsgroups.internal.protocol.message.MessagePacket;
 import se.natusoft.apsgroups.internal.protocol.message.MessagePacketListener;
 import se.natusoft.apsgroups.internal.protocol.message.PacketType;
@@ -105,8 +105,8 @@ public class NetTimeThread extends Thread implements MessagePacketListener {
     /** The NetTime instance representing network group time. */
     private NetTime netTime = null;
 
-    /** The transport to use to listen to incoming data. */
-    private Transport transport = null;
+    /** The transports to use to listen to incoming data. */
+    private Transports transports = null;
 
     /** The logger to log to. */
     private APSGroupsLogger logger = null;
@@ -135,12 +135,12 @@ public class NetTimeThread extends Thread implements MessagePacketListener {
      *
      * @param netTime The network time representative.
      * @param logger The logger for the thread to log on.
-     * @param transport The transport to use for reading data messages.
+     * @param transports The transports to use for reading data messages.
      */
-    public NetTimeThread(NetTime netTime, APSGroupsLogger logger, Transport transport) {
+    public NetTimeThread(NetTime netTime, APSGroupsLogger logger, Transports transports) {
         this.netTime = netTime;
         this.logger = logger;
-        this.transport = transport;
+        this.transports = transports;
 
         // The net time group and member are kind of dummies needed since the net time packet is a MessagePacket
         // which is expected to have both a group and a member. No messages are specifically sent on this group.
@@ -157,8 +157,8 @@ public class NetTimeThread extends Thread implements MessagePacketListener {
      * This to avoid having to save the transport outside of this class just to be able to
      * close it again.
      */
-    public Transport getTransport() {
-        return this.transport;
+    public Transports getTransports() {
+        return this.transports;
     }
 
     /**
@@ -194,7 +194,7 @@ public class NetTimeThread extends Thread implements MessagePacketListener {
         DataOutputStream dos = new DataOutputStream(mp.getOutputStream());
         dos.writeLong(this.netTime.getCurrentNetTime().getTimeValue());
         dos.close();
-        this.transport.send(mp.getPacketBytes());
+        this.transports.send(mp.getPacketBytes());
     }
 
     /**

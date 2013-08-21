@@ -55,7 +55,7 @@ package se.natusoft.apsgroups.internal.protocol;
 
 import se.natusoft.apsgroups.Debug;
 import se.natusoft.apsgroups.config.APSGroupsConfig;
-import se.natusoft.apsgroups.internal.net.Transport;
+import se.natusoft.apsgroups.internal.net.Transports;
 import se.natusoft.apsgroups.internal.protocol.message.MessagePacket;
 import se.natusoft.apsgroups.internal.protocol.message.MessagePacketListener;
 import se.natusoft.apsgroups.internal.protocol.message.PacketType;
@@ -80,8 +80,8 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
     /** The member to announce. */
     private List<Member> members = new LinkedList<>();
 
-    /** The transport to use to listen to incoming data. */
-    private Transport transport = null;
+    /** The transports to use to announce members on. */
+    private Transports transports = null;
 
     /** The logger to log to. */
     private APSGroupsLogger logger = null;
@@ -100,12 +100,12 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
      * Creates a new DataReceiverThread.
      *
      * @param logger The logger for the thread to log on.
-     * @param transport The transport to use for reading data messages.
+     * @param transports The transport to use for announcing members.
      * @param config The config to use.
      */
-    public MemberManagerThread(APSGroupsLogger logger, Transport transport, APSGroupsConfig config) {
+    public MemberManagerThread(APSGroupsLogger logger, Transports transports, APSGroupsConfig config) {
         this.logger = logger;
-        this.transport = transport;
+        this.transports = transports;
         this.config = config;
     }
 
@@ -117,8 +117,8 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
      * This to avoid having to save the transport outside of this class just to be able to
      * close it again.
      */
-    public Transport getTransport() {
-        return this.transport;
+    public Transports getTransport() {
+        return this.transports;
     }
 
     /**
@@ -144,6 +144,7 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
      */
     public synchronized void addMember(Member member) {
         this.members.add(member);
+        this.logger.debug("Added member '" + member.getId() + "' to MemberManager:" + hashCode());
     }
 
     /**
@@ -153,6 +154,16 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
      */
     public synchronized void removeMember(Member member) {
         this.members.remove(member);
+        this.logger.debug("Removed member '" + member.getId() + "' from MemberManager:" + hashCode());
+    }
+
+    /**
+     * Returns a concurrent safe member list.
+     */
+    private synchronized List<Member> getMembers() {
+        List<Member> membersCopy = new LinkedList<>();
+        membersCopy.addAll(this.members);
+        return membersCopy;
     }
 
     /**
@@ -174,7 +185,7 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
         ObjectOutputStream oos = new ObjectOutputStream(mp.getOutputStream());
         oos.writeObject(member.getMemberUserData());
         oos.close();
-        this.transport.send(mp.getPacketBytes());
+        this.transports.send(mp.getPacketBytes());
         member.announced();
     }
 
@@ -185,7 +196,7 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
     public void run() {
         while (isRunning()) {
             try {
-                for (Member member : members) {
+                for (Member member : getMembers()) {
                     if (member.lastAnnounced() < 0) {
                         announceMember(member);
                     }
@@ -228,7 +239,7 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
     @Override
     public void messagePacketReceived(MessagePacket messagePacket) {
         if (messagePacket.getType() == PacketType.MEMBER_LEAVING) {
-            for (Member member : this.members) {
+            for (Member member : getMembers()) {
                 if (member.getGroup().equals(messagePacket.getGroup())) {
                     Group group = member.getGroup();
                     group.removeMember(messagePacket.getMember());

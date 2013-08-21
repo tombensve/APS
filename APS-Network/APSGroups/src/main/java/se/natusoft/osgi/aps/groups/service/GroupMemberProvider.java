@@ -55,8 +55,7 @@ package se.natusoft.osgi.aps.groups.service;
 
 import se.natusoft.apsgroups.codeclarity.Package;
 import se.natusoft.apsgroups.config.APSGroupsConfig;
-import se.natusoft.apsgroups.internal.net.MulticastTransport;
-import se.natusoft.apsgroups.internal.net.Transport;
+import se.natusoft.apsgroups.internal.net.Transports;
 import se.natusoft.apsgroups.internal.protocol.DataReceiver;
 import se.natusoft.apsgroups.internal.protocol.Member;
 import se.natusoft.apsgroups.internal.protocol.MessageReceiver;
@@ -89,8 +88,8 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
     /** Client listeners. */
     private List<se.natusoft.osgi.aps.api.net.groups.service.MessageListener> messageListeners = new LinkedList<>();
 
-    /** The transport to use. */
-    private Transport transport = null;
+    /** The transports to use. */
+    private Transports transports = null;
 
     /** Receives messages for this member. */
     private MessageReceiver messageReceiver = null;
@@ -110,14 +109,15 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
      *
      * @param member The internal member object.
      * @param dataReceiver For adding and removing MessageReceivers to/from.
+     * @param transports The transports to use.
      * @param logger The logger to log to.
      */
     @Package
-    GroupMemberProvider(Member member, DataReceiver dataReceiver, APSGroupsLogger logger) {
+    GroupMemberProvider(Member member, DataReceiver dataReceiver, Transports transports, APSGroupsLogger logger) {
         this.member = member;
         this.dataReceiver = dataReceiver;
         this.logger = logger;
-        this.transport = new MulticastTransport(this.logger, this.config);
+        this.transports = transports;
     }
 
     //
@@ -130,10 +130,7 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
      * @throws IOException
      */
     public void open() throws IOException {
-        this.transport.open();
-        Transport ackTransport = new MulticastTransport(this.logger, this.config);
-        ackTransport.open();
-        this.messageReceiver = new MessageReceiver(ackTransport, this.member, this.logger);
+        this.messageReceiver = new MessageReceiver(this.transports, this.member, this.logger);
         this.messageReceiver.addMessageListener(this);
         this.dataReceiver.addMessagePacketListener(this.messageReceiver);
     }
@@ -145,15 +142,13 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
      */
     public void close() throws IOException {
         MessagePacket mp = new MessagePacket(this.member.getGroup(), this.member, UUID.randomUUID(), 0, PacketType.MEMBER_LEAVING);
-        this.transport.send(mp.getPacketBytes());
+        this.transports.send(mp.getPacketBytes());
         try {Thread.sleep(500);} catch (InterruptedException ie) {
             this.logger.error("GroupMemberProvider: Thread.sleep() got interrupted on close().");
         }
 
-        this.transport.close();
         this.messageListeners.clear();
         this.dataReceiver.removeMessagePacketListener(this.messageReceiver);
-        this.messageReceiver.getTransport().close();
         this.messageReceiver.removeMessageListener(this);
         this.messageReceiver = null;
     }
@@ -197,7 +192,7 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
     @Override
     public void sendMessage(se.natusoft.osgi.aps.api.net.groups.service.Message message) throws IOException {
         if (this.member.getGroup().getNumberOfMembers() > 0) {
-            MessageSender sender = new MessageSender(((MessageProvider)message).getRealMessage(), transport, this.config);
+            MessageSender sender = new MessageSender(((MessageProvider)message).getRealMessage(), this.transports, this.config);
             this.dataReceiver.addMessagePacketListener(sender);
             try {
                 sender.send();

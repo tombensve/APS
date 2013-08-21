@@ -55,8 +55,7 @@ package se.natusoft.apsgroups.internal;
 
 import se.natusoft.apsgroups.GroupMember;
 import se.natusoft.apsgroups.config.APSGroupsConfig;
-import se.natusoft.apsgroups.internal.net.MulticastTransport;
-import se.natusoft.apsgroups.internal.net.Transport;
+import se.natusoft.apsgroups.internal.net.Transports;
 import se.natusoft.apsgroups.internal.protocol.*;
 import se.natusoft.apsgroups.internal.protocol.message.Message;
 import se.natusoft.apsgroups.internal.protocol.message.MessageListener;
@@ -89,8 +88,8 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
     /** Client listeners. */
     private List<MessageListener> messageListeners = new LinkedList<>();
 
-    /** The transport to use. */
-    private Transport transport = null;
+    /** The transports to use. */
+    private Transports transports = null;
 
     /** Receives messages for this member. */
     private MessageReceiver messageReceiver = null;
@@ -107,14 +106,15 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
      *
      * @param member The internal member object.
      * @param dataReceiver For adding and removing MessageReceivers to/from.
+     * @param transports The transports to use.
      * @param logger The logger to log to.
      */
-    public GroupMemberProvider(Member member, DataReceiver dataReceiver, APSGroupsLogger logger, APSGroupsConfig config) {
+    public GroupMemberProvider(Member member, DataReceiver dataReceiver, Transports transports, APSGroupsLogger logger, APSGroupsConfig config) {
         this.member = member;
         this.dataReceiver = dataReceiver;
+        this.transports = transports;
         this.logger = logger;
         this.config = config;
-        this.transport = new MulticastTransport(this.logger, this.config);
     }
 
     //
@@ -127,10 +127,7 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
      * @throws java.io.IOException
      */
     public void open() throws IOException {
-        this.transport.open();
-        Transport ackTransport = new MulticastTransport(this.logger, this.config);
-        ackTransport.open();
-        this.messageReceiver = new MessageReceiver(ackTransport, this.member, this.logger);
+        this.messageReceiver = new MessageReceiver(this.transports, this.member, this.logger);
         this.messageReceiver.addMessageListener(this);
         this.dataReceiver.addMessagePacketListener(this.messageReceiver);
     }
@@ -142,13 +139,11 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
      */
     public void close() throws IOException {
         MessagePacket mp = new MessagePacket(this.member.getGroup(), this.member, UUID.randomUUID(), 0, PacketType.MEMBER_LEAVING);
-        this.transport.send(mp.getPacketBytes());
+        this.transports.send(mp.getPacketBytes());
         try {Thread.sleep(500);} catch (InterruptedException ie) {}
 
-        this.transport.close();
         this.messageListeners.clear();
         this.dataReceiver.removeMessagePacketListener(this.messageReceiver);
-        this.messageReceiver.getTransport().close();
         this.messageReceiver.removeMessageListener(this);
         this.messageReceiver = null;
     }
@@ -191,7 +186,7 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
     @Override
     public void sendMessage(Message message) throws IOException {
         if (this.member.getGroup().getNumberOfMembers() > 0) {
-            MessageSender sender = new MessageSender(message, transport, this.config);
+            MessageSender sender = new MessageSender(message, transports, this.config);
             this.dataReceiver.addMessagePacketListener(sender);
             try {
                 sender.send();

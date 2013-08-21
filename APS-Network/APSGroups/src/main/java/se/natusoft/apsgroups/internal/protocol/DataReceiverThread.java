@@ -141,6 +141,15 @@ public class DataReceiverThread extends Thread implements DataReceiver {
     }
 
     /**
+     * Returns the listeners.
+     */
+    private synchronized List<MessagePacketListener> getListeners() {
+        List<MessagePacketListener> listenersCopy = new LinkedList<>();
+        listenersCopy.addAll(this.listeners);
+        return listenersCopy;
+    }
+
+    /**
      * Starts the thread.
      */
     @Override
@@ -184,7 +193,7 @@ public class DataReceiverThread extends Thread implements DataReceiver {
                     Debug.println("    length:       " + messagePacket.getData().length);
                 }
 
-                for (MessagePacketListener listener : this.listeners) {
+                for (MessagePacketListener listener : getListeners()) {
                     if (messagePacket.getType() != PacketType.MEMBER_ANNOUNCEMENT) {
                         Debug.println("Delivering packet to listener: " + listener);
                     }

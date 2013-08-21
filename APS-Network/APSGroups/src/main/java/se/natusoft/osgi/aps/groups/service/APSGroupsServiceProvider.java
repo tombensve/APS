@@ -54,12 +54,14 @@
 package se.natusoft.osgi.aps.groups.service;
 
 import se.natusoft.apsgroups.config.APSGroupsConfig;
-import se.natusoft.apsgroups.internal.net.MulticastTransport;
-import se.natusoft.apsgroups.internal.net.Transport;
+import se.natusoft.apsgroups.internal.net.*;
 import se.natusoft.apsgroups.internal.protocol.*;
 import se.natusoft.apsgroups.logging.APSGroupsLogger;
+import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent;
+import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener;
 import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
 import se.natusoft.osgi.aps.api.net.groups.service.GroupMember;
+import se.natusoft.osgi.aps.groups.config.APSGroupsServiceConfig;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -67,7 +69,7 @@ import java.util.Properties;
 /**
  * This is the service API implementation.
  */
-public class APSGroupsServiceProvider implements APSGroupsService {
+public class APSGroupsServiceProvider implements APSGroupsService, APSConfigChangedListener {
     //
     // Private Members
     //
@@ -76,13 +78,16 @@ public class APSGroupsServiceProvider implements APSGroupsService {
     private MemberManagerThread memberManagerThread = null;
 
     /** Handles receiving of all network packets. */
-    private DataReceiverThread dataReceiverThread = null;
+    private DataReceivers receivers = null;
 
     /** Manages net time with other groups on possible other hosts. */
     private NetTimeThread netTimeThread = null;
 
     /** This instance holds our copy of net time. This gets updated by the NetTimeThread. */
     private NetTime netTime = null;
+
+    /** The configured transports.  */
+    private Transports transports = null;
 
     /** Will be set to true on first connect. */
     private boolean connected = false;
@@ -113,6 +118,29 @@ public class APSGroupsServiceProvider implements APSGroupsService {
     // Methods
     //
 
+    /**
+     * Event listener callback when event occurs.
+     *
+     * @param event information about the event.
+     */
+    @Override
+    public void apsConfigChanged(APSConfigChangedEvent event) {
+        try {
+            disconnect();
+            connect();
+        }
+        catch (IOException ioe) {
+            this.logger.error("disconnect+(re)connect due to config change failed!", ioe);
+        }
+    }
+
+    private APSGroupsServiceConfig getConfig() {
+        if (!APSGroupsServiceConfig.managed.isManaged()) {
+            APSGroupsServiceConfig.managed.waitUtilManaged();
+        }
+
+        return APSGroupsServiceConfig.managed.get();
+    }
 
     /**
      * Starts upp and connects the groups engine. Nothing will work until this has been called and
@@ -120,25 +148,43 @@ public class APSGroupsServiceProvider implements APSGroupsService {
      *
      * @throws java.io.IOException on failure to connect.
      */
-    private void connect() throws IOException {
-        Transport transport = new MulticastTransport(this.logger, this.config);
-        transport.open();
-        this.dataReceiverThread = new DataReceiverThread(this.logger, transport, this.config);
-        this.dataReceiverThread.start();
+    private synchronized void connect() throws IOException {
+        getConfig().addConfigChangedListener(this);
 
-        Transport memberTransport = new MulticastTransport(this.logger, this.config);
-        memberTransport.open();
-        this.memberManagerThread = new MemberManagerThread(this.logger, memberTransport, this.config);
-        this.dataReceiverThread.addMessagePacketListener(this.memberManagerThread);
+        this.transports = new Transports(this.logger);
+        for (APSGroupsConfig.TransportConfig transportConfig : this.config.getTransports()) {
+            switch (transportConfig.getTransportType()) {
+                case MULTICAST:
+                    this.transports.addMulticastTransport(new MulticastTransport(this.logger, transportConfig));
+                    break;
+
+                case TCP_SENDER:
+                    this.transports.addSendingTCPTransport(new TCPSendTransport(this.logger, transportConfig));
+                    break;
+
+                case TCP_RECEIVER:
+                    this.transports.addReceivingTCPTransport(new TCPReceiveTransport(this.logger, transportConfig));
+                    break;
+            }
+        }
+        this.transports.openTransports();
+
+        this.receivers = new DataReceivers();
+        for (Transport transport : this.transports.getReceivingTransports()) {
+            DataReceiverThread receiver = new DataReceiverThread(this.logger, transport, this.config);
+            receiver.start();
+            this.receivers.add(receiver);
+        }
+
+        this.memberManagerThread = new MemberManagerThread(this.logger, this.transports, this.config);
+        this.receivers.addMessagePacketListener(this.memberManagerThread);
         this.memberManagerThread.start();
 
-        Transport netTimeTransport = new MulticastTransport(this.logger, this.config);
-        netTimeTransport.open();
         this.netTime = new NetTime();
-        this.netTimeThread = new NetTimeThread(this.netTime, this.logger, netTimeTransport);
-        this.dataReceiverThread.addMessagePacketListener(this.netTimeThread);
+        this.netTimeThread = new NetTimeThread(this.netTime, this.logger, this.transports);
+        this.receivers.addMessagePacketListener(this.netTimeThread);
         this.netTimeThread.start();
-
+        this.connected = true;
     }
 
     /**
@@ -147,27 +193,17 @@ public class APSGroupsServiceProvider implements APSGroupsService {
      *
      * @throws IOException
      */
-    public void disconnect()  {
-        if (this.dataReceiverThread != null) {
-            this.dataReceiverThread.terminate();
-            try {this.dataReceiverThread.getTransport().close();} catch (IOException ioe) {
-                this.logger.error("Failed to close data receiver transport!", ioe);
+    public synchronized void disconnect() throws IOException{
+        this.connected = false;
+        getConfig().removeConfigChangedListener(this);
+        if (this.receivers != null) {
+            for (DataReceiver receiver : this.receivers) {
+                ((DataReceiverThread)receiver).terminate();
             }
         }
-
-        if (this.memberManagerThread != null) {
-            this.memberManagerThread.terminate();
-            try {this.memberManagerThread.getTransport().close();} catch (IOException ioe) {
-                this.logger.error("Failed to close member manager transport!", ioe);
-            }
-        }
-
-        if (this.netTimeThread != null) {
-            this.netTimeThread.terminate();
-            try {this.netTimeThread.getTransport().close();} catch (IOException ioe) {
-                this.logger.error("Failed to close net time transport!", ioe);
-            }
-        }
+        if (this.memberManagerThread != null) this.memberManagerThread.terminate();
+        if (this.netTimeThread != null) this.netTimeThread.terminate();
+        if (transports != null) this.transports.closeTransports();
     }
 
     /**
@@ -180,11 +216,10 @@ public class APSGroupsServiceProvider implements APSGroupsService {
      * we have a managed config is on first service call. By then the config is almost surely managed, but
      * if it isn't yet, it is safe to wait for it to become managed.
      */
-    private void checkConnect() throws IOException {
+    private synchronized void checkConnect() throws IOException {
         if (!this.connected) {
             try {
                 connect();
-                this.connected = true;
             }
             catch (IOException ioe) {
                 disconnect();
@@ -228,7 +263,7 @@ public class APSGroupsServiceProvider implements APSGroupsService {
         Member member = new Member(memberUserData);
         group.addMember(member);
         this.memberManagerThread.addMember(member);
-        GroupMemberProvider groupMember = new GroupMemberProvider(member, this.dataReceiverThread, logger);
+        GroupMemberProvider groupMember = new GroupMemberProvider(member, this.receivers, this.transports, logger);
         groupMember.open();
 
         return groupMember;
@@ -249,4 +284,5 @@ public class APSGroupsServiceProvider implements APSGroupsService {
         this.memberManagerThread.removeMember(member);
         member.getGroup().removeMember(member);
     }
+
 }

@@ -55,7 +55,7 @@ package se.natusoft.apsgroups.internal.protocol;
 
 import se.natusoft.apsgroups.Debug;
 import se.natusoft.apsgroups.config.APSGroupsConfig;
-import se.natusoft.apsgroups.internal.net.Transport;
+import se.natusoft.apsgroups.internal.net.Transports;
 import se.natusoft.apsgroups.internal.protocol.message.Message;
 import se.natusoft.apsgroups.internal.protocol.message.MessagePacket;
 import se.natusoft.apsgroups.internal.protocol.message.MessagePacketListener;
@@ -74,8 +74,8 @@ public class MessageSender implements MessagePacketListener{
     /** The message to send. */
     private Message message = null;
 
-    /** The transport to use. */
-    private Transport transport = null;
+    /** The transports to use. */
+    private Transports transports = null;
 
     /** This is set to true in send() to inhibit that it gets sent twice. */
     private boolean sent = false;
@@ -91,12 +91,12 @@ public class MessageSender implements MessagePacketListener{
      * Creates a new MessageSender.
      *
      * @param message The message to send.
-     * @param transport The transport to use.
+     * @param transports The transports to use.
      * @param config The config to use.
      */
-    public MessageSender(Message message, Transport transport, APSGroupsConfig config) {
+    public MessageSender(Message message, Transports transports, APSGroupsConfig config) {
         this.message = message;
-        this.transport = transport;
+        this.transports = transports;
         this.config = config;
     }
 
@@ -148,7 +148,7 @@ public class MessageSender implements MessagePacketListener{
     private void sendNonAcknowledged() throws IOException {
         for (MessagePacket packet : this.message.getAllPackets()) {
             if (!packet.hasAllAcknowledgements()) {
-                this.transport.send(packet.getPacketBytes());
+                this.transports.send(packet.getPacketBytes());
             }
         }
     }
