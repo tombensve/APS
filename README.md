@@ -20,6 +20,8 @@ Short feature list:
 
 * Provides a far more flexible and usable service tracker than the standard one, that allows you to set a timeout and throws an exception on timeout. The tracker can also provide a Proxied implementation of the service interface using the tracker to make calls. 
 
+* Provides an authenticationable and pluggable administration web which different administration applications can plug into participating in a common login (SSO). APSConfigAdminWeb and APSUserAdminWeb are two such plugin admin applications.
+
 * Provides a high level configuration service where annotated configuration models are automatically registered and populated using the extender pattern. 
    * Advanced structured config models with config values and submodels and lists of values and submodels.
    * Supports multiple configuration environments.

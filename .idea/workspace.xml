@@ -11,7 +11,7 @@
     <ignored path=".idea/workspace.xml" />
     <ignored mask="*.iml" />
     <file path="/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1377178876974" ignored="false" />
-    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1377183925445" ignored="false" />
+    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1377184012960" ignored="false" />
     <file path="/a.dummy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376128280564" ignored="false" />
     <file path="/testclient.sh" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355064160118" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/wip-clones/MarkdownDoc/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355420755980" ignored="false" />
@@ -20,7 +20,7 @@
     <file path="/CodeLicenseManager.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1362254100113" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/CodeLicenseManager/.idea/workspace.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1362683129838" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/README.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1360347454296" ignored="false" />
-    <file path="/README.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1377181590711" ignored="false" />
+    <file path="/README.md" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1377185738593" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/MarkdownDoc/.idea/workspace.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376158318663" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/CodeLicenseManager/CodeLicenseManager-manager/src/main/java/se/natusoft/tools/codelicmgr/SourcePath.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1362682481588" ignored="false" />
     <file path="/SourcePath.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1361729841908" ignored="false" />
@@ -879,7 +879,7 @@
       <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="98" column="66" selection-start="3731" selection-end="3731" vertical-scroll-proportion="-24.375">
+            <state line="98" column="66" selection-start="3731" selection-end="3731" vertical-scroll-proportion="-25.0">
               <folding />
             </state>
           </provider>
@@ -888,7 +888,7 @@
       <file leaf-file-name="README.md" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="42" column="0" selection-start="2061" selection-end="2061" vertical-scroll-proportion="0.613079">
+            <state line="22" column="241" selection-start="1152" selection-end="1152" vertical-scroll-proportion="0.3446691">
               <folding />
             </state>
           </provider>
@@ -6828,7 +6828,11 @@
       <created>1377183932569</created>
       <updated>1377183932569</updated>
     </task>
-    <option name="localTasksCounter" value="369" />
+    <task id="LOCAL-00369" summary="Cosmetics.">
+      <created>1377184018397</created>
+      <updated>1377184018398</updated>
+    </task>
+    <option name="localTasksCounter" value="370" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="true" url="http://redmine.natusoft.private/redmine">
@@ -6955,7 +6959,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Improved README.md." />
+    <option name="LAST_COMMIT_MESSAGE" value="Cosmetics." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -6969,7 +6973,6 @@
     <option name="UPDATE_FILTER_BY_SCOPE" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="- aps-external-protocol-extender now listens to &quot;aps-externalizable&quot; property of value &quot;true&quot; in service properties.&#10;- Regenerated all documentation with a deploy." />
     <MESSAGE value="APSActivator can now register several  instances of services." />
     <MESSAGE value="Updated docs." />
     <MESSAGE value="Added required=true on @APSOSGiService with the effect of delayed publishing of services having required=true dependencies until all those dependencies are available. If any of those leaves long enough for a timeout then the service will be unpublished until the dependent service becomes available again. The bundle itself never changes any state due to this." />
@@ -6994,6 +6997,7 @@
     <MESSAGE value="Now added a config for the aps-config-service-provider. The config allows to enable/disable synchronization of config and also specify a group name where synchronization will only be done to the members of the same group thus allowing several groups on the same subnet with multicast transport." />
     <MESSAGE value="Updated the version number in the README.md file." />
     <MESSAGE value="Improved README.md." />
+    <MESSAGE value="Cosmetics." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -7162,13 +7166,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="98" column="66" selection-start="3731" selection-end="3731" vertical-scroll-proportion="-24.375">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONHTTP.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="59" column="13" selection-start="2044" selection-end="2044" vertical-scroll-proportion="0.0">
@@ -7176,9 +7173,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="98" column="66" selection-start="3731" selection-end="3731" vertical-scroll-proportion="-25.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="0" selection-start="2061" selection-end="2061" vertical-scroll-proportion="0.613079">
+        <state line="22" column="241" selection-start="1152" selection-end="1152" vertical-scroll-proportion="0.3446691">
           <folding />
         </state>
       </provider>
