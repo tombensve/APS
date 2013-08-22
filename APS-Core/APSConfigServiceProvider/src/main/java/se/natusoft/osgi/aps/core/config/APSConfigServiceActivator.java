@@ -46,6 +46,7 @@ import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
 import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
 import se.natusoft.osgi.aps.core.config.api.APSConfigSyncMgmtService;
+import se.natusoft.osgi.aps.core.config.config.APSConfigServiceConfig;
 import se.natusoft.osgi.aps.core.config.service.APSConfigAdminServiceProvider;
 import se.natusoft.osgi.aps.core.config.service.APSConfigServiceExtender;
 import se.natusoft.osgi.aps.core.config.service.APSConfigServiceProvider;
@@ -152,6 +153,9 @@ public class APSConfigServiceActivator implements BundleActivator {
         this.fsServiceTracker.setDebugLogger(new APSLogger(System.out));
         this.fsServiceTracker.start();
 
+        // We are doing a delayed start of the config services since the startup needs to access the filesystem
+        // service, which cannot be done in a bundle start method since it would created a deadlock if the
+        // filesystem service was not yet started, or alternatively the whole bundle would fail to start.
         this.fsServiceTracker.onActiveServiceAvailable(new OnServiceAvailable<APSFilesystemService>() {
             public void onServiceAvailable(APSFilesystemService fsService, ServiceReference serviceReference) throws Exception {
                 setupServices(fsService);
@@ -210,7 +214,10 @@ public class APSConfigServiceActivator implements BundleActivator {
             this.configServiceExtender.handleBundleStart(bundle);
         }
 
-        // Setup sychronization tracker
+        // Since we cannot auto manage our self, we have to do this the "hard" way :-)
+        this.configServiceProvider.registerConfiguration(APSConfigServiceConfig.class, false);
+
+        // Setup synchronization tracker
         this.groupsServiceTracker = new APSServiceTracker<APSGroupsService>(context, APSGroupsService.class,
                 APSServiceTracker.LARGE_TIMEOUT);
         this.groupsServiceTracker.start();
@@ -222,7 +229,7 @@ public class APSConfigServiceActivator implements BundleActivator {
         this.groupsServiceTracker.onActiveServiceAvailable(new OnServiceAvailable<APSGroupsService> () {
             public void onServiceAvailable(APSGroupsService groupsService, ServiceReference serviceReference) throws Exception {
                 APSConfigServiceActivator.this.synchronizer =
-                        new Synchronizer(configAdminLogger, configAdminProvider, envStore, memoryStore,
+                        new Synchronizer(configAdminLogger, configAdminProvider, configServiceProvider, envStore, memoryStore,
                                 configStore, groupsService);
                 APSConfigServiceActivator.this.synchronizer.start();
 
@@ -244,6 +251,7 @@ public class APSConfigServiceActivator implements BundleActivator {
                     APSConfigServiceActivator.this.syncMgmtService.unregister();
                     if (APSConfigServiceActivator.this.synchronizer != null) {
                         APSConfigServiceActivator.this.synchronizer.stop();
+                        APSConfigServiceActivator.this.synchronizer.cleanup();
                         APSConfigServiceActivator.this.synchronizer = null;
                     }
                 }
@@ -275,16 +283,19 @@ public class APSConfigServiceActivator implements BundleActivator {
         }
 
         if (this.configured) {
-            if (this.configAdminService != null) {this.configAdminService.unregister();}
+            if (this.configAdminService != null) {
+                this.configAdminService.unregister();
+            }
             if (this.configAdminLogger != null) {
                 this.configAdminLogger.info("APSConfigAdminServiceProvider have been unregistered!");
                 this.configAdminLogger.stop(context);
             }
             if (this.configService != null) {
+                this.configServiceProvider.unregisterConfiguration(APSConfigServiceConfig.class);
                 this.configService.unregister();
             }
             if (this.configLogger != null) {
-                this.configLogger.info("APSConfigServiceProvider havve been unregistered!");
+                this.configLogger.info("APSConfigServiceProvider have been unregistered!");
                 this.configLogger.stop(context);
             }
             this.fsServiceTracker.stop(context);

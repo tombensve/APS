@@ -78,7 +78,7 @@ public interface APSConfigService {
      *
      * @param configClass The config class to register.
      * @param forService If true then this configuration is for a service and will also be registered in the
-     *                   standard OSGi configuration service.
+     *                   standard OSGi configuration service. (Note: This was a bad idea and is quite useless!)
      *
      * @throws APSConfigException on bad configClass interface.
      */

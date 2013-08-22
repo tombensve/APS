@@ -78,6 +78,7 @@
         <!-- The private packages. -->
         <osgi.private.package>
             se.natusoft.osgi.aps.core.config,
+            se.natusoft.osgi.aps.core.config.config,
             se.natusoft.osgi.aps.core.config.model,
             se.natusoft.osgi.aps.core.config.model.admin,
             se.natusoft.osgi.aps.core.config.service,

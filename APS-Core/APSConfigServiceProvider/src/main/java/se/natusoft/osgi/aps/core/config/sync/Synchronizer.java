@@ -38,15 +38,19 @@
  */
 package se.natusoft.osgi.aps.core.config.sync;
 
+import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent;
+import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigAdmin;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
+import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
 import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
 import se.natusoft.osgi.aps.api.net.groups.service.GroupMember;
 import se.natusoft.osgi.aps.api.net.groups.service.Message;
 import se.natusoft.osgi.aps.api.net.groups.service.MessageListener;
 import se.natusoft.osgi.aps.core.config.api.APSConfigSyncMgmtService;
+import se.natusoft.osgi.aps.core.config.config.APSConfigServiceConfig;
 import se.natusoft.osgi.aps.core.config.model.admin.APSConfigAdminImpl;
 import se.natusoft.osgi.aps.core.config.store.APSConfigEnvStore;
 import se.natusoft.osgi.aps.core.config.store.APSConfigMemoryStore;
@@ -62,7 +66,8 @@ import java.util.*;
 /**
  * Responsible for synchronizing with other installations.
  */
-public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemoryStore.ConfigUpdateListener, APSConfigEnvStore.ConfigEnvUpdateListener, MessageListener {
+public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemoryStore.ConfigUpdateListener,
+        APSConfigEnvStore.ConfigEnvUpdateListener, APSConfigChangedListener, MessageListener {
     //
     // Constants
     //
@@ -74,25 +79,47 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
     // Private Members
     //
 
+    /** The general service logger. We get this in the constructor. */
     APSLogger logger = null;
 
+    /** The internal configuration environment storage.  */
     private APSConfigEnvStore configEnvStore = null;
 
+    /** The internal configuration value storage. */
     private APSConfigMemoryStore configMemoryStore = null;
 
+    /** The internal handler for accessing configurations on disk. */
     private APSConfigPersistentStore configPersistentStore = null;
 
+    /** The implementation of APSConfigAdminService. */
     private APSConfigAdminService configAdminService = null;
 
+    /** Our own config model. It is loaded in the constructor! */
+    private APSConfigServiceConfig config = null;
+
+    /** The APSGroups service we use for synchronizing the configuration. */
     private APSGroupsService groupsService = null;
 
+    /** APSGroups member representing us. */
     private GroupMember groupMember = null;
 
+    /** This inspects local timestamps and received timestamps and determines
+       if we have been out of touch for to long. */
     private LongTimeNoSeeThread longTimeNoSeeThread = null;
 
+    /** The time of the last message received. */
     private Date lastGroupMsgTimestamp = null;
 
+    /** Since we cannot use net time for the newest config timestamp passed with all config messages
+        received we have to avoid triggering a constant "FEED_ME" message due to time difference, so
+        the local newest config timestamp is calculated when this values is -1, otherwise the saved
+        value in this field is used. When a newer timestamp is received it is saved here. */
     private long newestConfigTimestamp = -1;
+
+    /** Determines if we are synchronizing or not. This is used to be able to turn on or off sync
+        due to configuration change. A configuration change event is received on each save even
+        if no values have been changed so we use this to determine the current state. */
+    private boolean synchronizing = false;
 
     //
     // Constructors
@@ -103,14 +130,16 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
      *
      * @param logger The logger to log to.
      * @param configAdminService The local APSConfigAdminService instance.
+     * @param configService The local APSConfigService instance.
      * @param configEnvStore The local APSConfigEnvStore.
      * @param configMemoryStore The memory store to listen for changes on.
      * @param configPersistentStore For persisting changes.
-     * @param groupsService The APSGroupsService to sych with.
+     * @param groupsService The APSGroupsService to sync with.
      */
     public Synchronizer(
             APSLogger logger,
             APSConfigAdminService configAdminService,
+            APSConfigService configService,
             APSConfigEnvStore configEnvStore,
             APSConfigMemoryStore configMemoryStore,
             APSConfigPersistentStore configPersistentStore,
@@ -122,35 +151,81 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
         this.configMemoryStore = configMemoryStore;
         this.configPersistentStore = configPersistentStore;
         this.groupsService = groupsService;
+
+        this.config = configService.getConfiguration(APSConfigServiceConfig.class);
+        this.config.addConfigChangedListener(this);
+    }
+
+    public void cleanup() {
+        if (this.config != null) {
+            this.config.removeConfigChangedListener(this);
+        }
     }
 
     //
     // Methods
     //
 
-    public void start() throws IOException {
-        Properties memberProps = new Properties();
-        memberProps.setProperty(NEWEST_CONFIG_TIMESTAMP, "" + resolveNewestConfigTimestamp());
-        this.groupMember = this.groupsService.joinGroup("aps-config-synchronizer", memberProps);
-        this.groupMember.addMessageListener(this);
-        this.configEnvStore.addUpdateListener(this);
-        this.configMemoryStore.addUpdateListener(this);
-        sendFeedMe();
-        updateLastGroupMsgTimestamp();
-        this.longTimeNoSeeThread = new LongTimeNoSeeThread();
-        this.longTimeNoSeeThread.start();
-        this.logger.info("Started synchronizer!");
+    public void start() {
+        if (this.config.synchronize.toBoolean()) {
+            this.synchronizing = true;
+            try {
+                Properties memberProps = new Properties();
+                memberProps.setProperty(NEWEST_CONFIG_TIMESTAMP, "" + resolveNewestConfigTimestamp());
+                this.groupMember = this.groupsService.joinGroup(this.config.synchronizationGroup.toString(), memberProps);
+                this.groupMember.addMessageListener(this);
+                this.configEnvStore.addUpdateListener(this);
+                this.configMemoryStore.addUpdateListener(this);
+                sendFeedMe();
+                updateLastGroupMsgTimestamp();
+                this.longTimeNoSeeThread = new LongTimeNoSeeThread();
+                this.longTimeNoSeeThread.start();
+                this.logger.info("Started config synchronizer!");
+            }
+            catch (IOException ioe) {
+                this.logger.error("Failed to start config synchronizer!", ioe);
+            }
+        }
     }
 
-    public void stop() throws IOException {
-        if (this.longTimeNoSeeThread != null) this.longTimeNoSeeThread.stopThread();
-        this.configEnvStore.removeUpdateListener(this);
-        this.configMemoryStore.removeUpdateListener(this);
-        if (this.groupMember != null) this.groupMember.removeMessageListener(this);
-        this.groupsService.leaveGroup(this.groupMember);
-        this.logger.info("Stopped synchronizer!");
+    public void stop() {
+        if (this.config.synchronize.toBoolean()) {
+            this.synchronizing = false;
+            try {
+                if (this.longTimeNoSeeThread != null) this.longTimeNoSeeThread.stopThread();
+                this.configEnvStore.removeUpdateListener(this);
+                this.configMemoryStore.removeUpdateListener(this);
+                if (this.groupMember != null) this.groupMember.removeMessageListener(this);
+                this.groupsService.leaveGroup(this.groupMember);
+                this.logger.info("Stopped config synchronizer!");
+            }
+            catch (IOException ioe) {
+                this.logger.error("Failed to stop config synchronizer!", ioe);
+            }
+        }
     }
 
+    /**
+     * Event listener callback when event occurs.
+     *
+     * @param event information about the event.
+     */
+    @Override
+    public void apsConfigChanged(APSConfigChangedEvent event) {
+        // This will be called on save of the configuration even if nothing was actually changed!
+        // Thereby we keep track or and check our current state.
+        if (!this.synchronizing && this.config.synchronize.toBoolean()) {
+            start();
+        }
+        else if (this.synchronizing && !this.config.synchronize.toBoolean()) {
+            stop();
+        }
+    }
+
+    /**
+     * This finds the freshest of all config value timestamps. This is used to compare with same value
+     * of received configurations to determine if we are behind in actuality.
+     */
     private long resolveNewestConfigTimestamp() {
         if (this.newestConfigTimestamp == -1) {
             long newestConfigTimestamp = 0;
