@@ -61,7 +61,7 @@
         <!-- 
             Bundle properties 
         -->
-        <!-- The synbolic name of the bundle. Defaults to the artifact id, but can be overriden. -->
+        <!-- The synbolic name of the bundle. Defaults to the artifact id, but can be overridden. -->
         <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
         
         <!-- The bundle activator class -->
