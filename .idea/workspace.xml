@@ -11,7 +11,7 @@
     <ignored path=".idea/workspace.xml" />
     <ignored mask="*.iml" />
     <file path="/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1377178876974" ignored="false" />
-    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1377180848375" ignored="false" />
+    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1377183925445" ignored="false" />
     <file path="/a.dummy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376128280564" ignored="false" />
     <file path="/testclient.sh" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355064160118" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/wip-clones/MarkdownDoc/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355420755980" ignored="false" />
@@ -885,19 +885,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="README.md" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="README.md" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="46" column="0" selection-start="2339" selection-end="2339" vertical-scroll-proportion="0.0">
+            <state line="42" column="0" selection-start="2061" selection-end="2061" vertical-scroll-proportion="0.613079">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="JSONHTTP.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="JSONHTTP.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONHTTP.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="59" column="13" selection-start="2044" selection-end="2044" vertical-scroll-proportion="-2.0980926">
+            <state line="59" column="13" selection-start="2044" selection-end="2044" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -6824,7 +6824,11 @@
       <created>1377180853177</created>
       <updated>1377180853178</updated>
     </task>
-    <option name="localTasksCounter" value="368" />
+    <task id="LOCAL-00368" summary="Improved README.md.">
+      <created>1377183932569</created>
+      <updated>1377183932569</updated>
+    </task>
+    <option name="localTasksCounter" value="369" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="true" url="http://redmine.natusoft.private/redmine">
@@ -6951,7 +6955,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated the version number in the README.md file." />
+    <option name="LAST_COMMIT_MESSAGE" value="Improved README.md." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -6965,7 +6969,6 @@
     <option name="UPDATE_FILTER_BY_SCOPE" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="Regenerated all documentation with a deploy." />
     <MESSAGE value="- aps-external-protocol-extender now listens to &quot;aps-externalizable&quot; property of value &quot;true&quot; in service properties.&#10;- Regenerated all documentation with a deploy." />
     <MESSAGE value="APSActivator can now register several  instances of services." />
     <MESSAGE value="Updated docs." />
@@ -6990,6 +6993,7 @@
     <MESSAGE value="IDE files and regenerated docs." />
     <MESSAGE value="Now added a config for the aps-config-service-provider. The config allows to enable/disable synchronization of config and also specify a group name where synchronization will only be done to the members of the same group thus allowing several groups on the same subnet with multicast transport." />
     <MESSAGE value="Updated the version number in the README.md file." />
+    <MESSAGE value="Improved README.md." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -7165,16 +7169,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
+    <entry file="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONHTTP.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="46" column="0" selection-start="2339" selection-end="2339" vertical-scroll-proportion="0.0">
+        <state line="59" column="13" selection-start="2044" selection-end="2044" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONHTTP.java">
+    <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="59" column="13" selection-start="2044" selection-end="2044" vertical-scroll-proportion="-2.0980926">
+        <state line="42" column="0" selection-start="2061" selection-end="2061" vertical-scroll-proportion="0.613079">
           <folding />
         </state>
       </provider>

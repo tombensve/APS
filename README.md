@@ -38,9 +38,9 @@ Short feature list:
 
 * More useful utilities and services ...
 
-Documentation ([Markdown](https://github.com/tombensve/APS/blob/master/APS-UserGuide/docs/APS-UserGuide.md) | [PDF](https://github.com/tombensve/APS/blob/master/APS-UserGuide/docs/APS-UserGuide.pdf))  
+---
+
+Documentation ([Markdown](https://github.com/tombensve/APS/blob/master/APS-UserGuide/docs/APS-UserGuide.md) | [PDF](https://github.com/tombensve/APS/blob/master/APS-UserGuide/docs/APS-UserGuide.pdf))
 
 [Licenses](https://github.com/tombensve/APS/blob/master/lics/licenses.md)
-
----
 
