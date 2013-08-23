@@ -104,7 +104,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * This way you can manage injections in a servlet for example. Please note that in addition to the
      * already provided instances like servlets or other framework instances all classes in the bundle
      * will still be scanned and handled! It will ofcourse sort out any duplicates due to the already
-     * passed instances can be of an instance of a bundle class.
+     * passed instances can be instances of a bundle class.
      */
     public static final boolean EXISTING_INSTANCES_MODE = false;
 
@@ -142,7 +142,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param instances Instances to manage.
      */
     public APSActivator(Object... instances) {
-        this.managedInstances = new HashMap<>();
+        this.managedInstances = Collections.synchronizedMap(new HashMap<Class, List<Object>>());
         this.activatorMode = EXISTING_INSTANCES_MODE;
         for (Object inst : instances) {
             System.out.println("[APSActivator] Adding instance of '" + inst.getClass().getName() + "' as already " +
@@ -171,12 +171,16 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      */
     protected void initMembers() {
         if (this.services == null) {
-            this.services = new LinkedList<>();
-            this.trackers = new HashMap<>();
-            this.namedInstances = new HashMap<>();
-            this.shutdownMethods = new LinkedList<>();
-            if (this.activatorMode) this.managedInstances = new HashMap<>();
-            this.requiredServices = new LinkedList<>();
+            this.services = Collections.synchronizedList(new LinkedList<ServiceRegistration>());
+            this.trackers = Collections.synchronizedMap(new HashMap<String, APSServiceTracker>());
+            this.namedInstances = Collections.synchronizedMap(new HashMap<String, Object>());
+            this.shutdownMethods = Collections.synchronizedList(new LinkedList<Tuple2<Method, Object>>());
+            if (this.activatorMode) this.managedInstances =
+                    Collections.synchronizedMap(new HashMap<Class, List<Object>>());
+            this.requiredServices =
+                    Collections.synchronizedList(
+                            new LinkedList<Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>>>()
+                    );
 
             this.activatorLogger = new APSLogger(System.out);
             this.activatorLogger.setLoggingFor("APSActivator");
@@ -213,10 +217,40 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         collectClassEntries(bundle, classEntries, "/");
 
         for (Class entryClass : classEntries) {
-            handleServiceInstances(entryClass, context);
-            handleFieldInjections(entryClass, context);
-            handleServiceRegistrations(entryClass, context);
-            handleMethods(entryClass, context);
+            OSGiServiceProvider serviceProvider = (OSGiServiceProvider)entryClass.getAnnotation(OSGiServiceProvider.class);
+            if (serviceProvider != null && serviceProvider.threadStart()) {
+                new StartThread(entryClass, context).start();
+            }
+            else {
+                handleServiceInstances(entryClass, context);
+                handleFieldInjections(entryClass, context);
+                handleServiceRegistrations(entryClass, context);
+                handleMethods(entryClass, context);
+            }
+        }
+    }
+
+    private class StartThread extends Thread {
+
+        private Class entryClass;
+        private BundleContext context;
+
+        public StartThread(Class entryClass, BundleContext context) {
+            this.entryClass = entryClass;
+            this.context = context;
+        }
+
+        @Override
+        public void run() {
+            try {
+                handleServiceInstances(this.entryClass, this.context);
+                handleFieldInjections(this.entryClass, this.context);
+                handleServiceRegistrations(this.entryClass, this.context);
+                handleMethods(this.entryClass, this.context);
+            }
+            catch (Exception e) {
+                APSActivator.this.activatorLogger.error("Threaded start: Failed to manage class: " + this.entryClass, e);
+            }
         }
     }
 
@@ -356,31 +390,15 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         OSGiServiceProvider serviceProvider = (OSGiServiceProvider)managedClass.getAnnotation(OSGiServiceProvider.class);
 
         if (serviceProvider != null) {
-            if (serviceProvider.threadStart()) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            registerServices(managedClass, context, APSActivator.this.services);
-                        }
-                        catch (Exception e) {
-                            APSActivator.this.activatorLogger.error("Failed threaded startup for '" +
-                                    managedClass.getName() + "'! [" + e.getMessage() +"]", e);
-                        }
-                    }
-                }).start();
+            if (this.requiredServices.isEmpty()) {
+                    registerServices(managedClass, context, this.services);
             }
             else {
-                if (this.requiredServices.isEmpty()) {
-                        registerServices(managedClass, context, this.services);
-                }
-                else {
-                    for (Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService : this.requiredServices) {
-                        this.activatorLogger.info("Registering for delayed start of '" + managedClass.getName() + "' " +
-                            "due to service '" + requiredService.t1.getServiceClass().getName() + "'!");
-                        requiredService.t1.onActiveServiceAvailable(this);
-                        requiredService.t1.setOnTimeout(this);
-                    }
+                for (Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService : this.requiredServices) {
+                    this.activatorLogger.info("Registering for delayed start of '" + managedClass.getName() + "' " +
+                        "due to service '" + requiredService.t1.getServiceClass().getName() + "'!");
+                    requiredService.t1.onActiveServiceAvailable(this);
+                    requiredService.t1.setOnTimeout(this);
                 }
             }
         }

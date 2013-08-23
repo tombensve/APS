@@ -61,7 +61,7 @@ import java.util.*;
 /**
  * Provides an implementation of the APSSimpleUserService.
  */
-@OSGiServiceProvider(instanceFactoryClass = APSSimpleUserServiceProvider.class)
+@OSGiServiceProvider(instanceFactoryClass = APSSimpleUserServiceProvider.class, threadStart = true)
 public class APSSimpleUserServiceProvider implements APSSimpleUserServiceAdmin, APSActivator.InstanceFactory {
     //
     // Private Members
