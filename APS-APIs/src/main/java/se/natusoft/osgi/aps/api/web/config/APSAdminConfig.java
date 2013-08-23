@@ -47,7 +47,7 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
  */
 @APSConfigDescription(
         version="1.0",
-        configId="se.natusoft.aps.adminweb",
+        configId="se.natusoft.aps.admin-web",
         group="aps",
         description="Configuration for the APS admin web."
 )

@@ -10,7 +10,7 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
  * This is a configuration class for this APSConfigService provider.
  */
 @APSConfigDescription( version="1.0",
-        configId="se.natusoft.osgi.aps.config", group="aps",
+        configId="se.natusoft.osgi.aps.config-service", group="aps",
         description="Configuration for the aps-configuration-service-provider."
 )
 public class APSConfigServiceConfig extends APSConfig {

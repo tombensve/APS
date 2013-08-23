@@ -48,8 +48,8 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigList;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
 
 @APSConfigDescription(
-        configId = "se.natusoft.osgi.aps.userservice.dsrefs",
-        group = "persistence",
+        configId = "se.natusoft.osgi.aps.userservice.user-service",
+        group = "aps",
         description = "This defines references to datasources. A service instance will be created " +
                       "for each with an additional 'se.natusoft.osgi.aps.userservice.dsref' property " +
                       "indicating the datasource used by the service instance.",
@@ -68,13 +68,14 @@ public class UserServiceInstConfig extends APSConfig {
     }
 
     @APSConfigItemDescription(
-            description = "A set of data source definitions. Add one for each definition you want to create."
+            description = "A set of data source definitions. Add one for each definition you want to create.",
+            environmentSpecific = true
     )
-    public APSConfigList<UserServiceInstance> dataSourceDefinitions;
+    public APSConfigList<UserServiceInstance> instances;
 
 
     @APSConfigDescription(
-            configId = "se.natusoft.osgi.aps.userservice.dsref",
+            configId = "se.natusoft.osgi.aps.userservice.instance",
             description = "This defines an instance by specifying the name of a defined datasource to " +
                           "use for the instance.",
             version = "1.0.0"

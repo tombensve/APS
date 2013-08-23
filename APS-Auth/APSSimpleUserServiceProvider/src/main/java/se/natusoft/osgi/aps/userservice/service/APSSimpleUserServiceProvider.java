@@ -124,7 +124,7 @@ public class APSSimpleUserServiceProvider implements APSSimpleUserServiceAdmin, 
     @Override
     public List<Properties> getPropertiesPerInstance() {
         List<Properties> props = new LinkedList<>();
-        if (UserServiceInstConfig.get().dataSourceDefinitions.isEmpty()) {
+        if (UserServiceInstConfig.get().instances.isEmpty()) {
             Properties instProps = new Properties();
             instProps.setProperty("instance", "aps-admin-web");
             instProps.setProperty("dsRef", "APSSimpleUserServiceDS");
@@ -136,7 +136,7 @@ public class APSSimpleUserServiceProvider implements APSSimpleUserServiceAdmin, 
             props.add(instProps);
         }
         else {
-            for (UserServiceInstConfig.UserServiceInstance inst : UserServiceInstConfig.get().dataSourceDefinitions) {
+            for (UserServiceInstConfig.UserServiceInstance inst : UserServiceInstConfig.get().instances) {
                 Properties instProps = new Properties();
                 instProps.setProperty("instance", inst.name.toString());
                 instProps.setProperty("dsRef", inst.dsRef.toString());
