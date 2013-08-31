@@ -34,7 +34,7 @@
  *         2012-08-19: Created!
  *         
  */
-package se.natusoft.osgi.aps.tools.annotation;
+package se.natusoft.osgi.aps.tools.annotation.activator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -42,10 +42,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation indicates that the annotated method should be called on bundle stop.
+ * This annotation indicates that the annotated field is a service that the class depends on.
  *
  * This only works when APSActivator is used as bundle activator!
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface BundleStop {}
+@Target(ElementType.FIELD)
+public @interface OSGiService {
+
+    /** The timeout for a service to become available. Defaults to 30 seconds. */
+    String timeout() default "30 seconds";
+
+    /** Any additional search criteria. Should start with '(' and end with ')'. Defaults to none. */
+    String additionalSearchCriteria() default "";
+
+    /** If set to true the service using this service will not be registered until the service becomes available. */
+    boolean required() default false;
+}

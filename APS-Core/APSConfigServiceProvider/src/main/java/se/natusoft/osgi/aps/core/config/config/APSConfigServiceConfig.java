@@ -25,7 +25,7 @@ public class APSConfigServiceConfig extends APSConfig {
     @APSConfigItemDescription(
             description = "Specifies a named group for synchronization. All members of the same group " +
                           "will have their configuration synchronized between them. For synchronization " +
-                          "to work a configured aps-groups service must also be available.",
+                          "to work a configured APSSyncService service must also be available.",
             defaultValue = {@APSDefaultValue("aps-config-sync-default")},
             environmentSpecific = true
     )

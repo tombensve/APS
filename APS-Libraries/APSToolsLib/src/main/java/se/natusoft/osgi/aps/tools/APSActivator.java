@@ -37,7 +37,10 @@
 package se.natusoft.osgi.aps.tools;
 
 import org.osgi.framework.*;
-import se.natusoft.osgi.aps.tools.annotation.*;
+import org.osgi.framework.BundleListener;
+import org.osgi.framework.FrameworkListener;
+import org.osgi.framework.ServiceListener;
+import se.natusoft.osgi.aps.tools.annotation.activator.*;
 import se.natusoft.osgi.aps.tools.exceptions.APSActivatorException;
 import se.natusoft.osgi.aps.tools.tracker.OnServiceAvailable;
 import se.natusoft.osgi.aps.tools.tracker.OnTimeout;
@@ -67,7 +70,7 @@ import java.util.*;
  *   (runtime) if no service has become available before the specified timeout. It is also possible to have
  *   APSServiceTracker as field type in which case the underlying configured tracker will be injected instead.
  *
- * * **@Inject** -
+ * * **@Managed** -
  *   This will have an instance injected. There will be a unique instance for each name specified with the
  *   default name of "default" being used in none is specified. There are 2 field types handled specially:
  *   BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger
@@ -120,6 +123,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     private List<Tuple2<Method, Object>> shutdownMethods;
     private List<Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>>> requiredServices;
     private Map<Class, List<Object>> managedInstances;
+    private List<ListenerWrapper> listeners;
 
     private boolean supportsRequired = true;
 
@@ -181,6 +185,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     Collections.synchronizedList(
                             new LinkedList<Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>>>()
                     );
+
+            this.listeners = Collections.synchronizedList(new LinkedList<ListenerWrapper>());
 
             this.activatorLogger = new APSLogger(System.out);
             this.activatorLogger.setLoggingFor("APSActivator");
@@ -277,6 +283,11 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         this.activatorLogger.info("Stopping APSActivator for bundle '" + context.getBundle().getSymbolicName() +
                 "' with activatorMode: " + this.activatorMode);
 
+        for (ListenerWrapper listenerWrapper : this.listeners) {
+            listenerWrapper.stop(context);
+        }
+        this.listeners = null;
+
         for (Tuple2<Method, Object> shutdownMethod : this.shutdownMethods) {
             try {
                 shutdownMethod.t1.invoke(shutdownMethod.t2, null);
@@ -290,6 +301,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 failure = e;
             }
         }
+        this.shutdownMethods = null;
 
         for (ServiceRegistration serviceRegistration : this.services) {
             try {
@@ -300,6 +312,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 failure = e;
             }
         }
+        this.services = null;
 
         for (String trackerKey : this.trackers.keySet()) {
             APSServiceTracker tracker = this.trackers.get(trackerKey);
@@ -311,6 +324,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 failure = e;
             }
         }
+        this.trackers = null;
 
         for (String namedInstanceKey : this.namedInstances.keySet()) {
             Object namedInstance = this.namedInstances.get(namedInstanceKey);
@@ -324,8 +338,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 }
             }
         }
+        this.namedInstances = null;
 
         this.activatorLogger.stop(context);
+        this.activatorLogger = null;
 
         if (failure != null) {
             throw new APSActivatorException("Bundle stop not entirely successful!", failure);
@@ -683,15 +699,15 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param context The bundle context.
      */
     protected void handleInstanceInjections(Field field, Class managedClass, BundleContext context) {
-        Inject inject = field.getAnnotation(Inject.class);
-        if (inject != null) {
-            String namedInstanceKey = inject.name() + field.getType().getName();
+        Managed managed = field.getAnnotation(Managed.class);
+        if (managed != null) {
+            String namedInstanceKey = managed.name() + field.getType().getName();
             Object namedInstance = this.namedInstances.get(namedInstanceKey);
             if (namedInstance == null) {
                 if (field.getType().equals(APSLogger.class)) {
                     namedInstance = new APSLogger(System.out);
-                    if (inject.loggingFor().length() > 0) {
-                        ((APSLogger)namedInstance).setLoggingFor(inject.loggingFor());
+                    if (managed.loggingFor().length() > 0) {
+                        ((APSLogger)namedInstance).setLoggingFor(managed.loggingFor());
                     }
                     ((APSLogger)namedInstance).start(context);
                 }
@@ -705,7 +721,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             }
             else {
                 this.activatorLogger.info("Got named instance for key '" + namedInstanceKey + "': " +
-                    namedInstance.getClass().getName());
+                        namedInstance.getClass().getName());
             }
 
             List<Object> managedInstances = getManagedInstances(managedClass);
@@ -714,7 +730,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             }
 
             this.activatorLogger.info("Injected '" + namedInstance.getClass().getName() +
-                    "' instance for name '" + inject.name() + "' " +
+                    "' instance for name '" + managed.name() + "' " +
                     "into '" + managedClass.getName() + "." + field.getName() + "' for bundle: " +
                     context.getBundle().getSymbolicName() + "!");
         }
@@ -732,6 +748,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         for (Method method : managedClass.getDeclaredMethods()) {
             handleStartupMethods(method, managedClass, context);
             handleShutdownMethods(method, managedClass, context);
+            handleListenerMethods(method, managedClass, context);
         }
     }
 
@@ -816,6 +833,35 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             }
 
             this.shutdownMethods.add(shutdownMethod);
+        }
+    }
+
+    protected void handleListenerMethods(Method method, Class managedClass, BundleContext context) {
+        se.natusoft.osgi.aps.tools.annotation.activator.ServiceListener serviceListener =
+                method.getAnnotation(se.natusoft.osgi.aps.tools.annotation.activator.ServiceListener.class);
+        if (serviceListener != null) {
+            ServiceListenerWrapper serviceListenerWrapper =
+                    new ServiceListenerWrapper(method, getManagedInstance(managedClass));
+            serviceListenerWrapper.start(context);
+            this.listeners.add(serviceListenerWrapper);
+        }
+
+        se.natusoft.osgi.aps.tools.annotation.activator.BundleListener bundleListener =
+                method.getAnnotation(se.natusoft.osgi.aps.tools.annotation.activator.BundleListener.class);
+        if (bundleListener != null) {
+            BundleListenerWrapper bundleListenerWrapper =
+                    new BundleListenerWrapper(method, getManagedInstance(managedClass));
+            bundleListenerWrapper.start(context);
+            this.listeners.add(bundleListenerWrapper);
+        }
+
+        se.natusoft.osgi.aps.tools.annotation.activator.FrameworkListener frameworkListener =
+                method.getAnnotation(se.natusoft.osgi.aps.tools.annotation.activator.FrameworkListener.class);
+        if (frameworkListener != null) {
+            FrameworkListenerWrapper frameworkListenerWrapper =
+                    new FrameworkListenerWrapper(method, getManagedInstance(managedClass));
+            frameworkListenerWrapper.start(context);
+            this.listeners.add(frameworkListenerWrapper);
         }
     }
 
@@ -951,4 +997,112 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
          */
         List<Properties> getPropertiesPerInstance();
     }
+
+    protected interface ListenerWrapper {
+        public void start(BundleContext context);
+        public void stop(BundleContext context);
+    }
+
+    protected class ServiceListenerWrapper implements ListenerWrapper, ServiceListener {
+
+        private Method method;
+        private Object instance;
+
+        public ServiceListenerWrapper(Method method, Object instance) {
+            this.method = method;
+            this.instance = instance;
+        }
+
+        public void start(BundleContext context) {
+            context.addServiceListener(this);
+        }
+
+        public void stop(BundleContext context) {
+            context.removeServiceListener(this);
+        }
+
+        /**
+         * Receives notification that a service has had a lifecycle change.
+         *
+         * @param event The <code>ServiceEvent</code> object.
+         */
+        @Override
+        public void serviceChanged(ServiceEvent event) {
+            try {
+                method.invoke(instance,event);
+            }
+            catch (IllegalAccessException | InvocationTargetException e) {
+                APSActivator.this.activatorLogger.error("Failed to invoke ServiceListener method [" + method + "]!", e);
+            }
+        }
+    }
+
+    protected class BundleListenerWrapper implements ListenerWrapper, BundleListener {
+
+        private Method method;
+        private Object instance;
+
+        public BundleListenerWrapper(Method method, Object instance) {
+            this.method = method;
+            this.instance = instance;
+        }
+
+        public void start(BundleContext context) {
+            context.addBundleListener(this);
+        }
+
+        public void stop(BundleContext context) {
+            context.removeBundleListener(this);
+        }
+
+        /**
+         * Receives notification that a bundle has had a lifecycle change.
+         *
+         * @param event The <code>BundleEvent</code> object.
+         */
+        @Override
+        public void bundleChanged(BundleEvent event) {
+            try {
+                method.invoke(instance,event);
+            }
+            catch (IllegalAccessException | InvocationTargetException e) {
+                APSActivator.this.activatorLogger.error("Failed to invoke ServiceListener method [" + method + "]!", e);
+            }
+        }
+    }
+
+    protected class FrameworkListenerWrapper implements ListenerWrapper, FrameworkListener {
+
+        private Method method;
+        private Object instance;
+
+        public FrameworkListenerWrapper(Method method, Object instance) {
+            this.method = method;
+            this.instance = instance;
+        }
+
+        public void start(BundleContext context) {
+            context.addFrameworkListener(this);
+        }
+
+        public void stop(BundleContext context) {
+            context.removeFrameworkListener(this);
+        }
+
+        /**
+         * Receives notification of a general FrameworkEvent object.
+         *
+         * @param event The <code>FrameworkEvent</code> object.
+         */
+        @Override
+        public void frameworkEvent(FrameworkEvent event) {
+            try {
+                method.invoke(instance,event);
+            }
+            catch (IllegalAccessException | InvocationTargetException e) {
+                APSActivator.this.activatorLogger.error("Failed to invoke ServiceListener method [" + method + "]!", e);
+            }
+        }
+    }
+
 }

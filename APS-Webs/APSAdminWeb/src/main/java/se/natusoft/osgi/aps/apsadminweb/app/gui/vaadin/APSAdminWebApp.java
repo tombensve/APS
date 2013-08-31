@@ -41,7 +41,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import se.natusoft.osgi.aps.tools.annotation.Inject;
+import se.natusoft.osgi.aps.tools.annotation.activator.Managed;
 import se.natusoft.osgi.aps.tools.web.APSAdminWebLoginHandler;
 import se.natusoft.osgi.aps.tools.web.ClientContext;
 import se.natusoft.osgi.aps.tools.web.vaadin.APSTheme;
@@ -67,7 +67,7 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
     private Window main = null;
 
     /** The application tabs. */
-    @Inject
+    @Managed
     private TabPanel tabPanel;
 
     /** The main window layout. */

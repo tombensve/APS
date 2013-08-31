@@ -93,6 +93,7 @@
             se.natusoft.osgi.aps.tools.tracker;version="${aps.import.ver}",
             se.natusoft.osgi.aps.tools.exceptions;version="${aps.import.ver}",
             se.natusoft.osgi.aps.tools.annotation;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.tools.annotation.activator;version="${aps.import.ver}",
             se.natusoft.osgi.aps.apsadminweb.service;version="${aps.import.ver}",
             se.natusoft.osgi.aps.apsadminweb.service.model;version="${aps.import.ver}",
             se.natusoft.osgi.aps.api.misc.session;version="${aps.import.ver}",

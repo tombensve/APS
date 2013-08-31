@@ -57,6 +57,8 @@
         <module>APSDiscoveryServiceProvider</module>
         <module>APSStreamedJSONRPCProtocolProvider</module>
         <module>APSGroups</module>
+        <module>APSGroupsSyncServiceProvider</module>
+        <module>APSNetTimeServiceProvider</module>
     </modules>
 
 </project>

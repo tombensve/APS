@@ -102,6 +102,7 @@
         <module name="aps-admin-web" />
         <module name="aps-admin-web-service-provider" />
         <module name="aps-apis" />
+        <module name="APS-BOM" />
         <module name="aps-config-admin-web" />
         <module name="aps-configuration-service-provider" />
         <module name="aps-datasource" />
@@ -111,9 +112,11 @@
         <module name="aps-external-protocol-extender" />
         <module name="aps-filesystem-service-provider" />
         <module name="aps-groups" />
+        <module name="aps-groups-sync-service-provider" />
         <module name="aps-json-lib" />
         <module name="aps-json-service-provider" />
         <module name="aps-log-service-provider" />
+        <module name="aps-net-time-service-provider" />
         <module name="aps-openjpa-provider" />
         <module name="aps-platform-service-provider" />
         <module name="aps-resolving-bundle-deployer" />
@@ -126,6 +129,8 @@
         <module name="aps-tools-lib" />
         <module name="aps-user-admin-web" />
         <module name="aps-web-tools" />
+        <module name="APSGroupsMessageServiceProvider" />
+        <module name="APSNetTimeServiceProvider" />
         <module name="APSResolvingBundleDeployer" />
         <module name="APSSimpleUserServiceAuthServiceProvider" />
         <module name="APSTomcatWebExtender" />
@@ -140,6 +145,7 @@
       <module name="aps-admin-web-service-provider" target="1.7" />
       <module name="aps-apis" target="1.7" />
       <module name="APS-Auth" target="1.7" />
+      <module name="APS-BOM" target="1.7" />
       <module name="aps-config-admin-web" target="1.7" />
       <module name="aps-configuration-service-provider" target="1.7" />
       <module name="APS-Core" target="1.7" />
@@ -151,11 +157,13 @@
       <module name="aps-external-protocol-extender" target="1.7" />
       <module name="aps-filesystem-service-provider" target="1.7" />
       <module name="aps-groups" target="1.7" />
+      <module name="aps-groups-sync-service-provider" target="1.7" />
       <module name="aps-json-lib" target="1.7" />
       <module name="aps-json-service-provider" target="1.7" />
       <module name="APS-Libraries" target="1.7" />
       <module name="aps-log-service-provider" target="1.7" />
       <module name="APS-Misc" target="1.7" />
+      <module name="aps-net-time-service-provider" target="1.7" />
       <module name="APS-Network" target="1.7" />
       <module name="aps-openjpa-provider" target="1.7" />
       <module name="aps-platform-service-provider" target="1.7" />
@@ -171,6 +179,8 @@
       <module name="aps-web-tools" target="1.7" />
       <module name="APS-Webs" target="1.7" />
       <module name="APSConfigTest" target="1.7" />
+      <module name="APSGroupsMessageServiceProvider" target="1.7" />
+      <module name="APSNetTimeServiceProvider" target="1.7" />
       <module name="APSSimpleUserServiceAuthServiceProvider" target="1.7" />
       <module name="Build" target="1.7" />
       <module name="BuildTiles" target="1.7" />

@@ -47,9 +47,9 @@ import se.natusoft.osgi.aps.api.data.jpa.service.APSJPAService;
 import se.natusoft.osgi.aps.exceptions.APSPersistenceException;
 import se.natusoft.osgi.aps.tools.APSActivator;
 import se.natusoft.osgi.aps.tools.APSLogger;
-import se.natusoft.osgi.aps.tools.annotation.Inject;
-import se.natusoft.osgi.aps.tools.annotation.OSGiService;
-import se.natusoft.osgi.aps.tools.annotation.OSGiServiceProvider;
+import se.natusoft.osgi.aps.tools.annotation.activator.Managed;
+import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService;
+import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider;
 import se.natusoft.osgi.aps.userservice.config.UserServiceInstConfig;
 import se.natusoft.osgi.aps.userservice.entities.RoleEntity;
 import se.natusoft.osgi.aps.userservice.entities.UserEntity;
@@ -67,10 +67,10 @@ public class APSSimpleUserServiceProvider implements APSSimpleUserServiceAdmin, 
     // Private Members
     //
 
-    @Inject
+    @Managed
     private BundleContext bundleContext = null;
 
-    @Inject(name = "userServiceLogger", loggingFor = "aps-simple-user-service")
+    @Managed(name = "userServiceLogger", loggingFor = "aps-simple-user-service")
     private APSLogger logger = null;
 
     @OSGiService

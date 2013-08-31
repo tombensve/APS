@@ -34,7 +34,7 @@
  *         2012-08-19: Created!
  *         
  */
-package se.natusoft.osgi.aps.tools.annotation;
+package se.natusoft.osgi.aps.tools.annotation.activator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -42,13 +42,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation represents an OSGi service property and is used in @OSGiServiceProvider.
+ * This annotation indicates that the annotated method should be called on bundle stop.
  *
  * This only works when APSActivator is used as bundle activator!
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface OSGiProperty {
-    String name();
-    String value();
-}
+@Target(ElementType.METHOD)
+public @interface BundleStop {}

@@ -45,6 +45,8 @@ import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
 import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
+import se.natusoft.osgi.aps.api.net.sync.service.APSSyncService;
+import se.natusoft.osgi.aps.api.net.time.service.APSNetTimeService;
 import se.natusoft.osgi.aps.core.config.api.APSConfigSyncMgmtService;
 import se.natusoft.osgi.aps.core.config.config.APSConfigServiceConfig;
 import se.natusoft.osgi.aps.core.config.service.APSConfigAdminServiceProvider;
@@ -89,7 +91,10 @@ public class APSConfigServiceActivator implements BundleActivator {
     private APSServiceTracker<APSFilesystemService> fsServiceTracker = null;
 
     /** Tracker for the APSGroupsService. */
-    private APSServiceTracker<APSGroupsService> groupsServiceTracker = null;
+    private APSServiceTracker<APSSyncService> syncServiceTracker = null;
+
+    /** Tracker for the APSNetTimeService. */
+    private APSServiceTracker<APSNetTimeService> netTimeServiceTracker = null;
 
     //
     // Other Members
@@ -104,7 +109,7 @@ public class APSConfigServiceActivator implements BundleActivator {
     /** Logger for config service. */
     private APSLogger configLogger = null;
 
-    /** This is set to true when all services have been csetup, and false when they have been taken down. */
+    /** This is set to true when all services have been setup, and false when they have been taken down. */
     private boolean configured = false;
 
     /** This is needed for the extender handling. */
@@ -218,19 +223,24 @@ public class APSConfigServiceActivator implements BundleActivator {
         this.configServiceProvider.registerConfiguration(APSConfigServiceConfig.class, false);
 
         // Setup synchronization tracker
-        this.groupsServiceTracker = new APSServiceTracker<APSGroupsService>(context, APSGroupsService.class,
+        this.syncServiceTracker = new APSServiceTracker<APSSyncService>(context, APSSyncService.class,
                 APSServiceTracker.LARGE_TIMEOUT);
-        this.groupsServiceTracker.start();
+        this.syncServiceTracker.start();
+
+        // Setup net time tracker
+        this.netTimeServiceTracker = new APSServiceTracker<APSNetTimeService>(context, APSNetTimeService.class,
+                APSServiceTracker.LARGE_TIMEOUT);
+        this.netTimeServiceTracker.start();
 
         // We create and start a new Synchronizer when an active APSGroupsService becomes available, and stop it when
         // the active APSGroupsService leaves. This because the Synchronizer need to rejoin the group when there is a
         // new APSGroupsService since membership is automatically removed when the service goes away.
 
-        this.groupsServiceTracker.onActiveServiceAvailable(new OnServiceAvailable<APSGroupsService> () {
-            public void onServiceAvailable(APSGroupsService groupsService, ServiceReference serviceReference) throws Exception {
+        this.syncServiceTracker.onActiveServiceAvailable(new OnServiceAvailable<APSSyncService> () {
+            public void onServiceAvailable(APSSyncService syncService, ServiceReference serviceReference) throws Exception {
                 APSConfigServiceActivator.this.synchronizer =
                         new Synchronizer(configAdminLogger, configAdminProvider, configServiceProvider, envStore, memoryStore,
-                                configStore, groupsService);
+                                configStore, syncService, APSConfigServiceActivator.this.netTimeServiceTracker.getWrappedService());
                 APSConfigServiceActivator.this.synchronizer.start();
 
                 Dictionary props = new Properties();
@@ -241,7 +251,7 @@ public class APSConfigServiceActivator implements BundleActivator {
             }
         });
 
-        this.groupsServiceTracker.onActiveServiceLeaving(new OnServiceLeaving<APSGroupsService>() {
+        this.syncServiceTracker.onActiveServiceLeaving(new OnServiceLeaving<APSGroupsService>() {
             @Override
             public void onServiceLeaving(ServiceReference service, Class serviceAPI) throws Exception {
                 // We have to synchronize here since there will be a potential shutdown conflict if the
@@ -277,9 +287,9 @@ public class APSConfigServiceActivator implements BundleActivator {
             }
         }
 
-        if (this.groupsServiceTracker != null) {
-            this.groupsServiceTracker.stop(context);
-            this.groupsServiceTracker = null;
+        if (this.syncServiceTracker != null) {
+            this.syncServiceTracker.stop(context);
+            this.syncServiceTracker = null;
         }
 
         if (this.configured) {

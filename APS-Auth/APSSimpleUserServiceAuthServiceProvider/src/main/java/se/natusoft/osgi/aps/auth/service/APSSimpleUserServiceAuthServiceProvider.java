@@ -38,9 +38,9 @@ import se.natusoft.osgi.aps.api.auth.user.APSSimpleUserService;
 import se.natusoft.osgi.aps.api.auth.user.exceptions.APSAuthMethodNotSupportedException;
 import se.natusoft.osgi.aps.api.auth.user.model.User;
 import se.natusoft.osgi.aps.tools.APSLogger;
-import se.natusoft.osgi.aps.tools.annotation.Inject;
-import se.natusoft.osgi.aps.tools.annotation.OSGiService;
-import se.natusoft.osgi.aps.tools.annotation.OSGiServiceProvider;
+import se.natusoft.osgi.aps.tools.annotation.activator.Managed;
+import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService;
+import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider;
 
 import java.util.Properties;
 
@@ -57,7 +57,7 @@ public class APSSimpleUserServiceAuthServiceProvider implements APSAuthService<S
     @OSGiService(timeout = "30 seconds", additionalSearchCriteria = "(instance=aps-admin-web)")
     private APSSimpleUserService userService;
 
-    @Inject(loggingFor = "aps-user-service-auth-service")
+    @Managed(loggingFor = "aps-user-service-auth-service")
     private APSLogger authLogger;
 
     //

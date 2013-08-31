@@ -60,7 +60,7 @@ import javax.servlet.http.HttpSession;
  * * Creates a ClientContext containing the BundleContext, but can also be used to store
  *   services in.
  *
- * * Uses APSActivator to inject and manage the subclass fields annotated with @OSGiService and @Inject.
+ * * Uses APSActivator to inject and manage the subclass fields annotated with @OSGiService and @Managed.
  *   Also provides a public `injectToInstance(Object instance)` method to manage injections of other
  *   instances. This is an alternative to initServices() and cleanupServices(). See APSActivator for
  *   more information.
@@ -100,7 +100,7 @@ public abstract class APSVaadinOSGiApplication
     /** The client context. */
     private ClientContext clientContext;
 
-    /** We use part of the APSActivator functionality to inject into @OSGiService and @Inject annotated fields. */
+    /** We use part of the APSActivator functionality to inject into @OSGiService and @Managed annotated fields. */
     private APSActivator activator;
 
     //

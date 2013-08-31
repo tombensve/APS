@@ -43,7 +43,7 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import se.natusoft.osgi.aps.apsadminweb.service.APSAdminWebService;
 import se.natusoft.osgi.aps.apsadminweb.service.model.AdminWebReg;
-import se.natusoft.osgi.aps.tools.annotation.OSGiService;
+import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService;
 import se.natusoft.osgi.aps.tools.web.vaadin.APSTheme;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.HTMLFileLabel;
 

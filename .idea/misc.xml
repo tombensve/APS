@@ -3,7 +3,7 @@
   <component name="BSFConsole">
     <option name="preferredRecentCommandsDividerLocations">
       <map>
-        <entry key="[BSF] beanshell" value="2019" />
+        <entry key="[BSF] beanshell" value="1834" />
       </map>
     </option>
     <option name="searchOptions">
@@ -366,6 +366,8 @@
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSGroups" />
+    <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSGroupsSyncServiceProvider" />
+    <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSNetTimeServiceProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Webs/APSJettyWebExtender" />
@@ -407,6 +409,11 @@
         <option value="$PROJECT_DIR$/Documentation/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Core/APSLogServiceProvider/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/APS-BOM/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ModuleEditorState">

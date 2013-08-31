@@ -34,7 +34,7 @@
  *         2012-08-19: Created!
  *         
  */
-package se.natusoft.osgi.aps.tools.annotation;
+package se.natusoft.osgi.aps.tools.annotation.activator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -42,25 +42,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation indicates that the annotated field should have an instance injected.
- *
- * Using this annotation on a class not annotated with @OSGiServiceProvider will still be
- * instantiated by APSActivator.
+ * This annotation indicates that the annotated method should receive service events.
+ * The method must take one argument of ServiceEvent type!
  *
  * This only works when APSActivator is used as bundle activator!
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface Inject {
-    /**
-     * The name of the instance to inject. If the same is used in multiple classes the same instance will
-     * be injected.
-     */
-    String name() default "default";
-
-    /**
-     * A label indicating who is logging. If not specified the bundle name will be used. This is only
-     * relevant if the injected type is APSLogger.
-     */
-    String loggingFor() default "";
-}
+@Target(ElementType.METHOD)
+public @interface ServiceListener {}

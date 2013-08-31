@@ -6,7 +6,7 @@
             APS APIs
         
         Code Version
-            0.9.2
+            0.9.3
         
         Description
             Provides the APIs for the application platform services.
@@ -107,6 +107,9 @@
             se.natusoft.osgi.aps.api.net.rpc.service;version="${project.version}",
             se.natusoft.osgi.aps.api.net.rpc.exceptions;version="${project.version}",
             se.natusoft.osgi.aps.api.net.groups.service;version="${project.version}",
+            se.natusoft.osgi.aps.api.net.messaging.service;version="${project.version}",
+            se.natusoft.osgi.aps.api.net.time.service;version="${project.version}",
+            se.natusoft.osgi.aps.api.net.sync.service;version="${project.version}",
             se.natusoft.osgi.aps.api.web.config;version="${project.version}"
         </osgi.export.package>
         

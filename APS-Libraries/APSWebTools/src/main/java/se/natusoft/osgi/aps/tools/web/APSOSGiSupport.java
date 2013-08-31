@@ -58,7 +58,7 @@ import javax.servlet.http.HttpSession;
  *
  * * Looks up the bundle context in the servlet and caches it locally withing the instance.
  *
- * * Uses APSActivator to manage and inject fields annotated with @OSGiService and @Inject of the
+ * * Uses APSActivator to manage and inject fields annotated with @OSGiService and @Managed of the
  *   instance passed as first argument to constructor. `void injectToInstance(Object instance)` is
  *   public and can be used to inject into other instances. Se APSActivator for more info on how
  *   this works.
@@ -88,7 +88,7 @@ public class APSOSGiSupport implements OSGiBundleContextProvider, APSSessionList
 
     private APSOSGiSupportCallbacks callbacks;
 
-    /** We use part of the APSActivator functionality to inject into @OSGiService and @Inject annotated fields. */
+    /** We use part of the APSActivator functionality to inject into @OSGiService and @Managed annotated fields. */
     private APSActivator activator;
 
     private BundleContext bundleContext;

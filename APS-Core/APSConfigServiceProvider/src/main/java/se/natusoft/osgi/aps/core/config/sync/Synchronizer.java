@@ -45,10 +45,8 @@ import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
-import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
-import se.natusoft.osgi.aps.api.net.groups.service.GroupMember;
-import se.natusoft.osgi.aps.api.net.groups.service.Message;
-import se.natusoft.osgi.aps.api.net.groups.service.MessageListener;
+import se.natusoft.osgi.aps.api.net.sync.service.APSSyncService;
+import se.natusoft.osgi.aps.api.net.time.service.APSNetTimeService;
 import se.natusoft.osgi.aps.core.config.api.APSConfigSyncMgmtService;
 import se.natusoft.osgi.aps.core.config.config.APSConfigServiceConfig;
 import se.natusoft.osgi.aps.core.config.model.admin.APSConfigAdminImpl;
@@ -61,20 +59,17 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Responsible for synchronizing with other installations.
  */
 public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemoryStore.ConfigUpdateListener,
-        APSConfigEnvStore.ConfigEnvUpdateListener, APSConfigChangedListener, MessageListener {
-    //
-    // Constants
-    //
-
-    private static final String NEWEST_CONFIG_TIMESTAMP = "newest-config-timestamp";
-
-
+        APSConfigEnvStore.ConfigEnvUpdateListener, APSConfigChangedListener, APSSyncService.SyncGroup.Message.Listener,
+APSSyncService.SyncGroup.ReSyncListener {
     //
     // Private Members
     //
@@ -97,15 +92,17 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
     /** Our own config model. It is loaded in the constructor! */
     private APSConfigServiceConfig config = null;
 
-    /** The APSGroups service we use for synchronizing the configuration. */
-    private APSGroupsService groupsService = null;
+    /** The APSSync service we use for synchronizing the configuration. */
+    private APSSyncService syncService = null;
+
+    /** The net time service for translating time between hosts. */
+    private APSNetTimeService netTimeService = null;
 
     /** APSGroups member representing us. */
-    private GroupMember groupMember = null;
+    private APSSyncService.SyncGroup syncGroup = null;
 
-    /** This inspects local timestamps and received timestamps and determines
-       if we have been out of touch for to long. */
-    private LongTimeNoSeeThread longTimeNoSeeThread = null;
+    /** This thread sends the freshest config timestamp out at intervals. */
+    private ConfigTimestampSendingThread configTimestampSendingThread = null;
 
     /** The time of the last message received. */
     private Date lastGroupMsgTimestamp = null;
@@ -134,7 +131,8 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
      * @param configEnvStore The local APSConfigEnvStore.
      * @param configMemoryStore The memory store to listen for changes on.
      * @param configPersistentStore For persisting changes.
-     * @param groupsService The APSGroupsService to sync with.
+     * @param syncService The APSSyncService to sync with.
+     * @param netTimeService The APSNetTimeService to resolve time difference between hosts with.
      */
     public Synchronizer(
             APSLogger logger,
@@ -143,14 +141,16 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
             APSConfigEnvStore configEnvStore,
             APSConfigMemoryStore configMemoryStore,
             APSConfigPersistentStore configPersistentStore,
-            APSGroupsService groupsService
+            APSSyncService syncService,
+            APSNetTimeService netTimeService
     ) {
         this.logger = logger;
         this.configAdminService = configAdminService;
         this.configEnvStore = configEnvStore;
         this.configMemoryStore = configMemoryStore;
         this.configPersistentStore = configPersistentStore;
-        this.groupsService = groupsService;
+        this.syncService = syncService;
+        this.netTimeService = netTimeService;
 
         this.config = configService.getConfiguration(APSConfigServiceConfig.class);
         this.config.addConfigChangedListener(this);
@@ -169,39 +169,33 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
     public void start() {
         if (this.config.synchronize.toBoolean()) {
             this.synchronizing = true;
-            try {
-                Properties memberProps = new Properties();
-                memberProps.setProperty(NEWEST_CONFIG_TIMESTAMP, "" + resolveNewestConfigTimestamp());
-                this.groupMember = this.groupsService.joinGroup(this.config.synchronizationGroup.toString(), memberProps);
-                this.groupMember.addMessageListener(this);
-                this.configEnvStore.addUpdateListener(this);
-                this.configMemoryStore.addUpdateListener(this);
-                sendFeedMe();
-                updateLastGroupMsgTimestamp();
-                this.longTimeNoSeeThread = new LongTimeNoSeeThread();
-                this.longTimeNoSeeThread.start();
-                this.logger.info("Started config synchronizer!");
-            }
-            catch (IOException ioe) {
-                this.logger.error("Failed to start config synchronizer!", ioe);
-            }
+
+            this.syncGroup = this.syncService.joinSyncGroup(this.config.synchronizationGroup.toString());
+            this.syncGroup.addMessageListener(this);
+            this.syncGroup.addReSyncListener(this);
+            this.configEnvStore.addUpdateListener(this);
+            this.configMemoryStore.addUpdateListener(this);
+            this.syncGroup.reSyncAll();
+            updateLastGroupMsgTimestamp();
+            this.configTimestampSendingThread = new ConfigTimestampSendingThread();
+            this.configTimestampSendingThread.start();
+            this.logger.info("Started config synchronizer!");
         }
     }
 
     public void stop() {
         if (this.config.synchronize.toBoolean()) {
             this.synchronizing = false;
-            try {
-                if (this.longTimeNoSeeThread != null) this.longTimeNoSeeThread.stopThread();
-                this.configEnvStore.removeUpdateListener(this);
-                this.configMemoryStore.removeUpdateListener(this);
-                if (this.groupMember != null) this.groupMember.removeMessageListener(this);
-                this.groupsService.leaveGroup(this.groupMember);
-                this.logger.info("Stopped config synchronizer!");
+
+            if (this.configTimestampSendingThread != null) this.configTimestampSendingThread.stopThread();
+            this.configEnvStore.removeUpdateListener(this);
+            this.configMemoryStore.removeUpdateListener(this);
+            if (this.syncGroup != null) {
+                this.syncGroup.removeMessageListener(this);
+                this.syncGroup.removeReSyncListener(this);
             }
-            catch (IOException ioe) {
-                this.logger.error("Failed to stop config synchronizer!", ioe);
-            }
+            this.syncGroup.leaveSyncGroup();
+            this.logger.info("Stopped config synchronizer!");
         }
     }
 
@@ -254,84 +248,6 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
         this.lastGroupMsgTimestamp = new Date();
     }
 
-    // ---- FEED_ME handling start ---- //
-
-    /**
-     * Sends a "FEED_ME" message to all other installation which will trigger then to send all their configuration which
-     * will be received and merged by all other. The more installations the more messages will be received and in the end
-     * all should have the same data.
-     */
-    private void sendFeedMe() {
-        this.sendFeedMeThread = new SendFeedMeThread();
-        this.sendFeedMeThread.start();
-    }
-
-    private SendFeedMeThread sendFeedMeThread = null;
-
-    private void cancelFeedMe() {
-        if (this.sendFeedMeThread != null) {
-            this.sendFeedMeThread.cancel();
-        }
-    }
-
-    /**
-     * This sends the FEED_ME message in a separate thread with some delay.
-     */
-    private class SendFeedMeThread extends Thread {
-        private boolean run = true;
-
-        public synchronized void cancel() {
-            this.run = false;
-        }
-
-        private synchronized boolean isRun() {
-            return this.run;
-        }
-
-        public void run() {
-            try {
-                Random random = new Random(new Date().getTime());
-                try {
-                    // Wait between 5 to 15 seconds. This is an attempt to avoid several nodes sending a "feed me"
-                    // simultaneously. When a "feed me" message is received cancel is done on this thread.
-                    Thread.sleep(random.nextInt(10000) + 5000);
-                }
-                catch (InterruptedException ie) {
-                    Synchronizer.this.logger.error("Unexpectedly interrupted from sleep!", ie);
-                }
-
-                if (isRun()) {
-                    _sendFeedMe();
-                }
-            }
-            catch (Exception e) {
-                Synchronizer.this.logger.error("Failed to send FEED_ME message!", e);
-            }
-        }
-    }
-
-    /**
-     * Sends a "FEED_ME" message to all other installation which will trigger then to send all their configuration which
-     * will be received and merged by all other. The more installations the more messages will be received and in the end
-     * all should have the same data.
-     */
-    private void _sendFeedMe() {
-        try {
-            Message message = this.groupMember.createNewMessage();
-            ObjectOutputStream msgStream = new ObjectOutputStream(message.getOutputStream());
-            msgStream.writeObject(MessageType.FEED_ME);
-            msgStream.close();
-            MessageSendThread mst = new MessageSendThread(this.groupMember, message, this.logger, "Send of feed me message failed: ");
-            mst.start();
-            this.logger.info("Sent 'FEED_ME' message!");
-        }
-        catch (IOException ioe) {
-            this.logger.error("Send of config env message failed: " + ioe.getMessage(), ioe);
-        }
-    }
-
-    // ---- FEED_ME handling end ---- //
-
     /** Matches time properties for config env properties. */
     private static final TimePropertyMatcher Config_Env_Matcher = new TimePropertyMatcher() {
         @Override
@@ -352,7 +268,7 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
     private final TimePropertyConverter Local_2_Net_Time_Converter = new TimePropertyConverter() {
         @Override
         public long convertTime(long time) {
-            return Synchronizer.this.groupMember.createFromLocalTime(time).getNetTimeDate().getTime();
+            return Synchronizer.this.netTimeService.localToNetTime(time);
         }
     };
 
@@ -360,7 +276,7 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
     private final TimePropertyConverter Net_2_Local_Time_Converter = new TimePropertyConverter() {
         @Override
         public long convertTime(long time) {
-            return Synchronizer.this.groupMember.createFromNetTime(time).getLocalTimeDate().getTime();
+            return Synchronizer.this.netTimeService.netToLocalTime(time);
         }
     };
 
@@ -397,12 +313,12 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
     @Override
     public void updated(APSConfigEnvStore configEnvStore) {
         try {
-            Message message = this.groupMember.createNewMessage();
+            APSSyncService.SyncGroup.Message message = this.syncGroup.createMessage();
             ObjectOutputStream msgStream = new ObjectOutputStream(message.getOutputStream());
             msgStream.writeObject(MessageType.CONFIG_ENV);
             msgStream.writeObject(convertPropTime(configEnvStore.getAsProperties(), Config_Env_Matcher, Local_2_Net_Time_Converter));
             msgStream.close();
-            MessageSendThread mst = new MessageSendThread(this.groupMember, message, this.logger, "Send of config env message failed: ");
+            MessageSendThread mst = new MessageSendThread(this.syncGroup, message, this.logger, "Send of config env message failed: ");
             mst.start();
         }
         catch (IOException ioe) {
@@ -418,7 +334,7 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
     @Override
     public void updated(APSConfigAdmin configuration) {
         try {
-            Message message = this.groupMember.createNewMessage();
+            APSSyncService.SyncGroup.Message message = this.syncGroup.createMessage();
             ObjectOutputStream msgStream = new ObjectOutputStream(message.getOutputStream());
             msgStream.writeObject(MessageType.CONFIG);
             msgStream.writeUTF(configuration.getConfigId());
@@ -431,7 +347,7 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
                 )
             );
             msgStream.close();
-            MessageSendThread mst = new MessageSendThread(this.groupMember, message, this.logger, "Send of config value message failed: ");
+            MessageSendThread mst = new MessageSendThread(this.syncGroup, message, this.logger, "Send of config value message failed: ");
             mst.start();
         }
         catch (IOException ioe) {
@@ -440,57 +356,74 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
     }
 
     /**
-     * Receive of configuration from other installation.
+     * Request that all data be sent again.
+     *
+     * @param group The group making the request.
+     */
+    @Override
+    public void reSyncAll(APSSyncService.SyncGroup group) {
+        updated(this.configEnvStore);
+        for (APSConfigAdmin configAdmin : this.configAdminService.getAllConfigurations()) {
+            updated(configAdmin);
+        }
+    }
+
+    /**
+     * Called when a message is received.
      *
      * @param message The received message.
      */
     @Override
-    public void messageReceived(Message message) {
+    public void receiveMessage(APSSyncService.SyncGroup.Message message) {
         updateLastGroupMsgTimestamp();
 
-        this.logger.info("Received message from '" + message.getMemberId() + "' with id '" + message.getId() + "'!");
-        if (!message.getMemberId().equals(this.groupMember.getMemberId())) {
-            ObjectInputStream msgStream = null;
+        ObjectInputStream msgStream = null;
 
-            try {
-                msgStream = new ObjectInputStream(message.getInputStream());
-                MessageType messageType = (MessageType)msgStream.readObject();
-                switch(messageType) {
-                    case CONFIG:
-                        handleConfigValueMessage(msgStream);
-                        break;
+        try {
+            msgStream = new ObjectInputStream(message.getInputStream());
+            MessageType messageType = (MessageType)msgStream.readObject();
+            switch(messageType) {
+                case CONFIG:
+                    handleConfigValueMessage(msgStream);
+                    break;
 
-                    case CONFIG_ENV:
-                        handleConfigEnvMessage(msgStream);
-                        break;
+                case CONFIG_ENV:
+                    handleConfigEnvMessage(msgStream);
+                    break;
 
-                    case FEED_ME:
-                        // If some other node came first with a "feed me" then we don't need to do it too
-                        // since whoever sent it will not have the latest and we will receive the updates
-                        // from the other nodes too.
-                        cancelFeedMe();
-
-                        handleFeedMeMessage();
+                case CONFIG_TIMESTAMP:
+                    handleConfigTimestamp(msgStream);
+            }
+        }
+        catch (IOException ioe) {
+            this.logger.error("Failed to read synchronization message!", ioe);
+        }
+        catch (ClassNotFoundException cnfe) {
+            this.logger.error("Message contained data of unknown type!", cnfe);
+        }
+        finally {
+            if (msgStream != null) {
+                try {
+                    msgStream.close();
+                }
+                catch (IOException ioe2) {
+                    this.logger.error("Failed to close received message!", ioe2);
                 }
             }
-            catch (IOException ioe) {
-                this.logger.debug("Failed to read message with id '" + message.getId() + "' from member '" + message.getMemberId() + "':" +
-                ioe.getMessage(), ioe);
-            }
-            catch (ClassNotFoundException cnfe) {
-                this.logger.debug("Failed to read message with id '" + message.getId() + "' from member '" + message.getMemberId() + "':" +
-                        cnfe.getMessage(), cnfe);
-            }
-            finally {
-                if (msgStream != null) {
-                    try {
-                        msgStream.close();
-                    }
-                    catch (IOException ioe2) {
-                        this.logger.error("Failed to close received message!", ioe2);
-                    }
-                }
-            }
+        }
+    }
+
+    /**
+     * Handles a received config timestamp and triggers a re-sync if being behind.
+     * @param msgStream
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void handleConfigTimestamp(ObjectInputStream msgStream) throws IOException, ClassNotFoundException {
+        long timeStamp = this.netTimeService.netToLocalTime(msgStream.readLong());
+        long localTimeStamp = resolveNewestConfigTimestamp();
+        if (timeStamp > (localTimeStamp + 2000)) {
+            this.syncGroup.reSyncAll();
         }
     }
 
@@ -681,13 +614,8 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
      */
     @Override
     public String requestUpdate() {
-        try {
-            sendFeedMe();
-            return "Sent request to be updated!";
-        }
-        catch (Exception e) {
-            return "ERROR: " + e.getMessage();
-        }
+        this.syncGroup.reSyncAll();
+        return "Requested re-sync of all config!";
     }
 
     //
@@ -704,8 +632,8 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
         /** The message is a configuration. */
         CONFIG,
 
-        /** The message is a request to get all data. */
-        FEED_ME
+        /** A timestamp of the freshest config. */
+        CONFIG_TIMESTAMP;
     }
 
     /**
@@ -739,8 +667,8 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
         // Private Members
         //
 
-        private GroupMember groupMember = null;
-        private Message message = null;
+        private APSSyncService.SyncGroup groupMember = null;
+        private APSSyncService.SyncGroup.Message message = null;
         private APSLogger logger = null;
         private String errorText = null;
 
@@ -748,7 +676,7 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
         // Constructors
         //
 
-        public MessageSendThread(GroupMember groupMember, Message message, APSLogger logger, String errorText) {
+        public MessageSendThread(APSSyncService.SyncGroup groupMember, APSSyncService.SyncGroup.Message message, APSLogger logger, String errorText) {
             this.groupMember = groupMember;
             this.message = message;
             this.logger = logger;
@@ -759,16 +687,16 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
             try {
                 this.groupMember.sendMessage(this.message);
             }
-            catch (IOException ioe ) {
-                this.logger.error(this.errorText + ioe.getMessage(), ioe);
+            catch (Exception e ) {
+                this.logger.error(this.errorText + e.getMessage(), e);
             }
         }
     }
 
     /**
-     * Sends a new FEED_ME message if we have older config than other members.
+     * Sends messages with freshest config timestamp. This so that nodes can realize if they are behind.
      */
-    private class LongTimeNoSeeThread extends Thread {
+    private class ConfigTimestampSendingThread extends Thread {
 
         private boolean done = false;
 
@@ -781,45 +709,60 @@ public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemorySt
         }
 
         public void run() {
-            int count = 0;
             while (!isDone()) {
 
                 try {
-                    Thread.sleep(1000 * 15);
+                    Thread.sleep(1000 * 60);
                 }
                 catch (InterruptedException ie) {
                     Synchronizer.this.logger.error("Unexpected interrupt of sleep!", ie);
                 }
-                ++count;
 
-                if (count >= 20 && !isDone()) {
-                    count = 0;
-                    long localNewestTimestamp = resolveNewestConfigTimestamp();
-                    long newestTimestamp = 0;
-
-                    for (Properties memberProps : Synchronizer.this.groupMember.getMembersUserProperties()) {
-                        String val = memberProps.getProperty(NEWEST_CONFIG_TIMESTAMP);
-                        if (val != null) {
-                            try {
-                                long ts = Long.valueOf(val);
-                                if (ts > newestTimestamp) {
-                                    newestTimestamp = ts;
-                                }
-                            }
-                            catch (NumberFormatException nfe) {}
-                        }
-                    }
-
-                    if (newestTimestamp > localNewestTimestamp) {
-                        // This to avoid this always happening due to time difference. Since the timestamp is
-                        // calculated before we join our group and this value is passed on join we cannot use
-                        // net time to remove time differences!
-                        Synchronizer.this.newestConfigTimestamp = newestTimestamp;
-                        Synchronizer.this.logger.info("Found fresher config at other members!");
-                        sendFeedMe();
-                    }
-                }
+                sendTimestampMessage();
             }
         }
     }
+
+    private void sendTimestampMessage() {
+        try {
+            APSSyncService.SyncGroup.Message message = this.syncGroup.createMessage();
+            ObjectOutputStream msgStream = new ObjectOutputStream(message.getOutputStream());
+            msgStream.writeObject(MessageType.CONFIG_TIMESTAMP);
+            msgStream.writeLong(this.netTimeService.localToNetTime(resolveNewestConfigTimestamp()));
+            msgStream.close();
+            this.syncGroup.sendMessage(message);
+        }
+        catch (IOException ioe) {
+            this.logger.error("Failed to send timestamp message!", ioe);
+        }
+    }
 }
+//++count;
+//
+//if (count >= 20 && !isDone()) {
+//        count = 0;
+//long localNewestTimestamp = resolveNewestConfigTimestamp();
+//long newestTimestamp = 0;
+//
+//for (Properties memberProps : Synchronizer.this.syncGroup.getMembersUserProperties()) {
+//        String val = memberProps.getProperty(NEWEST_CONFIG_TIMESTAMP);
+//if (val != null) {
+//        try {
+//        long ts = Long.valueOf(val);
+//if (ts > newestTimestamp) {
+//        newestTimestamp = ts;
+//}
+//        }
+//        catch (NumberFormatException nfe) {}
+//        }
+//        }
+//
+//        if (newestTimestamp > localNewestTimestamp) {
+//        // This to avoid this always happening due to time difference. Since the timestamp is
+//        // calculated before we join our group and this value is passed on join we cannot use
+//        // net time to remove time differences!
+//        Synchronizer.this.newestConfigTimestamp = newestTimestamp;
+//Synchronizer.this.logger.info("Found fresher config at other members!");
+//sendFeedMe();
+//}
+//        }

@@ -73,6 +73,7 @@
             se.natusoft.osgi.aps.tools.models;version="${project.version}",
             se.natusoft.osgi.aps.tools.data;version="${project.version}",
             se.natusoft.osgi.aps.tools.annotation;version="${project.version}",
+            se.natusoft.osgi.aps.tools.annotation.activator;version="${project.version}",
             se.natusoft.osgi.aps.tools.exceptions;version="${project.version}",
             se.natusoft.osgi.aps.tools.tuples;version="${project.version}"
         </osgi.export.package>

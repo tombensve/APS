@@ -210,7 +210,7 @@
     </p>
     <H2>APSActivator</H2>
     <p>
-      This is a BundleActivator implementation that uses annotations to register services and inject tracked services. Any bundle can use this activator by just importing the <em>se.natusoft.osgi.aps.tools</em> package.      
+      This is a BundleActivator implementation that uses annotations to register services and managed tracked services. Any bundle can use this activator by just importing the <em>se.natusoft.osgi.aps.tools</em> package.
     </p>
     <p>
       This is actually a trivial not very large class that just scans the bundle for files ending in <em>.class</em>, removes the <em>.class</em> from the path and translates the separator char to '.' and then passes it to bundle.getClass(...) to get the Class instance for it. After that it can inspect the bundles all classes for annotations and act on them. Most methods are protected making it easy to subclass this class and expand on its functionality.      
@@ -257,7 +257,7 @@
       <code>
     public @interface APSInject {
         /**
-         * The name of the instance to inject. If the same is used in multiple classes the same instance will
+         * The name of the instance to managed. If the same is used in multiple classes the same instance will
          * be injected.
          */
         String name() default "default";
@@ -271,7 +271,7 @@
       </code>
     </pre>
     <p>
-      <strong>@APSBundleStart</strong> - This should be used on a method and will be called on bundle start. The method should take no arguments. If you need a BundleContext just inject it with @APSInejct. The use of this annotation is only needed for things not supported by this activator. Please note that a method annotated with this annotation can be static (in which case the class it belongs to will not be instantiaded -- due to this!). You can provide this annotation on as many methods in as many classes as you want. They will all be called (in the order classes are discovered in the bundle).      
+      <strong>@APSBundleStart</strong> - This should be used on a method and will be called on bundle start. The method should take no arguments. If you need a BundleContext just managed it with @APSInejct. The use of this annotation is only needed for things not supported by this activator. Please note that a method annotated with this annotation can be static (in which case the class it belongs to will not be instantiaded -- due to this!). You can provide this annotation on as many methods in as many classes as you want. They will all be called (in the order classes are discovered in the bundle).
     </p>
     <pre>
       <code>

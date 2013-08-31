@@ -34,7 +34,9 @@
  *         2012-08-19: Created!
  *         
  */
-package se.natusoft.osgi.aps.tools.annotation;
+package se.natusoft.osgi.aps.tools.annotation.activator;
+
+import se.natusoft.osgi.aps.tools.APSActivator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -42,18 +44,38 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation represents one instance of an an OSGi service and is used in @OSGiServiceProvider.
+ * This annotation indicates that the annotated class is an OSGi service to be made available by the
+ * APSActivator.
  *
  * This only works when APSActivator is used as bundle activator!
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface OSGiServiceInstance {
+public @interface OSGiServiceProvider {
 
     /** Extra properties to register the service with. */
     OSGiProperty[] properties() default {};
 
     /** The service API to register instance with. If not specified the first implemented interface will be used. */
     Class[] serviceAPIs() default {};
+
+    /** This can be used as an alternative to properties() and also supports several instances. */
+    OSGiServiceInstance[] instances() default {};
+
+    /**
+     * This can be used as an alternative and will instantiate the specified factory class which will deliver
+     * one set of Properties per instance.
+     */
+    Class<? extends APSActivator.InstanceFactory> instanceFactoryClass() default APSActivator.InstanceFactory.class;
+
+    /**
+     * If true this service will be stared in a separate thread. This means the bundle start
+     * will continue in parallel and that any failures in startup will be logged, but will
+     * not stop the bundle from being started. If this is true it wins over required service
+     * dependencies of the service class. Specifying this as true allows you to do things that
+     * cannot be done in a bunde activator start method, like calling a service tracked by
+     * APSServiceTracker, without causing a deadlock.
+     */
+    boolean threadStart() default false;
 
 }
