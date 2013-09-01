@@ -120,7 +120,6 @@ public class MulticastTransport implements Transport {
         this.msocket.setSoTimeout(5000);
         this.msocket.setReuseAddress(true);
         this.msocket.setBroadcast(false);
-        this.msocket.setSoTimeout(1000);
         this.msocket.joinGroup(this.group);
         this.logger.info("Listening for multicast messages on " + multicastAddress + ", targetPort " + this.port);
     }

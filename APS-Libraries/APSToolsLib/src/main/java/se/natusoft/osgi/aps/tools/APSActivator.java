@@ -278,6 +278,11 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      */
     @Override
     public void stop(BundleContext context) throws Exception {
+        if (this.services == null) {
+            System.err.println("ERROR: Stopping non started instance of APSActivator!");
+            return; // Not started!
+        }
+
         Exception failure = null;
 
         this.activatorLogger.info("Stopping APSActivator for bundle '" + context.getBundle().getSymbolicName() +

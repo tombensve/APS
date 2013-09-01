@@ -246,5 +246,12 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
                 }
             }
         }
+        else if (messagePacket.getType() == PacketType.MEMBER_ANNOUNCEMENT) {
+            Group group = messagePacket.getGroup();
+            if (!group.hasMember(messagePacket.getMember())) {
+                group.addMember(messagePacket.getMember());
+            }
+            messagePacket.getMember().updateLastHeardFrom();
+        }
     }
 }
