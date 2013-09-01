@@ -112,15 +112,22 @@ public class APSGroupsInfoServiceProvider implements APSGroupsInfoService {
         List<String> members = new LinkedList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         for (Member member : group.getListOfMembers()) {
-            if (member.isLocalMember()) {
-                members.add(member.getId().toString() + " (localMember=true" +
-                        ", lastAnnounced='" + sdf.format(member.lastAnnounced()) + "'" +
-                        ", stillKicking=" + member.stillKicking(this.config.getMemberAnnounceInterval()) + ")");
+            try {
+                if (member.isLocalMember()) {
+                    members.add(member.getId().toString() + " (localMember=true" +
+                            ", lastAnnounced='" + sdf.format(member.lastAnnounced()) + "'" +
+                            ", stillKicking=" + member.stillKicking(this.config.getMemberAnnounceInterval()) + ")");
+                }
+                else {
+                    members.add(member.getId().toString() + " (localMember=false" +
+                            ", lastHeardFrom='" + sdf.format(member.getLastHeardFrom().getLocalTimeDate()) + "'" +
+                            ", stillKicking=" + member.stillKicking(this.config.getMemberAnnounceInterval()) + ")");
+                }
             }
-            else {
-                members.add(member.getId().toString() + " (localMember=false" +
-                        ", lastHeardFrom='" + sdf.format(member.getLastHeardFrom().getLocalTimeDate()) + "'" +
-                        ", stillKicking=" + member.stillKicking(this.config.getMemberAnnounceInterval()) + ")");
+            catch (Exception e) {
+                if (member != null && member.getId() != null) {
+                    members.add(member.getId().toString() + " " + e.getMessage());
+                }
             }
         }
 
