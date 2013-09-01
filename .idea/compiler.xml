@@ -119,6 +119,7 @@
         <module name="aps-net-time-service-provider" />
         <module name="aps-openjpa-provider" />
         <module name="aps-platform-service-provider" />
+        <module name="aps-rabbitmq-message-service-provider" />
         <module name="aps-resolving-bundle-deployer" />
         <module name="aps-rpc-http-transport-provider" />
         <module name="aps-session-provider-service" />
@@ -131,6 +132,7 @@
         <module name="aps-web-tools" />
         <module name="APSGroupsMessageServiceProvider" />
         <module name="APSNetTimeServiceProvider" />
+        <module name="APSRabbitMQMessageServiceProvider" />
         <module name="APSResolvingBundleDeployer" />
         <module name="APSSimpleUserServiceAuthServiceProvider" />
         <module name="APSTomcatWebExtender" />
@@ -167,6 +169,7 @@
       <module name="APS-Network" target="1.7" />
       <module name="aps-openjpa-provider" target="1.7" />
       <module name="aps-platform-service-provider" target="1.7" />
+      <module name="aps-rabbitmq-message-service-provider" target="1.7" />
       <module name="aps-resolving-bundle-deployer" target="1.7" />
       <module name="aps-session-provider-service" target="1.7" />
       <module name="aps-session-service-provider" target="1.7" />
@@ -181,6 +184,7 @@
       <module name="APSConfigTest" target="1.7" />
       <module name="APSGroupsMessageServiceProvider" target="1.7" />
       <module name="APSNetTimeServiceProvider" target="1.7" />
+      <module name="APSRabbitMQMessageServiceProvider" target="1.7" />
       <module name="APSSimpleUserServiceAuthServiceProvider" target="1.7" />
       <module name="Build" target="1.7" />
       <module name="BuildTiles" target="1.7" />

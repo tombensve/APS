@@ -46,14 +46,65 @@ import java.io.*;
 public interface APSMessageService {
 
     /**
-     * Joins a queue.
+     * Checks if the named queue exists.
      *
-     * @param name The name of the queue to join.
+     * @param name The name of the queue to check.
      *
-     * @return The joined to queue.
+     * @return true if queue exists, false otherwise.
      */
-    Queue joinQueue(String name);
+    boolean queueExists(String name);
 
+    /**
+     * Defines a queue that lives as long as the queue providing service lives.
+     *
+     * If the queue already exist nothing happens. If the queue is of another type an
+     * _APSMessageException_ could possibly be throws depending on implementation and
+     * underlying service used.
+     *
+     * @param name The name of the queue to define.
+     *
+     * @throws APSMessageException (possibly) on trying to redefine type.
+     */
+    Queue defineQueue(String name) throws APSMessageException;
+
+    /**
+     * Defines a queue that lives for a long time.
+     *
+     * If the queue already exist nothing happens. If the queue is of another type an
+     * _APSMessageException_ could possibly be thrown depending on implementation and
+     * underlying service used.
+     *
+     * @param name The name of the queue to define.
+     *
+     * @throws APSMessageException (possibly) on trying to redefine type.
+     * @throws UnsupportedOperationException If this type of queue is not supported by the implementation.
+     */
+    Queue defineDurableQueue(String name) throws APSMessageException, UnsupportedOperationException;
+
+    /**
+     * Defines a queue that is temporary and gets deleted when no longer used.
+     *
+     * If the queue already exist nothing happens. If the queue is of another type an
+     * _APSMessageException_ could possibly be thrown depending on implementation and
+     * underlying service used.
+     *
+     * @param name The name of the queue to define.
+     *
+     * @throws APSMessageException (possibly) on trying to redefine type.
+     * @throws UnsupportedOperationException If this type of queue is not supported by the implementation.
+     */
+    Queue defineTemporaryQueue(String name) throws APSMessageException, UnsupportedOperationException;
+
+    /**
+     * Returns the named queue or null if no such queue exists.
+     *
+     * @param name The name of the queue to get.
+     */
+    Queue getQueue(String name);
+
+    /**
+     * This represents a specific named queue.
+     */
     public interface Queue {
 
         /**
@@ -97,19 +148,25 @@ public interface APSMessageService {
         void removeMessageListener(Message.Listener listener);
 
         /**
-         * Leaves the queue.
+         * Deletes this queue.
+         *
+         * @throws APSMessageException on failure.
+         * @throws UnsupportedOperationException if this is not allowed by the implementation.
          */
-        void leaveQueue();
+        void delete() throws APSMessageException, UnsupportedOperationException;
+
+        /**
+         * Clears all the messages from the queue.
+         *
+         * @throws APSMessageException on failure.
+         * @throws UnsupportedOperationException If this is not allowed by the implementation.
+         */
+        void clear() throws APSMessageException, UnsupportedOperationException;
 
         /**
          * This represents a message to send/receive.
          */
         public interface Message {
-
-            /**
-             * Returns the queue the message belongs to.
-             */
-            Queue getQueue();
 
             /**
              * Sets the message content bytes overwriting any previous content.
@@ -141,9 +198,10 @@ public interface APSMessageService {
                 /**
                  * Called when a message is received.
                  *
+                 * @param queueName The name of the queue that delivered the message.
                  * @param message The received message.
                  */
-                void receiveMessage(Message message);
+                void receiveMessage(String queueName, Message message);
             }
 
             /**
@@ -151,25 +209,12 @@ public interface APSMessageService {
              */
             public class Provider implements Message {
 
-                private Queue queue;
                 private byte[] content = new byte[0];
 
                 /**
                  * Creates a new Provider.
-                 *
-                 * @param queue The queue the message belongs to.
                  */
-                public Provider(Queue queue) {
-                    this.queue = queue;
-                }
-
-                /**
-                 * Returns the queue the message belongs to.
-                 */
-                @Override
-                public Queue getQueue() {
-                    return this.queue;
-                }
+                public Provider() {}
 
                 /**
                  * Sets the message content bytes overwriting any previous content.

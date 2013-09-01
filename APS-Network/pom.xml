@@ -59,6 +59,7 @@
         <module>APSGroups</module>
         <module>APSGroupsSyncServiceProvider</module>
         <module>APSNetTimeServiceProvider</module>
+        <module>APSRabbitMQMessageServiceProvider</module>
     </modules>
 
 </project>

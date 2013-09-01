@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Maven: org.apache.commons:commons-io:1.2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/lib/commons-io-1.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
