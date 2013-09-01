@@ -60,15 +60,20 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
     // Private Members
     //
 
+    /** Our logger. */
     @Managed(loggingFor = "aps-rabbitmq-message-service-provider")
     private APSLogger logger;
 
+    /** Flag to see if the connection to the RabbitMQ service have been done. */
     private boolean connected = false;
 
+    /** The RabbitMQ service connection. */
     private Connection connection = null;
 
+    /** A RabbitMQ channel. */
     private Channel channel = null;
 
+    /** The listener threads. */
     private Map<String, QueueProvider.ReceiverThread> listenerThreads = new HashMap<>();
 
     //
@@ -109,6 +114,10 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
                 this.logger.error("Failed to close RabbitMQ channel on shutdown!", ioe);
             }
         }
+
+        this.logger.info("Disconnected from RabbitMQ server at " +
+                BunnyConnectionConfig.managed.get().rabbitMQHost.toString() + ":" +
+                BunnyConnectionConfig.managed.get().rabbitMQPort.toString() + "!");
 
     }
 
@@ -161,6 +170,10 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
                 }
                 throw new APSMessageException(ioe.getMessage(), ioe);
             }
+
+            this.logger.info("Connected to RabbitMQ server at " +
+                    BunnyConnectionConfig.managed.get().rabbitMQHost.toString() + ":" +
+                    BunnyConnectionConfig.managed.get().rabbitMQPort.toString() + "!");
 
             this.connected = true;
         }
@@ -319,7 +332,7 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
         @Override
         public Message createMessage(byte[] content) {
             Message.Provider message = new Message.Provider();
-            message.setBytes(content);
+            message.setBytes(Arrays.copyOf(content, content.length));
             return message;
         }
 
@@ -350,6 +363,8 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
             ReceiverThread receiverThread = listenerThreads.get(this.name);
             if (receiverThread == null) {
                 receiverThread = new ReceiverThread();
+                receiverThread.start();
+                logger.info("Created new receiver for queue '" + this.name + "'!");
                 listenerThreads.put(this.name, receiverThread);
             }
             receiverThread.addMessageListener(listener);
@@ -365,6 +380,13 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
             ReceiverThread receiverThread = listenerThreads.get(this.name);
             if (receiverThread != null) {
                 receiverThread.removeMessageListener(listener);
+                if (!receiverThread.haveListeners()) {
+                    logger.info("The receiver for queue '" + this.name + "' has no more listeners so it is being " +
+                        "shutdown until new listeners becomes available again.");
+                    listenerThreads.remove(receiverThread);
+                    receiverThread.stopThread();
+                    //try {receiverThread.join(8000);} catch (InterruptedException ie) {}
+                }
             }
         }
 
@@ -461,6 +483,13 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
             }
 
             /**
+             * Returns true if there are listeners available.
+             */
+            public boolean haveListeners() {
+                return !this.listeners.isEmpty();
+            }
+
+            /**
              * Removes all listeners.
              */
             public void removeAllListeners() {
@@ -478,6 +507,8 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
                         try {
                             QueueingConsumer.Delivery delivery = consumer.nextDelivery(5000);
                             Message message = createMessage(delivery.getBody());
+                            channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+
                             for (Message.Listener listener : this.listeners) {
                                 listener.receiveMessage(name, message);
                             }

@@ -1,24 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="Fixed an NPE.">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/lib/commons-cli-1.1.jar" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/lib/commons-io-1.2.jar" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/lib/rabbitmq-client.jar" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQMessageServiceProvider.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/config/BunnyConnectionConfig.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_cli_1_1.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_io_1_2.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__rabbitmq_rabbitmq_client_3_1_5.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APS-Auth.iml" afterPath="$PROJECT_DIR$/APS-Auth/APS-Auth.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/messaging/service/APSMessageService.java" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/messaging/service/APSMessageService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/aps-simple-user-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/aps-simple-user-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/pom.xml" afterPath="$PROJECT_DIR$/APS-Network/pom.xml" />
+    <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQMessageServiceProvider.java" afterPath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQMessageServiceProvider.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="93ee55a5-7aeb-46b4-befc-da110c6bd63a" name="Failed commit: Default" comment="Dev commit." />
@@ -27,7 +11,7 @@
     <ignored path=".idea/workspace.xml" />
     <ignored mask="*.iml" />
     <file path="/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1378056175461" ignored="false" />
-    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1378056368153" ignored="false" />
+    <file path="/Dummy.txt" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1378056794562" ignored="false" />
     <file path="/a.dummy" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1376128280564" ignored="false" />
     <file path="/testclient.sh" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355064160118" ignored="false" />
     <file path="$PROJECT_DIR$/../../Tools/wip-clones/MarkdownDoc/pom.xml" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1355420755980" ignored="false" />
@@ -781,7 +765,7 @@
     <file path="/APSNetTimeService.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1377951987541" ignored="false" />
     <file path="/APSNetTimeServiceProvider.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1377954323820" ignored="false" />
     <file path="/APSSyncServiceProvider.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1377958827078" ignored="false" />
-    <file path="/APSRabbitMQMessageServiceProvider.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1378055434547" ignored="false" />
+    <file path="/APSRabbitMQMessageServiceProvider.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1378057615684" ignored="false" />
     <file path="/BunnyConnectionConfig.java" changelist="b5f6ccfb-d11e-450c-9c28-31283ef00044" time="1378049210191" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -964,10 +948,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="154" column="0" selection-start="5302" selection-end="5302" vertical-scroll-proportion="0.4735376">
+            <state line="154" column="0" selection-start="5302" selection-end="5302" vertical-scroll-proportion="-21.25">
               <folding />
             </state>
           </provider>
@@ -982,13 +966,12 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="APSRabbitMQMessageServiceProvider.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="APSRabbitMQMessageServiceProvider.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQMessageServiceProvider.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="71" column="0" selection-start="2267" selection-end="2267" vertical-scroll-proportion="0.0">
+            <state line="40" column="23" selection-start="1255" selection-end="1255" vertical-scroll-proportion="0.040871933">
               <folding>
-                <element signature="e#0#16685#0" expanded="true" />
-                <element signature="imports" expanded="true" />
+                <element signature="e#0#18301#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -1296,8 +1279,8 @@
         <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/APSGroupsInfoServiceProvider.java" />
         <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/messaging/service/APSMessageService.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/config/BunnyConnectionConfig.java" />
-        <option value="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQMessageServiceProvider.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/pom.xml" />
+        <option value="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQMessageServiceProvider.java" />
       </list>
     </option>
   </component>
@@ -5704,7 +5687,11 @@
       <created>1378031444549</created>
       <updated>1378031444549</updated>
     </task>
-    <option name="localTasksCounter" value="377" />
+    <task id="LOCAL-00377" summary="Added APSRabbitMQMessageServiceProvider.">
+      <created>1378056806028</created>
+      <updated>1378056806028</updated>
+    </task>
+    <option name="localTasksCounter" value="378" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="true" url="http://redmine.natusoft.private/redmine">
@@ -5831,7 +5818,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed an NPE." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added APSRabbitMQMessageServiceProvider." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -5845,7 +5832,6 @@
     <option name="UPDATE_FILTER_BY_SCOPE" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
-    <MESSAGE value="Fixed some stupid NPEs." />
     <MESSAGE value="Updated APSToolsLib documentation." />
     <MESSAGE value="- The MultiBundleClassLoader of APSOpenJPAProvider has now been moved to APSToolsLib.&#10;- APSOpenJPAProvider now uses new features in MultiBundleClassLoader to extends the JPA framework classpath to clients of clients to more easily be able to provide JDBC drivers." />
     <MESSAGE value="APSActivator now supports 2 modes: Activator mode where it just scans all the bundles classes and manages any annotations. This is achieved by using the default constructor of APSActivator. &#10;&#10;The second mode is the existing instances mode. This requires the constructor where you pass at least one instance to the constructor.  Calls to addManagedInstance(instance) can also be done before start(BundleContext) is done. In this case it will just add the provided instances as managed instances, and then scan the bundle classes skipping any class that already has a provided managed instance. This way web-container created instances like servlets can be managed by the activator also. In a WAB you mostly want to inject tracked services, but it is possible to provide service instances also. &#10;&#10;APSVaadinOSGiApplication and APSOSGiSupport (for servlets, etc) creates an APSActivator and adds itself/its caller to it thus handling annotations." />
@@ -5870,6 +5856,7 @@
     <MESSAGE value="- New APSMessageService API.&#10;- New APSSyncService API.&#10;- New APSNetTimeService API.&#10;- New APSSyncService provider using APSGroupsService.&#10;- New APSNetTimeService provider using APSGroupsService.&#10;- Synchronizer in APSConfigService provider now uses the new APSSyncService rather than APSGroupsService.&#10;- All this in preparation for providing providing an APSMessageServcie provider based on RabbitMQ, and an alternative APSSyncService provider using APSMessageService." />
     <MESSAGE value="Fixed bug in APSGroups that ignored new members being announced.&#10;" />
     <MESSAGE value="Fixed an NPE." />
+    <MESSAGE value="Added APSRabbitMQMessageServiceProvider." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -6058,20 +6045,19 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQMessageServiceProvider.java">
+    <entry file="file://$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="71" column="0" selection-start="2267" selection-end="2267" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#0#16685#0" expanded="true" />
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state line="154" column="0" selection-start="5302" selection-end="5302" vertical-scroll-proportion="-21.25">
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/pom.xml">
+    <entry file="file://$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQMessageServiceProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="154" column="0" selection-start="5302" selection-end="5302" vertical-scroll-proportion="0.4735376">
-          <folding />
+        <state line="40" column="23" selection-start="1255" selection-end="1255" vertical-scroll-proportion="0.040871933">
+          <folding>
+            <element signature="e#0#18301#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
