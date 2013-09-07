@@ -96,7 +96,7 @@
         -->
 
         <!-- We register our configuration for auto registration and management. -->
-        <aps.config.classes>se.natusoft.osgi.aps.messaging.config.BunnyConnectionConfig</aps.config.classes>
+        <aps.config.classes>se.natusoft.osgi.aps.messaging.config.RabbitMQConnectionConfig</aps.config.classes>
 
         <!--
              Trigger tiles.

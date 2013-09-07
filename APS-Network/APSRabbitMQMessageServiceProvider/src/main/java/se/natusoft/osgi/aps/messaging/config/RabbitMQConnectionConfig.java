@@ -41,6 +41,7 @@ import se.natusoft.osgi.aps.api.core.config.ManagedConfig;
 import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigDescription;
 import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigItemDescription;
 import se.natusoft.osgi.aps.api.core.config.annotation.APSDefaultValue;
+import se.natusoft.osgi.aps.api.core.config.model.APSConfigList;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
 
 /**
@@ -53,7 +54,7 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
         // APSConfigAdminWeb GUI tree placement.
         group = "aps.network.mq"
 )
-public class BunnyConnectionConfig extends APSConfig {
+public class RabbitMQConnectionConfig extends APSConfig {
 
     /**
      * Provides an auto managed instance of this config when this class is specified with APS-Configs: in MANIFEST.MF.
@@ -63,17 +64,17 @@ public class BunnyConnectionConfig extends APSConfig {
      * before the config service have had a change to manage the config. Using this constant instance of ManagedConfig
      * is the safest way to handle auto managed configurations.
      */
-    public static final ManagedConfig<BunnyConnectionConfig> managed = new ManagedConfig<BunnyConnectionConfig>() {
+    public static final ManagedConfig<RabbitMQConnectionConfig> managed = new ManagedConfig<RabbitMQConnectionConfig>() {
 
         /**
          * This makes it safe to do:
          * <pre>
-         *     BunnyConnectionConfig.managed.get().rabbitMQHost.toString();
+         *     RabbitMQConnectionConfig.managed.get().host.toString();
          * </pre>
          * directly.
          */
         @Override
-        public BunnyConnectionConfig get() {
+        public RabbitMQConnectionConfig get() {
             if (!super.isManaged()) {
                 super.waitUtilManaged();
             }
@@ -82,25 +83,43 @@ public class BunnyConnectionConfig extends APSConfig {
     };
 
     @APSConfigItemDescription(description = "The host where the RabbitMQ server runs.", environmentSpecific = true)
-    public APSConfigValue rabbitMQHost;
+    public APSConfigValue host;
 
     @APSConfigItemDescription(description = "The port the RabbitMQ service is listening on.",
             environmentSpecific = true, defaultValue = @APSDefaultValue("5672"))
-    public APSConfigValue rabbitMQPort;
+    public APSConfigValue port;
 
     @APSConfigItemDescription(description = "A user if such is required by the RabbitMQ server.",
             environmentSpecific = true)
-    public APSConfigValue rabbitMQUser;
+    public APSConfigValue user;
 
     @APSConfigItemDescription(description = "A password if such is required by the RabbitMQ server.",
             environmentSpecific = true)
-    public APSConfigValue rabbitMQPassword;
+    public APSConfigValue password;
 
     @APSConfigItemDescription(description = "A virtual host name to use if specified. Can be blank.",
             environmentSpecific = true)
-    public APSConfigValue rabbitMQVirtualHost;
+    public APSConfigValue virtualHost;
 
     @APSConfigItemDescription(description = "Changes the default timeout to this. Can be blank.",
             environmentSpecific = true)
-    public APSConfigValue rabbitMQTimeout;
+    public APSConfigValue timeout;
+
+    @APSConfigItemDescription(description = "Named queues to define.", environmentSpecific = true)
+    public APSConfigList<RabbitMQQueueConfig> queues;
+
+
+    @APSConfigDescription(
+            configId = "se.natusoft.osg.aps.messaging.rabbitmq.queue",
+            description = "This defines one specific queue.",
+            version = "1.0.0"
+    )
+    public static class RabbitMQQueueConfig extends APSConfig {
+
+        @APSConfigItemDescription(description = "Defines the name of the queue.")
+        public APSConfigValue name;
+
+        @APSConfigItemDescription(description = "Is this queue durable ?", isBoolean = true)
+        public APSConfigValue durable;
+    }
 }

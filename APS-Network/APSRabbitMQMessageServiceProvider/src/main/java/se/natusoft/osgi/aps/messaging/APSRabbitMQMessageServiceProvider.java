@@ -37,13 +37,12 @@
 package se.natusoft.osgi.aps.messaging;
 
 import com.rabbitmq.client.*;
+import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent;
+import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener;
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService;
-import se.natusoft.osgi.aps.messaging.config.BunnyConnectionConfig;
+import se.natusoft.osgi.aps.messaging.config.RabbitMQConnectionConfig;
 import se.natusoft.osgi.aps.tools.APSLogger;
-import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop;
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed;
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty;
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider;
+import se.natusoft.osgi.aps.tools.annotation.activator.*;
 
 import java.io.IOException;
 import java.util.*;
@@ -54,7 +53,7 @@ import java.util.*;
 @OSGiServiceProvider(properties = {
         @OSGiProperty(name = "underlying-provider", value = "RabbitMQ"),
         @OSGiProperty(name = "supports-complete-api", value = "true")
-})
+}, threadStart = true)
 public class APSRabbitMQMessageServiceProvider implements APSMessageService {
     //
     // Private Members
@@ -76,6 +75,10 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
     /** The listener threads. */
     private Map<String, QueueProvider.ReceiverThread> listenerThreads = new HashMap<>();
 
+    private APSConfigChangedListener configChangedListener;
+
+    private Runnable queueUpdater;
+
     //
     // Constructors
     //
@@ -85,12 +88,96 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
      */
     public APSRabbitMQMessageServiceProvider() {}
 
+    @BundleStart
+    public void startup() {
+        // Please note that we can access config here due to the threadStart=true in the @OSGiServiceProvider
+        // above. The instance of this class will be created in a separate thread from the OSGi server startup
+        // thread that calls the activator.
+
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost(RabbitMQConnectionConfig.managed.get().host.toString());
+        connectionFactory.setPort(RabbitMQConnectionConfig.managed.get().port.toInt());
+
+        String userName = RabbitMQConnectionConfig.managed.get().user.toString().trim();
+        if (userName.length() > 0) {
+            connectionFactory.setUsername(userName);
+        }
+
+        String password = RabbitMQConnectionConfig.managed.get().password.toString().trim();
+        if (password.length() > 0) {
+            connectionFactory.setPassword(password);
+        }
+
+        String virtualHost = RabbitMQConnectionConfig.managed.get().virtualHost.toString().trim();
+        if (virtualHost.length() > 0) {
+            connectionFactory.setVirtualHost(virtualHost);
+        }
+
+        String timeout = RabbitMQConnectionConfig.managed.get().timeout.toString().trim();
+        if (timeout.length() > 0) {
+            connectionFactory.setConnectionTimeout(Integer.valueOf(timeout));
+        }
+
+        try {
+            this.connection = connectionFactory.newConnection();
+            this.channel = connection.createChannel();
+        }
+        catch (IOException ioe) {
+            if (this.connection != null) {
+                try {
+                    this.connection.close();
+                }
+                catch (IOException ioe2) {
+                    this.logger.error("Failed to close connection due to channel create failure!", ioe2);
+                }
+            }
+            throw new APSMessageException(ioe.getMessage(), ioe);
+        }
+
+        this.logger.info("Connected to RabbitMQ server at " +
+                RabbitMQConnectionConfig.managed.get().host.toString() + ":" +
+                RabbitMQConnectionConfig.managed.get().port.toString() + "!");
+
+        this.queueUpdater = new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 0; i < RabbitMQConnectionConfig.managed.get().queues.size(); i++) {
+                    RabbitMQConnectionConfig.RabbitMQQueueConfig queue =
+                            RabbitMQConnectionConfig.managed.get().queues.get(i);
+                    boolean durable = queue.durable.toBoolean();
+                    try {
+                        channel.queueDeclare(queue.name.toString(), durable, false, false, null);
+                        logger.info("Declaring RabbitMQ queue: " + queue.name.toString());
+                    }
+                    catch (IOException ioe) {
+                        throw new APSMessageException("Failed to declare queue! [" + queue.name.toString() + "]", ioe);
+                    }
+                }
+            }
+        };
+
+        this.queueUpdater.run();
+
+        this.configChangedListener = new APSConfigChangedListener() {
+            @Override
+            public void apsConfigChanged(APSConfigChangedEvent event) {
+                queueUpdater.run();
+            }
+        };
+
+        RabbitMQConnectionConfig.managed.get().addConfigChangedListener(this.configChangedListener);
+    }
+
     //
     // Shutdown
     //
 
     @BundleStop
     public void shutdown() {
+        if (this.configChangedListener != null) {
+            RabbitMQConnectionConfig.managed.get().removeConfigChangedListener(this.configChangedListener);
+        }
+
         for (QueueProvider.ReceiverThread receiverThread : this.listenerThreads.values()) {
             receiverThread.removeAllListeners();
             receiverThread.stopThread();
@@ -116,68 +203,14 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
         }
 
         this.logger.info("Disconnected from RabbitMQ server at " +
-                BunnyConnectionConfig.managed.get().rabbitMQHost.toString() + ":" +
-                BunnyConnectionConfig.managed.get().rabbitMQPort.toString() + "!");
+                RabbitMQConnectionConfig.managed.get().host.toString() + ":" +
+                RabbitMQConnectionConfig.managed.get().port.toString() + "!");
 
     }
 
     //
     // Methods
     //
-
-    /**
-     * Does delayed setup that we don't want to do during construction since the constructor is executed
-     * by bundle activator on start.
-     */
-    private void connect() {
-        if (!this.connected) {
-            ConnectionFactory connectionFactory = new ConnectionFactory();
-            connectionFactory.setHost(BunnyConnectionConfig.managed.get().rabbitMQHost.toString());
-            connectionFactory.setPort(BunnyConnectionConfig.managed.get().rabbitMQPort.toInt());
-
-            String userName = BunnyConnectionConfig.managed.get().rabbitMQUser.toString().trim();
-            if (userName.length() > 0) {
-                connectionFactory.setUsername(userName);
-            }
-
-            String password = BunnyConnectionConfig.managed.get().rabbitMQPassword.toString().trim();
-            if (password.length() > 0) {
-                connectionFactory.setPassword(password);
-            }
-
-            String virtualHost = BunnyConnectionConfig.managed.get().rabbitMQVirtualHost.toString().trim();
-            if (virtualHost.length() > 0) {
-                connectionFactory.setVirtualHost(virtualHost);
-            }
-
-            String timeout = BunnyConnectionConfig.managed.get().rabbitMQTimeout.toString().trim();
-            if (timeout.length() > 0) {
-                connectionFactory.setConnectionTimeout(Integer.valueOf(timeout));
-            }
-
-            try {
-                this.connection = connectionFactory.newConnection();
-                this.channel = connection.createChannel();
-            }
-            catch (IOException ioe) {
-                if (this.connection != null) {
-                    try {
-                        this.connection.close();
-                    }
-                    catch (IOException ioe2) {
-                        this.logger.error("Failed to close connection due to channel create failure!", ioe2);
-                    }
-                }
-                throw new APSMessageException(ioe.getMessage(), ioe);
-            }
-
-            this.logger.info("Connected to RabbitMQ server at " +
-                    BunnyConnectionConfig.managed.get().rabbitMQHost.toString() + ":" +
-                    BunnyConnectionConfig.managed.get().rabbitMQPort.toString() + "!");
-
-            this.connected = true;
-        }
-    }
 
     /**
      * Checks if the named queue exists.
@@ -187,7 +220,6 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
      */
     @Override
     public boolean queueExists(String name) {
-        connect();
         try {
             this.channel.queueDeclarePassive(name);
             return true;
@@ -210,7 +242,6 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
      */
     @Override
     public Queue defineQueue(String name) throws APSMessageException {
-        connect();
         try {
             this.channel.queueDeclare(name, false, false, false, null);
         }
@@ -235,7 +266,6 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
      */
     @Override
     public Queue defineDurableQueue(String name) throws APSMessageException, UnsupportedOperationException {
-        connect();
         try {
             this.channel.queueDeclare(name, true, false, false, null);
         }
@@ -260,7 +290,6 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
      */
     @Override
     public Queue defineTemporaryQueue(String name) throws APSMessageException, UnsupportedOperationException {
-        connect();
         try {
             this.channel.queueDeclare(name, false, false, true, null);
         }
