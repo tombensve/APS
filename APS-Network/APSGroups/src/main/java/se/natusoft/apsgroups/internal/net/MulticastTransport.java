@@ -5,7 +5,7 @@
  *         APS Groups
  *     
  *     Code Version
- *         0.9.2
+ *         0.9.1
  *     
  *     Description
  *         Provides network groups where named groups can be joined as members and then send and
@@ -81,7 +81,7 @@ public class MulticastTransport implements Transport {
     private APSGroupsLogger logger;
 
     /** Our config. */
-    private APSGroupsConfig.TransportConfig config = null;
+    private APSGroupsConfig config = null;
 
     //
     // Constructors
@@ -93,7 +93,7 @@ public class MulticastTransport implements Transport {
      * @param logger The logger to log to.
      * @param config The config to use.
      */
-    public MulticastTransport(APSGroupsLogger logger, APSGroupsConfig.TransportConfig config) {
+    public MulticastTransport(APSGroupsLogger logger, APSGroupsConfig config) {
         this.logger = logger;
         this.config = config;
     }
@@ -110,16 +110,15 @@ public class MulticastTransport implements Transport {
      * @throws java.io.IOException
      */
     public void open() throws IOException {
-        this.logger.info("Opening MulticastTransport on address " + this.config.getHost() +
-                " and port " + this.config.getPort() + "!");
-        String multicastAddress = this.config.getHost();
-        this.port = this.config.getPort();
+        String multicastAddress = this.config.getMulticastAddress();
+        this.port = this.config.getMulticastPort();
         this.group = InetAddress.getByName(multicastAddress);
         this.msocket = new MulticastSocket(this.port);
         this.msocket.setLoopbackMode(false);
         this.msocket.setSoTimeout(5000);
         this.msocket.setReuseAddress(true);
         this.msocket.setBroadcast(false);
+        this.msocket.setSoTimeout(1000);
         this.msocket.joinGroup(this.group);
         this.logger.info("Listening for multicast messages on " + multicastAddress + ", targetPort " + this.port);
     }
@@ -130,8 +129,6 @@ public class MulticastTransport implements Transport {
      * @throws IOException
      */
     public void close() throws IOException {
-        this.logger.info("Closing MulticastTransport on address " + this.config.getHost() +
-                " and port " + this.config.getPort() + "!");
         this.msocket.leaveGroup(this.group);
         this.msocket.close();
     }

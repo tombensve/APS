@@ -5,7 +5,7 @@
  *         APS Groups
  *     
  *     Code Version
- *         0.9.2
+ *         0.9.1
  *     
  *     Description
  *         Provides network groups where named groups can be joined as members and then send and
@@ -57,7 +57,6 @@ import se.natusoft.apsgroups.Debug;
 import se.natusoft.apsgroups.internal.protocol.NetTime.Time;
 
 import java.util.Date;
-import java.util.Properties;
 import java.util.UUID;
 /**
  * Represents a member of a group. This is the internal member representation. The end user member is GroupMember.
@@ -82,9 +81,6 @@ public class Member {
     /** A timestamp of when this member was last announced. */
     private long lastAnnounced = -1;
 
-    /** Users of APSGroups can provide specific member data here. */
-    private Properties memberUserData = null;
-
     //
     // Constructors
     //
@@ -93,18 +89,8 @@ public class Member {
      * Creates a new Member.
      */
     public Member() {
-        this(new Properties());
-    }
-
-    /**
-     * Creates a new Member.
-     *
-     * @param memberUserData The user data properties of the member.
-     */
-    public Member(Properties memberUserData) {
         this.id = UUID.randomUUID();
         this.localMember = true;
-        this.memberUserData = memberUserData;
         updateLastHeardFrom();
     }
 
@@ -112,23 +98,14 @@ public class Member {
      * Creates a new remote Member.
      *
      * @param id The id of the member.
-     * @param memberUserData The user data properties of the member.
      */
-    public Member(UUID id, Properties memberUserData) {
+    public Member(UUID id) {
         this.id = id;
-        this.memberUserData = memberUserData;
     }
 
     //
     // Methods
     //
-
-    /**
-     * Returns the member user data.
-     */
-    public Properties getMemberUserData() {
-        return this.memberUserData;
-    }
 
     /**
      * Sets the group this member is part of.

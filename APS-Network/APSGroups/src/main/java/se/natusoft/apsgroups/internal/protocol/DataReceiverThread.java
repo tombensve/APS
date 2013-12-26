@@ -5,7 +5,7 @@
  *         APS Groups
  *     
  *     Code Version
- *         0.9.2
+ *         0.9.1
  *     
  *     Description
  *         Provides network groups where named groups can be joined as members and then send and
@@ -141,15 +141,6 @@ public class DataReceiverThread extends Thread implements DataReceiver {
     }
 
     /**
-     * Returns the listeners.
-     */
-    private synchronized List<MessagePacketListener> getListeners() {
-        List<MessagePacketListener> listenersCopy = new LinkedList<>();
-        listenersCopy.addAll(this.listeners);
-        return listenersCopy;
-    }
-
-    /**
      * Starts the thread.
      */
     @Override
@@ -193,7 +184,7 @@ public class DataReceiverThread extends Thread implements DataReceiver {
                     Debug.println("    length:       " + messagePacket.getData().length);
                 }
 
-                for (MessagePacketListener listener : getListeners()) {
+                for (MessagePacketListener listener : this.listeners) {
                     if (messagePacket.getType() != PacketType.MEMBER_ANNOUNCEMENT) {
                         Debug.println("Delivering packet to listener: " + listener);
                     }

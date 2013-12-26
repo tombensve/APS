@@ -5,7 +5,7 @@
  *         APS Groups
  *     
  *     Code Version
- *         0.9.2
+ *         0.9.1
  *     
  *     Description
  *         Provides network groups where named groups can be joined as members and then send and
@@ -79,7 +79,7 @@ public interface Transport {
 
 
     /**
-     * Sets up the transport.
+     * Sets up the multicast socket.
      *
      * @throws java.net.UnknownHostException
      * @throws java.net.SocketException

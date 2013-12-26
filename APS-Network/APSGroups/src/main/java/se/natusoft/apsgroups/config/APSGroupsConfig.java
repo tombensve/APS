@@ -5,7 +5,7 @@
  *         APS Groups
  *     
  *     Code Version
- *         0.9.2
+ *         0.9.1
  *     
  *     Description
  *         Provides network groups where named groups can be joined as members and then send and
@@ -53,59 +53,35 @@
  */
 package se.natusoft.apsgroups.config;
 
-import java.util.List;
-
 /**
- * This represents the configuration values needed by netgroups.
+ * This respresents the configuration values needed by netgroups.
  */
 public interface APSGroupsConfig {
 
     /**
+     * The multicast address to use.
+     */
+    public String getMulticastAddress();
+
+    /**
+     * The multicast target port to use.
+     */
+    public int getMulticastPort();
+
+    /**
      * The number of seconds to allow for a send of a message before timeout.
      */
-    int getSendTimeout();
+    public int getSendTimeout();
 
     /**
      * The number of seconds to wait before a packet is resent if not acknowledged.
      */
-    int getResendInterval();
+    public int getResendInterval();
 
     /**
      * The interval in seconds that members announce that they are (sill) members. If a member has
      * not announced itself again within this time other members of the group will drop the member.
      */
-    int getMemberAnnounceInterval();
-
-    /**
-     * Returns the configured transports.
-     */
-    List<TransportConfig> getTransports();
-
-    /**
-     * Defines configuration for a specific transport.
-     */
-    interface TransportConfig {
-
-        enum TransportType {
-            MULTICAST,
-            TCP_SENDER,
-            TCP_RECEIVER
-        }
-
-        /**
-         * Returns the type of the transport.
-         */
-        TransportType getTransportType();
-
-        /**
-         * Returns the host of the transport. IP address or hostname. This is only required for TCP_SENDER.
-         */
-        String getHost();
-
-        /**
-         * Returns the port to talk on.
-         */
-        int getPort();
-    }
+    public int getMemberAnnounceInterval();
 
 }

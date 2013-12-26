@@ -5,7 +5,7 @@
  *         APS Groups
  *     
  *     Code Version
- *         0.9.2
+ *         0.9.1
  *     
  *     Description
  *         Provides network groups where named groups can be joined as members and then send and
@@ -53,7 +53,7 @@
  */
 package se.natusoft.apsgroups.internal.protocol;
 
-import se.natusoft.apsgroups.internal.net.Transports;
+import se.natusoft.apsgroups.internal.net.Transport;
 import se.natusoft.apsgroups.internal.protocol.message.*;
 import se.natusoft.apsgroups.logging.APSGroupsLogger;
 
@@ -72,7 +72,7 @@ public class MessageReceiver implements MessagePacketListener {
     private Map<UUID, Message> messages = new HashMap<>();
 
     /** The transport to use for sending acknowledgements. */
-    private Transports transports = null;
+    private Transport transport = null;
 
     /** The member this receiver belongs to. */
     private Member member = null;
@@ -90,12 +90,12 @@ public class MessageReceiver implements MessagePacketListener {
     /**
      * Creates a new MessageReceiver.
      *
-     * @param transports The transports to use.
+     * @param transport The transport to use.
      * @param member The member this receiver belongs to.
      * @param logger The logger to log to.
      */
-    public MessageReceiver(Transports transports, Member member, APSGroupsLogger logger) {
-        this.transports = transports;
+    public MessageReceiver(Transport transport, Member member, APSGroupsLogger logger) {
+        this.transport = transport;
         this.member = member;
         this.logger = logger;
     }
@@ -108,8 +108,8 @@ public class MessageReceiver implements MessagePacketListener {
      * This to avoid having to save the transport outside of this class just to be able to
      * close it again.
      */
-    public Transports getTransports() {
-        return this.transports;
+    public Transport getTransport() {
+        return this.transport;
     }
 
     /**
@@ -146,7 +146,7 @@ public class MessageReceiver implements MessagePacketListener {
             PacketType.ACKNOWLEDGEMENT
         );
         ackPacket.getOutputStream().close();
-        this.transports.send(ackPacket.getPacketBytes());
+        this.transport.send(ackPacket.getPacketBytes());
     }
 
     /**

@@ -5,7 +5,7 @@
  *         APS Groups
  *     
  *     Code Version
- *         0.9.2
+ *         0.9.1
  *     
  *     Description
  *         Provides network groups where named groups can be joined as members and then send and
@@ -55,14 +55,13 @@ package se.natusoft.apsgroups.internal.protocol;
 
 import se.natusoft.apsgroups.Debug;
 import se.natusoft.apsgroups.config.APSGroupsConfig;
-import se.natusoft.apsgroups.internal.net.Transports;
+import se.natusoft.apsgroups.internal.net.Transport;
 import se.natusoft.apsgroups.internal.protocol.message.MessagePacket;
 import se.natusoft.apsgroups.internal.protocol.message.MessagePacketListener;
 import se.natusoft.apsgroups.internal.protocol.message.PacketType;
 import se.natusoft.apsgroups.logging.APSGroupsLogger;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -80,8 +79,8 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
     /** The member to announce. */
     private List<Member> members = new LinkedList<>();
 
-    /** The transports to use to announce members on. */
-    private Transports transports = null;
+    /** The transport to use to listen to incoming data. */
+    private Transport transport = null;
 
     /** The logger to log to. */
     private APSGroupsLogger logger = null;
@@ -100,12 +99,12 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
      * Creates a new DataReceiverThread.
      *
      * @param logger The logger for the thread to log on.
-     * @param transports The transport to use for announcing members.
+     * @param transport The transport to use for reading data messages.
      * @param config The config to use.
      */
-    public MemberManagerThread(APSGroupsLogger logger, Transports transports, APSGroupsConfig config) {
+    public MemberManagerThread(APSGroupsLogger logger, Transport transport, APSGroupsConfig config) {
         this.logger = logger;
-        this.transports = transports;
+        this.transport = transport;
         this.config = config;
     }
 
@@ -117,8 +116,8 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
      * This to avoid having to save the transport outside of this class just to be able to
      * close it again.
      */
-    public Transports getTransport() {
-        return this.transports;
+    public Transport getTransport() {
+        return this.transport;
     }
 
     /**
@@ -144,7 +143,6 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
      */
     public synchronized void addMember(Member member) {
         this.members.add(member);
-        this.logger.debug("Added member '" + member.getId() + "' to MemberManager:" + hashCode());
     }
 
     /**
@@ -154,16 +152,6 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
      */
     public synchronized void removeMember(Member member) {
         this.members.remove(member);
-        this.logger.debug("Removed member '" + member.getId() + "' from MemberManager:" + hashCode());
-    }
-
-    /**
-     * Returns a concurrent safe member list.
-     */
-    private synchronized List<Member> getMembers() {
-        List<Member> membersCopy = new LinkedList<>();
-        membersCopy.addAll(this.members);
-        return membersCopy;
     }
 
     /**
@@ -182,10 +170,7 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
      */
     private void announceMember(Member member) throws IOException {
         MessagePacket mp = new MessagePacket(member.getGroup(), member, UUID.randomUUID(),0 , PacketType.MEMBER_ANNOUNCEMENT);
-        ObjectOutputStream oos = new ObjectOutputStream(mp.getOutputStream());
-        oos.writeObject(member.getMemberUserData());
-        oos.close();
-        this.transports.send(mp.getPacketBytes());
+        this.transport.send(mp.getPacketBytes());
         member.announced();
     }
 
@@ -196,7 +181,7 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
     public void run() {
         while (isRunning()) {
             try {
-                for (Member member : getMembers()) {
+                for (Member member : members) {
                     if (member.lastAnnounced() < 0) {
                         announceMember(member);
                     }
@@ -239,19 +224,12 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
     @Override
     public void messagePacketReceived(MessagePacket messagePacket) {
         if (messagePacket.getType() == PacketType.MEMBER_LEAVING) {
-            for (Member member : getMembers()) {
+            for (Member member : this.members) {
                 if (member.getGroup().equals(messagePacket.getGroup())) {
                     Group group = member.getGroup();
                     group.removeMember(messagePacket.getMember());
                 }
             }
-        }
-        else if (messagePacket.getType() == PacketType.MEMBER_ANNOUNCEMENT) {
-            Group group = messagePacket.getGroup();
-            if (!group.hasMember(messagePacket.getMember())) {
-                group.addMember(messagePacket.getMember());
-            }
-            messagePacket.getMember().updateLastHeardFrom();
         }
     }
 }
