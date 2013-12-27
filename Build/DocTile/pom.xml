@@ -57,6 +57,8 @@
         <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
 
     in the pom.
+
+    Also note that the profile "gen-docs" must be active to generate any docs.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -87,7 +89,6 @@
                 <version>2.3</version>
             </extension>
         </extensions>
-
         <plugins>
             <!--
                 Generate Documentation
@@ -174,4 +175,5 @@
 
         </plugins>
     </build>
+
 </project>
