@@ -312,14 +312,23 @@ APSSyncService.SyncGroup.ReSyncListener {
      */
     @Override
     public void updated(APSConfigEnvStore configEnvStore) {
+       syncSend(configEnvStore);
+    }
+
+    /**
+     * Send sync config update.
+     *
+     * @param configEnvStore The config env store holding the updated value(s).
+     */
+    public void syncSend(APSConfigEnvStore configEnvStore) {
         try {
             APSSyncService.SyncGroup.Message message = this.syncGroup.createMessage();
             ObjectOutputStream msgStream = new ObjectOutputStream(message.getOutputStream());
             msgStream.writeObject(MessageType.CONFIG_ENV);
             msgStream.writeObject(convertPropTime(configEnvStore.getAsProperties(), Config_Env_Matcher, Local_2_Net_Time_Converter));
             msgStream.close();
-            MessageSendThread mst = new MessageSendThread(this.syncGroup, message, this.logger, "Send of config env message failed: ");
-            mst.start();
+            this.syncGroup.sendMessage(message);
+            this.logger.debug(("### Send updated configEnvStore!"));
         }
         catch (IOException ioe) {
             this.logger.error("Send of config env message failed: " + ioe.getMessage(), ioe);
@@ -333,6 +342,19 @@ APSSyncService.SyncGroup.ReSyncListener {
      */
     @Override
     public void updated(APSConfigAdmin configuration) {
+        if (configuration.getConfigId().equals(APSConfigServiceConfig.CONFIG_ID)) {
+            stop();
+            start();
+        }
+        syncSend(configuration);
+    }
+
+    /**
+     * Sends a sync config update.
+     *
+     * @param configuration The updated configuration.
+     */
+    private void syncSend(APSConfigAdmin configuration) {
         try {
             APSSyncService.SyncGroup.Message message = this.syncGroup.createMessage();
             ObjectOutputStream msgStream = new ObjectOutputStream(message.getOutputStream());
@@ -347,8 +369,7 @@ APSSyncService.SyncGroup.ReSyncListener {
                 )
             );
             msgStream.close();
-            MessageSendThread mst = new MessageSendThread(this.syncGroup, message, this.logger, "Send of config value message failed: ");
-            mst.start();
+            this.syncGroup.sendMessage(message);
         }
         catch (IOException ioe) {
             this.logger.error("Send of config value message failed: " + ioe.getMessage(), ioe);
@@ -362,9 +383,9 @@ APSSyncService.SyncGroup.ReSyncListener {
      */
     @Override
     public void reSyncAll(APSSyncService.SyncGroup group) {
-        updated(this.configEnvStore);
+        syncSend(this.configEnvStore);
         for (APSConfigAdmin configAdmin : this.configAdminService.getAllConfigurations()) {
-            updated(configAdmin);
+            syncSend(configAdmin);
         }
     }
 
@@ -415,7 +436,9 @@ APSSyncService.SyncGroup.ReSyncListener {
 
     /**
      * Handles a received config timestamp and triggers a re-sync if being behind.
-     * @param msgStream
+     *
+     * @param msgStream The message stream to read timestamp from.
+     *
      * @throws IOException
      * @throws ClassNotFoundException
      */
@@ -660,40 +683,6 @@ APSSyncService.SyncGroup.ReSyncListener {
     }
 
     /**
-     * Sends messages off in the background.
-     */
-    private class MessageSendThread extends Thread {
-        //
-        // Private Members
-        //
-
-        private APSSyncService.SyncGroup groupMember = null;
-        private APSSyncService.SyncGroup.Message message = null;
-        private APSLogger logger = null;
-        private String errorText = null;
-
-        //
-        // Constructors
-        //
-
-        public MessageSendThread(APSSyncService.SyncGroup groupMember, APSSyncService.SyncGroup.Message message, APSLogger logger, String errorText) {
-            this.groupMember = groupMember;
-            this.message = message;
-            this.logger = logger;
-            this.errorText = errorText;
-        }
-
-        public void run() {
-            try {
-                this.groupMember.sendMessage(this.message);
-            }
-            catch (Exception e ) {
-                this.logger.error(this.errorText + e.getMessage(), e);
-            }
-        }
-    }
-
-    /**
      * Sends messages with freshest config timestamp. This so that nodes can realize if they are behind.
      */
     private class ConfigTimestampSendingThread extends Thread {
@@ -737,32 +726,3 @@ APSSyncService.SyncGroup.ReSyncListener {
         }
     }
 }
-//++count;
-//
-//if (count >= 20 && !isDone()) {
-//        count = 0;
-//long localNewestTimestamp = resolveNewestConfigTimestamp();
-//long newestTimestamp = 0;
-//
-//for (Properties memberProps : Synchronizer.this.syncGroup.getMembersUserProperties()) {
-//        String val = memberProps.getProperty(NEWEST_CONFIG_TIMESTAMP);
-//if (val != null) {
-//        try {
-//        long ts = Long.valueOf(val);
-//if (ts > newestTimestamp) {
-//        newestTimestamp = ts;
-//}
-//        }
-//        catch (NumberFormatException nfe) {}
-//        }
-//        }
-//
-//        if (newestTimestamp > localNewestTimestamp) {
-//        // This to avoid this always happening due to time difference. Since the timestamp is
-//        // calculated before we join our group and this value is passed on join we cannot use
-//        // net time to remove time differences!
-//        Synchronizer.this.newestConfigTimestamp = newestTimestamp;
-//Synchronizer.this.logger.info("Found fresher config at other members!");
-//sendFeedMe();
-//}
-//        }
