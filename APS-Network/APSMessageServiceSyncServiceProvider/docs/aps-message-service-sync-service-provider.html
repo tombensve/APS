@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="generated-by" content="MarkdownDoc"/>
+    <link href="docs.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body>
+    <H1>APS Message Service Sync Service Provider</H1>
+    <p>
+      As this long name suggests this service provides an implementation of APSSyncService using APSMessageService to do the synchronization.      
+    </p>
+    <H2>APSSyncService API</H2>
+    <p>
+      public <em>interface</em> <strong>APSSyncService </strong>   [se.natusoft.osgi.aps.api.net.sync.service] {      
+    </p>
+    <p>
+      Defines a data synchronization service.      
+    </p>
+    <p>
+      <strong>Please note</strong> that this API is very similar to the APSMessageService! There are differences in implementations between synchronization and sync, reusing the same API would be confusing and also require services to register extra properties to identify type of service provided.      
+    </p>
+    <p>
+      <strong>SyncGroup joinSyncGroup(String name)</strong>      
+    </p>
+    <p>
+      Joins a synchronization group.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        joined group.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the group to join.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>String getName()</strong>      
+    </p>
+    <p>
+      Returns the name of the group.      
+    </p>
+    <p>
+      <strong>Message createMessage()</strong>      
+    </p>
+    <p>
+      Creates a new message.      
+    </p>
+    <p>
+      <strong>Message createMessage(byte[] content)</strong>      
+    </p>
+    <p>
+      Creates a new message.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>content</em> - The content of the message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void sendMessage(Message message) throws APSSyncException</strong>      
+    </p>
+    <p>
+      Sends a message.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The message to send.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>se.natusoft.osgi.aps.api.net.sync.service.APSSyncService.APSSyncException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>void addMessageListener(Message.Listener listener)</strong>      
+    </p>
+    <p>
+      Adds a listener to received messages.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>listener</em> - The listener to add.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void removeMessageListener(Message.Listener listener)</strong>      
+    </p>
+    <p>
+      Removes a listener from receiving messages.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>listener</em> - The listener to remove.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void addReSyncListener(ReSyncListener reSyncListener)</strong>      
+    </p>
+    <p>
+      Adds a resynchronization listener.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>reSyncListener</em> - The listener to add.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void removeReSyncListener(ReSyncListener reSyncListener)</strong>      
+    </p>
+    <p>
+      Removes a Resynchronization listener.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>reSyncListener</em> - The listener to remove.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void reSyncAll()</strong>      
+    </p>
+    <p>
+      Triggers a re-synchronization between all data and all members.      
+    </p>
+    <p>
+      <strong>void leaveSyncGroup()</strong>      
+    </p>
+    <p>
+      Leaves the synchronization group.      
+    </p>
+    <p>
+      public <em>interface</em> <strong>ReSyncListener </strong>   [se.natusoft.osgi.aps.api.net.sync.service] {      
+    </p>
+    <p>
+      This is called when a total re-synchronization is requested.      
+    </p>
+    <p>
+      <strong>void reSyncAll(SyncGroup group)</strong>      
+    </p>
+    <p>
+      Request that all data be sent again.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>group</em> - The group making the request.         
+      </p>
+    </blockquote>
+    <p>
+      public <em>interface</em> <strong>Message </strong>   [se.natusoft.osgi.aps.api.net.sync.service] {      
+    </p>
+    <p>
+      This represents a message to send/receive.      
+    </p>
+    <p>
+      <strong>SyncGroup getSyncGroup()</strong>      
+    </p>
+    <p>
+      Returns the sync group the message belongs to.      
+    </p>
+    <p>
+      <strong>void setBytes(byte[] content)</strong>      
+    </p>
+    <p>
+      Sets the message content bytes overwriting any previous content.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>content</em> - The content to set.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>byte[] getBytes()</strong>      
+    </p>
+    <p>
+      Returns the message content bytes.      
+    </p>
+    <p>
+      <strong>OutputStream getOutputStream()</strong>      
+    </p>
+    <p>
+      Returns an OutputStream for writing message content. This will replace any previous content.      
+    </p>
+    <p>
+      <strong>InputStream getInputStream()</strong>      
+    </p>
+    <p>
+      Returns an InputStream for reading the message content.      
+    </p>
+    <p>
+      public <em>interface</em> <strong>Listener </strong>   [se.natusoft.osgi.aps.api.net.sync.service] {      
+    </p>
+    <p>
+      This needs to be implemented to receive messages.      
+    </p>
+    <p>
+      <strong>void receiveMessage(Message message)</strong>      
+    </p>
+    <p>
+      Called when a message is received.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The received message.         
+      </p>
+    </blockquote>
+    <p>
+      public <em>class</em> <strong>Provider </strong> implements  Message    [se.natusoft.osgi.aps.api.net.sync.service] {      
+    </p>
+    <p>
+      A simple default implementation of message.      
+    </p>
+    <p>
+      <strong>public Provider(SyncGroup group)</strong>      
+    </p>
+    <p>
+      Creates a new Provider.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>group</em> - The group the message belongs to.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      public <em>static</em> <em>class</em> <strong>APSSyncException </strong> extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.sync.service] {      
+    </p>
+    <p>
+      Thrown on sendMessage(). Please note that this is a runtime exception!      
+    </p>
+    <p>
+      <strong>public APSSyncException(String message)</strong>      
+    </p>
+    <p>
+      Creates a new <em>APSSyncException</em>.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The exception message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public APSSyncException(String message, Throwable cause)</strong>      
+    </p>
+    <p>
+      Creates a new <em>APSSyncException</em>.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The exception message.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>cause</em> - The cause of this exception.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+  </body>
+</html>
