@@ -95,7 +95,7 @@
             <plugin>
                 <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
                 <artifactId>markdowndoc-maven-plugin</artifactId>
-                <version>1.2.6</version>
+                <version>1.2.9</version>
 
                 <executions>
                     <execution>
@@ -103,7 +103,7 @@
                         <goals>
                             <goal>doc</goal>
                         </goals>
-                        <phase>deploy</phase>
+                        <phase>install</phase>
                         <configuration>
 
                             <generatorOptions>
@@ -131,7 +131,7 @@
                         <goals>
                             <goal>doc</goal>
                         </goals>
-                        <phase>deploy</phase>
+                        <phase>install</phase>
                         <configuration>
 
                             <generatorOptions>
@@ -153,7 +153,7 @@
                         <goals>
                             <goal>doc</goal>
                         </goals>
-                        <phase>deploy</phase>
+                        <phase>install</phase>
                         <configuration>
 
                             <generatorOptions>
