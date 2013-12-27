@@ -160,7 +160,6 @@
              Trigger tiles.
          -->
         <tile.deploy>${project.groupId}:DeployWABBundleTile:${project.version}</tile.deploy>
-        <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
     </properties>
 
     <dependencies>
