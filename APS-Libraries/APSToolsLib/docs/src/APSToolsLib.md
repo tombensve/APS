@@ -90,7 +90,7 @@ This will result in a callback when any instance of the service goes away. If th
             }
         });
 
-Note that since the service is already gone by this time you don’t get the service instance, only its reference and the class representing its API. In most cases both of these parameters are irellevant. 
+Note that since the service is already gone by this time you don't get the service instance, only its reference and the class representing its API. In most cases both of these parameters are irellevant. 
 
 #### onActiveServiceAvailable
 
@@ -113,7 +113,7 @@ Don't use this in an activator start() method! onActiveServiceAvailable() and on
             }
         }, arg1, arg2);
 
-If you don’t have any arguments this will also work:
+If you don't have any arguments this will also work:
 
         tracker.withService(new WithService<Service>() {
             @Override
@@ -226,9 +226,9 @@ If _required=true_ is specified and this field is in a class annotated with _@OS
 
     }
 
-**@Inject** - This will have an instance injected. There will be a unique instance for each name specified with the default name of "default" being used in none is specified. There are 2 field types handled specially: BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger instance the 'loggingFor' annotation property can be specified. Please note that any other type must have a default constructor to be instantiated and injected!
+**@Managed** - This will have an instance managed and injected. There will be a unique instance for each name specified with the default name of "default" being used if none is specified. There are 2 field types handled specially: BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger instance the 'loggingFor' annotation property can be specified. Please note that any other type must have a default constructor to be instantiated and injected!
 
-    public @interface Inject {
+    public @interface Managed {
         /**
          * The name of the instance to inject. If the same is used in multiple classes the same instance will
          * be injected.
