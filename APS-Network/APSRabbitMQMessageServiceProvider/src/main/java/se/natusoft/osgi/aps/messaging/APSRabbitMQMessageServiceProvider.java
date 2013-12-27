@@ -49,6 +49,10 @@ import java.util.*;
 
 /**
  * This provides an implementation of APSMessageService using RabbitMQ.
+ *
+ * **WARNING:** For some reason when many consecutive messages are send in a burst
+ *              the data seem to get garbled at the receiving end. Sending sporadic
+ *              messages seems to work fine. I still fail to see why.
  */
 @OSGiServiceProvider(properties = {
         @OSGiProperty(name = "underlying-provider", value = "RabbitMQ"),
@@ -66,11 +70,14 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
     /** Flag to see if the connection to the RabbitMQ service have been done. */
     private boolean connected = false;
 
+    /** A connection factory for connecting to RabbitMQ. */
+    private ConnectionFactory connectionFactory = null;
+
     /** The RabbitMQ service connection. */
     private Connection connection = null;
 
-    /** A RabbitMQ channel. */
-    private Channel channel = null;
+    /** The channel to communicate on. Always use getGeneralChannel() to get this! */
+    private Channel generalChannel = null;
 
     /** The listener threads. */
     private Map<String, QueueProvider.ReceiverThread> listenerThreads = new HashMap<>();
@@ -78,6 +85,9 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
     private APSConfigChangedListener configChangedListener;
 
     private Runnable queueUpdater;
+
+    /** Created and cached queue providers. */
+    private Map<String, QueueProvider> queueProviders = new HashMap<>();
 
     //
     // Constructors
@@ -94,49 +104,7 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
         // above. The instance of this class will be created in a separate thread from the OSGi server startup
         // thread that calls the activator.
 
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost(RabbitMQConnectionConfig.managed.get().host.toString());
-        connectionFactory.setPort(RabbitMQConnectionConfig.managed.get().port.toInt());
-
-        String userName = RabbitMQConnectionConfig.managed.get().user.toString().trim();
-        if (userName.length() > 0) {
-            connectionFactory.setUsername(userName);
-        }
-
-        String password = RabbitMQConnectionConfig.managed.get().password.toString().trim();
-        if (password.length() > 0) {
-            connectionFactory.setPassword(password);
-        }
-
-        String virtualHost = RabbitMQConnectionConfig.managed.get().virtualHost.toString().trim();
-        if (virtualHost.length() > 0) {
-            connectionFactory.setVirtualHost(virtualHost);
-        }
-
-        String timeout = RabbitMQConnectionConfig.managed.get().timeout.toString().trim();
-        if (timeout.length() > 0) {
-            connectionFactory.setConnectionTimeout(Integer.valueOf(timeout));
-        }
-
-        try {
-            this.connection = connectionFactory.newConnection();
-            this.channel = connection.createChannel();
-        }
-        catch (IOException ioe) {
-            if (this.connection != null) {
-                try {
-                    this.connection.close();
-                }
-                catch (IOException ioe2) {
-                    this.logger.error("Failed to close connection due to channel create failure!", ioe2);
-                }
-            }
-            throw new APSMessageException(ioe.getMessage(), ioe);
-        }
-
-        this.logger.info("Connected to RabbitMQ server at " +
-                RabbitMQConnectionConfig.managed.get().host.toString() + ":" +
-                RabbitMQConnectionConfig.managed.get().port.toString() + "!");
+        ensureConnection();
 
         this.queueUpdater = new Runnable() {
             @Override
@@ -146,7 +114,7 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
                             RabbitMQConnectionConfig.managed.get().queues.get(i);
                     boolean durable = queue.durable.toBoolean();
                     try {
-                        channel.queueDeclare(queue.name.toString(), durable, false, false, null);
+                        getGeneralChannel().queueDeclare(queue.name.toString(), durable, false, false, null);
                         logger.info("Declaring RabbitMQ queue: " + queue.name.toString());
                     }
                     catch (IOException ioe) {
@@ -161,11 +129,16 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
         this.configChangedListener = new APSConfigChangedListener() {
             @Override
             public void apsConfigChanged(APSConfigChangedEvent event) {
+                synchronized (APSRabbitMQMessageServiceProvider.this) {
+                    ensureConnectionClosed();
+                    ensureConnection();
+                }
                 queueUpdater.run();
             }
         };
 
         RabbitMQConnectionConfig.managed.get().addConfigChangedListener(this.configChangedListener);
+
     }
 
     //
@@ -184,6 +157,88 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
             try {receiverThread.join(8000);} catch (InterruptedException ie) {};
         }
 
+        ensureConnectionClosed();
+    }
+
+    //
+    // Methods
+    //
+
+    /**
+     * Ensures that there is a connection setup.
+     */
+    private synchronized void ensureConnection() {
+        if (this.connectionFactory == null) {
+            this.connectionFactory = new ConnectionFactory();
+            connectionFactory.setHost(RabbitMQConnectionConfig.managed.get().host.toString());
+            connectionFactory.setPort(RabbitMQConnectionConfig.managed.get().port.toInt());
+
+            String userName = RabbitMQConnectionConfig.managed.get().user.toString().trim();
+            if (userName.length() > 0) {
+                connectionFactory.setUsername(userName);
+            }
+
+            String password = RabbitMQConnectionConfig.managed.get().password.toString().trim();
+            if (password.length() > 0) {
+                connectionFactory.setPassword(password);
+            }
+
+            String virtualHost = RabbitMQConnectionConfig.managed.get().virtualHost.toString().trim();
+            if (virtualHost.length() > 0) {
+                connectionFactory.setVirtualHost(virtualHost);
+            }
+
+            String timeout = RabbitMQConnectionConfig.managed.get().timeout.toString().trim();
+            if (timeout.length() > 0) {
+                connectionFactory.setConnectionTimeout(Integer.valueOf(timeout));
+            }
+        }
+
+        if (this.connection == null || !this.connection.isOpen()) {
+            try {
+                this.connection = connectionFactory.newConnection();
+            }
+            catch (IOException ioe) {
+                if (this.connection != null) {
+                    try {
+                        this.connection.close();
+                    }
+                    catch (IOException ioe2) {
+                        this.logger.error("Failed to close connection due to channel create failure!", ioe2);
+                    }
+                }
+                throw new APSMessageException(ioe.getMessage(), ioe);
+            }
+
+            this.logger.info("Connected to RabbitMQ server at " +
+                    RabbitMQConnectionConfig.managed.get().host.toString() + ":" +
+                    RabbitMQConnectionConfig.managed.get().port.toString() + "!");
+        }
+    }
+
+    /**
+     * Closes the connection if not closed already.
+     */
+    private synchronized void ensureConnectionClosed() {
+        if (this.generalChannel != null && this.generalChannel.isOpen()) {
+            try {
+                this.generalChannel.close();
+            }
+            catch (IOException ioe) {
+                this.logger.error("Failed to close RabbitMQ channel!", ioe);
+            }
+        }
+
+        for (String queueName : this.queueProviders.keySet()) {
+            QueueProvider qp = this.queueProviders.get(queueName);
+            try {
+                qp.close();
+            }
+            catch (IOException ioe) {
+                this.logger.error("Failed to close QueueProvider for '" + queueName + "'!" ,ioe);
+            }
+        }
+
         if (this.connection != null) {
             try {
                 this.connection.close();
@@ -191,26 +246,40 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
             catch (IOException ioe) {
                 this.logger.error("Failed to close RabbitMQ connection on shutdown!", ioe);
             }
-        }
 
-        if (this.channel != null) {
-            try {
-                this.channel.close();
-            }
-            catch (IOException ioe) {
-                this.logger.error("Failed to close RabbitMQ channel on shutdown!", ioe);
-            }
+            this.logger.info("Disconnected from RabbitMQ server at " +
+                    RabbitMQConnectionConfig.managed.get().host.toString() + ":" +
+                    RabbitMQConnectionConfig.managed.get().port.toString() + "!");
         }
-
-        this.logger.info("Disconnected from RabbitMQ server at " +
-                RabbitMQConnectionConfig.managed.get().host.toString() + ":" +
-                RabbitMQConnectionConfig.managed.get().port.toString() + "!");
 
     }
 
-    //
-    // Methods
-    //
+    /**
+     * Returns the current channel or creates a new if it does not exist or the existing one has been closed.
+     *
+     * @return A Channel.
+     */
+    private Channel getGeneralChannel() {
+        ensureConnection();
+        if (this.generalChannel == null || !this.generalChannel.isOpen()) {
+            try {
+                this.generalChannel = this.connection.createChannel();
+            }
+            catch (IOException ioe) {
+                throw new APSMessageException("Failed to create channel!", ioe);
+            }
+        }
+
+        return this.generalChannel;
+    }
+
+    /**
+     * @return The current connection.
+     */
+    private Connection getConnection() {
+        ensureConnection();
+        return this.connection;
+    }
 
     /**
      * Checks if the named queue exists.
@@ -221,7 +290,7 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
     @Override
     public boolean queueExists(String name) {
         try {
-            this.channel.queueDeclarePassive(name);
+            getGeneralChannel().queueDeclarePassive(name);
             return true;
         }
         catch (IOException ioe) {
@@ -243,13 +312,12 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
     @Override
     public Queue defineQueue(String name) throws APSMessageException {
         try {
-            this.channel.queueDeclare(name, false, false, false, null);
+            getGeneralChannel().queueDeclare(name, false, false, false, null);
+            return new QueueProvider(name);
         }
         catch (IOException ioe) {
             throw new APSMessageException(ioe.getMessage(), ioe);
         }
-
-        return new QueueProvider(name);
     }
 
     /**
@@ -267,13 +335,12 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
     @Override
     public Queue defineDurableQueue(String name) throws APSMessageException, UnsupportedOperationException {
         try {
-            this.channel.queueDeclare(name, true, false, false, null);
+            getGeneralChannel().queueDeclare(name, true, false, false, null);
+            return new QueueProvider(name);
         }
         catch (IOException ioe) {
             throw new APSMessageException(ioe.getMessage(), ioe);
         }
-
-        return new QueueProvider(name);
     }
 
     /**
@@ -291,13 +358,12 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
     @Override
     public Queue defineTemporaryQueue(String name) throws APSMessageException, UnsupportedOperationException {
         try {
-            this.channel.queueDeclare(name, false, false, true, null);
+            getGeneralChannel().queueDeclare(name, false, false, true, null);
+            return new QueueProvider(name);
         }
         catch (IOException ioe) {
             throw new APSMessageException(ioe.getMessage(), ioe);
         }
-
-        return new QueueProvider(name);
     }
 
     /**
@@ -307,7 +373,18 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
      */
     @Override
     public Queue getQueue(String name) {
-        return queueExists(name) ? new QueueProvider(name) : null;
+        QueueProvider queue = this.queueProviders.get(name);
+        if (queue == null && queueExists(name)) {
+            try {
+                queue = new QueueProvider(name);
+                this.queueProviders.put(name, queue);
+            }
+            catch (IOException ioe) {
+                throw new APSMessageException(ioe.getMessage(), ioe);
+            }
+        }
+
+        return queue;
     }
 
     /**
@@ -320,6 +397,11 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
 
         private String name;
 
+        private Channel sendChannel = null;
+
+        private Channel recvChannel = null;
+        private String recvQueueName = null;
+
         //
         // Constructors
         //
@@ -329,13 +411,40 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
          *
          * @param name The queue name represented by this instance.
          */
-        public QueueProvider(String name) {
+        public QueueProvider(String name) throws IOException {
             this.name = name;
         }
 
         //
         // Methods
         //
+
+        /**
+         * Returns the sender channel.
+         * @throws Exception
+         */
+        private Channel getSendChannel() throws IOException {
+            if (this.sendChannel == null || !this.sendChannel.isOpen()) {
+                this.sendChannel = getConnection().createChannel();
+                this.sendChannel.exchangeDeclare(this.name, "fanout");
+            }
+
+            return this.sendChannel;
+        }
+
+        /**
+         * Returns the receive channel.
+         * @throws Exception
+         */
+        private Channel getRecvChannel() throws IOException {
+            if (this.recvChannel == null || !this.recvChannel.isOpen()) {
+                this.recvChannel = getConnection().createChannel();
+                this.recvChannel.exchangeDeclare(this.name, "fanout");
+                this.recvQueueName = this.recvChannel.queueDeclare().getQueue();
+                this.recvChannel.queueBind(this.recvQueueName, this.name, "");
+            }
+            return this.recvChannel;
+        }
 
         /**
          * Returns the name of the queue.
@@ -375,7 +484,8 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
         @Override
         public void sendMessage(Message message) throws APSMessageException {
             try {
-                channel.basicPublish("", this.name, MessageProperties.PERSISTENT_BASIC, message.getBytes());
+                getSendChannel().basicPublish(this.name, "", null, message.getBytes());
+                logger.debug("Sent message of length " + message.getBytes().length);
             }
             catch (IOException ioe) {
                 throw new APSMessageException(ioe.getMessage(), ioe);
@@ -410,11 +520,10 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
             if (receiverThread != null) {
                 receiverThread.removeMessageListener(listener);
                 if (!receiverThread.haveListeners()) {
-                    logger.info("The receiver for queue '" + this.name + "' has no more listeners so it is being " +
-                        "shutdown until new listeners becomes available again.");
-                    listenerThreads.remove(receiverThread);
-                    receiverThread.stopThread();
-                    //try {receiverThread.join(8000);} catch (InterruptedException ie) {}
+                    logger.warn("The receiver for queue '" + this.name + "' has no more listeners!");
+                    // Not entirely sure this is a good idea ...
+                    //listenerThreads.remove(this.name);
+                    //receiverThread.stopThread();
                 }
             }
         }
@@ -429,7 +538,7 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
         @Override
         public void delete() throws APSMessageException, UnsupportedOperationException {
             try {
-                channel.queueDelete(this.name);
+                getGeneralChannel().queueDelete(this.name);
             }
             catch (IOException ioe) {
                 throw new APSMessageException(ioe.getMessage(), ioe);
@@ -446,10 +555,24 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
         @Override
         public void clear() throws APSMessageException, UnsupportedOperationException {
             try {
-                channel.queuePurge(this.name);
+                getGeneralChannel().queuePurge(this.name);
             }
             catch (IOException ioe) {
                 throw new APSMessageException(ioe.getMessage(), ioe);
+            }
+        }
+
+        /**
+         * Closes this queue provider.
+         *
+         * @throws IOException
+         */
+        public void close() throws IOException {
+            try {
+                if (this.sendChannel != null) this.sendChannel.close();
+            }
+            finally {
+                if (this.recvChannel != null) this.recvChannel.close();
             }
         }
 
@@ -529,23 +652,39 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
              * Thread entry and exit point.
              */
             public void run() {
+
+
                 try {
-                    QueueingConsumer consumer = new QueueingConsumer(channel);
-                    channel.basicConsume(name, false, consumer);
+                    QueueingConsumer consumer = new QueueingConsumer(getRecvChannel());
+                    getRecvChannel().basicConsume(QueueProvider.this.recvQueueName, true, consumer);
                     while (keepRunning()) {
                         try {
                             QueueingConsumer.Delivery delivery = consumer.nextDelivery(5000);
-                            Message message = createMessage(delivery.getBody());
-                            channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                            if (delivery != null) {
+                                byte[] body = delivery.getBody();
+                                //logger.debug("======== Received message of length " + body.length + " ==========");
+                                //logger.debug("  Current no listeners: " + this.listeners.size());
+                                Message message = createMessage(body);
+                                getGeneralChannel().basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 
-                            for (Message.Listener listener : this.listeners) {
-                                listener.receiveMessage(name, message);
+                                for (Message.Listener listener : this.listeners) {
+                                    listener.receiveMessage(name, message);
+                                }
+                            }
+                            else {
+                                //logger.debug("====== TIMEOUT ======");
                             }
 
                         }
-                        catch (InterruptedException ie) {
-                            // This is OK, we get here on timeout. In this case we want to check if we
-                            // should keep running and if so wait some more for a delivery.
+                        catch (ShutdownSignalException sse) {
+                            throw sse;
+                        }
+                        catch (ConsumerCancelledException cce) {
+                            throw cce;
+                        }
+                        // We dont want this thread to die on Exception!
+                        catch (Exception e) {
+                            logger.error("ReceiverThread got an Exception!", e);
                         }
                     }
                 }
