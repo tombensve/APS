@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="generated-by" content="MarkdownDoc"/>
+    <link href="docs.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body>
+    <H1>APS RabbitMQ Message Service Provider</H1>
+    <p>
+      This service provides an implementation of APSMessageService using <a href='http://www.rabbitmq.com/' title=''>RabbitMQ</a>.      
+    </p>
+    <H2>APSMessageService API</H2>
+    <p>
+      <a href='http://apidoc.natusoft.se/APS/se/natusoft/osgi/aps/api/net/messaging/service/APSMessageService.html' title=''>Javadoc</a>      
+    </p>
+    <p>
+      public <em>interface</em> <strong>APSMessageService </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
+    </p>
+    <p>
+      Defines a message service.      
+    </p>
+    <p>
+      <strong>boolean queueExists(String name)</strong>      
+    </p>
+    <p>
+      Checks if the named queue exists.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if queue exists, false otherwise.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the queue to check.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>Queue defineQueue(String name) throws APSMessageException</strong>      
+    </p>
+    <p>
+      Defines a queue that lives as long as the queue providing service lives.      
+    </p>
+    <p>
+      If the queue already exist nothing happens. If the queue is of another type an <em>APSMessageException</em> could possibly be throws depending on implementation and underlying service used.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the queue to define.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>APSMessageException</em> - (possibly) on trying to redefine type.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>Queue defineDurableQueue(String name) throws APSMessageException, UnsupportedOperationException</strong>      
+    </p>
+    <p>
+      Defines a queue that lives for a long time.      
+    </p>
+    <p>
+      If the queue already exist nothing happens. If the queue is of another type an <em>APSMessageException</em> could possibly be thrown depending on implementation and underlying service used.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the queue to define.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>APSMessageException</em> - (possibly) on trying to redefine type.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>UnsupportedOperationException</em> - If this type of queue is not supported by the implementation.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>Queue defineTemporaryQueue(String name) throws APSMessageException, UnsupportedOperationException</strong>      
+    </p>
+    <p>
+      Defines a queue that is temporary and gets deleted when no longer used.      
+    </p>
+    <p>
+      If the queue already exist nothing happens. If the queue is of another type an <em>APSMessageException</em> could possibly be thrown depending on implementation and underlying service used.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the queue to define.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>APSMessageException</em> - (possibly) on trying to redefine type.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>UnsupportedOperationException</em> - If this type of queue is not supported by the implementation.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>Queue getQueue(String name)</strong>      
+    </p>
+    <p>
+      Returns the named queue or null if no such queue exists.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the queue to get.         
+      </p>
+    </blockquote>
+    <p>
+      public <em>interface</em> <strong>Queue </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
+    </p>
+    <p>
+      This represents a specific named queue.      
+    </p>
+    <p>
+      <strong>String getName()</strong>      
+    </p>
+    <p>
+      Returns the name of the queue.      
+    </p>
+    <p>
+      <strong>Message createMessage()</strong>      
+    </p>
+    <p>
+      Creates a new message.      
+    </p>
+    <p>
+      <strong>Message createMessage(byte[] content)</strong>      
+    </p>
+    <p>
+      Creates a new message.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>content</em> - The content of the message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void sendMessage(Message message) throws APSMessageException</strong>      
+    </p>
+    <p>
+      Sends a message.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The message to send.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>APSMessageException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>void addMessageListener(Message.Listener listener)</strong>      
+    </p>
+    <p>
+      Adds a listener to received messages.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>listener</em> - The listener to add.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void removeMessageListener(Message.Listener listener)</strong>      
+    </p>
+    <p>
+      Removes a listener from receiving messages.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>listener</em> - The listener to remove.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void delete() throws APSMessageException, UnsupportedOperationException</strong>      
+    </p>
+    <p>
+      Deletes this queue.      
+    </p>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>APSMessageException</em> - on failure.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>UnsupportedOperationException</em> - if this is not allowed by the implementation.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void clear() throws APSMessageException, UnsupportedOperationException</strong>      
+    </p>
+    <p>
+      Clears all the messages from the queue.      
+    </p>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>APSMessageException</em> - on failure.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>UnsupportedOperationException</em> - If this is not allowed by the implementation.         
+      </p>
+    </blockquote>
+    <p>
+      public <em>interface</em> <strong>Message </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
+    </p>
+    <p>
+      This represents a message to send/receive.      
+    </p>
+    <p>
+      <strong>void setBytes(byte[] content)</strong>      
+    </p>
+    <p>
+      Sets the message content bytes overwriting any previous content.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>content</em> - The content to set.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>byte[] getBytes()</strong>      
+    </p>
+    <p>
+      Returns the message content bytes.      
+    </p>
+    <p>
+      <strong>OutputStream getOutputStream()</strong>      
+    </p>
+    <p>
+      Returns an OutputStream for writing message content. This will replace any previous content.      
+    </p>
+    <p>
+      <strong>InputStream getInputStream()</strong>      
+    </p>
+    <p>
+      Returns an InputStream for reading the message content.      
+    </p>
+    <p>
+      public <em>interface</em> <strong>Listener </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
+    </p>
+    <p>
+      This needs to be implemented to receive messages.      
+    </p>
+    <p>
+      <strong>void receiveMessage(String queueName, Message message)</strong>      
+    </p>
+    <p>
+      Called when a message is received.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>queueName</em> - The name of the queue that delivered the message.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>message</em> - The received message.         
+      </p>
+    </blockquote>
+    <p>
+      public <em>class</em> <strong>Provider </strong> implements  Message    [se.natusoft.osgi.aps.api.net.messaging.service] {      
+    </p>
+    <p>
+      A simple default implementation of message.      
+    </p>
+    <p>
+      <strong>public Provider()</strong>      
+    </p>
+    <p>
+      Creates a new Provider.      
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      public <em>static</em> <em>class</em> <strong>APSMessageException </strong> extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.messaging.service] {      
+    </p>
+    <p>
+      Thrown on sendMessage(). Please note that this is a runtime exception!      
+    </p>
+    <p>
+      <strong>public APSMessageException(String message)</strong>      
+    </p>
+    <p>
+      Creates a new <em>APSMessageException</em>.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The exception message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public APSMessageException(String message, Throwable cause)</strong>      
+    </p>
+    <p>
+      Creates a new <em>APSMessageException</em>.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The exception message.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>cause</em> - The cause of this exception.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+  </body>
+</html>
