@@ -351,6 +351,16 @@
     <profiles>
 
         <profile>
+            <id>generate-docs</id>
+            <properties>
+                <!--
+                    Trigger documentation generation tile.
+                -->
+                <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
+            </properties>
+        </profile>
+
+        <profile>
             <id>apply-license-info</id>
             <build>
                 <plugins>
