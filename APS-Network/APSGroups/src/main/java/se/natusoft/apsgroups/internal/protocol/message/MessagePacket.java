@@ -382,4 +382,9 @@ public class MessagePacket {
         return this.messageId.equals(mp.getMessageId()) && this.member.getId().equals(mp.getMember().getId()) &&
             this.group.getName().equals(mp.getGroup().getName());
     }
+
+    @Override
+    public String toString() {
+        return this.group.getName() + ":" + this.member.getId() + ":" + this.messageId + ":" + this.type + ":" + this.address;
+    }
 }

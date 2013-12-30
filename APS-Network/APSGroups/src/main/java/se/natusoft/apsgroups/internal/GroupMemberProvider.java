@@ -95,9 +95,6 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
     /** Receives messages for this member. */
     private MessageReceiver messageReceiver = null;
 
-    /** Needed to make messageReceiver received messages. */
-    private DataReceiver dataReceiver = null;
-
     //
     // Constructors
     //
@@ -106,12 +103,10 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
      * Creates a new GroupMember.
      *
      * @param member The internal member object.
-     * @param dataReceiver For adding and removing MessageReceivers to/from.
      * @param logger The logger to log to.
      */
-    public GroupMemberProvider(Member member, DataReceiver dataReceiver, APSGroupsLogger logger, APSGroupsConfig config) {
+    public GroupMemberProvider(Member member, APSGroupsLogger logger, APSGroupsConfig config) {
         this.member = member;
-        this.dataReceiver = dataReceiver;
         this.logger = logger;
         this.config = config;
         this.transport = new MulticastTransport(this.logger, this.config);
@@ -132,7 +127,7 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
         ackTransport.open();
         this.messageReceiver = new MessageReceiver(ackTransport, this.member, this.logger);
         this.messageReceiver.addMessageListener(this);
-        this.dataReceiver.addMessagePacketListener(this.messageReceiver);
+        DataReceiverThread.get().addMessagePacketListener(this.messageReceiver);
     }
 
     /**
@@ -147,7 +142,7 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
 
         this.transport.close();
         this.messageListeners.clear();
-        this.dataReceiver.removeMessagePacketListener(this.messageReceiver);
+        DataReceiverThread.get().removeMessagePacketListener(this.messageReceiver);
         this.messageReceiver.getTransport().close();
         this.messageReceiver.removeMessageListener(this);
         this.messageReceiver = null;
@@ -192,12 +187,12 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
     public void sendMessage(Message message) throws IOException {
         if (this.member.getGroup().getNumberOfMembers() > 0) {
             MessageSender sender = new MessageSender(message, transport, this.config);
-            this.dataReceiver.addMessagePacketListener(sender);
+            DataReceiverThread.get().addMessagePacketListener(sender);
             try {
                 sender.send();
             }
             finally {
-                this.dataReceiver.removeMessagePacketListener(sender);
+                DataReceiverThread.get().removeMessagePacketListener(sender);
             }
         }
 //        else {

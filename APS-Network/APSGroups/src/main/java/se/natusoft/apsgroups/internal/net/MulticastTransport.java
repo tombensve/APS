@@ -53,6 +53,7 @@
  */
 package se.natusoft.apsgroups.internal.net;
 
+import se.natusoft.apsgroups.Debug;
 import se.natusoft.apsgroups.config.APSGroupsConfig;
 import se.natusoft.apsgroups.logging.APSGroupsLogger;
 
@@ -110,17 +111,19 @@ public class MulticastTransport implements Transport {
      * @throws java.io.IOException
      */
     public void open() throws IOException {
-        String multicastAddress = this.config.getMulticastAddress();
-        this.port = this.config.getMulticastPort();
-        this.group = InetAddress.getByName(multicastAddress);
-        this.msocket = new MulticastSocket(this.port);
-        this.msocket.setLoopbackMode(false);
-        this.msocket.setSoTimeout(5000);
-        this.msocket.setReuseAddress(true);
-        this.msocket.setBroadcast(false);
-        this.msocket.setSoTimeout(1000);
-        this.msocket.joinGroup(this.group);
-        this.logger.info("Listening for multicast messages on " + multicastAddress + ", targetPort " + this.port);
+        if (this.msocket == null) {
+            String multicastAddress = this.config.getMulticastAddress();
+            this.port = this.config.getMulticastPort();
+            this.group = InetAddress.getByName(multicastAddress);
+            this.msocket = new MulticastSocket(this.port);
+            this.msocket.setLoopbackMode(false);
+            this.msocket.setSoTimeout(5000);
+            this.msocket.setReuseAddress(true);
+            this.msocket.setBroadcast(false);
+            this.msocket.setSoTimeout(1000);
+            this.msocket.joinGroup(this.group);
+            this.logger.info("Listening for multicast messages on " + multicastAddress + ", targetPort " + this.port);
+        }
     }
 
     /**
@@ -129,8 +132,11 @@ public class MulticastTransport implements Transport {
      * @throws IOException
      */
     public void close() throws IOException {
-        this.msocket.leaveGroup(this.group);
-        this.msocket.close();
+        if (this.msocket != null) {
+            this.msocket.leaveGroup(this.group);
+            this.msocket.close();
+            this.msocket = null;
+        }
     }
 
     /**
@@ -143,6 +149,11 @@ public class MulticastTransport implements Transport {
     private void sendPacket(DatagramPacket packet) throws IOException {
         try {
             this.msocket.send(packet);
+            Debug.print(
+                    "======================================\n" +
+                    "Sending packet of length: " + packet.getLength() + "\n" +
+                    "======================================"
+            );
         }
         catch (SocketException se) {
             Exception fail = null;
@@ -182,7 +193,17 @@ public class MulticastTransport implements Transport {
     public synchronized Packet receive() throws IOException {
         byte[] buffer = new byte[1500];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+        Debug.print(
+                "=======================================\n" +
+                "WAITING TO RECEIVE PACKET! \n" +
+                "=======================================\n"
+        );
         this.msocket.receive(packet);
+        Debug.print(
+                "=======================================\n" +
+                "Received packet of length: " + packet.getLength() + " from host " + packet.getAddress() + "\n" +
+                "=======================================\n"
+        );
         byte[] packetbuf = packet.getData();
         return new MCTPPacket(Arrays.copyOf(packetbuf, packet.getLength()), packet.getAddress());
     }

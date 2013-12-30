@@ -58,6 +58,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceRegistration;
 import se.natusoft.apsgroups.config.APSGroupsConfig;
+import se.natusoft.apsgroups.internal.protocol.DataReceiverThread;
+import se.natusoft.apsgroups.internal.protocol.MemberManagerThread;
 import se.natusoft.apsgroups.logging.APSGroupsLogger;
 import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsInfoService;
 import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
@@ -113,6 +115,10 @@ public class APSGroupsActivator implements BundleActivator {
 
         this.config = new APSGroupsConfigRelay();
 
+        DataReceiverThread.init( this.logger, this.config);
+
+        MemberManagerThread.init(this.logger, this.config);
+
         Dictionary serviceProps = new Properties();
         serviceProps.put(Constants.SERVICE_PID, APSGroupsServiceProvider.class.getName());
         this.apsGroupsServiceProvider =
@@ -161,6 +167,23 @@ public class APSGroupsActivator implements BundleActivator {
             ((APSGroupsLoggerRelay)this.logger).getLogger().stop(context);
             this.logger = null;
         }
+
+        try {
+            DataReceiverThread dataReceiverThread = (DataReceiverThread)DataReceiverThread.get();
+            if (dataReceiverThread != null) {
+                dataReceiverThread.terminate();
+                dataReceiverThread.join(3000);
+            }
+        }
+        finally {
+            MemberManagerThread memberManagerThread = MemberManagerThread.get();
+            if (memberManagerThread != null) {
+                memberManagerThread.terminate();
+
+                memberManagerThread.join(3000);
+            }
+        }
+
     }
 
 }

@@ -72,12 +72,6 @@ public class APSGroupsServiceProvider implements APSGroupsService {
     // Private Members
     //
 
-    /** Manages members. */
-    private MemberManagerThread memberManagerThread = null;
-
-    /** Handles receiving of all network packets. */
-    private DataReceiverThread dataReceiverThread = null;
-
     /** Manages net time with other groups on possible other hosts. */
     private NetTimeThread netTimeThread = null;
 
@@ -87,6 +81,8 @@ public class APSGroupsServiceProvider implements APSGroupsService {
     /** Will be set to true on first connect. */
     private boolean connected = false;
 
+    /** The transport to send with. */
+    private Transport sendTransport = null;
 
     /** For logging. */
     private APSGroupsLogger logger = null;
@@ -121,24 +117,19 @@ public class APSGroupsServiceProvider implements APSGroupsService {
      * @throws java.io.IOException on failure to connect.
      */
     private void connect() throws IOException {
-        Transport transport = new MulticastTransport(this.logger, this.config);
-        transport.open();
-        this.dataReceiverThread = new DataReceiverThread(this.logger, transport, this.config);
-        this.dataReceiverThread.start();
+        this.sendTransport = new MulticastTransport(this.logger, this.config);
+        this.sendTransport.open();
 
-        Transport memberTransport = new MulticastTransport(this.logger, this.config);
-        memberTransport.open();
-        this.memberManagerThread = new MemberManagerThread(this.logger, memberTransport, this.config);
-        this.dataReceiverThread.addMessagePacketListener(this.memberManagerThread);
-        this.memberManagerThread.start();
+        DataReceiverThread.get().addMessagePacketListener(MemberManagerThread.get());
 
         Transport netTimeTransport = new MulticastTransport(this.logger, this.config);
         netTimeTransport.open();
         this.netTime = new NetTime();
         this.netTimeThread = new NetTimeThread(this.netTime, this.logger, netTimeTransport);
-        this.dataReceiverThread.addMessagePacketListener(this.netTimeThread);
+        DataReceiverThread.get().addMessagePacketListener(this.netTimeThread);
         this.netTimeThread.start();
 
+        this.connected = true;
     }
 
     /**
@@ -148,26 +139,26 @@ public class APSGroupsServiceProvider implements APSGroupsService {
      * @throws IOException
      */
     public void disconnect()  {
-        if (this.dataReceiverThread != null) {
-            this.dataReceiverThread.terminate();
-            try {this.dataReceiverThread.getTransport().close();} catch (IOException ioe) {
-                this.logger.error("Failed to close data receiver transport!", ioe);
-            }
-        }
 
-        if (this.memberManagerThread != null) {
-            this.memberManagerThread.terminate();
-            try {this.memberManagerThread.getTransport().close();} catch (IOException ioe) {
-                this.logger.error("Failed to close member manager transport!", ioe);
-            }
-        }
+        DataReceiverThread.get().removeMessagePacketListener(MemberManagerThread.get());
 
         if (this.netTimeThread != null) {
+            DataReceiverThread.get().removeMessagePacketListener(this.netTimeThread);
             this.netTimeThread.terminate();
             try {this.netTimeThread.getTransport().close();} catch (IOException ioe) {
                 this.logger.error("Failed to close net time transport!", ioe);
             }
+            this.netTimeThread = null;
         }
+
+        try {
+            this.sendTransport.close();
+        }
+        catch (IOException ioe ) {
+            this.logger.error("Failed to close send transport! [" + this.sendTransport + "]", ioe);
+        }
+
+        this.connected = false;
     }
 
     /**
@@ -184,7 +175,6 @@ public class APSGroupsServiceProvider implements APSGroupsService {
         if (!this.connected) {
             try {
                 connect();
-                this.connected = true;
             }
             catch (IOException ioe) {
                 disconnect();
@@ -214,8 +204,7 @@ public class APSGroupsServiceProvider implements APSGroupsService {
         group.setNetTime(this.netTime);
         Member member = new Member();
         group.addMember(member);
-        this.memberManagerThread.addMember(member);
-        GroupMemberProvider groupMember = new GroupMemberProvider(member, this.dataReceiverThread, logger);
+        GroupMemberProvider groupMember = new GroupMemberProvider(member, this.sendTransport, logger);
         groupMember.open();
 
         return groupMember;
@@ -248,7 +237,6 @@ public class APSGroupsServiceProvider implements APSGroupsService {
         GroupMemberProvider gmp = (GroupMemberProvider)groupMember;
         gmp.close();
         Member member = gmp.getMember();
-        this.memberManagerThread.removeMember(member);
         member.getGroup().removeMember(member);
     }
 }

@@ -55,12 +55,8 @@ package se.natusoft.osgi.aps.groups.service;
 
 import se.natusoft.apsgroups.codeclarity.Package;
 import se.natusoft.apsgroups.config.APSGroupsConfig;
-import se.natusoft.apsgroups.internal.net.MulticastTransport;
 import se.natusoft.apsgroups.internal.net.Transport;
-import se.natusoft.apsgroups.internal.protocol.DataReceiver;
-import se.natusoft.apsgroups.internal.protocol.Member;
-import se.natusoft.apsgroups.internal.protocol.MessageReceiver;
-import se.natusoft.apsgroups.internal.protocol.MessageSender;
+import se.natusoft.apsgroups.internal.protocol.*;
 import se.natusoft.apsgroups.internal.protocol.message.Message;
 import se.natusoft.apsgroups.internal.protocol.message.MessageListener;
 import se.natusoft.apsgroups.internal.protocol.message.MessagePacket;
@@ -87,7 +83,7 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
     private APSGroupsLogger logger = null;
 
     /** Client listeners. */
-    private List<se.natusoft.osgi.aps.api.net.groups.service.MessageListener> messageListeners = new LinkedList<>();
+    private List<se.natusoft.osgi.aps.api.net.groups.service.MessageListener> messageListeners = null;
 
     /** The transport to use. */
     private Transport transport = null;
@@ -109,14 +105,16 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
      * Creates a new GroupMember.
      *
      * @param member The internal member object.
-     * @param dataReceiver For adding and removing MessageReceivers to/from.
+     * @param transport The transport to use.
      * @param logger The logger to log to.
      */
-    @Package GroupMemberProvider(Member member, DataReceiver dataReceiver, APSGroupsLogger logger) {
+    @Package GroupMemberProvider(Member member, Transport transport,  APSGroupsLogger logger) {
         this.member = member;
-        this.dataReceiver = dataReceiver;
         this.logger = logger;
-        this.transport = new MulticastTransport(this.logger, this.config);
+        this.transport = transport;
+        this.dataReceiver = DataReceiverThread.get();
+
+        this.messageListeners = Collections.synchronizedList(new LinkedList<se.natusoft.osgi.aps.api.net.groups.service.MessageListener>());
     }
 
     //
@@ -129,10 +127,7 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
      * @throws IOException
      */
     public void open() throws IOException {
-        this.transport.open();
-        Transport ackTransport = new MulticastTransport(this.logger, this.config);
-        ackTransport.open();
-        this.messageReceiver = new MessageReceiver(ackTransport, this.member, this.logger);
+        this.messageReceiver = new MessageReceiver(this.transport, this.member, this.logger);
         this.messageReceiver.addMessageListener(this);
         this.dataReceiver.addMessagePacketListener(this.messageReceiver);
     }
@@ -149,7 +144,6 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
             this.logger.error("GroupMemberProvider: Thread.sleep() got interrupted on close().");
         }
 
-        this.transport.close();
         this.messageListeners.clear();
         this.dataReceiver.removeMessagePacketListener(this.messageReceiver);
         this.messageReceiver.getTransport().close();
@@ -163,7 +157,7 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
      * @param listener The listener to add.
      */
     @Override
-    public synchronized void addMessageListener(se.natusoft.osgi.aps.api.net.groups.service.MessageListener listener) {
+    public void addMessageListener(se.natusoft.osgi.aps.api.net.groups.service.MessageListener listener) {
         this.messageListeners.add(listener);
     }
 
@@ -173,7 +167,7 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
      * @param listener The listener to remove.
      */
     @Override
-    public synchronized void removeMessageListener(se.natusoft.osgi.aps.api.net.groups.service.MessageListener listener) {
+    public void removeMessageListener(se.natusoft.osgi.aps.api.net.groups.service.MessageListener listener) {
         this.messageListeners.remove(listener);
     }
 
@@ -246,18 +240,27 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
     }
 
     /**
-     * Returns the number of active members.
+     * Returns the current listeners.
      */
-    //@Override
-//    public int getNoMembers() {
-//        int memberCount = 0;
-//        for (Member membr : this.member.getGroup().getListOfMembers()) {
-//            if (membr.stillKicking(this.config.getMemberAnnounceInterval())) {
-//                ++memberCount;
-//            }
-//        }
-//        return memberCount;
-//    }
+    private List<se.natusoft.osgi.aps.api.net.groups.service.MessageListener> getMessageListeners() {
+        List<se.natusoft.osgi.aps.api.net.groups.service.MessageListener> listenersCopy = new LinkedList<>();
+        synchronized (this.messageListeners) {
+            listenersCopy.addAll(this.messageListeners);
+        }
+        return listenersCopy;
+    }
+
+    /**
+     * Notification of received message.
+     *
+     * @param message The received message.
+     */
+    @Override
+    public void messageReceived(Message message) {
+        for (se.natusoft.osgi.aps.api.net.groups.service.MessageListener listener : getMessageListeners()) {
+            listener.messageReceived(new MessageProvider(message));
+        }
+    }
 
     /**
      * @return The current time as net time.
@@ -307,15 +310,4 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
         return new NetTimeProvider(this.member.getGroup().getNetTime().createWithLocalTime(localTimeDate.getTime()));
     }
 
-    /**
-     * Notification of received message.
-     *
-     * @param message The received message.
-     */
-    @Override
-    public void messageReceived(Message message) {
-        for (se.natusoft.osgi.aps.api.net.groups.service.MessageListener listener : this.messageListeners) {
-            listener.messageReceived(new MessageProvider(message));
-        }
-    }
 }

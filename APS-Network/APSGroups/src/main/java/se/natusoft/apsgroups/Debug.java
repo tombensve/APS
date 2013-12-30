@@ -61,7 +61,7 @@ public class Debug {
     public static final int DEBUG_NORMAL = 1;
     public static final int DEBUG_HIGH = 2;
 
-    public static int level = DEBUG_NONE;
+    public static int level = DEBUG_NORMAL;
 
     public static void print(String str) {
         if (level >= DEBUG_NORMAL) System.out.print(str);
@@ -71,11 +71,26 @@ public class Debug {
         if (level >= DEBUG_NORMAL) System.out.println(str);
     }
 
+    public static void println(String... str) {
+        if (level >= DEBUG_NORMAL) {
+            StringBuilder sb = new StringBuilder();
+            for (String part : str) {
+                sb.append(part);
+                sb.append("\n");
+            }
+            System.out.println(sb.toString());
+        }
+    }
+
     public static void print2(String str) {
         if (level >= DEBUG_HIGH) System.out.print(str);
     }
 
     public static void println2(String str) {
         if (level >= DEBUG_HIGH) System.out.println(str);
+    }
+
+    public static void trace(Exception e) {
+        if (level >= DEBUG_NORMAL) e.printStackTrace();
     }
 }

@@ -343,7 +343,9 @@ public class Message {
 
         DMInputStream() {
             MessagePacket messagePacket = Message.this.packets.get(this.packetNumber);
-            this.packetStream = messagePacket.getInputStream();
+            if (messagePacket != null) {
+                this.packetStream = messagePacket.getInputStream();
+            }
         }
 
         //
@@ -366,13 +368,16 @@ public class Message {
          */
         @Override
         public int read() throws IOException {
-            int b = this.packetStream.read();
-            if (b == -1) {
-                ++this.packetNumber;
-                MessagePacket messagePacket = Message.this.packets.get(this.packetNumber);
-                if (messagePacket != null) {
-                    this.packetStream = messagePacket.getInputStream();
-                    b = this.packetStream.read();
+            int b = -1;
+            if (this.packetStream != null) {
+                b = this.packetStream.read();
+                if (b == -1) {
+                    ++this.packetNumber;
+                    MessagePacket messagePacket = Message.this.packets.get(this.packetNumber);
+                    if (messagePacket != null) {
+                        this.packetStream = messagePacket.getInputStream();
+                        b = this.packetStream.read();
+                    }
                 }
             }
 

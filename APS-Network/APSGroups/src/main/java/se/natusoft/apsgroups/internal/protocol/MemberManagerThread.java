@@ -55,6 +55,7 @@ package se.natusoft.apsgroups.internal.protocol;
 
 import se.natusoft.apsgroups.Debug;
 import se.natusoft.apsgroups.config.APSGroupsConfig;
+import se.natusoft.apsgroups.internal.net.MulticastTransport;
 import se.natusoft.apsgroups.internal.net.Transport;
 import se.natusoft.apsgroups.internal.protocol.message.MessagePacket;
 import se.natusoft.apsgroups.internal.protocol.message.MessagePacketListener;
@@ -63,21 +64,37 @@ import se.natusoft.apsgroups.logging.APSGroupsLogger;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 
 /**
  * This thread handles repeated announcements of members added to the thread. It also
  * handles eviction of expired members for each members group.
  */
-public class MemberManagerThread extends Thread implements MemberManager, MessagePacketListener {
+public class MemberManagerThread extends Thread implements MessagePacketListener {
+    //
+    // Singleton instance
+    //
+
+    private static MemberManagerThread instance = null;
+
+    //
+    // Static access methods
+    //
+
+    public static void init(APSGroupsLogger logger, APSGroupsConfig config) {
+        if (MemberManagerThread.instance == null) {
+            MemberManagerThread.instance = new MemberManagerThread(logger, config);
+            MemberManagerThread.instance.start();
+        }
+    }
+
+    public static MemberManagerThread get() {
+        return MemberManagerThread.instance;
+    }
+
     //
     // Private Members
     //
-
-    /** The member to announce. */
-    private List<Member> members = new LinkedList<>();
 
     /** The transport to use to listen to incoming data. */
     private Transport transport = null;
@@ -99,13 +116,13 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
      * Creates a new DataReceiverThread.
      *
      * @param logger The logger for the thread to log on.
-     * @param transport The transport to use for reading data messages.
      * @param config The config to use.
      */
-    public MemberManagerThread(APSGroupsLogger logger, Transport transport, APSGroupsConfig config) {
+    private MemberManagerThread(APSGroupsLogger logger,  APSGroupsConfig config) {
+        super("APSGroups:MemberManagerThread");
         this.logger = logger;
-        this.transport = transport;
         this.config = config;
+        this.transport = new MulticastTransport(this.logger, this.config);
     }
 
     //
@@ -121,37 +138,10 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
     }
 
     /**
-     * Starts the thread.
-     */
-    @Override
-    public void start() {
-        this.running = true;
-        super.start();
-    }
-
-    /**
      * Terminates the thread.
      */
     public synchronized void terminate() {
         this.running = false;
-    }
-
-    /**
-     * Adds a member.
-     *
-     * @param member The member to add.
-     */
-    public synchronized void addMember(Member member) {
-        this.members.add(member);
-    }
-
-    /**
-     * Removes a member.
-     *
-     * @param member The member to remove.
-     */
-    public synchronized void removeMember(Member member) {
-        this.members.remove(member);
     }
 
     /**
@@ -179,40 +169,74 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
      */
     @Override
     public void run() {
+        try {
+            this.transport.open();
+            this.running = true;
+        }
+        catch (IOException ioe) {
+            this.logger.error("Failed to open transport! This thread will terminate directly! " +
+                    "This is very serious, the APSGroups service will not work correctly due to this!", ioe);
+        }
+        this.logger.info(
+                "==================================\n" +
+                "MemberManagerThread Started!\n" +
+                "=================================="
+        );
         while (isRunning()) {
             try {
-                for (Member member : members) {
-                    if (member.lastAnnounced() < 0) {
-                        announceMember(member);
-                    }
-                    else {
-                        long now = new Date().getTime();
-                        long lastAnnounce = member.lastAnnounced();
-                        long interval = this.config.getMemberAnnounceInterval() * 1000l;
-                        Debug.println2("" + now + " >= " + (lastAnnounce + interval) + " : " + (now >= (lastAnnounce + interval)));
-                        if (now >= (lastAnnounce + interval)) {
-                            announceMember(member);
+                for (String groupName : Groups.getAvailableGroups()) {
+                    Group group = Groups.getGroup(groupName);
+
+                    for (Member member : group.getListOfMembers()) {
+                        if (member.isLocalMember()) {
+                            if (member.lastAnnounced() < 0) {
+                                announceMember(member);
+                                Debug.println(
+                                        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n" +
+                                        "Announced member: " + member.getId() + "\n" +
+                                        "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+                                );
+                            }
+                            else {
+                                long now = new Date().getTime();
+                                long lastAnnounce = member.lastAnnounced();
+                                long interval = this.config.getMemberAnnounceInterval() * 1000l;
+                                if (now >= (lastAnnounce + interval)) {
+                                    announceMember(member);
+                                    Debug.println(
+                                            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n" +
+                                            "Announced member: " + member.getId() + "\n" +
+                                            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+                                    );
+                                }
+                            }
+                        }
+
+                        // Lets also evict old member of the members group.
+                        if (member.getGroup() != null) {
+                            member.getGroup().evictExpiredMembers();
                         }
                     }
-
-                    // Lets also evict old member of the members group.
-                    if (member.getGroup() != null) {
-                        member.getGroup().evictExpiredMembers();
-                    }
                 }
+
+                sleep(2000);
             }
             catch (IOException ioe) {
                 this.logger.error("MemberManagerThread: Communication problem!", ioe);
             }
+            catch (InterruptedException ie) {
+                this.logger.warn("MemberManagerThread: Thread.sleep() was unexpectedly interrupted!");
+            }
             catch (Exception e) {
-                e.printStackTrace();
                 this.logger.error("MemberManagerThread: Unknown failure!", e);
             }
+        }
 
-            try {Thread.sleep(2000);} catch (InterruptedException ie) {
-                this.logger.warn("MemberManagerThread: Thread.sleep() was unexpectedly interrupted! If this happens consecutively " +
-                        "too often it can cause highly increased CPU usage!");
-            }
+        try {
+            this.transport.close();
+        }
+        catch (IOException ioe) {
+            this.logger.error("Failed to close transport!", ioe);
         }
     }
 
@@ -224,11 +248,13 @@ public class MemberManagerThread extends Thread implements MemberManager, Messag
     @Override
     public void messagePacketReceived(MessagePacket messagePacket) {
         if (messagePacket.getType() == PacketType.MEMBER_LEAVING) {
-            for (Member member : this.members) {
-                if (member.getGroup().equals(messagePacket.getGroup())) {
-                    Group group = member.getGroup();
-                    group.removeMember(messagePacket.getMember());
-                }
+            Group msgGroup = messagePacket.getGroup();
+            Group localGroup = Groups.getGroup(msgGroup.getName());
+            if (localGroup != null) {
+                localGroup.removeMember(messagePacket.getMember());
+            }
+            else {
+                this.logger.error("MEMBER_LEAVING packet contained group '" + msgGroup + "' which for some reason does not exist locally!");
             }
         }
     }
