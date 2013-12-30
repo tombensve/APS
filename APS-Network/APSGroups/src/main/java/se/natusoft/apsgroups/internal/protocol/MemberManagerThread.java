@@ -238,6 +238,8 @@ public class MemberManagerThread extends Thread implements MessagePacketListener
         catch (IOException ioe) {
             this.logger.error("Failed to close transport!", ioe);
         }
+
+        MemberManagerThread.instance = null;
     }
 
     /**

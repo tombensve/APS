@@ -286,6 +286,8 @@ public class DataReceiverThread extends Thread implements DataReceiver {
         catch (IOException ioe) {
             this.logger.error("Failed to close transport!", ioe);
         }
+
+        DataReceiverThread.instance = null;
     }
 
 
