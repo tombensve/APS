@@ -304,6 +304,7 @@ public class DataReceiverThread extends Thread implements DataReceiver {
         private MessagePacket packet = null;
 
         public MessageListenerDeliveryThread(MessagePacketListener listener, MessagePacket packet) {
+            super("APSGroups:MessageListenerDeliveryThread->" + listener);
             this.listener = listener;
             this.packet = packet;
         }
