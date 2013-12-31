@@ -183,6 +183,7 @@ public class APSSyncServiceProvider implements APSSyncService {
                 dataStream.writeObject(MessageType.SYNC_DATA);
                 dataStream.writeInt(message.getBytes().length);
                 dataStream.write(message.getBytes());
+                dataStream.flush();
                 dataStream.close();
                 this.groupMember.sendMessage(msg);
             }
@@ -329,6 +330,7 @@ public class APSSyncServiceProvider implements APSSyncService {
                 se.natusoft.osgi.aps.api.net.groups.service.Message msg = this.groupMember.createNewMessage();
                 ObjectOutputStream dataStream = new ObjectOutputStream(msg.getOutputStream());
                 dataStream.writeObject(MessageType.RESYNC_REQUEST);
+                dataStream.flush();
                 dataStream.close();
                 this.groupMember.sendMessage(msg);
             }
