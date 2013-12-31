@@ -134,22 +134,6 @@ public class DataReceiverThread extends Thread implements DataReceiver {
                 this.listeners = Collections.synchronizedList(new LinkedList<MessagePacketListener>());
     }
 
-//    /**
-//     * Creates a new DataReceiverThread.
-//     *
-//     * @param logger The logger for the thread to log on.
-//     * @param transport The transport to use for reading data messages.
-//     * @param config Our config.
-//     */
-//    public DataReceiverThread(APSGroupsLogger logger, Transport transport, APSGroupsConfig config) {
-//        super("APSGroups:DataReceiverThread");
-//        this.logger = logger;
-//        this.config = config;
-//        this.transport = transport;
-//
-//        this.listeners = Collections.synchronizedList(new LinkedList<MessagePacketListener>());
-//    }
-
     //
     // Methods
     //
@@ -313,7 +297,7 @@ public class DataReceiverThread extends Thread implements DataReceiver {
         public void run() {
             try {
                 this.listener.messagePacketReceived(this.packet);
-                Debug.println("---- Packet delivered!");
+                //Debug.println("---- Packet delivered!");
             }
             catch (Exception e) {
                 DataReceiverThread.this.logger.error("Failed to deliver packet [" + this.packet + "] to listener [" + this.listener + "]", e);
