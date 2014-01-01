@@ -327,6 +327,7 @@ APSSyncService.SyncGroup.ReSyncListener {
             msgStream.writeObject(MessageType.CONFIG_ENV);
             msgStream.writeObject(convertPropTime(configEnvStore.getAsProperties(), Config_Env_Matcher, Local_2_Net_Time_Converter));
             msgStream.close();
+            logger.debug(">>>>>> length: [" + message.getBytes().length + "]");
             this.syncGroup.sendMessage(message);
             this.logger.debug(("### Send updated configEnvStore!"));
         }
@@ -360,15 +361,19 @@ APSSyncService.SyncGroup.ReSyncListener {
             ObjectOutputStream msgStream = new ObjectOutputStream(message.getOutputStream());
             msgStream.writeObject(MessageType.CONFIG);
             msgStream.writeUTF(configuration.getConfigId());
+            logger.debug(">>>>>> configId: [" + configuration.getConfigId() + "]");
             msgStream.writeUTF(configuration.getVersion());
+            logger.debug(">>>>>> version: [" + configuration.getVersion() + "]");
             msgStream.writeObject(
-                convertPropTime(
-                        ((APSConfigAdminImpl) configuration).getConfigInstanceMemoryStore().getProperties(),
-                        Config_Value_Matcher,
-                        Local_2_Net_Time_Converter
-                )
+                    convertPropTime(
+                            ((APSConfigAdminImpl) configuration).getConfigInstanceMemoryStore().getProperties(),
+                            Config_Value_Matcher,
+                            Local_2_Net_Time_Converter
+                    )
             );
+            msgStream.flush();
             msgStream.close();
+            logger.debug(">>>>>> length: [" + message.getBytes().length + "]");
             this.syncGroup.sendMessage(message);
         }
         catch (IOException ioe) {
@@ -386,6 +391,7 @@ APSSyncService.SyncGroup.ReSyncListener {
         syncSend(this.configEnvStore);
         for (APSConfigAdmin configAdmin : this.configAdminService.getAllConfigurations()) {
             syncSend(configAdmin);
+            try {Thread.sleep(500);} catch (InterruptedException ie) {}
         }
     }
 
@@ -399,7 +405,7 @@ APSSyncService.SyncGroup.ReSyncListener {
         updateLastGroupMsgTimestamp();
 
         ObjectInputStream msgStream = null;
-
+        logger.debug("<<<<<< length: [" + message.getBytes().length + "]");
         try {
             msgStream = new ObjectInputStream(message.getInputStream());
             MessageType messageType = (MessageType)msgStream.readObject();
@@ -460,8 +466,11 @@ APSSyncService.SyncGroup.ReSyncListener {
      */
     private void handleConfigValueMessage(ObjectInputStream msgStream) throws IOException, ClassNotFoundException {
         String configId = msgStream.readUTF();
+        this.logger.debug("<<<<<< configId: [" + configId + "]");
         String version = msgStream.readUTF();
-        Properties props = convertPropTime((Properties)msgStream.readObject(), Config_Value_Matcher, Net_2_Local_Time_Converter);
+        this.logger.debug("<<<<<< version: [" + version + "]");
+        Properties props = (Properties)msgStream.readObject();
+        props = convertPropTime(props, Config_Value_Matcher, Net_2_Local_Time_Converter);
 
         mergeConfigValues(configId, version, props);
     }
@@ -609,16 +618,6 @@ APSSyncService.SyncGroup.ReSyncListener {
                 this.configEnvStore.setFromProperties(localEnvProps);
                 this.configEnvStore.saveConfigEnvironments();
             }
-        }
-    }
-
-    /**
-     * Send all config data to all members.
-     */
-    private void handleFeedMeMessage() {
-        updated(this.configEnvStore);
-        for (APSConfigAdmin configAdmin : this.configAdminService.getAllConfigurations()) {
-            updated(configAdmin);
         }
     }
 
