@@ -170,7 +170,6 @@ public class MessageReceiver implements MessagePacketListener {
     public void messagePacketReceived(MessagePacket messagePacket) {
         // We will get our own messages so ignore them.
         if (messagePacket.getMember().equals(this.member)) {
-            this.logger.debug("Ignoring message from self: " + messagePacket.getMessageId());
             return;
         }
 
