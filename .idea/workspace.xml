@@ -1,37 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="Added APSMessageServiceSyncServiceProvider.&#10;">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APS-Auth.iml" afterPath="$PROJECT_DIR$/APS-Auth/APS-Auth.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APS-Core.iml" afterPath="$PROJECT_DIR$/APS-Core/APS-Core.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APS-Data.iml" afterPath="$PROJECT_DIR$/APS-Data/APS-Data.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APS-Libraries.iml" afterPath="$PROJECT_DIR$/APS-Libraries/APS-Libraries.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/APS-Misc.iml" afterPath="$PROJECT_DIR$/APS-Misc/APS-Misc.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APS-Network.iml" afterPath="$PROJECT_DIR$/APS-Network/APS-Network.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APS-Webs.iml" afterPath="$PROJECT_DIR$/APS-Webs/APS-Webs.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Build/Build.iml" afterPath="$PROJECT_DIR$/Build/Build.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider/aps-admin-web-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider/aps-admin-web-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/aps-admin-web.iml" afterPath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/aps-admin-web.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/aps-apis.iml" afterPath="$PROJECT_DIR$/APS-APIs/aps-apis.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/aps-config-admin-web.iml" afterPath="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/aps-config-admin-web.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/aps-configuration-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/aps-configuration-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSDataSource/aps-datasource.iml" afterPath="$PROJECT_DIR$/APS-Data/APSDataSource/aps-datasource.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/aps-discovery-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/aps-discovery-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/aps-ext-protocol-http-transport-provider.iml" afterPath="$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/aps-ext-protocol-http-transport-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/aps-external-protocol-extender.iml" afterPath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/aps-external-protocol-extender.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSFilesystemServiceProvider/aps-filesystem-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Core/APSFilesystemServiceProvider/aps-filesystem-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/aps-groups.iml" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/aps-groups.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/aps-json-lib.iml" afterPath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/aps-json-lib.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/APSJSONServiceProvider/aps-json-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Misc/APSJSONServiceProvider/aps-json-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSLogServiceProvider/aps-log-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Core/APSLogServiceProvider/aps-log-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/aps-openjpa-provider.iml" afterPath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/aps-openjpa-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSPlatformServiceProvider/aps-platform-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Core/APSPlatformServiceProvider/aps-platform-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/APSResolvingBundleDeployer/aps-resolving-bundle-deployer.iml" afterPath="$PROJECT_DIR$/APS-Misc/APSResolvingBundleDeployer/aps-resolving-bundle-deployer.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider/aps-session-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider/aps-session-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/aps-simple-user-service-auth-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/aps-simple-user-service-auth-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/aps-simple-user-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/aps-simple-user-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/aps-streamed-json-rpc-protocol-provider.iml" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/aps-streamed-json-rpc-protocol-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/aps-user-admin-web.iml" afterPath="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/aps-user-admin-web.iml" />
+    <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="IDE files.">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/DataReceiverThread.java" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/DataReceiverThread.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/pom.xml" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/pom.xml" afterPath="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/pom.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="93ee55a5-7aeb-46b4-befc-da110c6bd63a" name="Failed commit: Default" comment="Dev commit." />
@@ -203,55 +176,70 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Synchronizer.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/sync/Synchronizer.java">
+      <file leaf-file-name="Transport.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/net/Transport.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="349" column="32" selection-start="13709" selection-end="13709" vertical-scroll-proportion="2.7861772" vertical-offset="3555" max-vertical-offset="10575">
+            <state line="77" column="18" selection-start="2930" selection-end="2930" vertical-scroll-proportion="0.0" vertical-offset="700" max-vertical-offset="1755">
               <folding>
-                <element signature="e#10078#10245#0" expanded="true" />
-                <element signature="e#10238#10239#0" expanded="true" />
-                <element signature="e#10380#10545#0" expanded="true" />
-                <element signature="e#10538#10539#0" expanded="true" />
-                <element signature="e#10661#10843#0" expanded="true" />
-                <element signature="e#10836#10837#0" expanded="true" />
-                <element signature="e#10959#11141#0" expanded="true" />
-                <element signature="e#11134#11135#0" expanded="true" />
+                <element signature="imports" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="NetTimeThread.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/NetTimeThread.java">
+      <file leaf-file-name="APSGroupsConfigProvider.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/config/APSGroupsConfigProvider.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="139" column="11" selection-start="5515" selection-end="5515" vertical-scroll-proportion="0.0" vertical-offset="2085" max-vertical-offset="4095">
-              <folding />
+            <state line="58" column="13" selection-start="2584" selection-end="2584" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2715">
+              <folding>
+                <element signature="e#4272#4273#0" expanded="false" />
+                <element signature="e#4328#4329#0" expanded="false" />
+                <element signature="e#4438#4439#0" expanded="false" />
+                <element signature="e#4482#4483#0" expanded="false" />
+                <element signature="e#4644#4645#0" expanded="false" />
+                <element signature="e#4694#4695#0" expanded="false" />
+                <element signature="e#4802#4803#0" expanded="false" />
+                <element signature="e#4843#4844#0" expanded="false" />
+                <element signature="e#5035#5036#0" expanded="false" />
+                <element signature="e#5081#5082#0" expanded="false" />
+                <element signature="e#5224#5225#0" expanded="false" />
+                <element signature="e#5263#5264#0" expanded="false" />
+                <element signature="e#5482#5483#0" expanded="false" />
+                <element signature="e#5534#5535#0" expanded="false" />
+                <element signature="e#5686#5687#0" expanded="false" />
+                <element signature="e#5728#5729#0" expanded="false" />
+                <element signature="e#5940#5941#0" expanded="false" />
+                <element signature="e#6008#6009#0" expanded="false" />
+                <element signature="e#6283#6284#0" expanded="false" />
+                <element signature="e#6333#6334#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="GroupMemberProvider.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/GroupMemberProvider.java">
+      <file leaf-file-name="APSGroupsConfig.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/config/APSGroupsConfig.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="240" column="0" selection-start="8538" selection-end="8538" vertical-scroll-proportion="0.0" vertical-offset="3600" max-vertical-offset="4785">
-              <folding />
+            <state line="37" column="46" selection-start="1896" selection-end="1896" vertical-scroll-proportion="0.0" vertical-offset="325" max-vertical-offset="1395">
+              <folding>
+                <marker date="1388591505000" expanded="true" signature="1778:1900" placeholder="/**...*/" />
+                <marker date="1388591505000" expanded="true" signature="1961:2047" placeholder="/**...*/" />
+                <marker date="1388591505000" expanded="true" signature="2272:2321" placeholder="/**...*/" />
+                <marker date="1388591505000" expanded="true" signature="2391:2442" placeholder="/**...*/" />
+                <marker date="1388591505000" expanded="true" signature="2482:2555" placeholder="/**...*/" />
+                <marker date="1388591505000" expanded="true" signature="2596:2644" placeholder="/**...*/" />
+                <marker date="1388591505000" expanded="true" signature="2788:2877" placeholder="/**...*/" />
+                <marker date="1388591505000" expanded="true" signature="2916:3011" placeholder="/**...*/" />
+                <marker date="1388591505000" expanded="true" signature="3053:3255" placeholder="/**...*/" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="APSGroups.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/APSGroups.java">
+      <file leaf-file-name="MessageReceiver.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MessageReceiver.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="101" column="30" selection-start="3913" selection-end="3913" vertical-scroll-proportion="0.0" vertical-offset="1515" max-vertical-offset="3015">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Message.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/message/Message.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="337" column="48" selection-start="10560" selection-end="10560" vertical-scroll-proportion="0.0" vertical-offset="5055" max-vertical-offset="5895">
+            <state line="185" column="29" selection-start="6513" selection-end="6513" vertical-scroll-proportion="0.0" vertical-offset="250" max-vertical-offset="3615">
               <folding />
             </state>
           </provider>
@@ -260,16 +248,7 @@
       <file leaf-file-name="MessageSender.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MessageSender.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="68" column="13" selection-start="2976" selection-end="2976" vertical-scroll-proportion="0.0" vertical-offset="1020" max-vertical-offset="3090">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="APSSyncServiceProvider.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroupsSyncServiceProvider/src/main/java/se/natusoft/osgi/aps/sync/APSSyncServiceProvider.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="254" column="81" selection-start="8198" selection-end="8198" vertical-scroll-proportion="0.0" vertical-offset="3810" max-vertical-offset="6060">
+            <state line="68" column="13" selection-start="2976" selection-end="2976" vertical-scroll-proportion="0.0" vertical-offset="75" max-vertical-offset="2970">
               <folding />
             </state>
           </provider>
@@ -278,7 +257,7 @@
       <file leaf-file-name="DataReceiverThread.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/DataReceiverThread.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="92" column="38" selection-start="3768" selection-end="3768" vertical-scroll-proportion="0.0" vertical-offset="1380" max-vertical-offset="4695">
+            <state line="133" column="11" selection-start="4781" selection-end="4781" vertical-scroll-proportion="0.0" vertical-offset="1080" max-vertical-offset="4440">
               <folding />
             </state>
           </provider>
@@ -287,160 +266,34 @@
       <file leaf-file-name="DataReceivers.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/DataReceivers.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="9" column="13" selection-start="222" selection-end="222" vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="615">
+            <state line="34" column="1" selection-start="934" selection-end="934" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="585">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="APSGroupsActivator.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/APSGroupsActivator.java">
+      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="17" selection-start="632" selection-end="632" vertical-scroll-proportion="0.0" vertical-offset="225" max-vertical-offset="2925">
+            <state line="97" column="20" selection-start="3051" selection-end="3051" vertical-scroll-proportion="-3.4583333" vertical-offset="1372" max-vertical-offset="7080">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="GroupMemberProvider.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/GroupMemberProvider.java">
+      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="74" column="13" selection-start="3228" selection-end="3228" vertical-scroll-proportion="0.0" vertical-offset="1110" max-vertical-offset="3795">
+            <state line="218" column="0" selection-start="9642" selection-end="9642" vertical-scroll-proportion="-14.625" vertical-offset="2919" max-vertical-offset="4515">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MessageProvider.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/MessageProvider.java">
+      <file leaf-file-name="pom.xml" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="64" column="13" selection-start="2751" selection-end="2751" vertical-scroll-proportion="0.0" vertical-offset="960" max-vertical-offset="2160">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MemberManagerThread.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MemberManagerThread.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="72" column="13" selection-start="3204" selection-end="3204" vertical-scroll-proportion="0.0" vertical-offset="1080" max-vertical-offset="4035">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MessageReceiver.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MessageReceiver.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="185" column="29" selection-start="6513" selection-end="6513" vertical-scroll-proportion="0.0" vertical-offset="2775" max-vertical-offset="3720">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MemberManager.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MemberManager.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="52" column="3" selection-start="2434" selection-end="2434" vertical-scroll-proportion="0.0" vertical-offset="160" max-vertical-offset="1215">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Transport.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/net/Transport.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="77" column="18" selection-start="2930" selection-end="2930" vertical-scroll-proportion="0.0" vertical-offset="1155" max-vertical-offset="1770">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Debug.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/Debug.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="63" column="40" selection-start="2718" selection-end="2718" vertical-scroll-proportion="0.0" vertical-offset="945" max-vertical-offset="1530">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DataReceiver.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/DataReceiver.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="60" column="17" selection-start="2636" selection-end="2636" vertical-scroll-proportion="0.0" vertical-offset="160" max-vertical-offset="1215">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="APSSyncService.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/sync/service/APSSyncService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="142" column="25" selection-start="3901" selection-end="3901" vertical-scroll-proportion="0.0" vertical-offset="2130" max-vertical-offset="4290">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="APSGroupsServiceProvider.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/APSGroupsServiceProvider.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="105" column="5" selection-start="4000" selection-end="4000" vertical-scroll-proportion="0.0" vertical-offset="1575" max-vertical-offset="3720">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="APSConfigSyncMgmtService.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/api/APSConfigSyncMgmtService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="25" selection-start="164" selection-end="164" vertical-scroll-proportion="0.0" vertical-offset="75" max-vertical-offset="375">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="APSGroupsInfoServiceProvider.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/APSGroupsInfoServiceProvider.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="13" selection-start="504" selection-end="504" vertical-scroll-proportion="0.0" vertical-offset="225" max-vertical-offset="1470">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Group.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/Group.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="209" column="29" selection-start="6146" selection-end="6146" vertical-scroll-proportion="0.0" vertical-offset="3135" max-vertical-offset="4500">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MulticastTransport.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/net/MulticastTransport.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="192" column="31" selection-start="6303" selection-end="6303" vertical-scroll-proportion="0.0" vertical-offset="2880" max-vertical-offset="4050">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Groups.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/Groups.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="62" column="13" selection-start="2622" selection-end="2622" vertical-scroll-proportion="0.0" vertical-offset="930" max-vertical-offset="1530">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MessagePacket.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/message/MessagePacket.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="70" column="13" selection-start="3030" selection-end="3030" vertical-scroll-proportion="0.0" vertical-offset="1050" max-vertical-offset="5940">
+            <state line="173" column="0" selection-start="7429" selection-end="7429" vertical-scroll-proportion="0.5072745" vertical-offset="2072" max-vertical-offset="3645">
               <folding />
             </state>
           </provider>
@@ -473,7 +326,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/messaging/service/APSMessageService.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSMessageServiceSyncServiceProvider/src/main/java/se/natusoft/osgi/aps/sync/APSMessageServiceSyncServiceProvider.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQMessageServiceProvider.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSMessageServiceSyncServiceProvider/docs/filesets/doc-files.fs" />
@@ -498,7 +350,6 @@
         <option value="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/pom.xml" />
-        <option value="$PROJECT_DIR$/APS-Network/APSGroups/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Network/APSGroupsSyncServiceProvider/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Network/APSMessageServiceSyncServiceProvider/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Network/APSNetTimeServiceProvider/pom.xml" />
@@ -506,7 +357,6 @@
         <option value="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Webs/APSAdminWeb/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider/pom.xml" />
-        <option value="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/pom.xml" />
         <option value="$PROJECT_DIR$/APS-APIs/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Network/APSGroupsSyncServiceProvider/src/main/java/se/natusoft/osgi/aps/sync/APSSyncServiceProvider.java" />
@@ -519,11 +369,14 @@
         <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/GroupMemberProvider.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/APSGroupsActivator.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MemberManagerThread.java" />
-        <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/DataReceiverThread.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/Debug.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MessageReceiver.java" />
         <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/sync/service/APSSyncService.java" />
         <option value="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/sync/Synchronizer.java" />
+        <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/config/APSGroupsConfig.java" />
+        <option value="$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/DataReceiverThread.java" />
+        <option value="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/pom.xml" />
+        <option value="$PROJECT_DIR$/APS-Network/APSGroups/pom.xml" />
       </list>
     </option>
   </component>
@@ -2878,7 +2731,99 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="protocol" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="message" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Network and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSGroups" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="apsgroups" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="internal" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="net" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Network and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSGroups" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="natusoft" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="apsgroups" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="config" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -3035,18 +2980,18 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth0" value="274" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth1" value="289" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth0" value="315" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth1" value="330" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="JdbcConsole.Connection.Autocommit" value="true" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth0" value="283" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth0" value="324" />
     <property name="MemberChooser.sorted" value="false" />
     <property name="recentsLimit" value="5" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth2" value="291" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth3" value="988" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth3" value="990" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth2" value="288" />
-    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth1" value="285" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth2" value="332" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth3" value="1029" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth3" value="1031" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth2" value="329" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth1" value="326" />
     <property name="FileHistory.org.zmlx.hg4idea.provider.HgHistoryProvider_treeOrder0" value="0" />
     <property name="Database.TableEditor.Splitter" value="0.6551126" />
     <property name="FileHistory.org.zmlx.hg4idea.provider.HgHistoryProvider_treeOrder1" value="1" />
@@ -3557,7 +3502,7 @@
       <workItem from="1387882920250" duration="54241000" />
       <workItem from="1388147411331" duration="47563000" />
       <workItem from="1388326449140" duration="22802000" />
-      <workItem from="1388493304988" duration="957000" />
+      <workItem from="1388493304988" duration="4747000" />
     </task>
     <task id="LOCAL-00001" summary="Added hashCode() and equals() to the 2 configuration model implementations.">
       <created>1334502625761</created>
@@ -5275,7 +5220,11 @@
       <created>1388585756123</created>
       <updated>1388585756124</updated>
     </task>
-    <option name="localTasksCounter" value="402" />
+    <task id="LOCAL-00402" summary="IDE files.">
+      <created>1388585804577</created>
+      <updated>1388585804578</updated>
+    </task>
+    <option name="localTasksCounter" value="403" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="true" url="http://redmine.natusoft.private/redmine">
@@ -5292,7 +5241,7 @@
     </servers>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="128898000" />
+    <option name="totallyTimeSpent" value="132688000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -5316,10 +5265,10 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="197" y="67" width="2093" height="1201" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Changes" active="true" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.5466297" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5466297" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Persistence" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26426134" sideWeight="0.36565098" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24963433" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.18820088" sideWeight="0.6763006" order="4" side_tool="false" content_ui="tabs" />
@@ -5327,7 +5276,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32502308" sideWeight="0.5" order="19" side_tool="true" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="22" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32959533" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32577133" sideWeight="0.5" order="20" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32502308" sideWeight="0.5" order="20" side_tool="false" content_ui="tabs" />
       <window_info id="JSF" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32959533" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32594645" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -5384,7 +5333,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="- New APSMessageService API.&#10;- New APSSyncService API.&#10;- New APSNetTimeService API.&#10;- New APSSyncService provider using APSGroupsService.&#10;- New APSNetTimeService provider using APSGroupsService.&#10;- Synchronizer in APSConfigService provider now uses the new APSSyncService rather than APSGroupsService.&#10;- All this in preparation for providing providing an APSMessageServcie provider based on RabbitMQ, and an alternative APSSyncService provider using APSMessageService." />
     <MESSAGE value="Fixed bug in APSGroups that ignored new members being announced.&#10;" />
     <MESSAGE value="Fixed an NPE." />
     <MESSAGE value="Added APSRabbitMQMessageServiceProvider." />
@@ -5409,7 +5357,8 @@
     <MESSAGE value="Added some debug logging and a bit of cleanup." />
     <MESSAGE value="Removed debug logging within loop that caused too many logs. Set level to NONE in Debug. java." />
     <MESSAGE value="IDE-files" />
-    <option name="LAST_COMMIT_MESSAGE" value="IDE-files" />
+    <MESSAGE value="IDE files." />
+    <option name="LAST_COMMIT_MESSAGE" value="IDE files." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -5486,38 +5435,23 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/APS-Misc/APSResolvingBundleDeployer/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="113" column="0" selection-start="4169" selection-end="4169" vertical-scroll-proportion="0.77109605" vertical-offset="900" max-vertical-offset="2985">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="102" column="0" selection-start="3490" selection-end="3490" vertical-scroll-proportion="0.6838021" vertical-offset="825" max-vertical-offset="2910">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="104" column="0" selection-start="3777" selection-end="3777" vertical-scroll-proportion="0.6401552" vertical-offset="900" max-vertical-offset="2940" />
+        <state line="104" column="0" selection-start="3777" selection-end="3777" vertical-scroll-proportion="0.6401552" vertical-offset="900" max-vertical-offset="2940">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="130" column="0" selection-start="6012" selection-end="6012" vertical-scroll-proportion="0.785645" vertical-offset="1140" max-vertical-offset="3345" />
+        <state line="130" column="0" selection-start="6012" selection-end="6012" vertical-scroll-proportion="0.785645" vertical-offset="1140" max-vertical-offset="3345">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="127" column="0" selection-start="5082" selection-end="5082" vertical-scroll-proportion="0.785645" vertical-offset="1095" max-vertical-offset="4110" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="154" column="0" selection-start="6890" selection-end="6890" vertical-scroll-proportion="0.80019397" vertical-offset="1485" max-vertical-offset="3825">
+        <state line="127" column="0" selection-start="5082" selection-end="5082" vertical-scroll-proportion="0.785645" vertical-offset="1095" max-vertical-offset="4110">
           <folding />
         </state>
       </provider>
@@ -5531,22 +5465,30 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSMessageServiceSyncServiceProvider/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="59" column="0" selection-start="2114" selection-end="2114" vertical-scroll-proportion="-31.25" vertical-offset="135" max-vertical-offset="2265" />
+        <state line="59" column="0" selection-start="2114" selection-end="2114" vertical-scroll-proportion="-31.25" vertical-offset="135" max-vertical-offset="2265">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSNetTimeServiceProvider/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="96" column="0" selection-start="3276" selection-end="3276" vertical-scroll-proportion="-35.625" vertical-offset="585" max-vertical-offset="2820" />
+        <state line="96" column="0" selection-start="3276" selection-end="3276" vertical-scroll-proportion="-35.625" vertical-offset="585" max-vertical-offset="2820">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="104" column="0" selection-start="3616" selection-end="3616" vertical-scroll-proportion="-33.125" vertical-offset="765" max-vertical-offset="3315" />
+        <state line="104" column="0" selection-start="3616" selection-end="3616" vertical-scroll-proportion="-33.125" vertical-offset="765" max-vertical-offset="3315">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="105" column="0" selection-start="3777" selection-end="3777" vertical-scroll-proportion="-29.375" vertical-offset="870" max-vertical-offset="2880" />
+        <state line="105" column="0" selection-start="3777" selection-end="3777" vertical-scroll-proportion="-29.375" vertical-offset="870" max-vertical-offset="2880">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Webs/APSAdminWeb/pom.xml">
@@ -5558,17 +5500,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="106" column="0" selection-start="3769" selection-end="3769" vertical-scroll-proportion="-33.75" vertical-offset="780" max-vertical-offset="2925" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="162" column="0" selection-start="8013" selection-end="8013" vertical-scroll-proportion="-31.25" vertical-offset="1680" max-vertical-offset="4605" />
+        <state line="106" column="0" selection-start="3769" selection-end="3769" vertical-scroll-proportion="-33.75" vertical-offset="780" max-vertical-offset="2925">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="133" column="0" selection-start="5406" selection-end="5406" vertical-scroll-proportion="-32.5" vertical-offset="1215" max-vertical-offset="4035" />
+        <state line="133" column="0" selection-start="5406" selection-end="5406" vertical-scroll-proportion="-32.5" vertical-offset="1215" max-vertical-offset="4035">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Build/DeployBundleTile/pom.xml">
@@ -5581,13 +5522,6 @@
     <entry file="file://$PROJECT_DIR$/APS-APIs/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state line="157" column="0" selection-start="7596" selection-end="7596" vertical-scroll-proportion="-35.0" vertical-offset="1515" max-vertical-offset="4560">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="20" selection-start="150" selection-end="150" vertical-scroll-proportion="0.10184287" vertical-offset="0" max-vertical-offset="7080">
           <folding />
         </state>
       </provider>
@@ -5608,7 +5542,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/message/Message.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="337" column="48" selection-start="10560" selection-end="10560" vertical-scroll-proportion="0.0" vertical-offset="4480" max-vertical-offset="5685">
+        <state line="337" column="48" selection-start="10560" selection-end="10560" vertical-scroll-proportion="0.20379147" vertical-offset="4840" max-vertical-offset="5895">
           <folding />
         </state>
       </provider>
@@ -5620,21 +5554,23 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/NetTimeThread.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="139" column="11" selection-start="5515" selection-end="5515" vertical-scroll-proportion="0.0" vertical-offset="1569" max-vertical-offset="3870">
+        <state line="139" column="11" selection-start="5515" selection-end="5515" vertical-scroll-proportion="0.014218009" vertical-offset="2070" max-vertical-offset="4095">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/api/APSConfigSyncMgmtService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="25" selection-start="164" selection-end="164" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="375">
+        <state line="5" column="25" selection-start="164" selection-end="164" vertical-scroll-proportion="0.07109005" vertical-offset="0" max-vertical-offset="1055">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/message/PacketType.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="58" column="12" selection-start="2551" selection-end="2551" vertical-scroll-proportion="0.63033175" vertical-offset="205" max-vertical-offset="1260" />
+        <state line="58" column="12" selection-start="2551" selection-end="2551" vertical-scroll-proportion="0.63033175" vertical-offset="205" max-vertical-offset="1260">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="jar://$JAVA_HOME$/src.zip!/java/lang/ThreadGroup.java">
@@ -5651,28 +5587,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/MessageProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="64" column="13" selection-start="2751" selection-end="2751" vertical-scroll-proportion="0.0" vertical-offset="685" max-vertical-offset="2070">
+        <state line="64" column="13" selection-start="2751" selection-end="2751" vertical-scroll-proportion="0.014218009" vertical-offset="945" max-vertical-offset="2160">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/APSGroupsInfoServiceProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="13" selection-start="504" selection-end="504" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1350">
+        <state line="15" column="13" selection-start="504" selection-end="504" vertical-scroll-proportion="0.014218009" vertical-offset="210" max-vertical-offset="1470">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MemberManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="3" selection-start="2434" selection-end="2434" vertical-scroll-proportion="0.0" vertical-offset="160" max-vertical-offset="1215">
+        <state line="52" column="3" selection-start="2434" selection-end="2434" vertical-scroll-proportion="0.5876777" vertical-offset="160" max-vertical-offset="1215">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/Groups.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="62" column="13" selection-start="2622" selection-end="2622" vertical-scroll-proportion="0.0" vertical-offset="445" max-vertical-offset="1500">
+        <state line="62" column="13" selection-start="2622" selection-end="2622" vertical-scroll-proportion="0.43127963" vertical-offset="475" max-vertical-offset="1530">
           <folding />
         </state>
       </provider>
@@ -5684,135 +5620,100 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/net/Transport.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="77" column="18" selection-start="2930" selection-end="2930" vertical-scroll-proportion="0.0" vertical-offset="700" max-vertical-offset="1755">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/message/MessagePacket.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="70" column="13" selection-start="3030" selection-end="3030" vertical-scroll-proportion="0.0" vertical-offset="885" max-vertical-offset="5445">
+        <state line="70" column="13" selection-start="3030" selection-end="3030" vertical-scroll-proportion="0.014218009" vertical-offset="1035" max-vertical-offset="5940">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/Group.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="209" column="29" selection-start="6146" selection-end="6146" vertical-scroll-proportion="0.0" vertical-offset="2589" max-vertical-offset="4305">
+        <state line="209" column="29" selection-start="6146" selection-end="6146" vertical-scroll-proportion="0.014218009" vertical-offset="3120" max-vertical-offset="4500">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/net/MulticastTransport.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="192" column="31" selection-start="6303" selection-end="6303" vertical-scroll-proportion="0.0" vertical-offset="2454" max-vertical-offset="3915">
+        <state line="192" column="31" selection-start="6303" selection-end="6303" vertical-scroll-proportion="0.014218009" vertical-offset="2880" max-vertical-offset="4065">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/APSGroups.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="101" column="30" selection-start="3913" selection-end="3913" vertical-scroll-proportion="0.0" vertical-offset="879" max-vertical-offset="2880">
+        <state line="101" column="30" selection-start="3913" selection-end="3913" vertical-scroll-proportion="0.014218009" vertical-offset="1500" max-vertical-offset="3015">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/APSGroupsActivator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="17" selection-start="632" selection-end="632" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2670">
+        <state line="15" column="17" selection-start="632" selection-end="632" vertical-scroll-proportion="0.014218009" vertical-offset="210" max-vertical-offset="2925">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/Debug.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="63" column="40" selection-start="2718" selection-end="2718" vertical-scroll-proportion="0.0" vertical-offset="415" max-vertical-offset="1530">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MessageSender.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="68" column="13" selection-start="2976" selection-end="2976" vertical-scroll-proportion="0.0" vertical-offset="475" max-vertical-offset="2970">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/DataReceiverThread.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="92" column="38" selection-start="3768" selection-end="3768" vertical-scroll-proportion="0.0" vertical-offset="2620" max-vertical-offset="4440">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/DataReceivers.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="13" selection-start="222" selection-end="222" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="585">
+        <state line="63" column="40" selection-start="2718" selection-end="2718" vertical-scroll-proportion="0.44549763" vertical-offset="475" max-vertical-offset="1530">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/DataReceiver.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="60" column="17" selection-start="2636" selection-end="2636" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1215">
+        <state line="60" column="17" selection-start="2636" selection-end="2636" vertical-scroll-proportion="0.7014218" vertical-offset="160" max-vertical-offset="1215">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MemberManagerThread.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="72" column="13" selection-start="3204" selection-end="3204" vertical-scroll-proportion="0.0" vertical-offset="2454" max-vertical-offset="3840">
+        <state line="72" column="13" selection-start="3204" selection-end="3204" vertical-scroll-proportion="0.014218009" vertical-offset="1065" max-vertical-offset="4035">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/GroupMemberProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="74" column="13" selection-start="3228" selection-end="3228" vertical-scroll-proportion="0.0" vertical-offset="774" max-vertical-offset="3555">
+        <state line="74" column="13" selection-start="3228" selection-end="3228" vertical-scroll-proportion="0.014218009" vertical-offset="1095" max-vertical-offset="3795">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/GroupMemberProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="240" column="0" selection-start="8538" selection-end="8538" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4560">
+        <state line="240" column="0" selection-start="8538" selection-end="8538" vertical-scroll-proportion="0.014218009" vertical-offset="3600" max-vertical-offset="4800">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/osgi/aps/groups/service/APSGroupsServiceProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="105" column="5" selection-start="4000" selection-end="4000" vertical-scroll-proportion="0.0" vertical-offset="2530" max-vertical-offset="3585">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MessageReceiver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="185" column="29" selection-start="6513" selection-end="6513" vertical-scroll-proportion="0.0" vertical-offset="2299" max-vertical-offset="3615">
+        <state line="105" column="5" selection-start="4000" selection-end="4000" vertical-scroll-proportion="0.014218009" vertical-offset="1560" max-vertical-offset="3720">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/sync/service/APSSyncService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="142" column="25" selection-start="3901" selection-end="3901" vertical-scroll-proportion="0.0" vertical-offset="2130" max-vertical-offset="4290">
+        <state line="142" column="25" selection-start="3901" selection-end="3901" vertical-scroll-proportion="0.014218009" vertical-offset="2115" max-vertical-offset="4290">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroupsSyncServiceProvider/src/main/java/se/natusoft/osgi/aps/sync/APSSyncServiceProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="254" column="81" selection-start="8198" selection-end="8198" vertical-scroll-proportion="0.0" vertical-offset="2089" max-vertical-offset="5775">
+        <state line="254" column="81" selection-start="8198" selection-end="8198" vertical-scroll-proportion="0.014218009" vertical-offset="3795" max-vertical-offset="6060">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/sync/Synchronizer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="349" column="32" selection-start="13709" selection-end="13709" vertical-scroll-proportion="2.7861772" vertical-offset="3555" max-vertical-offset="10575">
+        <state line="299" column="80" selection-start="12056" selection-end="12056" vertical-scroll-proportion="2.3886256" vertical-offset="1575" max-vertical-offset="10575">
           <folding>
             <element signature="e#10078#10245#0" expanded="true" />
             <element signature="e#10238#10239#0" expanded="true" />
@@ -5823,6 +5724,109 @@
             <element signature="e#10959#11141#0" expanded="true" />
             <element signature="e#11134#11135#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/config/APSGroupsConfigProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="58" column="13" selection-start="2584" selection-end="2584" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2715">
+          <folding>
+            <element signature="e#4272#4273#0" expanded="false" />
+            <element signature="e#4328#4329#0" expanded="false" />
+            <element signature="e#4438#4439#0" expanded="false" />
+            <element signature="e#4482#4483#0" expanded="false" />
+            <element signature="e#4644#4645#0" expanded="false" />
+            <element signature="e#4694#4695#0" expanded="false" />
+            <element signature="e#4802#4803#0" expanded="false" />
+            <element signature="e#4843#4844#0" expanded="false" />
+            <element signature="e#5035#5036#0" expanded="false" />
+            <element signature="e#5081#5082#0" expanded="false" />
+            <element signature="e#5224#5225#0" expanded="false" />
+            <element signature="e#5263#5264#0" expanded="false" />
+            <element signature="e#5482#5483#0" expanded="false" />
+            <element signature="e#5534#5535#0" expanded="false" />
+            <element signature="e#5686#5687#0" expanded="false" />
+            <element signature="e#5728#5729#0" expanded="false" />
+            <element signature="e#5940#5941#0" expanded="false" />
+            <element signature="e#6008#6009#0" expanded="false" />
+            <element signature="e#6283#6284#0" expanded="false" />
+            <element signature="e#6333#6334#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/net/Transport.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="77" column="18" selection-start="2930" selection-end="2930" vertical-scroll-proportion="0.0" vertical-offset="700" max-vertical-offset="1755">
+          <folding>
+            <element signature="imports" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/config/APSGroupsConfig.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="37" column="46" selection-start="1896" selection-end="1896" vertical-scroll-proportion="0.0" vertical-offset="325" max-vertical-offset="1395">
+          <folding>
+            <marker date="1388591505000" expanded="true" signature="1778:1900" placeholder="/**...*/" />
+            <marker date="1388591505000" expanded="true" signature="1961:2047" placeholder="/**...*/" />
+            <marker date="1388591505000" expanded="true" signature="2272:2321" placeholder="/**...*/" />
+            <marker date="1388591505000" expanded="true" signature="2391:2442" placeholder="/**...*/" />
+            <marker date="1388591505000" expanded="true" signature="2482:2555" placeholder="/**...*/" />
+            <marker date="1388591505000" expanded="true" signature="2596:2644" placeholder="/**...*/" />
+            <marker date="1388591505000" expanded="true" signature="2788:2877" placeholder="/**...*/" />
+            <marker date="1388591505000" expanded="true" signature="2916:3011" placeholder="/**...*/" />
+            <marker date="1388591505000" expanded="true" signature="3053:3255" placeholder="/**...*/" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MessageReceiver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="185" column="29" selection-start="6513" selection-end="6513" vertical-scroll-proportion="0.0" vertical-offset="250" max-vertical-offset="3615">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/MessageSender.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="68" column="13" selection-start="2976" selection-end="2976" vertical-scroll-proportion="0.0" vertical-offset="75" max-vertical-offset="2970">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/DataReceiverThread.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="133" column="11" selection-start="4781" selection-end="4781" vertical-scroll-proportion="0.0" vertical-offset="1080" max-vertical-offset="4440">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/src/main/java/se/natusoft/apsgroups/internal/protocol/DataReceivers.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="34" column="1" selection-start="934" selection-end="934" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="585">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="218" column="0" selection-start="9642" selection-end="9642" vertical-scroll-proportion="-14.625" vertical-offset="2919" max-vertical-offset="4515">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="97" column="20" selection-start="3051" selection-end="3051" vertical-scroll-proportion="-3.4583333" vertical-offset="1372" max-vertical-offset="7080">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="173" column="0" selection-start="7429" selection-end="7429" vertical-scroll-proportion="0.5072745" vertical-offset="2072" max-vertical-offset="3645">
+          <folding />
         </state>
       </provider>
     </entry>

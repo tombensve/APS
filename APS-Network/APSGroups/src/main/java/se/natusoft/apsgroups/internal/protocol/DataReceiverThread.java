@@ -131,7 +131,7 @@ public class DataReceiverThread extends Thread implements DataReceiver {
         this.config = config;
         this.transport = new MulticastTransport(this.logger, this.config);
 
-                this.listeners = Collections.synchronizedList(new LinkedList<MessagePacketListener>());
+        this.listeners = Collections.synchronizedList(new LinkedList<MessagePacketListener>());
     }
 
     //
