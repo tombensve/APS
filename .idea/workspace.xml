@@ -2,13 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="Added APSMessageServiceSyncServiceProvider.&#10;">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/aps-configuration-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/aps-configuration-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/APSResolvingBundleDeployer/aps-resolving-bundle-deployer.iml" afterPath="$PROJECT_DIR$/APS-Misc/APSResolvingBundleDeployer/aps-resolving-bundle-deployer.iml" />
-    </list>
-    <list id="93ee55a5-7aeb-46b4-befc-da110c6bd63a" name="Failed commit: Default" comment="Dev commit." />
-    <list id="06b13bc3-1d3d-4a4b-a140-0787da2c2ef4" name="aps-36 Synchronize configurations between installations." comment="aps-36 Synchronize configurations between installations.&#10;" />
-    <list id="98afb004-a88c-48d4-a83f-173b6ab19c7d" name="IDE-files" comment="IDE-files">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_io_1_2.xml" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APS-Auth.iml" afterPath="$PROJECT_DIR$/APS-Auth/APS-Auth.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APS-Core.iml" afterPath="$PROJECT_DIR$/APS-Core/APS-Core.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APS-Data.iml" afterPath="$PROJECT_DIR$/APS-Data/APS-Data.iml" />
@@ -17,11 +10,11 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APS-Network.iml" afterPath="$PROJECT_DIR$/APS-Network/APS-Network.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APS-Webs.iml" afterPath="$PROJECT_DIR$/APS-Webs/APS-Webs.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Build/Build.iml" afterPath="$PROJECT_DIR$/Build/Build.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider/aps-admin-web-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider/aps-admin-web-service-provider.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/aps-admin-web.iml" afterPath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/aps-admin-web.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/aps-apis.iml" afterPath="$PROJECT_DIR$/APS-APIs/aps-apis.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/aps-config-admin-web.iml" afterPath="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/aps-config-admin-web.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/aps-configuration-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/aps-configuration-service-provider.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSDataSource/aps-datasource.iml" afterPath="$PROJECT_DIR$/APS-Data/APSDataSource/aps-datasource.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/aps-discovery-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/aps-discovery-service-provider.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/aps-ext-protocol-http-transport-provider.iml" afterPath="$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/aps-ext-protocol-http-transport-provider.iml" />
@@ -33,18 +26,16 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSLogServiceProvider/aps-log-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Core/APSLogServiceProvider/aps-log-service-provider.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/aps-openjpa-provider.iml" afterPath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/aps-openjpa-provider.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSPlatformServiceProvider/aps-platform-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Core/APSPlatformServiceProvider/aps-platform-service-provider.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/APSResolvingBundleDeployer/aps-resolving-bundle-deployer.iml" afterPath="$PROJECT_DIR$/APS-Misc/APSResolvingBundleDeployer/aps-resolving-bundle-deployer.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider/aps-session-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider/aps-session-service-provider.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/aps-simple-user-service-auth-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/aps-simple-user-service-auth-service-provider.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/aps-simple-user-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/aps-simple-user-service-provider.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/aps-streamed-json-rpc-protocol-provider.iml" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/aps-streamed-json-rpc-protocol-provider.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/aps-user-admin-web.iml" afterPath="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/aps-user-admin-web.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dataSources.xml" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
+    <list id="93ee55a5-7aeb-46b4-befc-da110c6bd63a" name="Failed commit: Default" comment="Dev commit." />
+    <list id="06b13bc3-1d3d-4a4b-a140-0787da2c2ef4" name="aps-36 Synchronize configurations between installations." comment="aps-36 Synchronize configurations between installations.&#10;" />
     <list id="afaa7e44-fd26-4203-aada-362a88909145" name="Regenerated Docs" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-UserGuide/docs/APS-UserGuide.md" afterPath="$PROJECT_DIR$/APS-UserGuide/docs/APS-UserGuide.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-UserGuide/docs/APS-UserGuide.pdf" afterPath="$PROJECT_DIR$/APS-UserGuide/docs/APS-UserGuide.pdf" />
@@ -3556,7 +3547,7 @@
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="" />
-      <changelist id="98afb004-a88c-48d4-a83f-173b6ab19c7d" name="IDE-files" comment="" />
+      <changelist id="" name="IDE-files" comment="" />
       <changelist id="afaa7e44-fd26-4203-aada-362a88909145" name="Regenerated Docs" comment="" />
       <created>1328367638843</created>
       <updated>1365864794958</updated>
@@ -3566,7 +3557,7 @@
       <workItem from="1387882920250" duration="54241000" />
       <workItem from="1388147411331" duration="47563000" />
       <workItem from="1388326449140" duration="22802000" />
-      <workItem from="1388493304988" duration="910000" />
+      <workItem from="1388493304988" duration="957000" />
     </task>
     <task id="LOCAL-00001" summary="Added hashCode() and equals() to the 2 configuration model implementations.">
       <created>1334502625761</created>
@@ -5280,7 +5271,11 @@
       <created>1388585625204</created>
       <updated>1388585625205</updated>
     </task>
-    <option name="localTasksCounter" value="401" />
+    <task id="LOCAL-00401" summary="IDE-files">
+      <created>1388585756123</created>
+      <updated>1388585756124</updated>
+    </task>
+    <option name="localTasksCounter" value="402" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="true" url="http://redmine.natusoft.private/redmine">
@@ -5297,7 +5292,7 @@
     </servers>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="128851000" />
+    <option name="totallyTimeSpent" value="128898000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -5389,7 +5384,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="Cosmetic renames in config ids for better readability in aps-admin-web." />
     <MESSAGE value="- New APSMessageService API.&#10;- New APSSyncService API.&#10;- New APSNetTimeService API.&#10;- New APSSyncService provider using APSGroupsService.&#10;- New APSNetTimeService provider using APSGroupsService.&#10;- Synchronizer in APSConfigService provider now uses the new APSSyncService rather than APSGroupsService.&#10;- All this in preparation for providing providing an APSMessageServcie provider based on RabbitMQ, and an alternative APSSyncService provider using APSMessageService." />
     <MESSAGE value="Fixed bug in APSGroups that ignored new members being announced.&#10;" />
     <MESSAGE value="Fixed an NPE." />
@@ -5414,7 +5408,8 @@
     <MESSAGE value="Cosmetics." />
     <MESSAGE value="Added some debug logging and a bit of cleanup." />
     <MESSAGE value="Removed debug logging within loop that caused too many logs. Set level to NONE in Debug. java." />
-    <option name="LAST_COMMIT_MESSAGE" value="Removed debug logging within loop that caused too many logs. Set level to NONE in Debug. java." />
+    <MESSAGE value="IDE-files" />
+    <option name="LAST_COMMIT_MESSAGE" value="IDE-files" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
