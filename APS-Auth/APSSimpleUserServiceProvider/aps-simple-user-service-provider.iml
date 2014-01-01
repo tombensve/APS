@@ -12,10 +12,8 @@
       </configuration>
     </facet>
     <facet type="Osmorc" name="OSGi">
-      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-simple-user-service-provider-0.9.3.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.tools.APSActivator" bundleSymbolicName="aps-simple-user-service-provider" bundleVersion="0.9.3" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
+      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-simple-user-service-provider-0.9.3.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.tools.APSActivator" bundleSymbolicName="aps-simple-user-service-provider" bundleVersion="1.0.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
-          <property key="Bundle-Vendor" value="Natusoft AB" />
-          <property key="Bundle-DocURL" value="http://www.natusoft.se/" />
           <property key="JPA-PersistenceUnits" value="UserAdmin" />
           <property key="Import-Package" value="*" />
           <property key="Private-Package" value="se.natusoft.osgi.aps.userservice,se.natusoft.osgi.aps.userservice.config,se.natusoft.osgi.aps.userservice.entities,se.natusoft.osgi.aps.userservice.util,se.natusoft.osgi.aps.userservice.service" />
@@ -35,7 +33,7 @@
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <excludeFolder url="file://$MODULE_DIR$/target/classes" />
       <excludeFolder url="file://$MODULE_DIR$/target/test-classes" />
       <excludeFolder url="file://$MODULE_DIR$/../../APS-Enterprise/APSSimpleUserServiceProvider/target/generated-sources/groovy-stubs" />

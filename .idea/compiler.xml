@@ -116,6 +116,7 @@
         <module name="aps-json-lib" />
         <module name="aps-json-service-provider" />
         <module name="aps-log-service-provider" />
+        <module name="aps-message-services-sync-service-provider" />
         <module name="aps-net-time-service-provider" />
         <module name="aps-openjpa-provider" />
         <module name="aps-platform-service-provider" />
@@ -131,6 +132,7 @@
         <module name="aps-user-admin-web" />
         <module name="aps-web-tools" />
         <module name="APSGroupsMessageServiceProvider" />
+        <module name="APSMessageServiceSyncServiceProvider" />
         <module name="APSNetTimeServiceProvider" />
         <module name="APSRabbitMQMessageServiceProvider" />
         <module name="APSResolvingBundleDeployer" />
@@ -164,6 +166,7 @@
       <module name="aps-json-service-provider" target="1.7" />
       <module name="APS-Libraries" target="1.7" />
       <module name="aps-log-service-provider" target="1.7" />
+      <module name="aps-message-services-sync-service-provider" target="1.7" />
       <module name="APS-Misc" target="1.7" />
       <module name="aps-net-time-service-provider" target="1.7" />
       <module name="APS-Network" target="1.7" />
@@ -183,6 +186,7 @@
       <module name="APS-Webs" target="1.7" />
       <module name="APSConfigTest" target="1.7" />
       <module name="APSGroupsMessageServiceProvider" target="1.7" />
+      <module name="APSMessageServiceSyncServiceProvider" target="1.7" />
       <module name="APSNetTimeServiceProvider" target="1.7" />
       <module name="APSRabbitMQMessageServiceProvider" target="1.7" />
       <module name="APSSimpleUserServiceAuthServiceProvider" target="1.7" />

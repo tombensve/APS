@@ -337,6 +337,10 @@
   </component>
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
+    <list size="2">
+      <item index="0" class="java.lang.String" itemvalue="se.natusoft.osgi.aps.tools.annotation.activator.Managed" />
+      <item index="1" class="java.lang.String" itemvalue="se.natusoft.osgi.aps.tools.annotation.activator.OSGiService" />
+    </list>
   </component>
   <component name="ExportToHTMLSettings">
     <option name="printScope" value="2" />
@@ -367,6 +371,7 @@
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSGroups" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSGroupsSyncServiceProvider" />
+    <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSMessageServiceSyncServiceProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSNetTimeServiceProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider" />
@@ -420,9 +425,6 @@
   <component name="ModuleEditorState">
     <option name="LAST_EDITED_MODULE_NAME" />
     <option name="LAST_EDITED_TAB_NAME" />
-  </component>
-  <component name="Osmorc">
-    <option name="manifestSynchronizationType" value="AutomaticallySynchronize" />
   </component>
   <component name="ProjectResources">
     <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
