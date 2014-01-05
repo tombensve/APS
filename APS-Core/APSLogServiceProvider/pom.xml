@@ -10,7 +10,6 @@
 
     <groupId>se.natusoft.osgi.aps</groupId>
     <artifactId>aps-log-service-provider</artifactId>
-    <version>1.0.0</version>
     <packaging>bundle</packaging>
 
     <name>APS Log service Provider</name>

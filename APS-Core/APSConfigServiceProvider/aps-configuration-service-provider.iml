@@ -2,8 +2,11 @@
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Osmorc" name="OSGi">
-      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-configuration-service-provider-0.9.3.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.core.config.APSConfigServiceActivator" bundleSymbolicName="aps-configuration-service-provider" bundleVersion="1.0.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
+      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-configuration-service-provider-0.10.0.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.core.config.APSConfigServiceActivator" bundleSymbolicName="aps-configuration-service-provider" bundleVersion="1.0.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
+          <property key="Bundle-Description" value="A more advanced configuration service that uses annotated interfaces to describe and provide access to configuration. It supports structuredconfiguration models." />
+          <property key="Bundle-Vendor" value="Natusoft AB" />
+          <property key="Bundle-DocURL" value="http://www.natusoft.se/" />
           <property key="Export-Package" value="se.natusoft.osgi.aps.core.config.api" />
           <property key="Import-Package" value="*" />
           <property key="Private-Package" value="se.natusoft.osgi.aps.core.config,se.natusoft.osgi.aps.core.config.config,se.natusoft.osgi.aps.core.config.model,se.natusoft.osgi.aps.core.config.model.admin,se.natusoft.osgi.aps.core.config.service,se.natusoft.osgi.aps.core.config.store,se.natusoft.osgi.aps.core.config.tools,se.natusoft.osgi.aps.core.config.sync" />

@@ -44,7 +44,6 @@ import org.osgi.framework.ServiceReference;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.APSExternalProtocolService;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternalProtocolListener;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternallyCallable;
-import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSRESTCallable;
 import se.natusoft.osgi.aps.api.external.model.type.DataType;
 import se.natusoft.osgi.aps.api.external.model.type.DataTypeDescription;
 import se.natusoft.osgi.aps.api.external.model.type.ParameterDataTypeDescription;
@@ -52,12 +51,11 @@ import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
 import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescriptionProvider;
 import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService;
-import se.natusoft.osgi.aps.api.net.rpc.errors.APSRESTException;
 import se.natusoft.osgi.aps.api.net.rpc.errors.ErrorType;
 import se.natusoft.osgi.aps.api.net.rpc.errors.HTTPError;
 import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
 import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;
-import se.natusoft.osgi.aps.api.net.rpc.service.StreamedHTTPProtocol;
+import se.natusoft.osgi.aps.api.net.rpc.model.RequestIntention;
 import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 import se.natusoft.osgi.aps.exceptions.APSException;
 import se.natusoft.osgi.aps.rpchttpextender.config.RPCServletConfig;
@@ -333,6 +331,27 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     }
 
     /**
+     * Copies the request parameters providing only the first value of multivalues since we currently only support one value per name.
+     *
+     * @param req The http request to get parameters from.
+     */
+    private Map<String, String> getParameters(HttpServletRequest req) {
+        Map<String, String> params = new HashMap<>();
+        Map<String, String[]> reqParams = req.getParameterMap();
+
+        for (String name : reqParams.keySet()) {
+            String[] value = reqParams.get(name);
+            String rvalue = "";
+            if (value != null) {
+                rvalue = value[0];
+            }
+            params.put(name, rvalue);
+        }
+
+        return params;
+    }
+
+    /**
      * Handles a service call.
      *
      * @param req
@@ -380,40 +399,34 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             method = pathParts[part];
         }
 
+        APSExternallyCallable<Object> callable = this.externalProtocolService.getCallable(service, method);
+
         StreamedRPCProtocol protocol = this.externalProtocolService.getStreamedProtocolByNameAndVersion(protocolName, version);
         if (protocol != null) {
-            boolean isHttpProtocol = false;
-            boolean supportsREST = false;
-
-            if (protocol instanceof StreamedHTTPProtocol) {
-                isHttpProtocol = true;
-                supportsREST = ((StreamedHTTPProtocol)protocol).supportsREST();
-            }
 
             List<RPCRequest> requests = null;
 
             String reqMethod = req.getMethod().toUpperCase();
-
-            if (isHttpProtocol) {
-                if (reqMethod.equalsIgnoreCase("POST") || reqMethod.equalsIgnoreCase("PUT") || reqMethod.equalsIgnoreCase("DELETE")) {
-                    requests = protocol.parseRequests(service, method, req.getInputStream());
-                }
-                else if (reqMethod.equalsIgnoreCase("GET")) {
+            switch (reqMethod) {
+                case "GET":
                     requests = new LinkedList<>();
-
-                    Map<String, String> reqParams = new HashMap<String, String>();
-
-                    Enumeration<String> rpEnumeration = req.getParameterNames();
-                    while (rpEnumeration.hasMoreElements()) {
-                        String name = rpEnumeration.nextElement();
-                        String value = req.getParameter(name);
-                        reqParams.put(name, value);
-                    }
-                    requests.add(protocol.parseRequest(service, method, reqParams));
-                }
-            }
-            else {
-                requests = protocol.parseRequests(service, method, req.getInputStream());
+                    requests.add(protocol.parseRequest(service, callable.getServiceClass(), method, getParameters(req), RequestIntention.READ));
+                    break;
+                case "PUT":
+                    requests = protocol.parseRequests(service, callable.getServiceClass(), method, req.getInputStream(), RequestIntention.UPDATE);
+                    break;
+                case "POST":
+                    requests = protocol.parseRequests(service, callable.getServiceClass(), method, req.getInputStream(), RequestIntention.CREATE);
+                    break;
+                case "DELETE":
+                    requests = new LinkedList<>();
+                    requests.add(protocol.parseRequest(service, callable.getServiceClass(), method, getParameters(req), RequestIntention.DELETE));
+                    break;
+                default:
+                    // We fallback on READ if we get something unexpected here!
+                    requests = new LinkedList<>();
+                    requests.add(protocol.parseRequest(service, callable.getServiceClass(), method, getParameters(req), RequestIntention.READ));
+                    break;
             }
 
             // It is possible to send multiple requests on the stream!
@@ -424,38 +437,8 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                         if (method == null) {
                             method = rpcRequest.getMethod();
                         }
-                        APSExternallyCallable<Object> callable = null;
 
-                        if (supportsREST && this.externalProtocolService.isRESTCallable(service)) {
-                            callable = this.externalProtocolService.getRESTCallable(service);
-                            APSRESTCallable restCallable = (APSRESTCallable)callable;
-                            if (reqMethod.equalsIgnoreCase("POST") && restCallable.supportsPost()) {
-                                restCallable.selectMethod(APSRESTCallable.HttpMethod.POST);
-                            }
-                            else if (reqMethod.equalsIgnoreCase("PUT") && restCallable.supportsPut()) {
-                                restCallable.selectMethod(APSRESTCallable.HttpMethod.PUT);
-                            }
-                            else if (reqMethod.equalsIgnoreCase("DELETE") && restCallable.supportsDelete()) {
-                                restCallable.selectMethod(APSRESTCallable.HttpMethod.DELETE);
-                            }
-                            else if (restCallable.supportsGet()) {
-                                restCallable.selectMethod(APSRESTCallable.HttpMethod.GET);
-                            }
-                            else {
-                                throw new RPCErrorException(
-                                        protocol.createRPCError(
-                                                ErrorType.SERVICE_NOT_FOUND,
-                                                null,
-                                                "HTTP method of '" + reqMethod + "' is not supported by service '" + service + "'!",
-                                                null,
-                                                null
-                                        )
-                                );
-                            }
-                        }
-                        else {
-                            callable = this.externalProtocolService.getCallable(service, method);
-                        }
+                        callable = this.externalProtocolService.getCallable(service, method);
 
                         if (callable != null) {
                             // Handle parameters
@@ -472,27 +455,14 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                                         paramClass = callable.getServiceBundle().loadClass(paramDesc.getObjectQName());
                                     }
                                 } catch (ClassNotFoundException cnfe) {
-                                    if (protocol instanceof StreamedHTTPProtocol) {
-                                        throw new RPCErrorException(
-                                                protocol.createRPCError(
-                                                        ErrorType.SERVICE_NOT_FOUND,
-                                                        "" + HttpServletResponse.SC_BAD_REQUEST,
-                                                        cnfe.getMessage(),
-                                                        null,
-                                                        cnfe
-                                                )
-                                        );
-                                    } else {
-                                        throw new RPCErrorException(
-                                                protocol.createRPCError(
-                                                        ErrorType.SERVICE_NOT_FOUND,
-                                                        null,
-                                                        cnfe.getMessage(),
-                                                        null,
-                                                        cnfe
-                                                )
-                                        );
-                                    }
+                                    throw new RPCErrorException(
+                                            protocol.createRPCError(
+                                                    ErrorType.SERVICE_NOT_FOUND,
+                                                    cnfe.getMessage(),
+                                                    null,
+                                                    cnfe
+                                            )
+                                    );
                                 }
 
                                 params.add(rpcRequest.getIndexedParameter(param++, paramClass));
@@ -502,91 +472,41 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                             paramsArray = params.toArray(paramsArray);
 
                             // Call service
-                            callable.setArguments(paramsArray);
                             Object result = null;
                             try {
-                                result = callable.call();
-                            } catch (APSRESTException are) {
+                                result = callable.call(paramsArray);
+                            } catch (APSNoServiceAvailableException nsae) {
                                 throw new RPCErrorException(
                                         protocol.createRPCError(
                                                 ErrorType.SERVICE_NOT_FOUND,
-                                                "" + are.getHttpStatusCode(),
-                                                are.getMessage(),
+                                                "Service '" + service + "' is not available!",
                                                 null,
-                                                are.getCause()
+                                                nsae
                                         )
                                 );
-                            } catch (APSNoServiceAvailableException nsae) {
-                                if (protocol instanceof StreamedHTTPProtocol) {
-                                    throw new RPCErrorException(
-                                            protocol.createRPCError(
-                                                    ErrorType.SERVICE_NOT_FOUND,
-                                                    "" + HttpServletResponse.SC_SERVICE_UNAVAILABLE,
-                                                    nsae.getMessage(),
-                                                    null,
-                                                    nsae
-                                            )
-                                    );
-                                } else {
-                                    throw new RPCErrorException(
-                                            protocol.createRPCError(
-                                                    ErrorType.SERVICE_NOT_FOUND,
-                                                    null,
-                                                    "Service '" + service + "' is not available!",
-                                                    null,
-                                                    nsae
-                                            )
-                                    );
-                                }
                             } catch (Exception e) {
-                                if (protocol instanceof StreamedHTTPProtocol) {
-                                    throw new RPCErrorException(
-                                            protocol.createRPCError(
-                                                    ErrorType.SERVER_ERROR,
-                                                    "" + HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                                    e.getMessage(),
-                                                    null,
-                                                    e
-                                            )
-                                    );
-                                } else {
-                                    throw new RPCErrorException(
-                                            protocol.createRPCError(
-                                                    ErrorType.SERVER_ERROR,
-                                                    null,
-                                                    e.getMessage(),
-                                                    null,
-                                                    e
-                                            )
-                                    );
-                                }
+                                throw new RPCErrorException(
+                                        protocol.createRPCError(
+                                                ErrorType.SERVER_ERROR,
+                                                e.getMessage(),
+                                                null,
+                                                e
+                                        )
+                                );
                             }
 
                             // Write the normal OK response.
                             protocol.writeResponse(result, rpcRequest, resp.getOutputStream());
 
                         } else {
-                            if (protocol instanceof StreamedHTTPProtocol) {
-                                throw new RPCErrorException(
-                                        protocol.createRPCError(
-                                                ErrorType.METHOD_NOT_FOUND,
-                                                "" + HttpServletResponse.SC_BAD_REQUEST,
-                                                "Method '" + method + "' is not available!",
-                                                null,
-                                                null
-                                        )
-                                );
-                            } else {
-                                throw new RPCErrorException(
-                                        protocol.createRPCError(
-                                                ErrorType.METHOD_NOT_FOUND,
-                                                null,
-                                                "Method '" + method + "' is not available!",
-                                                null,
-                                                null
-                                        )
-                                );
-                            }
+                            throw new RPCErrorException(
+                                    protocol.createRPCError(
+                                            ErrorType.METHOD_NOT_FOUND,
+                                            "Method '" + method + "' is not available!",
+                                            null,
+                                            null
+                                    )
+                            );
                         }
                     } else {
                         throw new RPCErrorException(rpcRequest.getError());
@@ -594,23 +514,23 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                 }
                 // Write error responses.
                 catch (RPCErrorException ree) {
-                    if (protocol instanceof StreamedHTTPProtocol) {
+                    if (ree.getError() instanceof HTTPError ) {
                         resp.sendError(((HTTPError) ree.getError()).getHttpStatusCode(), ree.getError().getMessage());
                     } else {
                         protocol.writeErrorResponse(ree.getError(), rpcRequest, resp.getOutputStream());
                     }
                 } catch (Exception e) {
-                    if (protocol instanceof StreamedHTTPProtocol) {
-                        resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                    RPCError error = protocol.createRPCError(
+                            ErrorType.SERVER_ERROR,
+                            e.getMessage(),
+                            null,
+                            e
+                    );
+                    if (error instanceof HTTPError) {
+                        resp.sendError(((HTTPError) error).getHttpStatusCode(), error.getMessage());
                     } else {
                         protocol.writeErrorResponse(
-                                protocol.createRPCError(
-                                        ErrorType.SERVER_ERROR,
-                                        null,
-                                        e.getMessage(),
-                                        null,
-                                        e
-                                ),
+                                error,
                                 rpcRequest,
                                 resp.getOutputStream()
                         );
@@ -1274,10 +1194,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                 ++p;
             }
             if (paramFail == null) {
-                if (args.length > 0) {
-                    callable.setArguments(args);
-                }
-                Object result = callable.call();
+                Object result = callable.call(args);
                 JSONValue jsonValue = this.jsonService.javaToJSON(result);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 this.jsonService.writeJSON(baos, jsonValue, false);

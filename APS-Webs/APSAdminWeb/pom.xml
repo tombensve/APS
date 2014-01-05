@@ -40,11 +40,10 @@
     <parent>
         <artifactId>APS-Webs</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version><!--APSVER-->0.9.3</version>
+        <version>0.10.0</version>
         <relativePath>..</relativePath>
     </parent>
 
-    <groupId>se.natusoft.osgi.aps</groupId>
     <artifactId>aps-admin-web</artifactId>
     <packaging>war</packaging>
 

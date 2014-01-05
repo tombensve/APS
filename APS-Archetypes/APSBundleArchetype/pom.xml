@@ -9,6 +9,5 @@
 	
     <groupId>se.natusoft.osgi.aps.archetype</groupId>
     <artifactId>APSBundleArchetype</artifactId>
-    <version>1.0</version>
     <name>Archetype - APSBundleArchetype</name>
 </project>

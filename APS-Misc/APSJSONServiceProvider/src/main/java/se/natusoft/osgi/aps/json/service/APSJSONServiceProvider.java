@@ -41,6 +41,7 @@ import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
 import se.natusoft.osgi.aps.api.misc.json.model.*;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
 import se.natusoft.osgi.aps.json.JSON;
+import se.natusoft.osgi.aps.json.JSONEOFException;
 import se.natusoft.osgi.aps.json.model.*;
 import se.natusoft.osgi.aps.json.tools.JSONToJava;
 import se.natusoft.osgi.aps.json.tools.JavaToJSON;
@@ -137,30 +138,35 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
     @Override
     public JSONValue readJSON(InputStream in, JSONErrorHandler errorHandler) throws IOException {
         JSONErrorHandlerProxy errorHandlerProxy = new JSONErrorHandlerProxy(errorHandler);
-        se.natusoft.osgi.aps.json.JSONValue jv = JSON.read(in, errorHandlerProxy);
+        try {
+            se.natusoft.osgi.aps.json.JSONValue jv = JSON.read(in, errorHandlerProxy);
 
-        JSONValue value = null;
+            JSONValue value = null;
 
-        if (jv instanceof se.natusoft.osgi.aps.json.JSONArray) {
-            value = new JSONArrayModel((se.natusoft.osgi.aps.json.JSONArray)jv);
-        }
-        else if (jv instanceof se.natusoft.osgi.aps.json.JSONObject) {
-            value = new JSONObjectModel((se.natusoft.osgi.aps.json.JSONObject)jv);
-        }
-        else if (jv instanceof se.natusoft.osgi.aps.json.JSONBoolean) {
-            value = new JSONBooleanModel((se.natusoft.osgi.aps.json.JSONBoolean)jv);
-        }
-        else if (jv instanceof se.natusoft.osgi.aps.json.JSONNull) {
-            value = new JSONNullModel((se.natusoft.osgi.aps.json.JSONNull)jv);
-        }
-        else if (jv instanceof se.natusoft.osgi.aps.json.JSONNumber) {
-            value = new JSONNumberModel((se.natusoft.osgi.aps.json.JSONNumber)jv);
-        }
-        else if (jv instanceof se.natusoft.osgi.aps.json.JSONString) {
-            value = new JSONStringModel((se.natusoft.osgi.aps.json.JSONString)jv);
-        }
+            if (jv instanceof se.natusoft.osgi.aps.json.JSONArray) {
+                value = new JSONArrayModel((se.natusoft.osgi.aps.json.JSONArray)jv);
+            }
+            else if (jv instanceof se.natusoft.osgi.aps.json.JSONObject) {
+                value = new JSONObjectModel((se.natusoft.osgi.aps.json.JSONObject)jv);
+            }
+            else if (jv instanceof se.natusoft.osgi.aps.json.JSONBoolean) {
+                value = new JSONBooleanModel((se.natusoft.osgi.aps.json.JSONBoolean)jv);
+            }
+            else if (jv instanceof se.natusoft.osgi.aps.json.JSONNull) {
+                value = new JSONNullModel((se.natusoft.osgi.aps.json.JSONNull)jv);
+            }
+            else if (jv instanceof se.natusoft.osgi.aps.json.JSONNumber) {
+                value = new JSONNumberModel((se.natusoft.osgi.aps.json.JSONNumber)jv);
+            }
+            else if (jv instanceof se.natusoft.osgi.aps.json.JSONString) {
+                value = new JSONStringModel((se.natusoft.osgi.aps.json.JSONString)jv);
+            }
 
-        return value;
+            return value;
+        }
+        catch (JSONEOFException eofe) {
+            throw new se.natusoft.osgi.aps.api.misc.json.JSONEOFException();
+        }
     }
 
     /**
@@ -208,10 +214,15 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      */
     @Override
     public <T> T readJSONToBean(InputStream in, JSONErrorHandler errorHandler, Class<T> beanType) throws IOException {
-        JSONErrorHandlerProxy errorHandlerProxy = new JSONErrorHandlerProxy(errorHandler);
-        se.natusoft.osgi.aps.json.JSONObject obj = new se.natusoft.osgi.aps.json.JSONObject(errorHandlerProxy);
-        obj.readJSON(in);
-        return JSONToJava.convert(obj, beanType);
+        try {
+            JSONErrorHandlerProxy errorHandlerProxy = new JSONErrorHandlerProxy(errorHandler);
+            se.natusoft.osgi.aps.json.JSONObject obj = new se.natusoft.osgi.aps.json.JSONObject(errorHandlerProxy);
+            obj.readJSON(in);
+            return JSONToJava.convert(obj, beanType);
+        }
+        catch (JSONEOFException eofe) {
+            throw new se.natusoft.osgi.aps.api.misc.json.JSONEOFException();
+        }
     }
 
     /**

@@ -4,7 +4,7 @@
     <parent>
         <artifactId>APS</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version><!--APSVER-->0.9.3</version>
+        <version>${project.version}</version>
     </parent>
 
     <artifactId>${artifactId}</artifactId>
@@ -70,13 +70,13 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-core-apis</artifactId>
-            <version><!--APSVER-->0.9.3</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tools-lib</artifactId>
-            <version><!--APSVER-->0.9.3</version>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

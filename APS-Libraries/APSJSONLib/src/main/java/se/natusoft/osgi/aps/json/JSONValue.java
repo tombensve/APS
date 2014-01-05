@@ -343,6 +343,9 @@ public abstract class JSONValue {
 
     /**
      * For subclasses to use in readJSON(JSONReader reader).
+     *
+     * __Please note__ Since this reads chars and chars cannot contain -1 or any value that can be used to indicate EOF it
+     * throws a JSONEOFException on EOF! JSONEOFException extends IOException.
      */
     /*package*/ static class JSONReader {
         //
@@ -395,6 +398,7 @@ public abstract class JSONValue {
             int noRead = this.reader.read(cbuff, 0, 1);
             if (noRead == -1) {
                 this.errorHandler.fail("Unexpected end-of-file!", null);
+                throw new JSONEOFException();
             }
 
             char c = cbuff[0];

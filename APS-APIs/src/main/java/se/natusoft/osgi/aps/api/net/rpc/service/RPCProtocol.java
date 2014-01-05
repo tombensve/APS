@@ -74,12 +74,11 @@ public interface RPCProtocol {
      * Factory method to create an error object.
      *
      * @param errorType The type of the error.
-     * @param errorCode An error code representing the error.
      * @param message An error message.
      * @param optionalData Whatever optional data you want to pass along or null.
      * @param cause The cause of the error.
      *
      * @return An RPCError implementation or null if not handled by the protocol implementation.
      */
-    RPCError createRPCError(ErrorType errorType, String errorCode, String message, String optionalData, Throwable cause);
+    RPCError createRPCError(ErrorType errorType, String message, String optionalData, Throwable cause);
 }

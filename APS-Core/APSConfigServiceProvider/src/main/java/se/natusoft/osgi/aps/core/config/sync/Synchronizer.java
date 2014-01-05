@@ -45,6 +45,12 @@ import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
+import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
+import se.natusoft.osgi.aps.api.misc.json.model.JSONNumber;
+import se.natusoft.osgi.aps.api.misc.json.model.JSONObject;
+import se.natusoft.osgi.aps.api.misc.json.model.JSONString;
+import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
+import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService;
 import se.natusoft.osgi.aps.api.net.sync.service.APSSyncService;
 import se.natusoft.osgi.aps.api.net.time.service.APSNetTimeService;
 import se.natusoft.osgi.aps.core.config.api.APSConfigSyncMgmtService;
@@ -56,8 +62,8 @@ import se.natusoft.osgi.aps.core.config.store.APSConfigPersistentStore;
 import se.natusoft.osgi.aps.tools.APSLogger;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -70,6 +76,15 @@ import java.util.Properties;
 public class Synchronizer implements APSConfigSyncMgmtService, APSConfigMemoryStore.ConfigUpdateListener,
         APSConfigEnvStore.ConfigEnvUpdateListener, APSConfigChangedListener, APSSyncService.SyncGroup.Message.Listener,
 APSSyncService.SyncGroup.ReSyncListener {
+    //
+    // Constants
+    //
+
+    private static final String SYNC_MESSAGE_TYPE = "messageType";
+    private static final String SYNC_CONFIG_ID = "configId";
+    private static final String SYNC_VERSION = "version";
+    private static final String SYNC_DATA = "data";
+
     //
     // Private Members
     //
@@ -97,6 +112,9 @@ APSSyncService.SyncGroup.ReSyncListener {
 
     /** The net time service for translating time between hosts. */
     private APSNetTimeService netTimeService = null;
+
+    /** This is used for creating and reading sync data. */
+    private APSJSONService jsonService;
 
     /** APSGroups member representing us. */
     private APSSyncService.SyncGroup syncGroup = null;
@@ -133,6 +151,7 @@ APSSyncService.SyncGroup.ReSyncListener {
      * @param configPersistentStore For persisting changes.
      * @param syncService The APSSyncService to sync with.
      * @param netTimeService The APSNetTimeService to resolve time difference between hosts with.
+     * @param jsonService The JSON service to use for creating and reading sync data.
      */
     public Synchronizer(
             APSLogger logger,
@@ -142,7 +161,8 @@ APSSyncService.SyncGroup.ReSyncListener {
             APSConfigMemoryStore configMemoryStore,
             APSConfigPersistentStore configPersistentStore,
             APSSyncService syncService,
-            APSNetTimeService netTimeService
+            APSNetTimeService netTimeService,
+            APSJSONService jsonService
     ) {
         this.logger = logger;
         this.configAdminService = configAdminService;
@@ -151,6 +171,7 @@ APSSyncService.SyncGroup.ReSyncListener {
         this.configPersistentStore = configPersistentStore;
         this.syncService = syncService;
         this.netTimeService = netTimeService;
+        this.jsonService = jsonService;
 
         this.config = configService.getConfiguration(APSConfigServiceConfig.class);
         this.config.addConfigChangedListener(this);
@@ -193,8 +214,8 @@ APSSyncService.SyncGroup.ReSyncListener {
             if (this.syncGroup != null) {
                 this.syncGroup.removeMessageListener(this);
                 this.syncGroup.removeReSyncListener(this);
+                this.syncGroup.leaveSyncGroup();
             }
-            this.syncGroup.leaveSyncGroup();
             this.logger.info("Stopped config synchronizer!");
         }
     }
@@ -316,6 +337,34 @@ APSSyncService.SyncGroup.ReSyncListener {
     }
 
     /**
+     * Creates a synchronization JSON object containing the passed config env properties.
+     *
+     * The object will look like this:
+     *
+     *     {
+     *         "messageType": "CONFIG_ENV",
+     *         "data": {
+     *             ...
+     *         }
+     *     }
+     *
+     * @param confenv The config env properties to sync.
+     */
+    private JSONObject createConfEnvJSON(Properties confenv) {
+        JSONObject root = this.jsonService.createJSONObject();
+        root.addValue(SYNC_MESSAGE_TYPE, this.jsonService.createJSONString(MessageType.CONFIG_ENV.name()));
+        JSONObject configEnvData = this.jsonService.createJSONObject();
+        for (String propName : confenv.stringPropertyNames()) {
+            String value = confenv.getProperty(propName);
+
+            configEnvData.addValue(propName, this.jsonService.createJSONString(value));
+        }
+        root.addValue(SYNC_DATA, configEnvData);
+
+        return root;
+    }
+
+    /**
      * Send sync config update.
      *
      * @param configEnvStore The config env store holding the updated value(s).
@@ -323,10 +372,12 @@ APSSyncService.SyncGroup.ReSyncListener {
     public void syncSend(APSConfigEnvStore configEnvStore) {
         try {
             APSSyncService.SyncGroup.Message message = this.syncGroup.createMessage();
-            ObjectOutputStream msgStream = new ObjectOutputStream(message.getOutputStream());
-            msgStream.writeObject(MessageType.CONFIG_ENV);
-            msgStream.writeObject(convertPropTime(configEnvStore.getAsProperties(), Config_Env_Matcher, Local_2_Net_Time_Converter));
+            JSONObject confEnvJSON =
+                    createConfEnvJSON(convertPropTime(configEnvStore.getAsProperties(), Config_Env_Matcher, Local_2_Net_Time_Converter));
+            OutputStream msgStream = message.getOutputStream();
+            this.jsonService.writeJSON(msgStream, confEnvJSON, false);
             msgStream.close();
+
             logger.debug(">>>>>> length: [" + message.getBytes().length + "]");
             this.syncGroup.sendMessage(message);
             this.logger.debug(("### Send updated configEnvStore!"));
@@ -351,6 +402,40 @@ APSSyncService.SyncGroup.ReSyncListener {
     }
 
     /**
+     * Creates a synchronization JSON object for a config.
+     *
+     * The object will look like this:
+     *
+     *     {
+     *         "messageType": "CONFIG",
+     *         "configId": "(id)",
+     *         "version": "(version)",
+     *         "data": {
+     *             ...
+     *         }
+     *     }
+     *
+     * @param configId The id of the config to synchronize.
+     * @param configVersion The version of the config to synchronize.
+     * @param config The config values of the config to synchronize.
+     */
+    private JSONObject createConfigJSON(String configId, String configVersion, Properties config) {
+        JSONObject root = this.jsonService.createJSONObject();
+        root.addValue(SYNC_MESSAGE_TYPE, this.jsonService.createJSONString(MessageType.CONFIG.name()));
+        root.addValue(SYNC_CONFIG_ID, this.jsonService.createJSONString(configId));
+        root.addValue(SYNC_VERSION, this.jsonService.createJSONString(configVersion));
+
+        JSONObject configData = this.jsonService.createJSONObject();
+        for (String propName : config.stringPropertyNames()) {
+            String value = config.getProperty(propName);
+
+            configData.addValue(propName, this.jsonService.createJSONString(value));
+        }
+        root.addValue(SYNC_DATA, configData);
+
+        return root;
+    }
+    /**
      * Sends a sync config update.
      *
      * @param configuration The updated configuration.
@@ -358,21 +443,21 @@ APSSyncService.SyncGroup.ReSyncListener {
     private void syncSend(APSConfigAdmin configuration) {
         try {
             APSSyncService.SyncGroup.Message message = this.syncGroup.createMessage();
-            ObjectOutputStream msgStream = new ObjectOutputStream(message.getOutputStream());
-            msgStream.writeObject(MessageType.CONFIG);
-            msgStream.writeUTF(configuration.getConfigId());
-            logger.debug(">>>>>> configId: [" + configuration.getConfigId() + "]");
-            msgStream.writeUTF(configuration.getVersion());
-            logger.debug(">>>>>> version: [" + configuration.getVersion() + "]");
-            msgStream.writeObject(
+            JSONObject configJSON = createConfigJSON(
+                    configuration.getConfigId(),
+                    configuration.getVersion(),
                     convertPropTime(
                             ((APSConfigAdminImpl) configuration).getConfigInstanceMemoryStore().getProperties(),
                             Config_Value_Matcher,
                             Local_2_Net_Time_Converter
                     )
             );
-            msgStream.flush();
+            OutputStream msgStream = message.getOutputStream();
+            this.jsonService.writeJSON(msgStream, configJSON, false);
             msgStream.close();
+//            System.out.print("SENDING:");
+//            this.jsonService.writeJSON(System.out, configJSON, false);
+
             logger.debug(">>>>>> length: [" + message.getBytes().length + "]");
             this.syncGroup.sendMessage(message);
         }
@@ -391,7 +476,35 @@ APSSyncService.SyncGroup.ReSyncListener {
         syncSend(this.configEnvStore);
         for (APSConfigAdmin configAdmin : this.configAdminService.getAllConfigurations()) {
             syncSend(configAdmin);
-            try {Thread.sleep(500);} catch (InterruptedException ie) {}
+            logger.debug("SyncSend: " + configAdmin);
+        }
+    }
+
+    /**
+     * This is a default implementation.
+     */
+    public class ErrorHandler implements JSONErrorHandler {
+
+        /**
+         * Warns about something.
+         *
+         * @param message The warning message.
+         */
+        @Override
+        public void warning(String message) {
+            logger.warn(message);
+        }
+
+        /**
+         * Indicate failure.
+         *
+         * @param message The failure message.
+         * @param cause   The cause of the failure. Can be null!
+         * @throws RuntimeException This method must throw a RuntimeException.
+         */
+        @Override
+        public void fail(String message, Throwable cause) throws RuntimeException {
+            logger.error(message, cause);
         }
     }
 
@@ -404,22 +517,23 @@ APSSyncService.SyncGroup.ReSyncListener {
     public void receiveMessage(APSSyncService.SyncGroup.Message message) {
         updateLastGroupMsgTimestamp();
 
-        ObjectInputStream msgStream = null;
-        logger.debug("<<<<<< length: [" + message.getBytes().length + "]");
+//        logger.debug("<<<<<< length: [" + message.getBytes().length + "]");
         try {
-            msgStream = new ObjectInputStream(message.getInputStream());
-            MessageType messageType = (MessageType)msgStream.readObject();
+            InputStream msgStream = message.getInputStream();
+            JSONObject msg = (JSONObject)this.jsonService.readJSON(msgStream, new ErrorHandler());
+            msgStream.close();
+            MessageType messageType = MessageType.valueOf(msg.getValue(SYNC_MESSAGE_TYPE).toString());
             switch(messageType) {
                 case CONFIG:
-                    handleConfigValueMessage(msgStream);
+                    handleConfigValueMessage(msg);
                     break;
 
                 case CONFIG_ENV:
-                    handleConfigEnvMessage(msgStream);
+                    handleConfigEnvMessage(msg);
                     break;
 
                 case CONFIG_TIMESTAMP:
-                    handleConfigTimestamp(msgStream);
+                    handleConfigTimestamp(msg);
             }
         }
         catch (IOException ioe) {
@@ -427,16 +541,6 @@ APSSyncService.SyncGroup.ReSyncListener {
         }
         catch (ClassNotFoundException cnfe) {
             this.logger.error("Message contained data of unknown type!", cnfe);
-        }
-        finally {
-            if (msgStream != null) {
-                try {
-                    msgStream.close();
-                }
-                catch (IOException ioe2) {
-                    this.logger.error("Failed to close received message!", ioe2);
-                }
-            }
         }
     }
 
@@ -448,8 +552,8 @@ APSSyncService.SyncGroup.ReSyncListener {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private void handleConfigTimestamp(ObjectInputStream msgStream) throws IOException, ClassNotFoundException {
-        long timeStamp = this.netTimeService.netToLocalTime(msgStream.readLong());
+    private void handleConfigTimestamp(JSONObject msg) throws IOException, ClassNotFoundException {
+        long timeStamp = this.netTimeService.netToLocalTime((long)((JSONNumber)msg.getValue(SYNC_DATA)).toNumber());
         long localTimeStamp = resolveNewestConfigTimestamp();
         if (timeStamp > (localTimeStamp + 2000)) {
             this.syncGroup.reSyncAll();
@@ -464,12 +568,15 @@ APSSyncService.SyncGroup.ReSyncListener {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private void handleConfigValueMessage(ObjectInputStream msgStream) throws IOException, ClassNotFoundException {
-        String configId = msgStream.readUTF();
-        this.logger.debug("<<<<<< configId: [" + configId + "]");
-        String version = msgStream.readUTF();
-        this.logger.debug("<<<<<< version: [" + version + "]");
-        Properties props = (Properties)msgStream.readObject();
+    private void handleConfigValueMessage(JSONObject msg) throws IOException, ClassNotFoundException {
+        String configId = msg.getValue(SYNC_CONFIG_ID).toString();
+        String version = msg.getValue(SYNC_VERSION).toString();
+        Properties props = new Properties();
+        JSONObject data = (JSONObject)msg.getValue(SYNC_DATA);
+        for (JSONString name : data.getValueNames()) {
+            JSONValue value = data.getValue(name);
+            props.put(name.toString(), value.toString());
+        }
         props = convertPropTime(props, Config_Value_Matcher, Net_2_Local_Time_Converter);
 
         mergeConfigValues(configId, version, props);
@@ -503,10 +610,10 @@ APSSyncService.SyncGroup.ReSyncListener {
                     }
 
                     String msgTSValue = msgProps.getProperty(propName + "_time");
-                    long msgTS = msgTSValue != null ? Long.valueOf(msgTSValue).longValue() : 0;
+                    long msgTS = msgTSValue != null ? Long.valueOf(msgTSValue) : 0;
 
                     String localTSValue = localProps.getProperty(propName + "_time");
-                    long localTS = localTSValue != null ? Long.valueOf(localTSValue).longValue() : 0;
+                    long localTS = localTSValue != null ? Long.valueOf(localTSValue) : 0;
 
                     if ((msgTS > localTS || localTS == 0) && propValue != null) {
                         localProps.setProperty(propName, propValue);
@@ -556,9 +663,16 @@ APSSyncService.SyncGroup.ReSyncListener {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    private void handleConfigEnvMessage(ObjectInputStream msgStream) throws IOException, ClassNotFoundException {
-        Properties msgProps = convertPropTime((Properties)msgStream.readObject(), Config_Env_Matcher, Net_2_Local_Time_Converter);
-        mergeConfigEnvs(msgProps);
+    private void handleConfigEnvMessage(JSONObject msg) throws IOException, ClassNotFoundException {
+        Properties props = new Properties();
+        JSONObject data = (JSONObject)msg.getValue(SYNC_DATA);
+        for (JSONString name : data.getValueNames()) {
+            JSONValue value = data.getValue(name);
+            props.put(name.toString(), value.toString());
+        }
+
+        //Properties msgProps = convertPropTime((Properties)msgStream.readObject(), Config_Env_Matcher, Net_2_Local_Time_Converter);
+        mergeConfigEnvs(props);
     }
 
     /**
@@ -636,7 +750,7 @@ APSSyncService.SyncGroup.ReSyncListener {
      */
     @Override
     public String requestUpdate() {
-        this.syncGroup.reSyncAll();
+        //this.syncGroup.reSyncAll();
         return "Requested re-sync of all config!";
     }
 
@@ -714,10 +828,17 @@ APSSyncService.SyncGroup.ReSyncListener {
     private void sendTimestampMessage() {
         try {
             APSSyncService.SyncGroup.Message message = this.syncGroup.createMessage();
-            ObjectOutputStream msgStream = new ObjectOutputStream(message.getOutputStream());
-            msgStream.writeObject(MessageType.CONFIG_TIMESTAMP);
-            msgStream.writeLong(this.netTimeService.localToNetTime(resolveNewestConfigTimestamp()));
+            JSONObject root = this.jsonService.createJSONObject();
+            root.addValue(SYNC_MESSAGE_TYPE, this.jsonService.createJSONString(MessageType.CONFIG_TIMESTAMP.name()));
+            root.addValue(SYNC_DATA, this.jsonService.createJSONNumber(this.netTimeService.localToNetTime(resolveNewestConfigTimestamp())));
+            OutputStream msgStream = message.getOutputStream();
+            this.jsonService.writeJSON(msgStream, root, false);
             msgStream.close();
+
+//            ObjectOutputStream msgStream = new ObjectOutputStream(message.getOutputStream());
+//            msgStream.writeObject(MessageType.CONFIG_TIMESTAMP);
+//            msgStream.writeLong(this.netTimeService.localToNetTime(resolveNewestConfigTimestamp()));
+//            msgStream.close();
             this.syncGroup.sendMessage(message);
         }
         catch (IOException ioe) {

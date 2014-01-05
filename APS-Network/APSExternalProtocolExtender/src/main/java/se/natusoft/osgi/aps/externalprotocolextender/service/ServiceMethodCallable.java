@@ -84,9 +84,6 @@ public class ServiceMethodCallable implements APSExternallyCallable {
     /** A bundle context to lookup service instance with. */
     private BundleContext bundleContext = null;
     
-    /** The arguments to the call. */
-    private Object[] arguments = null;
-
     /** Description of return data. */
     private DataTypeDescription returnDataDescription = null;
 
@@ -130,7 +127,6 @@ public class ServiceMethodCallable implements APSExternallyCallable {
         this.returnDataDescription = callable.returnDataDescription;
         this.parameterDataDescriptions = callable.parameterDataDescriptions;
         this.serviceBundle = callable.serviceBundle;
-        this.arguments = null;
     }
 
     //
@@ -195,17 +191,23 @@ public class ServiceMethodCallable implements APSExternallyCallable {
     }
 
     /**
-     * Provides parameters to the callable using a varags list of parameter values.
-     *
-     * @param value A parameter value.
+     * Returns the class of the service implementation.
      */
     @Override
-    public void setArguments(Object... value) {
-        this.arguments = value;
+    public Class getServiceClass() {
+        Object service = this.bundleContext.getService(this.serviceReference);
+        Class svcClass = service.getClass();
+        try {
+            this.bundleContext.ungetService(this.serviceReference);
+        }
+        catch (Exception e) {/* If it fails, it fails, but we at least tried. */}
+        return svcClass;
     }
 
     /**
      * Computes a result, or throws an exception if unable to do so.
+     *
+     * @param arguments Any arguments to the call.
      *
      * @return computed result
      *
@@ -216,14 +218,14 @@ public class ServiceMethodCallable implements APSExternallyCallable {
      * @throws Exception if unable to compute a result.
      */
     @Override
-    public Object call() throws Exception {
+    public Object call(Object... arguments) throws Exception {
         Object service = this.bundleContext.getService(this.serviceReference);
         if (service == null) {
             throw new APSNoServiceAvailableException("Service '" + this.serviceName + "' is no longer available!");
         }
 
         try {
-            return this.method.invoke(service, this.arguments);
+            return this.method.invoke(service, arguments);
         }
         catch (InvocationTargetException ite) {
             try {
@@ -239,5 +241,21 @@ public class ServiceMethodCallable implements APSExternallyCallable {
             }
             catch (Exception e) {/* If it fails, it fails, but we at least tried. */}
         }
+    }
+
+    /**
+     * Computes a result, or throws an exception if unable to do so.
+     *
+     * @return computed result
+     *
+     * @throws se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException
+     *                   This is thrown if the service represented by this object
+     *                   have gone away between the time you got this instance and
+     *                   the call to this method. This is a runtime exception!
+     * @throws Exception if unable to compute a result.
+     */
+    @Override
+    public Object call() throws Exception {
+        return call(new Object[0]);
     }
 }

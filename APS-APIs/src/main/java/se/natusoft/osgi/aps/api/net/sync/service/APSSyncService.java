@@ -43,7 +43,7 @@ import java.io.*;
 /**
  * Defines a data synchronization service.
  *
- * **Please note** that this API is very similar to the APSMessageService! There are
+ * **Please note** that this API is very similar to the APSSimpleMessageService! There are
  * differences in implementations between synchronization and sync, reusing the
  * same API would be confusing and also require services to register extra properties
  * to identify type of service provided.

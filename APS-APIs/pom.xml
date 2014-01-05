@@ -40,7 +40,7 @@
     <parent>
         <artifactId>APS</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version><!--APSVER-->0.9.3</version>
+        <version>0.10.0</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -102,6 +102,7 @@
             se.natusoft.osgi.aps.api.net.discovery.exception;version="${project.version}",
             se.natusoft.osgi.aps.api.net.discovery.model;version="${project.version}",
             se.natusoft.osgi.aps.api.net.discovery.service;version="${project.version}",
+            se.natusoft.osgi.aps.api.net.rpc.annotations;version="${project.version}",
             se.natusoft.osgi.aps.api.net.rpc.errors;version="${project.version}",
             se.natusoft.osgi.aps.api.net.rpc.model;version="${project.version}",
             se.natusoft.osgi.aps.api.net.rpc.service;version="${project.version}",

@@ -55,6 +55,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
 import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;
+import se.natusoft.osgi.aps.api.net.rpc.model.RequestIntention;
 import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 
 import java.io.IOException;
@@ -99,15 +100,19 @@ public class StreamedRPCProtocolWrapper extends RPCProtocolWrapper implements St
      * Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.
      *
      * @param serviceQName  A fully qualified name to the service to call. This can be null if service name is provided on the stream.
+     * @param serviceClass The class of the service to call. Intended for looking for method annotations! Don't try to be "smart" here!
      * @param method        The method to call. This can be null if method name is provided on the stream.
      * @param requestStream The stream to parse request from.
+     * @param requestIntention The intention of the request (CRUD + UNKNOWN).
+     *
      * @return The parsed requests.
      * @throws java.io.IOException on IO failure.
      */
     @Override
-    public List<RPCRequest> parseRequests(String serviceQName, String method, InputStream requestStream) throws IOException {
+    public List<RPCRequest> parseRequests(String serviceQName, Class serviceClass, String method, InputStream requestStream,
+                                          RequestIntention requestIntention) throws IOException {
         try {
-            return getInstance().parseRequests(serviceQName, method, requestStream);
+            return getInstance().parseRequests(serviceQName, serviceClass, method, requestStream, requestIntention);
         }
         finally {
             ungetInstance();
@@ -118,15 +123,19 @@ public class StreamedRPCProtocolWrapper extends RPCProtocolWrapper implements St
      * Provides an RPCRequest based on in-parameters. This variant supports HTTP transports.
      *
      * @param serviceQName A fully qualified name to the service to call. This can be null if service name is provided on the stream.
+     * @param serviceClass The class of the service to call. Intended for looking for method annotations! Don't try to be "smart" here!
      * @param method       The method to call. This can be null if method name is provided on the stream.
      * @param parameters   parameters passed as a
+     * @param requestIntention The intention of the request (CRUD + UNKNOWN).
+     *
      * @return The parsed requests.
      * @throws java.io.IOException on IO failure.
      */
     @Override
-    public RPCRequest parseRequest(String serviceQName, String method, Map<String, String> parameters) throws IOException {
+    public RPCRequest parseRequest(String serviceQName, Class serviceClas, String method, Map<String, String> parameters,
+                                   RequestIntention requestIntention) throws IOException {
         try {
-            return getInstance().parseRequest(serviceQName, method, parameters);
+            return getInstance().parseRequest(serviceQName, serviceClas, method, parameters, requestIntention);
         }
         finally {
             ungetInstance();

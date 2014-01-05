@@ -44,6 +44,7 @@ import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
+import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService;
 import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
 import se.natusoft.osgi.aps.api.net.sync.service.APSSyncService;
 import se.natusoft.osgi.aps.api.net.time.service.APSNetTimeService;
@@ -95,6 +96,9 @@ public class APSConfigServiceActivator implements BundleActivator {
 
     /** Tracker for the APSNetTimeService. */
     private APSServiceTracker<APSNetTimeService> netTimeServiceTracker = null;
+
+    /** Tracker for the APSJSONService. */
+    private APSServiceTracker<APSJSONService> jsonServiceTracker = null;
 
     //
     // Other Members
@@ -232,15 +236,21 @@ public class APSConfigServiceActivator implements BundleActivator {
                 APSServiceTracker.LARGE_TIMEOUT);
         this.netTimeServiceTracker.start();
 
-        // We create and start a new Synchronizer when an active APSGroupsService becomes available, and stop it when
-        // the active APSGroupsService leaves. This because the Synchronizer need to rejoin the group when there is a
-        // new APSGroupsService since membership is automatically removed when the service goes away.
+        // Setup the JSON service
+        this.jsonServiceTracker = new APSServiceTracker<>(context, APSJSONService.class, APSServiceTracker.LARGE_TIMEOUT);
+        this.jsonServiceTracker.start();
+
+        // We create and start a new Synchronizer when an active APSSyncService becomes available, and stop it when
+        // the active APSSyncService leaves. This because the Synchronizer need to rejoin the group when there is a
+        // new APSSyncService since membership is automatically removed when the service goes away.
 
         this.syncServiceTracker.onActiveServiceAvailable(new OnServiceAvailable<APSSyncService> () {
             public void onServiceAvailable(APSSyncService syncService, ServiceReference serviceReference) throws Exception {
                 APSConfigServiceActivator.this.synchronizer =
                         new Synchronizer(configAdminLogger, configAdminProvider, configServiceProvider, envStore, memoryStore,
-                                configStore, syncService, APSConfigServiceActivator.this.netTimeServiceTracker.getWrappedService());
+                                configStore, syncService,
+                                APSConfigServiceActivator.this.netTimeServiceTracker.getWrappedService(),
+                                APSConfigServiceActivator.this.jsonServiceTracker.getWrappedService());
                 APSConfigServiceActivator.this.synchronizer.start();
 
                 Dictionary props = new Properties();

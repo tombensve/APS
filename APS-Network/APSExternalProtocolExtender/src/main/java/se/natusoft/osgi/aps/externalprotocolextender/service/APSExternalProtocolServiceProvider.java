@@ -55,7 +55,6 @@ import org.osgi.framework.ServiceReference;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.APSExternalProtocolService;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternalProtocolListener;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternallyCallable;
-import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSRESTCallable;
 import se.natusoft.osgi.aps.api.net.rpc.service.RPCProtocol;
 import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 import se.natusoft.osgi.aps.externalprotocolextender.model.ProtocolEvent;
@@ -138,30 +137,6 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
         }
 
         return serviceMethods;
-    }
-
-    /**
-     * Returns true if the service has put*(...), get*(...), and/or delete*(...)
-     * methods.
-     *
-     * @param serviceName The service to check if it has any REST methods.
-     */
-    @Override
-    public boolean isRESTCallable(String serviceName) throws RuntimeException {
-        ServiceRepresentation serviceRep = this.services.get(serviceName);
-        return serviceRep != null && serviceRep.isRESTCompatible();
-    }
-
-    /**
-     * Returns an APSRESTCallable containing one or more of post, put.get, and delete
-     * methods.
-     *
-     * @param serviceName The name of the service to get the REST Callables for.
-     */
-    @Override
-    public APSRESTCallable getRESTCallable(String serviceName) {
-        ServiceRepresentation serviceRep = this.services.get(serviceName);
-        return serviceRep != null ? serviceRep.getRESTCallable() : null;
     }
 
     /**

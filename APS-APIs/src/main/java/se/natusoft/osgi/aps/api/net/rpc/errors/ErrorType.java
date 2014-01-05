@@ -39,8 +39,12 @@ package se.natusoft.osgi.aps.api.net.rpc.errors;
 /**
  * This defines what I think is a rather well though through set of error types applicable
  * for an RPC call. No they are not mine, they come from Matt Morley in his JSONRPC 2.0 specification
- * at <http://jsonrpc.org/spec.html>. I did add SERVICE\_NOT\_FOUND since it is fully possible to try to
- * call a service that does not exist.
+ * at <http://jsonrpc.org/spec.html>.
+ *
+ * I did however add the following:
+ * * SERVICE\_NOT\_FOUND - Simply because this can happen in this case!
+ * * AUTHORIZATION\_REQUIRED - This is also a clear possibility.
+ * * BAD\_AUTHORIZATION
  */
 public enum ErrorType {
     /**
@@ -76,6 +80,16 @@ public enum ErrorType {
     /**
      * Server related error.
      */
-    SERVER_ERROR
+    SERVER_ERROR,
+
+    /**
+     * Authorization is required, but none was supplied.
+     */
+    AUTHORIZATION_REQUIRED,
+
+    /**
+     * Bad authorization was supplied.
+     */
+    BAD_AUTHORIZATION;
 
 }

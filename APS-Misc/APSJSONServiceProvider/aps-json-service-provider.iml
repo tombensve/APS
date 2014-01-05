@@ -2,16 +2,19 @@
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Osmorc" name="OSGi">
-      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-json-service-provider-0.9.3.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.json.APSJSONServiceActivator" bundleSymbolicName="aps-json-service-provider" bundleVersion="1.0.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
+      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-json-service-provider-0.10.0.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.json.APSJSONServiceActivator" bundleSymbolicName="aps-json-service-provider" bundleVersion="1.0.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
+          <property key="Bundle-Description" value="Provides an implementation of aps-apis:se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedServiceusing aps-json-lib as JSON parser/creator." />
+          <property key="Bundle-Vendor" value="Natusoft AB" />
+          <property key="Bundle-DocURL" value="http://www.natusoft.se/" />
           <property key="Import-Package" value="*" />
           <property key="Private-Package" value="se.natusoft.osgi.aps.json,se.natusoft.osgi.aps.json.service,se.natusoft.osgi.aps.json.model" />
           <property key="Embed-Directory" value="lib" />
           <property key="Embed-Dependency" value="*;scope=compile" />
           <property key="Bundle-Name" value="APS JSON Service Provider" />
-          <property key="Bundle-ClassPath" value=".,lib/aps-tools-lib-0.9.3.jar,lib/aps-json-lib-0.9.3.jar" />
-          <property key="Include-Resource" value="lib/aps-tools-lib-0.9.3.jar=$MODULE_DIR$/../../APS-Libraries/APSToolsLib/pom.xml,lib/aps-json-lib-0.9.3.jar=$MODULE_DIR$/../../APS-Libraries/APSJSONLib/pom.xml" />
-          <property key="Embedded-Artifacts" value="lib/aps-tools-lib-0.9.3.jar;g=&quot;se.natusoft.osgi.aps&quot;;a=&quot;aps-tools-lib&quot;;v=&quot;0.9.3&quot;,lib/aps-json-lib-0.9.3.jar;g=&quot;se.natusoft.osgi.aps&quot;;a=&quot;aps-json-lib&quot;;v=&quot;0.9.3&quot;" />
+          <property key="Bundle-ClassPath" value=".,lib/aps-tools-lib-0.10.0.jar,lib/aps-json-lib-0.10.0.jar" />
+          <property key="Include-Resource" value="lib/aps-tools-lib-0.10.0.jar=$MODULE_DIR$/../../APS-Libraries/APSToolsLib/pom.xml,lib/aps-json-lib-0.10.0.jar=$MODULE_DIR$/../../APS-Libraries/APSJSONLib/pom.xml" />
+          <property key="Embedded-Artifacts" value="lib/aps-tools-lib-0.10.0.jar;g=&quot;se.natusoft.osgi.aps&quot;;a=&quot;aps-tools-lib&quot;;v=&quot;0.10.0&quot;,lib/aps-json-lib-0.10.0.jar;g=&quot;se.natusoft.osgi.aps&quot;;a=&quot;aps-json-lib&quot;;v=&quot;0.10.0&quot;" />
         </additionalProperties>
         <additionalJARContents />
       </configuration>

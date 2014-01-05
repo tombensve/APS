@@ -54,10 +54,12 @@ package se.natusoft.osgi.aps.externalprotocolextender.service;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import se.natusoft.osgi.aps.api.net.rpc.service.RPCProtocol;
-import se.natusoft.osgi.aps.api.net.rpc.service.StreamedHTTPProtocol;
 import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
-import se.natusoft.osgi.aps.externalprotocolextender.model.*;
+import se.natusoft.osgi.aps.externalprotocolextender.model.ProtocolEvent;
+import se.natusoft.osgi.aps.externalprotocolextender.model.RPCProtocolWrapper;
+import se.natusoft.osgi.aps.externalprotocolextender.model.ServiceDataReason;
+import se.natusoft.osgi.aps.externalprotocolextender.model.StreamedRPCProtocolWrapper;
 import se.natusoft.osgi.aps.tools.data.TrivialDataBus;
 import se.natusoft.osgi.aps.tools.data.TrivialDataBus.TrivialBusReceivingMember;
 import se.natusoft.osgi.aps.tools.data.TrivialDataBus.TrivialManyDataRequest;
@@ -155,26 +157,12 @@ public class RPCProtocolProviderTracker implements
      */
     @Override
     public synchronized void onServiceAvailable(RPCProtocol service, ServiceReference serviceReference) throws Exception {
+        // Do note that this instance is only used to call some information methods for the protocol which are copied
+        // by the wrapper. The actual instance is not saved!
         Object protocol = this.context.getService(serviceReference);
         try {
 
-            if (protocol instanceof StreamedHTTPProtocol) {
-                StreamedHTTPProtocolWrapper protocolWrapper = new StreamedHTTPProtocolWrapper(this.context, serviceReference,
-                        (StreamedRPCProtocol)protocol);
-
-                this.rpcStreamedProtocolByProtocolAndVersion.put(
-                        protocolWrapper.getServiceProtocolName() + ":" + protocolWrapper.getServiceProtocolVersion(),
-                        protocolWrapper
-                );
-
-                this.rpcStreamedProtocolByServiceReference.put(
-                        serviceReference,
-                        protocolWrapper.getServiceProtocolName() + ":" + protocolWrapper.getServiceProtocolVersion()
-                );
-
-                sendProtocolAvailableEvent(protocolWrapper.getServiceProtocolName(), protocolWrapper.getServiceProtocolVersion());
-            }
-            else if (protocol instanceof StreamedRPCProtocol) {
+            if (protocol instanceof StreamedRPCProtocol) {
                 StreamedRPCProtocolWrapper protocolWrapper = new StreamedRPCProtocolWrapper(this.context, serviceReference, (StreamedRPCProtocol)protocol);
 
                 this.rpcStreamedProtocolByProtocolAndVersion.put(

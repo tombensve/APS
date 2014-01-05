@@ -42,7 +42,7 @@
     <parent>
         <artifactId>APS-Core</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version><!--APSVER-->0.9.3</version>
+        <version>0.10.0</version>
     </parent>
 
     <groupId>se.natusoft.osgi.aps</groupId>

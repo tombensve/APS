@@ -38,6 +38,7 @@ package se.natusoft.osgi.aps.api.net.rpc.service;
 
 import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
 import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;
+import se.natusoft.osgi.aps.api.net.rpc.model.RequestIntention;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,27 +60,35 @@ public interface StreamedRPCProtocol extends RPCProtocol {
      * Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.
      *
      * @param serviceQName A fully qualified name to the service to call. This can be null if service name is provided on the stream.
+     * @param serviceClass The class of the service to call. Intended for looking for method annotations! Don't try to be "smart" here!
      * @param method The method to call. This can be null if method name is provided on the stream.
      * @param requestStream The stream to parse request from.
+     * @param requestIntention The intention of the request (CRUD + UNKNOWN).
      *
      * @return The parsed requests.
      *
      * @throws IOException on IO failure.
      */
-    List<RPCRequest> parseRequests(String serviceQName, String method, InputStream requestStream) throws IOException;
+    List<RPCRequest> parseRequests(String serviceQName, Class serviceClass, String method, InputStream requestStream,
+                                   RequestIntention requestIntention) throws IOException;
 
     /**
      * Provides an RPCRequest based on in-parameters. This variant supports HTTP transports.
      *
+     * Return null for this if the protocol does not support this!
+     *
      * @param serviceQName A fully qualified name to the service to call. This can be null if service name is provided on the stream.
+     * @param serviceClass The class of the service to call. Intended for looking for method annotations! Don't try to be "smart" here!
      * @param method The method to call. This can be null if method name is provided on the stream.
      * @param parameters parameters passed as a
+     * @param requestIntention The intention of the request (CRUD + UNKNOWN).
      *
      * @return The parsed requests.
      *
      * @throws IOException on IO failure.
      */
-    RPCRequest parseRequest(String serviceQName, String method, Map<String, String> parameters) throws IOException;
+    RPCRequest parseRequest(String serviceQName, Class serviceClass, String method,
+                            Map<String, String> parameters, RequestIntention requestIntention) throws IOException;
 
     /**
      * Writes a successful response to the specified OutputStream.

@@ -31,9 +31,9 @@
     <file url="file://$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Network/APSGroups" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Network/APSGroupsSyncServiceProvider" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/APS-Network/APSMessageServiceSyncServiceProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Network/APSNetTimeServiceProvider" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/APS-Network/APSSimpleMessageServiceSyncServiceProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-UserGuide/docs/docs.css" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/APS-UserGuide/docs/src/APSUserGuide.md" charset="UTF-8" />

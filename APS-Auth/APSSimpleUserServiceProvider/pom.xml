@@ -37,7 +37,7 @@
     <parent>
         <artifactId>APS-Auth</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version><!--APSVER-->0.9.3</version>
+        <version>0.10.0</version>
     </parent>
 
     <artifactId>aps-simple-user-service-provider</artifactId>
@@ -46,6 +46,7 @@
     <name>APS Simple User Service Provider</name>
 
     <description>
+        Provides an implementation of APSSimpleUserService backed by a database.
     </description>
 
     <properties>

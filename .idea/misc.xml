@@ -371,9 +371,9 @@
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSGroups" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSGroupsSyncServiceProvider" />
-    <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSMessageServiceSyncServiceProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSNetTimeServiceProvider" />
-    <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider" />
+    <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider" />
+    <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSSimpleMessageServiceSyncServiceProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Webs/APSJettyWebExtender" />

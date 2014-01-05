@@ -121,10 +121,12 @@
         <module name="aps-openjpa-provider" />
         <module name="aps-platform-service-provider" />
         <module name="aps-rabbitmq-message-service-provider" />
+        <module name="aps-rabbitmq-simple-message-service-provider" />
         <module name="aps-resolving-bundle-deployer" />
         <module name="aps-rpc-http-transport-provider" />
         <module name="aps-session-provider-service" />
         <module name="aps-session-service-provider" />
+        <module name="aps-simple-message-services-sync-service-provider" />
         <module name="aps-simple-user-service-auth-service-provider" />
         <module name="aps-simple-user-service-provider" />
         <module name="aps-streamed-json-rpc-protocol-provider" />
@@ -173,9 +175,11 @@
       <module name="aps-openjpa-provider" target="1.7" />
       <module name="aps-platform-service-provider" target="1.7" />
       <module name="aps-rabbitmq-message-service-provider" target="1.7" />
+      <module name="aps-rabbitmq-simple-message-service-provider" target="1.7" />
       <module name="aps-resolving-bundle-deployer" target="1.7" />
       <module name="aps-session-provider-service" target="1.7" />
       <module name="aps-session-service-provider" target="1.7" />
+      <module name="aps-simple-message-services-sync-service-provider" target="1.7" />
       <module name="aps-simple-user-service-auth-service-provider" target="1.7" />
       <module name="aps-simple-user-service-provider" target="1.7" />
       <module name="aps-streamed-json-rpc-protocol-provider" target="1.7" />

@@ -177,16 +177,15 @@ public class RPCProtocolWrapper implements RPCProtocol {
      * Factory method to create an error object.
      *
      * @param errorType    The type of the error.
-     * @param errorCode    An error code representing the error.
      * @param message      An error message.
      * @param optionalData Whatever optional data you want to pass along or null.
      * @param cause        The cause of the error.
      * @return An RPCError implementation or null if not handled by the protocol implementation.
      */
     @Override
-    public RPCError createRPCError(ErrorType errorType, String errorCode, String message, String optionalData, Throwable cause) {
+    public RPCError createRPCError(ErrorType errorType, String message, String optionalData, Throwable cause) {
         try {
-            return getInstance().createRPCError(errorType, errorCode, message, optionalData, cause);
+            return getInstance().createRPCError(errorType, message, optionalData, cause);
         }
         finally {
             ungetInstance();

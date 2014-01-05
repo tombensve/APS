@@ -72,21 +72,20 @@ public interface APSExternallyCallable<ReturnType> extends Callable<ReturnType> 
      * @return The bundle the service belongs to.
      */
     public Bundle getServiceBundle();
-    
+
     /**
-     * Provides parameters to the callable using a varags list of parameter values.
-     *
-     * @param value A parameter value.
+     * Returns the class of the service implementation.
      */
-    public void setArguments(Object... value);
+    public Class getServiceClass();
 
     /**
      * Calls the service method represented by this APSExternallyCallable.
      *
+     * @param arguments Possible arguments to the call.
+     *
      * @return The return value of the method call if any or null otherwise.
      * @throws Exception Any exception the called service method threw.
      */
-    @Override
-    ReturnType call() throws Exception;
+    ReturnType call(Object... arguments) throws Exception;
 
 }

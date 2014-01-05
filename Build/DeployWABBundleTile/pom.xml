@@ -40,9 +40,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <artifactId>Build</artifactId>
+        <groupId>se.natusoft.osgi.aps</groupId>
+        <version>0.10.0</version>
+    </parent>
+
     <groupId>se.natusoft.osgi.aps</groupId>
     <artifactId>DeployWABBundleTile</artifactId>
-    <version><!--APSVER-->0.9.3</version>
     <packaging>pom</packaging>
 
     <!--
@@ -69,7 +74,7 @@
             <plugin>
                 <groupId>se.natusoft.osgi.aps</groupId>
                 <artifactId>ServerDeployPlugin</artifactId>
-                <version><!--APSVER-->0.9.3</version>
+                <version>${project.version}</version>
                 <executions>
                     <execution>
                         <id>server-deploy</id>

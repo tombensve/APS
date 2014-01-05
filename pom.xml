@@ -43,7 +43,7 @@
     <groupId>se.natusoft.osgi.aps</groupId>
     <artifactId>APS</artifactId>
     <packaging>pom</packaging>
-    <version><!--APSVER-->0.9.3</version>
+    <version>0.10.0</version>
 
     <name>OSGi Application Platform Services</name>
 
@@ -53,6 +53,11 @@
         Common properties
     -->
     <properties>
+        <!--
+            The version of this project. Run the set-version profile to update all poms with this version.
+        -->
+        <projectVersion>0.10.0</projectVersion>
+
         <!--
             This is the import package version specification for APS packages.
         -->
@@ -441,6 +446,63 @@
                             </execution>
                         </executions>
 
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!--
+            This changes the version of this pom and all module poms, including parent.
+            ${projectVersion} must be defined in properties above! So to update version,
+            set it above and run this profile.
+        -->
+        <profile>
+            <id>set-version</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>se.natusoft.tools.fileeditor</groupId>
+                        <artifactId>file-editor-maven-support-plugin</artifactId>
+                        <version>1.0</version>
+
+                        <dependencies>
+                            <dependency>
+                                <groupId>se.natusoft.tools.fileeditor</groupId>
+                                <artifactId>file-editor-maven-support-scripts</artifactId>
+                                <version>1.0</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <id>update-version</id>
+                                <goals>
+                                    <goal>edit</goal>
+                                </goals>
+                                <phase>generate-sources</phase>
+                                <configuration>
+                                    <scripts>
+                                        <script>
+                                            <code>
+                                            <![CDATA[
+                                                editor.moveToTopOfFile();
+                                                // This will be either the parent version or the version of the root pom.
+                                                if (editor.findFromCurrent("<version>")) {
+                                                    editor.replaceCurrentLineBetween("<version>", "</version>", pomVersion);
+                                                }
+                                            ]]>
+                                            </code>
+                                            <sourcePath>${basedir}/pom.xml</sourcePath>
+                                            <variables>
+                                                <variable>
+                                                    <name>pomVersion</name>
+                                                    <value>${projectVersion}</value>
+                                                </variable>
+                                            </variables>
+                                        </script>
+                                    </scripts>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>

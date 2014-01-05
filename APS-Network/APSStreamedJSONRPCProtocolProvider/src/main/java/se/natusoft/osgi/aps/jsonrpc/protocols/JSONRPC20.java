@@ -45,9 +45,12 @@ import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
 import se.natusoft.osgi.aps.api.net.rpc.errors.ErrorType;
 import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
 import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;
+import se.natusoft.osgi.aps.api.net.rpc.model.RequestIntention;
 import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
-import se.natusoft.osgi.aps.jsonrpc.errors.*;
+import se.natusoft.osgi.aps.jsonrpc.errors.JSONRPCError;
+import se.natusoft.osgi.aps.jsonrpc.errors.JSONRPCInvalidRequestError;
+import se.natusoft.osgi.aps.jsonrpc.errors.JSONRPCParseError;
 import se.natusoft.osgi.aps.jsonrpc.model.JSONRPCRequest;
 import se.natusoft.osgi.aps.tools.APSLogger;
 
@@ -125,16 +128,20 @@ public class JSONRPC20 implements StreamedRPCProtocol {
     }
 
     /**
-     * Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.
+     * Parses a request from the provided InputStream and returns **1** RPCRequest object.
      *
      * @param serviceQName  A fully qualified name to the service to call. This can be null if service name is provided on the stream.
+     * @param serviceClass  The class of the service to call. Intended for looking for method annotations! Don't try to be "smart" here!
      * @param method        The method to call. This can be null if method name is provided on the stream.
      * @param requestStream The stream to parse request from.
+     * @param requestIntention The intention of the request (CRUD + UNKNOWN).
+     *
      * @return The parsed requests.
      * @throws java.io.IOException on IO failure.
      */
     @Override
-    public List<RPCRequest> parseRequests(String serviceQName, String method, InputStream requestStream) throws IOException {
+    public List<RPCRequest> parseRequests(String serviceQName, Class serviceClass, String method, InputStream requestStream,
+                                          RequestIntention requestIntention) throws IOException {
         List<RPCRequest> requests = new LinkedList<>();
 
         try {
@@ -183,13 +190,17 @@ public class JSONRPC20 implements StreamedRPCProtocol {
      * Provides an RPCRequest based on in-parameters. This variant supports HTTP transports.
      *
      * @param serviceQName A fully qualified name to the service to call. This can be null if service name is provided on the stream.
+     * @param serviceClass  The class of the service to call. Intended for looking for method annotations! Don't try to be "smart" here!
      * @param method       The method to call. This can be null if method name is provided on the stream.
      * @param parameters   parameters passed as a
+     * @param requestIntention The intention of the request (CRUD + UNKNOWN).
+     *
      * @return The parsed requests.
      * @throws java.io.IOException on IO failure.
      */
     @Override
-    public RPCRequest parseRequest(String serviceQName, String method, Map<String, String> parameters) throws IOException {
+    public RPCRequest parseRequest(String serviceQName, Class serviceClass, String method, Map<String, String> parameters,
+                                   RequestIntention requestIntention) throws IOException {
         return null;
     }
 
@@ -344,59 +355,20 @@ public class JSONRPC20 implements StreamedRPCProtocol {
      * Factory method to create an error object.
      *
      * @param errorType    The type of the error.
-     * @param errorCode    An error code representing the error.
      * @param message      An error message.
      * @param optionalData Whatever optional data you want to pass along or null.
      * @param cause        The cause of the error.
      * @return An RPCError implementation or null if not handled by the protocol implementation.
      */
     @Override
-    public RPCError createRPCError(ErrorType errorType, String errorCode, String message, String optionalData, Throwable cause) {
-        RPCError error = null;
-        int errCode = 1;
-        try {
-            errCode = Integer.valueOf(errorCode);
+    public RPCError createRPCError(ErrorType errorType, String message, String optionalData, Throwable cause) {
+        RPCError error;
+
+        if (cause != null) {
+            error = new JSONRPCError(errorType, message, cause, 0);
         }
-        catch (Exception nfe) {/*OK*/}
-
-        switch (errorType) {
-            case SERVER_ERROR:
-                if (cause != null) {
-                    error = new JSONRPCServerError(message, errCode, cause);
-                }
-                else {
-                    error = new JSONRPCServerError(message, errCode);
-                }
-                break;
-
-            case INTERNAL_ERROR:
-                if (cause != null) {
-                    error = new JSONRPCInternalError(message, cause);
-                }
-                else {
-                    error = new JSONRPCInternalError(message);
-                }
-                break;
-
-            case INVALID_PARAMS:
-                error = new JSONRPCInvalidMethodParametersError(message);
-                break;
-
-            case INVALID_REQUEST:
-                error = new JSONRPCInvalidRequestError(message);
-                break;
-
-            case METHOD_NOT_FOUND:
-                error = new JSONRPCMethodNotFoundError(message);
-                break;
-
-            case PARSE_ERROR:
-                if (cause != null) {
-                    error = new JSONRPCParseError(message, cause);
-                }
-                else {
-                    error = new JSONRPCParseError(message);
-                }
+        else {
+            error = new JSONRPCError(errorType, message, optionalData, 0);
         }
 
         return error;

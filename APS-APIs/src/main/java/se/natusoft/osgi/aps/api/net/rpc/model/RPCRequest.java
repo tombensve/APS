@@ -45,7 +45,7 @@ import se.natusoft.osgi.aps.api.net.rpc.exceptions.RequestedParamNotAvailableExc
  */
 public interface RPCRequest {
     /**
-     * Returns true if this request is valid. If this returns false all information except _getError()_ is invalid, and
+     * Returns true if this request is valid. If this returns false all information except _getError()_ is **invalid**, and
      * _getError()_ should return a valid _RPCError_ object.
      */
     boolean isValid();

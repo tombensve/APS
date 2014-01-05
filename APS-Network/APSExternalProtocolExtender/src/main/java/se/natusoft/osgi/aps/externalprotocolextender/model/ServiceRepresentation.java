@@ -52,10 +52,8 @@
 package se.natusoft.osgi.aps.externalprotocolextender.model;
 
 import org.osgi.framework.ServiceReference;
-import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSRESTCallable;
 import se.natusoft.osgi.aps.api.external.model.type.DataType;
 import se.natusoft.osgi.aps.api.external.model.type.ParameterDataTypeDescription;
-import se.natusoft.osgi.aps.externalprotocolextender.service.APSRESTCallableImpl;
 import se.natusoft.osgi.aps.externalprotocolextender.service.ServiceMethodCallable;
 
 import java.util.HashMap;
@@ -81,10 +79,7 @@ public class ServiceRepresentation {
 
     /** The uniquely callable methods with arg types. */
     private Map<String, ServiceMethodCallable> methodsUnique = new HashMap<>();
-    
-    /** If this is a REST compatible service this will also be set. */
-    private APSRESTCallable restCallable = null;
-    
+
     /** For cacheing rest status. */
     private Boolean isREST = null;
     
@@ -168,93 +163,4 @@ public class ServiceRepresentation {
         this.methodsUnique.put(methodName.toString(), callable);
     }
 
-    /**
-     * Returns true if the service represented by this object is REST compatible, that is having at least one method starting
-     * with one of "_post_", "_put_", "_get_", or "_delete_".
-     *
-     * @return true/false.
-     */
-    public boolean isRESTCompatible() {
-    	if (this.isREST == null) {
-    		ServiceMethodCallable post = null;
-    		ServiceMethodCallable put = null;
-    		ServiceMethodCallable get = null;
-    		ServiceMethodCallable delete = null;
-    		boolean validREST = false;
-    		
-    		for (String methodName : this.methods.keySet()) {
-    			methodName = methodName.toLowerCase();
-    			// Please mote that there can only be one of each method type.
-    			// If there are more than one of any method type we say that
-    			// this is not REST compatible.
-    			if (methodName.startsWith("post")) {
-    				
-    				if (post == null) {
-    					validREST = true;
-    					post = this.methods.get(methodName);
-    				}
-    				else {
-    					validREST = false;
-    					break;
-    				}
-    			}
-    			else if (methodName.startsWith("put")) {
-    				
-    				if (put == null) {
-    					validREST = true;
-    					put = this.methods.get(methodName);
-    				}
-    				else {
-    					validREST = false;
-    					break;
-    				}
-    			}
-    			else if (methodName.startsWith("get")) {
-    				
-    				if (get == null) {
-    					validREST = true;
-    					put = this.methods.get(methodName);
-    				}
-    				else {
-    					validREST = false;
-    					break;
-    				}
-    			}
-    			else if (methodName.startsWith("delete")) {
-    				
-    				if (delete == null) {
-    					validREST = true;
-    					put = this.methods.get(methodName);
-    				}
-    				else {
-    					validREST = false;
-    					break;
-    				}
-    			}
-    		}
-    		
-    		if (validREST) {
-    			this.isREST = true;
-    			APSRESTCallableImpl rc = new APSRESTCallableImpl();
-    			APSRESTCallableImpl.Input input = rc.input();
-    			input.providePost(post);
-                input.providePut(put);
-                input.provideGet(get);
-                input.provideDelete(delete);
-                this.restCallable = rc;
-    		}
-    		else {
-    			this.isREST = false;
-    		}
-    	}
-
-        return this.isREST;
-    }
-
-    /**
-     * @return Returns an APSRestCallable if any or null otherwise.
-     */
-    public APSRESTCallable getRESTCallable() {
-        return this.restCallable;
-    }
 }
