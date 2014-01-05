@@ -101,7 +101,18 @@ public class Tests {
         assertEquals(3, arrayValues.get(2).toInt());
         assertEquals(4, arrayValues.get(3).toInt());
     }
-  
+
+    @Test
+    public void readEmptyObject() throws Exception {
+        String json = "{\n}";
+        ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        JSONObject obj = new JSONObject(new SystemOutErrorHandler());
+        obj.readJSON(bais);
+        bais.close();
+
+        assertEquals(0, obj.getPropertyNames().size());
+    }
+
     @Test
     public void writeJSON() throws Exception {
         JSONObject obj = new JSONObject();

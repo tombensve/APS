@@ -1,147 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="Removed duplicate dependencies.">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/misc/json/JSONEOFException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/main/java/se/natusoft/osgi/aps/json/JSONEOFException.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/annotations/RESTDELETE.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/annotations/RESTGET.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/annotations/RESTPOST.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/annotations/RESTPUT.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/model/RequestIntention.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/service/StreamedHTTPProtocol.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/APS-BOM/pom.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/model/StreamedHTTPProtocolWrapper.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/service/APSRESTCallableImpl.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/lib/commons-cli-1.1.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/lib/commons-io-1.2.jar" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/lib/rabbitmq-client.jar" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/messaging/service/APSMessageService.java" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/messaging/service/APSSimpleMessageService.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Network/APSMessageServiceSyncServiceProvider/docs/aps-message-service-sync-service-provider.html" afterPath="$PROJECT_DIR$/APS-Network/APSSimpleMessageServiceSyncServiceProvider/docs/aps-message-service-sync-service-provider.html" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Network/APSMessageServiceSyncServiceProvider/docs/aps-message-service-sync-service-provider.md" afterPath="$PROJECT_DIR$/APS-Network/APSSimpleMessageServiceSyncServiceProvider/docs/aps-message-service-sync-service-provider.md" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Network/APSMessageServiceSyncServiceProvider/docs/aps-message-service-sync-service-provider.pdf" afterPath="$PROJECT_DIR$/APS-Network/APSSimpleMessageServiceSyncServiceProvider/docs/aps-message-service-sync-service-provider.pdf" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Network/APSMessageServiceSyncServiceProvider/docs/docs.css" afterPath="$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/docs/docs.css" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Network/APSMessageServiceSyncServiceProvider/docs/filesets/doc-files.fs" afterPath="$PROJECT_DIR$/APS-Network/APSSimpleMessageServiceSyncServiceProvider/docs/filesets/doc-files.fs" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Network/APSMessageServiceSyncServiceProvider/docs/src/APSMessageServiceSyncServiceProvider.md" afterPath="$PROJECT_DIR$/APS-Network/APSSimpleMessageServiceSyncServiceProvider/docs/src/APSMessageServiceSyncServiceProvider.md" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Network/APSMessageServiceSyncServiceProvider/pom.xml" afterPath="$PROJECT_DIR$/APS-Network/APSSimpleMessageServiceSyncServiceProvider/pom.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Network/APSMessageServiceSyncServiceProvider/src/main/java/se/natusoft/osgi/aps/sync/APSMessageServiceSyncServiceProvider.java" afterPath="$PROJECT_DIR$/APS-Network/APSSimpleMessageServiceSyncServiceProvider/src/main/java/se/natusoft/osgi/aps/sync/APSSimpleMessageServiceSyncServiceProvider.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/docs/aps-rabbitmq-message-service-provider.html" afterPath="$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/docs/aps-rabbitmq-message-service-provider.html" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/docs/aps-rabbitmq-message-service-provider.md" afterPath="$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/docs/aps-rabbitmq-message-service-provider.md" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/docs/aps-rabbitmq-message-service-provider.pdf" afterPath="$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/docs/aps-rabbitmq-message-service-provider.pdf" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/docs/docs.css" afterPath="$PROJECT_DIR$/APS-Network/APSSimpleMessageServiceSyncServiceProvider/docs/docs.css" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/docs/filesets/doc-files.fs" afterPath="$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/docs/filesets/doc-files.fs" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/docs/src/APSRabbitMQMessageServiceProvider.md" afterPath="$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/docs/src/APSRabbitMQMessageServiceProvider.md" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/pom.xml" afterPath="$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/pom.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQMessageServiceProvider.java" afterPath="$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQSimpleMessageServiceProvider.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/config/RabbitMQConnectionConfig.java" afterPath="$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/config/RabbitMQConnectionConfig.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/docs/src/APSExternalProtocolExtender.md" afterPath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/docs/src/APSExternalProtocolExtender.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/docs/src/APSJSONLib.md" afterPath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/docs/src/APSJSONLib.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/docs/aps-ext-protocol-http-transport-provider.md" afterPath="$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/docs/aps-ext-protocol-http-transport-provider.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/APSConfigServiceActivator.java" afterPath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/APSConfigServiceActivator.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/external/extprotocolsvc/APSExternalProtocolService.java" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/external/extprotocolsvc/APSExternalProtocolService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/service/APSExternalProtocolServiceProvider.java" afterPath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/service/APSExternalProtocolServiceProvider.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/external/extprotocolsvc/model/APSExternallyCallable.java" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/external/extprotocolsvc/model/APSExternallyCallable.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/APSJSONServiceProvider/src/main/java/se/natusoft/osgi/aps/json/service/APSJSONServiceProvider.java" afterPath="$PROJECT_DIR$/APS-Misc/APSJSONServiceProvider/src/main/java/se/natusoft/osgi/aps/json/service/APSJSONServiceProvider.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/sync/service/APSSyncService.java" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/sync/service/APSSyncService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Build/DeployBundleTile/DeployBundleTile.iml" afterPath="$PROJECT_DIR$/Build/DeployBundleTile/DeployBundleTile.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Build/DeployWABBundleTile/DeployWABBundleTile.iml" afterPath="$PROJECT_DIR$/Build/DeployWABBundleTile/DeployWABBundleTile.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Build/DocTile/DocTile.iml" afterPath="$PROJECT_DIR$/Build/DocTile/DocTile.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/errors/ErrorType.java" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/errors/ErrorType.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONHTTP.java" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONHTTP.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONREST.java" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONREST.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONRPC10.java" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONRPC10.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONRPC20.java" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONRPC20.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/main/java/se/natusoft/osgi/aps/json/JSONValue.java" afterPath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/main/java/se/natusoft/osgi/aps/json/JSONValue.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/src/main/resources/META-INF/MANIFEST.MF" afterPath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/src/main/resources/META-INF/MANIFEST.MF" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_cli_1_1.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_cli_1_1.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__rabbitmq_rabbitmq_client_3_1_5.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__rabbitmq_rabbitmq_client_3_1_5.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/service/RPCProtocol.java" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/service/RPCProtocol.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/service/RPCProtocolProviderTracker.java" afterPath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/service/RPCProtocolProviderTracker.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/model/RPCProtocolWrapper.java" afterPath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/model/RPCProtocolWrapper.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/model/RPCRequest.java" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/model/RPCRequest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/src/main/java/se/natusoft/osgi/aps/rpchttpextender/servlet/RPCServlet.java" afterPath="$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/src/main/java/se/natusoft/osgi/aps/rpchttpextender/servlet/RPCServlet.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/service/ServiceMethodCallable.java" afterPath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/service/ServiceMethodCallable.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/model/ServiceRepresentation.java" afterPath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/model/ServiceRepresentation.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/service/StreamedRPCProtocol.java" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/service/StreamedRPCProtocol.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/model/StreamedRPCProtocolWrapper.java" afterPath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/model/StreamedRPCProtocolWrapper.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/sync/Synchronizer.java" afterPath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/sync/Synchronizer.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider/aps-admin-web-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider/aps-admin-web-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/aps-apis.iml" afterPath="$PROJECT_DIR$/APS-APIs/aps-apis.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/aps-config-admin-web.iml" afterPath="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/aps-config-admin-web.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/aps-configuration-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/aps-configuration-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSDataSource/aps-datasource.iml" afterPath="$PROJECT_DIR$/APS-Data/APSDataSource/aps-datasource.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/aps-discovery-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/aps-discovery-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/aps-external-protocol-extender.iml" afterPath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/aps-external-protocol-extender.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSFilesystemServiceProvider/aps-filesystem-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Core/APSFilesystemServiceProvider/aps-filesystem-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/aps-groups.iml" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/aps-groups.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/aps-json-lib.iml" afterPath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/aps-json-lib.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/APSJSONServiceProvider/aps-json-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Misc/APSJSONServiceProvider/aps-json-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSPlatformServiceProvider/aps-platform-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Core/APSPlatformServiceProvider/aps-platform-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/APSResolvingBundleDeployer/aps-resolving-bundle-deployer.iml" afterPath="$PROJECT_DIR$/APS-Misc/APSResolvingBundleDeployer/aps-resolving-bundle-deployer.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider/aps-session-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider/aps-session-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/aps-simple-user-service-auth-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/aps-simple-user-service-auth-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/aps-simple-user-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/aps-simple-user-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/aps-streamed-json-rpc-protocol-provider.iml" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/aps-streamed-json-rpc-protocol-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSToolsLib/aps-tools-lib.iml" afterPath="$PROJECT_DIR$/APS-Libraries/APSToolsLib/aps-tools-lib.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/artifacts/aps_admin_web_war.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/aps_admin_web_war.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/artifacts/aps_admin_web_war_exploded.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/aps_admin_web_war_exploded.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/artifacts/aps_config_admin_web_war.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/aps_config_admin_web_war.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/artifacts/aps_config_admin_web_war_exploded.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/aps_config_admin_web_war_exploded.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/artifacts/aps_ext_protocol_http_transport_provider_war.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/aps_ext_protocol_http_transport_provider_war.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/artifacts/aps_ext_protocol_http_transport_provider_war_exploded.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/aps_ext_protocol_http_transport_provider_war_exploded.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/artifacts/aps_user_admin_web_war.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/aps_user_admin_web_war.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/artifacts/aps_user_admin_web_war_exploded.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/aps_user_admin_web_war_exploded.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/pom.xml" afterPath="$PROJECT_DIR$/APS-APIs/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Archetypes/APSBundleArchetype/pom.xml" afterPath="$PROJECT_DIR$/APS-Archetypes/APSBundleArchetype/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Archetypes/APSBundleArchetype/src/main/resources/archetype-resources/pom.xml" afterPath="$PROJECT_DIR$/APS-Archetypes/APSBundleArchetype/src/main/resources/archetype-resources/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Archetypes/APSBundleArchetype/target/classes/archetype-resources/pom.xml" afterPath="$PROJECT_DIR$/APS-Archetypes/APSBundleArchetype/target/classes/archetype-resources/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Archetypes/APSWarBundleArchetype/pom.xml" afterPath="$PROJECT_DIR$/APS-Archetypes/APSWarBundleArchetype/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/pom.xml" afterPath="$PROJECT_DIR$/APS-Auth/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/pom.xml" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/pom.xml" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/pom.xml" afterPath="$PROJECT_DIR$/APS-Core/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/pom.xml" afterPath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSFilesystemServiceProvider/pom.xml" afterPath="$PROJECT_DIR$/APS-Core/APSFilesystemServiceProvider/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSLogServiceProvider/pom.xml" afterPath="$PROJECT_DIR$/APS-Core/APSLogServiceProvider/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSPlatformServiceProvider/pom.xml" afterPath="$PROJECT_DIR$/APS-Core/APSPlatformServiceProvider/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/pom.xml" afterPath="$PROJECT_DIR$/APS-Data/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSDataSource/pom.xml" afterPath="$PROJECT_DIR$/APS-Data/APSDataSource/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/pom.xml" afterPath="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/pom.xml" afterPath="$PROJECT_DIR$/APS-Libraries/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/pom.xml" afterPath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSToolsLib/pom.xml" afterPath="$PROJECT_DIR$/APS-Libraries/APSToolsLib/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSWebTools/pom.xml" afterPath="$PROJECT_DIR$/APS-Libraries/APSWebTools/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/pom.xml" afterPath="$PROJECT_DIR$/APS-Misc/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/APSJSONServiceProvider/pom.xml" afterPath="$PROJECT_DIR$/APS-Misc/APSJSONServiceProvider/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/APSResolvingBundleDeployer/pom.xml" afterPath="$PROJECT_DIR$/APS-Misc/APSResolvingBundleDeployer/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider/pom.xml" afterPath="$PROJECT_DIR$/APS-Misc/APSSessionServiceProvider/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/pom.xml" afterPath="$PROJECT_DIR$/APS-Network/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/pom.xml" afterPath="$PROJECT_DIR$/APS-Network/APSDiscoveryServiceProvider/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/pom.xml" afterPath="$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/pom.xml" afterPath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroups/pom.xml" afterPath="$PROJECT_DIR$/APS-Network/APSGroups/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSGroupsSyncServiceProvider/pom.xml" afterPath="$PROJECT_DIR$/APS-Network/APSGroupsSyncServiceProvider/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSNetTimeServiceProvider/pom.xml" afterPath="$PROJECT_DIR$/APS-Network/APSNetTimeServiceProvider/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/pom.xml" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-UserGuide/pom.xml" afterPath="$PROJECT_DIR$/APS-UserGuide/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/pom.xml" afterPath="$PROJECT_DIR$/APS-Webs/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/pom.xml" afterPath="$PROJECT_DIR$/APS-Webs/APSAdminWeb/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider/pom.xml" afterPath="$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/pom.xml" afterPath="$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/pom.xml" afterPath="$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Build/pom.xml" afterPath="$PROJECT_DIR$/Build/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Build/DeployBundleTile/pom.xml" afterPath="$PROJECT_DIR$/Build/DeployBundleTile/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Build/DeployWABBundleTile/pom.xml" afterPath="$PROJECT_DIR$/Build/DeployWABBundleTile/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Build/DocTile/pom.xml" afterPath="$PROJECT_DIR$/Build/DocTile/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Build/ServerDeployPlugin/pom.xml" afterPath="$PROJECT_DIR$/Build/ServerDeployPlugin/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Test/pom.xml" afterPath="$PROJECT_DIR$/Test/pom.xml" />
+    <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="Debugged config synchronization: DONT use write(byte[]) on an ObjectOutputStream to write a byte array! Threat the array as an object and do writeObject(array) instead!">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/main/java/se/natusoft/osgi/aps/json/JSONObject.java" afterPath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/main/java/se/natusoft/osgi/aps/json/JSONObject.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/test/java/se/natusoft/osgi/aps/Tests.java" afterPath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/test/java/se/natusoft/osgi/aps/Tests.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="93ee55a5-7aeb-46b4-befc-da110c6bd63a" name="Failed commit: Default" comment="Dev commit." />
@@ -298,295 +160,19 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="APSRabbitMQSimpleMessageServiceProvider.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQSimpleMessageServiceProvider.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="218" column="54" selection-start="7876" selection-end="7876" vertical-scroll-proportion="0.0" vertical-offset="2325" max-vertical-offset="8820">
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RabbitMQConnectionConfig.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/config/RabbitMQConnectionConfig.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="44" column="65" selection-start="1610" selection-end="1610" vertical-scroll-proportion="0.0" vertical-offset="371" max-vertical-offset="1455">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="APSGroupsInfoService.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/groups/service/APSGroupsInfoService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="43" column="17" selection-start="1214" selection-end="1214" vertical-scroll-proportion="0.0" vertical-offset="645" max-vertical-offset="1005">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="APSSimpleMessageService.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/messaging/service/APSSimpleMessageService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="213" column="24" selection-start="6302" selection-end="6302" vertical-scroll-proportion="0.0" vertical-offset="3195" max-vertical-offset="3630">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="APSGroupsService.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/groups/service/APSGroupsService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="45" column="17" selection-start="1387" selection-end="1387" vertical-scroll-proportion="0.0" vertical-offset="675" max-vertical-offset="1260">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="GroupMember.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/groups/service/GroupMember.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="49" column="17" selection-start="1423" selection-end="1423" vertical-scroll-proportion="0.0" vertical-offset="735" max-vertical-offset="1980">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="APSSimpleMessageServiceSyncServiceProvider.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSSimpleMessageServiceSyncServiceProvider/src/main/java/se/natusoft/osgi/aps/sync/APSSimpleMessageServiceSyncServiceProvider.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="200" column="34" selection-start="6203" selection-end="6203" vertical-scroll-proportion="0.351476" vertical-offset="2619" max-vertical-offset="5100">
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#2970#2971#0" expanded="true" />
-                <element signature="e#3010#3011#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="InputStream.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="jar://$JAVA_HOME$/src.zip!/java/io/InputStream.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="99" column="15" selection-start="3748" selection-end="3748" vertical-scroll-proportion="0.0" vertical-offset="1214" max-vertical-offset="5580">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/pom.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="132" column="59" selection-start="4452" selection-end="4452" vertical-scroll-proportion="-34.166668" vertical-offset="1160" max-vertical-offset="2850">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Auth/pom.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.0" vertical-offset="0" max-vertical-offset="975">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Synchronizer.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/sync/Synchronizer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="572" column="0" selection-start="21701" selection-end="21701" vertical-scroll-proportion="0.0" vertical-offset="7914" max-vertical-offset="12315">
-              <folding>
-                <element signature="e#10906#11073#0" expanded="true" />
-                <element signature="e#11066#11067#0" expanded="true" />
-                <element signature="e#11208#11373#0" expanded="true" />
-                <element signature="e#11366#11367#0" expanded="true" />
-                <element signature="e#11489#11671#0" expanded="true" />
-                <element signature="e#11664#11665#0" expanded="true" />
-                <element signature="e#11787#11969#0" expanded="true" />
-                <element signature="e#11962#11963#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="JSONObjectModel.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Misc/APSJSONServiceProvider/src/main/java/se/natusoft/osgi/aps/json/model/JSONObjectModel.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="64" column="42" selection-start="2047" selection-end="2047" vertical-scroll-proportion="0.0" vertical-offset="836" max-vertical-offset="2160">
-              <folding>
-                <element signature="imports" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="JSONModel.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Misc/APSJSONServiceProvider/src/main/java/se/natusoft/osgi/aps/json/model/JSONModel.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="45" column="13" selection-start="1369" selection-end="1369" vertical-scroll-proportion="0.0" vertical-offset="356" max-vertical-offset="1845">
-              <folding>
-                <element signature="e#1986#1987#0" expanded="false" />
-                <element signature="e#2024#2025#0" expanded="false" />
-                <element signature="e#2202#2203#0" expanded="false" />
-                <element signature="e#2246#2247#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="JSONObject.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/misc/json/model/JSONObject.java">
+        <entry file="file://$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/main/java/se/natusoft/osgi/aps/json/JSONObject.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="56" column="17" selection-start="1705" selection-end="1705" vertical-scroll-proportion="0.0" vertical-offset="401" max-vertical-offset="1485">
+            <state line="195" column="0" selection-start="5896" selection-end="5896" vertical-scroll-proportion="0.0" vertical-offset="2490" max-vertical-offset="4035">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="APSJSONService.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/misc/json/service/APSJSONService.java">
+      <file leaf-file-name="Tests.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/test/java/se/natusoft/osgi/aps/Tests.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="61" column="54" selection-start="2017" selection-end="2017" vertical-scroll-proportion="0.0" vertical-offset="176" max-vertical-offset="1260">
-              <folding>
-                <element signature="imports" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="JSONErrorHandler.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/misc/json/JSONErrorHandler.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="60" column="71" selection-start="1664" selection-end="1664" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1020">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="APSConfigServiceActivator.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/APSConfigServiceActivator.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="244" column="22" selection-start="10887" selection-end="10887" vertical-scroll-proportion="0.0" vertical-offset="3044" max-vertical-offset="4590">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="APSSyncService.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/sync/service/APSSyncService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="246" column="35" selection-start="7158" selection-end="7158" vertical-scroll-proportion="0.0" vertical-offset="3026" max-vertical-offset="4110">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSSimpleMessageServiceSyncServiceProvider/pom.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="13" selection-start="445" selection-end="445" vertical-scroll-proportion="-5.0" vertical-offset="0" max-vertical-offset="2265">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/pom.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="113" column="21" selection-start="3772" selection-end="3772" vertical-scroll-proportion="-14.708333" vertical-offset="1342" max-vertical-offset="2775">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Archetypes/APSBundleArchetype/src/main/resources/archetype-resources/pom.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="78" column="21" selection-start="2715" selection-end="2715" vertical-scroll-proportion="-14.083333" vertical-offset="832" max-vertical-offset="2265">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/pom.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="9" column="8" selection-start="154" selection-end="154" vertical-scroll-proportion="-5.625" vertical-offset="0" max-vertical-offset="1080">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Archetypes/APSBundleArchetype/target/classes/archetype-resources/pom.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="78" column="21" selection-start="2715" selection-end="2715" vertical-scroll-proportion="-14.083333" vertical-offset="832" max-vertical-offset="2265">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/pom.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="170" column="21" selection-start="7330" selection-end="7330" vertical-scroll-proportion="-14.708333" vertical-offset="2197" max-vertical-offset="3645">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSGroupsSyncServiceProvider/pom.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="116" column="21" selection-start="3842" selection-end="3842" vertical-scroll-proportion="-14.708333" vertical-offset="1387" max-vertical-offset="2820">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSNetTimeServiceProvider/pom.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="116" column="21" selection-start="3858" selection-end="3858" vertical-scroll-proportion="-14.708333" vertical-offset="1387" max-vertical-offset="2820">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Build/DeployBundleTile/pom.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="76" column="25" selection-start="2564" selection-end="2564" vertical-scroll-proportion="-29.541666" vertical-offset="431" max-vertical-offset="1515">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Build/DeployWABBundleTile/pom.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="76" column="25" selection-start="2577" selection-end="2577" vertical-scroll-proportion="-29.541666" vertical-offset="431" max-vertical-offset="1515">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Test/pom.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="49" column="33" selection-start="1636" selection-end="1636" vertical-scroll-proportion="-30.625" vertical-offset="0" max-vertical-offset="945">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/pom.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="18" column="8" selection-start="443" selection-end="443" vertical-scroll-proportion="-11.25" vertical-offset="0" max-vertical-offset="3315">
+            <state line="62" column="5" selection-start="2026" selection-end="2026" vertical-scroll-proportion="0.15249538" vertical-offset="600" max-vertical-offset="3570">
               <folding />
             </state>
           </provider>
@@ -619,8 +205,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/annotations/RESTPOST.java" />
-        <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/annotations/RESTDELETE.java" />
         <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/model/RPCRequest.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONREST.java" />
         <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/service/StreamedRPCProtocol.java" />
@@ -670,6 +254,8 @@
         <option value="$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/src/main/resources/META-INF/MANIFEST.MF" />
         <option value="$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/config/RabbitMQConnectionConfig.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSSimpleMessageServiceSyncServiceProvider/src/main/java/se/natusoft/osgi/aps/sync/APSSimpleMessageServiceSyncServiceProvider.java" />
+        <option value="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/main/java/se/natusoft/osgi/aps/json/JSONObject.java" />
+        <option value="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/test/java/se/natusoft/osgi/aps/Tests.java" />
       </list>
     </option>
   </component>
@@ -1648,6 +1234,62 @@
         </PATH_ELEMENT>
         <PATH_ELEMENT>
           <option name="myItemId" value="APS Tools Library" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Lifecycle" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$LifecycleNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Libraries" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS JSON Library" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+      </PATH>
+      <PATH>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$RootNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="OSGi Application Platform Services" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS Libraries" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="Modules" />
+          <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ModulesNode" />
+        </PATH_ELEMENT>
+        <PATH_ELEMENT>
+          <option name="myItemId" value="APS JSON Library" />
           <option name="myItemType" value="org.jetbrains.idea.maven.navigator.MavenProjectsStructure$ProjectNode" />
         </PATH_ELEMENT>
         <PATH_ELEMENT>
@@ -3157,6 +2799,194 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Libraries and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Libraries and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSJSONLib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Libraries and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSJSONLib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Tests" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Libraries and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSJSONLib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Tests" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="TestBean" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Libraries and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSJSONLib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aps" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Tests" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="NameBean" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS-Libraries and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APSJSONLib" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="json" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="OSGiApplicationPlatformServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="APS and modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="APS-Data and modules" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
             </PATH_ELEMENT>
@@ -3981,7 +3811,7 @@
       <workItem from="1388693326419" duration="307000" />
       <workItem from="1388701249178" duration="2953000" />
       <workItem from="1388768140651" duration="8813000" />
-      <workItem from="1388839389310" duration="28183000" />
+      <workItem from="1388839389310" duration="29469000" />
     </task>
     <task id="LOCAL-00001" summary="Added hashCode() and equals() to the 2 configuration model implementations.">
       <created>1334502625761</created>
@@ -5707,7 +5537,11 @@
       <created>1388591650134</created>
       <updated>1388591650135</updated>
     </task>
-    <option name="localTasksCounter" value="404" />
+    <task id="LOCAL-00404" summary="Debugged config synchronization: DONT use write(byte[]) on an ObjectOutputStream to write a byte array! Threat the array as an object and do writeObject(array) instead!">
+      <created>1388934505652</created>
+      <updated>1388934505652</updated>
+    </task>
+    <option name="localTasksCounter" value="405" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="true" url="http://redmine.natusoft.private/redmine">
@@ -5724,7 +5558,7 @@
     </servers>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="203515000" />
+    <option name="totallyTimeSpent" value="204801000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -5765,7 +5599,7 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32594645" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23142613" sideWeight="0.63434905" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.49769586" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4976916" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32963988" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
@@ -5774,6 +5608,7 @@
       <window_info id="BSFConsole" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32849365" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4018433" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24813233" sideWeight="0.2876588" order="5" side_tool="true" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32395643" sideWeight="0.5" order="21" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23018147" sideWeight="0.40329835" order="6" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2327179" sideWeight="0.36565098" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1733561" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
@@ -5786,7 +5621,6 @@
       <window_info id="Dilbert" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26794657" sideWeight="0.5" order="23" side_tool="false" content_ui="tabs" />
       <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19061728" sideWeight="0.6752066" order="17" side_tool="false" content_ui="tabs" />
       <window_info id="IntelliJad Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3294606" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32395643" sideWeight="0.5" order="21" side_tool="false" content_ui="tabs" />
       <window_info id="Hudson Information" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
       <window_info id="Code Consultant" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -5816,7 +5650,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="Fixed an NPE." />
     <MESSAGE value="Added APSRabbitMQMessageServiceProvider." />
     <MESSAGE value="Cosmetics/logging." />
     <MESSAGE value="- It is now possible to config queues. &#10;- Startup is now threaded so that RabbitMQ connection can be made from config without deadlocking waiting for config to become available.&#10;" />
@@ -5841,7 +5674,8 @@
     <MESSAGE value="IDE-files" />
     <MESSAGE value="IDE files." />
     <MESSAGE value="Removed duplicate dependencies." />
-    <option name="LAST_COMMIT_MESSAGE" value="Removed duplicate dependencies." />
+    <MESSAGE value="Debugged config synchronization: DONT use write(byte[]) on an ObjectOutputStream to write a byte array! Threat the array as an object and do writeObject(array) instead!" />
+    <option name="LAST_COMMIT_MESSAGE" value="Debugged config synchronization: DONT use write(byte[]) on an ObjectOutputStream to write a byte array! Threat the array as an object and do writeObject(array) instead!" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -5918,20 +5752,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="435" max-vertical-offset="4110">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Webs/APSUserAdminWeb/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4035">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/APS-Webs/APSConfigAdminWeb/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state line="46" column="0" selection-start="1568" selection-end="1568" vertical-scroll-proportion="0.0" vertical-offset="165" max-vertical-offset="4485">
@@ -6086,70 +5906,70 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Archetypes/APSBundleArchetype/src/main/resources/archetype-resources/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="78" column="21" selection-start="2715" selection-end="2715" vertical-scroll-proportion="-14.083333" vertical-offset="832" max-vertical-offset="2265">
+        <state line="78" column="21" selection-start="2715" selection-end="2715" vertical-scroll-proportion="0.33364838" vertical-offset="832" max-vertical-offset="2265">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Archetypes/APSBundleArchetype/target/classes/archetype-resources/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="78" column="21" selection-start="2715" selection-end="2715" vertical-scroll-proportion="-14.083333" vertical-offset="832" max-vertical-offset="2265">
+        <state line="78" column="21" selection-start="2715" selection-end="2715" vertical-scroll-proportion="0.33364838" vertical-offset="832" max-vertical-offset="2265">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="113" column="21" selection-start="3772" selection-end="3772" vertical-scroll-proportion="-14.708333" vertical-offset="1342" max-vertical-offset="2775">
+        <state line="113" column="21" selection-start="3772" selection-end="3772" vertical-scroll-proportion="0.33364838" vertical-offset="1342" max-vertical-offset="2775">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroups/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="170" column="21" selection-start="7330" selection-end="7330" vertical-scroll-proportion="-14.708333" vertical-offset="2197" max-vertical-offset="3645">
+        <state line="170" column="21" selection-start="7330" selection-end="7330" vertical-scroll-proportion="0.33364838" vertical-offset="2197" max-vertical-offset="3645">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSGroupsSyncServiceProvider/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="116" column="21" selection-start="3842" selection-end="3842" vertical-scroll-proportion="-14.708333" vertical-offset="1387" max-vertical-offset="2820">
+        <state line="116" column="21" selection-start="3842" selection-end="3842" vertical-scroll-proportion="0.33364838" vertical-offset="1387" max-vertical-offset="2820">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSNetTimeServiceProvider/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="116" column="21" selection-start="3858" selection-end="3858" vertical-scroll-proportion="-14.708333" vertical-offset="1387" max-vertical-offset="2820">
+        <state line="116" column="21" selection-start="3858" selection-end="3858" vertical-scroll-proportion="0.33364838" vertical-offset="1387" max-vertical-offset="2820">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Build/DeployBundleTile/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="25" selection-start="2564" selection-end="2564" vertical-scroll-proportion="-29.541666" vertical-offset="431" max-vertical-offset="1515">
+        <state line="76" column="25" selection-start="2564" selection-end="2564" vertical-scroll-proportion="0.67013234" vertical-offset="431" max-vertical-offset="1515">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Build/DeployWABBundleTile/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="25" selection-start="2577" selection-end="2577" vertical-scroll-proportion="-29.541666" vertical-offset="431" max-vertical-offset="1515">
+        <state line="76" column="25" selection-start="2577" selection-end="2577" vertical-scroll-proportion="0.67013234" vertical-offset="431" max-vertical-offset="1515">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Test/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="33" selection-start="1636" selection-end="1636" vertical-scroll-proportion="-30.625" vertical-offset="0" max-vertical-offset="945">
+        <state line="49" column="33" selection-start="1636" selection-end="1636" vertical-scroll-proportion="0.694707" vertical-offset="0" max-vertical-offset="1058">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/sync/service/APSSyncService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="246" column="35" selection-start="7158" selection-end="7158" vertical-scroll-proportion="0.0" vertical-offset="3026" max-vertical-offset="4110">
+        <state line="246" column="35" selection-start="7158" selection-end="7158" vertical-scroll-proportion="0.44731978" vertical-offset="3026" max-vertical-offset="4110">
           <folding />
         </state>
       </provider>
@@ -6163,14 +5983,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/APSConfigServiceActivator.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="244" column="22" selection-start="10887" selection-end="10887" vertical-scroll-proportion="0.0" vertical-offset="3044" max-vertical-offset="4590">
+        <state line="244" column="22" selection-start="10887" selection-end="10887" vertical-scroll-proportion="0.1672828" vertical-offset="3044" max-vertical-offset="4590">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/misc/json/service/APSJSONService.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="61" column="54" selection-start="2017" selection-end="2017" vertical-scroll-proportion="0.0" vertical-offset="176" max-vertical-offset="1260">
+        <state line="61" column="54" selection-start="2017" selection-end="2017" vertical-scroll-proportion="0.59981513" vertical-offset="176" max-vertical-offset="1260">
           <folding>
             <element signature="imports" expanded="false" />
           </folding>
@@ -6179,21 +5999,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/misc/json/JSONErrorHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="60" column="71" selection-start="1664" selection-end="1664" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1020">
+        <state line="60" column="71" selection-start="1664" selection-end="1664" vertical-scroll-proportion="0.83179295" vertical-offset="0" max-vertical-offset="1082">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/misc/json/model/JSONObject.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="56" column="17" selection-start="1705" selection-end="1705" vertical-scroll-proportion="0.0" vertical-offset="401" max-vertical-offset="1485">
+        <state line="56" column="17" selection-start="1705" selection-end="1705" vertical-scroll-proportion="0.40573013" vertical-offset="401" max-vertical-offset="1485">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Misc/APSJSONServiceProvider/src/main/java/se/natusoft/osgi/aps/json/model/JSONModel.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="13" selection-start="1369" selection-end="1369" vertical-scroll-proportion="0.0" vertical-offset="356" max-vertical-offset="1845">
+        <state line="45" column="13" selection-start="1369" selection-end="1369" vertical-scroll-proportion="0.2948244" vertical-offset="356" max-vertical-offset="1845">
           <folding>
             <element signature="e#1986#1987#0" expanded="false" />
             <element signature="e#2024#2025#0" expanded="false" />
@@ -6205,7 +6025,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Misc/APSJSONServiceProvider/src/main/java/se/natusoft/osgi/aps/json/model/JSONObjectModel.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="64" column="42" selection-start="2047" selection-end="2047" vertical-scroll-proportion="0.0" vertical-offset="836" max-vertical-offset="2160">
+        <state line="64" column="42" selection-start="2047" selection-end="2047" vertical-scroll-proportion="0.045286506" vertical-offset="836" max-vertical-offset="2160">
           <folding>
             <element signature="imports" expanded="false" />
           </folding>
@@ -6214,28 +6034,28 @@
     </entry>
     <entry file="jar://$JAVA_HOME$/src.zip!/java/io/InputStream.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="99" column="15" selection-start="3748" selection-end="3748" vertical-scroll-proportion="0.0" vertical-offset="1214" max-vertical-offset="5580">
+        <state line="99" column="15" selection-start="3748" selection-end="3748" vertical-scroll-proportion="0.2504621" vertical-offset="1214" max-vertical-offset="5580">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="8" selection-start="443" selection-end="443" vertical-scroll-proportion="-11.25" vertical-offset="0" max-vertical-offset="3315">
+        <state line="18" column="8" selection-start="443" selection-end="443" vertical-scroll-proportion="0.25519848" vertical-offset="0" max-vertical-offset="3315">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSSimpleMessageServiceSyncServiceProvider/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="13" selection-start="445" selection-end="445" vertical-scroll-proportion="-5.0" vertical-offset="0" max-vertical-offset="2265">
+        <state line="8" column="13" selection-start="445" selection-end="445" vertical-scroll-proportion="0.11342155" vertical-offset="0" max-vertical-offset="2265">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="8" selection-start="154" selection-end="154" vertical-scroll-proportion="-5.625" vertical-offset="0" max-vertical-offset="1080">
+        <state line="9" column="8" selection-start="154" selection-end="154" vertical-scroll-proportion="0.12759924" vertical-offset="0" max-vertical-offset="1080">
           <folding />
         </state>
       </provider>
@@ -6249,51 +6069,68 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Data/APSOpenJPAProvider/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="132" column="59" selection-start="4452" selection-end="4452" vertical-scroll-proportion="-34.166668" vertical-offset="1160" max-vertical-offset="2850">
+        <state line="132" column="59" selection-start="4452" selection-end="4452" vertical-scroll-proportion="0.77504724" vertical-offset="1160" max-vertical-offset="2850">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/config/RabbitMQConnectionConfig.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="44" column="65" selection-start="1610" selection-end="1610" vertical-scroll-proportion="0.0" vertical-offset="371" max-vertical-offset="1455">
-          <folding />
+        <state line="43" column="65" selection-start="1545" selection-end="1545" vertical-scroll-proportion="0.0" vertical-offset="371" max-vertical-offset="1455">
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#2666#3109#0" expanded="false" />
+            <element signature="e#3102#3103#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQSimpleMessageServiceProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="218" column="54" selection-start="7876" selection-end="7876" vertical-scroll-proportion="0.0" vertical-offset="2325" max-vertical-offset="8820">
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state line="217" column="54" selection-start="7853" selection-end="7853" vertical-scroll-proportion="0.0" vertical-offset="2310" max-vertical-offset="8805">
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/sync/Synchronizer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="572" column="0" selection-start="21701" selection-end="21701" vertical-scroll-proportion="0.0" vertical-offset="7914" max-vertical-offset="12315">
+        <state line="574" column="0" selection-start="21768" selection-end="21768" vertical-scroll-proportion="0.19963032" vertical-offset="7914" max-vertical-offset="12315">
           <folding>
-            <element signature="e#10906#11073#0" expanded="true" />
-            <element signature="e#11066#11067#0" expanded="true" />
-            <element signature="e#11208#11373#0" expanded="true" />
-            <element signature="e#11366#11367#0" expanded="true" />
-            <element signature="e#11489#11671#0" expanded="true" />
-            <element signature="e#11664#11665#0" expanded="true" />
-            <element signature="e#11787#11969#0" expanded="true" />
-            <element signature="e#11962#11963#0" expanded="true" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#10973#11140#0" expanded="true" />
+            <element signature="e#11133#11134#0" expanded="true" />
+            <element signature="e#11275#11440#0" expanded="true" />
+            <element signature="e#11433#11434#0" expanded="true" />
+            <element signature="e#11556#11738#0" expanded="true" />
+            <element signature="e#11731#11732#0" expanded="true" />
+            <element signature="e#11854#12036#0" expanded="true" />
+            <element signature="e#12029#12030#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSSimpleMessageServiceSyncServiceProvider/src/main/java/se/natusoft/osgi/aps/sync/APSSimpleMessageServiceSyncServiceProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="200" column="34" selection-start="6203" selection-end="6203" vertical-scroll-proportion="0.351476" vertical-offset="2619" max-vertical-offset="5100">
+        <state line="211" column="78" selection-start="6934" selection-end="6934" vertical-scroll-proportion="0.42144176" vertical-offset="2709" max-vertical-offset="5100">
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#2970#2971#0" expanded="true" />
             <element signature="e#3010#3011#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/main/java/se/natusoft/osgi/aps/json/JSONObject.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="195" column="0" selection-start="5896" selection-end="5896" vertical-scroll-proportion="0.0" vertical-offset="2490" max-vertical-offset="4035">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/test/java/se/natusoft/osgi/aps/Tests.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="62" column="5" selection-start="2026" selection-end="2026" vertical-scroll-proportion="0.15249538" vertical-offset="600" max-vertical-offset="3570">
+          <folding />
         </state>
       </provider>
     </entry>

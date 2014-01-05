@@ -180,22 +180,25 @@ public class JSONObject extends JSONValue {
         boolean done = false;
         while (!done) {
             c = reader.skipWhitespace(c);
-            JSONString property = createString(getErrorHandler());
-            property.readJSON(c, reader);
-            
-            c = reader.getChar();
-            c = reader.skipWhitespace(c);
-            reader.assertChar(c, ':', "Expected a ':' after the name '" + property + "'!");
+            // Allow for an empty object!
+            if (!JSONObject.isObjectEnd(c)) {
+                JSONString property = createString(getErrorHandler());
+                property.readJSON(c, reader);
 
-            c = reader.getChar();
-            c = reader.skipWhitespace(c);
+                c = reader.getChar();
+                c = reader.skipWhitespace(c);
+                reader.assertChar(c, ':', "Expected a ':' after the name '" + property + "'!");
 
-            JSONValue value = JSONValue.resolveAndParseJSONValue(c, reader, getErrorHandler());
+                c = reader.getChar();
+                c = reader.skipWhitespace(c);
 
-            this.properties.put(property, value);
-            
-            c = reader.getChar();
-            c = reader.skipWhitespace(c);
+                JSONValue value = JSONValue.resolveAndParseJSONValue(c, reader, getErrorHandler());
+
+                this.properties.put(property, value);
+
+                c = reader.getChar();
+                c = reader.skipWhitespace(c);
+            }
 
             if (JSONObject.isObjectEnd(c)) {
                 done = true;
