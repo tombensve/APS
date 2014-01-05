@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="Debugged config synchronization: DONT use write(byte[]) on an ObjectOutputStream to write a byte array! Threat the array as an object and do writeObject(array) instead!">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/main/java/se/natusoft/osgi/aps/json/JSONObject.java" afterPath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/main/java/se/natusoft/osgi/aps/json/JSONObject.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/test/java/se/natusoft/osgi/aps/Tests.java" afterPath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/test/java/se/natusoft/osgi/aps/Tests.java" />
+    <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="Fixed bug in JSONObject. Now supports empty objects.">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQSimpleMessageServiceProvider.java" afterPath="$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQSimpleMessageServiceProvider.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/sync/Synchronizer.java" afterPath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/sync/Synchronizer.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="93ee55a5-7aeb-46b4-befc-da110c6bd63a" name="Failed commit: Default" comment="Dev commit." />
@@ -169,10 +169,28 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Tests.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="Tests.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/test/java/se/natusoft/osgi/aps/Tests.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="62" column="5" selection-start="2026" selection-end="2026" vertical-scroll-proportion="0.15249538" vertical-offset="600" max-vertical-offset="3570">
+            <state line="62" column="5" selection-start="2026" selection-end="2026" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3570">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Synchronizer.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/sync/Synchronizer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="382" column="0" selection-start="15009" selection-end="15009" vertical-scroll-proportion="0.0" vertical-offset="4734" max-vertical-offset="12030">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="APSRabbitMQSimpleMessageServiceProvider.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQSimpleMessageServiceProvider.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="337" column="0" selection-start="11035" selection-end="11035" vertical-scroll-proportion="1.267098" vertical-offset="3474" max-vertical-offset="8670">
               <folding />
             </state>
           </provider>
@@ -205,7 +223,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/model/RPCRequest.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONREST.java" />
         <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/service/StreamedRPCProtocol.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONRPC10.java" />
@@ -246,7 +263,6 @@
         <option value="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/APSConfigServiceActivator.java" />
         <option value="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/misc/json/JSONErrorHandler.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSMessageServiceSyncServiceProvider/src/main/java/se/natusoft/osgi/aps/sync/APSSimpleMessageServiceSyncServiceProvider.java" />
-        <option value="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/sync/Synchronizer.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSRabbitMQMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQSimpleMessageServiceProvider.java" />
         <option value="$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Network/APSMessageServiceSyncServiceProvider/pom.xml" />
@@ -256,6 +272,8 @@
         <option value="$PROJECT_DIR$/APS-Network/APSSimpleMessageServiceSyncServiceProvider/src/main/java/se/natusoft/osgi/aps/sync/APSSimpleMessageServiceSyncServiceProvider.java" />
         <option value="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/main/java/se/natusoft/osgi/aps/json/JSONObject.java" />
         <option value="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/test/java/se/natusoft/osgi/aps/Tests.java" />
+        <option value="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/sync/Synchronizer.java" />
+        <option value="$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQSimpleMessageServiceProvider.java" />
       </list>
     </option>
   </component>
@@ -2842,106 +2860,6 @@
               <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="aps" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Tests" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="OSGiApplicationPlatformServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS-Libraries and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APSJSONLib" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="aps" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Tests" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TestBean" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="OSGiApplicationPlatformServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APS-Libraries and modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewModuleGroupNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="APSJSONLib" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="aps" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Tests" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="NameBean" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ClassTreeNode" />
-            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -3811,7 +3729,7 @@
       <workItem from="1388693326419" duration="307000" />
       <workItem from="1388701249178" duration="2953000" />
       <workItem from="1388768140651" duration="8813000" />
-      <workItem from="1388839389310" duration="29469000" />
+      <workItem from="1388839389310" duration="29803000" />
     </task>
     <task id="LOCAL-00001" summary="Added hashCode() and equals() to the 2 configuration model implementations.">
       <created>1334502625761</created>
@@ -5541,7 +5459,11 @@
       <created>1388934505652</created>
       <updated>1388934505652</updated>
     </task>
-    <option name="localTasksCounter" value="405" />
+    <task id="LOCAL-00405" summary="Fixed bug in JSONObject. Now supports empty objects.">
+      <created>1388943763069</created>
+      <updated>1388943763070</updated>
+    </task>
+    <option name="localTasksCounter" value="406" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="true" url="http://redmine.natusoft.private/redmine">
@@ -5558,7 +5480,7 @@
     </servers>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="204801000" />
+    <option name="totallyTimeSpent" value="205135000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -5604,7 +5526,7 @@
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32963988" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Bean Validation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32959533" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31797236" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3176362" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="BSFConsole" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32849365" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4018433" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24813233" sideWeight="0.2876588" order="5" side_tool="true" content_ui="tabs" />
@@ -5650,7 +5572,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="Added APSRabbitMQMessageServiceProvider." />
     <MESSAGE value="Cosmetics/logging." />
     <MESSAGE value="- It is now possible to config queues. &#10;- Startup is now threaded so that RabbitMQ connection can be made from config without deadlocking waiting for config to become available.&#10;" />
     <MESSAGE value="Reverted to older code. I accidentally broke this when adding TCP transports in addition to Multicast. I couldn't figure out where I broke it so I finally revert it. I will retry adding TCP transports again later." />
@@ -5675,7 +5596,8 @@
     <MESSAGE value="IDE files." />
     <MESSAGE value="Removed duplicate dependencies." />
     <MESSAGE value="Debugged config synchronization: DONT use write(byte[]) on an ObjectOutputStream to write a byte array! Threat the array as an object and do writeObject(array) instead!" />
-    <option name="LAST_COMMIT_MESSAGE" value="Debugged config synchronization: DONT use write(byte[]) on an ObjectOutputStream to write a byte array! Threat the array as an object and do writeObject(array) instead!" />
+    <MESSAGE value="Fixed bug in JSONObject. Now supports empty objects." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed bug in JSONObject. Now supports empty objects." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -6085,30 +6007,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQSimpleMessageServiceProvider.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="217" column="54" selection-start="7853" selection-end="7853" vertical-scroll-proportion="0.0" vertical-offset="2310" max-vertical-offset="8805">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/sync/Synchronizer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="574" column="0" selection-start="21768" selection-end="21768" vertical-scroll-proportion="0.19963032" vertical-offset="7914" max-vertical-offset="12315">
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#10973#11140#0" expanded="true" />
-            <element signature="e#11133#11134#0" expanded="true" />
-            <element signature="e#11275#11440#0" expanded="true" />
-            <element signature="e#11433#11434#0" expanded="true" />
-            <element signature="e#11556#11738#0" expanded="true" />
-            <element signature="e#11731#11732#0" expanded="true" />
-            <element signature="e#11854#12036#0" expanded="true" />
-            <element signature="e#12029#12030#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSSimpleMessageServiceSyncServiceProvider/src/main/java/se/natusoft/osgi/aps/sync/APSSimpleMessageServiceSyncServiceProvider.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="211" column="78" selection-start="6934" selection-end="6934" vertical-scroll-proportion="0.42144176" vertical-offset="2709" max-vertical-offset="5100">
@@ -6129,7 +6027,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/test/java/se/natusoft/osgi/aps/Tests.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="62" column="5" selection-start="2026" selection-end="2026" vertical-scroll-proportion="0.15249538" vertical-offset="600" max-vertical-offset="3570">
+        <state line="62" column="5" selection-start="2026" selection-end="2026" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3570">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/src/main/java/se/natusoft/osgi/aps/core/config/sync/Synchronizer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="382" column="0" selection-start="15009" selection-end="15009" vertical-scroll-proportion="0.0" vertical-offset="4734" max-vertical-offset="12030">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/APSRabbitMQSimpleMessageServiceProvider.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="337" column="0" selection-start="11035" selection-end="11035" vertical-scroll-proportion="1.267098" vertical-offset="3474" max-vertical-offset="8670">
           <folding />
         </state>
       </provider>

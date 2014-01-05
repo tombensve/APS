@@ -329,7 +329,7 @@ public class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessage
         public void sendMessage(Message message) throws APSMessageException {
             try {
                 getSendChannel().basicPublish(this.name, "", null, message.getBytes());
-                logger.debug("Sent message of length " + message.getBytes().length);
+                //logger.debug("Sent message of length " + message.getBytes().length);
             }
             catch (IOException ioe) {
                 throw new APSMessageException(ioe.getMessage(), ioe);

@@ -378,9 +378,8 @@ APSSyncService.SyncGroup.ReSyncListener {
             this.jsonService.writeJSON(msgStream, confEnvJSON, false);
             msgStream.close();
 
-            logger.debug(">>>>>> length: [" + message.getBytes().length + "]");
+            //logger.debug(">>>>>> length: [" + message.getBytes().length + "]");
             this.syncGroup.sendMessage(message);
-            this.logger.debug(("### Send updated configEnvStore!"));
         }
         catch (IOException ioe) {
             this.logger.error("Send of config env message failed: " + ioe.getMessage(), ioe);
@@ -455,10 +454,10 @@ APSSyncService.SyncGroup.ReSyncListener {
             OutputStream msgStream = message.getOutputStream();
             this.jsonService.writeJSON(msgStream, configJSON, false);
             msgStream.close();
-//            System.out.print("SENDING:");
-//            this.jsonService.writeJSON(System.out, configJSON, false);
+            //System.out.print("SENDING:");
+            //this.jsonService.writeJSON(System.out, configJSON, false);
 
-            logger.debug(">>>>>> length: [" + message.getBytes().length + "]");
+            //logger.debug(">>>>>> length: [" + message.getBytes().length + "]");
             this.syncGroup.sendMessage(message);
         }
         catch (IOException ioe) {
@@ -476,7 +475,6 @@ APSSyncService.SyncGroup.ReSyncListener {
         syncSend(this.configEnvStore);
         for (APSConfigAdmin configAdmin : this.configAdminService.getAllConfigurations()) {
             syncSend(configAdmin);
-            logger.debug("SyncSend: " + configAdmin);
         }
     }
 
