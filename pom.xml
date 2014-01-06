@@ -72,7 +72,7 @@
         <!--
             Dependency versions
         -->
-        <markdownDoc.ver>1.1.1</markdownDoc.ver>
+        <markdownDoc.ver>1.2.10</markdownDoc.ver>
         <ftpPlugin.ver>1.0</ftpPlugin.ver>
         <clm.ver>2.1.1</clm.ver>
 
