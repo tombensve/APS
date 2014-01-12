@@ -2,24 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="Removed &amp; commented out some debug logging.">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Test/APSRestTest/src/main/java/se/natusoft/osgi/aps/test/api/RestTestService.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Test/APSRestTest/src/main/java/se/natusoft/osgi/aps/test/impl/RestTestServiceProvider.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Test/APSRestTest/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/docs/src/APSStreamedJSONRPCProtocolProvider.md" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/docs/src/APSStreamedJSONRPCProtocolProvider.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lics/licenses.md" afterPath="$PROJECT_DIR$/lics/licenses.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/service/APSExternalProtocolServiceProvider.java" afterPath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/service/APSExternalProtocolServiceProvider.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/main/java/se/natusoft/osgi/aps/json/JSON.java" afterPath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/main/java/se/natusoft/osgi/aps/json/JSON.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONREST.java" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONREST.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/main/java/se/natusoft/osgi/aps/json/JSONValue.java" afterPath="$PROJECT_DIR$/APS-Libraries/APSJSONLib/src/main/java/se/natusoft/osgi/aps/json/JSONValue.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/src/main/java/se/natusoft/osgi/aps/rpchttpextender/servlet/RPCServlet.java" afterPath="$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider/src/main/java/se/natusoft/osgi/aps/rpchttpextender/servlet/RPCServlet.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/config/RabbitMQConnectionConfig.java" afterPath="$PROJECT_DIR$/APS-Network/APSRabbitMQSimpleMessageServiceProvider/src/main/java/se/natusoft/osgi/aps/messaging/config/RabbitMQConnectionConfig.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/service/ServiceMethodCallable.java" afterPath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/service/ServiceMethodCallable.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/model/ServiceRepresentation.java" afterPath="$PROJECT_DIR$/APS-Network/APSExternalProtocolExtender/src/main/java/se/natusoft/osgi/aps/externalprotocolextender/model/ServiceRepresentation.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Test/Test.iml" afterPath="$PROJECT_DIR$/Test/Test.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/aps-simple-user-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/aps-simple-user-service-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Test/pom.xml" afterPath="$PROJECT_DIR$/Test/pom.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="93ee55a5-7aeb-46b4-befc-da110c6bd63a" name="Failed commit: Default" comment="Dev commit." />
@@ -4334,7 +4319,7 @@
       <workItem from="1388768140651" duration="8813000" />
       <workItem from="1388839389310" duration="35706000" />
       <workItem from="1389440848042" duration="927000" />
-      <workItem from="1389526667584" duration="14689000" />
+      <workItem from="1389526667584" duration="14827000" />
     </task>
     <task id="LOCAL-00001" summary="Added hashCode() and equals() to the 2 configuration model implementations.">
       <created>1334502625761</created>
@@ -6076,7 +6061,11 @@
       <created>1389021820322</created>
       <updated>1389021820323</updated>
     </task>
-    <option name="localTasksCounter" value="408" />
+    <task id="LOCAL-00408" summary="Debugged REST service calls via APSExternalProtocolExtender and APSExternalProtocolHTTPTransportProvider.">
+      <created>1389542948562</created>
+      <updated>1389542948563</updated>
+    </task>
+    <option name="localTasksCounter" value="409" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="true" url="http://redmine.natusoft.private/redmine">
@@ -6093,7 +6082,7 @@
     </servers>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="226654000" />
+    <option name="totallyTimeSpent" value="226792000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -6143,6 +6132,7 @@
       <window_info id="BSFConsole" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32849365" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.40166205" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24813233" sideWeight="0.2876588" order="5" side_tool="true" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32395643" sideWeight="0.5" order="21" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23018147" sideWeight="0.40329835" order="6" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2327179" sideWeight="0.36565098" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1733561" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
@@ -6155,7 +6145,6 @@
       <window_info id="Dilbert" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26794657" sideWeight="0.5" order="23" side_tool="false" content_ui="tabs" />
       <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19061728" sideWeight="0.6752066" order="17" side_tool="false" content_ui="tabs" />
       <window_info id="IntelliJad Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3294606" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32395643" sideWeight="0.5" order="21" side_tool="false" content_ui="tabs" />
       <window_info id="Hudson Information" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
       <window_info id="Code Consultant" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -6185,7 +6174,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="Reverted to older code. I accidentally broke this when adding TCP transports in addition to Multicast. I couldn't figure out where I broke it so I finally revert it. I will retry adding TCP transports again later." />
     <MESSAGE value="First commit." />
     <MESSAGE value="Bug fixes.&#10;&#10;Changed how RabbitMQ is used. The queue names provided are not used as RabbitMQ queuenames. Anonymous queues are created instead, and the provided queue name is used as exchange name instead. &quot;fanout&quot; is always used. &#10;" />
     <MESSAGE value="Changed phase of MarkdownDoc doc generation from &quot;deploy&quot; to &quot;install&quot;." />
@@ -6210,7 +6198,8 @@
     <MESSAGE value="Fixed bug in JSONObject. Now supports empty objects." />
     <MESSAGE value="Removed &amp; commented out some debug logging." />
     <MESSAGE value="Updated version of MarkdownDoc." />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated version of MarkdownDoc." />
+    <MESSAGE value="Debugged REST service calls via APSExternalProtocolExtender and APSExternalProtocolHTTPTransportProvider." />
+    <option name="LAST_COMMIT_MESSAGE" value="Debugged REST service calls via APSExternalProtocolExtender and APSExternalProtocolHTTPTransportProvider." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">

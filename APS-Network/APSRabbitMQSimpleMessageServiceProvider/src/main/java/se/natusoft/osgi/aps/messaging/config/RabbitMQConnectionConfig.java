@@ -48,10 +48,10 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
  */
 @APSConfigDescription(
         configId = "se.natusoft.osgi.aps.messaging.rabbitmq",
-        description = "This configures connection data for RabbitMQ server.",
+        description = "This configures connection data for RabbitMQ server for aps-rabbitmq-simple-message-service-provider.",
         version = "1.0.0",
         // APSConfigAdminWeb GUI tree placement.
-        group = "aps.network.mq"
+        group = "network.messaging"
 )
 public class RabbitMQConnectionConfig extends APSConfig {
 
