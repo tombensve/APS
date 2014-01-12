@@ -167,8 +167,13 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
         ServiceRepresentation serviceRep = this.services.get(serviceName);
         APSExternallyCallable callable = null;
 
+        if (serviceFunctionName == null) {
+            serviceFunctionName = getAvailableServiceFunctionNames(serviceName).iterator().next();
+        }
+
         if (serviceRep != null) {
-            callable = new ServiceMethodCallable(serviceRep.getMethodCallable(serviceFunctionName));
+            callable = serviceRep.getMethodCallable(serviceFunctionName);
+            callable = new ServiceMethodCallable((ServiceMethodCallable)callable);
         }
 
         return callable;

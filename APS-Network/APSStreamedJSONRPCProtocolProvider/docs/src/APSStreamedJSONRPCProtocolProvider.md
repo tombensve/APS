@@ -6,13 +6,15 @@ JSONRPC version 1.0 protocol as described at [http://json-rpc.org/wiki/specifica
 
 JSONRPC version 2.0 protocol as describved at [http://jsonrpc.org/spec.html](http://jsonrpc.org/spec.html).
 
-JSONHTTP version 1.0 which is not any standard protocol at all. It requires both service name and method name on the url, and in case of HTTP GET also arguments as ?params=arg:...:arg where values are strings or primitives. For POST, PUT, and DELETE a JSON array of values need to be written on the stream.
+JSONHTTP version 1.0 which is not any standard protocol at all. It requires both service name and method name on the url, and in case of HTTP GET or DELETE also arguments as ?params=arg:...:arg where values are strings or primitives. For POST, and PUT a JSON array of values need to be written on the stream.
 
-JSONREST version 1.0 extending JSONHTTP and providing 'true' for _supportsREST()_ which will make the http transport always map methods starting with post, put, get, or delete to the http method. This can thereby deliver a true REST API.
+JSONREST version 1.0 extending JSONHTTP will make the http transport always map methods annotated with @RESTGET, @RESTPUT, @RESTPOST, and @RESTDELETE to the corresponding http methods. This also does not require a method to be specified on the URL, and will ignore any specified method. 
+
+Personally I think that JSONRPC 2.0 is far more flexible than REST.
 
 ## Examples
 
-Here is some examples calling services over http with diffent protocols using curl (requires aps-ext-protocol-http-transport-provider.jar to be deployed):
+Here is some examples calling services over http with diffent protocols using curl (_requires aps-ext-protocol-http-transport-provider.jar and the called services to be deployed, and specified as externalizable via configuration_ (Network/service/external-protocol-extender)):
 
 	curl --data '{"jsonrpc": "2.0", "method": "getPlatformDescription", "params": [], "id": 1}' http://localhost:8080/apsrpc/JSONRPC/2.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService 
 
@@ -36,9 +38,9 @@ yields
  
 	{"id": "6d25d646-11fc-44c3-b74d-29b3d5c94920", "valid": true}
 	
-In this case we didn’t just use _createSession_ as method name, but _createSession(Integer)_ though with parentheses escaped to not confuse the shell. This is because there is 2 variants of createSession: createSession(String, Integer) and createSession(Integer). If we don’t specify clearly we might get the wrong one and in this case that happens and will fail due to missing second parameter. Also note the _params=5_.  On get we cannot pass any data on the stream to the service, we can only pass parameters on the URL which is done by specifying url parameter _params_ with a colon (”:”) separated list of parameters as value. In this case only String and primitives are supported for parameters.  
+In this case we didn't just use _createSession_ as method name, but _createSession(Integer)_ though with parentheses escaped to not confuse the shell. This is because there is 2 variants of createSession: createSession(String, Integer) and createSession(Integer). If we don't specify clearly we might get the wrong one and in this case that happens and will fail due to missing second parameter. Also note the _params=5_.  On get we cannot pass any data on the stream to the service, we can only pass parameters on the URL which is done by specifying url parameter _params_ with a colon (:) separated list of parameters as value. In this case only String and primitives are supported for parameters.  
 
-These examples only works if you have disabled the ”requireAuthentication” configuration (network/rpc-http-transport). 
+These examples only works if you have disabled the _requireAuthentication_ configuration (network/rpc-http-transport). 
 
 ## See also
 

@@ -396,7 +396,7 @@ public abstract class JSONValue {
         protected char getChar(boolean handleEscapes) throws IOException {
             char[] cbuff = new char[1];
             int noRead = this.reader.read(cbuff, 0, 1);
-            if (noRead == -1) {
+            if (noRead <= 0) {
                 this.errorHandler.fail("Unexpected end-of-file!", null);
                 throw new JSONEOFException();
             }

@@ -146,7 +146,7 @@ public class ServiceMethodCallable implements APSExternallyCallable {
      */
     @Override
     public String getServiceFunctionName() {
-        return this.method.getName();
+        return this.method != null ? this.method.getName() : null;
     }
 
     /**

@@ -197,6 +197,7 @@ public class JSONREST  extends JSONHTTP {
                 // and then report the invalid ones.
                 JSONRESTRequest req = new JSONRESTRequest(serviceQName, method, error);
                 requests.add(req);
+                break;
             }
         }
 

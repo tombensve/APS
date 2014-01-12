@@ -41,7 +41,7 @@
     <parent>
         <artifactId>APS</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version>${project.version}</version>
+        <version>0.10.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -51,6 +51,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>APSConfigTest</module>
+        <module>APSRestTest</module>
     </modules>
 
 

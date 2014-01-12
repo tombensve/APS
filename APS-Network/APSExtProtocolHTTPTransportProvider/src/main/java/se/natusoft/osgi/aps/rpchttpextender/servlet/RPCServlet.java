@@ -399,7 +399,8 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             method = pathParts[part];
         }
 
-        APSExternallyCallable<Object> callable = this.externalProtocolService.getCallable(service, method);
+        // A service with no methods
+        Class serviceClass = this.externalProtocolService.getCallables(service).get(0).getServiceClass();
 
         StreamedRPCProtocol protocol = this.externalProtocolService.getStreamedProtocolByNameAndVersion(protocolName, version);
         if (protocol != null) {
@@ -410,22 +411,22 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             switch (reqMethod) {
                 case "GET":
                     requests = new LinkedList<>();
-                    requests.add(protocol.parseRequest(service, callable.getServiceClass(), method, getParameters(req), RequestIntention.READ));
+                    requests.add(protocol.parseRequest(service, serviceClass, method, getParameters(req), RequestIntention.READ));
                     break;
                 case "PUT":
-                    requests = protocol.parseRequests(service, callable.getServiceClass(), method, req.getInputStream(), RequestIntention.UPDATE);
+                    requests = protocol.parseRequests(service, serviceClass, method, req.getInputStream(), RequestIntention.UPDATE);
                     break;
                 case "POST":
-                    requests = protocol.parseRequests(service, callable.getServiceClass(), method, req.getInputStream(), RequestIntention.CREATE);
+                    requests = protocol.parseRequests(service, serviceClass, method, req.getInputStream(), RequestIntention.CREATE);
                     break;
                 case "DELETE":
                     requests = new LinkedList<>();
-                    requests.add(protocol.parseRequest(service, callable.getServiceClass(), method, getParameters(req), RequestIntention.DELETE));
+                    requests.add(protocol.parseRequest(service, serviceClass, method, getParameters(req), RequestIntention.DELETE));
                     break;
                 default:
                     // We fallback on READ if we get something unexpected here!
                     requests = new LinkedList<>();
-                    requests.add(protocol.parseRequest(service, callable.getServiceClass(), method, getParameters(req), RequestIntention.READ));
+                    requests.add(protocol.parseRequest(service, serviceClass, method, getParameters(req), RequestIntention.READ));
                     break;
             }
 
@@ -438,7 +439,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                             method = rpcRequest.getMethod();
                         }
 
-                        callable = this.externalProtocolService.getCallable(service, method);
+                        APSExternallyCallable<Object> callable = this.externalProtocolService.getCallable(service, method);
 
                         if (callable != null) {
                             // Handle parameters
@@ -509,7 +510,8 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                             );
                         }
                     } else {
-                        throw new RPCErrorException(rpcRequest.getError());
+                        this.logger.error(rpcRequest.getServiceQName() + ":" + rpcRequest.getMethod() + " - " +
+                                rpcRequest.getError().getErrorType().name() + ":" + rpcRequest.getError().getMessage());
                     }
                 }
                 // Write error responses.

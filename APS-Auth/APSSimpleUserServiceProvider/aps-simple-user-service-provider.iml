@@ -14,6 +14,9 @@
     <facet type="Osmorc" name="OSGi">
       <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-simple-user-service-provider-0.10.0.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.tools.APSActivator" bundleSymbolicName="aps-simple-user-service-provider" bundleVersion="1.0.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
+          <property key="Bundle-Description" value="Provides an implementation of APSSimpleUserService backed by a database." />
+          <property key="Bundle-Vendor" value="Natusoft AB" />
+          <property key="Bundle-DocURL" value="http://www.natusoft.se/" />
           <property key="JPA-PersistenceUnits" value="UserAdmin" />
           <property key="Import-Package" value="*" />
           <property key="Private-Package" value="se.natusoft.osgi.aps.userservice,se.natusoft.osgi.aps.userservice.config,se.natusoft.osgi.aps.userservice.entities,se.natusoft.osgi.aps.userservice.util,se.natusoft.osgi.aps.userservice.service" />

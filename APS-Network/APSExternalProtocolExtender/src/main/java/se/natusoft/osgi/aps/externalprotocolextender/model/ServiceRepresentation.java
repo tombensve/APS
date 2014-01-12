@@ -80,9 +80,7 @@ public class ServiceRepresentation {
     /** The uniquely callable methods with arg types. */
     private Map<String, ServiceMethodCallable> methodsUnique = new HashMap<>();
 
-    /** For cacheing rest status. */
-    private Boolean isREST = null;
-    
+
     //
     // Constructors
     //

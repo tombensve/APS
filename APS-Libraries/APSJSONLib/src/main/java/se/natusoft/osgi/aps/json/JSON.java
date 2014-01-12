@@ -63,6 +63,7 @@ public class JSON {
         JSONValue.JSONReader reader = new JSONValue.JSONReader(new PushbackReader(new InputStreamReader(jsonIn)), errorHandler);
 
         char c = reader.getChar();
+
         JSONValue value = JSONValue.resolveAndParseJSONValue(c, reader, errorHandler);
 
         return value;
