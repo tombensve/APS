@@ -40,10 +40,7 @@ import se.natusoft.osgi.aps.api.misc.json.JSONEOFException;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONArray;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
-import se.natusoft.osgi.aps.api.net.rpc.annotations.RESTDELETE;
-import se.natusoft.osgi.aps.api.net.rpc.annotations.RESTGET;
-import se.natusoft.osgi.aps.api.net.rpc.annotations.RESTPOST;
-import se.natusoft.osgi.aps.api.net.rpc.annotations.RESTPUT;
+import se.natusoft.osgi.aps.api.net.rpc.annotations.APSRemoteService;
 import se.natusoft.osgi.aps.api.net.rpc.errors.ErrorType;
 import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;
 import se.natusoft.osgi.aps.api.net.rpc.model.RequestIntention;
@@ -126,17 +123,26 @@ public class JSONREST  extends JSONHTTP {
         Map<RequestIntention, String> methods = new HashMap<>();
 
         for (Method method : serviceClass.getMethods()) {
-            if (method.getAnnotation(RESTGET.class) != null) {
-                methods.put(RequestIntention.READ, method.getName());
-            }
-            if (method.getAnnotation(RESTPUT.class) != null) {
-                methods.put(RequestIntention.UPDATE, method.getName());
-            }
-            if (method.getAnnotation(RESTPOST.class) != null) {
-                methods.put(RequestIntention.CREATE, method.getName());
-            }
-            if (method.getAnnotation(RESTDELETE.class) != null) {
-                methods.put(RequestIntention.DELETE, method.getName());
+            APSRemoteService apsRemoteService = method.getAnnotation(APSRemoteService.class);
+
+            if (apsRemoteService != null) {
+                switch(apsRemoteService.httpMethod()) {
+                    case GET:
+                        methods.put(RequestIntention.READ, method.getName());
+                        break;
+
+                    case PUT:
+                        methods.put(RequestIntention.UPDATE, method.getName());
+                        break;
+
+                    case POST:
+                        methods.put(RequestIntention.CREATE, method.getName());
+                        break;
+
+                    case DELETE:
+                        methods.put(RequestIntention.DELETE, method.getName());
+
+                }
             }
         }
 

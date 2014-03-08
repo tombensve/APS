@@ -82,9 +82,10 @@ public interface APSRESTCallable extends APSExternallyCallable {
      * This defines the valid choices for selectMethod(...).
      */
 	public static enum HttpMethod {
+        NONE,
 		PUT,
 		POST,
 		GET,
-		DELETE;
+		DELETE
 	}
 }
