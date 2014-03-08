@@ -5,10 +5,10 @@
  *         APS Tools Library
  *     
  *     Code Version
- *         0.9.2
+ *         0.10.0
  *     
  *     Description
- *         Provides an implementation of APSJPAService using OpenJPA.
+ *         Provides a library of utilities, among them APSServiceTracker used by all other APS bundles.
  *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.

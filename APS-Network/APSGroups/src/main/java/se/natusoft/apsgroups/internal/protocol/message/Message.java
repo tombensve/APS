@@ -5,7 +5,7 @@
  *         APS Groups
  *     
  *     Code Version
- *         0.9.1
+ *         0.10.0
  *     
  *     Description
  *         Provides network groups where named groups can be joined as members and then send and

@@ -5,7 +5,7 @@
  *         APSSimpleUserServiceAuthServiceProvider
  *     
  *     Code Version
- *         0.9.2
+ *         0.10.0
  *     
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.

@@ -5,10 +5,10 @@
             DocTile
         
         Code Version
-            0.9.1
+            0.10.0
         
         Description
-            This provides a build tile for generating documentation in PDF and HTML format.
+            APS (Application Platform Services) - A smörgåsbord of OSGi platform type services.
         
     COPYRIGHTS
         Copyright (C) 2012 by Natusoft AB All rights reserved.

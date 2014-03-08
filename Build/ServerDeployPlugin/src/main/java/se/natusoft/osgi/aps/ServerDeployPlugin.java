@@ -5,7 +5,7 @@
  *         ServerDeployPlugin
  *     
  *     Code Version
- *         0.9.2
+ *         0.10.0
  *     
  *     Description
  *         Basically copies one file from one place to another. This is however used

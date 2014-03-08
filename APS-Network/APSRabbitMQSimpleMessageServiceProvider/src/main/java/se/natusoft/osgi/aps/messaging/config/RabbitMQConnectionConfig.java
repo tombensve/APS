@@ -2,10 +2,10 @@
  * 
  * PROJECT
  *     Name
- *         APS RabbitMQ Message Service Provider
+ *         APS RabbitMQ SimpleMessageService Provider
  *     
  *     Code Version
- *         0.9.3
+ *         0.10.0
  *     
  *     Description
  *         Provides an implementation of APSMessageService using RabbitMQ Java Client.

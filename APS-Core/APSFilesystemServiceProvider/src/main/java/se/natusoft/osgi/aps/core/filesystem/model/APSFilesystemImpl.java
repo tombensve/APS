@@ -5,7 +5,7 @@
  *         APS Filesystem Service Provider
  *     
  *     Code Version
- *         0.9.2
+ *         0.10.0
  *     
  *     Description
  *         Provides access to a service/application private filesystem that remains until the

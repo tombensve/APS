@@ -2,17 +2,13 @@
  * 
  * PROJECT
  *     Name
- *         APS Data Source
+ *         APS Simple User Service Provider
  *     
  *     Code Version
- *         0.9.2
+ *         0.10.0
  *     
  *     Description
- *         This bundle provides data source definitions configuration and a service to lookup
- *         the configured data source definitions with. These are not javax.sql.DataSource
- *         objects! This only provides the configuration data to setup a data source. Some
- *         other bundle can use this to configure a DataSource, a connection pool, JPA, etc
- *         from this.
+ *         Provides an implementation of APSSimpleUserService backed by a database.
  *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
