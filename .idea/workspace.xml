@@ -2,15 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="Cleaned up the JSONREST protocol.">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/core/memory/APSMemoryService.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/annotations/APSRemoteService.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/annotations/RESTDELETE.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/annotations/RESTGET.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/annotations/RESTPOST.java" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/net/rpc/annotations/RESTPUT.java" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/docs/aps-streamed-json-rpc-protocol-provider.md" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/docs/aps-streamed-json-rpc-protocol-provider.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lics/licenses.md" afterPath="$PROJECT_DIR$/lics/licenses.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/external/extprotocolsvc/model/APSRESTCallable.java" afterPath="$PROJECT_DIR$/APS-APIs/src/main/java/se/natusoft/osgi/aps/api/external/extprotocolsvc/model/APSRESTCallable.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONREST.java" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONREST.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -171,8 +162,10 @@
       <file leaf-file-name="JSONREST.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONREST.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="57" column="16" selection-start="1969" selection-end="1969" vertical-scroll-proportion="-0.3462604" vertical-offset="1230" max-vertical-offset="4125">
-              <folding />
+            <state line="111" column="36" selection-start="3836" selection-end="3836" vertical-scroll-proportion="0.40240517" vertical-offset="1230" max-vertical-offset="4125">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -3963,7 +3956,7 @@
       <workItem from="1389526667584" duration="25071000" />
       <workItem from="1390907880844" duration="598000" />
       <workItem from="1390999712557" duration="682000" />
-      <workItem from="1393767729458" duration="4881000" />
+      <workItem from="1393767729458" duration="5050000" />
     </task>
     <task id="LOCAL-00001" summary="Added hashCode() and equals() to the 2 configuration model implementations.">
       <created>1334502625761</created>
@@ -5713,7 +5706,11 @@
       <created>1389543064147</created>
       <updated>1389543064148</updated>
     </task>
-    <option name="localTasksCounter" value="410" />
+    <task id="LOCAL-00410" summary="Cleaned up the JSONREST protocol.">
+      <created>1394292699728</created>
+      <updated>1394292699728</updated>
+    </task>
+    <option name="localTasksCounter" value="411" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="true" url="http://redmine.natusoft.private/redmine">
@@ -5730,7 +5727,7 @@
     </servers>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="243197000" />
+    <option name="totallyTimeSpent" value="243366000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -5754,7 +5751,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="182" y="143" width="2184" height="1200" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5466297" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
@@ -5770,7 +5767,7 @@
       <window_info id="CDI" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32959533" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32594645" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2875817" sideWeight="0.63434905" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2875817" sideWeight="0.63434905" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.49723247" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32963988" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
@@ -5779,6 +5776,7 @@
       <window_info id="BSFConsole" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32849365" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.40166205" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24813233" sideWeight="0.2876588" order="5" side_tool="true" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32395643" sideWeight="0.5" order="21" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23014256" sideWeight="0.40329835" order="6" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2327179" sideWeight="0.36565098" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.14052288" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
@@ -5792,7 +5790,6 @@
       <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19061728" sideWeight="0.6752066" order="17" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3176362" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="IntelliJad Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3294606" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32395643" sideWeight="0.5" order="21" side_tool="false" content_ui="tabs" />
       <window_info id="Hudson Information" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
       <window_info id="Code Consultant" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -5822,7 +5819,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="Bug fixes.&#10;&#10;Changed how RabbitMQ is used. The queue names provided are not used as RabbitMQ queuenames. Anonymous queues are created instead, and the provided queue name is used as exchange name instead. &quot;fanout&quot; is always used. &#10;" />
     <MESSAGE value="Changed phase of MarkdownDoc doc generation from &quot;deploy&quot; to &quot;install&quot;." />
     <MESSAGE value="Bugfixes and cleanup." />
     <MESSAGE value="Added APSMessageServiceSyncServiceProvider." />
@@ -5847,7 +5843,8 @@
     <MESSAGE value="Updated version of MarkdownDoc." />
     <MESSAGE value="Debugged REST service calls via APSExternalProtocolExtender and APSExternalProtocolHTTPTransportProvider." />
     <MESSAGE value="Moved rabbitmq connection config to &quot;network.messaging&quot; in config web." />
-    <option name="LAST_COMMIT_MESSAGE" value="Moved rabbitmq connection config to &quot;network.messaging&quot; in config web." />
+    <MESSAGE value="Cleaned up the JSONREST protocol." />
+    <option name="LAST_COMMIT_MESSAGE" value="Cleaned up the JSONREST protocol." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -6236,8 +6233,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/src/main/java/se/natusoft/osgi/aps/jsonrpc/protocols/JSONREST.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="57" column="16" selection-start="1969" selection-end="1969" vertical-scroll-proportion="-0.3462604" vertical-offset="1230" max-vertical-offset="4125">
-          <folding />
+        <state line="111" column="36" selection-start="3836" selection-end="3836" vertical-scroll-proportion="0.40240517" vertical-offset="1230" max-vertical-offset="4125">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -108,7 +108,7 @@ public class JSONREST  extends JSONHTTP {
                 "URL parameters are required on GET while a JSON array on the stream is required on POST or PUT. " +
                 "Whatever the method call returns are converted to JSON and written on the response OutputStream. " +
                 "For this REST protocol the called service must have methods annotated with se.natusoft.osgi.aps.api." +
-                "net.rpc.annotations.RESTGET/RESTPUT/RESTPOST/RESTDELETE. If an appropriate method is not found a 404 " +
+                "net.rpc.annotations.APSRemoteService(httpMethod=GET/PUT/POST/DELETE). If an appropriate method is not found a 404 " +
                 "will be returned!";
     }
 
