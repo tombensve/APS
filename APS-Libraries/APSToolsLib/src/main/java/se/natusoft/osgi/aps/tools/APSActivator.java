@@ -729,7 +729,11 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                         namedInstance.getClass().getName());
             }
 
-            List<Object> managedInstances = getManagedInstances(managedClass);
+            // Do note that we pass the size of 1 here which solves the case of managedClass not being managed yet due
+            // to it not being a service class, but it have managed fields in it so we need at least one instance of it.
+            // If the managedClass is a service with multiple instances then those have already been created before we
+            // reach here and thus the size passed here does not matter since it only affects first time creation.
+            List<Object> managedInstances = getManagedInstances(managedClass, 1);
             for (Object managedInstance : managedInstances) {
                 injectObject(managedInstance, namedInstance, field);
             }
