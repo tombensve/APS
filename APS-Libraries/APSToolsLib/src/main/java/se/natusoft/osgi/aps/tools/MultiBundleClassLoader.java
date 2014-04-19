@@ -40,6 +40,7 @@ import org.osgi.framework.Bundle;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,9 +70,7 @@ public class MultiBundleClassLoader extends ClassLoader {
      */
     public MultiBundleClassLoader(Bundle... bundles) {
         this.bundles = new LinkedList<>();
-        for (Bundle bundle : bundles) {
-            this.bundles.add(bundle);
-        }
+        Collections.addAll(this.bundles, bundles);
     }
 
     //
