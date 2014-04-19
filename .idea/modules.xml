@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/APS.iml" filepath="$PROJECT_DIR$/APS.iml" group="APS and modules" />
+      <module fileurl="file://$PROJECT_DIR$/APS-Archetypes/APS-Archetypes.iml" filepath="$PROJECT_DIR$/APS-Archetypes/APS-Archetypes.iml" group="APS and modules/APS-Archetypes and modules" />
       <module fileurl="file://$PROJECT_DIR$/APS-Auth/APS-Auth.iml" filepath="$PROJECT_DIR$/APS-Auth/APS-Auth.iml" group="APS and modules/APS-Auth and modules" />
       <module fileurl="file://$PROJECT_DIR$/APS-Core/APS-Core.iml" filepath="$PROJECT_DIR$/APS-Core/APS-Core.iml" group="APS and modules/APS-Core and modules" />
       <module fileurl="file://$PROJECT_DIR$/APS-Data/APS-Data.iml" filepath="$PROJECT_DIR$/APS-Data/APS-Data.iml" group="APS and modules/APS-Data and modules" />
@@ -11,6 +12,8 @@
       <module fileurl="file://$PROJECT_DIR$/APS-Network/APS-Network.iml" filepath="$PROJECT_DIR$/APS-Network/APS-Network.iml" group="APS and modules/APS-Network and modules" />
       <module fileurl="file://$PROJECT_DIR$/APS-UserGuide/APS-UserGuide.iml" filepath="$PROJECT_DIR$/APS-UserGuide/APS-UserGuide.iml" group="APS and modules" />
       <module fileurl="file://$PROJECT_DIR$/APS-Webs/APS-Webs.iml" filepath="$PROJECT_DIR$/APS-Webs/APS-Webs.iml" group="APS and modules/APS-Webs and modules" />
+      <module fileurl="file://$PROJECT_DIR$/APS-Archetypes/APSBundleArchetype/APSBundleArchetype.iml" filepath="$PROJECT_DIR$/APS-Archetypes/APSBundleArchetype/APSBundleArchetype.iml" group="APS and modules/APS-Archetypes and modules" />
+      <module fileurl="file://$PROJECT_DIR$/APS-Archetypes/APSWarBundleArchetype/APSWarBundleArchetype.iml" filepath="$PROJECT_DIR$/APS-Archetypes/APSWarBundleArchetype/APSWarBundleArchetype.iml" group="APS and modules/APS-Archetypes and modules" />
       <module fileurl="file://$PROJECT_DIR$/Build/Build.iml" filepath="$PROJECT_DIR$/Build/Build.iml" group="APS and modules/Build and modules" />
       <module fileurl="file://$PROJECT_DIR$/Build/DeployBundleTile/DeployBundleTile.iml" filepath="$PROJECT_DIR$/Build/DeployBundleTile/DeployBundleTile.iml" group="APS and modules/Build and modules" />
       <module fileurl="file://$PROJECT_DIR$/Build/DeployWABBundleTile/DeployWABBundleTile.iml" filepath="$PROJECT_DIR$/Build/DeployWABBundleTile/DeployWABBundleTile.iml" group="APS and modules/Build and modules" />

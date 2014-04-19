@@ -377,7 +377,7 @@
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Webs/APSJettyWebExtender" />
-    <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Webs/APSTomcatWebExtender" />
+    <file type="Osmorc" url="file://$PROJECT_DIR$/APS-Webs/APSTomcatWebExtender2" />
     <file type="Osmorc" url="file://$PROJECT_DIR$/Test" />
     <file type="web" url="file://$PROJECT_DIR$/APS-Network/APSExtProtocolHTTPTransportProvider" />
     <file type="web" url="file://$PROJECT_DIR$/APS-Webs/APSAdminLoginWeb" />
@@ -414,12 +414,8 @@
         <option value="$PROJECT_DIR$/Archetypes/pom.xml" />
         <option value="$PROJECT_DIR$/Documentation/pom.xml" />
         <option value="$PROJECT_DIR$/APS-Core/APSLogServiceProvider/pom.xml" />
+        <option value="$PROJECT_DIR$/APS-Webs/APSTomcatWebExtender/pom.xml" />
       </list>
-    </option>
-    <option name="ignoredFiles">
-      <set>
-        <option value="$PROJECT_DIR$/APS-BOM/pom.xml" />
-      </set>
     </option>
   </component>
   <component name="ModuleEditorState">

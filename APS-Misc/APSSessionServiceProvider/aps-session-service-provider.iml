@@ -2,8 +2,11 @@
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Osmorc" name="OSGi">
-      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-session-service-provider-0.10.0.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.session.APSSessionServiceProviderActivator" bundleSymbolicName="aps-session-service-provider" bundleVersion="1.0.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
+      <configuration manifestGenerationMode="OsmorcControlled" manifestLocation="" jarfileLocation="aps-session-service-provider-0.10.0.jar" outputPathType="CompilerOutputPath" bndFileLocation="" bundlorFileLocation="" bundleActivator="se.natusoft.osgi.aps.session.APSSessionServiceProviderActivator" bundleSymbolicName="aps-session-service-provider" bundleVersion="0.10.0" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false" doNotSynchronizeWithMaven="false">
         <additionalProperties>
+          <property key="Bundle-Description" value="Provides an OSGi server wide session." />
+          <property key="Bundle-Vendor" value="Natusoft AB" />
+          <property key="Bundle-DocURL" value="http://www.natusoft.se/" />
           <property key="Import-Package" value="*" />
           <property key="Private-Package" value="se.natusoft.osgi.aps.session,se.natusoft.osgi.aps.session.service,se.natusoft.osgi.aps.session.config" />
           <property key="Embed-Directory" value="lib" />

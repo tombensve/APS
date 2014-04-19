@@ -133,6 +133,7 @@
         <module name="aps-tools-lib" />
         <module name="aps-user-admin-web" />
         <module name="aps-web-tools" />
+        <module name="APSBundleArchetype" />
         <module name="APSGroupsMessageServiceProvider" />
         <module name="APSMessageServiceSyncServiceProvider" />
         <module name="APSNetTimeServiceProvider" />
@@ -140,6 +141,7 @@
         <module name="APSResolvingBundleDeployer" />
         <module name="APSSimpleUserServiceAuthServiceProvider" />
         <module name="APSTomcatWebExtender" />
+        <module name="APSWarBundleArchetype" />
         <module name="OSGiTile" />
         <module name="ServerDeployPlugin" />
         <module name="ServerDeployPlugin (1)" />
@@ -194,6 +196,8 @@
       <module name="APSNetTimeServiceProvider" target="1.7" />
       <module name="APSRabbitMQMessageServiceProvider" target="1.7" />
       <module name="APSSimpleUserServiceAuthServiceProvider" target="1.7" />
+      <module name="APSTomcatWebExtender" target="1.7" />
+      <module name="APSTomcatWebExtender2" target="1.7" />
       <module name="Build" target="1.7" />
       <module name="BuildTiles" target="1.7" />
       <module name="DeployBundleTile" target="1.7" />
