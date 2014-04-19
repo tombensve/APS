@@ -39,10 +39,12 @@
 package se.natusoft.osgi.aps.core.filesystem.model;
 
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSDirectory;
+import se.natusoft.osgi.aps.api.core.filesystem.model.APSFile;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * This represents a directory in an APSFilesystem. 
@@ -92,7 +94,7 @@ public class APSDirectoryImpl extends APSFileImpl implements APSDirectory {
      */
     @Override
     public void recursiveDelete() throws IOException {
-        APSFileImpl[] files = listFiles();
+        APSFile[] files = listFiles();
         for (int i = 0; i < files.length; i++) {
             if (files[i].isDirectory()) {
                 ((APSDirectoryImpl)files[i]).recursiveDelete();
@@ -108,7 +110,7 @@ public class APSDirectoryImpl extends APSFileImpl implements APSDirectory {
      * 
      * @param path APSFileImpl (of type directory) relative path for new APSFileImpl.
      */
-    private APSFileImpl newAPSFile(String path) {
+    private APSFile newAPSFile(String path) {
         String newPath = "";
         if (this.relPath.trim().length() != 0) {
             newPath = this.relPath + File.separator;
@@ -122,7 +124,7 @@ public class APSDirectoryImpl extends APSFileImpl implements APSDirectory {
      * 
      * @param path A relative path for the new APSDirectoryImpl.
      */
-    private APSDirectoryImpl newAPSDirectory(String path) {
+    private APSDirectory newAPSDirectory(String path) {
         String newPath = "";
         if (this.relPath.trim().length() != 0) {
             newPath = this.relPath + File.separator;
@@ -140,7 +142,7 @@ public class APSDirectoryImpl extends APSFileImpl implements APSDirectory {
      * @throws IOException on any failurel.
      */
     @Override
-    public APSDirectoryImpl createDir(String name) throws IOException {
+    public APSDirectory createDir(String name) throws IOException {
         return createDir(name, null);
     }
     
@@ -153,8 +155,8 @@ public class APSDirectoryImpl extends APSFileImpl implements APSDirectory {
      * @throws IOException on any failurel.
      */
     @Override
-    public APSDirectoryImpl createDir(String name, String duplicateMessage) throws IOException {
-        APSDirectoryImpl dir = newAPSDirectory(name);
+    public APSDirectory createDir(String name, String duplicateMessage) throws IOException {
+        APSDirectoryImpl dir = (APSDirectoryImpl)newAPSDirectory(name);
         if (dir.exists()) {
             if (duplicateMessage == null) {
                 duplicateMessage = "Path of directory to create already exists!"; 
@@ -175,8 +177,8 @@ public class APSDirectoryImpl extends APSFileImpl implements APSDirectory {
      * @throws FileNotFoundException
      */
     @Override
-    public APSDirectoryImpl getDir(String dirname) throws FileNotFoundException {
-        APSDirectoryImpl dir = newAPSDirectory(dirname);
+    public APSDirectory getDir(String dirname) throws FileNotFoundException {
+        APSDirectory dir = newAPSDirectory(dirname);
         if (!dir.exists()) {
             throw new FileNotFoundException("Dir not found: " + toString());
         }
@@ -191,21 +193,64 @@ public class APSDirectoryImpl extends APSFileImpl implements APSDirectory {
      * @throws IOException on failure.
      */
     @Override
-    public APSFileImpl createFile(String name) throws IOException {
-        APSFileImpl file = newAPSFile(name);
+    public APSFile createFile(String name) throws IOException {
+        APSFile file = newAPSFile(name);
         if (file.exists()) {
             throw new IOException("File '" + file + "' already exist!");
         }
         return file;
-    }    
-    
+    }
+
+    /**
+     * Unzips an InputStream and returns its root as an APSDirectory.
+     *
+     * @param name          The root of the unzipped file tree.
+     * @param zipFile The zip file to unzip. This will be closed when all is unzipped!
+     * @return an APSDirectory pointing to name.
+     */
+    @Override
+    public APSDirectory unzip(String name, ZipFile zipFile) throws IOException {
+        APSDirectory unzipDir = createDir(name);
+
+        byte[] buffer = new byte[2000];
+
+        Enumeration entries = zipFile.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = (ZipEntry)entries.nextElement();
+            File destFile = new File(unzipDir.toFile().getAbsolutePath(), entry.getName());
+
+            if (!entry.isDirectory()) {
+                InputStream src = zipFile.getInputStream(entry);
+                OutputStream dest = new FileOutputStream(destFile);
+                try {
+                    int read = src.read(buffer);
+                    while (read != -1) {
+                        dest.write(buffer, 0, read);
+                        read = src.read(buffer);
+                    }
+                }
+                finally {
+                    dest.close();
+                    src.close();
+                }
+            }
+            else {
+                destFile.mkdir();
+            }
+        }
+
+        zipFile.close();
+
+        return unzipDir;
+    }
+
     /**
      * Returns the named backingFile in this directory.
      * 
      * @param name The name of the backingFile to get.
      */
     @Override
-    public APSFileImpl getFile(String name) {
+    public APSFile getFile(String name) {
         return new APSFileImpl(this.fs, this, name);
     }
     
@@ -218,7 +263,7 @@ public class APSDirectoryImpl extends APSFileImpl implements APSDirectory {
      * @see java.io.File#listFiles() 
      */
     @Override
-    public APSFileImpl[] listFiles() {
+    public APSFile[] listFiles() {
         String[] files = this.backingFile.list();
         if (files == null) {
             return null;
@@ -228,7 +273,7 @@ public class APSDirectoryImpl extends APSFileImpl implements APSDirectory {
         for (int i = 0; i < files.length; i++) {
             apsFiles[i] = new APSFileImpl(this.fs, this, files[i]);
             if (apsFiles[i].backingFile.isDirectory()) {
-                apsFiles[i] = apsFiles[i].toDirectory();
+                apsFiles[i] = (APSFileImpl)apsFiles[i].toDirectory();
             }
         }
 

@@ -38,6 +38,8 @@
  */
 package se.natusoft.osgi.aps.core.filesystem.model;
 
+import se.natusoft.osgi.aps.api.core.filesystem.model.APSDirectory;
+import se.natusoft.osgi.aps.api.core.filesystem.model.APSFile;
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
 
 import java.io.File;
@@ -139,7 +141,7 @@ public class APSFilesystemImpl implements APSFilesystem {
      * @param path The path of the file.
      */
     @Override
-    public APSFileImpl getFile(String path) {
+    public APSFile getFile(String path) {
         return new APSFileImpl(this, path);
     }
     
@@ -151,7 +153,7 @@ public class APSFilesystemImpl implements APSFilesystem {
      * @throws IOException on any failure, specifically if the specified path is not a folder or doesn't exist.
      */
     @Override
-    public APSDirectoryImpl getDirectory(String path) throws IOException {
+    public APSDirectory getDirectory(String path) throws IOException {
         APSDirectoryImpl dir = new APSDirectoryImpl(this, path);
         if (!dir.exists()) {
             throw new IOException("Specified path does not exist! [" + path + "]");
@@ -167,7 +169,7 @@ public class APSFilesystemImpl implements APSFilesystem {
      * Returns the root directory.
      */
     @Override
-    public APSDirectoryImpl getRootDirectory() {
+    public APSDirectory getRootDirectory() {
         return new APSDirectoryImpl(this, "");
     }
     

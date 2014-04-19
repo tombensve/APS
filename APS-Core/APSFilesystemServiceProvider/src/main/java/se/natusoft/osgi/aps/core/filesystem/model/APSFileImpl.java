@@ -38,6 +38,7 @@
  */
 package se.natusoft.osgi.aps.core.filesystem.model;
 
+import se.natusoft.osgi.aps.api.core.filesystem.model.APSDirectory;
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFile;
 
 import java.io.*;
@@ -122,7 +123,7 @@ public class APSFileImpl /*extends File*/ implements APSFile {
      * Otherwise null will be returned.
      */
     @Override
-    public APSDirectoryImpl toDirectory() {
+    public APSDirectory toDirectory() {
         if (this.backingFile.isDirectory()) {
             return new APSDirectoryImpl(this);
         }
@@ -253,7 +254,7 @@ public class APSFileImpl /*extends File*/ implements APSFile {
      * @see java.io.File#getParentFile()
      */
     @Override
-    public APSDirectoryImpl getParentFile() {
+    public APSDirectory getParentFile() {
         String parent = this.getParent();
 
         if (parent == null) {
@@ -275,11 +276,11 @@ public class APSFileImpl /*extends File*/ implements APSFile {
      * @see java.io.File#getAbsoluteFile() 
      */
     @Override
-    public APSFileImpl getAbsoluteFile() {
+    public APSFile getAbsoluteFile() {
         File path = this.backingFile.getAbsoluteFile();
         APSFileImpl file = new APSFileImpl(this.fs, path.getPath());
         if (file.backingFile.isDirectory()) {
-            file = file.toDirectory();
+            file = (APSFileImpl)file.toDirectory();
         }
         return file;
     }
@@ -296,11 +297,11 @@ public class APSFileImpl /*extends File*/ implements APSFile {
      * @see java.io.File#getCanonicalFile() 
      */
     @Override
-    public APSFileImpl getCanonicalFile() throws IOException {
+    public APSFile getCanonicalFile() throws IOException {
         File canonFile = this.backingFile.getCanonicalFile();
         APSFileImpl file = new APSFileImpl(fs, canonFile.getPath());
         if (file.backingFile.isDirectory()) {
-            file = file.toDirectory();
+            file = (APSFileImpl)file.toDirectory();
         }
 
         return file;
@@ -344,6 +345,21 @@ public class APSFileImpl /*extends File*/ implements APSFile {
     @Override
     public boolean exists() {
         return this.backingFile.exists();
+    }
+
+    /**
+     * Checks if the named file/directory exists.
+     *
+     * @param name The name to check.
+     *
+     * @return true or false.
+     *
+     * @since 0.10.0
+     */
+    @Override
+    public boolean exists(String name) {
+        File testFile = new File(this.backingFile, name);
+        return testFile.exists();
     }
 
     /**
@@ -417,5 +433,16 @@ public class APSFileImpl /*extends File*/ implements APSFile {
     public String toString() {
         return this.fs.toDisplayPath(this.backingFile.getPath());
     }
-    
+
+    /**
+     * This API tries to hide the real path and don't allow access outside of its root, but sometimes you just
+     * need the real path to pass on to other code requiring it. This provides that. Use it only when needed!
+     *
+     * @return A File object representing the real/full path to this file.
+     */
+    @Override
+    public File toFile() {
+        return this.backingFile;
+    }
+
 }

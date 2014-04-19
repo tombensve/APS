@@ -37,6 +37,8 @@
 package se.natusoft.osgi.aps.core.filesystem.model;
 
 import junit.framework.TestCase;
+import se.natusoft.osgi.aps.api.core.filesystem.model.APSDirectory;
+import se.natusoft.osgi.aps.api.core.filesystem.model.APSFile;
 
 import java.io.File;
 import java.io.Writer;
@@ -76,7 +78,7 @@ public class APSFilesystemTest extends TestCase {
     public void testGetRootFolder() {
         System.out.print("GetRootFolderFile...");
         
-        APSDirectoryImpl root = this.fs.getRootDirectory();
+        APSDirectory root = this.fs.getRootDirectory();
         assertTrue(root.list().length == 0);
         
         System.out.println("ok");
@@ -85,9 +87,9 @@ public class APSFilesystemTest extends TestCase {
     public void testCreateDir() throws Exception {
         System.out.print("CreateDir...");
         
-        APSDirectoryImpl root = this.fs.getRootDirectory();
-        APSDirectoryImpl myDir = root.createDir("mydir");
-        APSFileImpl myFile = myDir.createFile("myfile.txt");
+        APSDirectory root = this.fs.getRootDirectory();
+        APSDirectory myDir = root.createDir("mydir");
+        APSFile myFile = myDir.createFile("myfile.txt");
         Writer writer = myFile.createWriter();
         writer.write("This is a test file!\n");
         writer.close();
@@ -97,9 +99,9 @@ public class APSFilesystemTest extends TestCase {
 //        for (APSFileImpl file : myDir.listFiles()) {
 //            System.out.println(file);
 //        }
-        APSDirectoryImpl parent = myDir.getParentFile();
+        APSDirectory parent = myDir.getParentFile();
 //        System.out.println("Parent file: " + parent);
-        APSDirectoryImpl parentOfParent = parent.getParentFile();
+        APSDirectory parentOfParent = parent.getParentFile();
         assertTrue(parentOfParent == null);
 //        System.out.println("Parent of parent file: " + parentOfParent);
         

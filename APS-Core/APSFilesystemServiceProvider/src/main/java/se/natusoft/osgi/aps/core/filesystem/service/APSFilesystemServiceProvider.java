@@ -38,6 +38,7 @@
  */
 package se.natusoft.osgi.aps.core.filesystem.service;
 
+import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
 import se.natusoft.osgi.aps.core.filesystem.model.APSFilesystemImpl;
 import se.natusoft.osgi.aps.tools.APSLogger;
@@ -87,7 +88,7 @@ public class APSFilesystemServiceProvider implements APSFilesystemService {
      * @throws IOException on any failure. An already existing filesystem for the "owner" will cause this exception.
      */
     @Override
-    public APSFilesystemImpl createFilesystem(String owner) throws IOException {
+    public APSFilesystem createFilesystem(String owner) throws IOException {
         APSFilesystemImpl fs = new APSFilesystemImpl(this.apsFSRoot, owner);
         
         this.logger.debug("Created filesystem: " + fs.getRootDirectory());
@@ -114,7 +115,7 @@ public class APSFilesystemServiceProvider implements APSFilesystemService {
      * @throws IOException on any failure.
      */
     @Override
-    public APSFilesystemImpl getFilesystem(String owner) throws IOException {
+    public APSFilesystem getFilesystem(String owner) throws IOException {
         APSFilesystemImpl fs = new APSFilesystemImpl(this.apsFSRoot, owner);
         if (!fs.getRootDirectory().exists()) {
             throw new IOException("The owner '" + owner + "' has no filesystem! One must be created first!");
@@ -133,7 +134,7 @@ public class APSFilesystemServiceProvider implements APSFilesystemService {
      */
     @Override
     public void deleteFilesystem(String owner) throws IOException {
-        APSFilesystemImpl fs = getFilesystem(owner);
+        APSFilesystem fs = getFilesystem(owner);
         fs.getRootDirectory().recursiveDelete();
     }
     
