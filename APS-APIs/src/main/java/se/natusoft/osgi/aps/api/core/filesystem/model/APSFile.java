@@ -162,6 +162,15 @@ public interface APSFile {
     boolean exists();
 
     /**
+     * Checks if the named file/directory exists.
+     *
+     * @param name The name to check.
+     *
+     * @return true or false.
+     */
+    boolean exists(String name);
+
+    /**
      * @see java.io.File#isDirectory()
      */
     boolean isDirectory();
@@ -206,6 +215,14 @@ public interface APSFile {
      */
     @Override
     String toString();
+
+    /**
+     * This API tries to hide the real path and don't allow access outside of its root, but sometimes you just
+     * need the real path to pass on to other code requiring it. This provides that. Use it only when needed!
+     *
+     * @return A File object representing the real/full path to this file.
+     */
+    File toFile();
     
     
 }

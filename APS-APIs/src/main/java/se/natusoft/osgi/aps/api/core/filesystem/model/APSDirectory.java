@@ -38,6 +38,7 @@ package se.natusoft.osgi.aps.api.core.filesystem.model;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.zip.ZipFile;
 
 /**
  * This represents a directory in an _APSFilesystem_.
@@ -76,6 +77,18 @@ public interface APSDirectory extends APSFile {
      * @throws IOException on failure.
      */
     APSFile createFile(String name) throws IOException;
+
+    /**
+     * Unzips an InputStream and returns its root as an APSDirectory.
+     *
+     * @param name The root of the unzipped file tree.
+     * @param zipFile The zip file to unzip. This will be closed when all is unzipped!
+     *
+     * @return an APSDirectory pointing to name.
+     *
+     * @throws IOException on failure.
+     */
+    APSDirectory unzip(String name, ZipFile zipFile) throws IOException;
 
     /**
      * Returns the specified directory.
