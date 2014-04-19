@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b5f6ccfb-d11e-450c-9c28-31283ef00044" name="Default" comment="- Added unzip() method.">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lics/licenses.md" afterPath="$PROJECT_DIR$/lics/licenses.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Test/APSRestTest/src/main/java/se/natusoft/osgi/aps/test/impl/RestTestServiceProvider.java" afterPath="$PROJECT_DIR$/Test/APSRestTest/src/main/java/se/natusoft/osgi/aps/test/impl/RestTestServiceProvider.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider/aps-admin-web-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Webs/APSAdminWebServiceProvider/aps-admin-web-service-provider.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/aps-configuration-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Core/APSConfigServiceProvider/aps-configuration-service-provider.iml" />
@@ -20,12 +18,6 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/aps-simple-user-service-auth-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceAuthServiceProvider/aps-simple-user-service-auth-service-provider.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/aps-simple-user-service-provider.iml" afterPath="$PROJECT_DIR$/APS-Auth/APSSimpleUserServiceProvider/aps-simple-user-service-provider.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/aps-streamed-json-rpc-protocol-provider.iml" afterPath="$PROJECT_DIR$/APS-Network/APSStreamedJSONRPCProtocolProvider/aps-streamed-json-rpc-protocol-provider.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml" afterPath="$PROJECT_DIR$/.idea/copyright/profiles_settings.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <list id="93ee55a5-7aeb-46b4-befc-da110c6bd63a" name="Failed commit: Default" comment="Dev commit." />
@@ -506,8 +498,8 @@
       <file leaf-file-name="workspace.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="75570" max-vertical-offset="79395">
-              <caret line="5038" column="12" selection-start-line="5038" selection-start-column="12" selection-end-line="5038" selection-end-column="12" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="75555" max-vertical-offset="79380">
+              <caret line="5037" column="12" selection-start-line="5037" selection-start-column="12" selection-end-line="5037" selection-end-column="12" />
               <folding />
             </state>
           </provider>
@@ -2768,7 +2760,7 @@
       <workItem from="1395083222137" duration="29223000" />
       <workItem from="1397152265087" duration="265000" />
       <workItem from="1397403417055" duration="38000" />
-      <workItem from="1397403569115" duration="20711000" />
+      <workItem from="1397403569115" duration="20822000" />
     </task>
     <task id="LOCAL-00001" summary="Added hashCode() and equals() to the 2 configuration model implementations.">
       <created>1334502625761</created>
@@ -4554,7 +4546,11 @@
       <created>1397919905311</created>
       <updated>1397919905311</updated>
     </task>
-    <option name="localTasksCounter" value="419" />
+    <task id="LOCAL-00419" summary="Updated versions of dependencies in main pom.&#10;">
+      <created>1397920018001</created>
+      <updated>1397920018002</updated>
+    </task>
+    <option name="localTasksCounter" value="420" />
     <option name="taskHistoryLength" value="5" />
     <servers>
       <Redmine shared="true" url="http://redmine.natusoft.private/redmine">
@@ -4571,7 +4567,7 @@
     </servers>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="311649000" />
+    <option name="totallyTimeSpent" value="311760000" />
   </component>
   <component name="TodoView" selected-index="0">
     <todo-panel id="selected-file">
@@ -4667,7 +4663,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="Now inherits the tile.doc tile from top level parent and only when 'generate-docs' profile is active.&#10;" />
     <MESSAGE value="Doing callbacks in a service thread loop without protecting yourself from callback code was a bad idea :-). Now starts a new thread for each callback and catches Exceptions and logs it within the callback thread.&#10;&#10;Also made the DataReceiverThread and MemberManagerThread into singletons. There should only be one instance of each of these, but sometimes more than one turned up! There is now a static get() method in each of these that gets the instance.&#10;" />
     <MESSAGE value="Now sets the instance to null on thread exit for DataReceiverThread and MemberManagerThread." />
     <MESSAGE value="Gave the MessageListenerDeliveryThread a clear name - APSGroups:MessageListenerDeliveryThread-&gt;listener." />
@@ -4692,7 +4687,8 @@
     <MESSAGE value="- Added unzip() method.&#10;- Added exists(name) method." />
     <MESSAGE value="Code cosmetics." />
     <MESSAGE value="- Provided unzip() implementaion.&#10;- Provided exists(String name) implementation.&#10;- Fixed refactoring screwup.&#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Provided unzip() implementaion.&#10;- Provided exists(String name) implementation.&#10;- Fixed refactoring screwup.&#10;" />
+    <MESSAGE value="Updated versions of dependencies in main pom.&#10;" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated versions of dependencies in main pom.&#10;" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -4803,8 +4799,8 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="75570" max-vertical-offset="79395">
-          <caret line="5038" column="12" selection-start-line="5038" selection-start-column="12" selection-end-line="5038" selection-end-column="12" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="75555" max-vertical-offset="79380">
+          <caret line="5037" column="12" selection-start-line="5037" selection-start-column="12" selection-end-line="5037" selection-end-column="12" />
           <folding />
         </state>
       </provider>
