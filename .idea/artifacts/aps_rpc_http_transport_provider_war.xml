@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="aps-rpc-http-transport-provider:war">
-    <output-path>$PROJECT_DIR$/APS-Network/APSRPCHTTPTransportProvider/target</output-path>
-    <root id="archive" name="aps-rpc-http-transport-provider-0.9.0.war">
-      <element id="artifact" artifact-name="aps-rpc-http-transport-provider:war exploded" />
-    </root>
-  </artifact>
-</component>

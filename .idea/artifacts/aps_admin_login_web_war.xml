@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="aps-admin-login-web:war">
-    <output-path>$PROJECT_DIR$/APS-Webs/APSAdminLoginWeb/target</output-path>
-    <root id="archive" name="aps-admin-login-web-1.0.0.war">
-      <element id="artifact" artifact-name="aps-admin-login-web:war exploded" />
-    </root>
-  </artifact>
-</component>
