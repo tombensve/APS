@@ -54,7 +54,9 @@
     </description>
 
     <properties>
-        <!-- 
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!--
             Bundle properties 
         -->
         
@@ -139,6 +141,12 @@
          -->
         <tile.deploy>${project.groupId}:DeployWABBundleTile:${project.version}</tile.deploy>
 
+        <!--
+            Vaadin
+        -->
+        <vaadin.version>7.1.14</vaadin.version>
+        <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+
     </properties>
 
     <dependencies>
@@ -176,14 +184,7 @@
         <!--
             Third party
         -->
-        <dependency>
-            <groupId>com.vaadin</groupId>
-            <artifactId>vaadin</artifactId>
-            <version>6.8.1</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-        
+
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
@@ -191,27 +192,88 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Simply does not work!!
+        <!--
+            Vaadin
+        -->
+
         <dependency>
-           <groupId>org.vaadin.addons</groupId>
-           <artifactId>weelayout</artifactId>
-           <version>0.2.2</version>
-           <scope>compile</scope>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-server</artifactId>
+            <version>${vaadin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-client-compiled</artifactId>
+            <version>${vaadin.version}</version>
+        </dependency>
+        <!--
+          Needed when using the widgetset optimizer (custom ConnectorBundleLoaderFactory).
+
+          For widgetset compilation, vaadin-client-compiler is automatically added on the
+          compilation classpath by vaadin-maven-plugin so normally there is no need for an
+          explicit dependency.
+        -->
+        <!--
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-client-compiler</artifactId>
+            <version>${vaadin.version}</version>
+            <scope>provided</scope>
         </dependency>
         -->
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-client</artifactId>
+            <version>${vaadin.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-push</artifactId>
+            <version>${vaadin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-themes</artifactId>
+            <version>${vaadin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
 
     <repositories>
         <repository>
-            <id>vaadin</id>
-            <url>http://maven.vaadin.com/</url>
+            <id>vaadin-addons</id>
+            <url>http://maven.vaadin.com/vaadin-addons</url>
         </repository>
         <repository>
-           <id>vaadin-addons</id>
-           <url>http://maven.vaadin.com/vaadin-addons</url>
+            <id>vaadin-snapshots</id>
+            <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>vaadin-snapshots</id>
+            <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
     <build>
         <plugins>
@@ -231,8 +293,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.1.1</version>
+                <version>2.2</version>
                 <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
                     <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                     </archive>                     
