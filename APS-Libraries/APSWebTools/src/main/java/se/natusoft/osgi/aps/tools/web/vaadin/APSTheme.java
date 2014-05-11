@@ -41,5 +41,5 @@ package se.natusoft.osgi.aps.tools.web.vaadin;
  */
 public class APSTheme {
     
-    public static final String THEME = "APS";
+    public static final String THEME = "aps";
 }

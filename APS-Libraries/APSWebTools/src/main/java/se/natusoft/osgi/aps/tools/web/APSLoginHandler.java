@@ -111,17 +111,17 @@ public class APSLoginHandler implements LoginHandler {
 
         // Setup trackers for our used services.
         this.authServiceTracker =
-                new APSServiceTracker<APSAuthService>(this.context, APSAuthService.class, APSServiceTracker.LARGE_TIMEOUT);
+                new APSServiceTracker<>(this.context, APSAuthService.class, APSServiceTracker.LARGE_TIMEOUT);
         this.authServiceTracker.start();
         this.authService = this.authServiceTracker.getWrappedService();
 
         this.sessionServiceTracker =
-                new APSServiceTracker<APSSessionService>(this.context, APSSessionService.class, APSServiceTracker.LARGE_TIMEOUT);
+                new APSServiceTracker<>(this.context, APSSessionService.class, APSServiceTracker.LARGE_TIMEOUT);
         this.sessionServiceTracker.start();
         this.sessionService = this.sessionServiceTracker.getWrappedService();
 
         this.configServiceTracker =
-                new APSServiceTracker<APSConfigService>(this.context, APSConfigService.class, APSServiceTracker.LARGE_TIMEOUT);
+                new APSServiceTracker<>(this.context, APSConfigService.class, APSServiceTracker.LARGE_TIMEOUT);
         this.configServiceTracker.start();
         this.configService = this.configServiceTracker.getWrappedService();
     }
@@ -154,6 +154,12 @@ public class APSLoginHandler implements LoginHandler {
             this.sessionServiceTracker.stop(this.context);
             this.sessionServiceTracker = null;
             this.sessionService = null;
+        }
+
+        if (this.configServiceTracker != null) {
+            this.configServiceTracker.stop(this.context);
+            this.configServiceTracker = null;
+            this.configService = null;
         }
     }
 
@@ -247,11 +253,12 @@ public class APSLoginHandler implements LoginHandler {
             if (userId != null && pw != null) {
                 Properties userProps = null;
 
-                if (requiredRole != null) {
-                    userProps = this.authService.authUser(userId, pw, APSAuthService.AuthMethod.PASSWORD, requiredRole);
-                }
-                else {
-                    userProps = this.authService.authUser(userId, pw, APSAuthService.AuthMethod.PASSWORD);
+                if (this.authService != null) {
+                    if (requiredRole != null) {
+                        userProps = this.authService.authUser(userId, pw, APSAuthService.AuthMethod.PASSWORD, requiredRole);
+                    } else {
+                        userProps = this.authService.authUser(userId, pw, APSAuthService.AuthMethod.PASSWORD);
+                    }
                 }
 
                 if (userProps != null) {

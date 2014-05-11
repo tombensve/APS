@@ -65,7 +65,7 @@ public class HierarchicalModel<Data> {
     private ID itemId = null;
     
     /** Associates a data object with each item. */
-    private Map<ID, Data> itemDataMap = new HashMap<ID, Data>();
+    private Map<ID, Data> itemDataMap = new HashMap<>();
     
     /** The HierarchicalContainer we will be building. */
     private HierarchicalContainer container = new HierarchicalContainer();
@@ -122,12 +122,14 @@ public class HierarchicalModel<Data> {
      *                 
      * @return The item id of the added item.
      */
+    @SuppressWarnings("unchecked")
     public ID addItem(ID parent, Data data, String... captions) {
         this.itemId = this.itemId.newID();
         Item item = this.container.addItem(this.itemId);
         this.container.setChildrenAllowed(this.itemId, false);
         for (int i = 0; i < this.captionProperties.length; i++) {
             if (i < captions.length) {
+                // Note: item.getItemProperty(...) will never be null!
                 item.getItemProperty(this.captionProperties[i]).setValue(captions[i]);
             }
         }

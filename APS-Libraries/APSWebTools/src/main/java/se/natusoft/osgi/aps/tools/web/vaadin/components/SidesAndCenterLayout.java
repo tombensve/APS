@@ -36,8 +36,6 @@
  */
 package se.natusoft.osgi.aps.tools.web.vaadin.components;
 
-import com.vaadin.terminal.PaintException;
-import com.vaadin.terminal.PaintTarget;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -82,9 +80,6 @@ public class SidesAndCenterLayout extends HorizontalLayout {
 
     /** The right component. */
     private Component right = null;
-
-    /** Set when doLayout() is called. */
-    private boolean layedOut = false;
 
     //
     // Constructors
@@ -230,20 +225,6 @@ public class SidesAndCenterLayout extends HorizontalLayout {
             addComponent(this.right);
         }
 
-        this.layedOut = true;
     }
 
-    /**
-     * This is only here to validate that doLayout() have been called before painting is done.
-     *
-     * @param target
-     * @throws PaintException
-     */
-    @Override
-    public void paintContent(PaintTarget target) throws PaintException {
-        if (!this.layedOut) {
-            throw new PaintException("The doLayout() method has not been called on one of the SidesAndCenterLayout objects!");
-        }
-        super.paintContent(target);
-    }
 }

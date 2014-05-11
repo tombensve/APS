@@ -36,6 +36,7 @@
  */
 package se.natusoft.osgi.aps.tools.web.vaadin.components;
 
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
 
 import java.io.BufferedReader;
@@ -66,7 +67,7 @@ public class HTMLFileLabel extends Label {
      */
     public HTMLFileLabel(String htmlFilePath, String themeName, ClassLoader classLoader) {
         super(loadHTML(htmlFilePath, "VAADIN/themes/" + themeName + "/images", classLoader));
-        setContentMode(Label.CONTENT_XHTML);
+        setContentMode(ContentMode.HTML);
     }
 
     /**

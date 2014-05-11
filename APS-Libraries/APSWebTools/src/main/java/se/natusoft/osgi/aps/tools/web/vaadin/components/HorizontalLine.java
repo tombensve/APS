@@ -36,6 +36,7 @@
  */
 package se.natusoft.osgi.aps.tools.web.vaadin.components;
 
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
 
 /**
@@ -47,6 +48,6 @@ public class HorizontalLine extends Label {
      * Creates a new HorizontalLine.
      */
     public HorizontalLine() {
-        super("<hr/>", Label.CONTENT_XHTML);
+        super("<hr/>", ContentMode.HTML);
     }
 }

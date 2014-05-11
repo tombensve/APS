@@ -37,24 +37,23 @@
 package se.natusoft.osgi.aps.tools.web;
 
 import org.osgi.framework.BundleContext;
+import se.natusoft.osgi.aps.tools.web.OSGiBundleContextProvider;
+import se.natusoft.osgi.aps.tools.web.UserNotifier;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * A context to pass to client code for use in calling services.
- *
- * @deprecated Use WebClientContext instead.
  */
-@Deprecated
-public class ClientContext extends WebClientContext {
+public class WebClientContext {
     //
     // Private Members
     //
-    
+
     /** Used for sending messages to the user. */
-    private UserMessager userMessager = null;
-    
+    private UserNotifier userNotifier = null;
+
     /** A cached bundle context. */
     private BundleContext bundleContext = null;
 
@@ -64,14 +63,57 @@ public class ClientContext extends WebClientContext {
     //
     // Constructors
     //
-    
+
     /**
-     * Creates a new ClientContext instance. 
-     * 
-     * @param userMessager Used to send messages to the user.
+     * Creates a new ClientContext instance.
+     *
+     * @param userNotifier Used to send messages to the user.
      * @param bundleContextProvider Provides the OSGi BundleContext.
      */
-    public ClientContext(UserMessager userMessager, OSGiBundleContextProvider bundleContextProvider) {
-        super(userMessager, bundleContextProvider);
+    public WebClientContext(UserNotifier userNotifier, OSGiBundleContextProvider bundleContextProvider) {
+        this.userNotifier = userNotifier;
+        this.bundleContext = bundleContextProvider.getBundleContext();
+    }
+    
+    //
+    // Methods
+    //
+    
+    /**
+     * Returns the OSGi BundeContext.
+     */
+    public BundleContext getBundleContext() {
+        return this.bundleContext;
+    }
+    
+    /**
+     * Use for producing messages to the user.
+     */
+    public UserNotifier getNotifier() {
+        return this.userNotifier;
+    }
+
+    /**
+     * Adds a service to the context.
+     *
+     * @param serviceInterface The interface of the service to add.
+     * @param serviceImpl The implementation to the service.
+     */
+    public <Service> void addService(Class<Service> serviceInterface, Service serviceImpl) {
+        this.serviceMap.put(serviceInterface, serviceImpl);
+    }
+
+    /**
+     * Returns the service of the specified service interface.
+     *
+     * @param <Service> The service type.
+     *
+     * @param serviceClass The service type class.
+     *
+     * @return The service.
+     */
+    public <Service> Service getService(Class<Service> serviceClass) {
+        Service service =  (Service)this.serviceMap.get(serviceClass);
+        return service;
     }
 }

@@ -56,7 +56,7 @@ public class APSSessionListener implements HttpSessionListener{
     //
 
     /** The listener to forward destroy events to. */
-    private List<APSSessionDestroyedListener> destroyedListeners = new ArrayList<APSSessionDestroyedListener>();
+    private List<APSSessionDestroyedListener> destroyedListeners = new ArrayList<>();
 
     //
     // Methods
@@ -65,7 +65,7 @@ public class APSSessionListener implements HttpSessionListener{
     /**
      * Adds a session destroyed listener to forward session destroyed events to.
      *
-     * @param destroyedListener
+     * @param destroyedListener The listener to add.
      */
     public void addDestroyedListener(APSSessionDestroyedListener destroyedListener) {
         this.destroyedListeners.add(destroyedListener);
@@ -74,7 +74,7 @@ public class APSSessionListener implements HttpSessionListener{
     /**
      * Gets called when a session is created.
      *
-     * @param httpSessionEvent
+     * @param httpSessionEvent A session event received as an HttpSessionListener.
      */
     @Override
     public void sessionCreated(HttpSessionEvent httpSessionEvent) {
@@ -84,7 +84,7 @@ public class APSSessionListener implements HttpSessionListener{
     /**
      * Gets called when a session is destroyed.
      *
-     * @param httpSessionEvent
+     * @param httpSessionEvent A session event received as an HttpSessionListener.
      */
     @Override
     public void sessionDestroyed(HttpSessionEvent httpSessionEvent) {

@@ -36,102 +36,14 @@
  */
 package se.natusoft.osgi.aps.tools.web.vaadin;
 
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
 import se.natusoft.osgi.aps.tools.web.UserMessager;
+import se.natusoft.osgi.aps.tools.web.UserNotifier;
 
 /**
  * Implementation of _UserMessager_ for Vaadin applications using a Vaadin Window to do
  * _showNotification(...)_ on.
+ *
+ * @deprecated Use VaadinUserNotifier instead!
  */
-public class VaadinUserMessager implements UserMessager {
-    //
-    // Private Members
-    //
-    
-    /** The window to display messages in. */
-    private Window messageWindow = null;
-    
-    //
-    // Constructors
-    //
-    
-    /**
-     * Creates a new VaadinUserMessager instance.
-     */
-    public VaadinUserMessager() {
-    }
-    
-    //
-    // Methods
-    //
-
-    /**
-     * Sets the message window.
-     *
-     * @param messageWindow The message window to set.
-     */
-    public void setMessageWindow(Window messageWindow) {
-        this.messageWindow = messageWindow;
-    }
-
-    /**
-     * Shows an error message on the window.
-     * 
-     * @param caption The message caption.
-     * @param message The message.
-     */
-    public void error(String caption, String message) {
-        if (this.messageWindow != null) {
-            this.messageWindow.showNotification(
-                                caption,
-                                message,
-                                Notification.TYPE_ERROR_MESSAGE);
-        }
-    }
-    
-    /**
-     * Shows a warning message on the window.
-     * 
-     * @param caption The message caption.
-     * @param message The message.
-     */
-    public void warning(String caption, String message) {
-        if (this.messageWindow != null) {
-            this.messageWindow.showNotification(
-                                caption,
-                                message,
-                                Notification.TYPE_WARNING_MESSAGE);
-        }
-    }
-    
-    /**
-     * Shows an info message on the window.
-     * 
-     * @param caption The message caption.
-     * @param message The message.
-     */
-    public void info(String caption, String message) {
-        if (this.messageWindow != null) {
-            this.messageWindow.showNotification(
-                                caption,
-                                message,
-                                Notification.TYPE_HUMANIZED_MESSAGE);
-        }
-    }
-    
-    /**
-     * Shows a tray message on the window.
-     * 
-     * @param caption The message caption.
-     * @param message The message.
-     */
-    public void tray(String caption, String message) {
-        if (this.messageWindow != null) {
-            this.messageWindow.showNotification(
-                                caption,
-                                message,
-                                Notification.TYPE_TRAY_NOTIFICATION);
-        }
-    }
-}
+@Deprecated
+public class VaadinUserMessager extends VaadinUserNotifier implements UserMessager, UserNotifier {}

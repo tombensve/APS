@@ -36,42 +36,44 @@
  */
 package se.natusoft.osgi.aps.tools.web;
 
-import org.osgi.framework.BundleContext;
-
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * A context to pass to client code for use in calling services.
+ * Handles presenting user with messages.
  *
- * @deprecated Use WebClientContext instead.
+ * Different GUI choices needs different implementations of this. The basic idea
+ * behind this is to make message handling less dependent on GUI. Unit tests can
+ * also supply own implementation of this.
  */
-@Deprecated
-public class ClientContext extends WebClientContext {
-    //
-    // Private Members
-    //
-    
-    /** Used for sending messages to the user. */
-    private UserMessager userMessager = null;
-    
-    /** A cached bundle context. */
-    private BundleContext bundleContext = null;
+public interface UserNotifier {
 
-    /** Holds services mapped to service interface class. */
-    private Map<Class, Object> serviceMap = new HashMap<Class, Object>();
-
-    //
-    // Constructors
-    //
-    
     /**
-     * Creates a new ClientContext instance. 
+     * Shows an error message on the window.
      * 
-     * @param userMessager Used to send messages to the user.
-     * @param bundleContextProvider Provides the OSGi BundleContext.
+     * @param caption The message caption.
+     * @param message The message.
      */
-    public ClientContext(UserMessager userMessager, OSGiBundleContextProvider bundleContextProvider) {
-        super(userMessager, bundleContextProvider);
-    }
+    public void error(String caption, String message);
+
+    /**
+     * Shows a warning message on the window.
+     * 
+     * @param caption The message caption.
+     * @param message The message.
+     */
+    public void warning(String caption, String message);
+
+    /**
+     * Shows an info message on the window.
+     * 
+     * @param caption The message caption.
+     * @param message The message.
+     */
+    public void info(String caption, String message);
+
+    /**
+     * Shows a tray message on the window.
+     * 
+     * @param caption The message caption.
+     * @param message The message.
+     */
+    public void tray(String caption, String message);
 }

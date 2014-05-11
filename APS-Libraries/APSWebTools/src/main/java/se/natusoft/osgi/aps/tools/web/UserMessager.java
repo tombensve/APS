@@ -42,38 +42,8 @@ package se.natusoft.osgi.aps.tools.web;
  * Different GUI choices needs different implementations of this. The basic idea
  * behind this is to make message handling less dependent on GUI. Unit tests can
  * also supply own implementation of this.
+ *
+ * @deprecated Use UserNotifier instead.
  */
-public interface UserMessager {
-
-    /**
-     * Shows an error message on the window.
-     * 
-     * @param caption The message caption.
-     * @param message The message.
-     */
-    public void error(String caption, String message);
-
-    /**
-     * Shows a warning message on the window.
-     * 
-     * @param caption The message caption.
-     * @param message The message.
-     */
-    public void warning(String caption, String message);
-
-    /**
-     * Shows an info message on the window.
-     * 
-     * @param caption The message caption.
-     * @param message The message.
-     */
-    public void info(String caption, String message);
-
-    /**
-     * Shows a tray message on the window.
-     * 
-     * @param caption The message caption.
-     * @param message The message.
-     */
-    public void tray(String caption, String message);
-}
+@Deprecated
+public interface UserMessager extends UserNotifier {}

@@ -1,53 +1,53 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Web Tools
- *     
+ *
  *     Code Version
  *         0.10.0
- *     
+ *
  *     Description
  *         This provides some utility classes for web applications.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
  *         2011-08-27: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.tools.web.vaadin;
 
-import com.vaadin.service.ApplicationContext;
-import com.vaadin.terminal.gwt.server.WebApplicationContext;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.Window.Notification;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinServlet;
+import com.vaadin.server.VaadinServletService;
+import com.vaadin.server.WrappedSession;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import org.osgi.framework.BundleContext;
 import se.natusoft.osgi.aps.tools.APSActivator;
 import se.natusoft.osgi.aps.tools.APSLogger;
-import se.natusoft.osgi.aps.tools.web.ClientContext;
 import se.natusoft.osgi.aps.tools.web.OSGiBundleContextProvider;
-import se.natusoft.osgi.aps.tools.web.UserMessager;
-
-import javax.servlet.http.HttpSession;
+import se.natusoft.osgi.aps.tools.web.UserNotifier;
+import se.natusoft.osgi.aps.tools.web.WebClientContext;
 
 /**
  * APS base class for Vaadin application providing OSGi support.
@@ -73,7 +73,7 @@ import javax.servlet.http.HttpSession;
  *
  */
 public abstract class APSVaadinOSGiApplication
-        extends com.vaadin.Application
+        extends UI
         implements OSGiBundleContextProvider, APSSessionListener.APSSessionDestroyedListener {
     //
     // Private Constants
@@ -86,11 +86,6 @@ public abstract class APSVaadinOSGiApplication
     private static final String NON_OSGI_DEPLOYMENT_LONG_MESSAGE = "This application is an OSGi bundle and must be deployed as such in " +
             "an OSGi container for it to be able to do its work!";
 
-    private static final String ACTIVATOR_FAIL_SHORT_MESSAGE = "APSActivator failed!";
-
-    private static final String ACTIVATOR_FAIL_LONG_MESSAGE = "APSActivator management of this application and bundle failed! " +
-            "Things will likely not work!";
-    
     //
     // Private Members
     //
@@ -98,55 +93,60 @@ public abstract class APSVaadinOSGiApplication
     APSLogger logger;
 
     /** The client context. */
-    private ClientContext clientContext;
+    private WebClientContext clientContext;
 
     /** We use part of the APSActivator functionality to inject into @OSGiService and @Managed annotated fields. */
     private APSActivator activator;
+
+    private UserNotifier userNotifier = new VaadinUserNotifier();
 
     //
     // Methods
     //
 
     /**
-     * @return The http session.
+     * @return The Vaadin session.
      */
-    protected HttpSession getHttpSession() {
-        ApplicationContext ctx = getContext();
-        WebApplicationContext webCtx = (WebApplicationContext) ctx;
-        return webCtx.getHttpSession();
+    protected WrappedSession getHttpSession() {
+        return VaadinServletService.getCurrentRequest().getWrappedSession();
     }
 
     /**
      * This will return this war bundles _BundleContext_. This is only available if this war is
-     * deployed in an R4.2+ compliant OSGi container. 
-     * 
-     * @return The OSGi bundle context. 
+     * deployed in an R4.2+ compliant OSGi container.
+     *
+     * @return The OSGi bundle context.
      */
     @Override
     public BundleContext getBundleContext() {
-        BundleContext bundleContext = (BundleContext)getHttpSession().getServletContext().getAttribute("osgi-bundlecontext");
-        
-        if (bundleContext == null && this.getMainWindow() != null) {
-           this.getMainWindow().showNotification(
-                   NON_OSGI_DEPLOYMENT_SHORT_MESSAGE,
-                   NON_OSGI_DEPLOYMENT_LONG_MESSAGE,
-                                Notification.TYPE_ERROR_MESSAGE);
+        BundleContext bundleContext = (BundleContext)VaadinServlet.getCurrent().getServletContext().getAttribute("osgi-bundlecontext");
+
+        if (bundleContext == null) {
+            Notification.show(
+                    NON_OSGI_DEPLOYMENT_SHORT_MESSAGE,
+                    NON_OSGI_DEPLOYMENT_LONG_MESSAGE,
+                    Notification.Type.ERROR_MESSAGE);
             this.logger.error(NON_OSGI_DEPLOYMENT_SHORT_MESSAGE + " " + NON_OSGI_DEPLOYMENT_LONG_MESSAGE);
         }
-        
+
         return bundleContext;
+    }
+
+    protected UserNotifier getUserNotifier() {
+        return this.userNotifier;
     }
 
     /**
      * Initializes the vaadin application.
      */
-    public void init() {
+    public void init(VaadinRequest request) {
+
         this.logger = new APSLogger(System.err);
-        this.logger.setLoggingFor("APSVaadinOSGiApplication/" + getClass().getSimpleName());
+        this.logger.setLoggingFor("APSVaadinOSGiAdminApp/" + getClass().getSimpleName());
         this.logger.start(getBundleContext());
 
-        UserMessager messager = new VaadinUserMessager();
-        this.clientContext = new ClientContext(messager, this);
+        UserNotifier messager = new VaadinUserNotifier();
+        this.clientContext = new WebClientContext(messager, this);
 
         this.activator = new APSActivator(this);
         try {
@@ -177,7 +177,7 @@ public abstract class APSVaadinOSGiApplication
      *
      * @param clientContext The client context for accessing services.
      */
-    protected void initServices(ClientContext clientContext) {}
+    protected void initServices(WebClientContext clientContext) {}
 
     /**
      * Called when the session is about to die to cleanup anything setup in _initServices()_.
@@ -186,23 +186,12 @@ public abstract class APSVaadinOSGiApplication
      *
      * @param clientContext The client cntext for accessing services.
      */
-    protected void cleanupServices(ClientContext clientContext) {}
-
-    /**
-     * Intercepts _setMainWindow()_ and supplies it to the _VaadinUserMessager_ created in _init()_ and used to
-     * display user messages.
-     *
-     * @param mainWindow
-     */
-    public void setMainWindow(Window mainWindow) {
-        super.setMainWindow(mainWindow);
-        ((VaadinUserMessager)this.clientContext.getMessager()).setMessageWindow(mainWindow);
-    }
+    protected void cleanupServices(WebClientContext clientContext) {}
 
     /**
      * @return The client context.
      */
-    public ClientContext getClientContext() {
+    public WebClientContext getClientContext() {
         return this.clientContext;
     }
 

@@ -48,9 +48,6 @@ public class VaadinLoginDialogHandler {
     // Private Members
     //
 
-    /** The Vaadin application window. This is needed to popup the login dialog. */
-    private Window appWindow = null;
-
     /** The login window dialog. */
     private Window loginWindow = null;
 
@@ -71,13 +68,22 @@ public class VaadinLoginDialogHandler {
     //
 
     /**
-     * Creates a new VaadinLoginDialogHandler.
+     * Creates a new VaadinLoginDialogHandler. This constructor is deprecated. Use the one only taking a LoginHandler instead.
      *
      * @param appWindow The Vaadin application window to add the popup login dialog to.
      * @param loginHandler A handler for doing the login from the login dialog input.
      */
+    @Deprecated
     public VaadinLoginDialogHandler(Window appWindow, LoginHandler loginHandler) {
-        this.appWindow = appWindow;
+        this(loginHandler);
+    }
+
+    /**
+     * Creates a new VaadinLoginDialogHandler.
+     *
+     * @param loginHandler A handler for doing the login from the login dialog input.
+     */
+    public VaadinLoginDialogHandler(LoginHandler loginHandler) {
         this.loginHandler = loginHandler;
 
         // Create Login window dialog
@@ -94,7 +100,7 @@ public class VaadinLoginDialogHandler {
         this.password = new PasswordField("Password");
         this.password.setColumns(20);
         this.password.setImmediate(true);
-        this.password.addListener(new Property.ValueChangeListener() {
+        this.password.addValueChangeListener(new Property.ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 login();
@@ -102,7 +108,7 @@ public class VaadinLoginDialogHandler {
         });
         dialogLayout.addComponent(password);
         Button loginButton = new Button("Login");
-        loginButton.addListener(new Button.ClickListener() {
+        loginButton.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 login();
@@ -132,7 +138,7 @@ public class VaadinLoginDialogHandler {
         if (!this.dialogActive) {
             this.userName.setValue("");
             this.password.setValue("");
-            this.appWindow.addWindow(this.loginWindow);
+            UI.getCurrent().addWindow(this.loginWindow);
             this.dialogActive = true;
         }
     }
@@ -141,8 +147,8 @@ public class VaadinLoginDialogHandler {
      * Logs in and removes the login dialog if successful.
      */
     private void login() {
-        if (this.loginHandler.login(this.userName.getValue().toString(), this.password.getValue().toString())) {
-            this.appWindow.removeWindow(this.loginWindow);
+        if (this.loginHandler.login(this.userName.getValue(), this.password.getValue())) {
+            UI.getCurrent().removeWindow(this.loginWindow);
         }
     }
 }

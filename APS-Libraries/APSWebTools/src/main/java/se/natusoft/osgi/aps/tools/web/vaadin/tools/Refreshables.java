@@ -49,7 +49,7 @@ public class Refreshables implements Iterable<Refreshable> {
     //
 
     /** Holds the refreshables. */
-    private List<Refreshable> refreshableList = new LinkedList<Refreshable>();
+    private List<Refreshable> refreshableList = new LinkedList<>();
 
 
     //
