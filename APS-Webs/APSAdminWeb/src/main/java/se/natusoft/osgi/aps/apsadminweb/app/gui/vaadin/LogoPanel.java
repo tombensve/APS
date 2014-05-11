@@ -36,11 +36,9 @@
  */
 package se.natusoft.osgi.aps.apsadminweb.app.gui.vaadin;
 
-import com.vaadin.terminal.ThemeResource;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Panel;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
 import com.vaadin.ui.themes.Reindeer;
 
@@ -56,24 +54,23 @@ public class LogoPanel extends Panel {
         super();
         HorizontalLayout topLayout = new HorizontalLayout();
         topLayout.setSpacing(true);
-        topLayout.setMargin(true, true, false, true);
+        topLayout.setMargin(true);
         setContent(topLayout);
         setStyleName(Reindeer.PANEL_LIGHT);
 
-        ThemeResource logo = new ThemeResource("images/app-platform-services.png");
-        Label logoLabel = new Label();
-        logoLabel.setWidth("300px");
-        logoLabel.setIcon(logo);
-
-        addComponent(logoLabel);
+        ThemeResource logoResource = new ThemeResource("images/app-platform-services.png");
+        Embedded logo = new Embedded("", logoResource);
+        logo.setWidth("400px");
+        logo.setStyleName("aps-logo");
+        topLayout.addComponent(logo);
 
         Label textLabel = new Label("<font size='+1'><b>Admin Web</b></font>");
-        textLabel.setContentMode(Label.CONTENT_XHTML);
-        addComponent(textLabel);
+        textLabel.setContentMode(ContentMode.HTML);
+        topLayout.addComponent(textLabel);
 
         Button refreshButton = new Button("Refresh", clickListener);
         refreshButton.setStyleName(BaseTheme.BUTTON_LINK);
-        addComponent(refreshButton);
+        topLayout.addComponent(refreshButton);
     }
 
     //

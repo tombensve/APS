@@ -1,62 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-    
-    PROJECT
-        Name
-            APS Administration Web
-        
-        Code Version
-            0.10.0
-        
-        Description
-            This is a web application providing and administration web frame.
-        
-    COPYRIGHTS
-        Copyright (C) 2012 by Natusoft AB All rights reserved.
-        
-    LICENSE
-        Apache 2.0 (Open Source)
-        
-        Licensed under the Apache License, Version 2.0 (the "License");
-        you may not use this file except in compliance with the License.
-        You may obtain a copy of the License at
-        
-          http://www.apache.org/licenses/LICENSE-2.0
-        
-        Unless required by applicable law or agreed to in writing, software
-        distributed under the License is distributed on an "AS IS" BASIS,
-        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-        See the License for the specific language governing permissions and
-        limitations under the License.
-        
-    AUTHORS
-        Tommy Svensson (tommy.svensson@biltmore.se)
-            Changes:
-            2011-09-18: Created!
-            
--->
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-    <display-name>APS Administration Web</display-name>
-    <!--session-config>
-        <session-timeout>
-            30
-        </session-timeout>
-    </session-config-->
+<web-app
+        id="WebApp_ID" version="2.4"
+        xmlns="http://java.sun.com/xml/ns/j2ee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+     http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
     <servlet>
-        <servlet-name>apsadminservlet</servlet-name>
+        <servlet-name>apsadminweb</servlet-name>
         <servlet-class>
-                  com.vaadin.terminal.gwt.server.ApplicationServlet
+            com.vaadin.server.VaadinServlet
         </servlet-class>
+
         <init-param>
-            <param-name>application</param-name>
+            <param-name>UI</param-name>
             <param-value>se.natusoft.osgi.aps.apsadminweb.app.gui.vaadin.APSAdminWebApp</param-value>
         </init-param>
+
+        <!-- If not using the default widget set-->
+        <!--
+        <init-param>
+            <param-name>widgetset</param-name>
+            <param-value>com.ex.myprj.MyWidgetSet</param-value>
+        </init-param>
+        -->
     </servlet>
+
     <servlet-mapping>
-        <servlet-name>apsadminservlet</servlet-name>
+        <servlet-name>apsadminweb</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
-    <listener>
-        <listener-class>se.natusoft.osgi.aps.tools.web.vaadin.APSSessionListener</listener-class>
-    </listener>
 </web-app>

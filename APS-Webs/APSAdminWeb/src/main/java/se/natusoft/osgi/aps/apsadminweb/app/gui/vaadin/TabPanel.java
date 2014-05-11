@@ -36,11 +36,8 @@
  */
 package se.natusoft.osgi.aps.apsadminweb.app.gui.vaadin;
 
-import com.vaadin.terminal.ExternalResource;
-import com.vaadin.ui.Embedded;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.*;
 import se.natusoft.osgi.aps.apsadminweb.service.APSAdminWebService;
 import se.natusoft.osgi.aps.apsadminweb.service.model.AdminWebReg;
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService;
@@ -109,9 +106,14 @@ public class TabPanel extends TabSheet {
             tabLayout.setSizeFull();
             tabLayout.setMargin(false);
             tabLayout.setSpacing(false);
-            Embedded adminWeb = new Embedded("", new ExternalResource(adminWebReg.getUrl() + "?adminRefresh"));
-            adminWeb.setType(Embedded.TYPE_BROWSER);
+// Vaadin 6
+//            Embedded adminWeb = new Embedded("", new ExternalResource(adminWebReg.getUrl() + "?adminRefresh"));
+//            adminWeb.setType(Embedded.TYPE_BROWSER);
+//            adminWeb.setSizeFull();
+// Vaadin 7
+            BrowserFrame adminWeb = new BrowserFrame("", new ExternalResource(adminWebReg.getUrl() + "?adminRefresh"));
             adminWeb.setSizeFull();
+
             tabLayout.addComponent(adminWeb);
             tabLayout.setData(adminWebReg);
 

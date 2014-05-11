@@ -35,22 +35,36 @@
  *         
  */
 
-@import "../reindeer/styles.css";
+@import "../reindeer/reindeer.scss";
 
-.aps-description-text {
+@mixin aps {
+  @include reindeer;
+
+  .aps-description-text {
     font-size: 15px;
-}
+  }
 
-/*
-    If you can't get it right in Java with Vaadin, fix it with css :-).
+  /* If you can't get it right in Java with Vaadin, fix it with css :-). */
 
-    The problem is that the Tabsheet component leaves about 10-15px below the tab before the tab content.
-    This looked really ugly. I tried to fix it with layouts, but nothing worked. Finally I just put a
-    style name on the Tabsheet and override the height here.
-
-    The new side-effect is that I now get the pixels I managed to remove at the top at the bottom instead!
-    That is however better.
- */
-.aps-tabsheet-tab .v-caption {
+  /*
+    The Embedded component containing the image also have a caption in this case
+    being "", but still taking up vertical space. So I make it 0 pixels in height.
+  */
+  .v-caption-aps-logo {
     height: 0px;
+  }
+
+  /*
+      The problem is that the Tabsheet component leaves about 10-15px below the tab before the tab content.
+      This looked really ugly. I tried to fix it with layouts, but nothing worked. Finally I just put a
+      style name on the Tabsheet and override the height here.
+
+      The new side-effect is that I now get the pixels I managed to remove at the top at the bottom instead!
+      That is however better.
+   */
+
+  .aps-tabsheet-tab .v-caption {
+    height: 0px;
+  }
 }
+

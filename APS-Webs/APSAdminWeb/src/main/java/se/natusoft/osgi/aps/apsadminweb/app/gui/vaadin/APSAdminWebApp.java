@@ -36,19 +36,21 @@
  */
 package se.natusoft.osgi.aps.apsadminweb.app.gui.vaadin;
 
-import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
+import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
+import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed;
 import se.natusoft.osgi.aps.tools.web.APSAdminWebLoginHandler;
 import se.natusoft.osgi.aps.tools.web.ClientContext;
-import se.natusoft.osgi.aps.tools.web.vaadin.APSTheme;
 import se.natusoft.osgi.aps.tools.web.vaadin.APSVaadinOSGiApplication;
 import se.natusoft.osgi.aps.tools.web.vaadin.VaadinLoginDialogHandler;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.SidesAndCenterLayout;
 
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -58,13 +60,24 @@ import javax.servlet.http.HttpServletResponse;
  * web app needs to do to be available here is to register itself with APSAdminWebService (which includes the
  * url to the app). Each tabs content is a Vaadin Embedded component running the registered app.
  */
-public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickListener, HttpServletRequestListener {
+@Title("Application Platform Services Administration App")
+@Theme("aps")
+public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickListener {
+
+    @WebServlet(value = "/*",
+            asyncSupported = true)
+    @VaadinServletConfiguration(
+            productionMode = false,
+            ui = APSAdminWebApp.class)
+    public static class Servlet extends VaadinServlet {
+    }
+
     //
     // Private Members
     //
 
     /** The main window. */
-    private Window main = null;
+//    private Window main = null;
 
     /** The application tabs. */
     @Managed
@@ -94,7 +107,7 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
      *
      * @param clientContext The client context for accessing services.
      */
-    @Override
+//    @Override
     public void initServices(ClientContext clientContext) {
 
         this.loginHandler = new APSAdminWebLoginHandler(clientContext.getBundleContext()) {
@@ -104,9 +117,7 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
                 boolean result = super.login(userId, pw);
 
                 if (!result) {
-                    if (APSAdminWebApp.this.main != null) {
-                        APSAdminWebApp.this.main.showNotification("Login failed!", "Bad userid or password!", Window.Notification.TYPE_WARNING_MESSAGE);
-                    }
+                    getUserNotifier().warning("Login failed!", "Bad userid or password!");
                 }
 
                 return result;
@@ -119,7 +130,7 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
      *
      * @param clientContex The context for the current client.
      */
-    @Override
+//    @Override
     public void cleanupServices(ClientContext clientContex) {
         if (this.loginHandler != null) {
             this.loginHandler.shutdown();
@@ -132,10 +143,10 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
     @Override
     public void initGUI() {
 
-        this.setTheme(APSTheme.THEME);
+//        this.setTheme(APSTheme.THEME);
 
-        this.main = new Window("Application Platform Services Administration App");
-        this.main.setSizeFull();
+//        this.main = new Window("Application Platform Services Administration App");
+//        this.main.setSizeFull();
 
         this.mainLayout = new VerticalLayout();
         this.mainLayout.setSizeFull();
@@ -147,13 +158,16 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
 
         layout.doLayout();
         this.mainLayout.addComponent(layout);
-        this.main.setContent(this.mainLayout);
+
+//        this.mainLayout.addComponent(new LogoPanel(this));
+
 
         // And finally set the main window in the application to make it visible.
-        setMainWindow(this.main);
+//        setMainWindow(this.main);
+        setContent(this.mainLayout);
 
-        this.loginDialogHandler = new VaadinLoginDialogHandler(this.main, this.loginHandler);
-        this.loginDialogHandler.setLoginDialogTitle("APS Admin Login");
+//        this.loginDialogHandler = new VaadinLoginDialogHandler(this.main, this.loginHandler);
+//        this.loginDialogHandler.setLoginDialogTitle("APS Admin Login");
     }
 
     //
@@ -167,18 +181,18 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
      */
     @Override
     public void buttonClick(ClickEvent event) {
-        this.getMainWindow().showNotification("Refreshing ...");
+        getUserNotifier().info("", "Refreshing ...");
         this.tabPanel.refreshTabs();
     }
 
     /**
-     * This method is called before {@link com.vaadin.terminal.Terminal} applies the request to
+     * This method is called before applies the request to
      * Application.
      *
      * @param request
      * @param response
      */
-    @Override
+//    @Override
     public void onRequestStart(HttpServletRequest request, HttpServletResponse response) {
         if (this.loginDialogHandler != null && this.loginHandler != null) {
             this.loginHandler.setSessionIdFromRequestCookie(request);
@@ -195,7 +209,7 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
      * @param request
      * @param response
      */
-    @Override
+//    @Override
     public void onRequestEnd(HttpServletRequest request, HttpServletResponse response) {
         // For some odd reason the cookie must be set *both* in onRequestStart() and here for it to work!
         if (this.loginHandler != null) {
