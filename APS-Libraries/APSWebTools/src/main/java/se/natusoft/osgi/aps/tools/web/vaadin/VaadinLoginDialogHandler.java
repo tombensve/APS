@@ -88,6 +88,7 @@ public class VaadinLoginDialogHandler {
 
         // Create Login window dialog
         this.loginWindow = new Window("Login");
+        this.loginWindow.setClosable(false);
         this.loginWindow.setModal(true);
         this.loginWindow.setWidth("300px");
 

@@ -72,10 +72,12 @@
         <!--
             Dependency versions
         -->
+        <maven.bundle.plugin.version>2.3.6</maven.bundle.plugin.version>
         <markdownDoc.ver>1.3.2</markdownDoc.ver>
         <ftpPlugin.ver>1.0.1</ftpPlugin.ver>
         <clm.ver>2.1.2</clm.ver>
-
+        <vaadin.version>7.1.14</vaadin.version>
+        <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
     </properties>
 
     <!--

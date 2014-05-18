@@ -36,12 +36,19 @@
  */
 package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin;
 
+import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
+import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.Action;
-import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinServlet;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
@@ -53,6 +60,7 @@ import se.natusoft.osgi.aps.tools.APSServiceTracker;
 import se.natusoft.osgi.aps.tools.models.IntID;
 import se.natusoft.osgi.aps.tools.web.APSAdminWebLoginHandler;
 import se.natusoft.osgi.aps.tools.web.ClientContext;
+import se.natusoft.osgi.aps.tools.web.WebClientContext;
 import se.natusoft.osgi.aps.tools.web.vaadin.APSTheme;
 import se.natusoft.osgi.aps.tools.web.vaadin.APSVaadinOSGiApplication;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.SidesAndCenterLayout;
@@ -64,6 +72,7 @@ import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.handlerapi.Menu
 import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.handlerapi.MenuActionProvider;
 import se.natusoft.osgi.aps.tools.web.vaadin.tools.Refreshable;
 
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
@@ -71,7 +80,18 @@ import java.util.Map;
 /**
  * The main Vaadin app class for the configuration administration application.
  */
-public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements MenuActionHandler, HttpServletRequestListener {
+@Title("Application Platform Services Configuration App")
+@Theme("aps")
+public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements MenuActionHandler {
+
+    @WebServlet(value = "/apsconfigadminweb/*",
+            asyncSupported = true)
+    @VaadinServletConfiguration(
+            productionMode = false,
+            ui = APSConfigAdminWebApp.class)
+    public static class Servlet extends VaadinServlet {}
+
+
     //
     // Private Members
     //
@@ -101,13 +121,47 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
     // Vaadin GUI init
     //
 
+    private void handleLogin(WebClientContext clientContext) {
+
+        this.loginHandler = new APSAdminWebLoginHandler(clientContext.getBundleContext()) {
+
+            @Override
+            public boolean login(String userId, String pw) {
+                boolean result = super.login(userId, pw);
+
+                if (!result) {
+                    getUserNotifier().warning("Login failed!", "Bad userid or password!");
+                }
+
+                return result;
+            }
+        };
+
+        this.loginHandler.setSessionIdFromRequestCookie(VaadinService.getCurrentRequest());
+        if (!this.loginHandler.hasValidLogin()) {
+            Window notAuthWindow = new Window("Application Platform Services Administration App");
+            notAuthWindow.setClosable(false);
+            notAuthWindow.setSizeFull();
+            VerticalLayout nawvl = new VerticalLayout();
+            Label loginMessage = new Label("<font size='+2'>Please login!</font>", ContentMode.HTML);
+            nawvl.addComponent(loginMessage);
+            notAuthWindow.setContent(nawvl);
+            UI.getCurrent().addWindow(notAuthWindow);
+        }
+
+    }
+
     /**
      * Initializes services used by the application.
      *
      * @param clientContext The client context for accessing services.
      */
     @Override
-    public void initServices(ClientContext clientContext) {
+    public void initServices(WebClientContext clientContext) {
+        if (VaadinService.getCurrentRequest().getParameter("adminRefresh") != null) {
+            close();
+        }
+
         this.logger = new APSLogger(System.out);
         this.logger.start(clientContext.getBundleContext());
 
@@ -127,7 +181,7 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
      * @param clientContext The context for the current client.
      */
     @Override
-    public void cleanupServices(ClientContext clientContext) {
+    public void cleanupServices(WebClientContext clientContext) {
         if (this.configAdminServiceTracker != null) {
             this.configAdminServiceTracker.stop(clientContext.getBundleContext());
             this.configAdminServiceTracker = null;
@@ -191,12 +245,6 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
         this.layout.doLayout(); // This is required after contents have been set.
 
 
-        this.notAuthWindow = new Window("Application Platform Services Administration App");
-        this.notAuthWindow.setSizeFull();
-        VerticalLayout nawvl = new VerticalLayout();
-        Label loginMessage = new Label("<font size='+2'>Please login!</font>", Label.CONTENT_XHTML);
-        nawvl.addComponent(loginMessage);
-        this.notAuthWindow.setContent(nawvl);
 
         setMainWindow(this.notAuthWindow);
     }
@@ -287,10 +335,11 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
      */
     @Override
     public void onRequestStart(HttpServletRequest request, HttpServletResponse response) {
+
         if (this.loginHandler != null) {
             Window show = this.notAuthWindow;
 
-            this.loginHandler.setSessionIdFromRequestCookie(request);
+            this.loginHandler.setSessionIdFromRequestCookie(VaadinService.getCurrentRequest());
             if (this.loginHandler.hasValidLogin()) {
                 show = this.main;
             }
@@ -301,16 +350,6 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
         if (request.getParameter("adminRefresh") != null) {
             close();
         }
-    }
-
-    /**
-     * This method is called at the end of each request.
-     *
-     * @param request
-     * @param response
-     */
-    @Override
-    public void onRequestEnd(HttpServletRequest request, HttpServletResponse response) {
     }
 
 

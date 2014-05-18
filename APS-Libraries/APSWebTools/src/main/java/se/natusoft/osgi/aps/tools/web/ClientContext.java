@@ -72,6 +72,6 @@ public class ClientContext extends WebClientContext {
      * @param bundleContextProvider Provides the OSGi BundleContext.
      */
     public ClientContext(UserMessager userMessager, OSGiBundleContextProvider bundleContextProvider) {
-        super(userMessager, bundleContextProvider);
+        super(userMessager, bundleContextProvider, null);
     }
 }

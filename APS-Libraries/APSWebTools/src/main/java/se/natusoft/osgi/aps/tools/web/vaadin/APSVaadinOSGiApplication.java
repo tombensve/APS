@@ -142,11 +142,11 @@ public abstract class APSVaadinOSGiApplication
     public void init(VaadinRequest request) {
 
         this.logger = new APSLogger(System.err);
-        this.logger.setLoggingFor("APSVaadinOSGiAdminApp/" + getClass().getSimpleName());
+        this.logger.setLoggingFor("APSVaadinOSGiApp" + getClass().getSimpleName());
         this.logger.start(getBundleContext());
 
         UserNotifier messager = new VaadinUserNotifier();
-        this.clientContext = new WebClientContext(messager, this);
+        this.clientContext = new WebClientContext(messager, this, request);
 
         this.activator = new APSActivator(this);
         try {

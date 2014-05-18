@@ -39,20 +39,19 @@ package se.natusoft.osgi.aps.apsadminweb.app.gui.vaadin;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.VerticalLayout;
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed;
 import se.natusoft.osgi.aps.tools.web.APSAdminWebLoginHandler;
-import se.natusoft.osgi.aps.tools.web.ClientContext;
+import se.natusoft.osgi.aps.tools.web.WebClientContext;
 import se.natusoft.osgi.aps.tools.web.vaadin.APSVaadinOSGiApplication;
 import se.natusoft.osgi.aps.tools.web.vaadin.VaadinLoginDialogHandler;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.SidesAndCenterLayout;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * This is the main administration app for APS. It uses APSAdminWebService to get registered admin web apps and
@@ -64,20 +63,16 @@ import javax.servlet.http.HttpServletResponse;
 @Theme("aps")
 public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickListener {
 
-    @WebServlet(value = "/*",
+    @WebServlet(value = "/apsadminweb/*",
             asyncSupported = true)
     @VaadinServletConfiguration(
             productionMode = false,
             ui = APSAdminWebApp.class)
-    public static class Servlet extends VaadinServlet {
-    }
+    public static class Servlet extends VaadinServlet {}
 
     //
     // Private Members
     //
-
-    /** The main window. */
-//    private Window main = null;
 
     /** The application tabs. */
     @Managed
@@ -86,17 +81,11 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
     /** The main window layout. */
     private VerticalLayout mainLayout = null;
 
-//    /** A tracker for the APSAdminWebService. */
-//    private APSServiceTracker<APSAdminWebService> adminWebServiceTracker = null;
-
     /** A login handler. */
     private APSAdminWebLoginHandler loginHandler = null;
 
     /** A gui login dialog handler. */
     private VaadinLoginDialogHandler loginDialogHandler = null;
-
-    /** The session id if the admin web APSSession. */
-//    private String sessionId = null;
 
     //
     // Vaadin GUI init
@@ -107,8 +96,8 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
      *
      * @param clientContext The client context for accessing services.
      */
-//    @Override
-    public void initServices(ClientContext clientContext) {
+    @Override
+    public void initServices(WebClientContext clientContext) {
 
         this.loginHandler = new APSAdminWebLoginHandler(clientContext.getBundleContext()) {
 
@@ -123,15 +112,23 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
                 return result;
             }
         };
+
+        this.loginDialogHandler = new VaadinLoginDialogHandler(this.loginHandler);
+
+        this.loginHandler.setSessionIdFromRequestCookie(VaadinService.getCurrentRequest());
+        if (!this.loginHandler.hasValidLogin()) {
+            this.loginDialogHandler.doLoginDialog();
+        }
+        this.loginHandler.saveSessionIdOnResponse(VaadinService.getCurrentResponse());
     }
 
     /**
      * Called when session is about to die to cleanup anything setup in initServices().
      *
-     * @param clientContex The context for the current client.
+     * @param clientContext The context for the current client.
      */
-//    @Override
-    public void cleanupServices(ClientContext clientContex) {
+    @Override
+    public void cleanupServices(WebClientContext clientContext) {
         if (this.loginHandler != null) {
             this.loginHandler.shutdown();
         }
@@ -185,35 +182,4 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
         this.tabPanel.refreshTabs();
     }
 
-    /**
-     * This method is called before applies the request to
-     * Application.
-     *
-     * @param request
-     * @param response
-     */
-//    @Override
-    public void onRequestStart(HttpServletRequest request, HttpServletResponse response) {
-        if (this.loginDialogHandler != null && this.loginHandler != null) {
-            this.loginHandler.setSessionIdFromRequestCookie(request);
-            if (!this.loginHandler.hasValidLogin()) {
-                this.loginDialogHandler.doLoginDialog();
-            }
-            this.loginHandler.saveSessionIdOnResponse(response);
-        }
-    }
-
-    /**
-     * This method is called at the end of each request.
-     *
-     * @param request
-     * @param response
-     */
-//    @Override
-    public void onRequestEnd(HttpServletRequest request, HttpServletResponse response) {
-        // For some odd reason the cookie must be set *both* in onRequestStart() and here for it to work!
-        if (this.loginHandler != null) {
-            this.loginHandler.saveSessionIdOnResponse(response);
-        }
-    }
 }

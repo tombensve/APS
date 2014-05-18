@@ -36,6 +36,8 @@
  */
 package se.natusoft.osgi.aps.tools.web;
 
+import com.vaadin.server.VaadinResponse;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
@@ -78,12 +80,40 @@ public class CookieTool {
     }
 
     /**
+     * Sets a cookie on the specified response.
+     *
+     * @param resp The servlet response to set the cookie on.
+     * @param name The name of the cookie.
+     * @param value The value of the cookie.
+     * @param maxAge The max age of the cookie.
+     */
+    public static void setCookie(VaadinResponse resp, String name, String value, int maxAge, String path) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setMaxAge(maxAge);
+        cookie.setHttpOnly(true);
+        cookie.setPath(path);
+        resp.addCookie(cookie);
+    }
+
+    /**
      * Removes a cookie.
      *
      * @param name The name of the cookie to remove.
      * @param resp The servlet response to remove the cookie on.
      */
     public void deleteCookie(String name, HttpServletResponse resp) {
+        Cookie cookie = new Cookie(name, "");
+        cookie.setMaxAge(0);
+        resp.addCookie(cookie);
+    }
+
+    /**
+     * Removes a cookie.
+     *
+     * @param name The name of the cookie to remove.
+     * @param resp The servlet response to remove the cookie on.
+     */
+    public void deleteCookie(String name, VaadinResponse resp) {
         Cookie cookie = new Cookie(name, "");
         cookie.setMaxAge(0);
         resp.addCookie(cookie);
