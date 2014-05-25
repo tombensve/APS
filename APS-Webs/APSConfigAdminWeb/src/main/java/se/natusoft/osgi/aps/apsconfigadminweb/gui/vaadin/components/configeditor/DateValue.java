@@ -37,6 +37,7 @@
 package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor;
 
 import com.vaadin.data.Property;
+import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.PopupDateField;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
@@ -58,7 +59,7 @@ public class DateValue extends PopupDateField implements ValueComponent {
     //
 
     /** The listeners on this component. */
-    private List<ValueChangedListener> listeners = new LinkedList<ValueChangedListener>();
+    private List<ValueChangedListener> listeners = new LinkedList<>();
 
     /** The config value edit model representing the config value. */
     private APSConfigValueEditModel valueEditModel = null;
@@ -82,15 +83,15 @@ public class DateValue extends PopupDateField implements ValueComponent {
         this.dateFormat = new SimpleDateFormat(valueEditModel.getDatePattern());
 
         setDateFormat(valueEditModel.getDatePattern());
-        setResolution(PopupDateField.RESOLUTION_DAY);
+        setResolution(Resolution.DAY);
         super.setValue(new Date());
         setImmediate(true);
 
-        addListener(new ValueChangeListener() {
+        addValueChangeListener(new ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (event.getProperty().getValue() != null) {
-                    if (doFireEvent) fireEvent((String)event.getProperty().getValue().toString());
+                    if (doFireEvent) fireEvent();
                 }
             }
         });
@@ -149,16 +150,14 @@ public class DateValue extends PopupDateField implements ValueComponent {
      */
     @Override
     public String getComponentValue() {
-        Date dateValue = (Date)getValue();
+        Date dateValue = getValue();
         return this.dateFormat.format(dateValue);
     }
 
-    /**
+     /**
      * Updates the value in the configuration.
-     *
-     * @param dateValue The value to update.
      */
-    private void fireEvent(String dateValue) {
+    private void fireEvent() {
         String value = this.dateFormat.format(getValue());
 
         ValueChangedEvent event = new ValueChangedEvent(this, this.valueEditModel, value);

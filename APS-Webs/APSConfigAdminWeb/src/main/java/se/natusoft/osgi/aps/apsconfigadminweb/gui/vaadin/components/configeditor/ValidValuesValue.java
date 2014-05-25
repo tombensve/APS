@@ -56,7 +56,7 @@ public class ValidValuesValue extends ListSelect implements ValueComponent {
     //
 
     /** The listeners on this component. */
-    private List<ValueChangedListener> listeners = new LinkedList<ValueChangedListener>();
+    private List<ValueChangedListener> listeners = new LinkedList<>();
 
     /** The config value edit model representing the config value. */
     private APSConfigValueEditModel valueEditModel = null;
@@ -81,7 +81,7 @@ public class ValidValuesValue extends ListSelect implements ValueComponent {
         setImmediate(true);
         setNullSelectionAllowed(false);
 
-        addListener(new ValueChangeListener() {
+        addValueChangeListener(new ValueChangeListener() {
             @Override
             public void valueChange(Property.ValueChangeEvent event) {
                 if (doFireEvent) fireEvent((String)event.getProperty().getValue());

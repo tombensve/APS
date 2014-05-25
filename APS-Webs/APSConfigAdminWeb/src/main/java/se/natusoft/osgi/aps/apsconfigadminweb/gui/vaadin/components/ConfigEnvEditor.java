@@ -39,10 +39,10 @@ package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Window.Notification;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService.APSConfigEnvAdmin;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.css.CSS;
+import se.natusoft.osgi.aps.tools.web.UserNotifier;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.handlerapi.ComponentHandler;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.handlerapi.MenuActionExecutor;
 import se.natusoft.osgi.aps.tools.web.vaadin.tools.Refreshables;
@@ -89,6 +89,9 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
     /** The action to perform. */
     private int action  = 0;
 
+    /** For showing notifications to the user. */
+    private UserNotifier userNotifier = null;
+
     //
     // Constructors
     //
@@ -100,12 +103,14 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
      * @param configEnvAdmin The configuration admin to use for adding/removing configuration environments.
      * @param refreshables The Refreshable components to refresh after edit.
      * @param action The action to perform.
+     * @param userNotifier For showing notifications to the user.
      */
-    public ConfigEnvEditor(APSConfigEnvironment configEnv, APSConfigEnvAdmin configEnvAdmin, Refreshables refreshables, int action) {
+    public ConfigEnvEditor(APSConfigEnvironment configEnv, APSConfigEnvAdmin configEnvAdmin, Refreshables refreshables, int action, UserNotifier userNotifier) {
         this.configEnvAdmin = configEnvAdmin;
         this.configEnv = configEnv;
         this.refreshables = refreshables;
         this.action = action;
+        this.userNotifier = userNotifier;
         
         if (action == EDIT_ACTION) {
             initForEdit();
@@ -137,7 +142,7 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
         if (configEnv != null) { this.nameTextField.setValue(this.configEnv.getName()); }
         this.nameTextField.setColumns(30);
         this.nameTextField.setImmediate(true);
-        this.nameTextField.setEnabled(configEnv != null && configEnv.equals(this.configEnvAdmin.getActiveConfigEnvironment()) ? false : true);
+        this.nameTextField.setEnabled(!(configEnv != null && configEnv.equals(this.configEnvAdmin.getActiveConfigEnvironment())));
 
         verticalLayout.addComponent(this.nameTextField);
 
@@ -153,7 +158,7 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
         horizontalLayout.setSpacing(true);
 
         Button saveButton = new Button("Save");
-        saveButton.addListener(new ClickListener() {
+        saveButton.addClickListener(new ClickListener() {
             /** Click handling. */
             @Override
             public void buttonClick(ClickEvent event) {
@@ -163,7 +168,7 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
         horizontalLayout.addComponent(saveButton);
 
         Button cancelButton = new Button("Cancel");
-        cancelButton.addListener(new ClickListener() {
+        cancelButton.addClickListener(new ClickListener() {
             /** Click handling. */
             @Override
             public void buttonClick(ClickEvent event) {
@@ -190,16 +195,14 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
         
         Label nameLabel = new Label("Config environment name:");
         verticalLayout.addComponent(nameLabel);
-        Panel confNamePanel = new Panel();
         Label nameValue = new Label(this.configEnv.getName());
-        confNamePanel.addComponent(nameValue);
+        Panel confNamePanel = new Panel(nameValue);
         verticalLayout.addComponent(confNamePanel);
 
         Label descLabel = new Label("Description of config environment:");
         verticalLayout.addComponent(descLabel);
-        Panel confNameDescPanel = new Panel();
         Label descValue = new Label(this.configEnv.getDescription());
-        confNameDescPanel.addComponent(descValue);
+        Panel confNameDescPanel = new Panel(descValue);
         verticalLayout.addComponent(confNameDescPanel);
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
@@ -208,7 +211,7 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
         verticalLayout.addComponent(horizontalLayout);
         
         Button deleteButton = new Button("Delete");
-        deleteButton.addListener(new ClickListener() {
+        deleteButton.addClickListener(new ClickListener() {
             /** click handling. */
             @Override
             public void buttonClick(ClickEvent event) {
@@ -221,7 +224,7 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
         horizontalLayout.addComponent(deleteButton);
         
         Button cancelButton = new Button("Cancel");
-        cancelButton.addListener(new ClickListener() {
+        cancelButton.addClickListener(new ClickListener() {
             /** Click handling. */
             @Override
             public void buttonClick(ClickEvent event) {
@@ -240,7 +243,7 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
      * @param message The notification message.
      */
     private void notify(String message) {
-        getWindow().showNotification("Config environment changed", message, Notification.TYPE_TRAY_NOTIFICATION);
+        this.userNotifier.info("Config environment changed", message);
     }
 
     /**
@@ -255,8 +258,8 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
      * Saves the current config env.
      */
     private void saveConfigEnv() {
-        String name = this.nameTextField.getValue().toString();
-        String description = this.descriptionTextArea.getValue().toString();
+        String name = this.nameTextField.getValue();
+        String description = this.descriptionTextArea.getValue();
 
         if (this.origName != null) {
             APSConfigEnvironment current = this.configEnvAdmin.getConfigEnvironmentByName(this.origName);

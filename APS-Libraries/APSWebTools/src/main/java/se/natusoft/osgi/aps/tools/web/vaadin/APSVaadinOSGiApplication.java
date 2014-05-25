@@ -71,6 +71,7 @@ import se.natusoft.osgi.aps.tools.web.WebClientContext;
  *
  * * Provides getters for both the BundleContext and the ClientContext.
  *
+ * This version requires Vaadin 7 to work!
  */
 public abstract class APSVaadinOSGiApplication
         extends UI
@@ -132,6 +133,9 @@ public abstract class APSVaadinOSGiApplication
         return bundleContext;
     }
 
+    /**
+     * Returns the user notifier for presenting messages to the user.
+     */
     protected UserNotifier getUserNotifier() {
         return this.userNotifier;
     }
@@ -139,6 +143,7 @@ public abstract class APSVaadinOSGiApplication
     /**
      * Initializes the vaadin application.
      */
+    @Override
     public void init(VaadinRequest request) {
 
         this.logger = new APSLogger(System.err);

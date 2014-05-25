@@ -45,6 +45,7 @@ import java.util.List;
 /**
  * Manages the current config node.
  */
+@SuppressWarnings("UnusedDeclaration")
 public class ConfigNode {
     //
     // Constants
@@ -102,8 +103,8 @@ public class ConfigNode {
         this.currentNode = currentNode;
         this.index = index;
 
-        this.nodeValues = new LinkedList<APSConfigValueEditModel>();
-        this.nodeChildren = new LinkedList<APSConfigEditModel>();
+        this.nodeValues = new LinkedList<>();
+        this.nodeChildren = new LinkedList<>();
         for (APSConfigValueEditModel nodeMember : this.currentNode.getValues()) {
             if (APSConfigEditModel.class.isAssignableFrom(nodeMember.getClass())) {
                 this.nodeChildren.add((APSConfigEditModel)nodeMember);
@@ -126,8 +127,8 @@ public class ConfigNode {
 
         // In this case we need to replace the node child and value lists with new ones
         // based on this model.
-        this.nodeValues = new LinkedList<APSConfigValueEditModel>();
-        this.nodeChildren = new LinkedList<APSConfigEditModel>();
+        this.nodeValues = new LinkedList<>();
+        this.nodeChildren = new LinkedList<>();
         for (APSConfigValueEditModel nodeMember : this.currentInstanceNode.getValues()) {
             if (APSConfigEditModel.class.isAssignableFrom(nodeMember.getClass())) {
                 this.nodeChildren.add((APSConfigEditModel)nodeMember);

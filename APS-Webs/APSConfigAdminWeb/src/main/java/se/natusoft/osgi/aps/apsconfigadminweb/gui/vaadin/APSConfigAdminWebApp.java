@@ -45,7 +45,6 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.Action;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServlet;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -59,9 +58,7 @@ import se.natusoft.osgi.aps.tools.APSLogger;
 import se.natusoft.osgi.aps.tools.APSServiceTracker;
 import se.natusoft.osgi.aps.tools.models.IntID;
 import se.natusoft.osgi.aps.tools.web.APSAdminWebLoginHandler;
-import se.natusoft.osgi.aps.tools.web.ClientContext;
 import se.natusoft.osgi.aps.tools.web.WebClientContext;
-import se.natusoft.osgi.aps.tools.web.vaadin.APSTheme;
 import se.natusoft.osgi.aps.tools.web.vaadin.APSVaadinOSGiApplication;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.SidesAndCenterLayout;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.MenuTree;
@@ -73,8 +70,6 @@ import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.handlerapi.Menu
 import se.natusoft.osgi.aps.tools.web.vaadin.tools.Refreshable;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
@@ -105,12 +100,6 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
     /** The main app window layout. */
     private SidesAndCenterLayout layout = null;
 
-    /** The main window. */
-    private Window main = null;
-
-    /** The window to show when an authorized user is not available. */
-    private Window notAuthWindow = null;
-
     /** The left side menu. */
     private MenuTree menuTree = null;
 
@@ -123,21 +112,24 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
 
     private void handleLogin(WebClientContext clientContext) {
 
-        this.loginHandler = new APSAdminWebLoginHandler(clientContext.getBundleContext()) {
+        if (this.loginHandler == null) {
+            this.loginHandler = new APSAdminWebLoginHandler(clientContext.getBundleContext()) {
 
-            @Override
-            public boolean login(String userId, String pw) {
-                boolean result = super.login(userId, pw);
+                @Override
+                public boolean login(String userId, String pw) {
+                    boolean result = super.login(userId, pw);
 
-                if (!result) {
-                    getUserNotifier().warning("Login failed!", "Bad userid or password!");
+                    if (!result) {
+                        getUserNotifier().warning("Login failed!", "Bad userid or password!");
+                    }
+
+                    return result;
                 }
-
-                return result;
-            }
-        };
+            };
+        }
 
         this.loginHandler.setSessionIdFromRequestCookie(VaadinService.getCurrentRequest());
+
         if (!this.loginHandler.hasValidLogin()) {
             Window notAuthWindow = new Window("Application Platform Services Administration App");
             notAuthWindow.setClosable(false);
@@ -166,13 +158,14 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
         this.logger.start(clientContext.getBundleContext());
 
         this.configAdminServiceTracker =
-                new APSServiceTracker<APSConfigAdminService>(clientContext.getBundleContext(), APSConfigAdminService.class, APSServiceTracker.LARGE_TIMEOUT);
+                new APSServiceTracker<>(clientContext.getBundleContext(), APSConfigAdminService.class, APSServiceTracker.LARGE_TIMEOUT);
         this.configAdminServiceTracker.setLogger(this.logger);
         this.configAdminServiceTracker.start();
 
         clientContext.addService(APSConfigAdminService.class, this.configAdminServiceTracker.getWrappedService());
 
-        this.loginHandler = new APSAdminWebLoginHandler(clientContext.getBundleContext());
+        handleLogin(clientContext);
+
     }
 
     /**
@@ -199,17 +192,13 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
     @Override
     public void initGUI() {
 
-        this.setTheme(APSTheme.THEME);
-
-        this.main = new Window("Application Platform Services Administration App");
-        this.main.setSizeFull();
         VerticalLayout mainLayout = new VerticalLayout();
-        this.main.setContent(mainLayout);
+        setContent(mainLayout);
         mainLayout.setMargin(false);
         mainLayout.setSizeFull();
 
         this.layout = new SidesAndCenterLayout();
-        this.main.addComponent(this.layout);
+        mainLayout.addComponent(this.layout);
 
         LeftBar leftBar = new LeftBar();
 
@@ -217,19 +206,19 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
 
         APSConfigAdminService configAdminService = getClientContext().getService(APSConfigAdminService.class);
 
-        /* The menu builder for editing configuration environments. */
-        ConfigEnvMenuBuilder configEnvMenuBuilder = new ConfigEnvMenuBuilder(configAdminService.getConfigEnvAdmin());
+        // The menu builder for editing configuration environments.
+        ConfigEnvMenuBuilder configEnvMenuBuilder = new ConfigEnvMenuBuilder(configAdminService.getConfigEnvAdmin(), getUserNotifier());
         configEnvMenuBuilder.addRefreshable(this.menuTree);
         configEnvMenuBuilder.addRefreshable(new RemoveCenterRefreshable());
         this.menuTree.addMenuBuilder(configEnvMenuBuilder);
 
-        /* The menu builder for editing configurations. */
-        ConfigMenuBuilder configMenuBuilder = new ConfigMenuBuilder(configAdminService, this.logger);
+        // The menu builder for editing configurations.
+        ConfigMenuBuilder configMenuBuilder = new ConfigMenuBuilder(configAdminService, this.logger, getUserNotifier());
         this.menuTree.addMenuBuilder(configMenuBuilder);
 
         this.menuTree.refresh();
 
-        this.menuTree.addListener(new ValueChangeListener() {
+        this.menuTree.addValueChangeListener(new ValueChangeListener() {
             /** Handles input changes in the menu tree. */
             @Override
             public void valueChange(ValueChangeEvent event) {
@@ -244,9 +233,6 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
         this.layout.setLeft(leftBar);
         this.layout.doLayout(); // This is required after contents have been set.
 
-
-
-        setMainWindow(this.notAuthWindow);
     }
 
     //
@@ -325,33 +311,6 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
             }
         }
     }
-
-    /**
-     * This method is called before {@link com.vaadin.terminal.Terminal} applies the request to
-     * Application.
-     *
-     * @param request
-     * @param response
-     */
-    @Override
-    public void onRequestStart(HttpServletRequest request, HttpServletResponse response) {
-
-        if (this.loginHandler != null) {
-            Window show = this.notAuthWindow;
-
-            this.loginHandler.setSessionIdFromRequestCookie(VaadinService.getCurrentRequest());
-            if (this.loginHandler.hasValidLogin()) {
-                show = this.main;
-            }
-
-            setMainWindow(show);
-        }
-
-        if (request.getParameter("adminRefresh") != null) {
-            close();
-        }
-    }
-
 
     //
     // Inner Classes

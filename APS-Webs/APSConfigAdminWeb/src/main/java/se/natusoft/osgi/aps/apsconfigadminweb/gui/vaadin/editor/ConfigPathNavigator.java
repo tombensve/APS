@@ -47,7 +47,7 @@ public class ConfigPathNavigator {
     //
     
     /** Parent paths. */
-    private Stack<String> paths = new Stack<String>();
+    private Stack<String> paths = new Stack<>();
     
     /** Current path. */
     private String path = null;

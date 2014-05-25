@@ -45,6 +45,7 @@ import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService.APSCon
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.ConfigEnvEditor;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.css.CSS;
 import se.natusoft.osgi.aps.tools.models.ID;
+import se.natusoft.osgi.aps.tools.web.UserNotifier;
 import se.natusoft.osgi.aps.tools.web.vaadin.APSTheme;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.HTMLFileLabel;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.builderapi.MenuBuilder;
@@ -93,6 +94,9 @@ public class ConfigEnvMenuBuilder implements MenuBuilder<APSConfigAdmin>, Refres
     /** The refreshables to trigger on refresh. */
     private Refreshables refreshables = new Refreshables();
 
+    /** For user notifications. */
+    private UserNotifier userNotifier = null;
+
     //
     // Constructors
     //
@@ -101,9 +105,11 @@ public class ConfigEnvMenuBuilder implements MenuBuilder<APSConfigAdmin>, Refres
      * Creates a new ConfigEnvMenuBuilder.
      *
      * @param configEnvAdmin The APS configuration admin to get information from.
+     * @param userNotifier For user notifications.
      */
-    public ConfigEnvMenuBuilder(APSConfigEnvAdmin configEnvAdmin) {
+    public ConfigEnvMenuBuilder(APSConfigEnvAdmin configEnvAdmin, UserNotifier userNotifier) {
         this.configEnvAdmin = configEnvAdmin;
+        this.userNotifier = userNotifier;
     }
 
     //
@@ -127,18 +133,18 @@ public class ConfigEnvMenuBuilder implements MenuBuilder<APSConfigAdmin>, Refres
     @Override
     public void buildMenuEntries(HierarchicalModel<MenuItemData<APSConfigAdmin>> menuModel) {
         // This will be initialized with the root node and then sub nodes will be added to this.
-        ID configEnvsId = null;
+        @SuppressWarnings("UnusedAssignment") ID configEnvsId = null;
 
         // Setup root node for config environments.
         {
-            MenuItemData itemData = new MenuItemData();
+            MenuItemData<APSConfigAdmin> itemData = new MenuItemData<>();
 
             itemData.setActions(CONFIG_ENV_ROOT_ACTIONS);
             itemData.setSelectComponentHandler(new ConfigEnvDescriptionHandler());
 
-            Map<Action, MenuActionProvider> actionComponentHandlerMap = new HashMap<Action, MenuActionProvider>();
+            Map<Action, MenuActionProvider> actionComponentHandlerMap = new HashMap<>();
             actionComponentHandlerMap.put(ACTION_NEW_CONFIG_ENV,
-                    new ConfigEnvEditor(null, this.configEnvAdmin, this.refreshables, ConfigEnvEditor.EDIT_ACTION));
+                    new ConfigEnvEditor(null, this.configEnvAdmin, this.refreshables, ConfigEnvEditor.EDIT_ACTION, this.userNotifier));
             itemData.setActionComponentHandlers(actionComponentHandlerMap);
 
             configEnvsId = menuModel.addItem(null, itemData, "Config Environments");
@@ -149,19 +155,19 @@ public class ConfigEnvMenuBuilder implements MenuBuilder<APSConfigAdmin>, Refres
             APSConfigEnvironment activeConfigEnv = this.configEnvAdmin.getActiveConfigEnvironment();
 
             for (APSConfigEnvironment configEnv : this.configEnvAdmin.getAvailableConfigEnvironments()) {
-                MenuItemData itemData = new MenuItemData();
+                MenuItemData<APSConfigAdmin> itemData = new MenuItemData<>();
 
                 itemData.setToolTipText(configEnv.getDescription());
                 itemData.setActions(CONFIG_ENV_ITEM_ACTIONS);
                 itemData.setSelectComponentHandler(
-                        new ConfigEnvEditor(configEnv, this.configEnvAdmin, this.refreshables, ConfigEnvEditor.EDIT_ACTION)
+                        new ConfigEnvEditor(configEnv, this.configEnvAdmin, this.refreshables, ConfigEnvEditor.EDIT_ACTION, this.userNotifier)
                 );
 
-                Map<Action, MenuActionProvider> actionComponentHandlerMap2 = new HashMap<Action, MenuActionProvider>();
+                Map<Action, MenuActionProvider> actionComponentHandlerMap2 = new HashMap<>();
                 actionComponentHandlerMap2.put(ACTION_DELETE_CONFIG_ENV,
-                        new ConfigEnvEditor(configEnv, this.configEnvAdmin, this.refreshables, ConfigEnvEditor.DELETE_ACTION));
+                        new ConfigEnvEditor(configEnv, this.configEnvAdmin, this.refreshables, ConfigEnvEditor.DELETE_ACTION, this.userNotifier));
                 actionComponentHandlerMap2.put(ACTION_SET_ACTIVE_CONFIG_ENV,
-                        new ConfigEnvEditor(configEnv, this.configEnvAdmin, this.refreshables, ConfigEnvEditor.CHANGE_ACTIVE_ACTION));
+                        new ConfigEnvEditor(configEnv, this.configEnvAdmin, this.refreshables, ConfigEnvEditor.CHANGE_ACTIVE_ACTION, this.userNotifier));
                 itemData.setActionComponentHandlers(actionComponentHandlerMap2);
 
                 String menuName = configEnv.getName();

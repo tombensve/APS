@@ -41,13 +41,12 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.VerticalLayout;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigAdmin;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEditModel;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.ConfigEditor;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.css.CSS;
 import se.natusoft.osgi.aps.tools.APSLogger;
 import se.natusoft.osgi.aps.tools.models.ID;
+import se.natusoft.osgi.aps.tools.web.UserNotifier;
 import se.natusoft.osgi.aps.tools.web.vaadin.APSTheme;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.HTMLFileLabel;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.builderapi.MenuBuilder;
@@ -88,8 +87,8 @@ public class ConfigMenuBuilder implements MenuBuilder<APSConfigAdmin> {
     /** The APS configuration admin service providing the menu data. */
     private APSConfigAdminService configAdminService = null;
 
-    /** The currently active config environment. */
-    private APSConfigEnvironment activeConfigEnv = null;
+    /** For notifying users. */
+    private UserNotifier userNotifier = null;
 
     //
     // Constructors
@@ -100,11 +99,12 @@ public class ConfigMenuBuilder implements MenuBuilder<APSConfigAdmin> {
      *
      * @param configAdminService The APS configuration admin service providing menu data.
      * @param logger The logger to log to.
+     * @param userNotifier For notifying the user.
      */
-    public ConfigMenuBuilder(APSConfigAdminService configAdminService, APSLogger logger) {
+    public ConfigMenuBuilder(APSConfigAdminService configAdminService, APSLogger logger, UserNotifier userNotifier) {
         this.configAdminService = configAdminService;
         this.logger = logger;
-        this.activeConfigEnv = this.configAdminService.getConfigEnvAdmin().getActiveConfigEnvironment();
+        this.userNotifier = userNotifier;
     }
 
     //
@@ -118,12 +118,12 @@ public class ConfigMenuBuilder implements MenuBuilder<APSConfigAdmin> {
      */
     @Override
     public void buildMenuEntries(HierarchicalModel<MenuItemData<APSConfigAdmin>> menuModel) {
-        MenuItemData itemData = new MenuItemData();
+        MenuItemData<APSConfigAdmin> itemData = new MenuItemData<>();
         itemData.setActions(CONFIG_ROOT_ACTIONS);
         itemData.setSelectComponentHandler(new ConfigurationsDescriptionHandler());
 
         // Sort according to group
-        Map<String, List<APSConfigAdmin>> groups = new HashMap<String, List<APSConfigAdmin>>();
+        Map<String, List<APSConfigAdmin>> groups = new HashMap<>();
         for (APSConfigAdmin configAdmin : configAdminService.getAllConfigurations()) {
             String groupName = configAdmin.getGroup();
             if (groupName.equals("")) {
@@ -131,7 +131,7 @@ public class ConfigMenuBuilder implements MenuBuilder<APSConfigAdmin> {
             }
             List<APSConfigAdmin> groupItems = groups.get(groupName);
             if (groupItems == null) {
-                groupItems = new LinkedList<APSConfigAdmin>();
+                groupItems = new LinkedList<>();
                 groups.put(groupName, groupItems);
             }
 
@@ -142,7 +142,7 @@ public class ConfigMenuBuilder implements MenuBuilder<APSConfigAdmin> {
 
         ID configsId = menuModel.addItem(null, itemData, "Configurations");
 
-        Map<String, ID> groupPathIds = new HashMap<String, ID>();
+        Map<String, ID> groupPathIds = new HashMap<>();
 
         for (String groupName : groups.keySet()) {
             List<APSConfigAdmin> configAdmins = groups.get(groupName);
@@ -156,8 +156,8 @@ public class ConfigMenuBuilder implements MenuBuilder<APSConfigAdmin> {
 
                     ID pathId = groupPathIds.get(groupPath);
                     if (pathId == null) {
-                        itemData = new MenuItemData();
-                        Map<Action, MenuActionProvider> actionComponentHandlerMap = new HashMap<Action, MenuActionProvider>();
+                        itemData = new MenuItemData<>();
+                        Map<Action, MenuActionProvider> actionComponentHandlerMap = new HashMap<>();
                         itemData.setActionComponentHandlers(actionComponentHandlerMap);
                         pathId = menuModel.addItem(parent, itemData, pathPart);
                         groupPathIds.put(groupPath, pathId);
@@ -170,16 +170,16 @@ public class ConfigMenuBuilder implements MenuBuilder<APSConfigAdmin> {
 
                 APSConfigEditModel configModel = configAdmin.getConfigModel();
 
-                itemData = new MenuItemData();
+                itemData = new MenuItemData<>();
                 itemData.setItemRepresentative(configAdmin);
                 itemData.setToolTipText(configModel.getConfigId() + ":" + configModel.getVersion() + "<hr/>" + configModel.getDescription());
                 itemData.setActions(CONFIG_ITEM_ACTIONS);
-                itemData.setSelectComponentHandler(new ConfigEditor(configModel, configAdmin, this.configAdminService, this.logger));
+                itemData.setSelectComponentHandler(new ConfigEditor(configModel, configAdmin, this.configAdminService, this.logger, this.userNotifier));
 
                 String configId = configAdmin.getConfigId();
                 int ix = configId.lastIndexOf('.');
                 configId = configId.substring(ix+1);
-                ID itemID = menuModel.addItem(parent, itemData, configId);
+                menuModel.addItem(parent, itemData, configId);
             }
 
 //            // Sub config branches.
@@ -187,38 +187,38 @@ public class ConfigMenuBuilder implements MenuBuilder<APSConfigAdmin> {
         }
     }
 
-    /**
-     * Recursively builds menu entries for sub config branches.
-     *
-     * @param menuModel The menu model to add menu entries to.
-     * @param configEditModel The config model the menu entry represents.
-     * @param parentID The id of our parent.
-     * @param configAdmin This represents the whole configuration and are passed along as menu item data since it is needed to edit data later.
-     */
-    private void buildConfigBranch(
-            HierarchicalModel<MenuItemData<APSConfigAdmin>> menuModel,
-            APSConfigEditModel configEditModel,
-            ID parentID,
-            APSConfigAdmin configAdmin
-    ) {
-        
-        for (APSConfigValueEditModel valueModel : configEditModel.getValues()) {
-            if (valueModel instanceof APSConfigEditModel) {
-                APSConfigEditModel branchModel = (APSConfigEditModel)valueModel;
-
-                MenuItemData itemData = new MenuItemData();
-                itemData.setItemRepresentative(configAdmin);
-                itemData.setToolTipText(branchModel.getConfigId() + ":" + branchModel.getVersion() + "<hr/>" + branchModel.getDescription());
-                String name = branchModel.getName();
-                if (branchModel.isMany()) {
-                    name = name + "*";
-                    int size = configAdmin.getSize(branchModel, this.activeConfigEnv);
-                }
-                ID itemID = menuModel.addItem(parentID, itemData, name);
-                buildConfigBranch(menuModel, branchModel, itemID, configAdmin);
-            }
-        }        
-    }
+//    /**
+//     * Recursively builds menu entries for sub config branches.
+//     *
+//     * @param menuModel The menu model to add menu entries to.
+//     * @param configEditModel The config model the menu entry represents.
+//     * @param parentID The id of our parent.
+//     * @param configAdmin This represents the whole configuration and are passed along as menu item data since it is needed to edit data later.
+//     */
+//    private void buildConfigBranch(
+//            HierarchicalModel<MenuItemData<APSConfigAdmin>> menuModel,
+//            APSConfigEditModel configEditModel,
+//            ID parentID,
+//            APSConfigAdmin configAdmin
+//    ) {
+//
+//        for (APSConfigValueEditModel valueModel : configEditModel.getValues()) {
+//            if (valueModel instanceof APSConfigEditModel) {
+//                APSConfigEditModel branchModel = (APSConfigEditModel)valueModel;
+//
+//                MenuItemData itemData = new MenuItemData();
+//                itemData.setItemRepresentative(configAdmin);
+//                itemData.setToolTipText(branchModel.getConfigId() + ":" + branchModel.getVersion() + "<hr/>" + branchModel.getDescription());
+//                String name = branchModel.getName();
+//                if (branchModel.isMany()) {
+//                    name = name + "*";
+//                    int size = configAdmin.getSize(branchModel, this.activeConfigEnv);
+//                }
+//                ID itemID = menuModel.addItem(parentID, itemData, name);
+//                buildConfigBranch(menuModel, branchModel, itemID, configAdmin);
+//            }
+//        }
+//    }
 
     /**
      * This handles the "Config Environments" menu entry.

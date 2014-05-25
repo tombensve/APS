@@ -39,7 +39,6 @@ package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.Window.Notification;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigAdmin;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEditModel;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
@@ -56,6 +55,7 @@ import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.css.CSS;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.editor.ConfigNode;
 import se.natusoft.osgi.aps.tools.APSLogger;
 import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException;
+import se.natusoft.osgi.aps.tools.web.UserNotifier;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.HorizontalLine;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.handlerapi.ComponentHandler;
 import se.natusoft.osgi.aps.tools.web.vaadin.tools.Refreshable;
@@ -92,6 +92,9 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
     /** The currently edited node. */
     private ConfigNode currentConfigNode = null;
 
+    /** For showing notifications to user. */
+    private UserNotifier userNotifier = null;
+
     //----- GUI Components -----//
 
     /** Selects the config environment to edit for. Also provides the currently selected config environment. */
@@ -120,14 +123,16 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
      * @param configAdmin The config admin api.
      * @param configAdminService The config admin service for getting config envs and updating edited configs.
      * @param logger The logger to log to.
+     * @param userNotifier For sending notifications to user.
      */
     public ConfigEditor(APSConfigEditModel configEditModel, APSConfigAdmin configAdmin,
-                        APSConfigAdminService configAdminService, APSLogger logger) {
+                        APSConfigAdminService configAdminService, APSLogger logger, UserNotifier userNotifier) {
         this.logger = logger;
         this.liveConfigAdmin = configAdmin;
         this.editedConfigAdmin = configAdmin.cloneConfig();
         this.configAdminService = configAdminService;
         this.currentConfigNode = new ConfigNode(configEditModel);
+        this.userNotifier = userNotifier;
 
         setupGUI();
     }
@@ -137,43 +142,11 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
     //
 
     /**
-     * Returns the last part of the config id.
-     *
-     * @param configId The full config id.
-     */
-    private String getSimpleConfigId(String configId) {
-        int ix = configId.lastIndexOf('.');
-        return configId.substring(ix+1);
-    }
-
-    /**
      * @return The component that should handle the item.
      */
     @Override
     public AbstractComponent getComponent() {
         return this;
-    }
-
-    /**
-     * Shows notification.
-     *
-     * @param caption The message caption.
-     * @param message The notification message.
-     */
-    private void showNotification(String caption, String message) {
-        showNotification(caption, message, Notification.TYPE_TRAY_NOTIFICATION);
-    }
-    /**
-     * Shows notification.
-     *
-     * @param caption The message caption.
-     * @param message The notification message.
-     * @param notificationType The type of notification. Use constants in Notification.
-     */
-    private void showNotification(String caption, String message, int notificationType) {
-        if (getWindow() != null) {
-            getWindow().showNotification(caption, message, notificationType);
-        }
     }
 
     /**
@@ -223,7 +196,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
                         this.nodeSelector = new NodeSelector();
                         this.nodeSelector.setHeight("100%");
                         this.nodeSelector.setWidth(null);
-                        this.nodeSelector.setScrollable(true);
+//                        this.nodeSelector.setScrollable(true);
                         this.nodeSelector.setDataSource(this.nodeSelectorDataSource);
                         this.nodeSelector.addListener(new NodeSelectionListener() {
                             @Override
@@ -241,7 +214,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
 
                             this.addNodeButton = new Button(" + ");
                             this.addNodeButton.setEnabled(false);
-                            this.addNodeButton.addListener(new ClickListener() {
+                            this.addNodeButton.addClickListener(new ClickListener() {
                                 @Override
                                 public void buttonClick(ClickEvent event) {
                                     addNodeInstance();
@@ -251,7 +224,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
 
                             this.removeNodeButton = new Button(" - ");
                             this.removeNodeButton.setEnabled(false);
-                            this.removeNodeButton.addListener(new ClickListener() {
+                            this.removeNodeButton.addClickListener(new ClickListener() {
                                 @Override
                                 public void buttonClick(ClickEvent event) {
                                     removeNodeInstance();
@@ -268,7 +241,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
                 }
 
                 this.configNodeValuesEditor = new ConfigNodeValuesEditor(); {
-                    this.configNodeValuesEditor.setScrollable(true);
+//                    this.configNodeValuesEditor.setScrollable(true);
                     this.configNodeValuesEditor.setWidth("100%");
                     this.configNodeValuesEditor.setHeight("100%");
 
@@ -288,7 +261,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
                 saveCancelButtonsLayout.setSpacing(true);
 
                 Button saveButton = new Button("Save");
-                saveButton.addListener(new ClickListener() {
+                saveButton.addClickListener(new ClickListener() {
                     @Override
                     public void buttonClick(ClickEvent event) {
                         saveEdit();
@@ -297,7 +270,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
                 saveCancelButtonsLayout.addComponent(saveButton);
                 
                 Button cancelButton = new Button("Cancel");
-                cancelButton.addListener(new ClickListener() {
+                cancelButton.addClickListener(new ClickListener() {
                     @Override
                     public void buttonClick(ClickEvent event) {
                         cancelEdit();
@@ -343,7 +316,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
             this.nodeSelector.refreshData();
         }
 
-        showNotification("Now editing for configuration environment", selectedConfigEnv.getName());
+        this.userNotifier.info("Now editing for configuration environment", selectedConfigEnv.getName());
     }
 
     /**
@@ -402,8 +375,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
             this.nodeSelector.refreshData();
         }
         else {
-            showNotification("Operation on bad node type!", "This node has only one static instance!",
-                    Notification.TYPE_ERROR_MESSAGE);
+            this.userNotifier.error("Operation on bad node type!", "This node has only one static instance!");
         }
     }
 
@@ -437,8 +409,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
             this.nodeSelector.refreshData();
         }
         else {
-            showNotification("Operation on bad node type!", "This node has only one static instance!",
-                    Notification.TYPE_ERROR_MESSAGE);
+            this.userNotifier.error("Operation on bad node type!", "This node has only one static instance!");
         }
     }
 
@@ -449,15 +420,13 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
         try {
             this.configAdminService.updateConfiguration(this.editedConfigAdmin);
             this.editedConfigAdmin.sendConfigModifiedEvent();
-            showNotification("Saved!", "Saved config for '" + this.editedConfigAdmin.getConfigId() + "'!",
-                    Notification.TYPE_TRAY_NOTIFICATION);
+            this.userNotifier.info("Saved!", "Saved config for '" + this.editedConfigAdmin.getConfigId() + "'!");
         }
         catch (APSNoServiceAvailableException nsae) {
             this.logger.error("Faled to save config for '" + this.editedConfigAdmin.getConfigId() + "'!", nsae);
 
-            showNotification("Save Faield!",
-                    "The configuration service is currently not available on the server! Please try again later.",
-                    Notification.TYPE_ERROR_MESSAGE);
+            this.userNotifier.error("Save Faield!",
+                    "The configuration service is currently not available on the server! Please try again later.");
         }
     }
 
@@ -472,8 +441,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
             this.nodeSelector.refreshData();
         }
 
-        showNotification("Cancelled!", "Cancelled changes for '" + this.editedConfigAdmin.getConfigId() + "'!",
-                Notification.TYPE_TRAY_NOTIFICATION);
+        this.userNotifier.info("Cancelled!", "Cancelled changes for '" + this.editedConfigAdmin.getConfigId() + "'!");
     }
 
     //

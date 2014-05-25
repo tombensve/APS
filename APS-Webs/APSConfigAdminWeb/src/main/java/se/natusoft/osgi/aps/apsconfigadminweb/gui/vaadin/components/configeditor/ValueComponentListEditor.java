@@ -38,6 +38,7 @@ package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configedito
 
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -62,7 +63,7 @@ public class ValueComponentListEditor extends VerticalLayout {
     private APSConfigValueEditModel valueEditModel = null;
 
     /** Maps between a value and its index. */
-    private Map<String, Integer> valueIndexMap = new HashMap<String, Integer>();
+    private Map<String, Integer> valueIndexMap = new HashMap<>();
 
     /** The reverse of valueIndexMap. */
     private String[] valueByIndex = null;
@@ -133,12 +134,12 @@ public class ValueComponentListEditor extends VerticalLayout {
         this.values.setNullSelectionAllowed(false);
         this.values.setEnabled(false);
         this.values.setImmediate(true);
-        this.values.addListener(this.valuesListener);
+        this.values.addValueChangeListener(this.valuesListener);
         addComponent(this.values);
 
         HorizontalLayout buttonsLayout = new HorizontalLayout(); {
             Button addButton = new Button(" + ");
-            addButton.addListener(new ClickListener() {
+            addButton.addClickListener(new ClickListener() {
                 @Override
                 public void buttonClick(ClickEvent event) {
                     addValue();
@@ -147,7 +148,7 @@ public class ValueComponentListEditor extends VerticalLayout {
             buttonsLayout.addComponent(addButton);
 
             this.removeButton = new Button(" - ");
-            this.removeButton.addListener(new ClickListener() {
+            this.removeButton.addClickListener(new ClickListener() {
                 @Override
                 public void buttonClick(ClickEvent event) {
                     removeValue();
@@ -156,7 +157,7 @@ public class ValueComponentListEditor extends VerticalLayout {
             this.removeButton.setEnabled(false);
             buttonsLayout.addComponent(this.removeButton);
 
-            this.sizeLabel = new Label("&nbsp;&nbsp;&nbsp;&nbsp;[ ]", Label.CONTENT_XHTML);
+            this.sizeLabel = new Label("&nbsp;&nbsp;&nbsp;&nbsp;[ ]", ContentMode.HTML);
             this.sizeLabel.setStyleName(CSS.APS_MANYVALUE_COUNT_LABEL);
             buttonsLayout.addComponent(this.sizeLabel);
         }
@@ -190,7 +191,7 @@ public class ValueComponentListEditor extends VerticalLayout {
             this.values.setEnabled(false);
         }
 
-        this.values.removeListener(this.valuesListener); {
+        this.values.removeValueChangeListener(this.valuesListener); {
 
             this.values.removeAllItems();
             this.valueIndexMap.clear();
@@ -214,7 +215,7 @@ public class ValueComponentListEditor extends VerticalLayout {
                 this.values.setRows(rows);
             }
 
-        } this.values.addListener(this.valuesListener);
+        } this.values.addValueChangeListener(this.valuesListener);
 
         this.sizeLabel.setValue("&nbsp;&nbsp;&nbsp;&nbsp;[ " + size + " ]");
     }

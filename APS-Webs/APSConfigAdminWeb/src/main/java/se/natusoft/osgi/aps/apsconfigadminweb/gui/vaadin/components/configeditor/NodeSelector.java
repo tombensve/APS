@@ -54,6 +54,7 @@ import java.util.List;
  * This renders a three of config nodes and config node instances that can be selected.
  * It will trigger an event for each selection.
  */
+@SuppressWarnings("UnusedAssignment")
 public class NodeSelector extends Panel implements ItemDescriptionGenerator {
     //
     // Private Members
@@ -66,7 +67,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
     private DataSource dataSource = null;
 
     /** The listeners on this component. */
-    private List<NodeSelectionListener> nodeSelectionListeners = new LinkedList<NodeSelectionListener>();
+    private List<NodeSelectionListener> nodeSelectionListeners = new LinkedList<>();
 
     /**
      * A NodeData object representing the currently selected tree node.
@@ -108,7 +109,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
         this.configNodeTree = new Tree();
         this.configNodeTree.setImmediate(true);
         this.configNodeTree.setSelectable(true);
-        this.configNodeTree.setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
+        this.configNodeTree.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
         this.configNodeTree.setItemCaptionPropertyId(HierarchicalModel.getDefaultCaption());
         this.configNodeTree.setItemDescriptionGenerator(this); // For tooltips.
         this.configNodeTree.setHeight("100%");
@@ -121,7 +122,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
             }
         };
 
-        this.configNodeTree.addListener(this.itemSelectListener);
+        this.configNodeTree.addValueChangeListener(this.itemSelectListener);
 
         verticalLayout.addComponent(this.configNodeTree);
     }
@@ -133,17 +134,18 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
     /**
      * Reloads data from the data source.
      */
+    @SuppressWarnings("ConstantConditions")
     public void refreshData() {
-        HierarchicalModel<NodeData> hmodel  = new HierarchicalModel<NodeData>(new IntID());
+        HierarchicalModel<NodeData> hmodel  = new HierarchicalModel<>(new IntID());
 
         APSConfigEditModel root = this.dataSource.getRootModel();
 
         ID selectedID = null;
         selectedID = buildHierarchicalModel(hmodel, null, root, selectedID);
 
-        this.configNodeTree.removeListener(this.itemSelectListener);
+        this.configNodeTree.removeValueChangeListener(this.itemSelectListener);
         this.configNodeTree.setContainerDataSource(hmodel.getHierarchicalContainer());
-        this.configNodeTree.addListener(this.itemSelectListener);
+        this.configNodeTree.addValueChangeListener(this.itemSelectListener);
         this.configNodeTree.select(selectedID);
 
         this.configNodeModel = hmodel;
@@ -304,6 +306,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
     /**
      * This is a model of information that gets passed for each item to the HierarchicalModel.
      */
+    @SuppressWarnings("UnusedDeclaration")
     private static class NodeData {
         //
         // Private Members
@@ -407,6 +410,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
     /**
      * Event that gets sent when a node in the tree gets selected.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static class NodeSelectedEvent extends Event {
         //
         // Private Members
