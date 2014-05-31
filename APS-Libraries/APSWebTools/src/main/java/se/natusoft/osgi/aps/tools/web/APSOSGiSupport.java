@@ -146,6 +146,7 @@ public class APSOSGiSupport implements OSGiBundleContextProvider, APSSessionList
      *
      * @param session The session to get instance from.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public static APSOSGiSupport getFromSession(HttpSession session) {
         return (APSOSGiSupport)session.getAttribute(APSOSGiSupport.class.getName());
     }

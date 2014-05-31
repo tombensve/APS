@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Provides simple static cookie tools.
  */
+@SuppressWarnings("UnusedDeclaration")
 public class CookieTool {
 
     /**

@@ -100,9 +100,9 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
      * Creates a new NodeSelector.
      */
     public NodeSelector() {
+        setStyleName(CSS.APS_CONFIG_NODE_SELECTOR);
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setMargin(true);
-        verticalLayout.setStyleName(CSS.APS_CONFIG_NODE_SELECTOR);
 
         setContent(verticalLayout);
 

@@ -56,8 +56,8 @@ public class LeftBar extends Panel {
     //
 
     public LeftBar() {
+        setStyleName(CSS.APS_LEFTBAR);
         this.vl = new VerticalLayout();
-        vl.setStyleName(CSS.APS_LEFTBAR);
         vl.setMargin(true);
         setContent(vl);
     }

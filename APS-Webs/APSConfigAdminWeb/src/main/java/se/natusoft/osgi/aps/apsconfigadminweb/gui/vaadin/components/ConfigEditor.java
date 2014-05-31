@@ -47,7 +47,6 @@ import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.ConfigEnvSelector;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.ConfigEnvSelector.ConfigEnvChangeEvent;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.ConfigEnvSelector.ConfigEnvChangeListener;
-import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.ConfigNodeNavAndEdit;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.ConfigNodeValuesEditor;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.NodeSelector;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.NodeSelector.NodeSelectedEvent;
@@ -157,13 +156,13 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
      * loadCurrentNodeData() to do a first time load of the root node of the ConfigNavigator.
      */
     private void setupGUI() {
-        setStyleName(CSS.APS_CONFIGID_LABEL);
         setSizeFull(); // <-- Important to limit size to browser window size.
+        setStyleName(CSS.APS_CONTENT_PANEL);
+        addStyleName(CSS.APS_CONFIGID_LABEL);
 
         VerticalLayout mainLayout = new VerticalLayout(); {
             mainLayout.setSpacing(true);
             mainLayout.setMargin(true);
-            mainLayout.setStyleName(CSS.APS_CONTENT_PANEL);
             mainLayout.setHeight("100%"); // We want the layout to stretch the full height of the window.
 
             this.editForConfigEnvSelect = new ConfigEnvSelector();

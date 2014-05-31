@@ -61,6 +61,7 @@ import com.vaadin.ui.VerticalLayout;
  * When you have set all your components the doLayout() method must be called, and it cannot be called before that. If you fail to
  * call doLayout() there will be an exception when rendering.
  */
+@SuppressWarnings("UnusedDeclaration")
 public class SidesAndCenterLayout extends HorizontalLayout {
     //
     // Private Members

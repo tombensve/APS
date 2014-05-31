@@ -38,8 +38,6 @@ package se.natusoft.osgi.aps.tools.web;
 
 import com.vaadin.server.VaadinRequest;
 import org.osgi.framework.BundleContext;
-import se.natusoft.osgi.aps.tools.web.OSGiBundleContextProvider;
-import se.natusoft.osgi.aps.tools.web.UserNotifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +45,7 @@ import java.util.Map;
 /**
  * A context to pass to client code for use in calling services.
  */
+@SuppressWarnings("UnusedDeclaration")
 public class WebClientContext {
     //
     // Private Members
@@ -62,7 +61,7 @@ public class WebClientContext {
     private VaadinRequest request = null;
 
     /** Holds services mapped to service interface class. */
-    private Map<Class, Object> serviceMap = new HashMap<Class, Object>();
+    private Map<Class, Object> serviceMap = new HashMap<>();
 
     //
     // Constructors
@@ -124,8 +123,8 @@ public class WebClientContext {
      *
      * @return The service.
      */
+    @SuppressWarnings("unchecked")
     public <Service> Service getService(Class<Service> serviceClass) {
-        Service service =  (Service)this.serviceMap.get(serviceClass);
-        return service;
+        return  (Service)this.serviceMap.get(serviceClass);
     }
 }

@@ -80,7 +80,7 @@ public class HTMLFileLabel extends Label {
      * @return The loaded html file.
      */
     private static String loadHTML(String htmlFilePath, String themePath, ClassLoader classLoader) {
-        String html = null;        
+        String html;
         try {
             InputStream htmlStream = classLoader.getResourceAsStream(htmlFilePath);
             if (htmlStream == null) {
@@ -88,7 +88,7 @@ public class HTMLFileLabel extends Label {
             }
             StringBuilder sb = new StringBuilder();
             BufferedReader reader = new BufferedReader(new InputStreamReader(htmlStream));
-            String line = null;
+            String line;
             boolean comment = false;
             while ((line = reader.readLine()) != null) {
                 if (line.trim().startsWith("<!--")) {

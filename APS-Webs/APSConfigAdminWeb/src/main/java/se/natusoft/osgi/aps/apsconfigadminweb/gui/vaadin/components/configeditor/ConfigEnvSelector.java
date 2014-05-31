@@ -62,7 +62,7 @@ public class ConfigEnvSelector extends VerticalLayout {
     private APSConfigEnvironment selectedConfigEnv = null;
     
     /** The listeners of this component. */
-    private List<ConfigEnvChangeListener> listeners = new LinkedList<ConfigEnvChangeListener>();
+    private List<ConfigEnvChangeListener> listeners = new LinkedList<>();
     
     //----- GUI Components -----//
 
@@ -115,7 +115,7 @@ public class ConfigEnvSelector extends VerticalLayout {
             this.selectedConfigEnv = this.configEnvAdmin.getActiveConfigEnvironment();
         }
 
-        this.editForConfigEnvSelect.removeListener(this.configEnvSelectListener);
+        this.editForConfigEnvSelect.removeValueChangeListener(this.configEnvSelectListener);
 
         this.editForConfigEnvSelect.removeAllItems();
 
@@ -127,7 +127,7 @@ public class ConfigEnvSelector extends VerticalLayout {
             }
         }
 
-        this.editForConfigEnvSelect.addListener(this.configEnvSelectListener);
+        this.editForConfigEnvSelect.addValueChangeListener(this.configEnvSelectListener);
     }
 
     /**

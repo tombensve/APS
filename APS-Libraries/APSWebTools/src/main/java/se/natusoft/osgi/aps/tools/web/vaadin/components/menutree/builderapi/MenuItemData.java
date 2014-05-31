@@ -65,7 +65,7 @@ public class MenuItemData<ItemRepresentative> {
     private ComponentHandler selectComponentHandler = null;
 
     /** The menu action handlers per action. */
-    private Map<Action, MenuActionProvider> actionComponentHandlers = new HashMap<Action, MenuActionProvider>();
+    private Map<Action, MenuActionProvider> actionComponentHandlers = new HashMap<>();
 
     //
     // Constructors
@@ -81,6 +81,7 @@ public class MenuItemData<ItemRepresentative> {
     //
 
     /** This represents one specific configuration. */
+    @SuppressWarnings("UnusedDeclaration")
     public ItemRepresentative getItemRepresentative() {
         return itemRepresentative;
     }

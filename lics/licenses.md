@@ -28,6 +28,12 @@ The following third party products are using this license:
 * [vaadin-push-7.1.14](http://vaadin.com)
 * [vaadin-themes-7.1.14](http://vaadin.com)
 
+__[Apache Software License - version 2.0](http://www.apache.org/licenses/LICENSE-2.0)__
+
+The following third party products are using this license:
+
+* [jetty-continuation-9.2.0.v20140526](http://www.eclipse.org/jetty)
+
 __[CDDL + GPLv2 with classpath version exception](https://glassfish.dev.java.net/nonav/public/CDDL+GPL.html)__
 
 The following third party products are using this license:

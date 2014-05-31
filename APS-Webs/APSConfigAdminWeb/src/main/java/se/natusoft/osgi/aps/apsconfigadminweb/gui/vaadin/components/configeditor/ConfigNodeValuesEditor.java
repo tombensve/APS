@@ -36,6 +36,7 @@
  */
 package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor;
 
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
@@ -49,7 +50,7 @@ import se.natusoft.osgi.aps.tools.web.vaadin.components.HorizontalLine;
 import java.util.List;
 
 /**
- *
+ * Edits the values of a config node.
  */
 public class ConfigNodeValuesEditor extends Panel {
     //
@@ -80,8 +81,8 @@ public class ConfigNodeValuesEditor extends Panel {
      * Creates a new ConfigNodeValuesEditor instance.
      */
     public ConfigNodeValuesEditor() {
+        setStyleName(CSS.APS_CONFIG_NODE_VALUES_EDITOR);
         this.rootLayout = new VerticalLayout();
-        this.rootLayout.setStyleName(CSS.APS_CONFIG_NODE_VALUES_EDITOR);
         this.rootLayout.setMargin(true);
         this.rootLayout.setSpacing(true);
         setContent(this.rootLayout);
@@ -107,14 +108,14 @@ public class ConfigNodeValuesEditor extends Panel {
 
         this.rootLayout.removeAllComponents();
 
-        Label nodeDescription = new Label(this.dataSource.getNodeDescription(), Label.CONTENT_XHTML);
-        addComponent(nodeDescription);
+        Label nodeDescription = new Label(this.dataSource.getNodeDescription(), ContentMode.HTML);
+        this.rootLayout.addComponent(nodeDescription);
 
-        addComponent(new HorizontalLine());
+        this.rootLayout.addComponent(new HorizontalLine());
 
         // If we have a node that there can be only one of or if we have a "many" node where an instance of that
         // "many" node is selected then render the configuration values of that node.
-        if (!this.dataSource.isManyNode() || (this.dataSource.isManyNode() && this.dataSource.getIndex() >= 0)) {
+        if (!this.dataSource.isManyNode() || (this.dataSource.getIndex() >= 0)) {
 
             List<APSConfigValueEditModel> nodeValues = this.dataSource.getNodeValues();
 
@@ -126,13 +127,13 @@ public class ConfigNodeValuesEditor extends Panel {
                 if (valueModel.getDatePattern().trim().length() > 0) {
                     nameText += " [ " + valueModel.getDatePattern().toLowerCase() + " ]";
                 }
-                Label name = new Label(nameText, Label.CONTENT_XHTML);
-                addComponent(name);
+                Label name = new Label(nameText, ContentMode.HTML);
+                this.rootLayout.addComponent(name);
 
                 Label description = new Label(valueModel.getDescription());
-                addComponent(description);
+                this.rootLayout.addComponent(description);
 
-                ValueComponent valueComponent = null;
+                ValueComponent valueComponent;
 
                 // Date value
                 if (valueModel.getDatePattern() != null && valueModel.getDatePattern().trim().length() > 0) {
@@ -156,20 +157,20 @@ public class ConfigNodeValuesEditor extends Panel {
                     valueComponentListEditor.setWidth("95%");
                     valueComponentListEditor.setDataSource(this.dataSource);
                     valueComponentListEditor.refreshData();
-                    addComponent(valueComponentListEditor);
+                    this.rootLayout.addComponent(valueComponentListEditor);
                 }
                 else {
                     valueComponent.addListener(this.valueChangedListener);
                     valueComponent.setComponentValue(this.dataSource.getValue(valueModel), false);
                     valueComponent.getComponent().setWidth("95%");
-                    addComponent(valueComponent.getComponent());
+                    this.rootLayout.addComponent(valueComponent.getComponent());
                 }
             }
 
             if (nodeValues.isEmpty()) {
                 Label label = new Label("There are no values to edit for this node!");
                 label.setStyleName(CSS.APS_NO_CONFIG_VALUES_LABEL);
-                addComponent(label);
+                this.rootLayout.addComponent(label);
             }
         }
         // Otherwise the user has selected the root/parent node of a "many" type node, whose instances are rendered as children of
@@ -180,7 +181,7 @@ public class ConfigNodeValuesEditor extends Panel {
                                     "type. Select one of the indexed instances of this node shown as children of this node to edit that " +
                                     "specific instance. Or press the [ + ] button to add an instance node. Press the [ - ] button " +
                                     "to delete the selected instance.");
-            addComponent(label);
+            this.rootLayout.addComponent(label);
         }
     }
 

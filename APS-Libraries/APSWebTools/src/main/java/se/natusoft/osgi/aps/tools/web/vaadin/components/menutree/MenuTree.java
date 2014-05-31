@@ -38,7 +38,6 @@ package se.natusoft.osgi.aps.tools.web.vaadin.components.menutree;
 
 import com.vaadin.data.util.HierarchicalContainer;
 import com.vaadin.event.Action;
-import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Tree;
@@ -77,7 +76,7 @@ public class MenuTree extends Tree implements Action.Handler, ItemDescriptionGen
     private MenuActionHandler actionHandler = null;
 
     /** The menu builders responsible for menu content. */
-    private List<MenuBuilder> menuBuilders = new LinkedList<MenuBuilder>();
+    private List<MenuBuilder> menuBuilders = new LinkedList<>();
 
     //
     // Constructors
@@ -90,7 +89,7 @@ public class MenuTree extends Tree implements Action.Handler, ItemDescriptionGen
         setImmediate(true);
         setSelectable(true);
         setNullSelectionAllowed(false);
-        setItemCaptionMode(AbstractSelect.ITEM_CAPTION_MODE_PROPERTY);
+        setItemCaptionMode(ItemCaptionMode.PROPERTY);
         setItemCaptionPropertyId(HierarchicalModel.getDefaultCaption());
         setItemDescriptionGenerator(this); // For tooltips.
 
@@ -142,7 +141,7 @@ public class MenuTree extends Tree implements Action.Handler, ItemDescriptionGen
      */
     public void refresh() {
         setContainerDataSource(createHierarchicalModel());
-//        expandHierarchicalModel();
+        //expandHierarchicalModel();
     }
 
     /**
@@ -170,8 +169,9 @@ public class MenuTree extends Tree implements Action.Handler, ItemDescriptionGen
      *
      * @return A Vaadin HierarchicalContainer that can be used for a Tree or any other hierarchical component.
      */
+    @SuppressWarnings("unchecked")
     private HierarchicalContainer createHierarchicalModel() {
-        this.menuModel = new HierarchicalModel<MenuItemData>(new IntID());
+        this.menuModel = new HierarchicalModel<>(new IntID());
 
         for (MenuBuilder menuBuilder : this.menuBuilders) {
             menuBuilder.buildMenuEntries(this.menuModel);
@@ -183,6 +183,7 @@ public class MenuTree extends Tree implements Action.Handler, ItemDescriptionGen
     /**
      * Expands all nodes in the hierarchical model.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void expandHierarchicalModel() {
         Iterator<IntID> it = IntID.rangeIterator(new IntID(), (IntID)this.menuModel.getCurrentItemId());
         while(it.hasNext()) {

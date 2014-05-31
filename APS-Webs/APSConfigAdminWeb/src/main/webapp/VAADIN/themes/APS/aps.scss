@@ -50,7 +50,7 @@
   /*
    * The left bar (containing the menu)
    */
-  .v-panel .v-panel-content .aps-leftbar {
+  .v-panel-content-aps-leftbar {
     background: #d6dbe3;
   }
 
@@ -85,7 +85,7 @@
   /*
    * Text properties for editing panels.
    */
-  .v-panel-content .aps-editing-text {
+  .v-panel-content-aps-editing-text {
     font-size: 15px;
   }
   .aps-editing-text {
@@ -102,7 +102,7 @@
   /*
    * Light blue content panel background.
    */
-  .v-panel-content .aps-content-panel {
+  .aps-content-panel .v-panel-content-aps-content-panel {
     /* Blue */
     background: #f3f6fa;
 
@@ -115,15 +115,25 @@
   /*
    * For the config node selector panel.
    */
-  .v-panel-content .aps-config-node-select {
+  .v-panel-content-aps-config-node-select {
     background: #f8f9ff;
   }
 
   /*
    * For the value editor panel.
    */
-  .v-panel-content .aps-config-node-values-editor {
+  .v-panel-content-aps-config-node-values-editor {
     background: #f8f9ff;
+  }
+
+  /*
+   * Vaadin 7 fix
+   */
+  .aps .v-panel-content, .aps .white .v-panel-content {
+    background: #d6dbe3;
+    border: 1px solid #dcdcdc;
+    border-bottom: none;
+    border-top: none;
   }
 
 }

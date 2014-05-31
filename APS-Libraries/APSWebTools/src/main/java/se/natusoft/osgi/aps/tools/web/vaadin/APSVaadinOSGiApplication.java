@@ -49,6 +49,8 @@ import se.natusoft.osgi.aps.tools.web.OSGiBundleContextProvider;
 import se.natusoft.osgi.aps.tools.web.UserNotifier;
 import se.natusoft.osgi.aps.tools.web.WebClientContext;
 
+import javax.servlet.ServletContext;
+
 /**
  * APS base class for Vaadin application providing OSGi support.
  *
@@ -120,17 +122,31 @@ public abstract class APSVaadinOSGiApplication
      */
     @Override
     public BundleContext getBundleContext() {
-        BundleContext bundleContext = (BundleContext)VaadinServlet.getCurrent().getServletContext().getAttribute("osgi-bundlecontext");
+        VaadinServlet vaadinServlet = VaadinServlet.getCurrent();
+        if (vaadinServlet != null) {
+            ServletContext servletContext = vaadinServlet.getServletContext();
+            if (servletContext != null) {
+                BundleContext bundleContext = (BundleContext) servletContext.getAttribute("osgi-bundlecontext");
 
-        if (bundleContext == null) {
-            Notification.show(
-                    NON_OSGI_DEPLOYMENT_SHORT_MESSAGE,
-                    NON_OSGI_DEPLOYMENT_LONG_MESSAGE,
-                    Notification.Type.ERROR_MESSAGE);
-            this.logger.error(NON_OSGI_DEPLOYMENT_SHORT_MESSAGE + " " + NON_OSGI_DEPLOYMENT_LONG_MESSAGE);
+                if (bundleContext == null) {
+                    Notification.show(
+                            NON_OSGI_DEPLOYMENT_SHORT_MESSAGE,
+                            NON_OSGI_DEPLOYMENT_LONG_MESSAGE,
+                            Notification.Type.ERROR_MESSAGE);
+                    this.logger.error(NON_OSGI_DEPLOYMENT_SHORT_MESSAGE + " " + NON_OSGI_DEPLOYMENT_LONG_MESSAGE);
+                }
+
+                return bundleContext;
+            }
+            else {
+                this.logger.error("Failed to get ServletContext!");
+            }
+        }
+        else {
+            this.logger.error("Failed to get VaadinServlet!");
         }
 
-        return bundleContext;
+        return null;
     }
 
     /**

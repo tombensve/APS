@@ -79,7 +79,7 @@ import java.util.Map;
 @Theme("aps")
 public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements MenuActionHandler {
 
-    @WebServlet(value = "/apsconfigadminweb/*",
+    @WebServlet(value = "/*",
             asyncSupported = true)
     @VaadinServletConfiguration(
             productionMode = false,

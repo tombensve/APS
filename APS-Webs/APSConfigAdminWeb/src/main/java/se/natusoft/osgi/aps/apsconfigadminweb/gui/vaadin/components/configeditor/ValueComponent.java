@@ -42,6 +42,7 @@ import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor
 /**
  * This interface is implemented by all *Value components since they are very similar in behavior.
  */
+@SuppressWarnings("UnusedDeclaration")
 public interface ValueComponent {
 
     /**

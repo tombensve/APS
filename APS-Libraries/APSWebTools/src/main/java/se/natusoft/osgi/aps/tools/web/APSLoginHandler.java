@@ -82,7 +82,7 @@ public class APSLoginHandler implements LoginHandler {
     private APSServiceTracker<APSAuthService> authServiceTracker = null;
 
     /** A tracker wrapped instance of the APSAuthService. */
-    private APSAuthService authService = null;
+    private APSAuthService<String> authService = null;
 
     /** A service tracker for APSSessionService. */
     private APSServiceTracker<APSSessionService> sessionServiceTracker = null;
@@ -105,6 +105,7 @@ public class APSLoginHandler implements LoginHandler {
      *
      * @param context The bundles BundleContext.
      */
+    @SuppressWarnings("unchecked")
     public APSLoginHandler(BundleContext context, HandlerInfo handlerInfo) {
         this.context = context;
         this.handlerInfo = handlerInfo;

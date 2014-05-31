@@ -73,6 +73,7 @@ public class VaadinLoginDialogHandler {
      * @param appWindow The Vaadin application window to add the popup login dialog to.
      * @param loginHandler A handler for doing the login from the login dialog input.
      */
+    @SuppressWarnings("UnusedParameters")
     @Deprecated
     public VaadinLoginDialogHandler(Window appWindow, LoginHandler loginHandler) {
         this(loginHandler);
@@ -128,6 +129,7 @@ public class VaadinLoginDialogHandler {
      *
      * @param loginDialogTitle The title to set.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void setLoginDialogTitle(String loginDialogTitle) {
         this.loginWindow.setCaption(loginDialogTitle);
     }

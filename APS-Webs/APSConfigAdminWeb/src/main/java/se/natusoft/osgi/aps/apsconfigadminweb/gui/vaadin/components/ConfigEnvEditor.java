@@ -124,6 +124,9 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
      * Setup for editing.
      */
     private void initForEdit() {
+        setStyleName(CSS.APS_CONTENT_PANEL);
+        addStyleName(CSS.APS_CONFIGID_LABEL);
+
         if (this.configEnv == null) {
             setCaption("Creating new config environment");
         }
@@ -131,12 +134,11 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
             this.origName = this.configEnv.getName();
             setCaption("Editing config environment '" + this.configEnv.getName() + "'");
         }
-        this.setStyleName(CSS.APS_EDITING_TEXT);
 
         VerticalLayout verticalLayout = new VerticalLayout();
+        verticalLayout.addStyleName(CSS.APS_EDITING_TEXT);
         verticalLayout.setMargin(true);
         verticalLayout.setSpacing(true);
-        verticalLayout.setStyleName(CSS.APS_EDITING_TEXT + " " + CSS.APS_CONTENT_PANEL);
 
         this.nameTextField = new TextField("Config environment name");
         if (configEnv != null) { this.nameTextField.setValue(this.configEnv.getName()); }
