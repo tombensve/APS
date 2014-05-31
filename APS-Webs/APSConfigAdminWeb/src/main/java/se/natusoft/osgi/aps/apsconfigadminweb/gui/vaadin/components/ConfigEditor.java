@@ -156,14 +156,14 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
      * loadCurrentNodeData() to do a first time load of the root node of the ConfigNavigator.
      */
     private void setupGUI() {
-        this.setStyleName(CSS.APS_CONFIGID_LABEL);
+        setStyleName(CSS.APS_CONFIGID_LABEL);
         setSizeFull();
 
         VerticalLayout mainLayout = new VerticalLayout(); {
             mainLayout.setSpacing(true);
             mainLayout.setMargin(true);
             mainLayout.setStyleName(CSS.APS_CONTENT_PANEL);
-            mainLayout.setSizeFull();
+            mainLayout.setHeight(100, Unit.PERCENTAGE);
 
             this.editForConfigEnvSelect = new ConfigEnvSelector();
             this.editForConfigEnvSelect.setDataSource(this.configAdminService.getConfigEnvAdmin());
@@ -173,12 +173,11 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
                     handleChangedConfigEnv(event.getSelectedConfigEnvironment());
                 }
             });
+            this.editForConfigEnvSelect.setSizeUndefined();
             mainLayout.addComponent(this.editForConfigEnvSelect);
-            mainLayout.setExpandRatio(this.editForConfigEnvSelect, 1.0f);
 
             HorizontalLine hr = new HorizontalLine();
             mainLayout.addComponent(hr);
-            mainLayout.setExpandRatio(hr, 1.0f);
 
             HorizontalLayout contentLayout = new HorizontalLayout(); {
                 contentLayout.setSpacing(true);
@@ -205,8 +204,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
                             }
                         });
                         nodesAndButtonsLayout.addComponent(this.nodeSelector);
-                        nodesAndButtonsLayout.setExpandRatio(this.nodeSelector, 92.0f); // This works for iPad screen
-                                                                                        // size and upp.
+
                         HorizontalLayout buttonsLayout = new HorizontalLayout(); {
                             buttonsLayout.setMargin(false);
                             buttonsLayout.setSpacing(false);
@@ -233,29 +231,27 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
                             buttonsLayout.addComponent(this.removeNodeButton);
                         }
                         nodesAndButtonsLayout.addComponent(buttonsLayout);
-                        nodesAndButtonsLayout.setExpandRatio(buttonsLayout, 8.0f);
 
                     }
                     contentLayout.addComponent(nodesAndButtonsLayout);
-                    contentLayout.setExpandRatio(nodesAndButtonsLayout, 1.0f);
                 }
 
                 this.configNodeValuesEditor = new ConfigNodeValuesEditor(); {
-//                    this.configNodeValuesEditor.setScrollable(true);
                     this.configNodeValuesEditor.setWidth("100%");
                     this.configNodeValuesEditor.setHeight("100%");
 
                     this.configNodeValuesEditor.setDataSource(this.configNodeValueEditorDataSource);
                 }
                 contentLayout.addComponent(this.configNodeValuesEditor);
-                contentLayout.setExpandRatio(this.configNodeValuesEditor, 99.0f);
             }
             mainLayout.addComponent(contentLayout);
-            mainLayout.setExpandRatio(contentLayout, 96.0f);
+            // This will make all but contentLayout occupy as much space as they need and
+            // contentLayout to take the rest. This works because we don't set any expandRatio
+            // on any other component in mainLayout!
+            mainLayout.setExpandRatio(contentLayout, 1.0f);
 
-            hr = new HorizontalLine();
-            mainLayout.addComponent(hr);
-            mainLayout.setExpandRatio(hr, 1.0f);
+            HorizontalLine hr2 = new HorizontalLine();
+            mainLayout.addComponent(hr2);
 
             HorizontalLayout saveCancelButtonsLayout = new HorizontalLayout(); {
                 saveCancelButtonsLayout.setSpacing(true);
@@ -279,7 +275,6 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
                 saveCancelButtonsLayout.addComponent(cancelButton);
             }
             mainLayout.addComponent(saveCancelButtonsLayout);
-            mainLayout.setExpandRatio(saveCancelButtonsLayout, 1.0f);
         }
 
         setContent(mainLayout);
