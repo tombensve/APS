@@ -47,6 +47,7 @@ import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.ConfigEnvSelector;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.ConfigEnvSelector.ConfigEnvChangeEvent;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.ConfigEnvSelector.ConfigEnvChangeListener;
+import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.ConfigNodeNavAndEdit;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.ConfigNodeValuesEditor;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.NodeSelector;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.NodeSelector.NodeSelectedEvent;
@@ -151,19 +152,19 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
 
     /**
      * Builds the gui of this component.
-     * <p/>
+     *
      * The code in this method builds the base gui, the static parts that is only created once. It ends by calling
      * loadCurrentNodeData() to do a first time load of the root node of the ConfigNavigator.
      */
     private void setupGUI() {
         setStyleName(CSS.APS_CONFIGID_LABEL);
-        setSizeFull();
+        setSizeFull(); // <-- Important to limit size to browser window size.
 
         VerticalLayout mainLayout = new VerticalLayout(); {
             mainLayout.setSpacing(true);
             mainLayout.setMargin(true);
             mainLayout.setStyleName(CSS.APS_CONTENT_PANEL);
-            mainLayout.setHeight(100, Unit.PERCENTAGE);
+            mainLayout.setHeight("100%"); // We want the layout to stretch the full height of the window.
 
             this.editForConfigEnvSelect = new ConfigEnvSelector();
             this.editForConfigEnvSelect.setDataSource(this.configAdminService.getConfigEnvAdmin());
@@ -187,15 +188,17 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
                 if (!configNode.getNodeChildren().isEmpty()) {
 
                     VerticalLayout nodesAndButtonsLayout = new VerticalLayout(); {
+                        // Force width to be unspecified. Default is 100%. This makes the width
+                        // adapt to the content.
                         nodesAndButtonsLayout.setWidth(null);
                         nodesAndButtonsLayout.setHeight("100%");
                         nodesAndButtonsLayout.setMargin(false);
                         nodesAndButtonsLayout.setSpacing(false);
 
                         this.nodeSelector = new NodeSelector();
+                        // Make the NodeSelector whatever size the layout is.
                         this.nodeSelector.setHeight("100%");
-                        this.nodeSelector.setWidth(null);
-//                        this.nodeSelector.setScrollable(true);
+                        this.nodeSelector.setWidth("100%");
                         this.nodeSelector.setDataSource(this.nodeSelectorDataSource);
                         this.nodeSelector.addListener(new NodeSelectionListener() {
                             @Override
@@ -204,11 +207,17 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
                             }
                         });
                         nodesAndButtonsLayout.addComponent(this.nodeSelector);
+                        // This makes the NodeSelector occupy whatever space is left
+                        // after the buttons below it are rendered. The buttons must
+                        // not have an ExpandRatio!
+                        nodesAndButtonsLayout.setExpandRatio(this.nodeSelector, 1.0f);
 
                         HorizontalLayout buttonsLayout = new HorizontalLayout(); {
                             buttonsLayout.setMargin(false);
                             buttonsLayout.setSpacing(false);
-                            buttonsLayout.setHeight("100%");
+                            // This will make this layout use whatever space is needed to fit
+                            // the buttons.
+                            buttonsLayout.setSizeUndefined();
 
                             this.addNodeButton = new Button(" + ");
                             this.addNodeButton.setEnabled(false);
@@ -234,6 +243,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
 
                     }
                     contentLayout.addComponent(nodesAndButtonsLayout);
+                    // Note: no expandRatio for this!
                 }
 
                 this.configNodeValuesEditor = new ConfigNodeValuesEditor(); {
@@ -243,6 +253,8 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
                     this.configNodeValuesEditor.setDataSource(this.configNodeValueEditorDataSource);
                 }
                 contentLayout.addComponent(this.configNodeValuesEditor);
+                // This makes the ConfigValuesEditor use whatever space is left to the right of the window.
+                contentLayout.setExpandRatio(this.configNodeValuesEditor, 1.0f);
             }
             mainLayout.addComponent(contentLayout);
             // This will make all but contentLayout occupy as much space as they need and
