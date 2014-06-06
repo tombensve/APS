@@ -36,6 +36,7 @@
  */
 package se.natusoft.osgi.aps.apsadminweb.app.gui.vaadin;
 
+import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -61,6 +62,7 @@ import javax.servlet.annotation.WebServlet;
  */
 @Title("Application Platform Services Administration App")
 @Theme("aps")
+@PreserveOnRefresh
 public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickListener {
 
     @WebServlet(value = "/apsadminweb/*",

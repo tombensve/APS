@@ -9,6 +9,10 @@
         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
      http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
+    <session-config>
+        <session-timeout>1200</session-timeout>
+    </session-config>
+
     <servlet>
         <servlet-name>apsadminweb</servlet-name>
         <servlet-class>
