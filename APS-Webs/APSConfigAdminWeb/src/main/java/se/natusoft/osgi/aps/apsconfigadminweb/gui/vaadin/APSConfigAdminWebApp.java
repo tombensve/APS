@@ -36,6 +36,7 @@
  */
 package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin;
 
+import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -43,8 +44,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.Action;
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinServlet;
+import com.vaadin.server.*;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -70,6 +70,7 @@ import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.handlerapi.Menu
 import se.natusoft.osgi.aps.tools.web.vaadin.tools.Refreshable;
 
 import javax.servlet.annotation.WebServlet;
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -77,6 +78,7 @@ import java.util.Map;
  */
 @Title("Application Platform Services Configuration App")
 @Theme("aps")
+@PreserveOnRefresh
 public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements MenuActionHandler {
 
     @WebServlet(value = "/*",
@@ -153,6 +155,29 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
         if (VaadinService.getCurrentRequest().getParameter("adminRefresh") != null) {
             close();
         }
+
+        // This is a workaround to the problem that Vaadin 7 cannot run another Vaadin application embedded in a tab without
+        // having the "outer" Vaadin application interfere with it. Thereby we setup an old frame in which we load ourself.
+        VaadinSession.getCurrent().addRequestHandler(new RequestHandler() {
+            @Override
+            public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response) throws IOException {
+                boolean handled = false;
+
+                if (request != null && request.getParameterMap().containsKey("frame")) {
+                    handled = true;
+                    response.setContentType("text/html");
+                    response.getWriter().append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\"\n" +
+                            "   \"http://www.w3.org/TR/html4/frameset.dtd\">");
+                    response.getWriter().append("<html>");
+                    response.getWriter().append("<frameset>");
+                    response.getWriter().append("<frame src=\"/apsadminweb/config\">");
+                    response.getWriter().append("</frame>");
+                    response.getWriter().append("</frameset>");
+                    response.getWriter().append("</html>");
+                }
+                return handled;
+            }
+        });
 
         this.logger = new APSLogger(System.out);
         this.logger.start(clientContext.getBundleContext());

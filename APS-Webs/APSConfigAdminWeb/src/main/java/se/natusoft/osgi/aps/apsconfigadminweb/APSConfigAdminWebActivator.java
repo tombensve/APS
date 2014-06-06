@@ -66,7 +66,7 @@ public class APSConfigAdminWebActivator implements BundleActivator {
 
     /** Our APSAdminWeb registration. */
     private static final AdminWebReg ADMIN_WEB_REG =
-            new AdminWebReg("Configuration", "1.0.0", "Administers APSConfigService configurations.", "/apsadminweb/config/");
+            new AdminWebReg("Configuration", "1.0.0", "Administers APSConfigService configurations.", "/apsadminweb/config?frame=true");
 
     //
     // Bundle Start.
