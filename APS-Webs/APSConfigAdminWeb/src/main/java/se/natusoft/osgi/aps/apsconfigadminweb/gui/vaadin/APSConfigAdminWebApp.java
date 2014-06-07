@@ -112,6 +112,7 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
     // Vaadin GUI init
     //
 
+    // TODO: Improve this handling using a RequestHandler instead!
     private void handleLogin(WebClientContext clientContext) {
 
         if (this.loginHandler == null) {
