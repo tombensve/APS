@@ -77,16 +77,24 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
     //
 
     /** The application tabs. */
+    // The TabPanel uses @OSGiservice annotation to inject an APSServiceTracker wrapped service instance.
+    // The injection is handled by APSActivator which is managed by the APSVaadinOSGiApplication base class.
+    // For the injection of the service into TabPanel to work the TabPanel needs to be instantiated and
+    // managed by the APSActivator. Doing new TabPanel here instead will cause a NullPointerException since
+    // then the service used by the TabPanel will never get injected.
+    @SuppressWarnings("UnusedDeclaration")
     @Managed
     private TabPanel tabPanel;
 
     /** The main window layout. */
+    @SuppressWarnings("FieldCanBeLocal")
     private VerticalLayout mainLayout = null;
 
     /** A login handler. */
     private APSAdminWebLoginHandler loginHandler = null;
 
     /** A gui login dialog handler. */
+    @SuppressWarnings("FieldCanBeLocal")
     private VaadinLoginDialogHandler loginDialogHandler = null;
 
     //
@@ -142,11 +150,6 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
     @Override
     public void initGUI() {
 
-//        this.setTheme(APSTheme.THEME);
-
-//        this.main = new Window("Application Platform Services Administration App");
-//        this.main.setSizeFull();
-
         this.mainLayout = new VerticalLayout();
         this.mainLayout.setSizeFull();
 
@@ -158,11 +161,6 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
         layout.doLayout();
         this.mainLayout.addComponent(layout);
 
-//        this.mainLayout.addComponent(new LogoPanel(this));
-
-
-        // And finally set the main window in the application to make it visible.
-//        setMainWindow(this.main);
         setContent(this.mainLayout);
 
 //        this.loginDialogHandler = new VaadinLoginDialogHandler(this.main, this.loginHandler);
