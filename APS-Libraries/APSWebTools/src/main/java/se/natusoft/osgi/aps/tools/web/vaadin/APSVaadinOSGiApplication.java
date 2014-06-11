@@ -36,15 +36,13 @@
  */
 package se.natusoft.osgi.aps.tools.web.vaadin;
 
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServlet;
-import com.vaadin.server.VaadinServletService;
-import com.vaadin.server.WrappedSession;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
+import com.vaadin.server.*;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
 import org.osgi.framework.BundleContext;
 import se.natusoft.osgi.aps.tools.APSActivator;
 import se.natusoft.osgi.aps.tools.APSLogger;
+import se.natusoft.osgi.aps.tools.web.APSAdminWebLoginHandler;
 import se.natusoft.osgi.aps.tools.web.OSGiBundleContextProvider;
 import se.natusoft.osgi.aps.tools.web.UserNotifier;
 import se.natusoft.osgi.aps.tools.web.WebClientContext;
@@ -102,6 +100,10 @@ public abstract class APSVaadinOSGiApplication
     private APSActivator activator;
 
     private UserNotifier userNotifier = new VaadinUserNotifier();
+
+    /** A login handler. */
+    private APSAdminWebLoginHandler loginHandler = null;
+
 
     //
     // Methods
@@ -177,6 +179,8 @@ public abstract class APSVaadinOSGiApplication
             this.logger.error("Failed to start activator!", e);
         }
 
+        handleLogin(this.clientContext);
+
         initServices(this.clientContext);
 
         // For the following to return an APSSessionListener instance it has to be specified as a listener in web.xml!
@@ -212,7 +216,7 @@ public abstract class APSVaadinOSGiApplication
     /**
      * @return The client context.
      */
-    public WebClientContext getClientContext() {
+    protected WebClientContext getClientContext() {
         return this.clientContext;
     }
 
@@ -221,26 +225,55 @@ public abstract class APSVaadinOSGiApplication
      */
     @Override
     public void sessionDestroyed() {
-        if (this.activator != null) {
-            try {
-                this.activator.stop(getBundleContext());
-            }
-            catch (Exception e) {
-                if (this.logger != null) {
-                    this.logger.error("Failed to stop activator!", e);
-                }
-                else {
-                    e.printStackTrace(System.err);
-                }
-            }
-        }
-        try {
-            cleanupServices(this.clientContext);
-        }
-        finally {
-            if (this.logger != null) {
-                this.logger.stop(getBundleContext());
-            }
-        }
+        cleanupServices(this.clientContext);
     }
+
+    /**
+     * This gets called to handle a login. This implementation does nothing at all!
+     * But if subclasses override this they can do their own login handling or just
+     * call defaultLoginHandler().
+     *
+     * @param clientContext
+     */
+    protected void handleLogin(WebClientContext clientContext) {
+        // Do nothing. This needs to be overridden to handle login.
+    }
+
+    /**
+     * Provides a default login handler that anyone can use.
+     */
+    protected void defaultLoginHandler() {
+
+        if (this.loginHandler == null) {
+            this.loginHandler = new APSAdminWebLoginHandler(this.clientContext.getBundleContext()) {
+
+                @Override
+                public boolean login(String userId, String pw) {
+                    boolean result = super.login(userId, pw);
+
+                    if (!result) {
+                        getUserNotifier().warning("Login failed!", "Bad userid or password!");
+                    }
+
+                    return result;
+                }
+            };
+        }
+
+        this.loginHandler.setSessionIdFromRequestCookie(VaadinService.getCurrentRequest());
+
+        // TODO: Fix.
+        if (!this.loginHandler.hasValidLogin()) {
+            Window notAuthWindow = new Window("Login required");
+            notAuthWindow.setClosable(false);
+            notAuthWindow.setSizeFull();
+            VerticalLayout nawvl = new VerticalLayout();
+            Label loginMessage = new Label("<font size='+2'>Please login!</font>", ContentMode.HTML);
+            nawvl.addComponent(loginMessage);
+            notAuthWindow.setContent(nawvl);
+            UI.getCurrent().addWindow(notAuthWindow);
+        }
+
+    }
+
 }
