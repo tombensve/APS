@@ -39,7 +39,7 @@
     <display-name>APS Configuration Administration Web</display-name>
     <session-config>
         <session-timeout>
-            600
+            30
         </session-timeout>
     </session-config>
     <servlet>

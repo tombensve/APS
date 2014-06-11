@@ -45,11 +45,7 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.Action;
 import com.vaadin.server.*;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.LeftBar;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.menu.ConfigEnvMenuBuilder;
@@ -112,38 +108,9 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
     // Vaadin GUI init
     //
 
-    // TODO: Improve this handling using a RequestHandler instead!
-    private void handleLogin(WebClientContext clientContext) {
-
-        if (this.loginHandler == null) {
-            this.loginHandler = new APSAdminWebLoginHandler(clientContext.getBundleContext()) {
-
-                @Override
-                public boolean login(String userId, String pw) {
-                    boolean result = super.login(userId, pw);
-
-                    if (!result) {
-                        getUserNotifier().warning("Login failed!", "Bad userid or password!");
-                    }
-
-                    return result;
-                }
-            };
-        }
-
-        this.loginHandler.setSessionIdFromRequestCookie(VaadinService.getCurrentRequest());
-
-        if (!this.loginHandler.hasValidLogin()) {
-            Window notAuthWindow = new Window("Application Platform Services Administration App");
-            notAuthWindow.setClosable(false);
-            notAuthWindow.setSizeFull();
-            VerticalLayout nawvl = new VerticalLayout();
-            Label loginMessage = new Label("<font size='+2'>Please login!</font>", ContentMode.HTML);
-            nawvl.addComponent(loginMessage);
-            notAuthWindow.setContent(nawvl);
-            UI.getCurrent().addWindow(notAuthWindow);
-        }
-
+    @Override
+    protected void handleLogin(WebClientContext clientContext) {
+        defaultLoginHandler();
     }
 
     /**
@@ -189,8 +156,6 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
         this.configAdminServiceTracker.start();
 
         clientContext.addService(APSConfigAdminService.class, this.configAdminServiceTracker.getWrappedService());
-
-        handleLogin(clientContext);
 
     }
 
