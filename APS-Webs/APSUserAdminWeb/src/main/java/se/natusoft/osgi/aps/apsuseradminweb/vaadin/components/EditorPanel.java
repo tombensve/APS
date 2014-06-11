@@ -36,8 +36,9 @@
  */
 package se.natusoft.osgi.aps.apsuseradminweb.vaadin.components;
 
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.Window;
+import se.natusoft.osgi.aps.apsuseradminweb.vaadin.css.CSS;
 import se.natusoft.osgi.aps.tools.APSLogger;
 import se.natusoft.osgi.aps.tools.web.vaadin.tools.Refreshable;
 import se.natusoft.osgi.aps.tools.web.vaadin.tools.Refreshables;
@@ -58,6 +59,10 @@ public class EditorPanel extends Panel {
 
     /** The app logger. */
     private APSLogger logger;
+
+    protected EditorPanel() {
+        this.setStyleName(CSS.APS_CONTENT_PANEL);
+    }
 
     //
     // Methods
@@ -103,9 +108,7 @@ public class EditorPanel extends Panel {
      * @param message The notification message.
      */
     protected void notifySuccess(String heading, String message) {
-        if (getWindow() != null) {
-            getWindow().showNotification(heading, message, Window.Notification.TYPE_TRAY_NOTIFICATION);
-        }
+        Notification.show(heading, message, Notification.Type.TRAY_NOTIFICATION);
     }
 
     /**
@@ -114,9 +117,7 @@ public class EditorPanel extends Panel {
      * @param message The notification message.
      */
     protected void notifyError(String heading, String message) {
-        if (getWindow() != null) {
-            getWindow().showNotification(heading, message, Window.Notification.TYPE_ERROR_MESSAGE);
-        }
+        Notification.show(heading, message, Notification.Type.ERROR_MESSAGE);
     }
 
     /**

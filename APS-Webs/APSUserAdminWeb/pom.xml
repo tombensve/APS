@@ -54,7 +54,6 @@
     </description>
 
     <properties>
-        <vaadin.version>6.8.1</vaadin.version>
 
         <!-- 
             Bundle properties 
@@ -70,7 +69,29 @@
         <osgi.web.context.path>apsadminweb/user</osgi.web.context.path>
 
         <!-- The osgi Bundle-ClassPath manifest entry. -->
-        <osgi.bundle.classpath>.,WEB-INF/classes, WEB-INF/lib/vaadin-${vaadin.version}.jar,WEB-INF/lib/aps-web-tools-${project.version}.jar</osgi.bundle.classpath>
+        <osgi.bundle.classpath>
+.,
+WEB-INF/classes,
+WEB-INF/lib/atmosphere-compat-jbossweb-1.0.18.vaadin3.jar,
+WEB-INF/lib/atmosphere-compat-tomcat-1.0.18.vaadin3.jar,
+WEB-INF/lib/atmosphere-compat-tomcat7-1.0.18.vaadin3.jar,
+WEB-INF/lib/atmosphere-runtime-1.0.18.vaadin3.jar,
+WEB-INF/lib/commons-cli-1.2.jar,
+WEB-INF/lib/commons-jexl-2.1.1.jar,
+WEB-INF/lib/commons-logging-1.1.1.jar,
+WEB-INF/lib/cssparser-0.9.5.jar,
+WEB-INF/lib/jsoup-1.6.3.jar,
+WEB-INF/lib/sac-1.3.jar,
+WEB-INF/lib/vaadin-client-compiled-${vaadin.version}.jar,
+WEB-INF/lib/vaadin-push-${vaadin.version}.jar,
+WEB-INF/lib/vaadin-server-${vaadin.version}.jar,
+WEB-INF/lib/vaadin-shared-${vaadin.version}.jar,
+WEB-INF/lib/vaadin-shared-deps-1.0.2.jar,
+WEB-INF/lib/vaadin-slf4j-jdk14-1.6.1.jar,
+WEB-INF/lib/vaadin-theme-compiler-${vaadin.version}.jar,
+WEB-INF/lib/vaadin-themes-${vaadin.version}.jar,
+WEB-INF/lib/aps-web-tools-${project.version}.jar
+        </osgi.bundle.classpath>
 
         <!-- The bundle packages to export. -->
         <osgi.export.package>
@@ -168,26 +189,105 @@
         </dependency>
 
         <!--
-            Third party
+            Vaadin
+        -->
+
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-server</artifactId>
+            <version>${vaadin.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-client-compiled</artifactId>
+            <version>${vaadin.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <!--
+          Needed when using the widgetset optimizer (custom ConnectorBundleLoaderFactory).
+
+          For widgetset compilation, vaadin-client-compiler is automatically added on the
+          compilation classpath by vaadin-maven-plugin so normally there is no need for an
+          explicit dependency.
+        -->
+        <!--
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-client-compiler</artifactId>
+            <version>${vaadin.version}</version>
+            <scope>provided</scope>
+        </dependency>
         -->
         <dependency>
             <groupId>com.vaadin</groupId>
-            <artifactId>vaadin</artifactId>
+            <artifactId>vaadin-client</artifactId>
             <version>${vaadin.version}</version>
-            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-push</artifactId>
+            <version>${vaadin.version}</version>
             <scope>compile</scope>
         </dependency>
-
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
-            <version>6.0</version>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-themes</artifactId>
+            <version>${vaadin.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>vaadin-addons</id>
+            <url>http://maven.vaadin.com/vaadin-addons</url>
+        </repository>
+        <repository>
+            <id>vaadin-snapshots</id>
+            <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>vaadin-snapshots</id>
+            <url>http://oss.sonatype.org/content/repositories/vaadin-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
     <build>
         <plugins>
+
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.4.1</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>src/main/webapp/VAADIN/widgetsets</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
 
             <!--
                 Force the jar plugin to use the maven-bundle-plugin generated manifest.

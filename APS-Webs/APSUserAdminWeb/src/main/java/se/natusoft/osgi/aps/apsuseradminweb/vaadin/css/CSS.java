@@ -47,4 +47,10 @@ public interface CSS {
 
     public static final String APS_EDITING_TEXT = "aps-editing-text";
 
+    public static final String APS_DESCRIPTION_TEXT = "aps-description-text";
+
+    public static final String APS_CAPTION_TEXT = "aps-caption-text";
+
+    public static final String APS_EDITOR_LABEL = "aps-editor-label";
+
 }

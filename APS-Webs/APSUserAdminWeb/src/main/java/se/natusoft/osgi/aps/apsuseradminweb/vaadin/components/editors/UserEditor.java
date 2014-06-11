@@ -45,6 +45,7 @@ import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.event.dd.acceptcriteria.ServerSideCriterion;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import se.natusoft.osgi.aps.api.auth.user.APSSimpleUserService;
 import se.natusoft.osgi.aps.api.auth.user.APSSimpleUserServiceAdmin;
@@ -160,7 +161,7 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
     public UserEditor(APSSimpleUserServiceAdmin userServiceAdmin) {
         this.userServiceAdmin = userServiceAdmin;
 
-        this.setStyleName(CSS.APS_EDITING_TEXT);
+        addStyleName(CSS.APS_EDITOR_LABEL);
 
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setSpacing(true);
@@ -219,7 +220,7 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
             this.propertiesEditor.setColumnExpandRatio(USER_PROPS_KEY, 0.3f);
             this.propertiesEditor.setColumnExpandRatio(USER_PROPS_VALUE, 0.7f);
             this.propertiesEditor.setTableFieldFactory(new EditFieldFactory());
-            this.propertiesEditor.addListener(new ItemClickEvent.ItemClickListener() {
+            this.propertiesEditor.addItemClickListener(new ItemClickEvent.ItemClickListener() {
                 @Override
                 public void itemClick(ItemClickEvent event) {
                     selectDeselectProperty(event.getItemId());
@@ -233,7 +234,7 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
                 plusMinusRow.setSpacing(true);
 
                 this.plusButton = new Button("+");
-                this.plusButton.addListener(new Button.ClickListener() {
+                this.plusButton.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
                         addProperty();
@@ -242,7 +243,7 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
                 plusMinusRow.addComponent(this.plusButton);
 
                 this.minusButton = new Button("-");
-                this.minusButton.addListener(new Button.ClickListener() {
+                this.minusButton.addClickListener(new Button.ClickListener() {
                     @Override
                     public void buttonClick(Button.ClickEvent event) {
                         deleteProperty();
@@ -284,7 +285,7 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
                 }
             });
             VerticalLayout availableRolesFrame = new VerticalLayout();
-            availableRolesFrame.setMargin(false, true, false, false);
+            availableRolesFrame.setMargin(new MarginInfo(false, true, false, false));
             availableRolesFrame.addComponent(this.availableRoles);
             rolesLayout.addComponent(availableRolesFrame);
 
@@ -309,7 +310,7 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
                 }
             });
             VerticalLayout selectedRolesFrame = new VerticalLayout();
-            selectedRolesFrame.setMargin(false, false, false, true);
+            selectedRolesFrame.setMargin(new MarginInfo(false, false, false, true));
             selectedRolesFrame.addComponent(this.selectedRoles);
             rolesLayout.addComponent(selectedRolesFrame);
 
@@ -328,7 +329,7 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
             saveCancelLayout.setSpacing(true);
 
             this.saveButton = new Button("Save");
-            this.saveButton.addListener(new Button.ClickListener() {
+            this.saveButton.addClickListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
                     save();
@@ -337,7 +338,7 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
             saveCancelLayout.addComponent(saveButton);
 
             Button cancelButton = new Button("Cancel");
-            cancelButton.addListener(new Button.ClickListener() {
+            cancelButton.addClickListener(new Button.ClickListener() {
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
                     cancel();
@@ -409,11 +410,12 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
      *
      * @param itemId This identifies the item of the 'availableRoles' table that was dropped.
      */
+    @SuppressWarnings("unchecked")
     private void addRole(Object itemId) {
         if (itemId != null) {
             Item item = this.availableRoles.getItem(itemId);
-            String roleId = (String)item.getItemProperty(ROLE_ID).getValue();
-            String roleDesc = (String)item.getItemProperty(ROLE_DESC).getValue();
+            Object roleId = item.getItemProperty(ROLE_ID).getValue();
+            Object roleDesc = item.getItemProperty(ROLE_DESC).getValue();
             this.availableRoles.removeItem(itemId);
 
             item = this.selectedRoles.addItem(roleId);
@@ -432,6 +434,7 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
      *
      * @param itemId This identifies the item of the 'selectedRoles' table that was dropped.
      */
+    @SuppressWarnings("unchecked")
     private void removeRole(Object itemId) {
         if (itemId == null) {
             itemId = this.selectedRoles.getValue();
@@ -439,8 +442,8 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
 
         if (itemId != null) {
             Item item = this.selectedRoles.getItem(itemId);
-            String roleId = (String)item.getItemProperty(ROLE_ID).getValue();
-            String roleDesc = (String)item.getItemProperty(ROLE_DESC).getValue();
+            Object roleId = item.getItemProperty(ROLE_ID).getValue();
+            Object roleDesc = item.getItemProperty(ROLE_DESC).getValue();
             this.selectedRoles.removeItem(itemId);
 
             item = this.availableRoles.addItem(roleId);
@@ -467,7 +470,7 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
         }
         catch (RuntimeException re) {
             notifyError("Failed to save user!", "Failed to save user: " + re.getMessage());
-            getLogger().error("Failed to save user!", re);
+//            getLogger().error("Failed to save user!", re);
             throw re;
         }
         finally {
@@ -481,9 +484,9 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
     private void doSave() {
         boolean newUser = false;
         if (this.user == null) {
-            User checkUser = this.userServiceAdmin.getUser(this.userId.getValue().toString());
+            User checkUser = this.userServiceAdmin.getUser(this.userId.getValue());
             if (checkUser != null) {
-                notifyError("User already exists!", "The user with id '" + this.userId.getValue().toString() + "' already exists!");
+                notifyError("User already exists!", "The user with id '" + this.userId.getValue() + "' already exists!");
                 // In this case we want the admin user to be able to correct his/her mistake and try saving again.
                 // We should therefore not call 'refreshDependentComponents()'!
                 return;
@@ -494,8 +497,8 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
                         this.authNewTwo.getValue() != null &&
                         this.authNewOne.getValue().equals(this.authNewTwo.getValue())
                 ) {
-                    this.user = this.userServiceAdmin.createUser(this.userId.getValue().toString());
-                    this.userServiceAdmin.setUserAuthentication(this.user, this.authNewOne.getValue().toString());
+                    this.user = this.userServiceAdmin.createUser(this.userId.getValue());
+                    this.userServiceAdmin.setUserAuthentication(this.user, this.authNewOne.getValue());
                     newUser = true;
                 }
                 else {
@@ -559,10 +562,10 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
             notifySuccess("User created!", "Created new user '" + this.user.getId() + "'!");
         }
         else {
-            if (this.authNewOne.getValue().toString().length() > 0) {
+            if (this.authNewOne.getValue().length() > 0) {
                 if (this.userServiceAdmin.authenticateUser(this.user, this.authCurrent.getValue(), APSSimpleUserService.AUTH_METHOD_PASSWORD)) {
                     if (this.authNewOne.getValue().equals(this.authNewTwo.getValue())) {
-                        this.userServiceAdmin.setUserAuthentication(this.user, this.authNewOne.getValue().toString());
+                        this.userServiceAdmin.setUserAuthentication(this.user, this.authNewOne.getValue());
                     }
                     else {
                         notifyError("User partly saved!", "User data saved, but failed to change auth due to the two entered new values " +
@@ -691,6 +694,7 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
      *
      * @return The created container.
      */
+    @SuppressWarnings("unchecked")
     private IndexedContainer createUserPropertiesContainer(User user) {
         IndexedContainer userPropsContainer = new IndexedContainer();
         userPropsContainer.addContainerProperty(USER_PROPS_KEY, String.class, "");
@@ -719,6 +723,7 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
      *
      * @return The created container.
      */
+    @SuppressWarnings("unchecked")
     private IndexedContainer createAvailableRolesContainer(User user) {
         IndexedContainer availRolesContainer = new IndexedContainer();
         availRolesContainer.addContainerProperty(ROLE_ID, String.class, "");
@@ -751,6 +756,7 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
      *
      * @return The created container.
      */
+    @SuppressWarnings("unchecked")
     private IndexedContainer createUserRolesContainer(User user) {
         IndexedContainer userRolesContainer = new IndexedContainer();
         userRolesContainer.addContainerProperty(ROLE_ID, String.class, "");
@@ -850,8 +856,9 @@ public class UserEditor extends EditorPanel implements EditorIdentifier {
          * Note that even if your criterion is validated on client side, you should
          * always validate the data on server side too.
          *
-         * @param dragEvent
-         * @return
+         * @param dragEvent The event triggered by a drop.
+         *
+         * @return True if we accept this drop.
          */
         @Override
         public boolean accept(DragAndDropEvent dragEvent) {

@@ -42,65 +42,57 @@
  * Use the constants in se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.css.CSS to reference these
  * rules in the code!
  */
-@import "../reindeer/styles.css";
-/*@import "../chameleon/styles.css";*/
+@import "../reindeer/reindeer.scss";
 
-/*
- * The left bar (containing the menu)
- */
-.v-panel .v-panel-content .aps-leftbar {
+@mixin aps {
+  @include reindeer;
+
+  /*
+   * The left bar (containing the menu)
+   */
+  .v-panel-content-aps-leftbar {
     background: #d6dbe3;
-}
+  }
 
-/*
- * General description HTML parts as used with HTMLFileLabel.
- */
-.aps-description-text {
+  /*
+   * General description HTML parts as used with HTMLFileLabel.
+   */
+  .aps-description-text {
     font-size: 15px;
-}
+  }
 
-/*
- * For the editing configuration id label.
- */
-.aps-configid-label {
+  /*
+   * For the editors id labels.
+   */
+  .v-panel-caption-aps-editor-label {
     font-size: 15px;
-}
+  }
 
-/*
- * The small "[ n ]" label to the right of the buttons in the many value list editor.
- */
-.aps-manyvalue-count-label {
-    font-size: 10px;
-}
+  /*
+   * For captions.
+   */
+  .v-caption-aps-caption-text, .v-checkbox-aps-caption-text {
+    font-size: 12px;
+  }
 
-/*
- * The "There are no config values for this node!" message.
- */
-.aps-no-config-values-label {
-    font-size: 20px;
-}
+  /*
+   * For text in what is being edited.
+   */
+  .aps-editing-text .v-table-cell-content, .v-widget .aps-editing-text {
+    font-size: 12px;
+  }
 
-/*
- * Text properties for editing panels.
- */
-.v-panel-content .aps-editing-text {
-    font-size: 15px;
-}
-.aps-editing-text {
-    font-size: 15px;
-}
-
-/*
- * Makes a textarea sizeable.
- */
-.aps-sizeable-textarea {
+  /*
+   * Make textarea resizeable.
+   */
+  .v-widget textarea {
     resize: vertical;
-}
+  }
 
-/*
- * Light blue content panel background.
- */
-.v-panel-content .aps-content-panel {
+  /*
+   * Light blue content panel background.
+   */
+  .v-panel-content-aps-content-panel {
     /* Blue */
     background: #f3f6fa;
 
@@ -108,20 +100,6 @@
     background: #999999;
     color: #dddddd;
     */
+  }
+
 }
-
-/*
- * For the config node selector panel.
- */
-.v-panel-content .aps-config-node-select {
-    background: #f8f9ff;
-}
-
-/*
- * For the value editor panel.
- */
-.v-panel-content .aps-config-node-values-editor {
-    background: #f8f9ff;
-}
-
-

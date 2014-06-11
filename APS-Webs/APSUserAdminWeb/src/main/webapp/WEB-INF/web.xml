@@ -36,7 +36,7 @@
             
 -->
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-    <display-name>APS Configuration Administration Web</display-name>
+    <display-name>APS User Administration Web</display-name>
     <session-config>
         <session-timeout>
             30
@@ -45,10 +45,10 @@
     <servlet>
         <servlet-name>apsuseradminservlet</servlet-name>
         <servlet-class>
-                  com.vaadin.terminal.gwt.server.ApplicationServlet
+            com.vaadin.server.VaadinServlet
         </servlet-class>
         <init-param>
-            <param-name>application</param-name>
+            <param-name>UI</param-name>
             <param-value>se.natusoft.osgi.aps.apsuseradminweb.vaadin.APSUSerAdminWebApp</param-value>
         </init-param>
     </servlet>

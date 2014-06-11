@@ -60,18 +60,21 @@ public class RoleDeleteEditor extends EditorPanel implements EditorIdentifier {
     private Role role = null;
 
     /** A visual box to put the role id in instead of a TextField since values cannot be changed here. */
+    @SuppressWarnings("FieldCanBeLocal")
     private Panel idPanel = null;
 
     /** A label with the role id. This is put in the idPanel. */
     private Label idLabel = null;
 
     /** A visual box to put the role description in instead of a TextField. */
+    @SuppressWarnings("FieldCanBeLocal")
     private Panel descriptionPanel = null;
 
     /** A label with the role description. This is put in the descriptionPanel. */
     private Label descriptionLabel = null;
 
     /** A visual box to put the sub role list in. */
+    @SuppressWarnings("FieldCanBeLocal")
     private Panel subRolesPanel = null;
 
     /** A label containing a list of sub roles of the role. */
@@ -89,7 +92,8 @@ public class RoleDeleteEditor extends EditorPanel implements EditorIdentifier {
      */
     public RoleDeleteEditor(APSSimpleUserServiceAdmin userServiceAdmin) {
         this.userServiceAdmin = userServiceAdmin;
-        this.setStyleName(CSS.APS_EDITING_TEXT);
+
+        addStyleName(CSS.APS_EDITOR_LABEL);
 
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setMargin(true);
@@ -99,19 +103,19 @@ public class RoleDeleteEditor extends EditorPanel implements EditorIdentifier {
         this.idPanel = new Panel();
         this.idPanel.setCaption("Role id");
         this.idLabel = new Label("");
-        this.idPanel.addComponent(this.idLabel);
+        this.idPanel.setContent(this.idLabel);
         verticalLayout.addComponent(idPanel);
 
         this.descriptionPanel = new Panel();
         this.descriptionPanel.setCaption("Description");
         this.descriptionLabel = new Label("");
-        this.descriptionPanel.addComponent(this.descriptionLabel);
+        this.descriptionPanel.setContent(this.descriptionLabel);
         verticalLayout.addComponent(this.descriptionPanel);
 
         this.subRolesPanel = new Panel();
         this.subRolesPanel.setCaption("Sub roles");
         this.subRolesLabel = new Label("");
-        this.subRolesPanel.addComponent(this.subRolesLabel);
+        this.subRolesPanel.setContent(this.subRolesLabel);
         verticalLayout.addComponent(this.subRolesPanel);
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
@@ -119,7 +123,7 @@ public class RoleDeleteEditor extends EditorPanel implements EditorIdentifier {
         horizontalLayout.setSpacing(true);
 
         Button deleteButton = new Button("Delete");
-        deleteButton.addListener(new Button.ClickListener() {
+        deleteButton.addClickListener(new Button.ClickListener() {
             /** Click handling. */
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -129,7 +133,7 @@ public class RoleDeleteEditor extends EditorPanel implements EditorIdentifier {
         horizontalLayout.addComponent(deleteButton);
 
         Button cancelButton = new Button("Cancel");
-        cancelButton.addListener(new Button.ClickListener() {
+        cancelButton.addClickListener(new Button.ClickListener() {
             /** Click handling. */
             @Override
             public void buttonClick(Button.ClickEvent event) {
@@ -177,7 +181,7 @@ public class RoleDeleteEditor extends EditorPanel implements EditorIdentifier {
         }
         catch (RuntimeException re) {
             notifyError("Failed to delete role!", "Failed to delete role: " + re.getMessage());
-            getLogger().error("Failed to delete role!", re);
+//            getLogger().error("Failed to delete role!", re);
             throw re;
         }
     }

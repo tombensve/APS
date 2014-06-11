@@ -36,6 +36,7 @@
  */
 package se.natusoft.osgi.aps.apsuseradminweb.vaadin.components;
 
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import se.natusoft.osgi.aps.apsuseradminweb.vaadin.css.CSS;
@@ -50,8 +51,17 @@ public class LeftBar extends Panel {
      */
     public LeftBar() {
         VerticalLayout vl = new VerticalLayout();
-        vl.setStyleName(CSS.APS_LEFTBAR);
+        setStyleName(CSS.APS_LEFTBAR);
         vl.setMargin(true);
         setContent(vl);
+    }
+
+    /**
+     * Adds a component to the LeftBar.
+     *
+     * @param component The component to add.
+     */
+    public void addComponent(Component component) {
+        ((VerticalLayout)getContent()).addComponent(component);
     }
 }

@@ -77,11 +77,11 @@ public class APSUserAdminActivator implements BundleActivator {
         this.logger = new APSLogger();
         this.logger.start(context);
 
-        this.adminWebServiceTracker = new APSServiceTracker(context, APSAdminWebService.class);
+        this.adminWebServiceTracker = new APSServiceTracker<>(context, APSAdminWebService.class);
         this.adminWebServiceTracker.setLogger(this.logger);
         this.adminWebServiceTracker.onServiceAvailable(new OnServiceAvailable<APSAdminWebService>() {
             public void onServiceAvailable(APSAdminWebService service, ServiceReference serviceReference) {
-                service.registerAdminWeb(APSUserAdminActivator.this.ADMIN_WEB_REG);
+                service.registerAdminWeb(APSUserAdminActivator.ADMIN_WEB_REG);
             }
         });
         this.adminWebServiceTracker.start();
@@ -97,7 +97,7 @@ public class APSUserAdminActivator implements BundleActivator {
 
         this.adminWebServiceTracker.withAllAvailableServices(new WithService<APSAdminWebService>() {
             public void withService(APSAdminWebService service) {
-                service.unregisterAdminWeb(APSUserAdminActivator.this.ADMIN_WEB_REG);
+                service.unregisterAdminWeb(APSUserAdminActivator.ADMIN_WEB_REG);
             }
         });
         this.adminWebServiceTracker.stop(context);

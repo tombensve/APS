@@ -43,6 +43,7 @@ import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.event.dd.acceptcriteria.ServerSideCriterion;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.*;
 import se.natusoft.osgi.aps.api.auth.user.APSSimpleUserServiceAdmin;
 import se.natusoft.osgi.aps.api.auth.user.model.Role;
@@ -113,12 +114,12 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
     public RoleEditor(APSSimpleUserServiceAdmin userServiceAdmin) {
         this.userServiceAdmin = userServiceAdmin;
 
-        this.setStyleName(CSS.APS_EDITING_TEXT);
+        addStyleName(CSS.APS_EDITOR_LABEL);
 
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setMargin(true);
         verticalLayout.setSpacing(true);
-        verticalLayout.setStyleName(CSS.APS_EDITING_TEXT + " " + CSS.APS_CONTENT_PANEL);
+        //verticalLayout.setStyleName(CSS.APS_CONTENT_PANEL);
 
         // Role id, master and description.
         {
@@ -126,12 +127,16 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
             horizLayout.setSpacing(true);
 
             this.idTextField = new TextField("Role id");
+            this.idTextField.addStyleName(CSS.APS_CAPTION_TEXT);
+            this.idTextField.addStyleName(CSS.APS_EDITING_TEXT);
             this.idTextField.setColumns(30);
             this.idTextField.setImmediate(false);
             this.idTextField.setEnabled(true);
             horizLayout.addComponent(this.idTextField);
 
             this.masterRole = new CheckBox("Master Role");
+            this.masterRole.addStyleName(CSS.APS_CAPTION_TEXT);
+            this.masterRole.addStyleName(CSS.APS_EDITING_TEXT);
             this.masterRole.setImmediate(false);
             this.masterRole.setEnabled(true);
             horizLayout.addComponent(this.masterRole);
@@ -139,6 +144,8 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
             verticalLayout.addComponent(horizLayout);
 
             this.descriptionTextArea = new TextArea("Description of role");
+            this.descriptionTextArea.addStyleName(CSS.APS_CAPTION_TEXT);
+            this.descriptionTextArea.addStyleName(CSS.APS_EDITING_TEXT);
             this.descriptionTextArea.setRows(3);
             this.descriptionTextArea.setColumns(60);
             this.descriptionTextArea.setImmediate(false);
@@ -153,6 +160,8 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
 
             // Available
             this.availableRoles = new Table("Available roles");
+            this.availableRoles.addStyleName(CSS.APS_CAPTION_TEXT);
+            this.availableRoles.addStyleName(CSS.APS_EDITING_TEXT);
             this.availableRoles.setImmediate(true);
             this.availableRoles.setPageLength(10);
             this.availableRoles.setSortAscending(true);
@@ -172,12 +181,14 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
                 }
             });
             VerticalLayout availableRolesFrame = new VerticalLayout();
-            availableRolesFrame.setMargin(false, true, false, false);
+            availableRolesFrame.setMargin(new MarginInfo(false, true, false, false));
             availableRolesFrame.addComponent(this.availableRoles);
             rolesLayout.addComponent(availableRolesFrame);
 
             // Selected
             this.selectedRoles = new Table("Selected sub roles of the role");
+            this.selectedRoles.addStyleName(CSS.APS_CAPTION_TEXT);
+            this.selectedRoles.addStyleName(CSS.APS_EDITING_TEXT);
             this.selectedRoles.setImmediate(true);
             this.selectedRoles.setPageLength(10);
             this.selectedRoles.setSortAscending(true);
@@ -197,7 +208,7 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
                 }
             });
             VerticalLayout selectedRolesFrame = new VerticalLayout();
-            selectedRolesFrame.setMargin(false, false, false, true);
+            selectedRolesFrame.setMargin(new MarginInfo(false, false, false, true));
             selectedRolesFrame.addComponent(this.selectedRoles);
             rolesLayout.addComponent(selectedRolesFrame);
 
@@ -221,7 +232,7 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
             horizontalLayout.setSpacing(true);
 
             Button saveButton = new Button("Save");
-            saveButton.addListener(new Button.ClickListener() {
+            saveButton.addClickListener(new Button.ClickListener() {
                 /** Click handling. */
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
@@ -231,7 +242,7 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
             horizontalLayout.addComponent(saveButton);
 
             Button cancelButton = new Button("Cancel");
-            cancelButton.addListener(new Button.ClickListener() {
+            cancelButton.addClickListener(new Button.ClickListener() {
                 /** Click handling. */
                 @Override
                 public void buttonClick(Button.ClickEvent event) {
@@ -256,14 +267,14 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
             String successMessage1;
             String successMessage2;
             if (this.role == null) {
-                this.role = this.userServiceAdmin.createRole(this.idTextField.getValue().toString(),
-                        this.descriptionTextArea.getValue().toString());
-                this.role.setMasterRole((Boolean) this.masterRole.getValue());
+                this.role = this.userServiceAdmin.createRole(this.idTextField.getValue(),
+                        this.descriptionTextArea.getValue());
+                this.role.setMasterRole(this.masterRole.getValue());
                 successMessage1 = "New role created.";
                 successMessage2 = "Role '" + this.role.getId() + "' was created!";
             }
             else {
-                this.role.setDescription(this.descriptionTextArea.getValue().toString());
+                this.role.setDescription(this.descriptionTextArea.getValue());
                 successMessage1 = "Role updated.";
                 successMessage2 = "Role '" + role.getId() + "' was updated!";
             }
@@ -306,7 +317,7 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
         }
         catch (RuntimeException re) {
             notifyError("Failed saving role!", "Falied to save role:" + re.getMessage());
-            getLogger().error("Failed to save role!", re);
+//            getLogger().error("Failed to save role!", re);
             throw re;
         }
     }
@@ -365,11 +376,12 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
      *
      * @param itemId This identifies the item of the 'availableRoles' table that was dropped.
      */
+    @SuppressWarnings("unchecked")
     private void addSubRole(Object itemId) {
         if (itemId != null) {
             Item item = this.availableRoles.getItem(itemId);
-            String roleId = (String)item.getItemProperty(ROLE_ID).getValue();
-            String roleDesc = (String)item.getItemProperty(ROLE_DESC).getValue();
+            Object roleId = item.getItemProperty(ROLE_ID).getValue();
+            Object roleDesc = item.getItemProperty(ROLE_DESC).getValue();
             this.availableRoles.removeItem(itemId);
 
             item = this.selectedRoles.addItem(roleId);
@@ -388,6 +400,7 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
      *
      * @param itemId This identifies the item of the 'selectedRoles' table that was dropped.
      */
+    @SuppressWarnings("unchecked")
     private void removeSubRole(Object itemId) {
         if (itemId == null) {
             itemId = this.selectedRoles.getValue();
@@ -395,8 +408,8 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
 
         if (itemId != null) {
             Item item = this.selectedRoles.getItem(itemId);
-            String roleId = (String)item.getItemProperty(ROLE_ID).getValue();
-            String roleDesc = (String)item.getItemProperty(ROLE_DESC).getValue();
+            Object roleId = item.getItemProperty(ROLE_ID).getValue();
+            Object roleDesc = item.getItemProperty(ROLE_DESC).getValue();
             this.selectedRoles.removeItem(itemId);
 
             item = this.availableRoles.addItem(roleId);
@@ -417,6 +430,7 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
      *
      * @return The created container.
      */
+    @SuppressWarnings("unchecked")
     private IndexedContainer createAvailableRolesContainer(RoleAdmin role) {
         IndexedContainer availRolesContainer = new IndexedContainer();
         availRolesContainer.addContainerProperty(ROLE_ID, String.class, "");
@@ -449,6 +463,7 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
      *
      * @return The created container.
      */
+    @SuppressWarnings("unchecked")
     private IndexedContainer createSubRolesContainer(RoleAdmin role) {
         IndexedContainer userRolesContainer = new IndexedContainer();
         userRolesContainer.addContainerProperty(ROLE_ID, String.class, "");
@@ -508,8 +523,9 @@ public class RoleEditor extends EditorPanel implements EditorIdentifier {
          * Note that even if your criterion is validated on client side, you should
          * always validate the data on server side too.
          *
-         * @param dragEvent
-         * @return
+         * @param dragEvent The event resulting from a drop.
+         *
+         * @return True if this drop is acceptable.
          */
         @Override
         public boolean accept(DragAndDropEvent dragEvent) {
