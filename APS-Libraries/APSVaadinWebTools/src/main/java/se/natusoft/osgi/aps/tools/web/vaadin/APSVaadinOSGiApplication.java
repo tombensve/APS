@@ -42,10 +42,8 @@ import com.vaadin.ui.*;
 import org.osgi.framework.BundleContext;
 import se.natusoft.osgi.aps.tools.APSActivator;
 import se.natusoft.osgi.aps.tools.APSLogger;
-import se.natusoft.osgi.aps.tools.web.APSAdminWebLoginHandler;
-import se.natusoft.osgi.aps.tools.web.OSGiBundleContextProvider;
-import se.natusoft.osgi.aps.tools.web.UserNotifier;
-import se.natusoft.osgi.aps.tools.web.WebClientContext;
+import se.natusoft.osgi.aps.tools.web.*;
+import se.natusoft.osgi.aps.tools.web.vaadin.tools.VaadinCookieAdapters;
 
 import javax.servlet.ServletContext;
 
@@ -97,6 +95,7 @@ public abstract class APSVaadinOSGiApplication
     private WebClientContext clientContext;
 
     /** We use part of the APSActivator functionality to inject into @OSGiService and @Managed annotated fields. */
+    @SuppressWarnings("FieldCanBeLocal")
     private APSActivator activator;
 
     private UserNotifier userNotifier = new VaadinUserNotifier();
@@ -161,6 +160,7 @@ public abstract class APSVaadinOSGiApplication
     /**
      * Retuns the logger.
      */
+    @SuppressWarnings("UnusedDeclaration")
     protected APSLogger getLogger() {
         return this.logger;
     }
@@ -176,7 +176,7 @@ public abstract class APSVaadinOSGiApplication
         this.logger.start(getBundleContext());
 
         UserNotifier messager = new VaadinUserNotifier();
-        this.clientContext = new WebClientContext(messager, this, request);
+        this.clientContext = new WebClientContext(messager, this);
 
         this.activator = new APSActivator(this);
         try {
@@ -209,6 +209,7 @@ public abstract class APSVaadinOSGiApplication
      *
      * @param clientContext The client context for accessing services.
      */
+    @SuppressWarnings("UnusedParameters")
     protected void initServices(WebClientContext clientContext) {}
 
     /**
@@ -218,11 +219,13 @@ public abstract class APSVaadinOSGiApplication
      *
      * @param clientContext The client cntext for accessing services.
      */
+    @SuppressWarnings("UnusedParameters")
     protected void cleanupServices(WebClientContext clientContext) {}
 
     /**
      * @return The client context.
      */
+    @SuppressWarnings("UnusedDeclaration")
     protected WebClientContext getClientContext() {
         return this.clientContext;
     }
@@ -240,8 +243,9 @@ public abstract class APSVaadinOSGiApplication
      * But if subclasses override this they can do their own login handling or just
      * call defaultLoginHandler().
      *
-     * @param clientContext
+     * @param clientContext The clients context.
      */
+    @SuppressWarnings("UnusedParameters")
     protected void handleLogin(WebClientContext clientContext) {
         // Do nothing. This needs to be overridden to handle login.
     }
@@ -249,6 +253,7 @@ public abstract class APSVaadinOSGiApplication
     /**
      * Provides a default login handler that anyone can use.
      */
+    @SuppressWarnings("UnusedDeclaration")
     protected void defaultLoginHandler() {
 
         if (this.loginHandler == null) {
@@ -267,7 +272,7 @@ public abstract class APSVaadinOSGiApplication
             };
         }
 
-        this.loginHandler.setSessionIdFromRequestCookie(VaadinService.getCurrentRequest());
+        this.loginHandler.setSessionIdFromRequestCookie(new VaadinCookieAdapters.VaadinRequestCookieReaderAdapter(VaadinService.getCurrentRequest()));
 
         // TODO: Fix.
         if (!this.loginHandler.hasValidLogin()) {

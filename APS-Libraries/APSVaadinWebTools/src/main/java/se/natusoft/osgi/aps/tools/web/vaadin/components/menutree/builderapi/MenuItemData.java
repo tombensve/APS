@@ -86,6 +86,7 @@ public class MenuItemData<ItemRepresentative> {
         return itemRepresentative;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setItemRepresentative(ItemRepresentative itemRepresentative) {
         this.itemRepresentative = itemRepresentative;
     }
@@ -95,6 +96,7 @@ public class MenuItemData<ItemRepresentative> {
         return toolTipText;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setToolTipText(String toolTipText) {
         this.toolTipText = toolTipText;
     }
@@ -104,24 +106,29 @@ public class MenuItemData<ItemRepresentative> {
         return actions;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setActions(Action[] actions) {
         this.actions = actions;
     }
 
     /** The component hander for when this item is selected. */
+    @SuppressWarnings("UnusedDeclaration")
     public ComponentHandler getSelectComponentHandler() {
         return selectComponentHandler;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setSelectComponentHandler(ComponentHandler selectComponentHandler) {
         this.selectComponentHandler = selectComponentHandler;
     }
 
     /** The menu action handlers per action. */
+    @SuppressWarnings("UnusedDeclaration")
     public Map<Action, MenuActionProvider> getActionComponentHandlers() {
         return actionComponentHandlers;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void setActionComponentHandlers(Map<Action, MenuActionProvider> actionComponentHandlers) {
         this.actionComponentHandlers = actionComponentHandlers;
     }

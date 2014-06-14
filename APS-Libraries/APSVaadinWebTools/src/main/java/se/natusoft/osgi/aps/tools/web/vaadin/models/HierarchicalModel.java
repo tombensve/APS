@@ -152,6 +152,7 @@ public class HierarchicalModel<Data> {
      *
      * @return The item id of the added item.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public ID addItem(Data data, String... captions) {
         return addItem(null, data, captions);
     }

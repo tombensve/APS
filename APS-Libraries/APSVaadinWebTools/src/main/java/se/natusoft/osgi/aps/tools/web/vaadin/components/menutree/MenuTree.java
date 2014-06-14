@@ -106,6 +106,7 @@ public class MenuTree extends Tree implements Action.Handler, ItemDescriptionGen
      *
      * @param menuBuilder The menu builder to add.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void addMenuBuilder(MenuBuilder menuBuilder) {
         this.menuBuilders.add(menuBuilder);
     }
@@ -160,6 +161,7 @@ public class MenuTree extends Tree implements Action.Handler, ItemDescriptionGen
      *
      * @param actionHandler The action handler to set.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void setActionHandler(MenuActionHandler actionHandler) {
         this.actionHandler = actionHandler;
     }

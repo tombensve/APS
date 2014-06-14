@@ -70,6 +70,7 @@ public class Refreshables implements Iterable<Refreshable> {
      *
      * @param refreshable The refreshable to add.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void addRefreshable(Refreshable refreshable) {
         this.refreshableList.add(refreshable);
     }
@@ -87,6 +88,7 @@ public class Refreshables implements Iterable<Refreshable> {
     /**
      * Calls on the managed refreshables to do refresh.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void refresh() {
         for (Refreshable refreshable : this) {
             refreshable.refresh();

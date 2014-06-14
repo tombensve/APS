@@ -46,6 +46,7 @@ public interface RefreshableSupport {
      *
      * @param refreshable The refreshable to add.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void addRefreshable(Refreshable refreshable);
 
 }

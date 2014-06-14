@@ -73,7 +73,7 @@ public class VaadinLoginDialogHandler {
      * @param appWindow The Vaadin application window to add the popup login dialog to.
      * @param loginHandler A handler for doing the login from the login dialog input.
      */
-    @SuppressWarnings("UnusedParameters")
+    @SuppressWarnings({"UnusedParameters", "UnusedDeclaration"})
     @Deprecated
     public VaadinLoginDialogHandler(Window appWindow, LoginHandler loginHandler) {
         this(loginHandler);
@@ -137,6 +137,7 @@ public class VaadinLoginDialogHandler {
     /**
      * This will popup the login dialog if it is not already showing. Any previously entered user and password are ofcourse cleared!
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void doLoginDialog() {
         if (!this.dialogActive) {
             this.userName.setValue("");

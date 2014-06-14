@@ -45,5 +45,6 @@ public interface MenuActionExecutor extends MenuActionProvider {
     /**
      * Executes the menu action.
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void executeMenuAction();
 }
