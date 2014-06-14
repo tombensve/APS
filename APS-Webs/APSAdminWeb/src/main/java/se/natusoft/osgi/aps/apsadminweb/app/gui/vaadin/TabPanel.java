@@ -106,11 +106,6 @@ public class TabPanel extends TabSheet {
             tabLayout.setSizeFull();
             tabLayout.setMargin(false);
             tabLayout.setSpacing(false);
-// Vaadin 6
-//            Embedded adminWeb = new Embedded("", new ExternalResource(adminWebReg.getUrl() + "?adminRefresh"));
-//            adminWeb.setType(Embedded.TYPE_BROWSER);
-//            adminWeb.setSizeFull();
-// Vaadin 7
             BrowserFrame adminWeb = new BrowserFrame("", new ExternalResource(adminWebReg.getUrl() + "?adminRefresh"));
             adminWeb.setSizeFull();
 
