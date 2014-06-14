@@ -57,6 +57,6 @@
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
     <listener>
-        <listener-class>se.natusoft.osgi.aps.tools.web.vaadin.APSSessionListener</listener-class>
+        <listener-class>se.natusoft.osgi.aps.tools.web.APSSessionListener</listener-class>
     </listener>
 </web-app>
