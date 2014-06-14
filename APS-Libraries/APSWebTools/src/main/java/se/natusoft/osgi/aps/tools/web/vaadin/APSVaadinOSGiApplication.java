@@ -91,7 +91,7 @@ public abstract class APSVaadinOSGiApplication
     // Private Members
     //
 
-    APSLogger logger;
+    private APSLogger logger;
 
     /** The client context. */
     private WebClientContext clientContext;
@@ -159,13 +159,20 @@ public abstract class APSVaadinOSGiApplication
     }
 
     /**
+     * Retuns the logger.
+     */
+    protected APSLogger getLogger() {
+        return this.logger;
+    }
+
+    /**
      * Initializes the vaadin application.
      */
     @Override
     public void init(VaadinRequest request) {
 
         this.logger = new APSLogger(System.err);
-        this.logger.setLoggingFor("APSVaadinOSGiApp" + getClass().getSimpleName());
+        this.logger.setLoggingFor("APSVaadinOSGiApplication:" + getClass().getSimpleName());
         this.logger.start(getBundleContext());
 
         UserNotifier messager = new VaadinUserNotifier();
