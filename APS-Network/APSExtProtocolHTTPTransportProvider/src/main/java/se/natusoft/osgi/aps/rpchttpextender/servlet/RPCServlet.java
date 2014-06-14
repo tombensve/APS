@@ -292,25 +292,57 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             pathInfo = pathInfo.substring(1);
         }
         if (pathInfo.startsWith("_help")) {
-            // If the first page help does not end in '/' then we want to redirect so that it does. Otherwise the
-            // relative links generated for services will be incorrect.
-            if (pathInfo.equals("_help")) {
-                resp.sendRedirect(pathInfo + "/");
-            } else {
-                if (!RPCServletConfig.mc.isManaged()) {
-                    RPCServletConfig.mc.waitUtilManaged();
+            if (RPCServletConfig.mc.get().enableHelpWeb.toBoolean()) {
+                // If the first page help does not end in '/' then we want to redirect so that it does. Otherwise the
+                // relative links generated for services will be incorrect.
+                if (pathInfo.equals("_help")) {
+                    resp.sendRedirect(pathInfo + "/");
                 }
-                if (this.loginHandler.hasValidLogin()) {
-                    if (RPCServletConfig.mc.get().enableHelpWeb.toBoolean()) {
-                        doHelp(req, resp);
-                    } else {
-                        resp.sendError(HttpServletResponse.SC_FORBIDDEN, "The help web has been disabled!");
+                else {
+                    if (!RPCServletConfig.mc.isManaged()) {
+                        RPCServletConfig.mc.waitUtilManaged();
                     }
-                } else {
-                    resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication is required! Please login.");
+                    if (this.loginHandler.hasValidLogin()) {
+                        doHelp(req, resp);
+                    }
+                    else {
+
+                        String auth = req.getHeader("Authorization");
+                        if (auth != null) {
+                            if (auth.startsWith("Basic")) {
+                                String encoded = auth.substring(6);
+                                Base64 base64 = new Base64();
+                                byte[] userPwBytes = base64.decodeBase64(encoded.getBytes());
+                                String[] userPw = new String(userPwBytes).split(":");
+                                if (userPw.length != 2) {
+                                    resp.setHeader("WWW-Authenticate", "Basic");
+                                    resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Bad authorization!");
+                                    return;
+                                }
+
+                                String user = userPw[0];
+                                String password = userPw[1];
+                                if (this.loginHandler.login(user, password)) {
+                                    doHelp(req, resp);
+                                }
+                                else {
+                                    resp.addHeader("WWW-Authenticate", "Basic");
+                                    resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Bad authorization!");
+                                }
+                            }
+                        }
+                        else {
+                            resp.addHeader("WWW-Authenticate", "Basic");
+                            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication is required! Please login.");
+                        }
+                    }
                 }
             }
-        } else {
+            else {
+                resp.sendError(HttpServletResponse.SC_FORBIDDEN, "The help web has been disabled!");
+            }
+        }
+        else {
             doService(req, resp);
         }
     }
@@ -582,7 +614,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                     String[] userPw = new String(userPwBytes).split(":");
                     if (userPw.length != 2) {
                         resp.setHeader("WWW-Authenticate", "Basic realm=\"aps\"");
-                        resp.sendError(401, "Bad authorisation!");
+                        resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Bad authorisation!");
                         return AUTH_FAILED;
                     }
                     user = userPw[0];

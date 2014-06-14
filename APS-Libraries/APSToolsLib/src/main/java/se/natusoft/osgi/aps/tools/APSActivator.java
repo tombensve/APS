@@ -125,6 +125,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     private Map<Class, List<Object>> managedInstances;
     private List<ListenerWrapper> listeners;
 
+    @SuppressWarnings("FieldCanBeLocal")
     private boolean supportsRequired = true;
 
     private BundleContext context;
@@ -228,7 +229,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 new StartThread(entryClass, context).start();
             }
             else {
-                handleServiceInstances(entryClass, context);
+                handleServiceInstances(entryClass);
                 handleFieldInjections(entryClass, context);
                 handleServiceRegistrations(entryClass, context);
                 handleMethods(entryClass, context);
@@ -249,7 +250,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         @Override
         public void run() {
             try {
-                handleServiceInstances(this.entryClass, this.context);
+                handleServiceInstances(this.entryClass);
                 handleFieldInjections(this.entryClass, this.context);
                 handleServiceRegistrations(this.entryClass, this.context);
                 handleMethods(this.entryClass, this.context);
@@ -295,7 +296,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
         for (Tuple2<Method, Object> shutdownMethod : this.shutdownMethods) {
             try {
-                shutdownMethod.t1.invoke(shutdownMethod.t2, null);
+                shutdownMethod.t1.invoke(shutdownMethod.t2, (Object)null);
 
                 this.activatorLogger.info("Called bundle shutdown method '" + shutdownMethod.t2.getClass() +
                         "." + shutdownMethod.t1.getName() + "() for bundle: " +
@@ -372,10 +373,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * This is the first thing done to instantiate all service instances needed, so that they all can be injected later.
      *
      * @param managedClass The manages class to create instances of.
-     * @param context The bundles context.
      * @throws Exception
      */
-    protected void handleServiceInstances(Class managedClass, BundleContext context) throws Exception {
+    protected void handleServiceInstances(Class managedClass) throws Exception {
         OSGiServiceProvider serviceProvider = (OSGiServiceProvider)managedClass.getAnnotation(OSGiServiceProvider.class);
         if (serviceProvider != null) {
             int noInstances = 1;
@@ -458,7 +458,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             if (allRequiredAvailable) {
                 this.activatorLogger.info("All required services are now available for: " + managedClass.getName());
                 for (Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService : this.requiredServices) {
-                    if (requiredService.t2.equals(managedClass) && requiredService.t3 == false) {
+                    if (requiredService.t2.equals(managedClass) && !requiredService.t3) {
                         this.activatorLogger.info("Registering services for: " + managedClass.getName());
                         registerServices(requiredService.t2, this.context, requiredService.t4);
                         this.services.addAll(requiredService.t4);
@@ -579,9 +579,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 else if (!serviceProvider.instanceFactoryClass().equals(InstanceFactory.class)) {
                     String svcAPIList = serviceInstData.get(i).t1.getProperty(InstanceFactory.SERVICE_API_CLASSES_PROPERTY);
                     if (svcAPIList != null) {
-                        for (String svcAPI : svcAPIList.split(":")) {
-                            serviceAPIs.add(svcAPI);
-                        }
+                        Collections.addAll(serviceAPIs, svcAPIList.split(":"));
                     }
                     else {
                         Class[] interfaces = managedClass.getInterfaces();
@@ -756,7 +754,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     protected void handleMethods(Class managedClass, BundleContext context) {
         for (Method method : managedClass.getDeclaredMethods()) {
             handleStartupMethods(method, managedClass, context);
-            handleShutdownMethods(method, managedClass, context);
+            handleShutdownMethods(method, managedClass);
             handleListenerMethods(method, managedClass, context);
         }
     }
@@ -785,7 +783,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                             if (!Modifier.isStatic(method.getModifiers())) {
                                 managedInstance = getManagedInstance(managedClass);
                             }
-                            method.invoke(managedInstance, null);
+                            method.invoke(managedInstance, (Object)null);
 
                             APSActivator.this.activatorLogger.info("Called bundle start method '" + managedClass.getName() +
                                     "." + method.getName() + "()' for bundle: " + context.getBundle().getSymbolicName() + "!");
@@ -810,7 +808,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     if (!Modifier.isStatic(method.getModifiers())) {
                         managedInstance = getManagedInstance(managedClass);
                     }
-                    method.invoke(managedInstance, null);
+                    method.invoke(managedInstance, (Object)null);
 
                     this.activatorLogger.info("Called bundle start method '" + managedClass.getName() +
                             "." + method.getName() + "()' for bundle: " + context.getBundle().getSymbolicName() + "!");
@@ -831,9 +829,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      *
      * @param method The annotated method to call.
      * @param managedClass Used to lookup or create an instance of this class containing the method to call.
-     * @param context The bundle context.
      */
-    protected void handleShutdownMethods(Method method, Class managedClass, BundleContext context) {
+    protected void handleShutdownMethods(Method method, Class managedClass) {
         BundleStop bundleStop = method.getAnnotation(BundleStop.class);
         if (bundleStop != null) {
             Tuple2<Method, Object> shutdownMethod = new Tuple2<>(method, null);
@@ -950,9 +947,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param startPath The start path to look for entries.
      */
     protected void collectClassEntries(Bundle bundle, List<Class> entries, String startPath) {
-        Enumeration<String> entryPathEnumeration = bundle.getEntryPaths(startPath);
+        Enumeration entryPathEnumeration = bundle.getEntryPaths(startPath);
         while (entryPathEnumeration.hasMoreElements()) {
-            String entryPath = entryPathEnumeration.nextElement();
+            String entryPath = entryPathEnumeration.nextElement().toString();
             if (entryPath.endsWith("/")) {
                 collectClassEntries(bundle, entries, entryPath);
             }
@@ -969,11 +966,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                         entries.add(entryClass);
                     }
                 }
-                catch (ClassNotFoundException cnfe) {
+                catch (ClassNotFoundException | NoClassDefFoundError cnfe) {
                     this.activatorLogger.warn("Failed to load bundle class!", cnfe);
-                }
-                catch (NoClassDefFoundError ncdfe) {
-                    this.activatorLogger.warn("Failed to load bundle class!", ncdfe);
                 }
             }
         }

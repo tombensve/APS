@@ -18,20 +18,16 @@ The following third party products are using this license:
 
 * [MarkdownDoclet-3.0-null](http://code.google.com/p/markdown-doclet/)
 
-__[Apache Software License version 2.0](http://www.apache.org/licenses/LICENSE-2.0)__
+__[Apache Software License version 2.0](/LICENSE.txt)__
 
 The following third party products are using this license:
 
-* [vaadin-server-7.1.14](http://vaadin.com)
-* [vaadin-client-compiled-7.1.14](http://vaadin.com)
-* [vaadin-client-7.1.14](http://vaadin.com)
-* [vaadin-push-7.1.14](http://vaadin.com)
-* [vaadin-themes-7.1.14](http://vaadin.com)
+* [commons-codec-20041127.091804](http://jakarta.apache.org/commons/codec/)
 
 __[CDDL + GPLv2 with classpath version exception](https://glassfish.dev.java.net/nonav/public/CDDL+GPL.html)__
 
 The following third party products are using this license:
 
-* [javax.servlet-api-3.0.1](http://servlet-spec.java.net)
+* [javaee-web-api-6.0](http://java.sun.com/javaee/6/docs/api/index.html)
 
 <!-- CLM -->

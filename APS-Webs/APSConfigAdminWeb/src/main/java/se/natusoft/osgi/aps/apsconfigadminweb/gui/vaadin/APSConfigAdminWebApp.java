@@ -66,7 +66,6 @@ import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.handlerapi.Menu
 import se.natusoft.osgi.aps.tools.web.vaadin.tools.Refreshable;
 
 import javax.servlet.annotation.WebServlet;
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -108,9 +107,14 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
     // Vaadin GUI init
     //
 
+    /**
+     * Let our base class handle the login.
+     *
+     * @param clientContext The clients context.
+     */
     @Override
     protected void handleLogin(WebClientContext clientContext) {
-        defaultLoginHandler();
+        useDefaultLoginHandler();
     }
 
     /**

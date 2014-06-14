@@ -37,6 +37,7 @@
 package se.natusoft.osgi.aps.tools.web.vaadin;
 
 import com.vaadin.data.Property;
+import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.*;
 import se.natusoft.osgi.aps.tools.web.LoginHandler;
 
@@ -90,6 +91,8 @@ public class VaadinLoginDialogHandler {
         // Create Login window dialog
         this.loginWindow = new Window("Login");
         this.loginWindow.setClosable(false);
+        this.loginWindow.setDraggable(false);
+        this.loginWindow.setResizable(false);
         this.loginWindow.setModal(true);
         this.loginWindow.setWidth("300px");
 

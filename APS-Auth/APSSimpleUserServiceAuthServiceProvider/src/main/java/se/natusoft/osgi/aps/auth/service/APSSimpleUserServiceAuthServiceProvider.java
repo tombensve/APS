@@ -54,7 +54,7 @@ public class APSSimpleUserServiceAuthServiceProvider implements APSAuthService<S
     //
 
     /** The user service we authenticate against. */
-    @OSGiService(timeout = "30 seconds", additionalSearchCriteria = "(instance=aps-admin-web)")
+    @OSGiService(timeout = "15 seconds", additionalSearchCriteria = "(instance=aps-admin-web)")
     private APSSimpleUserService userService;
 
     @Managed(loggingFor = "aps-user-service-auth-service")

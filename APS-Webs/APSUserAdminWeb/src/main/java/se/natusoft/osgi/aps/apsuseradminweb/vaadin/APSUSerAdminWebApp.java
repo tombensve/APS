@@ -109,6 +109,16 @@ public class APSUSerAdminWebApp extends APSVaadinOSGiApplication implements Menu
     //
 
     /**
+     * Let our base class handle the login.
+     *
+     * @param clientContext The clients context.
+     */
+    @Override
+    protected void handleLogin(WebClientContext clientContext) {
+        useDefaultLoginHandler();
+    }
+
+    /**
      * Initializes services used by the application.
      *
      * @param clientContext The client context for accessing services.

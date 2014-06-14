@@ -103,6 +103,9 @@ public abstract class APSVaadinOSGiApplication
     /** A login handler. */
     private APSAdminWebLoginHandler loginHandler = null;
 
+    /** A gui login dialog handler. */
+    @SuppressWarnings("FieldCanBeLocal")
+    private VaadinLoginDialogHandler loginDialogHandler = null;
 
     //
     // Methods
@@ -241,7 +244,7 @@ public abstract class APSVaadinOSGiApplication
     /**
      * This gets called to handle a login. This implementation does nothing at all!
      * But if subclasses override this they can do their own login handling or just
-     * call defaultLoginHandler().
+     * call useDefaultLoginHandler().
      *
      * @param clientContext The clients context.
      */
@@ -254,7 +257,7 @@ public abstract class APSVaadinOSGiApplication
      * Provides a default login handler that anyone can use.
      */
     @SuppressWarnings("UnusedDeclaration")
-    protected void defaultLoginHandler() {
+    protected void useDefaultLoginHandler() {
 
         if (this.loginHandler == null) {
             this.loginHandler = new APSAdminWebLoginHandler(this.clientContext.getBundleContext()) {
@@ -272,19 +275,14 @@ public abstract class APSVaadinOSGiApplication
             };
         }
 
+        this.loginDialogHandler = new VaadinLoginDialogHandler(this.loginHandler);
+
         this.loginHandler.setSessionIdFromRequestCookie(new VaadinCookieAdapters.VaadinRequestCookieReaderAdapter(VaadinService.getCurrentRequest()));
 
-        // TODO: Fix.
         if (!this.loginHandler.hasValidLogin()) {
-            Window notAuthWindow = new Window("Login required");
-            notAuthWindow.setClosable(false);
-            notAuthWindow.setSizeFull();
-            VerticalLayout nawvl = new VerticalLayout();
-            Label loginMessage = new Label("<font size='+2'>Please login!</font>", ContentMode.HTML);
-            nawvl.addComponent(loginMessage);
-            notAuthWindow.setContent(nawvl);
-            UI.getCurrent().addWindow(notAuthWindow);
+            this.loginDialogHandler.doLoginDialog();
         }
+        this.loginHandler.saveSessionIdOnResponse(new VaadinCookieAdapters.VaadinResponseCookieWriterAdapter(VaadinService.getCurrentResponse()));
 
     }
 

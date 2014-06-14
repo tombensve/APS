@@ -40,7 +40,6 @@ import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -49,9 +48,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.Managed;
 import se.natusoft.osgi.aps.tools.web.APSAdminWebLoginHandler;
 import se.natusoft.osgi.aps.tools.web.WebClientContext;
 import se.natusoft.osgi.aps.tools.web.vaadin.APSVaadinOSGiApplication;
-import se.natusoft.osgi.aps.tools.web.vaadin.VaadinLoginDialogHandler;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.SidesAndCenterLayout;
-import se.natusoft.osgi.aps.tools.web.vaadin.tools.VaadinCookieAdapters;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -94,9 +91,6 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
     /** A login handler. */
     private APSAdminWebLoginHandler loginHandler = null;
 
-    /** A gui login dialog handler. */
-    @SuppressWarnings("FieldCanBeLocal")
-    private VaadinLoginDialogHandler loginDialogHandler = null;
 
     //
     // Vaadin GUI init
@@ -110,28 +104,6 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
     @Override
     public void initServices(WebClientContext clientContext) {
 
-        this.loginHandler = new APSAdminWebLoginHandler(clientContext.getBundleContext()) {
-
-            @Override
-            public boolean login(String userId, String pw) {
-                boolean result = super.login(userId, pw);
-
-                if (!result) {
-                    getUserNotifier().warning("Login failed!", "Bad userid or password!");
-                }
-
-                return result;
-            }
-        };
-
-        this.loginDialogHandler = new VaadinLoginDialogHandler(this.loginHandler);
-
-        this.loginHandler.setSessionIdFromRequestCookie(new VaadinCookieAdapters.VaadinRequestCookieReaderAdapter(VaadinService.getCurrentRequest()));
-
-        if (!this.loginHandler.hasValidLogin()) {
-            this.loginDialogHandler.doLoginDialog();
-        }
-        this.loginHandler.saveSessionIdOnResponse(new VaadinCookieAdapters.VaadinResponseCookieWriterAdapter(VaadinService.getCurrentResponse()));
     }
 
     /**
@@ -165,9 +137,17 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
 
         setContent(this.mainLayout);
 
-//        this.loginDialogHandler = new VaadinLoginDialogHandler(this.main, this.loginHandler);
-//        this.loginDialogHandler.setLoginDialogTitle("APS Admin Login");
     }
+
+    /**
+     * Handle logins.
+     *
+     * @param clientContext The clients context.
+     */
+    protected void handleLogin(WebClientContext clientContext) {
+        useDefaultLoginHandler();
+    }
+
 
     //
     // Event Handler Methods
