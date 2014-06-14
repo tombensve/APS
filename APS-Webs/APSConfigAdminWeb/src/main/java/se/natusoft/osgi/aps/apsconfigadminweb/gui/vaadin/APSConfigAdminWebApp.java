@@ -120,32 +120,6 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
      */
     @Override
     public void initServices(WebClientContext clientContext) {
-        if (VaadinService.getCurrentRequest().getParameter("adminRefresh") != null) {
-            close();
-        }
-
-        // This is a workaround to the problem that Vaadin 7 cannot run another Vaadin application embedded in a tab without
-        // having the "outer" Vaadin application interfere with it. Thereby we setup an old frame in which we load ourself.
-        VaadinSession.getCurrent().addRequestHandler(new RequestHandler() {
-            @Override
-            public boolean handleRequest(VaadinSession session, VaadinRequest request, VaadinResponse response) throws IOException {
-                boolean handled = false;
-
-                if (request != null && request.getParameterMap().containsKey("frame")) {
-                    handled = true;
-                    response.setContentType("text/html");
-                    response.getWriter().append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Frameset//EN\"\n" +
-                            "   \"http://www.w3.org/TR/html4/frameset.dtd\">");
-                    response.getWriter().append("<html>");
-                    response.getWriter().append("<frameset>");
-                    response.getWriter().append("<frame src=\"/apsadminweb/config\">");
-                    response.getWriter().append("</frame>");
-                    response.getWriter().append("</frameset>");
-                    response.getWriter().append("</html>");
-                }
-                return handled;
-            }
-        });
 
         this.logger = new APSLogger(System.out);
         this.logger.start(clientContext.getBundleContext());
