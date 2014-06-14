@@ -51,6 +51,7 @@ import se.natusoft.osgi.aps.tools.web.WebClientContext;
 import se.natusoft.osgi.aps.tools.web.vaadin.APSVaadinOSGiApplication;
 import se.natusoft.osgi.aps.tools.web.vaadin.VaadinLoginDialogHandler;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.SidesAndCenterLayout;
+import se.natusoft.osgi.aps.tools.web.vaadin.tools.VaadinCookieAdapters;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -125,11 +126,12 @@ public class APSAdminWebApp extends APSVaadinOSGiApplication implements ClickLis
 
         this.loginDialogHandler = new VaadinLoginDialogHandler(this.loginHandler);
 
-        this.loginHandler.setSessionIdFromRequestCookie(VaadinService.getCurrentRequest());
+        this.loginHandler.setSessionIdFromRequestCookie(new VaadinCookieAdapters.VaadinRequestCookieReaderAdapter(VaadinService.getCurrentRequest()));
+
         if (!this.loginHandler.hasValidLogin()) {
             this.loginDialogHandler.doLoginDialog();
         }
-        this.loginHandler.saveSessionIdOnResponse(VaadinService.getCurrentResponse());
+        this.loginHandler.saveSessionIdOnResponse(new VaadinCookieAdapters.VaadinResponseCookieWriterAdapter(VaadinService.getCurrentResponse()));
     }
 
     /**
