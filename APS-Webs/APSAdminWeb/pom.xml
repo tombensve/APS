@@ -91,6 +91,7 @@
             WEB-INF/lib/vaadin-slf4j-jdk14-1.6.1.jar,
             WEB-INF/lib/vaadin-theme-compiler-${vaadin.version}.jar,
             WEB-INF/lib/vaadin-themes-${vaadin.version}.jar,
+            WEB-INF/lib/aps-vaadin-web-tools-${project.version}.jar,
             WEB-INF/lib/aps-web-tools-${project.version}.jar
         </osgi.bundle.classpath>
         
@@ -181,6 +182,13 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-web-tools</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-vaadin-web-tools</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
