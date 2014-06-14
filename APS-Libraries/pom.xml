@@ -55,5 +55,6 @@
         <module>APSToolsLib</module>
         <module>APSJSONLib</module>
         <module>APSWebTools</module>
+        <module>APSVaadinWebTools</module>
     </modules>
 </project>
