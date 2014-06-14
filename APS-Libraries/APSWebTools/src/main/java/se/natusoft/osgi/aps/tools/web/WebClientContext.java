@@ -36,7 +36,6 @@
  */
 package se.natusoft.osgi.aps.tools.web;
 
-import com.vaadin.server.VaadinRequest;
 import org.osgi.framework.BundleContext;
 
 import java.util.HashMap;
@@ -57,9 +56,6 @@ public class WebClientContext {
     /** A cached bundle context. */
     private BundleContext bundleContext = null;
 
-    /** The current request. */
-    private VaadinRequest request = null;
-
     /** Holds services mapped to service interface class. */
     private Map<Class, Object> serviceMap = new HashMap<>();
 
@@ -73,10 +69,9 @@ public class WebClientContext {
      * @param userNotifier Used to send messages to the user.
      * @param bundleContextProvider Provides the OSGi BundleContext.
      */
-    public WebClientContext(UserNotifier userNotifier, OSGiBundleContextProvider bundleContextProvider, VaadinRequest request) {
+    public WebClientContext(UserNotifier userNotifier, OSGiBundleContextProvider bundleContextProvider) {
         this.userNotifier = userNotifier;
         this.bundleContext = bundleContextProvider.getBundleContext();
-        this.request = request;
     }
     
     //
@@ -95,13 +90,6 @@ public class WebClientContext {
      */
     public UserNotifier getNotifier() {
         return this.userNotifier;
-    }
-
-    /**
-     * Returns the Vaadin request.
-     */
-    public VaadinRequest getRequest() {
-        return this.request;
     }
 
     /**

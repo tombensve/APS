@@ -34,7 +34,7 @@
  *         2011-09-11: Created!
  *         
  */
-package se.natusoft.osgi.aps.tools.web.vaadin;
+package se.natusoft.osgi.aps.tools.web;
 
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;

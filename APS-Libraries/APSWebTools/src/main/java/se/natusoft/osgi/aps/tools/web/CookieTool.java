@@ -36,9 +36,8 @@
  */
 package se.natusoft.osgi.aps.tools.web;
 
-import com.vaadin.server.VaadinResponse;
-
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -72,28 +71,24 @@ public class CookieTool {
      * @param value The value of the cookie.
      * @param maxAge The max age of the cookie.
      */
-    public static void setCookie( HttpServletResponse resp, String name, String value, int maxAge, String path) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setMaxAge(maxAge);
-        cookie.setHttpOnly(true);
-        cookie.setPath(path);
-        resp.addCookie(cookie);
+    public static void setCookie(HttpServletResponse resp, String name, String value, int maxAge, String path) {
+        setCookie(new HttpServletResponseCookieWriterAdapter(resp), name, value, maxAge, path);
     }
 
     /**
      * Sets a cookie on the specified response.
      *
-     * @param resp The servlet response to set the cookie on.
+     * @param cookieWriter The object to set the cookie on.
      * @param name The name of the cookie.
      * @param value The value of the cookie.
      * @param maxAge The max age of the cookie.
      */
-    public static void setCookie(VaadinResponse resp, String name, String value, int maxAge, String path) {
+    public static void setCookie(CookieWriter cookieWriter, String name, String value, int maxAge, String path) {
         Cookie cookie = new Cookie(name, value);
         cookie.setMaxAge(maxAge);
         cookie.setHttpOnly(true);
         cookie.setPath(path);
-        resp.addCookie(cookie);
+        cookieWriter.writeCookie(cookie);
     }
 
     /**
@@ -103,20 +98,75 @@ public class CookieTool {
      * @param resp The servlet response to remove the cookie on.
      */
     public void deleteCookie(String name, HttpServletResponse resp) {
-        Cookie cookie = new Cookie(name, "");
-        cookie.setMaxAge(0);
-        resp.addCookie(cookie);
+        deleteCookie(name, new HttpServletResponseCookieWriterAdapter(resp));
     }
 
     /**
      * Removes a cookie.
      *
      * @param name The name of the cookie to remove.
-     * @param resp The servlet response to remove the cookie on.
+     * @param cookieWriter The object to remove the cookie on.
      */
-    public void deleteCookie(String name, VaadinResponse resp) {
+    public void deleteCookie(String name, CookieWriter cookieWriter) {
         Cookie cookie = new Cookie(name, "");
         cookie.setMaxAge(0);
-        resp.addCookie(cookie);
+        cookieWriter.writeCookie(cookie);
     }
+
+    //
+    // Inner Classes
+    //
+
+    /**
+     * Reads cookies.
+     */
+    public interface CookieReader {
+        /**
+         * @return A set of cookies.
+         */
+        Cookie[] readCookies();
+    }
+
+    /**
+     * Writes one cookie at a time.
+     */
+    public interface CookieWriter {
+        /**
+         * Writes one cookie.
+         *
+         * @param cookie The cookie to write.
+         */
+        public void writeCookie(Cookie cookie);
+    }
+
+    /**
+     * Cookie reader adapter for HttpServletRequest.
+     */
+    public static class HttpServletRequestCookieReaderAdaper implements CookieReader {
+        private HttpServletRequest request;
+
+        public HttpServletRequestCookieReaderAdaper(HttpServletRequest request) {
+            this.request = request;
+        }
+
+        public Cookie[] readCookies() {
+            return this.request.getCookies();
+        }
+    }
+
+    /**
+     * Cooke writer adapter for HttpServletResponse.
+     */
+    public static class HttpServletResponseCookieWriterAdapter implements CookieWriter {
+        private HttpServletResponse response;
+
+        public HttpServletResponseCookieWriterAdapter(HttpServletResponse response) {
+            this.response = response;
+        }
+
+        public void writeCookie(Cookie cookie) {
+            this.response.addCookie(cookie);
+        }
+    }
+
 }

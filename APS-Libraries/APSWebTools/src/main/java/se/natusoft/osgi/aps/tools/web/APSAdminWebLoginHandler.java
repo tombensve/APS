@@ -36,8 +36,6 @@
  */
 package se.natusoft.osgi.aps.tools.web;
 
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinResponse;
 import org.osgi.framework.BundleContext;
 
 import javax.servlet.http.HttpServletRequest;
@@ -79,22 +77,17 @@ public class APSAdminWebLoginHandler extends APSLoginHandler implements APSLogin
      * @param request The request to get the session id cookie from.
      */
     public void setSessionIdFromRequestCookie(HttpServletRequest request) {
-        if (request.getCookies() != null) {
-            String sessId = CookieTool.getCookie(request.getCookies(), "aps-adminweb-session-id");
-            if (sessId != null) {
-                this.sessionId = sessId;
-            }
-        }
+        setSessionIdFromRequestCookie(new CookieTool.HttpServletRequestCookieReaderAdaper(request));
     }
 
     /**
      * Sets the session id from a cookie in the specified request.
      *
-     * @param request The request to get the session id cookie from.
+     * @param cookieReader The cookie reader to get the session id cookie from.
      */
-    public void setSessionIdFromRequestCookie(VaadinRequest request) {
-        if (request.getCookies() != null) {
-            String sessId = CookieTool.getCookie(request.getCookies(), "aps-adminweb-session-id");
+    public void setSessionIdFromRequestCookie(CookieTool.CookieReader cookieReader) {
+        if (cookieReader.readCookies() != null) {
+            String sessId = CookieTool.getCookie(cookieReader.readCookies(), "aps-adminweb-session-id");
             if (sessId != null) {
                 this.sessionId = sessId;
             }
@@ -107,21 +100,18 @@ public class APSAdminWebLoginHandler extends APSLoginHandler implements APSLogin
      * @param response The response to save the session id cookie on.
      */
     public void saveSessionIdOnResponse(HttpServletResponse response) {
-        if (this.sessionId != null) {
-
-            CookieTool.setCookie(response, "aps-adminweb-session-id", this.sessionId, 3600 * 24, "/");
-        }
+        saveSessionIdOnResponse(new CookieTool.HttpServletResponseCookieWriterAdapter(response));
     }
 
     /**
      * Saves the current session id on the specified response.
      *
-     * @param response The response to save the session id cookie on.
+     * @param cookieWriter The cookie writer to save the session id cookie on.
      */
-    public void saveSessionIdOnResponse(VaadinResponse response) {
+    public void saveSessionIdOnResponse(CookieTool.CookieWriter cookieWriter) {
         if (this.sessionId != null) {
 
-            CookieTool.setCookie(response, "aps-adminweb-session-id", this.sessionId, 3600 * 24, "/");
+            CookieTool.setCookie(cookieWriter, "aps-adminweb-session-id", this.sessionId, 3600 * 24, "/");
         }
     }
 
@@ -158,4 +148,5 @@ public class APSAdminWebLoginHandler extends APSLoginHandler implements APSLogin
     public String getRequiredRole() {
         return "apsadmin";
     }
+
 }

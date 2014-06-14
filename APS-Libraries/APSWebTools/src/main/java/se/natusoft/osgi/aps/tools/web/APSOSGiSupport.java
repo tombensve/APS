@@ -38,7 +38,6 @@ package se.natusoft.osgi.aps.tools.web;
 
 import org.osgi.framework.BundleContext;
 import se.natusoft.osgi.aps.tools.APSActivator;
-import se.natusoft.osgi.aps.tools.web.vaadin.APSSessionListener;
 
 import javax.servlet.http.HttpSession;
 
