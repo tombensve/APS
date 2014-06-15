@@ -89,7 +89,7 @@ public class ConfigEnvSelector extends VerticalLayout {
         this.configEnvSelectListener = new ValueChangeListener() {
             @Override
             public void valueChange(ValueChangeEvent event) {
-                selectEditedConfigEnv(event.getProperty().toString());
+                selectEditedConfigEnv(event.getProperty().getValue().toString());
             }
         };
     }
