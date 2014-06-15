@@ -347,6 +347,17 @@ public class APSFileImpl /*extends File*/ implements APSFile {
     }
 
     /**
+     * Checks if the named file/directory exists.
+     *
+     * @param name The name to check.
+     * @return true or false.
+     */
+    @Override
+    public boolean exists(String name) {
+        return new File(name).exists();
+    }
+
+    /**
      * @see java.io.File#isDirectory()
      */
     @Override
@@ -417,5 +428,17 @@ public class APSFileImpl /*extends File*/ implements APSFile {
     public String toString() {
         return this.fs.toDisplayPath(this.backingFile.getPath());
     }
-    
+
+    /**
+     * This API tries to hide the real path and don't allow access outside of its root, but sometimes you just
+     * need the real path to pass on to other code requiring it. This provides that. Use it only when needed!
+     *
+     * @return A File object representing the real/full path to this file.
+     */
+    @Override
+    public File toFile() {
+        return this.backingFile;
+
+    }
+
 }

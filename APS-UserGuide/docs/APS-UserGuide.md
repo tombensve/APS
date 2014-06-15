@@ -593,6 +593,18 @@ _See_
 
 > java.io.File.exists()
 
+__boolean exists(String name)__
+
+Checks if the named file/directory exists.
+
+_Returns_
+
+> true or false.
+
+_Parameters_
+
+> _name_ - The name to check. 
+
 __boolean isDirectory()__
 
 _See_
@@ -644,6 +656,14 @@ _See_
 __String toString()__
 
 Returns a string representation of this _APSFile_.
+
+__File toFile()__
+
+This API tries to hide the real path and don't allow access outside of its root, but sometimes you just need the real path to pass on to other code requiring it. This provides that. Use it only when needed!
+
+_Returns_
+
+> A File object representing the real/full path to this file.
 
 }
 
@@ -825,7 +845,7 @@ This is a library (exports all its packages and provides no service) for reading
 
 This basically provides a class representing each JSON type: JSONObject, JSONString, JSONNumber, JSONBoolean, JSONArray, JSONNull, and a JSONValue class that is the common base class for all the other. Each class knows how to read and write the JSON type it represents. Then there is a JavaToJSON and a JSONToJava class with static methods for converting back and forth. This mapping is very primitive. There has to be one to one between the JSON and the Java objects.
 
-This does not try to be an alternative to Jackson! This is used internally by other services.
+## Changes  0.10.0 _readJSON(...)_ in the __JSONValue__ base class now throws JSONEOFException (extends IOException) on EOF. The reason for this is that internally it reads characters which cannot return -1 or any non JSON data valid char to represent EOF. Yes, it would be possible to replace _char_ with _Character_, but that will have a greater effect on existing code using this lib. If an JSONEOFException comes and is not handled it is still very much more clear what happened than a NullPointerException would be!  
 
 ## APIs
 
@@ -1004,6 +1024,16 @@ Returns the value of this boolean as a String.
 
 
 
+
+}
+
+----
+
+    
+
+public _class_ __JSONEOFException__ extends  IOException  }  [se.natusoft.osgi.aps.json] {
+
+Thrown if a JSON structure is tried to be read from a stream that has no more data.
 
 }
 
@@ -2034,7 +2064,7 @@ This will result in a callback when any instance of the service goes away. If th
                 }
             });
 
-Note that since the service is already gone by this time you don’t get the service instance, only its reference and the class representing its API. In most cases both of these parameters are irellevant.
+Note that since the service is already gone by this time you don't get the service instance, only its reference and the class representing its API. In most cases both of these parameters are irellevant.
 
 #### onActiveServiceAvailable
 
@@ -2057,7 +2087,7 @@ Don't use this in an activator start() method! onActiveServiceAvailable() and on
                 }
             }, arg1, arg2);
 
-If you don’t have any arguments this will also work:
+If you don't have any arguments this will also work:
 
             tracker.withService(new WithService<Service>() {
                 @Override
@@ -2171,9 +2201,9 @@ If _required=true_ is specified and this field is in a class annotated with _@OS
         
         }
 
-__@Inject__ - This will have an instance injected. There will be a unique instance for each name specified with the default name of "default" being used in none is specified. There are 2 field types handled specially: BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger instance the 'loggingFor' annotation property can be specified. Please note that any other type must have a default constructor to be instantiated and injected!
+__@Managed__ - This will have an instance managed and injected. There will be a unique instance for each name specified with the default name of "default" being used if none is specified. There are 2 field types handled specially: BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger instance the 'loggingFor' annotation property can be specified. Please note that any other type must have a default constructor to be instantiated and injected!
 
-        public @interface Inject {
+        public @interface Managed {
             /**
              * The name of the instance to inject. If the same is used in multiple classes the same instance will
              * be injected.
@@ -2311,6 +2341,14 @@ _Parameters_
 
 > _request_ - The request to get the session id cookie from. 
 
+__public void setSessionIdFromRequestCookie(CookieTool.CookieReader cookieReader)__
+
+Sets the session id from a cookie in the specified request.
+
+_Parameters_
+
+> _cookieReader_ - The cookie reader to get the session id cookie from. 
+
 __public void saveSessionIdOnResponse(HttpServletResponse response)__
 
 Saves the current session id on the specified response.
@@ -2318,6 +2356,14 @@ Saves the current session id on the specified response.
 _Parameters_
 
 > _response_ - The response to save the session id cookie on. 
+
+__public void saveSessionIdOnResponse(CookieTool.CookieWriter cookieWriter)__
+
+Saves the current session id on the specified response.
+
+_Parameters_
+
+> _cookieWriter_ - The cookie writer to save the session id cookie on. 
 
 
 
@@ -2362,13 +2408,7 @@ The bundle needs to import the following packages for this class to work:
 
 
 
-__public APSLoginHandler(BundleContext context, HandlerInfo handlerInfo)__
 
-Creates a new VaadinLoginDialogHandler.
-
-_Parameters_
-
-> _context_ - The bundles BundleContext. 
 
 __protected void setHandlerInfo(HandlerInfo handlerInfo)__
 
@@ -3720,11 +3760,11 @@ _Throws_
 
 # APSExternalProtocolExtender
 
-This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles _MANIFEST.MF_ contains ”APS-Externalizable: true” the service is made externally available. If the _MANIFEST.MF_ contains ”APS-Externalizable: false” however making the service externally available is forbidden. A specific service can also be registered containing an _aps-externalizable_ property with value _true_ to be externalizable. This overrides any other specification.
+This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles _MANIFEST.MF_ contains `APS-Externalizable: true` the service is made externally available. If the _MANIFEST.MF_ contains `APS-Externalizable: false` however making the service externally available is forbidden. A specific service can also be registered containing an _aps-externalizable_ property with value _true_ to be externalizable. This overrides any other specification.
 
 The exernal protocol extender also provides a configuration where services can be specified with their fully qualified name to be made externally available. If a bundle however have specifically specified false for the above manifest entry then the config entry will be ignored.
 
-So, what is meant by ”made externally available” ? Well what this bundle does is to analyze with reflection all services that are in one way or the other specified as being externalizable (manifest or config) and for all callable methods of the service an _APSExternallyCallable_ object will be created and saved locally with the service name. _APSExternallyCallable_ extends _java.util.concurrent.Callable_, and adds the possibility to add parameters to calls and also provides meta data for the service method, and the bundle it belongs to. There is also an _APSRESTCallable_ that extends _APSExternallyCallable_ and also takes an http method and maps that to a appropriate service method.
+So, what is meant by _made externally available_ ? Well what this bundle does is to analyze with reflection all services that are in one way or the other specified as being externalizable (manifest or config) and for all callable methods of the service an _APSExternallyCallable_ object will be created and saved locally with the service name. _APSExternallyCallable_ extends _java.util.concurrent.Callable_, and adds the possibility to add parameters to calls and also provides meta data for the service method, and the bundle it belongs to. There is also an _APSRESTCallable_ that extends _APSExternallyCallable_ and also takes an http method and maps that to a appropriate service method.
 
 ## The overall structure
 
@@ -3758,13 +3798,19 @@ There is a base API for protocols: _RPCProtocol_. APIs for different types of pr
 
 The _StreamedRPCProtocol_ extends _RPCProtocol_ and provides a method for parsing a request from an _InputStream_ returning an _RPCRequest_ object. This request object contains the name of the service, the method, and the parameters. This is enough for using _APSExternalProtocolService_ to do a call to the service. The request object is also used to write the call response on an OutputStream. There is also a method to write an error response.
 
-The _StreamedHTTPProtocol_ extends _StreamedRPCProtocol_ and indicates that the protocol should probably only be supported by http transports. It also provides a _supportsREST()_ method that transports can use to make decicions on how the call should be interpreted.
-
 It is the responsibility of the transport provider to use a protocol to read and write requests and responses and to use the request information to call a service method. An exception is the case of http transports supporting REST that must take the responibility for returning an http status.
 
 ### Getting information about services and protocols.
 
 A transport provider can register themselves with the _APSExternalProtocolService_ by implementing the _APSExternalProtocolListener_ interface. They will then be notified when a new externalizable service becomes available or is leaving and when a protocol becomes available or is leaving.
+
+## WARNING - Non backwards compatible changes!
+
+This version have non backwards compatible changes! _StreamedRPCProtocol_ have changed in parameters for _parseRequest(...)_ and _isRest()_ is gone. _RPCProtocol_ have changes in parameters for crateRPCError(...). The error code is now gone. These changes was a necessity! The old was really bad and tried to solve REST support in a very stupid way. It is now handled very much more elegantly without any special support for it with _is_methods!
+
+The _APSExtProtocolHTTPTransportProvider_ now checks if an _RPCError_ (returned by createRPCError(...)) object actually is an _HTTPError_ subclass providing an HTTP error code to return.
+
+_parseRequest(...)_ parameters now also contain the class of the service and a new RequestIntention enum. The service class is only for inspecting methods for annoations or other possible meta data. The JSONREST protocol for example uses this to find annotations indicating GET, PUT, DELETE, etc methods, which is far more flexible than the old solution of requiring a get(), put(), etc method. The RequestIntention enum provides the following values: CREATE, READ, UPDATE, DELETE, UNKNOWN. That is CRUD + UNKNOWN. It will be UNKNOWN if the transport cannot determine such information. These are basically to support REST protocols without being too HTTP specific. Other transports can possible also make use of them.
 
 ## See also
 
@@ -3795,22 +3841,6 @@ _Parameters_
 _Throws_
 
 > _RuntimeException_ - If the service is not available. 
-
-__public boolean isRESTCallable(String serviceName) throws RuntimeException__
-
-Returns true if the service has _post*(...)_, _put*(...)_, _get*(...)_, and/or _delete*(...)_ methods. This is to help HTTP transports support REST calls.
-
-_Parameters_
-
-> _serviceName_ - The service to check if it has any REST methods. 
-
-__public APSRESTCallable getRESTCallable(String serviceName)__
-
-Returns an APSRESTCallable containing one or more of post, put, get, and delete methods. This is to help HTTP transports support REST calls.
-
-_Parameters_
-
-> _serviceName_ - The name of the service to get the REST Callables for. 
 
 __public Set<String> getAvailableServiceFunctionNames(String serviceName)__
 
@@ -3930,21 +3960,21 @@ _Returns_
 
 > The bundle the service belongs to.
 
-__public void setArguments(Object... value)__
+__public Class getServiceClass()__
 
-Provides parameters to the callable using a varags list of parameter values.
+Returns the class of the service implementation.
 
-_Parameters_
-
-> _value_ - A parameter value. 
-
-__ReturnType call() throws Exception__
+__ReturnType call(Object... arguments) throws Exception__
 
 Calls the service method represented by this APSExternallyCallable.
 
 _Returns_
 
 > The return value of the method call if any or null otherwise.
+
+_Parameters_
+
+> _arguments_ - Possible arguments to the call. 
 
 _Throws_
 
@@ -4058,6 +4088,18 @@ This defines the valid choices for selectMethod(...).
 
     
 
+
+
+__APSRESTCallable.HttpMethod httpMethod() default APSRESTCallable.HttpMethod.NONE__
+
+This needs to be provided if you are providing a REST API using JSONREST protocol of the APSStreamedJSONRPCProtocolProvider bundle.
+
+}
+
+----
+
+    
+
 public _class_ __APSRESTException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.rpc.errors] {
 
 This is a special exception that services can throw if they are intended to be available as REST services through the aps-external-protocol-extender + aps-ext-protocol-http-transport-provider. This allows for better control over status codes returned by the service call.
@@ -4094,7 +4136,15 @@ Returns the http status code.
 
 public _enum_ __ErrorType__   [se.natusoft.osgi.aps.api.net.rpc.errors] {
 
-This defines what I think is a rather well though through set of error types applicable for an RPC call. No they are not mine, they come from Matt Morley in his JSONRPC 2.0 specification at [http://jsonrpc.org/spec.html](http://jsonrpc.org/spec.html). I did add SERVICE_NOT_FOUND since it is fully possible to try to call a service that does not exist.
+This defines what I think is a rather well though through set of error types applicable for an RPC call. No they are not mine, they come from Matt Morley in his JSONRPC 2.0 specification at [http://jsonrpc.org/spec.html](http://jsonrpc.org/spec.html).
+
+I did however add the following:
+
+* SERVICE_NOT_FOUND - Simply because this can happen in this case!
+
+* AUTHORIZATION_REQUIRED - This is also a clear possibility.
+
+* BAD_AUTHORIZATION
 
 __PARSE_ERROR__
 
@@ -4123,6 +4173,14 @@ Internal protocol error.
 __SERVER_ERROR__
 
 Server related error.
+
+__AUTHORIZATION_REQUIRED__
+
+Authorization is required, but none was supplied.
+
+__BAD_AUTHORIZATION;__
+
+Bad authorization was supplied.
 
 }
 
@@ -4294,13 +4352,23 @@ _Parameters_
 
     
 
+public _enum_ __RequestIntention__   [se.natusoft.osgi.aps.api.net.rpc.model] {
+
+The intention of a request.
+
+}
+
+----
+
+    
+
 public _interface_ __RPCRequest__   [se.natusoft.osgi.aps.api.net.rpc.model] {
 
 This represents a request returned by protocol implementations.
 
 __boolean isValid()__
 
-Returns true if this request is valid. If this returns false all information except _getError()_ is invalid, and _getError()_ should return a valid _RPCError_ object.
+Returns true if this request is valid. If this returns false all information except _getError()_ is __invalid__, and _getError()_ should return a valid _RPCError_ object.
 
 __RPCError getError()__
 
@@ -4388,7 +4456,7 @@ _Returns_
 
 > A short description of the provided service. This should be in plain text.
 
-__RPCError createRPCError(ErrorType errorType, String errorCode, String message, String optionalData, Throwable cause)__
+__RPCError createRPCError(ErrorType errorType, String message, String optionalData, Throwable cause)__
 
 Factory method to create an error object.
 
@@ -4399,8 +4467,6 @@ _Returns_
 _Parameters_
 
 > _errorType_ - The type of the error. 
-
-> _errorCode_ - An error code representing the error. 
 
 > _message_ - An error message. 
 
@@ -4414,31 +4480,13 @@ _Parameters_
 
     
 
-public _interface_ __StreamedHTTPProtocol__ extends  StreamedRPCProtocol    [se.natusoft.osgi.aps.api.net.rpc.service] {
-
-This is a marker interface indicating that the protocol is really assuming a HTTP transport and is expecting to be able to return http status codes. This also means it will be returning an HTTPError (which extends RPCError) from _createError(...)_.
-
-It might be difficult for non HTTP transports to support this kind of protocol, and such should probably ignore these protocols. For example a REST implementation of this protocol will not be writing any error response back, but rather expect the transport to deliver the http status code it provides. A non HTTP transport will not be able to know how to communicate back errors in this case since it will not know anything about the protocol itself.
-
-__boolean supportsREST()__
-
-_Returns_
-
-> true if the protocol supports REST.
-
-}
-
-----
-
-    
-
 public _interface_ __StreamedRPCProtocol__ extends  RPCProtocol    [se.natusoft.osgi.aps.api.net.rpc.service] {
 
 This represents an RPC protocol provider that provide client/service calls with requests read from an InputStream or having parameters passes as strings and responses written to an OutputStream.
 
 HTTP transports can support both _parseRequests(...)_ and _parseRequest(...)_ while other transports probably can handle only _parseRequests(...)_. __A protocol provider can return null for either of these!__ Most protocol providers will support _parseRequests(...)_ and some also _parseRequest(...)_.
 
-__List<RPCRequest> parseRequests(String serviceQName, String method, InputStream requestStream) throws IOException__
+__List<RPCRequest> parseRequests(String serviceQName, Class serviceClass, String method, InputStream requestStream, RequestIntention requestIntention) throws IOException__
 
 Parses a request from the provided InputStream and returns 1 or more RPCRequest objects.
 
@@ -4450,17 +4498,23 @@ _Parameters_
 
 > _serviceQName_ - A fully qualified name to the service to call. This can be null if service name is provided on the stream. 
 
+> _serviceClass_ - The class of the service to call. Intended for looking for method annotations! Don't try to be "smart" here! 
+
 > _method_ - The method to call. This can be null if method name is provided on the stream. 
 
 > _requestStream_ - The stream to parse request from. 
+
+> _requestIntention_ - The intention of the request (CRUD + UNKNOWN). 
 
 _Throws_
 
 > _IOException_ - on IO failure. 
 
-__RPCRequest parseRequest(String serviceQName, String method, Map<String, String> parameters) throws IOException__
+__RPCRequest parseRequest(String serviceQName, Class serviceClass, String method, Map<String, String> parameters, RequestIntention requestIntention) throws IOException__
 
 Provides an RPCRequest based on in-parameters. This variant supports HTTP transports.
+
+Return null for this if the protocol does not support this!
 
 _Returns_
 
@@ -4470,9 +4524,13 @@ _Parameters_
 
 > _serviceQName_ - A fully qualified name to the service to call. This can be null if service name is provided on the stream. 
 
+> _serviceClass_ - The class of the service to call. Intended for looking for method annotations! Don't try to be "smart" here! 
+
 > _method_ - The method to call. This can be null if method name is provided on the stream. 
 
 > _parameters_ - parameters passed as a 
+
+> _requestIntention_ - The intention of the request (CRUD + UNKNOWN). 
 
 _Throws_
 
@@ -4963,6 +5021,616 @@ _Parameters_
 
     
 
+# APS Message Service Sync Service Provider
+
+As this long name suggests this service provides an implementation of APSSyncService using APSMessageService to do the synchronization.
+
+## APSSyncService API
+
+public _interface_ __APSSyncService__   [se.natusoft.osgi.aps.api.net.sync.service] {
+
+Defines a data synchronization service.
+
+__Please note__ that this API is very similar to the APSSimpleMessageService! There are differences in implementations between synchronization and sync, reusing the same API would be confusing and also require services to register extra properties to identify type of service provided.
+
+__SyncGroup joinSyncGroup(String name)__
+
+Joins a synchronization group.
+
+_Returns_
+
+> joined group.
+
+_Parameters_
+
+> _name_ - The name of the group to join. 
+
+__String getName()__
+
+Returns the name of the group.
+
+__Message createMessage()__
+
+Creates a new message.
+
+__Message createMessage(byte[] content)__
+
+Creates a new message.
+
+_Parameters_
+
+> _content_ - The content of the message. 
+
+__void sendMessage(Message message) throws APSSyncException__
+
+Sends a message.
+
+_Parameters_
+
+> _message_ - The message to send. 
+
+_Throws_
+
+> _se.natusoft.osgi.aps.api.net.sync.service.APSSyncService.APSSyncException_
+
+__void addMessageListener(Message.Listener listener)__
+
+Adds a listener to received messages.
+
+_Parameters_
+
+> _listener_ - The listener to add. 
+
+__void removeMessageListener(Message.Listener listener)__
+
+Removes a listener from receiving messages.
+
+_Parameters_
+
+> _listener_ - The listener to remove. 
+
+__void addReSyncListener(ReSyncListener reSyncListener)__
+
+Adds a resynchronization listener.
+
+_Parameters_
+
+> _reSyncListener_ - The listener to add. 
+
+__void removeReSyncListener(ReSyncListener reSyncListener)__
+
+Removes a Resynchronization listener.
+
+_Parameters_
+
+> _reSyncListener_ - The listener to remove. 
+
+__void reSyncAll()__
+
+Triggers a re-synchronization between all data and all members.
+
+__void leaveSyncGroup()__
+
+Leaves the synchronization group.
+
+public _interface_ __ReSyncListener__   [se.natusoft.osgi.aps.api.net.sync.service] {
+
+This is called when a total re-synchronization is requested.
+
+__void reSyncAll(SyncGroup group)__
+
+Request that all data be sent again.
+
+_Parameters_
+
+> _group_ - The group making the request. 
+
+public _interface_ __Message__   [se.natusoft.osgi.aps.api.net.sync.service] {
+
+This represents a message to send/receive.
+
+__SyncGroup getSyncGroup()__
+
+Returns the sync group the message belongs to.
+
+__void setBytes(byte[] content)__
+
+Sets the message content bytes overwriting any previous content.
+
+_Parameters_
+
+> _content_ - The content to set. 
+
+__byte[] getBytes()__
+
+Returns the message content bytes.
+
+__OutputStream getOutputStream()__
+
+Returns an OutputStream for writing message content. This will replace any previous content.
+
+__InputStream getInputStream()__
+
+Returns an InputStream for reading the message content.
+
+public _interface_ __Listener__   [se.natusoft.osgi.aps.api.net.sync.service] {
+
+This needs to be implemented to receive messages.
+
+__void receiveMessage(Message message)__
+
+Called when a message is received.
+
+_Parameters_
+
+> _message_ - The received message. 
+
+public _class_ __Provider__ implements  Message    [se.natusoft.osgi.aps.api.net.sync.service] {
+
+A simple default implementation of message.
+
+__public Provider(SyncGroup group)__
+
+Creates a new Provider.
+
+_Parameters_
+
+> _group_ - The group the message belongs to. 
+
+
+
+
+
+
+
+
+
+
+
+public _static_ _class_ __APSSyncException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.sync.service] {
+
+Thrown on sendMessage(). Please note that this is a runtime exception!
+
+__public APSSyncException(String message)__
+
+Creates a new _APSSyncException_.
+
+_Parameters_
+
+> _message_ - The exception message. 
+
+__public APSSyncException(String message, Throwable cause)__
+
+Creates a new _APSSyncException_.
+
+_Parameters_
+
+> _message_ - The exception message. 
+
+> _cause_ - The cause of this exception. 
+
+}
+
+----
+
+    
+
+# APS Net Time Servcie Provider
+
+This provides a service for converting time between a common network time and local time. The actual net time is provided by APSGroupsService which must be running for this service provider to work. This also means that it will only work between hosts on the same subnet and multicast must be supported on that subnet.
+
+The idea with this service is that no matter what the local host time is, time critical data passed on the network can be reasonably compared between hosts, by agreeing on a common _now_ time and the diff between local time and this common time.
+
+As said above, this implementation have limitations!
+
+## APSNetTimeService
+
+[Javadoc](http://apidoc.natusoft.se/APS/se/natusoft/osgi/aps/api/net/time/service/APSNetTimeService.html)
+
+public _interface_ __APSNetTimeService__   [se.natusoft.osgi.aps.api.net.time.service] {
+
+This service provides network neutral time. Even with NTP it is difficult to keep the same time on different servers. This service creates a network timezone and broadcasts the network time. It supports converting local time to network time and converting network time to local time.
+
+Please note that the network time will not be accurate down to milliseconds, but will be reasonable correct for most usages.
+
+__public long netToLocalTime(long netTime)__
+
+Converts from net time to local time.
+
+_Returns_
+
+> local time.
+
+_Parameters_
+
+> _netTime_ - The net time to convert. 
+
+__public Date netToLocalTime(Date netTime)__
+
+Converts from net time to local time.
+
+_Returns_
+
+> local time.
+
+_Parameters_
+
+> _netTime_ - The net time to convert. 
+
+__public long localToNetTime(long localTime)__
+
+Converts from local time to net time.
+
+_Returns_
+
+> net time.
+
+_Parameters_
+
+> _localTime_ - The local time to convert. 
+
+__public Date localToNetTime(Date localTime)__
+
+Converts from local time to net time.
+
+_Returns_
+
+> net time.
+
+_Parameters_
+
+> _localTime_ - The local time to convert. 
+
+}
+
+----
+
+    
+
+public _interface_ __APSSimpleMessageService__   [se.natusoft.osgi.aps.api.net.messaging.service] {
+
+This is as the name suggests a simple message service where a named group can be joined to send messages to all members of that group.
+
+Yes, this API is very similar to APSGroups, but that API is a bit too explicit for the provided implementation. This is very simple and generic.
+
+__MessageGroup joinMessageGroup(String name) throws APSMessageException__
+
+Joins a message group.
+
+_Returns_
+
+> A MessageGroup instance used to send and receive messages to/from the group.
+
+_Parameters_
+
+> _name_ - The name of the message group to join. 
+
+_Throws_
+
+> _APSMessageException_ - On nay failure to join. 
+
+public _interface_ __MessageGroup__   [se.natusoft.osgi.aps.api.net.messaging.service] {
+
+This represents a specific message group.
+
+__String getName()__
+
+Returns the name of the group.
+
+__Message createMessage()__
+
+Creates a new message.
+
+__Message createMessage(byte[] content)__
+
+Creates a new message.
+
+_Parameters_
+
+> _content_ - The content of the message. 
+
+__void sendMessage(Message message) throws APSMessageException__
+
+Sends a message.
+
+_Parameters_
+
+> _message_ - The message to send. 
+
+_Throws_
+
+> _APSMessageException_ - depending on implementation! 
+
+__void addMessageListener(Message.Listener listener)__
+
+Adds a listener to receive messages.
+
+_Parameters_
+
+> _listener_ - The listener to add. 
+
+__void removeMessageListener(Message.Listener listener)__
+
+Removes a listener from receiving messages.
+
+_Parameters_
+
+> _listener_ - The listener to remove. 
+
+__void leave()__
+
+Leaves the group. This should always be done in case the implementation needs to do any cleanup.
+
+public _interface_ __Message__   [se.natusoft.osgi.aps.api.net.messaging.service] {
+
+This represents a message to send/receive.
+
+__void setBytes(byte[] content)__
+
+Sets the message content bytes overwriting any previous content.
+
+_Parameters_
+
+> _content_ - The content to set. 
+
+__byte[] getBytes()__
+
+Returns the message content bytes.
+
+__OutputStream getOutputStream()__
+
+Returns an OutputStream for writing message content. This will replace any previous content.
+
+__InputStream getInputStream()__
+
+Returns an InputStream for reading the message content.
+
+public _interface_ __Listener__   [se.natusoft.osgi.aps.api.net.messaging.service] {
+
+This needs to be implemented to receive messages.
+
+__void receiveMessage(String groupName, Message message)__
+
+Called when a message is received.
+
+_Parameters_
+
+> _groupName_ - The name of the group that delivered the message. 
+
+> _message_ - The received message. 
+
+public _class_ __Provider__ implements  Message    [se.natusoft.osgi.aps.api.net.messaging.service] {
+
+A simple default implementation of message.
+
+__public Provider()__
+
+Creates a new Provider.
+
+
+
+
+
+
+
+
+
+public _static_ _class_ __APSMessageException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.messaging.service] {
+
+Thrown on sendMessage(). Please note that this is a runtime exception!
+
+__public APSMessageException(String message)__
+
+Creates a new _APSMessageException_.
+
+_Parameters_
+
+> _message_ - The exception message. 
+
+__public APSMessageException(String message, Throwable cause)__
+
+Creates a new _APSMessageException_.
+
+_Parameters_
+
+> _message_ - The exception message. 
+
+> _cause_ - The cause of this exception. 
+
+}
+
+----
+
+    
+
+public _interface_ __APSSyncService__   [se.natusoft.osgi.aps.api.net.sync.service] {
+
+Defines a data synchronization service.
+
+__Please note__ that this API is very similar to the APSSimpleMessageService! There are differences in implementations between synchronization and sync, reusing the same API would be confusing and also require services to register extra properties to identify type of service provided.
+
+__SyncGroup joinSyncGroup(String name)__
+
+Joins a synchronization group.
+
+_Returns_
+
+> joined group.
+
+_Parameters_
+
+> _name_ - The name of the group to join. 
+
+__String getName()__
+
+Returns the name of the group.
+
+__Message createMessage()__
+
+Creates a new message.
+
+__Message createMessage(byte[] content)__
+
+Creates a new message.
+
+_Parameters_
+
+> _content_ - The content of the message. 
+
+__void sendMessage(Message message) throws APSSyncException__
+
+Sends a message.
+
+_Parameters_
+
+> _message_ - The message to send. 
+
+_Throws_
+
+> _se.natusoft.osgi.aps.api.net.sync.service.APSSyncService.APSSyncException_
+
+__void addMessageListener(Message.Listener listener)__
+
+Adds a listener to received messages.
+
+_Parameters_
+
+> _listener_ - The listener to add. 
+
+__void removeMessageListener(Message.Listener listener)__
+
+Removes a listener from receiving messages.
+
+_Parameters_
+
+> _listener_ - The listener to remove. 
+
+__void addReSyncListener(ReSyncListener reSyncListener)__
+
+Adds a resynchronization listener.
+
+_Parameters_
+
+> _reSyncListener_ - The listener to add. 
+
+__void removeReSyncListener(ReSyncListener reSyncListener)__
+
+Removes a Resynchronization listener.
+
+_Parameters_
+
+> _reSyncListener_ - The listener to remove. 
+
+__void reSyncAll()__
+
+Triggers a re-synchronization between all data and all members.
+
+__void leaveSyncGroup()__
+
+Leaves the synchronization group.
+
+public _interface_ __ReSyncListener__   [se.natusoft.osgi.aps.api.net.sync.service] {
+
+This is called when a total re-synchronization is requested.
+
+__void reSyncAll(SyncGroup group)__
+
+Request that all data be sent again.
+
+_Parameters_
+
+> _group_ - The group making the request. 
+
+public _interface_ __Message__   [se.natusoft.osgi.aps.api.net.sync.service] {
+
+This represents a message to send/receive.
+
+__SyncGroup getSyncGroup()__
+
+Returns the sync group the message belongs to.
+
+__void setBytes(byte[] content)__
+
+Sets the message content bytes overwriting any previous content.
+
+_Parameters_
+
+> _content_ - The content to set. 
+
+__byte[] getBytes()__
+
+Returns the message content bytes.
+
+__OutputStream getOutputStream()__
+
+Returns an OutputStream for writing message content. This will replace any previous content.
+
+__InputStream getInputStream()__
+
+Returns an InputStream for reading the message content.
+
+public _interface_ __Listener__   [se.natusoft.osgi.aps.api.net.sync.service] {
+
+This needs to be implemented to receive messages.
+
+__void receiveMessage(Message message)__
+
+Called when a message is received.
+
+_Parameters_
+
+> _message_ - The received message. 
+
+public _class_ __Provider__ implements  Message    [se.natusoft.osgi.aps.api.net.sync.service] {
+
+A simple default implementation of message.
+
+__public Provider(SyncGroup group)__
+
+Creates a new Provider.
+
+_Parameters_
+
+> _group_ - The group the message belongs to. 
+
+
+
+
+
+
+
+
+
+
+
+public _static_ _class_ __APSSyncException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.sync.service] {
+
+Thrown on sendMessage(). Please note that this is a runtime exception!
+
+__public APSSyncException(String message)__
+
+Creates a new _APSSyncException_.
+
+_Parameters_
+
+> _message_ - The exception message. 
+
+__public APSSyncException(String message, Throwable cause)__
+
+Creates a new _APSSyncException_.
+
+_Parameters_
+
+> _message_ - The exception message. 
+
+> _cause_ - The cause of this exception. 
+
+}
+
+----
+
+    
+
 # APSStreamedJSONRPCProtocolProvider
 
 This provides JSONRPC protocol. It provides both version 1.0 and 2.0 of the protocol. It requires a transport that uses it and services provided by aps-external-protocol-extender to be useful.
@@ -4971,13 +5639,15 @@ JSONRPC version 1.0 protocol as described at [http://json-rpc.org/wiki/specifica
 
 JSONRPC version 2.0 protocol as describved at [http://jsonrpc.org/spec.html](http://jsonrpc.org/spec.html).
 
-JSONHTTP version 1.0 which is not any standard protocol at all. It requires both service name and method name on the url, and in case of HTTP GET also arguments as ?params=arg:...:arg where values are strings or primitives. For POST, PUT, and DELETE a JSON array of values need to be written on the stream.
+JSONHTTP version 1.0 which is not any standard protocol at all. It requires both service name and method name on the url, and in case of HTTP GET or DELETE also arguments as ?params=arg:...:arg where values are strings or primitives. For POST, and PUT a JSON array of values need to be written on the stream.
 
-JSONREST version 1.0 extending JSONHTTP and providing 'true' for _supportsREST()_ which will make the http transport always map methods starting with post, put, get, or delete to the http method. This can thereby deliver a true REST API.
+JSONREST version 1.0 extending JSONHTTP will make the http transport always map methods annotated with @RESTGET, @RESTPUT, @RESTPOST, and @RESTDELETE to the corresponding http methods. This also does not require a method to be specified on the URL, and will ignore any specified method.
+
+Personally I think that JSONRPC 2.0 is far more flexible than REST.
 
 ## Examples
 
-Here is some examples calling services over http with diffent protocols using curl (requires aps-ext-protocol-http-transport-provider.jar to be deployed):
+Here is some examples calling services over http with diffent protocols using curl (_requires aps-ext-protocol-http-transport-provider.jar and the called services to be deployed_,_and specified as externalizable via configuration_ (Network/service/external-protocol-extender)):
 
         curl --data '{"jsonrpc": "2.0", "method": "getPlatformDescription", "params": [], "id": 1}' http://localhost:8080/apsrpc/JSONRPC/2.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService 
 
@@ -5006,9 +5676,9 @@ yields
         {"id": "6d25d646-11fc-44c3-b74d-29b3d5c94920", "valid": true}
         
 
-In this case we didn’t just use _createSession_ as method name, but _createSession(Integer)_ though with parentheses escaped to not confuse the shell. This is because there is 2 variants of createSession: createSession(String, Integer) and createSession(Integer). If we don’t specify clearly we might get the wrong one and in this case that happens and will fail due to missing second parameter. Also note the _params=5_. On get we cannot pass any data on the stream to the service, we can only pass parameters on the URL which is done by specifying url parameter _params_ with a colon (”:”) separated list of parameters as value. In this case only String and primitives are supported for parameters.
+In this case we didn't just use _createSession_ as method name, but _createSession(Integer)_ though with parentheses escaped to not confuse the shell. This is because there is 2 variants of createSession: createSession(String, Integer) and createSession(Integer). If we don't specify clearly we might get the wrong one and in this case that happens and will fail due to missing second parameter. Also note the _params=5_. On get we cannot pass any data on the stream to the service, we can only pass parameters on the URL which is done by specifying url parameter _params_ with a colon (:) separated list of parameters as value. In this case only String and primitives are supported for parameters.
 
-These examples only works if you have disabled the ”requireAuthentication” configuration (network/rpc-http-transport).
+These examples only works if you have disabled the _requireAuthentication_ configuration (network/rpc-http-transport).
 
 ## See also
 
@@ -5230,9 +5900,17 @@ ____[Apache Software License version 2.0](http://www.apache.org/licenses/LICENSE
 
 The following third party products are using this license:
 
-* [vaadin-6.8.1](http://vaadin.com)
+* [annotations-13.0](http://www.jetbrains.org)
 
-* [commons-codec-20041127.091804](http://jakarta.apache.org/commons/codec/)
+* [vaadin-server-7.1.14](http://vaadin.com)
+
+* [vaadin-client-compiled-7.1.14](http://vaadin.com)
+
+* [vaadin-client-7.1.14](http://vaadin.com)
+
+* [vaadin-push-7.1.14](http://vaadin.com)
+
+* [vaadin-themes-7.1.14](http://vaadin.com)
 
 * [openjpa-all-2.2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
@@ -5253,6 +5931,8 @@ The following third party products are using this license:
 ____[CDDL + GPLv2 with classpath version exception](https://glassfish.dev.java.net/nonav/public/CDDL+GPL.html)____
 
 The following third party products are using this license:
+
+* [javax.servlet-api-3.0.1](http://servlet-spec.java.net)
 
 * [javaee-web-api-6.0](http://java.sun.com/javaee/6/docs/api/index.html)
 
@@ -5456,313 +6136,6 @@ All Recipient's rights under this Agreement shall terminate if it fails to compl
 Everyone is permitted to copy and distribute copies of this Agreement, but in order to avoid inconsistency the Agreement is copyrighted and may only be modified in the following manner. The Agreement Steward reserves the right to publish new versions (including revisions) of this Agreement from time to time. No one other than the Agreement Steward has the right to modify this Agreement. The Eclipse Foundation is the initial Agreement Steward. The Eclipse Foundation may assign the responsibility to serve as the Agreement Steward to a suitable separate entity. Each new version of the Agreement will be given a distinguishing version number. The Program (including Contributions) may always be distributed subject to the version of the Agreement under which it was received. In addition, after a new version of the Agreement is published, Contributor may elect to distribute the Program (including its Contributions) under the new version. Except as expressly stated in Sections 2(a) and 2(b) above, Recipient receives no rights or licenses to the intellectual property of any Contributor under this Agreement, whether expressly, by implication, estoppel or otherwise. All rights in the Program not expressly granted under this Agreement are reserved.
 
 This Agreement is governed by the laws of the State of New York and the intellectual property laws of the United States of America. No party to this Agreement will bring a legal action under this Agreement more than one year after the cause of action arose. Each party waives its rights to a jury trial in any resulting litigation.
-
-<!--
-  
-  This was created by CodeLicenseManager
--->
-## GNU Lesser General Public License version 2.1
-
-Skip to content |
-
-Skip to navigation | Accessibility
-
-&nbsp;English[en]() &nbsp; &nbsp; &nbsp; català[ca]() &nbsp; &nbsp; &nbsp; Deutsch[de]() &nbsp; &nbsp; &nbsp; français[fr]() &nbsp; &nbsp; &nbsp; 日本語[ja]() &nbsp; &nbsp; &nbsp; русский[ru]() &nbsp; &nbsp;
-
-            The GNU Operating System
-
-&nbsp; &nbsp;JointheFSF! Sign up for the Free Software Supporter A monthly email newsletter about GNU and Free Software
-
-Enter your email address (e.g. &nbsp; address@hidden) 
-
-        Search:
-        
-        
-
-&nbsp;About GNU Philosophy Licenses Education Software Documentation HelpGNU
-
-GNU Lesser General Public License
-
-Why you shouldn't use the Lesser GPL for your next library Frequently Asked Questions about the GNU licenses How to use GNU licenses for your own software Translations of the LGPL The GNU LGPL in other formats: plain text, Docbook, standalone HTML, LaTeX, Texinfo LGPLv3 logos to use with your project Old versions of the GNU LGPL What to do if you see a possible LGPL violation
-
-This license is a set of additional permissions added to version 3 of the GNU General Public License. For more information about how to release your own software under this license, please see our page of instructions.
-
-GNU LESSER GENERAL PUBLIC LICENSE Version 3, 29 June 2007
-
-Copyright &copy; 2007 Free Software Foundation, Inc. [http://fsf.org/](http://fsf.org/) Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
-
-This version of the GNU Lesser General Public License incorporates the terms and conditions of version 3 of the GNU General Public License, supplemented by the additional permissions listed below.
-
-1. Additional Definitions.
-
-As used herein, &ldquo;this License&rdquo; refers to version 3 of the GNU Lesser General Public License, and the &ldquo;GNU GPL&rdquo; refers to version 3 of the GNU General Public License.
-
-&ldquo;The Library&rdquo; refers to a covered work governed by this License, other than an Application or a Combined Work as defined below.
-
-An &ldquo;Application&rdquo; is any work that makes use of an interface provided by the Library, but which is not otherwise based on the Library. Defining a subclass of a class defined by the Library is deemed a mode of using an interface provided by the Library.
-
-A &ldquo;Combined Work&rdquo; is a work produced by combining or linking an Application with the Library. The particular version of the Library with which the Combined Work was made is also called the &ldquo;Linked Version&rdquo;.
-
-The &ldquo;Minimal Corresponding Source&rdquo; for a Combined Work means the Corresponding Source for the Combined Work, excluding any source code for portions of the Combined Work that, considered in isolation, are based on the Application, and not on the Linked Version.
-
-The &ldquo;Corresponding Application Code&rdquo; for a Combined Work means the object code and/or source code for the Application, including any data and utility programs needed for reproducing the Combined Work from the Application, but excluding the System Libraries of the Combined Work.
-
-1. Exception to Section 3 of the GNU GPL.
-
-You may convey a covered work under sections 3 and 4 of this License without being bound by section 3 of the GNU GPL.
-
-1. Conveying Modified Versions.
-
-If you modify a copy of the Library, and, in your modifications, a facility refers to a function or data to be supplied by an Application that uses the facility (other than as an argument passed when the facility is invoked), then you may convey a copy of the modified version:
-
-a) under this License, provided that you make a good faith effort to ensure that, in the event an Application does not supply the function or data, the facility still operates, and performs whatever part of its purpose remains meaningful, or
-
-b) under the GNU GPL, with none of the additional permissions of this License applicable to that copy.
-
-1. Object Code Incorporating Material from Library Header Files.
-
-The object code form of an Application may incorporate material from a header file that is part of the Library. You may convey such object code under terms of your choice, provided that, if the incorporated material is not limited to numerical parameters, data structure layouts and accessors, or small macros, inline functions and templates (ten or fewer lines in length), you do both of the following:
-
-a) Give prominent notice with each copy of the object code that the Library is used in it and that the Library and its use are covered by this License.
-
-b) Accompany the object code with a copy of the GNU GPL and this license document.
-
-1. Combined Works.
-
-You may convey a Combined Work under terms of your choice that, taken together, effectively do not restrict modification of the portions of the Library contained in the Combined Work and reverse engineering for debugging such modifications, if you also do each of the following:
-
-a) Give prominent notice with each copy of the Combined Work that the Library is used in it and that the Library and its use are covered by this License.
-
-b) Accompany the Combined Work with a copy of the GNU GPL and this license document.
-
-c) For a Combined Work that displays copyright notices during execution, include the copyright notice for the Library among these notices, as well as a reference directing the user to the copies of the GNU GPL and this license document.
-
-d) Do one of the following:
-
-0) Convey the Minimal Corresponding Source under the terms of this License, and the Corresponding Application Code in a form suitable for, and under terms that permit, the user to recombine or relink the Application with a modified version of the Linked Version to produce a modified Combined Work, in the manner specified by section 6 of the GNU GPL for conveying Corresponding Source.
-
-1) Use a suitable shared library mechanism for linking with the Library. A suitable mechanism is one that (a) uses at run time a copy of the Library already present on the user's computer system, and (b) will operate properly with a modified version of the Library that is interface-compatible with the Linked Version.
-
-e) Provide Installation Information, but only if you would otherwise be required to provide such information under section 6 of the GNU GPL, and only to the extent that such information is necessary to install and execute a modified version of the Combined Work produced by recombining or relinking the Application with a modified version of the Linked Version. (If you use option 4d0, the Installation Information must accompany the Minimal Corresponding Source and Corresponding Application Code. If you use option 4d1, you must provide the Installation Information in the manner specified by section 6 of the GNU GPL for conveying Corresponding Source.)
-
-1. Combined Libraries.
-
-You may place library facilities that are a work based on the Library side by side in a single library together with other library facilities that are not Applications and are not covered by this License, and convey such a combined library under terms of your choice, if you do both of the following:
-
-a) Accompany the combined library with a copy of the same work based on the Library, uncombined with any other library facilities, conveyed under the terms of this License.
-
-b) Give prominent notice with the combined library that part of it is a work based on the Library, and explaining where to find the accompanying uncombined form of the same work.
-
-1. Revised Versions of the GNU Lesser General Public License.
-
-The Free Software Foundation may publish revised and/or new versions of the GNU Lesser General Public License from time to time. Such new versions will be similar in spirit to the present version, but may differ in detail to address new problems or concerns.
-
-Each version is given a distinguishing version number. If the Library as you received it specifies that a certain numbered version of the GNU Lesser General Public License &ldquo;or any later version&rdquo; applies to it, you have the option of following the terms and conditions either of that published version or of any later version published by the Free Software Foundation. If the Library as you received it does not specify a version number of the GNU Lesser General Public License, you may choose any version of the GNU Lesser General Public License ever published by the Free Software Foundation.
-
-If the Library as you received it specifies that a proxy can decide whether future versions of the GNU Lesser General Public License shall apply, that proxy's public statement of acceptance of any version is permanent authorization for you to choose that version for the Library.
-
-            GNU&nbsp;home&nbsp;page
-            FSF&nbsp;home&nbsp;page
-            GNU&nbsp;Art
-            GNU&nbsp;Fun
-            GNU's&nbsp;Who?
-            Free&nbsp;Software&nbsp;Directory
-            Site&nbsp;map
-        
-
-The Free Software Foundation is the principal organizational sponsor of the GNU Operating System. Our mission is to preserve, protect and promote the freedom to use, study, copy, modify, and redistribute computer software, and to defend the rights of Free Software users. Support GNU and the FSF by buying manuals and gear, joining the FSF as an associate member or by making a donation, either directly to the FSF or via Flattr.
-
-back to top
-
-Please send FSF &amp; GNU inquiries to gnu@gnu.org. There are also other ways to contact the FSF.
-
-Please send broken links and other corrections or suggestions to webmasters@gnu.org.
-
-Please see the Translations README for information on coordinating and submitting translations of this article.
-
-Copyright notice above.
-
-51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-
-Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
-
-Copyright Infringement Notification
-
-Updated:
-
-$Date: 2013/02/28 17:09:29 $
-
-<!--
-  
-  This was created by CodeLicenseManager
--->
-## GNU LESSER GENERAL PUBLIC version LICENSE
-
-                           GNU LESSER GENERAL PUBLIC LICENSE
-                               Version 3, 29 June 2007
-        
-         Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
-         Everyone is permitted to copy and distribute verbatim copies
-         of this license document, but changing it is not allowed.
-        
-        
-          This version of the GNU Lesser General Public License incorporates
-        the terms and conditions of version 3 of the GNU General Public
-        License, supplemented by the additional permissions listed below.
-        
-          0. Additional Definitions.
-        
-          As used herein, "this License" refers to version 3 of the GNU Lesser
-        General Public License, and the "GNU GPL" refers to version 3 of the GNU
-        General Public License.
-        
-          "The Library" refers to a covered work governed by this License,
-        other than an Application or a Combined Work as defined below.
-        
-          An "Application" is any work that makes use of an interface provided
-        by the Library, but which is not otherwise based on the Library.
-        Defining a subclass of a class defined by the Library is deemed a mode
-        of using an interface provided by the Library.
-        
-          A "Combined Work" is a work produced by combining or linking an
-        Application with the Library.  The particular version of the Library
-        with which the Combined Work was made is also called the "Linked
-        Version".
-        
-          The "Minimal Corresponding Source" for a Combined Work means the
-        Corresponding Source for the Combined Work, excluding any source code
-        for portions of the Combined Work that, considered in isolation, are
-        based on the Application, and not on the Linked Version.
-        
-          The "Corresponding Application Code" for a Combined Work means the
-        object code and/or source code for the Application, including any data
-        and utility programs needed for reproducing the Combined Work from the
-        Application, but excluding the System Libraries of the Combined Work.
-        
-          1. Exception to Section 3 of the GNU GPL.
-        
-          You may convey a covered work under sections 3 and 4 of this License
-        without being bound by section 3 of the GNU GPL.
-        
-          2. Conveying Modified Versions.
-        
-          If you modify a copy of the Library, and, in your modifications, a
-        facility refers to a function or data to be supplied by an Application
-        that uses the facility (other than as an argument passed when the
-        facility is invoked), then you may convey a copy of the modified
-        version:
-        
-           a) under this License, provided that you make a good faith effort to
-           ensure that, in the event an Application does not supply the
-           function or data, the facility still operates, and performs
-           whatever part of its purpose remains meaningful, or
-        
-           b) under the GNU GPL, with none of the additional permissions of
-           this License applicable to that copy.
-        
-          3. Object Code Incorporating Material from Library Header Files.
-        
-          The object code form of an Application may incorporate material from
-        a header file that is part of the Library.  You may convey such object
-        code under terms of your choice, provided that, if the incorporated
-        material is not limited to numerical parameters, data structure
-        layouts and accessors, or small macros, inline functions and templates
-        (ten or fewer lines in length), you do both of the following:
-        
-           a) Give prominent notice with each copy of the object code that the
-           Library is used in it and that the Library and its use are
-           covered by this License.
-        
-           b) Accompany the object code with a copy of the GNU GPL and this license
-           document.
-        
-          4. Combined Works.
-        
-          You may convey a Combined Work under terms of your choice that,
-        taken together, effectively do not restrict modification of the
-        portions of the Library contained in the Combined Work and reverse
-        engineering for debugging such modifications, if you also do each of
-        the following:
-        
-           a) Give prominent notice with each copy of the Combined Work that
-           the Library is used in it and that the Library and its use are
-           covered by this License.
-        
-           b) Accompany the Combined Work with a copy of the GNU GPL and this license
-           document.
-        
-           c) For a Combined Work that displays copyright notices during
-           execution, include the copyright notice for the Library among
-           these notices, as well as a reference directing the user to the
-           copies of the GNU GPL and this license document.
-        
-           d) Do one of the following:
-        
-               0) Convey the Minimal Corresponding Source under the terms of this
-               License, and the Corresponding Application Code in a form
-               suitable for, and under terms that permit, the user to
-               recombine or relink the Application with a modified version of
-               the Linked Version to produce a modified Combined Work, in the
-               manner specified by section 6 of the GNU GPL for conveying
-               Corresponding Source.
-        
-               1) Use a suitable shared library mechanism for linking with the
-               Library.  A suitable mechanism is one that (a) uses at run time
-               a copy of the Library already present on the user's computer
-               system, and (b) will operate properly with a modified version
-               of the Library that is interface-compatible with the Linked
-               Version.
-        
-           e) Provide Installation Information, but only if you would otherwise
-           be required to provide such information under section 6 of the
-           GNU GPL, and only to the extent that such information is
-           necessary to install and execute a modified version of the
-           Combined Work produced by recombining or relinking the
-           Application with a modified version of the Linked Version. (If
-           you use option 4d0, the Installation Information must accompany
-           the Minimal Corresponding Source and Corresponding Application
-           Code. If you use option 4d1, you must provide the Installation
-           Information in the manner specified by section 6 of the GNU GPL
-           for conveying Corresponding Source.)
-        
-          5. Combined Libraries.
-        
-          You may place library facilities that are a work based on the
-        Library side by side in a single library together with other library
-        facilities that are not Applications and are not covered by this
-        License, and convey such a combined library under terms of your
-        choice, if you do both of the following:
-        
-           a) Accompany the combined library with a copy of the same work based
-           on the Library, uncombined with any other library facilities,
-           conveyed under the terms of this License.
-        
-           b) Give prominent notice with the combined library that part of it
-           is a work based on the Library, and explaining where to find the
-           accompanying uncombined form of the same work.
-        
-          6. Revised Versions of the GNU Lesser General Public License.
-        
-          The Free Software Foundation may publish revised and/or new versions
-        of the GNU Lesser General Public License from time to time. Such new
-        versions will be similar in spirit to the present version, but may
-        differ in detail to address new problems or concerns.
-        
-          Each version is given a distinguishing version number. If the
-        Library as you received it specifies that a certain numbered version
-        of the GNU Lesser General Public License "or any later version"
-        applies to it, you have the option of following the terms and
-        conditions either of that published version or of any later version
-        published by the Free Software Foundation. If the Library as you
-        received it does not specify a version number of the GNU Lesser
-        General Public License, you may choose any version of the GNU Lesser
-        General Public License ever published by the Free Software Foundation.
-        
-          If the Library as you received it specifies that a proxy can decide
-        whether future versions of the GNU Lesser General Public License shall
-        apply, that proxy's public statement of acceptance of any version is
-        permanent authorization for you to choose that version for the
-        Library.
 
 <!--
   

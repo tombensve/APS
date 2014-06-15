@@ -78,17 +78,17 @@ public interface APSDirectory extends APSFile {
      */
     APSFile createFile(String name) throws IOException;
 
-    /**
-     * Unzips an InputStream and returns its root as an APSDirectory.
-     *
-     * @param name The root of the unzipped file tree.
-     * @param zipFile The zip file to unzip. This will be closed when all is unzipped!
-     *
-     * @return an APSDirectory pointing to name.
-     *
-     * @throws IOException on failure.
-     */
-    APSDirectory unzip(String name, ZipFile zipFile) throws IOException;
+//    /**
+//     * Unzips an InputStream and returns its root as an APSDirectory.
+//     *
+//     * @param name The root of the unzipped file tree.
+//     * @param zipFile The zip file to unzip. This will be closed when all is unzipped!
+//     *
+//     * @return an APSDirectory pointing to name.
+//     *
+//     * @throws IOException on failure.
+//     */
+//    APSDirectory unzip(String name, ZipFile zipFile) throws IOException;
 
     /**
      * Returns the specified directory.
