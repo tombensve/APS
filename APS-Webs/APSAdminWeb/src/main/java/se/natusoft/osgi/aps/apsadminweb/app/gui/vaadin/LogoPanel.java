@@ -37,6 +37,7 @@
 package se.natusoft.osgi.aps.apsadminweb.app.gui.vaadin;
 
 import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.BaseTheme;
@@ -54,13 +55,13 @@ public class LogoPanel extends Panel {
         super();
         HorizontalLayout topLayout = new HorizontalLayout();
         topLayout.setSpacing(true);
-        topLayout.setMargin(true);
+        topLayout.setMargin(new MarginInfo(true, true, false, true));
         setContent(topLayout);
         setStyleName(Reindeer.PANEL_LIGHT);
 
         ThemeResource logoResource = new ThemeResource("images/app-platform-services.png");
         Embedded logo = new Embedded("", logoResource);
-        logo.setWidth("400px");
+        logo.setWidth("300px");
         logo.setStyleName("aps-logo");
         topLayout.addComponent(logo);
 
