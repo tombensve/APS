@@ -69,9 +69,15 @@ public class LogoPanel extends Panel {
         textLabel.setContentMode(ContentMode.HTML);
         topLayout.addComponent(textLabel);
 
+        Label startBracket = new Label("[");
+        topLayout.addComponent(startBracket);
+
         Button refreshButton = new Button("Refresh", clickListener);
         refreshButton.setStyleName(BaseTheme.BUTTON_LINK);
         topLayout.addComponent(refreshButton);
+
+        Label endBracket = new Label("]");
+        topLayout.addComponent(endBracket);
     }
 
     //
