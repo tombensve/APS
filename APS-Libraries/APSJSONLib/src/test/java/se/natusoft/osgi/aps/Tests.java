@@ -52,6 +52,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class Tests {
     
@@ -137,7 +138,13 @@ public class Tests {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         obj.writeJSON(baos, true);
         baos.close();
-        assertEquals("{\"string\": \"bla\", \"boolean\": true, \"number\": 1234, \"null\": null, \"array\": [1, 2, 3, 4]}", baos.toString());
+        String result = baos.toString();
+        // Note that we cannot assume the order of things so we cannot verify as one string.
+        assertTrue(result.contains("\"string\": \"bla\""));
+        assertTrue(result.contains("\"boolean\": true"));
+        assertTrue(result.contains("\"number\": 1234"));
+        assertTrue(result.contains("\"null\": null"));
+        assertTrue(result.contains("\"array\": [1, 2, 3, 4]"));
     }
     
     @Test 
