@@ -201,48 +201,48 @@ public class APSDirectoryImpl extends APSFileImpl implements APSDirectory {
         return file;
     }
 
-    /**
-     * Unzips an InputStream and returns its root as an APSDirectory.
-     *
-     * @param name          The root of the unzipped file tree.
-     * @param zipFile The zip file to unzip. This will be closed when all is unzipped!
-     * @return an APSDirectory pointing to name.
-     */
-    @Override
-    public APSDirectory unzip(String name, ZipFile zipFile) throws IOException {
-        APSDirectory unzipDir = createDir(name);
-
-        byte[] buffer = new byte[2000];
-
-        Enumeration entries = zipFile.entries();
-        while (entries.hasMoreElements()) {
-            ZipEntry entry = (ZipEntry)entries.nextElement();
-            File destFile = new File(unzipDir.toFile().getAbsolutePath(), entry.getName());
-
-            if (!entry.isDirectory()) {
-                InputStream src = zipFile.getInputStream(entry);
-                OutputStream dest = new FileOutputStream(destFile);
-                try {
-                    int read = src.read(buffer);
-                    while (read != -1) {
-                        dest.write(buffer, 0, read);
-                        read = src.read(buffer);
-                    }
-                }
-                finally {
-                    dest.close();
-                    src.close();
-                }
-            }
-            else {
-                destFile.mkdir();
-            }
-        }
-
-        zipFile.close();
-
-        return unzipDir;
-    }
+//    /**
+//     * Unzips an InputStream and returns its root as an APSDirectory.
+//     *
+//     * @param name          The root of the unzipped file tree.
+//     * @param zipFile The zip file to unzip. This will be closed when all is unzipped!
+//     * @return an APSDirectory pointing to name.
+//     */
+//    @Override
+//    public APSDirectory unzip(String name, ZipFile zipFile) throws IOException {
+//        APSDirectory unzipDir = createDir(name);
+//
+//        byte[] buffer = new byte[2000];
+//
+//        Enumeration entries = zipFile.entries();
+//        while (entries.hasMoreElements()) {
+//            ZipEntry entry = (ZipEntry)entries.nextElement();
+//            File destFile = new File(unzipDir.toFile().getAbsolutePath(), entry.getName());
+//
+//            if (!entry.isDirectory()) {
+//                InputStream src = zipFile.getInputStream(entry);
+//                OutputStream dest = new FileOutputStream(destFile);
+//                try {
+//                    int read = src.read(buffer);
+//                    while (read != -1) {
+//                        dest.write(buffer, 0, read);
+//                        read = src.read(buffer);
+//                    }
+//                }
+//                finally {
+//                    dest.close();
+//                    src.close();
+//                }
+//            }
+//            else {
+//                destFile.mkdir();
+//            }
+//        }
+//
+//        zipFile.close();
+//
+//        return unzipDir;
+//    }
 
     /**
      * Returns the named backingFile in this directory.
