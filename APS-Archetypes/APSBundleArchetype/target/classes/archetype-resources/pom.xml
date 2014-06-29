@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<!--
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>APS</artifactId>
@@ -24,7 +28,7 @@
         <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
         
         <!-- The bundle activator class -->
-        <osgi.bundle.activator>Activator</osgi.bundle.activator>
+        <osgi.bundle.activator>se.natusoft.osgi.aps.tools.APSActivator</osgi.bundle.activator>
         
         <!-- The bundle packages to export. -->
         <osgi.export.package>
@@ -35,6 +39,7 @@
                 
         <!-- The private packages. -->
         <osgi.private.package>
+            se.natusoft.osgi.aps
         </osgi.private.package>
         
         <!-- The packages to export from dependent & embeded jars -->
@@ -46,10 +51,17 @@
         </osgi.include.resource>
 
         <!-- The default for embedding dependencies in bundle. -->
-        <osgi.embed.dependency>*;scope=compile</osgi.embed.dependency>
+        <osgi.embed.dependency>*;scope=system</osgi.embed.dependency>
         
         <!-- The directory whose content should be embeded into the bundle jar. -->
         <osgi.embed.directory>lib</osgi.embed.directory>
+
+        <!--
+            APS properties.
+        -->
+
+        <!-- We register our configuration for auto registration and management. -->
+        <aps.config.classes></aps.config.classes>
 
         <!--
              Trigger tiles.
@@ -69,7 +81,7 @@
         -->
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-core-apis</artifactId>
+            <artifactId>aps-apis</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -79,6 +91,11 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <!--
+            ${artifactId} dependencies
+        -->
+
     </dependencies>
 
     <build>
@@ -120,7 +137,7 @@
                     </supportedProjectTypes>
                     <archive>
                         <manifestEntries>
-                            <!--APS-Configs></APS-Configs-->
+                            <APS-Configs>${aps.config.classes}</APS-Configs>
                             <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
                         </manifestEntries>                        
                     </archive>
