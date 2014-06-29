@@ -6,7 +6,7 @@
             APS OpenJPA Provider
         
         Code Version
-            0.10.0
+            0.11.0
         
         Description
             Provides an implementation of APSJPAService using OpenJPA.
@@ -41,7 +41,7 @@
     <parent>
         <artifactId>APS-Data</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version>0.10.0</version>
+        <version>0.11.0</version>
     </parent>
 
     <artifactId>aps-openjpa-provider</artifactId>

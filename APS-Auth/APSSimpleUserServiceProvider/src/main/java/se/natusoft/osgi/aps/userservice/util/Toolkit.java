@@ -5,7 +5,7 @@
  *         APS Simple User Service Provider
  *     
  *     Code Version
- *         0.10.0
+ *         0.11.0
  *     
  *     Description
  *         Provides an implementation of APSSimpleUserService backed by a database.

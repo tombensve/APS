@@ -5,7 +5,7 @@
             ServerDeployPlugin
         
         Code Version
-            0.10.0
+            0.11.0
         
         Description
             Basically copies one file from one place to another. This is however used
@@ -40,7 +40,7 @@
     <parent>
         <artifactId>Build</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version>0.10.0</version>
+        <version>0.11.0</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>

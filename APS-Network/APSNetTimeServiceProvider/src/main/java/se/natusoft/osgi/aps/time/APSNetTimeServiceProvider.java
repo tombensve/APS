@@ -5,7 +5,7 @@
  *         APS Net Time Service Provider
  *     
  *     Code Version
- *         0.10.0
+ *         0.11.0
  *     
  *     Description
  *         Provides time translation between local time an network neutral time.

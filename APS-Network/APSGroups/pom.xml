@@ -6,7 +6,7 @@
             APS Groups
         
         Code Version
-            0.10.0
+            0.11.0
         
         Description
             Provides network groups where named groups can be joined as members and then send and
@@ -58,7 +58,7 @@
     <parent>
         <artifactId>APS-Network</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version>0.10.0</version>
+        <version>0.11.0</version>
     </parent>
 
     <artifactId>aps-groups</artifactId>

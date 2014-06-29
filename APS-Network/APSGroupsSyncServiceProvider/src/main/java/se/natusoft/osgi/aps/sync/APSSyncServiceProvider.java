@@ -5,7 +5,7 @@
  *         APS Groups Sync Service Provider
  *     
  *     Code Version
- *         0.10.0
+ *         0.11.0
  *     
  *     Description
  *         This provides APSSyncService based on the APSGroupService.

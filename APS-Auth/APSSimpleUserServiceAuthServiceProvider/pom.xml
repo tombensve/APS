@@ -6,7 +6,7 @@
             APSSimpleUserServiceAuthServiceProvider
         
         Code Version
-            0.10.0
+            0.11.0
         
     COPYRIGHTS
         Copyright (C) 2012 by Natusoft AB All rights reserved.
@@ -38,7 +38,7 @@
     <parent>
         <artifactId>APS-Auth</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version>0.10.0</version>
+        <version>0.11.0</version>
     </parent>
 
     <artifactId>aps-simple-user-service-auth-service-provider</artifactId>

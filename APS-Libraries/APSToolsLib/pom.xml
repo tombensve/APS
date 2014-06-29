@@ -6,7 +6,7 @@
             APS Tools Library
         
         Code Version
-            0.10.0
+            0.11.0
         
         Description
             Provides a library of utilities, among them APSServiceTracker used by all other APS bundles.
@@ -41,7 +41,7 @@
     <parent>
         <artifactId>APS-Libraries</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version>0.10.0</version>
+        <version>0.11.0</version>
         <relativePath>..</relativePath>
     </parent>
 

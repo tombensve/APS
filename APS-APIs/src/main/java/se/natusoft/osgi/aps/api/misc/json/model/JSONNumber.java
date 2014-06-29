@@ -5,7 +5,7 @@
  *         APS APIs
  *     
  *     Code Version
- *         0.10.0
+ *         0.11.0
  *     
  *     Description
  *         Provides the APIs for the application platform services.

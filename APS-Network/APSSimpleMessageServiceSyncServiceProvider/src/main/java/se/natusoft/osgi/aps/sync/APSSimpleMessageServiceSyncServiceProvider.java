@@ -5,7 +5,7 @@
  *         APS SimpleMessageService Sync Service Provider
  *     
  *     Code Version
- *         0.10.0
+ *         0.11.0
  *     
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.

@@ -2,10 +2,10 @@
  * 
  * PROJECT
  *     Name
- *         APS Web Tools
+ *         APS Vaadin Web Tools
  *     
  *     Code Version
- *         0.10.0
+ *         0.11.0
  *     
  *     Description
  *         This provides some utility classes for web applications.
