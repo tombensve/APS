@@ -40,6 +40,8 @@ package se.natusoft.osgi.aps.core.config.model;
 
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
 
+import java.util.List;
+
 /**
  * Provides the active config environment.
  */
@@ -49,4 +51,19 @@ public interface ConfigEnvironmentProvider {
      * Returns the active config environment.
      */
     public APSConfigEnvironment getActiveConfigEnvironment();
+
+    /**
+     * @return The available environments.
+     */
+    public List<APSConfigEnvironment> getConfigEnvironments();
+
+    /**
+     * Returns an environment by its name.
+     *
+     * @param name The name of the environment to get.
+     *
+     * @return The named environment or null if it does not exist.
+     */
+    public APSConfigEnvironment getConfigEnvironmentByName(String name);
+
 }

@@ -178,6 +178,14 @@ public class APSConfigAdminServiceProvider implements APSConfigAdminService, APS
     }
 
     /**
+     * @return The available environments.
+     */
+    @Override
+    public List<APSConfigEnvironment> getConfigEnvironments() {
+        return this.envStore.getConfigEnvironments();
+    }
+
+    /**
      * Returns the API for administering configuration environments.
      */
     @Override

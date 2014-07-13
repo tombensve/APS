@@ -50,6 +50,8 @@ import se.natusoft.osgi.aps.core.config.model.APSConfigInstanceMemoryStoreImpl;
 import se.natusoft.osgi.aps.core.config.model.APSConfigObjectFactory;
 import se.natusoft.osgi.aps.core.config.model.ConfigEnvironmentProvider;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 public class ConfigModelTest extends TestCase {
@@ -74,6 +76,19 @@ public class ConfigModelTest extends TestCase {
             @Override
             public APSConfigEnvironment getActiveConfigEnvironment() {
                 return new APSConfigEnvironmentImpl("test", "For test.", 0);
+            }
+
+            @Override
+            public List<APSConfigEnvironment> getConfigEnvironments() {
+                List<APSConfigEnvironment> envs = new LinkedList<>();
+                envs.add(new APSConfigEnvironmentImpl("test", "For test", 0));
+                envs.add(new APSConfigEnvironmentImpl("unit-test", "For unit test", 0));
+                return envs;
+            }
+
+            @Override
+            public APSConfigEnvironment getConfigEnvironmentByName(String name) {
+                return getActiveConfigEnvironment();
             }
         }, configValueStore);
 
@@ -103,7 +118,20 @@ public class ConfigModelTest extends TestCase {
         APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(new ConfigEnvironmentProvider() {
             @Override
             public APSConfigEnvironment getActiveConfigEnvironment() {
-                return new APSConfigEnvironmentImpl("whatever", "For test.", 0);
+                return new APSConfigEnvironmentImpl("test", "For test.", 0);
+            }
+
+            @Override
+            public List<APSConfigEnvironment> getConfigEnvironments() {
+                List<APSConfigEnvironment> envs = new LinkedList<>();
+                envs.add(new APSConfigEnvironmentImpl("test", "For test", 0));
+                envs.add(new APSConfigEnvironmentImpl("unit-test", "For unit test", 0));
+                return envs;
+            }
+
+            @Override
+            public APSConfigEnvironment getConfigEnvironmentByName(String name) {
+                return getActiveConfigEnvironment();
             }
         }, configValueStore);
 

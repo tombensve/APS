@@ -44,14 +44,15 @@ import java.util.Date;
 public interface APSConfigValue {
 
     /**
+     * Returns the value as a String.
+     */
+    @Override
+    String toString();
+
+    /**
      * Returns the value as a boolean.
      */
     boolean toBoolean();
-
-    /**
-     * Returns the value as a Date.
-     */
-    Date toDate();
 
     /**
      * Returns the value as a double.
@@ -84,9 +85,71 @@ public interface APSConfigValue {
     public short toShort();
 
     /**
-     * Returns the value as a String.
+     * Returns the value as a Date.
      */
-    @Override
-    String toString();
+    Date toDate();
+
+    /**
+     * Returns the value as a String.
+     *
+     * @param configEnvironment The config environment to get config value for.
+     */
+    String toString(String configEnvironment);
+
+    /**
+     * Returns the value as a boolean.
+     *
+     * @param configEnvironment The config environment to get config value for.
+     */
+    boolean toBoolean(String configEnvironment);
+
+    /**
+     * Returns the value as a double.
+     *
+     * @param configEnvironment The config environment to get config value for.
+     */
+    double toDouble(String configEnvironment);
+
+    /**
+     * Returns the value as a float.
+     *
+     * @param configEnvironment The config environment to get config value for.
+     */
+    float toFloat(String configEnvironment);
+
+    /**
+     * Returns the value as an int.
+     *
+     * @param configEnvironment The config environment to get config value for.
+     */
+    int toInt(String configEnvironment);
+
+    /**
+     * Returns the value as a long.
+     *
+     * @param configEnvironment The config environment to get config value for.
+     */
+    long toLong(String configEnvironment);
+
+    /**
+     * Returns the value is a byte.
+     *
+     * @param configEnvironment The config environment to get config value for.
+     */
+    public byte toByte(String configEnvironment);
+
+    /**
+     * Returns the value as a short.
+     *
+     * @param configEnvironment The config environment to get config value for.
+     */
+    public short toShort(String configEnvironment);
+
+    /**
+     * Returns the value as a Date.
+     *
+     * @param configEnvironment The config environment to get config value for.
+     */
+    Date toDate(String configEnvironment);
 
 }

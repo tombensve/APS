@@ -39,6 +39,7 @@
 package se.natusoft.osgi.aps.core.config.model;
 
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
 
@@ -91,7 +92,35 @@ public class APSConfigValueImpl implements APSConfigValue {
      * Returns the resolved value.
      */
     protected String getValue() {
-        return getNormalValue();
+        return getNormalValue(this.configEnvProvider.getActiveConfigEnvironment());
+    }
+
+    /**
+     * Returns the resolved value.
+     *
+     * @param configEnvironment The config environment to get the value for.
+     */
+    protected String getValue(String configEnvironment) {
+        return getNormalValue(configEnvironment);
+    }
+
+    /**
+     * The specified value is actually a list of values so an index of the actual value needs to be fetched.
+     *
+     * @param ix The index of the value to get.
+     */
+    protected String getIndexedValue(int ix, APSConfigEnvironment configEnvironment) {
+        return this.configValuesProvider.getConfigValueStore().
+                getConfigValue(this.configValueEditModel.getKey(configEnvironment, ix));
+    }
+
+    /**
+     * The specified value is actually a list of values so an index of the actual value needs to be fetched.
+     *
+     * @param ix The index of the value to get.
+     */
+    protected String getIndexedValue(int ix, String configEnvironemnt) {
+        return getIndexedValue(ix, this.configEnvProvider.getConfigEnvironmentByName(configEnvironemnt));
     }
 
     /**
@@ -100,16 +129,62 @@ public class APSConfigValueImpl implements APSConfigValue {
      * @param ix The index of the value to get.
      */
     protected String getIndexedValue(int ix) {
-        return this.configValuesProvider.getConfigValueStore().
-                getConfigValue(this.configValueEditModel.getKey(this.configEnvProvider.getActiveConfigEnvironment(), ix));
+        return getIndexedValue(ix, this.configEnvProvider.getActiveConfigEnvironment());
     }
 
     /**
      * Returns a normal non indexed value.
+     *
+     * @oaram configEnvironment The configuration environment to get value for.
      */
-    private String getNormalValue() {
+    private String getNormalValue(APSConfigEnvironment configEnvironment) {
         return this.configValuesProvider.getConfigValueStore().
-                getConfigValue(this.configValueEditModel.getKey(this.configEnvProvider.getActiveConfigEnvironment()));
+                getConfigValue(this.configValueEditModel.getKey(configEnvironment));
+    }
+
+    /**
+     * Returns a normal non indexed value.
+     *
+     * @oaram configEnvironment The configuration environment to get value for.
+     */
+    private String getNormalValue(String configEnvironment) {
+        APSConfigEnvironment confEnv = this.configEnvProvider.getConfigEnvironmentByName(configEnvironment);
+        // If asked for environment does not exist, fall back on default.
+        if (confEnv == null) {
+            confEnv = this.configEnvProvider.getActiveConfigEnvironment();
+        }
+        return getNormalValue(confEnv);
+    }
+
+    /**
+     * Gets the value null safe.
+     *
+     * @param defaultValue The default value to use if no other default value is available.
+     * @param value an ingoing value to start with.
+     *
+     * @return A value guaranteed.
+     */
+    private String _safeGetValue(String defaultValue, String value) {
+        if (value == null) {
+            value = this.configValueEditModel.getDefaultValue(this.configEnvProvider.getActiveConfigEnvironment());
+        }
+        if (value == null) {
+            value = defaultValue;
+        }
+
+        return value;
+    }
+
+    /**
+     * Gets the value null safe.
+     *
+     * @param defaultValue The default value to use if no other default value is available.
+     * @param configEnvironment The config environment to get value for.
+     *
+     * @return A value guaranteed.
+     */
+    private String safeGetValue(String defaultValue, String configEnvironment) {
+        return _safeGetValue(defaultValue, getValue(configEnvironment));
     }
 
     /**
@@ -120,16 +195,9 @@ public class APSConfigValueImpl implements APSConfigValue {
      * @return A value guaranteed.
      */
     private String safeGetValue(String defaultValue) {
-        String value = getValue();
-        if (value == null) {
-            value = this.configValueEditModel.getDefaultValue(this.configEnvProvider.getActiveConfigEnvironment());
-        }
-        if (value == null) {
-            value = defaultValue;
-        }
-
-        return value;
+        return _safeGetValue(defaultValue, getValue());
     }
+
 
     /**
      * Returns the value as a String.
@@ -213,6 +281,88 @@ public class APSConfigValueImpl implements APSConfigValue {
         }
     }
 
+    /**
+     * Returns the value as a String.
+     */
+    @Override
+    public String toString(String configEnvironment) {
+        return safeGetValue("", configEnvironment);
+    }
+
+    /**
+     * Returns the value is a byte.
+     */
+    @Override
+    public byte toByte(String configEnvironment) {
+        return Byte.valueOf(safeGetValue("0", configEnvironment));
+    }
+
+    /**
+     * Returns the value as a short.
+     */
+    @Override
+    public short toShort(String configEnvironment) {
+        return Short.valueOf(safeGetValue("0", configEnvironment));
+    }
+
+    /**
+     * Returns the value as an int.
+     */
+    @Override
+    public int toInt(String configEnvironment) {
+        return Integer.valueOf(safeGetValue("0", configEnvironment));
+    }
+
+    /**
+     * Returns the value as a long.
+     */
+    @Override
+    public long toLong(String configEnvironment) {
+        return Long.valueOf(safeGetValue("0", configEnvironment));
+    }
+
+    /**
+     * Returns the value as a float.
+     */
+    @Override
+    public float toFloat(String configEnvironment) {
+        return Float.valueOf(safeGetValue("0.0", configEnvironment));
+    }
+
+    /**
+     * Returns the value as a double.
+     */
+    @Override
+    public double toDouble(String configEnvironment) {
+        return Double.valueOf(safeGetValue("0.0", configEnvironment));
+    }
+
+    /**
+     * Returns the value as a boolean.
+     */
+    @Override
+    public boolean toBoolean(String configEnvironment) {
+        return Boolean.valueOf(safeGetValue("false", configEnvironment));
+    }
+
+    /**
+     * Returns the value as a Date.
+     *
+     * @throws APSRuntimeException on no specified date pattern or no valid date in config.
+     */
+    @Override
+    public Date toDate(String configEnvironment) {
+        if (this.configValueEditModel.getDatePattern() == null) {
+            throw new APSRuntimeException("Trying to convert value to a Date object without any specification of date format!");
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat(this.configValueEditModel.getDatePattern());
+        try {
+            return sdf.parse(safeGetValue("", configEnvironment));
+        } catch (ParseException ex) {
+            throw new APSRuntimeException(ex.getMessage(), ex);
+        }
+    }
+
     //
     // Inner Classes
     //
@@ -255,8 +405,19 @@ public class APSConfigValueImpl implements APSConfigValue {
         /**
          * Returns the resolved value.
          */
+        @Override
         protected String getValue() {
             return getIndexedValue(this.index);
+        }
+
+        /**
+         * Returns the resolved value.
+         *
+         * @param configEnvironment The config enviornment to get value for.
+         */
+        @Override
+        protected String getValue(String configEnvironment) {
+            return getIndexedValue(this.index, configEnvironment);
         }
     }
 }

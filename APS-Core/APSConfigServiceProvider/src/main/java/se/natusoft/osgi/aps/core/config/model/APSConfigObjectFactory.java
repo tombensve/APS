@@ -47,6 +47,8 @@ import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueStore;
 import se.natusoft.osgi.aps.core.config.model.admin.APSConfigEditModelImpl;
 
+import java.util.List;
+
 /**
  * Creates instances of APSConfigValue, APSConfigValueList, and APSConfigList. The point of this
  * is not to mess down other code with extra object needed to create these, those only get this
@@ -88,6 +90,25 @@ public class APSConfigObjectFactory implements ConfigEnvironmentProvider, Config
     @Override
     public APSConfigEnvironment getActiveConfigEnvironment() {
         return this.configEnvironment.getActiveConfigEnvironment();
+    }
+
+    /**
+     * @return The available environments.
+     */
+    @Override
+    public List<APSConfigEnvironment> getConfigEnvironments() {
+        return this.configEnvironment.getConfigEnvironments();
+    }
+
+    /**
+     * Returns an environment by its name.
+     *
+     * @param name The name of the environment to get.
+     * @return The named environment or null if it does not exist.
+     */
+    @Override
+    public APSConfigEnvironment getConfigEnvironmentByName(String name) {
+        return this.configEnvironment.getConfigEnvironmentByName(name);
     }
 
     /**
