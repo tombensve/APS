@@ -220,11 +220,8 @@ public class APSConfigEditModelImpl<APSConfigSubclass extends APSConfig> extends
         try {
             this.instance = this.configClass.newInstance();
         }
-        catch (IllegalAccessException iae) {
+        catch (IllegalAccessException | InstantiationException iae) {
             throw new APSConfigException(iae.getMessage(), iae);
-        }
-        catch (InstantiationException ie) {
-            throw new APSConfigException(ie.getMessage(), ie);
         }
 
         // Copy our key as base key for children.
@@ -242,9 +239,12 @@ public class APSConfigEditModelImpl<APSConfigSubclass extends APSConfig> extends
         this.configId = configAnn.configId();
         this.group = configAnn.group();
 
-        for (Field field : this.configClass.getDeclaredFields()) {
+        for (Field field : this.configClass.getFields()) {
             if (!Modifier.isStatic(field.getModifiers()) && Modifier.isPublic(field.getModifiers())) {
-                parse(field, configAnn);
+                APSConfigItemDescription configItem = field.getAnnotation(APSConfigItemDescription.class);
+                if (configItem != null) {
+                    parse(field, configAnn, configItem);
+                }
             }
         }
     }
@@ -400,14 +400,11 @@ public class APSConfigEditModelImpl<APSConfigSubclass extends APSConfig> extends
      *
      * @param field The field to parse.
      * @param apsConfig The APSConfigDescription annotation.
+     * @param configItem The APSConfigItemDescription annotation.
      *
      * @throws APSConfigException On bad configClass interface.
      */
-    private void parse(Field field, APSConfigDescription apsConfig) throws APSConfigException {
-        APSConfigItemDescription configItem = field.getAnnotation(APSConfigItemDescription.class);
-        if (configItem == null) {
-            throw new APSConfigException("Bad configuration field: '" + field.getName() + "'! Missing @APSConfigItemDescription annotation!");
-        }
+    private void parse(Field field, APSConfigDescription apsConfig, APSConfigItemDescription configItem) throws APSConfigException {
 
         ConfigValueKey key = this.baseKey;
 
@@ -514,7 +511,7 @@ public class APSConfigEditModelImpl<APSConfigSubclass extends APSConfig> extends
         }
         else if (APSConfig.class.isAssignableFrom(type)) {
 
-            valueEditModel = new APSConfigEditModelImpl<APSConfigSubclass>((Class<APSConfigSubclass>)type, key, this, this.configObjectFactory);
+            valueEditModel = new APSConfigEditModelImpl<>((Class<APSConfigSubclass>)type, key, this, this.configObjectFactory);
         }
         else {
             throw new APSConfigException("Bad configuration field ('" + name + "') type! Must be either APSConfigValue, List<APSConfigValue> or " +

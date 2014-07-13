@@ -44,7 +44,6 @@ import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -73,10 +72,7 @@ public class APSConfigValueEditModelImpl implements APSConfigValueEditModel {
     private String name = null;
 
     /** The defaults for this value as a map. */
-    private Map<APSConfigEnvironment, APSConfigDefaultValue> defaultValuesMap = new HashMap<APSConfigEnvironment, APSConfigDefaultValue>();
-
-    /** The defaults for this value as a list. */
-    private List<APSConfigDefaultValue> defaultValuesList = new LinkedList<APSConfigDefaultValue>();
+    private Map<APSConfigEnvironment, APSConfigDefaultValue> defaultValuesMap = new HashMap<>();
 
     /** The description of this value. */
     private String description = "";
@@ -110,7 +106,6 @@ public class APSConfigValueEditModelImpl implements APSConfigValueEditModel {
     APSConfigValueEditModelImpl(APSConfigEditModel parent, String key, List<APSConfigDefaultValue> defaultValues) {
         this.parent = parent;
         this.key = new ConfigValueKey(key);
-        this.defaultValuesList.addAll(defaultValues);
         for (APSConfigDefaultValue defValue : defaultValues) {
             this.defaultValuesMap.put(defValue.getConfigEnv(), defValue);
         }
