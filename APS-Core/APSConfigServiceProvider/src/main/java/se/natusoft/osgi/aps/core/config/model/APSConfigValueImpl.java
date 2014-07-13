@@ -135,7 +135,7 @@ public class APSConfigValueImpl implements APSConfigValue {
     /**
      * Returns a normal non indexed value.
      *
-     * @oaram configEnvironment The configuration environment to get value for.
+     * @param configEnvironment The configuration environment to get value for.
      */
     private String getNormalValue(APSConfigEnvironment configEnvironment) {
         return this.configValuesProvider.getConfigValueStore().
@@ -145,7 +145,7 @@ public class APSConfigValueImpl implements APSConfigValue {
     /**
      * Returns a normal non indexed value.
      *
-     * @oaram configEnvironment The configuration environment to get value for.
+     * @param configEnvironment The configuration environment to get value for.
      */
     private String getNormalValue(String configEnvironment) {
         APSConfigEnvironment confEnv = this.configEnvProvider.getConfigEnvironmentByName(configEnvironment);
