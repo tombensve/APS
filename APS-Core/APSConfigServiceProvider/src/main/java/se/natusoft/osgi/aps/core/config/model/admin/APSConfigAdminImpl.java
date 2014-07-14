@@ -173,7 +173,7 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
         if (value == null) {
             value = valueEditModel.getDefaultValue(configEnvironment);
             if (value != null) {
-                this.configInstanceMemoryStore.setConfigValue(valueEditModel.getKey(configEnvironment), value);
+                setConfigValue(valueEditModel, value, configEnvironment);
             }
         }
 
