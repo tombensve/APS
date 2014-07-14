@@ -170,8 +170,14 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
     @Override
     public synchronized String getConfigValue(APSConfigValueEditModel valueEditModel, APSConfigEnvironment configEnvironment) {
         String value = this.configInstanceMemoryStore.getConfigValue(valueEditModel.getKey(configEnvironment));
+        if (value == null) {
+            value = valueEditModel.getDefaultValue(configEnvironment);
+            if (value != null) {
+                this.configInstanceMemoryStore.setConfigValue(valueEditModel.getKey(configEnvironment), value);
+            }
+        }
 
-        return value != null ? value : valueEditModel.getDefaultValue(configEnvironment);
+        return value;
     }
 
     /**

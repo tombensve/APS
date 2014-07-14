@@ -56,6 +56,10 @@ import java.util.Properties;
 
 public class ConfigModelTest extends TestCase {
 
+    private APSConfigEnvironment testConfigEnvironment = new APSConfigEnvironmentImpl("testenv", "For test.", 0);
+    private APSConfigEnvironment defaultConfigEnvironment = new APSConfigEnvironmentImpl("default", "For test.", 0);
+    private APSConfigEnvironment whateverConfigEnvironment = new APSConfigEnvironmentImpl("whatever", "For test.", 0);
+
     /**
      *
      */
@@ -70,19 +74,17 @@ public class ConfigModelTest extends TestCase {
 
         Properties props = new Properties();
         APSConfigInstanceMemoryStoreImpl configValueStore = new APSConfigInstanceMemoryStoreImpl(props);
-        APSConfigEnvironment testConfigEnvironment = new APSConfigEnvironmentImpl("test", "For test.", 0);
-        APSConfigEnvironment defaultConfigEnvironment = new APSConfigEnvironmentImpl("default", "For test.", 0);
         APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(new ConfigEnvironmentProvider() {
             @Override
             public APSConfigEnvironment getActiveConfigEnvironment() {
-                return new APSConfigEnvironmentImpl("test", "For test.", 0);
+                return testConfigEnvironment;
             }
 
             @Override
             public List<APSConfigEnvironment> getConfigEnvironments() {
                 List<APSConfigEnvironment> envs = new LinkedList<>();
-                envs.add(new APSConfigEnvironmentImpl("test", "For test", 0));
-                envs.add(new APSConfigEnvironmentImpl("unit-test", "For unit test", 0));
+                envs.add(testConfigEnvironment);
+                envs.add(defaultConfigEnvironment);
                 return envs;
             }
 
@@ -114,18 +116,17 @@ public class ConfigModelTest extends TestCase {
         Properties props = new Properties();
         APSConfigInstanceMemoryStoreImpl configValueStore = new APSConfigInstanceMemoryStoreImpl(props);
         // Please note that we provide a different config environment than the default values in the config class!
-        APSConfigEnvironment configEnvironment = new APSConfigEnvironmentImpl("whatever", "For test.", 0);
         APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(new ConfigEnvironmentProvider() {
             @Override
             public APSConfigEnvironment getActiveConfigEnvironment() {
-                return new APSConfigEnvironmentImpl("test", "For test.", 0);
+                return testConfigEnvironment;
             }
 
             @Override
             public List<APSConfigEnvironment> getConfigEnvironments() {
                 List<APSConfigEnvironment> envs = new LinkedList<>();
-                envs.add(new APSConfigEnvironmentImpl("test", "For test", 0));
-                envs.add(new APSConfigEnvironmentImpl("unit-test", "For unit test", 0));
+                envs.add(testConfigEnvironment);
+                envs.add(defaultConfigEnvironment);
                 return envs;
             }
 
@@ -140,11 +141,11 @@ public class ConfigModelTest extends TestCase {
 
         // Please note that here we automatically fall back to config env "default" due to than config env "whatever" does not exist!
         // And since we have provided a default value for config env "default" for this value we will get that value back.
-        assertEquals("false", config.getConfigValue(configModel.getValueByName("southerncomfort"), configEnvironment));
+        assertEquals("false", config.getConfigValue(configModel.getValueByName("southerncomfort"), whateverConfigEnvironment));
 
         APSConfigEditModel otherChoicesModel = (APSConfigEditModel)configModel.getValueByName("otherchoices");
-        assertNull(config.getConfigValue(otherChoicesModel.getValueByName("pizza"), configEnvironment));
-        assertNull(config.getConfigValue(otherChoicesModel.getValueByName("salmon"), configEnvironment));
+        assertNull(config.getConfigValue(otherChoicesModel.getValueByName("pizza"), whateverConfigEnvironment));
+        assertNull(config.getConfigValue(otherChoicesModel.getValueByName("salmon"), whateverConfigEnvironment));
 
         System.out.println("ok");
     }
@@ -157,11 +158,11 @@ public class ConfigModelTest extends TestCase {
     public static class MySubConfig extends APSConfig {
 
         /** */
-        @APSConfigItemDescription(description="Do you like pizza ?", defaultValue={@APSDefaultValue(value="true", configEnv="test")})
+        @APSConfigItemDescription(description="Do you like pizza ?", defaultValue={@APSDefaultValue(value="true", configEnv="testenv")})
         public APSConfigValue pizza;
 
         /** */
-        @APSConfigItemDescription(description="Do you like salmon ?", defaultValue={@APSDefaultValue(value="false", configEnv="test")})
+        @APSConfigItemDescription(description="Do you like salmon ?", defaultValue={@APSDefaultValue(value="false", configEnv="testenv")})
         public APSConfigValue salmon;
     }
 
@@ -174,7 +175,8 @@ public class ConfigModelTest extends TestCase {
 
         /** */
         @APSConfigItemDescription(description="Do you like Southern Comfort ?",
-                defaultValue={@APSDefaultValue(value="true", configEnv="test"), @APSDefaultValue(value="false", configEnv="default")})
+                environmentSpecific = true,
+                defaultValue={@APSDefaultValue(value="true", configEnv="testenv"), @APSDefaultValue(value="false", configEnv="default")})
         public APSConfigValue southernComfort;
 
         /** */

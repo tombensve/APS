@@ -95,8 +95,8 @@ public class APSConfigEditModelImpl<APSConfigSubclass extends APSConfig> extends
     // Constants
     //
 
-    /** A default empty set of defaults. */
-    private static final List<APSConfigDefaultValue> NO_DEFAULTS = new ArrayList<APSConfigDefaultValue>();
+    /** A default empty set of default defaults. */
+    private static final List<APSConfigDefaultValue> NO_DEFAULTS = new ArrayList<>();
 
     /** The value if an index have not been provided. */
     private static final int NO_INDEX = -1;
@@ -109,7 +109,7 @@ public class APSConfigEditModelImpl<APSConfigSubclass extends APSConfig> extends
     private List<APSConfigValueEditModel> values = new ArrayList<APSConfigValueEditModel>();
 
     /** The value models of this configuration class by name. */
-    private Map<String /*name*/, APSConfigValueEditModel> valuesByName = new HashMap<String, APSConfigValueEditModel>();
+    private Map<String /*name*/, APSConfigValueEditModel> valuesByName = new HashMap<>();
 
     /** The configClass interface. */
     private Class<APSConfigSubclass> configClass;
