@@ -87,8 +87,6 @@ import java.util.*;
  * different things at the same time to save time and make things easier. Once a model have been created
  * then all information for creating an instance and populating it, is right there available! Most of the
  * code here have to be duplicated to do this separately.
- *
- * @param <APSConfigSubclass> This represents a subclass of APSConfig.
  */
 public class APSConfigEditModelImpl<APSConfigSubclass extends APSConfig> extends APSConfigValueEditModelImpl implements APSConfigEditModel {
     //
@@ -106,7 +104,7 @@ public class APSConfigEditModelImpl<APSConfigSubclass extends APSConfig> extends
     //
 
     /** The value models of this configuration class. */
-    private List<APSConfigValueEditModel> values = new ArrayList<APSConfigValueEditModel>();
+    private List<APSConfigValueEditModel> values = new ArrayList<>();
 
     /** The value models of this configuration class by name. */
     private Map<String /*name*/, APSConfigValueEditModel> valuesByName = new HashMap<>();
@@ -304,11 +302,8 @@ public class APSConfigEditModelImpl<APSConfigSubclass extends APSConfig> extends
      * @return The new indexed model. This model version should only be used to set values at that index.
      */
     public APSConfigEditModel createIndexVersion(int index, APSConfigEditModel instanceType, APSConfigEnvironment configEnvironment) {
-        APSConfigEditModelImpl indexedConfigEditModel =
-                new APSConfigEditModelImpl(this.configClass, this.getInternalKey(), this.getParent(), instanceType,
-                        this.configObjectFactory, index, configEnvironment);
-
-        return indexedConfigEditModel;
+        return new APSConfigEditModelImpl<>(this.configClass, this.getInternalKey(), this.getParent(), instanceType,
+                this.configObjectFactory, index, configEnvironment);
     }
 
     /**
@@ -501,7 +496,7 @@ public class APSConfigEditModelImpl<APSConfigSubclass extends APSConfig> extends
         APSConfigValueEditModelImpl valueEditModel;
 
         if (APSConfigValue.class.isAssignableFrom(type)) {
-            List<APSConfigDefaultValue> defValues = new ArrayList<APSConfigDefaultValue>();
+            List<APSConfigDefaultValue> defValues = new ArrayList<>();
             for (APSDefaultValue defValue : configItem.defaultValue()) {
                 APSConfigDefaultValue defaultValue = new APSConfigDefaultValue(new APSConfigEnvironmentImpl(defValue.configEnv(), "", 0),
                         defValue.value());
@@ -511,7 +506,7 @@ public class APSConfigEditModelImpl<APSConfigSubclass extends APSConfig> extends
         }
         else if (APSConfig.class.isAssignableFrom(type)) {
 
-            valueEditModel = new APSConfigEditModelImpl<>((Class<APSConfigSubclass>)type, key, this, this.configObjectFactory);
+            valueEditModel = new APSConfigEditModelImpl((Class<? extends APSConfig>)type, key, this, this.configObjectFactory);
         }
         else {
             throw new APSConfigException("Bad configuration field ('" + name + "') type! Must be either APSConfigValue, List<APSConfigValue> or " +

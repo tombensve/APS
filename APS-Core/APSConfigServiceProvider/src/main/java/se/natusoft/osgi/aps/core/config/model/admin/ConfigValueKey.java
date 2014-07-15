@@ -238,7 +238,7 @@ public class ConfigValueKey {
      * @return A new ConfigValueKey containing the added key.
      */
     public ConfigValueKey addToNodeKey(ConfigValueKey keyToAdd) {
-        return new ConfigValueKey(this.key.length() > 0 ? "_" + keyToAdd : "" + keyToAdd);
+        return new ConfigValueKey(this.key + (this.key.length() > 0 ? "_" + keyToAdd : "" + keyToAdd));
     }
 
     /**

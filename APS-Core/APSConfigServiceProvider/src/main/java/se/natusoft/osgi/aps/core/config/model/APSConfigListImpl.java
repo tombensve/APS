@@ -112,7 +112,7 @@ public class APSConfigListImpl<APSConfigSubclass extends APSConfig> implements A
         String key = this.configModel.getKey(configEnvironmentProvider.getActiveConfigEnvironment());
         return
             new APSConfigEditModelImpl<APSConfigSubclass>(
-                this.configModel.getConfigClass(),
+                    this.configModel.getConfigClass(),
                 key,
                 this.configModel.getParent(),
                 this.configObjectFactory,
