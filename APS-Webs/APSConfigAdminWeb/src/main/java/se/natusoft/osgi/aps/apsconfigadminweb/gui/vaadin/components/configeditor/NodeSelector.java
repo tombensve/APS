@@ -161,11 +161,27 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
      * @param selectedID This will be returned possibly modified. The final id returned in refreshData() is the id to select in the tree.
      */
     private ID buildHierarchicalModel(HierarchicalModel<NodeData> hmodel, ID parentID, APSConfigEditModel currentNode, ID selectedID) {
+        return buildHierarchicalModel(hmodel, parentID, currentNode, selectedID, -1);
+    }
+
+    /**
+     * Recursively builds the model from the config node structure.
+     *
+     * @param hmodel The HierarchicalModel to build.
+     * @param parentID The id of the parent or null if root.
+     * @param currentNode The current node to add to the model.
+     * @param selectedID This will be returned possibly modified. The final id returned in refreshData() is the id to select in the tree.
+     * @param index the index of this node or < 0 if not indexed.
+     */
+    private ID buildHierarchicalModel(HierarchicalModel<NodeData> hmodel, ID parentID, APSConfigEditModel currentNode, ID selectedID, int index) {
 
         String name = getSimpleConfigId(currentNode.getConfigId());
         NodeData nodeData = new NodeData();
         nodeData.setConfigNodeModel(currentNode);
         nodeData.setToolTipText(currentNode.getConfigId() + ":" + currentNode.getVersion() + "<hr/>" + currentNode.getDescription());
+        if (index >= 0) {
+            nodeData.setIndex(index);
+        }
 
         ID currNodeId = null;
 
@@ -197,6 +213,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
                 instanceNodeData.setIndex(i);
 
                 instanceId = hmodel.addItem(currNodeId, instanceNodeData, name + " : " + i);
+                selectedID = buildChildren(selectedID, hmodel, currentNode, instanceId, i);
 
                 // If this is the selected node model and this is the selected index of that model then set the selectedID to this id
                 // so that the tree node can be selected using this id. If we don't select it again after reloading a new built model
@@ -211,12 +228,42 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
                 selectedID = currNodeId;
             }
         }
+        else {
+            selectedID = buildChildren(selectedID, hmodel, currentNode, currNodeId);
+        }
 
-        // Call ourself to build our children. APSConfigValueEditModel can be both a value and a node. All nodes however
-        // extend APSConfigValueEditModel with APSConfigEditModel.
+        return selectedID;
+    }
+
+    /**
+     * Builds children for non indexed node by calling buildHierarchicalModel.
+     *
+     * @param selectedID The current selected id.
+     * @param hmodel The model being built.
+     * @param currentNode The node whose children to build.
+     * @param currNodeId The current node that will be the parent of child nodes.
+     *
+     * @return A possibly updated selectedID.
+     */
+    private ID buildChildren(ID selectedID, HierarchicalModel<NodeData> hmodel, APSConfigEditModel currentNode, ID currNodeId) {
+        return buildChildren(selectedID, hmodel, currentNode, currNodeId, -1);
+    }
+
+    /**
+     * Builds children for possibly indexed node by calling buildHierarchicalModel.
+     *
+     * @param selectedID The current selected id.
+     * @param hmodel The model being built.
+     * @param currentNode The node whose children to build.
+     * @param currNodeId The current node that will be the parent of child nodes.
+     * @param index The index of the node to build children for or < 0 if not indexed node.
+     *
+     * @return A possibly updated selectedID.
+     */
+    private ID buildChildren(ID selectedID, HierarchicalModel<NodeData> hmodel, APSConfigEditModel currentNode, ID currNodeId, int index) {
         for (APSConfigValueEditModel valueEditModel : currentNode.getValues()) {
             if (valueEditModel instanceof APSConfigEditModel) { // We are only interested in nodes, not values.
-                selectedID = buildHierarchicalModel(hmodel, currNodeId, (APSConfigEditModel)valueEditModel, selectedID);
+                selectedID = buildHierarchicalModel(hmodel, currNodeId, (APSConfigEditModel)valueEditModel, selectedID, index);
             }
         }
 

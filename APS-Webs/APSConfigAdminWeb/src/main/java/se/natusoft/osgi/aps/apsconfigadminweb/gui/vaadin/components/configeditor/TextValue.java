@@ -115,7 +115,7 @@ public class TextValue extends TextField implements ValueComponent {
      * @param fireEvent True to fire value update event.
      */
     @Override
-    public void setComponentValue(String value, boolean fireEvent) {
+    public synchronized void setComponentValue(String value, boolean fireEvent) {
         this.doFireEvent = fireEvent;
         if (value != null) {
             super.setValue(value);
