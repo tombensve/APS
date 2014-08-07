@@ -40,15 +40,18 @@ package se.natusoft.osgi.aps.core.config.model;
 
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValueList;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
-import se.natusoft.osgi.aps.core.config.model.APSConfigValueImpl.APSConfigIndexedValueImpl;
 
 import java.util.Iterator;
+
+import static se.natusoft.osgi.aps.core.config.model.StaticUtils.ensureRef;
+import static se.natusoft.osgi.aps.core.config.model.StaticUtils.toImpl;
 
 /**
  * Provides an implementation of APSConfigValueList for handling a list of APSConfigValue objects.
  */
-public class APSConfigValueListImpl implements APSConfigValueList {
+public class APSConfigValueListImpl implements APSConfigValueList, APSConfigRefConsumer {
     //
     // Private Members
     //
@@ -61,6 +64,9 @@ public class APSConfigValueListImpl implements APSConfigValueList {
 
     /** Provides the active config environment. */
     private ConfigEnvironmentProvider configEnvProvider = null;
+
+    /** The reference to the config value represented by this instance. */
+    private APSConfigReference ref;
 
     //
     // Constructors
@@ -85,6 +91,11 @@ public class APSConfigValueListImpl implements APSConfigValueList {
     // Methods
     //
 
+    private APSConfigReference getRef() {
+        this.ref = ensureRef(this.ref, this.configValueEditModel);
+        return this.ref;
+    }
+
     /**
      * Returns the value at the specified index.
      *
@@ -96,7 +107,7 @@ public class APSConfigValueListImpl implements APSConfigValueList {
         if (index >= size) {
             throw new IndexOutOfBoundsException("Tried to get " + index + "th value out of total " + size + " values!");
         }
-        return new APSConfigIndexedValueImpl(configValueEditModel, configValuesProvider, configEnvProvider, index);
+        return new APSConfigValueImpl(configValueEditModel, configValuesProvider, configEnvProvider, this.ref.index(index));
     }
 
     /**
@@ -106,8 +117,17 @@ public class APSConfigValueListImpl implements APSConfigValueList {
     public int size() {
         try {
             return Integer.valueOf(
-                    this.configValuesProvider.getConfigValueStore().
-                            getConfigValue(this.configValueEditModel.getManyValueSizeKey(this.configEnvProvider.getActiveConfigEnvironment()))
+                    this.configValuesProvider.
+                            getConfigValueStore()
+                            .getConfigValue(
+                                    toImpl(
+                                            getRef()
+                                                    .configEnvironment(this.configEnvProvider.getActiveConfigEnvironment())
+                                    )
+                                            .getValueKey()
+                                            .getSizeKey()
+
+                            )
             );
         }
         catch (NumberFormatException nfe) {
@@ -132,6 +152,16 @@ public class APSConfigValueListImpl implements APSConfigValueList {
     @Override
     public Iterator<APSConfigValue> iterator() {
         return new APSConfigValueIterator(size());
+    }
+
+    /**
+     * Receives a config value reference.
+     *
+     * @param ref The reference received.
+     */
+    @Override
+    public void setConfigReference(APSConfigReference ref) {
+        this.ref = ref._(this.configValueEditModel);
     }
 
     //

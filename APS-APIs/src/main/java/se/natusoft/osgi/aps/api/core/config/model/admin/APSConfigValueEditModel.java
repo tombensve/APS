@@ -57,20 +57,6 @@ public interface APSConfigValueEditModel extends Serializable {
     String getDescription();
 
     /**
-     * The name of the value. This is basically the last part of the key.
-     *
-     * @return the name
-     */
-    String getName();
-
-    /**
-     * true if the value represented by this model is environment specific, false otherwise.
-     *
-     * @return true or false.
-     */
-    boolean isConfigEnvironmentSpecific();
-
-    /**
      * If true this represents an array of values.
      *
      * @return the isMany
@@ -94,21 +80,30 @@ public interface APSConfigValueEditModel extends Serializable {
     /**
      * If the size of this array > 0 then these are the valid values to set for this value.
      *
-     * @return An empty array or set of valid values.
+     * @return An emtpy array or set of valid values.
      */
     String[] getValidValues();
 
     /**
-     * Returns the key for the number of values of a many value.
+     * The name of the value. This is basically the last part of the localKey.
      *
-     * @param configEnv The configuration environment to get the key for. For values that are configuration environment specific
-     *                  a key including the configuration environment will be produced. For other values the specified config
-     *                  environment has no effect. If null is passed the key is treated as a non config environment specific.
-     *                  Only pass null if you are absolutely sure or you might end up with a bad key!
-     *
-     * @return The many value size key.
+     * @return the name
      */
-    String getManyValueSizeKey(APSConfigEnvironment configEnv);
+    String getName();
+
+    /**
+     * true if the value represented by this model is environment specific, false otherwise.
+     *
+     * @return true or false.
+     */
+    boolean isConfigEnvironmentSpecific();
+
+    /**
+     * The parent of this or null if top parent.
+     *
+     * @return the parent
+     */
+    APSConfigEditModel getParent();
 
     /**
      * The default for this value.
@@ -118,49 +113,4 @@ public interface APSConfigValueEditModel extends Serializable {
      * @return the defaultValue
      */
     String getDefaultValue(APSConfigEnvironment configEnv);
-
-    /**
-     * The key for this value.
-     *
-     * @param configEnv The configuration environment to get the key for. For values that are configuration environment specific
-     *                  a key including the configuration environment will be produced. For other values the specified config
-     *                  environment has no effect. If null is passed the key is treated as a non config environment specific.
-     *                  Only pass null if you are absolutely sure or you might end up with a bad key!
-     *
-     * @return the key
-     */
-    String getKey(APSConfigEnvironment configEnv);
-
-    /**
-     * The timestamp key for this value.
-     *
-     * @param configEnv The configuration environment to get the key for. For values that are configuration environment specific
-     *                  a key including the configuration environment will be produced. For other values the specified config
-     *                  environment has no effect. If null is passed the key is treated as a non config environment specific.
-     *                  Only pass null if you are absolutely sure or you might end up with a bad key!
-     *
-     * @return The key.
-     */
-    String getTimestampKey(APSConfigEnvironment configEnv);
-
-    /**
-     * If isMany() is true then use this method to get the key for a specific index.
-     *
-     * @param configEnv The configuration environment to get the key for. For values that are configuration environment specific
-     *                  a key including the configuration environment will be produced. For other values the specified config
-     *                  environment has no effect. If null is passed the key is treated as a non config environment specific.
-     *                  Only pass null if you are absolutely sure or you might end up with a bad key!
-     * @param index  The index of a "many" value.
-     *
-     * @return the key
-     */
-    String getKey(APSConfigEnvironment configEnv, int index);
-
-    /**
-     * The parent of this or null if top parent.
-     *
-     * @return the parent
-     */
-    APSConfigEditModel getParent();
-
 }

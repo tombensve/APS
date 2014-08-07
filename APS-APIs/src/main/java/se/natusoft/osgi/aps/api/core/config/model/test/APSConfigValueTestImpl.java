@@ -118,4 +118,95 @@ public class APSConfigValueTestImpl implements APSConfigValue {
     public String toString() {
         return this.value;
     }
+
+    /**
+     * Returns the value as a String.
+     *
+     * @param configEnvironment The config environment to get config value for.
+     */
+    @Override
+    public String toString(String configEnvironment) {
+        return toString();
+    }
+
+    /**
+     * Returns the value as a boolean.
+     *
+     * @param configEnvironment The config environment to get config value for.
+     */
+    @Override
+    public boolean toBoolean(String configEnvironment) {
+        return toBoolean();
+    }
+
+    /**
+     * Returns the value as a double.
+     *
+     * @param configEnvironment The config environment to get config value for.
+     */
+    @Override
+    public double toDouble(String configEnvironment) {
+        return toDouble();
+    }
+
+    /**
+     * Returns the value as a float.
+     *
+     * @param configEnvironment The config environment to get config value for.
+     */
+    @Override
+    public float toFloat(String configEnvironment) {
+        return toFloat();
+    }
+
+    /**
+     * Returns the value as an int.
+     *
+     * @param configEnvironment The config environment to get config value for.
+     */
+    @Override
+    public int toInt(String configEnvironment) {
+        return toInt();
+    }
+
+    /**
+     * Returns the value as a long.
+     *
+     * @param configEnvironment The config environment to get config value for.
+     */
+    @Override
+    public long toLong(String configEnvironment) {
+        return toLong();
+    }
+
+    /**
+     * Returns the value is a byte.
+     *
+     * @param configEnvironment The config environment to get config value for.
+     */
+    @Override
+    public byte toByte(String configEnvironment) {
+        return toByte();
+    }
+
+    /**
+     * Returns the value as a short.
+     *
+     * @param configEnvironment The config environment to get config value for.
+     */
+    @Override
+    public short toShort(String configEnvironment) {
+        return toShort();
+    }
+
+    /**
+     * Returns the value as a Date.
+     *
+     * @param configEnvironment The config environment to get config value for.
+     */
+    @Override
+    public Date toDate(String configEnvironment) {
+        return toDate();
+    }
+
 }

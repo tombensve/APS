@@ -245,16 +245,17 @@ APSSyncService.SyncGroup.ReSyncListener {
         if (this.newestConfigTimestamp == -1) {
             long newestConfigTimestamp = 0;
 
-            for (APSConfigAdmin configAdmin : this.configMemoryStore.getAllConfigurations()) {
-                for (APSConfigValueEditModel valueEditModel : configAdmin.getConfigModel().getValues()) {
-                    for (APSConfigEnvironment configEnv : this.configEnvStore.getConfigEnvironments()) {
-                        long ts = configAdmin.getConfigValueTimestamp(valueEditModel, configEnv);
-                        if (ts > newestConfigTimestamp) {
-                            newestConfigTimestamp = ts;
-                        }
-                    }
-                }
-            }
+            // TODO: Fix
+//            for (APSConfigAdmin configAdmin : this.configMemoryStore.getAllConfigurations()) {
+//                for (APSConfigValueEditModel valueEditModel : configAdmin.getConfigModel().getValues()) {
+//                    for (APSConfigEnvironment configEnv : this.configEnvStore.getConfigEnvironments()) {
+//                        long ts = configAdmin.getConfigValueTimestamp(valueEditModel, configEnv);
+//                        if (ts > newestConfigTimestamp) {
+//                            newestConfigTimestamp = ts;
+//                        }
+//                    }
+//                }
+//            }
             this.newestConfigTimestamp = newestConfigTimestamp;
         }
 

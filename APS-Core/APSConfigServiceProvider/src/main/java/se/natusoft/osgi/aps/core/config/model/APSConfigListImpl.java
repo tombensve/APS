@@ -40,9 +40,16 @@ package se.natusoft.osgi.aps.core.config.model;
 
 import se.natusoft.osgi.aps.api.core.config.APSConfig;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigList;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
+import se.natusoft.osgi.aps.api.core.config.service.APSConfigException;
 import se.natusoft.osgi.aps.core.config.model.admin.APSConfigEditModelImpl;
 
+import static se.natusoft.osgi.aps.core.config.model.StaticUtils.*;
+
+import java.lang.reflect.Field;
 import java.util.Iterator;
+import java.util.Stack;
 
 /**
  * This represents a list of sub configuration classes.
@@ -51,7 +58,7 @@ import java.util.Iterator;
  *
  * @param <APSConfigSubclass> A subclass of APSConfig (an annotated configuration class).
  */
-public class APSConfigListImpl<APSConfigSubclass extends APSConfig> implements APSConfigList<APSConfigSubclass> {
+public class APSConfigListImpl<APSConfigSubclass extends APSConfig> implements APSConfigList<APSConfigSubclass>, APSConfigRefConsumer {
     //
     // Private Members
     //
@@ -67,6 +74,8 @@ public class APSConfigListImpl<APSConfigSubclass extends APSConfig> implements A
 
     /** Provides the config value storage. */
     private ConfigValueStoreProvider configValueStoreProvider = null;
+
+    private APSConfigReference ref = null;
 
     //
     // Constructors
@@ -96,7 +105,13 @@ public class APSConfigListImpl<APSConfigSubclass extends APSConfig> implements A
     // Methods
     //
 
-
+    /**
+     * Ensures and returns a reference to the config value represented by this instance.
+     */
+    private APSConfigReference getRef() {
+        this.ref = ensureRef(this.ref, this.configModel);
+        return this.ref;
+    }
 
     /**
      * Returns the value at the specified index.
@@ -107,17 +122,34 @@ public class APSConfigListImpl<APSConfigSubclass extends APSConfig> implements A
     public APSConfigSubclass get(int index) {
         int size = size();
         if (index >= size) {
-            throw new IndexOutOfBoundsException("Tried to get " + index + "th value out of total " + size + " values!");
+            throw new IndexOutOfBoundsException("Tried to get value #" + index + " out of total " + size + " values!");
         }
-        String key = this.configModel.getKey(configEnvironmentProvider.getActiveConfigEnvironment());
-        return
-            new APSConfigEditModelImpl<APSConfigSubclass>(
-                    this.configModel.getConfigClass(),
-                key,
+
+        APSConfigReference gref = getRef().index(index).configEnvironment(configEnvironmentProvider.getActiveConfigEnvironment());
+
+        //noinspection unchecked
+        APSConfigEditModelImpl<APSConfigSubclass> acem =
+            new APSConfigEditModelImpl(
+                this.configModel.getConfigClass(),
                 this.configModel.getParent(),
-                this.configObjectFactory,
-                index
-            ).getInstance();
+                this.configObjectFactory
+            );
+        APSConfigSubclass inst = acem.getInstance();
+
+        for (Field f : inst.getClass().getDeclaredFields()) {
+            try {
+                Object fieldInst = f.get(inst);
+                if (fieldInst instanceof APSConfigRefConsumer) {
+                    APSConfigRefConsumer crc = (APSConfigRefConsumer)fieldInst;
+                    crc.setConfigReference(gref.copy());
+                }
+            }
+            catch (IllegalAccessException iae) {
+                throw new APSConfigException("Failed to get configuration field instance!", iae);
+            }
+        }
+
+        return inst;
     }
 
     /**
@@ -127,9 +159,18 @@ public class APSConfigListImpl<APSConfigSubclass extends APSConfig> implements A
     public int size() {
         try {
             return Integer.valueOf(
-                    this.configValueStoreProvider.getConfigValueStore().
-                            getConfigValue(this.configModel.getManyValueSizeKey(this.configEnvironmentProvider.getActiveConfigEnvironment()))
+                    this.configValueStoreProvider
+                            .getConfigValueStore()
+                            .getConfigValue(
+                                    toImpl(
+                                            getRef()
+                                            .configEnvironment(configEnvironmentProvider.getActiveConfigEnvironment())
+                                    )
+                                    .getValueKey()
+                                    .getSizeKey()
+                            )
             );
+
         }
         catch (NumberFormatException nfe) {
             // In case a size has not yet been set, it means the "list" is empty!
@@ -153,6 +194,16 @@ public class APSConfigListImpl<APSConfigSubclass extends APSConfig> implements A
     @Override
     public Iterator<APSConfigSubclass> iterator() {
         return new APSConfigValueIterator(size());
+    }
+
+    /**
+     * Receives a config value reference.
+     *
+     * @param ref The reference received.
+     */
+    @Override
+    public void setConfigReference(APSConfigReference ref) {
+        this.ref = ref._(this.configModel);
     }
 
     //

@@ -50,6 +50,7 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigList;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEditModel;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.core.config.model.APSConfigInstanceMemoryStoreImpl;
 import se.natusoft.osgi.aps.core.config.model.APSConfigObjectFactory;
@@ -150,7 +151,8 @@ public class APSConfigPersistentStoreTest {
         APSConfigAdminImpl config = new APSConfigAdminImpl(configModel, configValueStore);
 
         APSConfigValueEditModel southernComfort = configModel.getValueByName("southerncomfort");
-        config.setConfigValue(southernComfort, "false", configEnvironment); // In reality it is true :-)
+        APSConfigReference southernComfortRef = config.createRef()._(configModel)._(southernComfort)._(configEnvironment);
+        config.setConfigValue(southernComfortRef, "false");
 
         return config;
     }
@@ -236,11 +238,12 @@ public class APSConfigPersistentStoreTest {
         APSConfigAdminImpl config = configStore.loadConfiguration(MyConfig2.class);
 
         assertNotNull(config);
-        APSConfigEditModel configModel = (APSConfigEditModel)config.getConfigModel().getValueByName("otherchoices");
-        APSConfigValueEditModel valueEditModel = configModel.getValueByName("otherfish");
+        APSConfigEditModel otherChoicesEditModel = (APSConfigEditModel)config.getConfigModel().getValueByName("otherchoices");
+        APSConfigValueEditModel otherFishEditModel = otherChoicesEditModel.getValueByName("otherfish");
+        APSConfigReference otherFishRef = config.createRef()._(config.getConfigModel())._(otherChoicesEditModel)._(otherFishEditModel);
 
         // Please note that we actually get the default value back here since we have not set this to anything.
-        assertEquals("false", config.getConfigValue(valueEditModel, this.envStore.getActiveConfigEnvironment()));
+        assertEquals("false", config.getConfigValue(otherFishRef._(this.envStore.getActiveConfigEnvironment())));
 
         System.out.println("ok");
     }
@@ -259,10 +262,11 @@ public class APSConfigPersistentStoreTest {
         APSConfigAdminImpl config = configStore.loadConfiguration(MyConfig2.class);
 
         assertNotNull(config);
-        APSConfigEditModelImpl configModel = (APSConfigEditModelImpl)config.getConfigModel().getValueByName("otherchoices");
-        APSConfigValueEditModel valueEditModel = configModel.getValueByName("otherfish");
+        APSConfigEditModel otherChoicesEditModel = (APSConfigEditModel)config.getConfigModel().getValueByName("otherchoices");
+        APSConfigValueEditModel otherFishEditModel = otherChoicesEditModel.getValueByName("otherfish");
+        APSConfigReference otherFishRef = config.createRef()._(config.getConfigModel())._(otherChoicesEditModel)._(otherFishEditModel);
 
-        config.setConfigValue(valueEditModel, "true", this.envStore.getActiveConfigEnvironment());
+        config.setConfigValue(otherFishRef._(this.envStore.getActiveConfigEnvironment()), "true");
 
         MyConfig2 mc2 = ((APSConfigEditModelImpl<MyConfig2>)config.getConfigModel()).getInstance();
         try {((ManagedService)mc2).updated(config.getConfigInstanceMemoryStore().getProperties());} catch (Exception e) {}

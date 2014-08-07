@@ -125,6 +125,16 @@ public class APSConfig implements ManagedService {
     //
 
     /**
+     * Copies this instance to the passed copy.
+     *
+     * @param to The instance to copy to.
+     */
+    protected void copy(APSConfig to) {
+        to.configValues = this.configValues;
+        to.listeners = this.listeners;
+    }
+
+    /**
      * Sets the backing configuration store.
      *
      * @param configValues The backing configuration store to set.

@@ -46,6 +46,8 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigList;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEditModel;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.core.config.model.APSConfigInstanceMemoryStoreImpl;
 import se.natusoft.osgi.aps.core.config.model.APSConfigObjectFactory;
 import se.natusoft.osgi.aps.core.config.model.ConfigEnvironmentProvider;
@@ -60,6 +62,30 @@ public class ConfigModelTest extends TestCase {
     private APSConfigEnvironment defaultConfigEnvironment = new APSConfigEnvironmentImpl("default", "For test.", 0);
     private APSConfigEnvironment whateverConfigEnvironment = new APSConfigEnvironmentImpl("whatever", "For test.", 0);
 
+    private Properties props = new Properties();
+    private APSConfigInstanceMemoryStoreImpl configValueStore = new APSConfigInstanceMemoryStoreImpl(props);
+    private APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(new ConfigEnvironmentProvider() {
+        @Override
+        public APSConfigEnvironment getActiveConfigEnvironment() {
+            return testConfigEnvironment;
+        }
+
+        @Override
+        public List<APSConfigEnvironment> getConfigEnvironments() {
+            List<APSConfigEnvironment> envs = new LinkedList<>();
+            envs.add(testConfigEnvironment);
+            envs.add(defaultConfigEnvironment);
+            envs.add(whateverConfigEnvironment);
+            return envs;
+        }
+
+        @Override
+        public APSConfigEnvironment getConfigEnvironmentByName(String name) {
+            return getActiveConfigEnvironment();
+        }
+    }, configValueStore);
+
+
     /**
      *
      */
@@ -67,126 +93,227 @@ public class ConfigModelTest extends TestCase {
     }
 
     /**
+     * Note that this test is very long. I don't want to split it up into several tests since that would
+     * run against new instances each time. That is not what happens in reality and would also hide defects
+     * like modification of one config value affects another for example.
+     *
      * @throws Exception on failure.
      */
     public void testConfigModels() throws Exception {
         System.out.print("testConfigModels...");
 
-        Properties props = new Properties();
-        APSConfigInstanceMemoryStoreImpl configValueStore = new APSConfigInstanceMemoryStoreImpl(props);
-        APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(new ConfigEnvironmentProvider() {
-            @Override
-            public APSConfigEnvironment getActiveConfigEnvironment() {
-                return testConfigEnvironment;
-            }
 
-            @Override
-            public List<APSConfigEnvironment> getConfigEnvironments() {
-                List<APSConfigEnvironment> envs = new LinkedList<>();
-                envs.add(testConfigEnvironment);
-                envs.add(defaultConfigEnvironment);
-                return envs;
-            }
-
-            @Override
-            public APSConfigEnvironment getConfigEnvironmentByName(String name) {
-                return getActiveConfigEnvironment();
-            }
-        }, configValueStore);
-
-        APSConfigEditModelImpl configModel = new APSConfigEditModelImpl(MyConfig.class, configObjectFactory);
+        APSConfigEditModelImpl configModel = new APSConfigEditModelImpl(RootConfig.class, configObjectFactory);
+        RootConfig rootConfig = (RootConfig)configModel.getInstance();
         APSConfigAdminImpl config = new APSConfigAdminImpl(configModel, configValueStore);
 
-        assertEquals(config.getConfigValue(configModel.getValueByName("southerncomfort"), testConfigEnvironment), "true");
-        assertEquals(config.getConfigValue(configModel.getValueByName("southerncomfort"), defaultConfigEnvironment), "false");
+        // RootConfig.bool
 
-        APSConfigEditModel otherChoicesModel = (APSConfigEditModel)configModel.getValueByName("otherchoices");
-        assertEquals(config.getConfigValue(otherChoicesModel.getValueByName("pizza"), testConfigEnvironment), "true");
-        assertEquals(config.getConfigValue(otherChoicesModel.getValueByName("salmon"), testConfigEnvironment), "false");
+        APSConfigValueEditModel bool = configModel.getValueByName("bool");
+        APSConfigReference boolRef = config.createRef()._(configModel)._(bool);
+
+        String boolRefValue = config.getConfigValue(boolRef.configEnvironment(testConfigEnvironment));
+        assertEquals("true", boolRefValue);
+
+        boolRefValue = config.getConfigValue(boolRef.configEnvironment(defaultConfigEnvironment));
+        assertEquals("false", boolRefValue);
+
+        assertEquals(rootConfig.bool.toBoolean(), true);
+
+        config.setConfigValue(boolRef.configEnvironment(configObjectFactory.getActiveConfigEnvironment()), "false");
+
+        assertEquals(rootConfig.bool.toBoolean(), false);
+
+
+        // RootConfig.str
+
+        APSConfigValueEditModel str = configModel.getValueByName("str");
+        APSConfigReference strRef = config.createRef()._(configModel)._(str);
+
+        String strRefValue = config.getConfigValue(strRef.configEnvironment(configObjectFactory.getActiveConfigEnvironment()));
+        // This has no default values and have not been set so it will be null.
+        assertTrue(strRefValue == null);
+
+        config.setConfigValue(strRef.configEnvironment(configObjectFactory.getActiveConfigEnvironment()), "testValue");
+        assertEquals("testValue", rootConfig.str.toString());
+
+        // RootConfig.simple
+
+        assertTrue(rootConfig.simple != null);
+
+        assertEquals("", rootConfig.simple.simpleValue1.toString());
+        assertEquals("", rootConfig.simple.simpleValue2.toString());
+
+        APSConfigEditModel simple = (APSConfigEditModel)configModel.getValueByName("simple");
+        assertNotNull(simple);
+        APSConfigReference simpleRef = config.createRef()._(configModel)._(simple);
+
+        APSConfigValueEditModel simpleValue1 = simple.getValueByName("simpleValue1");
+        APSConfigReference simpleValue1Ref = simpleRef._(simpleValue1);
+        config.setConfigValue(simpleValue1Ref, "qaz");
+
+        APSConfigValueEditModel simpleValue2 = simple.getValueByName("simpleValue2");
+        APSConfigReference simpleValue2Ref = simpleRef._(simpleValue2);
+        config.setConfigValue(simpleValue2Ref, "wsx");
+
+        assertEquals("qaz", config.getConfigValue(simpleValue1Ref));
+        assertEquals("wsx", config.getConfigValue(simpleValue2Ref));
+        assertEquals("qaz", rootConfig.simple.simpleValue1.toString());
+        assertEquals("wsx", rootConfig.simple.simpleValue2.toString());
+
+        // RootConfig.listComplex.
+
+        assertTrue(rootConfig.listComplex != null);
+
+        APSConfigEditModel listComplex = (APSConfigEditModel)configModel.getValueByName("listComplex");
+        assertNotNull(listComplex);
+        APSConfigReference listComplexRef = config.createRef()._(configModel)._(listComplex);
+
+        APSConfigReference listComplex_0_Ref = config.addConfigList(listComplexRef);
+        assertEquals(config.getListSize(listComplexRef), 1);
+
+        APSConfigValueEditModel listComplex_0_complexValue1 = listComplex.getValueByName("complexValue1");
+        APSConfigReference listComplex_0_complexValue1Ref = listComplex_0_Ref._(listComplex_0_complexValue1);
+        config.setConfigValue(listComplex_0_complexValue1Ref, "edc");
+
+        APSConfigValueEditModel listComplex_0_complexValue2 = (APSConfigValueEditModel)listComplex.getValueByName("complexValue2");
+        APSConfigReference listComplex_0_complexValue2Ref = listComplex_0_Ref._(listComplex_0_complexValue2);
+        config.setConfigValue(listComplex_0_complexValue2Ref, "rfv");
+
+        assertEquals("edc", rootConfig.listComplex.get(0).complexValue1.toString());
+        assertEquals("rfv", rootConfig.listComplex.get(0).complexValue2.toString());
+
+        // RootConfig.listComplex.listSimple
+
+        APSConfigEditModel listComplex_0_listSimple = (APSConfigEditModel)listComplex.getValueByName("listSimple");
+        assertNotNull(listComplex_0_listSimple);
+        APSConfigReference listComplex_0_listSimpleRef = listComplex_0_Ref._(listComplex_0_listSimple);
+
+        APSConfigReference listComplex_0_listSimple_0_Ref = config.addConfigList(listComplex_0_listSimpleRef);
+        assertEquals(1, config.getListSize(listComplex_0_listSimpleRef));
+
+        APSConfigValueEditModel listComplex_0_listSimple_0_simpleValue1 =
+                listComplex_0_listSimple.getValueByName("simpleValue1");
+        APSConfigReference listComplex_0_listSimple_0_simpleValue1Ref =
+                listComplex_0_listSimple_0_Ref._(listComplex_0_listSimple_0_simpleValue1);
+        config.setConfigValue(listComplex_0_listSimple_0_simpleValue1Ref, "tgb");
+
+        APSConfigValueEditModel listComplex_0_listSimple_0_simpleValue2 =
+                listComplex_0_listSimple.getValueByName("simpleValue2");
+        APSConfigReference listComplex_0_listSimple_0_simpleValue2Ref =
+                listComplex_0_listSimple_0_Ref._(listComplex_0_listSimple_0_simpleValue2);
+        config.setConfigValue(listComplex_0_listSimple_0_simpleValue2Ref, "yhn");
+
+        assertEquals("tgb", rootConfig.listComplex.get(0).listSimple.get(0).simpleValue1.toString());
+        assertEquals("yhn", rootConfig.listComplex.get(0).listSimple.get(0).simpleValue2.toString());
+
+        try {
+            assertEquals("", rootConfig.listComplex.get(1).listSimple.get(0).simpleValue2.toString());
+            fail("This should have thrown an IndexOutOfBoundException since we are referencing index 1 and there are only 1 entry.");
+        }
+        catch (IndexOutOfBoundsException iobe) {/*OK*/}
+
+        // Test one more index of the first.
+
+        APSConfigReference listComplex_1_Ref = config.addConfigList(listComplexRef);
+        assertEquals(config.getListSize(listComplexRef), 2);
+
+        APSConfigValueEditModel listComplex_1_complexValue1 = listComplex.getValueByName("complexValue1");
+        APSConfigReference listComplex_1_complexValue1Ref = listComplex_1_Ref._(listComplex_1_complexValue1);
+        config.setConfigValue(listComplex_1_complexValue1Ref, "ujm");
+
+        APSConfigValueEditModel listComplex_1_complexValue2 = (APSConfigValueEditModel)listComplex.getValueByName("complexValue2");
+        APSConfigReference listComplex_1_complexValue2Ref = listComplex_1_Ref._(listComplex_1_complexValue2);
+        config.setConfigValue(listComplex_1_complexValue2Ref, "ik,");
+
+        assertEquals("ujm", rootConfig.listComplex.get(1).complexValue1.toString());
+        assertEquals("ik,", rootConfig.listComplex.get(1).complexValue2.toString());
+
+        APSConfigEditModel listComplex_1_listSimple = (APSConfigEditModel)listComplex.getValueByName("listSimple");
+        assertNotNull(listComplex_1_listSimple);
+        APSConfigReference listComplex_1_listSimpleRef = listComplex_1_Ref._(listComplex_1_listSimple);
+
+        APSConfigReference listComplex_1_listSimple_0_Ref = config.addConfigList(listComplex_1_listSimpleRef);
+        assertEquals(1, config.getListSize(listComplex_1_listSimpleRef));
+
+        APSConfigValueEditModel listComplex_1_listSimple_0_simpleValue1 =
+                listComplex_1_listSimple.getValueByName("simpleValue1");
+        APSConfigReference listComplex_1_listSimple_0_simpleValue1Ref =
+                listComplex_1_listSimple_0_Ref._(listComplex_1_listSimple_0_simpleValue1);
+        config.setConfigValue(listComplex_1_listSimple_0_simpleValue1Ref, "ol.");
+
+        APSConfigValueEditModel listComplex_1_listSimple_0_simpleValue2 =
+                listComplex_1_listSimple.getValueByName("simpleValue2");
+        APSConfigReference listComplex_1_listSimple_0_simpleValue2Ref =
+                listComplex_1_listSimple_0_Ref._(listComplex_1_listSimple_0_simpleValue2);
+        config.setConfigValue(listComplex_1_listSimple_0_simpleValue2Ref, "po-");
+
+        assertEquals("ol.", rootConfig.listComplex.get(1).listSimple.get(0).simpleValue1.toString());
+        assertEquals("po-", rootConfig.listComplex.get(1).listSimple.get(0).simpleValue2.toString());
+
+        // Double check that the previous index  hasn't changed.
+
+        assertEquals("tgb", rootConfig.listComplex.get(0).listSimple.get(0).simpleValue1.toString());
+        assertEquals("yhn", rootConfig.listComplex.get(0).listSimple.get(0).simpleValue2.toString());
+
 
         System.out.println("ok");
     }
 
-    /**
-     * @throws Exception on failure.
-     */
-    public void testConfigModels2() throws Exception {
-        System.out.print("testConfigModels2...");
-
-        Properties props = new Properties();
-        APSConfigInstanceMemoryStoreImpl configValueStore = new APSConfigInstanceMemoryStoreImpl(props);
-        // Please note that we provide a different config environment than the default values in the config class!
-        APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(new ConfigEnvironmentProvider() {
-            @Override
-            public APSConfigEnvironment getActiveConfigEnvironment() {
-                return testConfigEnvironment;
-            }
-
-            @Override
-            public List<APSConfigEnvironment> getConfigEnvironments() {
-                List<APSConfigEnvironment> envs = new LinkedList<>();
-                envs.add(testConfigEnvironment);
-                envs.add(defaultConfigEnvironment);
-                return envs;
-            }
-
-            @Override
-            public APSConfigEnvironment getConfigEnvironmentByName(String name) {
-                return getActiveConfigEnvironment();
-            }
-        }, configValueStore);
-
-        APSConfigEditModelImpl configModel = new APSConfigEditModelImpl(MyConfig.class, configObjectFactory);
-        APSConfigAdminImpl config = new APSConfigAdminImpl(configModel, configValueStore);
-
-        // Please note that here we automatically fall back to config env "default" due to than config env "whatever" does not exist!
-        // And since we have provided a default value for config env "default" for this value we will get that value back.
-        assertEquals("false", config.getConfigValue(configModel.getValueByName("southerncomfort"), whateverConfigEnvironment));
-
-        APSConfigEditModel otherChoicesModel = (APSConfigEditModel)configModel.getValueByName("otherchoices");
-        assertNull(config.getConfigValue(otherChoicesModel.getValueByName("pizza"), whateverConfigEnvironment));
-        assertNull(config.getConfigValue(otherChoicesModel.getValueByName("salmon"), whateverConfigEnvironment));
-
-        System.out.println("ok");
-    }
 
     @APSConfigDescription(
             version="1.0",
-            configId="aps.configapiproxy.test.sub",
-            description="Test of sub config model."
+            configId="aps.config.test",
+            description="Root config model."
     )
-    public static class MySubConfig extends APSConfig {
+    public static class RootConfig extends APSConfig {
 
-        /** */
-        @APSConfigItemDescription(description="Do you like pizza ?", defaultValue={@APSDefaultValue(value="true", configEnv="testenv")})
-        public APSConfigValue pizza;
-
-        /** */
-        @APSConfigItemDescription(description="Do you like salmon ?", defaultValue={@APSDefaultValue(value="false", configEnv="testenv")})
-        public APSConfigValue salmon;
-    }
-
-    @APSConfigDescription(
-            version="1.0",
-            configId="aps.configapiproxy.test",
-            description="Test of sub config model."
-    )
-    public static class MyConfig extends APSConfig {
-
-        /** */
-        @APSConfigItemDescription(description="Do you like Southern Comfort ?",
+        @APSConfigItemDescription(description="Boolean + config env specific.",
                 environmentSpecific = true,
                 defaultValue={@APSDefaultValue(value="true", configEnv="testenv"), @APSDefaultValue(value="false", configEnv="default")})
-        public APSConfigValue southernComfort;
+        public APSConfigValue bool;
 
-        /** */
+        @APSConfigItemDescription(description="Plain string.")
+        public APSConfigValue str;
+
         @APSConfigItemDescription(description="Some other choices")
-        public MySubConfig otherChoices;
+        public SimpleConfig simple;
 
-        /** */
-        @APSConfigItemDescription(description="More choices")
-        public APSConfigList<MySubConfig> moreChoices;
+        @APSConfigItemDescription(description="List of config object test 1.")
+        public APSConfigList<ComplexConfig> listComplex;
 
+    }
+
+    @APSConfigDescription(
+            version="1.0",
+            configId="simple",
+            description="Test of sub config model."
+    )
+    public static class SimpleConfig extends APSConfig {
+
+        @APSConfigItemDescription(description="Some value 1")
+        public APSConfigValue simpleValue1;
+
+        @APSConfigItemDescription(description="Some value 2")
+        public APSConfigValue simpleValue2;
+
+    }
+
+    @APSConfigDescription(
+            version="1.0",
+            configId="complex",
+            description="Test of list of config object."
+    )
+    public static class ComplexConfig extends APSConfig {
+
+        @APSConfigItemDescription(description="Some value 1")
+        public APSConfigValue complexValue1;
+
+        @APSConfigItemDescription(description="Some value 2")
+        public APSConfigValue complexValue2;
+
+        @APSConfigItemDescription(description="List of config object test 1.")
+        public APSConfigList<SimpleConfig> listSimple;
     }
 
 

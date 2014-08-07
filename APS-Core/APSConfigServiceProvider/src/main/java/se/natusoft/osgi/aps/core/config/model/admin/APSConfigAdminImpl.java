@@ -40,30 +40,74 @@
 package se.natusoft.osgi.aps.core.config.model.admin;
 
 import se.natusoft.osgi.aps.api.core.config.APSConfig;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigAdmin;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEditModel;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
+import se.natusoft.osgi.aps.api.core.config.model.admin.*;
+import se.natusoft.osgi.aps.api.core.config.service.APSConfigException;
 import se.natusoft.osgi.aps.core.config.model.APSConfigInstanceMemoryStoreImpl;
+
+import static se.natusoft.osgi.aps.core.config.model.StaticUtils.*;
 
 import java.util.*;
 
 
 /**
  * This represents a specific configuration.
- * <p>
- * This API is intended for editing configuration. Start by getting the APSConfigModel that represents the configuration structure. Then
- * each model value (APSConfigValueModel) can be used to get or set configuration values using this API. Under the surface the whole
- * configuration is stored in a java.util.Properties, which also can be fetched and set directly. It is however the config definition models
- * that generate the keys for the values in the Properties, which is why they are used to set and get configuration values.
- * <p/>
- * Please note that some configuration values are not dependent on configuration environment while others are. Those configuration values
- * whose definition are annotated with @APSConfigItemDescription(environmentSpecific=true) will have different values depending on the configuration
- * environment, which is why that is also passed to all get and set methods. Easiest is to not care which values are env specified and which
- * are and always pass a configuration environment. If you are making a GUI editor for the configuration it is however a good idea to
- * check if a value is configuration environment specific or not so that the user can choose for which environment to set a value. This
- * information is available in APSConfigValueModel.isConfigEnvironmentSpecific(). The APSConfigAdminService also provides all
- * defined configuration environments since it is also used for defining the configuration environments.
+ *
+ * Configurations are really a tree of configuration objects. How the configuration values are stored however
+ * are up to the implementation. In this case we store it in a simple Properties object which we load and save.
+ *
+ * The configuration objects used by clients are read only! To set and change configuration values you use
+ * this class along with models representing the structure of the config objects:
+ *
+ * __APSConfigValueEditModel__ - This model represents a config value.
+ *
+ * __APSConfigEditModel__ -This model represents a config object and have a values() method that return value
+ * fields. This model extends APSConfigValueEditModel.
+ *
+ * These models represents the structure of the configuration. They do not represent specific instances of
+ * configuration values. They don't know about indexes for list values nor configuration environments. They
+ * only supply a navigable structure.
+ *
+ * To actually reference a configuration value or configuration object you need to build a reference to it.
+ * createRef() does just that. Then you add models to reference specific config.
+ *
+ *     APSConfigAdmin admin = ...
+ *
+ *     APSConfigEditModel root = admin.getConfigModel();
+ *     APSConfigValueEditModel url = root.getValueByName("url");
+ *
+ *     APSConfigReference urlRef = admin.createRef()._(root)._(url);
+ *     System.out.println(admin.getConfigValue(urlRef));
+ *     admin.setConfigValue(urlRef, "http://...");
+ *
+ * Referencing lists:
+ *
+ *     APSConfigAdmin admin = ...
+ *
+ *     APSConfigEditModel root = admin.getConfigModel();
+ *     APSConfigEditModel dataSources = root.getValeuByName("datasources");
+ *     APSConfigValueEditModel dsUrl = dataSources.getValueByName("url");
+ *
+ *     APSConfigReference dataSource0Url = admin.createRef()
+ *             ._(root)._(dataSources, 0)._(dsUrl);
+ *     System.out.println(admin.getConfigValue(dataSource0Url));
+ *
+ * Getting for specific config environment:
+ *
+ *     APDConfigEnvironment prod = ...
+ *
+ *     APSConfigReference dataSource0Url = admin.createRef()
+ *             ._(root)._(dataSources, 0)._(dsUrl).configEnvironment(prod);
+ *
+ *
+ * Please note that some configuration values are not dependent on configuration environment while others are. Those
+ * configuration values whose definition are annotated with @APSConfigItemDescription(environmentSpecific=true) will
+ * have different values depending on the configuration environment. Easiest is to not care which values are env
+ * specific and which are not, and always provide a configuration environment. It will only be used where it applies.
+ *
+ * If you are making a GUI editor for the configuration it is however a good idea to check if a value is
+ * configuration environment specific or not so that the user can choose for which environment to set a value. This
+ * information is available in APSConfigValueModel.isConfigEnvironmentSpecific(). The APSConfigAdminService also
+ * provides all defined configuration environments since it is also used for defining the configuration environments.
  */
 public class APSConfigAdminImpl implements APSConfigAdmin {
     //
@@ -72,12 +116,6 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
 
     /** The configuration model. */
     private APSConfigEditModel configModel;
-
-    /** The configuration id specified by the user. */
-    private String configId;
-
-    /** The configuration version. */
-    private String version;
 
     /** The configuration values. */
     private APSConfigInstanceMemoryStoreImpl configInstanceMemoryStore;
@@ -95,8 +133,6 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
     public APSConfigAdminImpl(APSConfigEditModel configModel, APSConfigInstanceMemoryStoreImpl configInstanceMemoryStore) {
         this.configModel = configModel;
         this.configInstanceMemoryStore = configInstanceMemoryStore;
-        this.configId = configModel.getConfigId();
-        this.version = configModel.getVersion();
     }
 
     //
@@ -127,7 +163,7 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
      */
     @Override
     public String getVersion() {
-        return this.version;
+        return this.configModel.getVersion();
     }
 
     /**
@@ -143,7 +179,7 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
      */
     @Override
     public String getConfigId() {
-        return this.configId;
+        return this.configModel.getConfigId();
     }
 
 
@@ -158,298 +194,282 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
     }
 
     /**
+     * Adds a timestamp.
+     *
+     * @param reference The reference to add timestamp for.
+     */
+    private void timestamp(APSConfigReference reference) {
+        APSConfigReferenceImpl _reference = (APSConfigReferenceImpl)reference;
+        setConfigValue(_reference.getValueKey().getTimeKey(), "" + new Date().getTime());
+    }
+
+    /**
+     * Creates a new empty reference that needs to be populated with APSConfig*EditModels to build a config value reference.
+     */
+    @Override
+    public APSConfigReference createRef() {
+        return new APSConfigReferenceImpl();
+    }
+
+    /**
+     * Creates a new reference already containing the root edit model.
+     */
+    @Override
+    public APSConfigReference createRootRef() {
+        return createRef()._(getConfigModel());
+    }
+
+    /**
      * Returns a configuration value.
      *
-     * @param valueEditModel The value model holding the key to the value.
-     * @param configEnvironment This argument can always be null. If the config value is not config env specific then this argument has no effect.
-     *                          If the config value is config env specific then the value is gotten for the specific config env when this argument
-     *                          is non null, and for first that have a value if this is null. It is however strongly recommended to always pass
-     *                          a valid config env for this.
+     * @param reference The reference to the value.
+     *
      * @return The referenced config value or a default value.
      */
     @Override
-    public synchronized String getConfigValue(APSConfigValueEditModel valueEditModel, APSConfigEnvironment configEnvironment) {
-        String value = this.configInstanceMemoryStore.getConfigValue(valueEditModel.getKey(configEnvironment));
+    public synchronized String getConfigValue(APSConfigReference reference) {
+        String value = getConfigValue(reference.toString());
+
         if (value == null) {
-            value = valueEditModel.getDefaultValue(configEnvironment);
+            value = reference.getDefaultValue();
             if (value != null) {
-                setConfigValue(valueEditModel, value, configEnvironment);
+                setConfigValue(reference, value);
             }
         }
 
         return value;
-    }
-
-    /**
-     * Returns the timestamp for the specified config value.
-     *
-     * @param valueEditModel The value model holding the key to the value.
-     * @param configEnvironment This argument can always be null. If the config value is not config env specific then this argument has no effect.
-     *                          If the config value is config env specific then the value is gotten for the specific config env when this argument
-     *                          is non null, and for first that have a value if this is null. It is however strongly recommended to always pass
-     *                          a valid config env for this.
-     * @return The timestamp of the config value which will be 0 if not set (January 1, 1970 00:00:00).
-     */
-    public long getConfigValueTimestamp(APSConfigValueEditModel valueEditModel, APSConfigEnvironment configEnvironment) {
-        long timestamp = 0;
-        String ts = this.configInstanceMemoryStore.getConfigValue(valueEditModel.getTimestampKey(configEnvironment));
-        if (ts != null) {
-            timestamp = Long.valueOf(ts);
-        }
-
-        return timestamp;
     }
 
     /**
      * Sets a configuration value.
      *
-     * @param valueEditModel The value model holding the key to the value.
+     * @param reference The reference to the config value to set.
      * @param value The value to set.
-     * @param configEnvironment This argument can always be null. If the config value is not config env specific then this argument has no effect.
-     *                          If the config value is config env specific then the value is set for the specific config env when this argument
-     *                          is non null, and for all config envs if this argument is null. It is however strongly recommended to always pass
-     *                          a valid config env for this.
      */
     @Override
-    public synchronized void setConfigValue(APSConfigValueEditModel valueEditModel, String value, APSConfigEnvironment configEnvironment) {
-        this.configInstanceMemoryStore.setConfigValue(valueEditModel.getKey(configEnvironment), value);
-        this.configInstanceMemoryStore.setConfigValue(valueEditModel.getTimestampKey(configEnvironment), "" + new Date().getTime());
+    public synchronized void setConfigValue(APSConfigReference reference, String value) {
+        setConfigValue(reference.toString(), value);
+        timestamp(reference);
     }
 
     /**
-     * Removes a configuration value.
-     *
-     * @param valueEditModel The value model holding the key to the value.
-     * @param configEnvironment This argument can always be null. If the config value is not config env specific then this argument has no effect.
-     *                          If the config value is config env specific then the value is removed for the specific config env when this argument
-     *                          is non null, and for all config envs if this argument is null, making null a more useful value in this case.
-     * @return The removed value.
+     * Returns the value of the config with the specified key.
+     * @param key The key of the config to get.
      */
-    @Override
-    public synchronized String removeConfigValue(APSConfigValueEditModel valueEditModel, APSConfigEnvironment configEnvironment) {
-        this.configInstanceMemoryStore.setConfigValue(valueEditModel.getTimestampKey(configEnvironment), "" + new Date().getTime());
-        return this.configInstanceMemoryStore.removeConfigValue(valueEditModel.getKey(configEnvironment));
+    private String getConfigValue(String key) {
+        return this.configInstanceMemoryStore.getConfigValue(key);
     }
 
     /**
-     * Gets a configuration "many" value.
+     * Sets a config value.
      *
-     * @param valueEditModel The value model holding the key to the value.
-     * @param index The index of the "many" value.
-     * @param configEnvironment This argument can always be null. If the config value is not config env specific then this argument has no effect.
-     *                          If the config value is config env specific then the value is gotten for the specific config env when this argument
-     *                          is non null, and for first that have a value if this is null. It is however strongly recommended to always pass
-     *                          a valid config env for this.
-     * @return The referenced config value or a default value.
+     * @param key The key of the config value to set.
+     * @param value The value to set.
      */
-    @Override
-    public synchronized String getConfigValue(APSConfigValueEditModel valueEditModel, int index, APSConfigEnvironment configEnvironment) {
-        String value = this.configInstanceMemoryStore.getConfigValue(valueEditModel.getKey(configEnvironment, index));
-
-        return value != null ? value : valueEditModel.getDefaultValue(configEnvironment);
+    private void setConfigValue(String key, String value) {
+        this.configInstanceMemoryStore.setConfigValue(key, value);
     }
 
     /**
-     * Sets a configuration "many" value.
+     * Removes a config value.
      *
-     * @param valueEditModel The value model holding the key to the value.
-     * @param index The index of the "many" value.
-     * @param value the many value to set.
-     * @param configEnvironment This argument can always be null. If the config value is not config env specific then this argument has no effect.
-     *                          If the config value is config env specific then the value is set for the specific config env when this argument
-     *                          is non null, and for all config envs if this argument is null. It is however strongly recommended to always pass
-     *                          a valid config env for this.
+     * @param key The key of the config value to remove.
+     * @return The value of the removed config value.
      */
-    @Override
-    public synchronized void setConfigValue(APSConfigValueEditModel valueEditModel, int index, String value, APSConfigEnvironment configEnvironment) {
-        this.configInstanceMemoryStore.setConfigValue(valueEditModel.getKey(configEnvironment, index), value);
-        this.configInstanceMemoryStore.setConfigValue(valueEditModel.getTimestampKey(configEnvironment), "" + new Date().getTime());
+    private String removeConfigValue(String key) {
+        return this.configInstanceMemoryStore.removeConfigValue(key);
     }
 
     /**
-     * Adds a configuration "many" value last.
-     *
-     * @param valueEditModel The value model holding the key to the value.
-     * @param value The value to add.
-     * @param configEnvironment This argument can always be null. If the config value is not config env specific then this argument has no effect.
-     *                          If the config value is config env specific then the value is removed for the specific config env when this argument
-     *                          is non null, and for all config envs if this argument is null, making null a more useful value in this case.
+     * Return the config keys.
      */
-    @Override
-    public void addConfigValue(APSConfigValueEditModel valueEditModel, String value, APSConfigEnvironment configEnvironment) {
-        int size = getSize(valueEditModel, configEnvironment);
-        setConfigValue(valueEditModel, size, value, configEnvironment);
-        setSize(size + 1, valueEditModel, configEnvironment);
+    private Set<String> getConfigKeys() {
+        return this.configInstanceMemoryStore.getKeys();
     }
 
     /**
-     * Removes a configuration "many" value.
+     * Adds a configuration value.
      *
-     * @param valueEditModel The value model holding the key to the value.
-     * @param index The index to remove.
-     * @param configEnvironment This argument can always be null. If the config value is not config env specific then this argument has no effect.
-     *                          If the config value is config env specific then the value is removed for the specific config env when this argument
-     *                          is non null, and for all config envs if this argument is null, making null a more useful value in this case.
-     * @return The removed value.
+     * @param reference The reference to the value to add.
+     * @param value The actual value to add.
      */
     @Override
-    public synchronized String removeConfigValue(APSConfigValueEditModel valueEditModel, int index, APSConfigEnvironment configEnvironment) {
-        String value;
-        if (index == (getSize(valueEditModel, configEnvironment) -1)) {
-            value = this.configInstanceMemoryStore.removeConfigValue(valueEditModel.getKey(configEnvironment, index));
-            setSize(getSize(valueEditModel, configEnvironment) - 1, valueEditModel, configEnvironment);
+    public synchronized void addConfigValue(APSConfigReference reference, String value) {
+        ConfigValueKey key = toImpl(reference).getValueKey();
+
+        if (key.isMany()) {
+            int size = getListSize(reference);
+            setConfigValue(key.forIndex(size).toString(), value);
+            ++size;
+            setListSize(reference, size);
         }
         else {
-            // Transfer entries to temp List, remove entry, create entries again.
-            List<String> values = new LinkedList<String>();
-            int size = getSize(valueEditModel, configEnvironment);
-            for (int i = 0; i < size; i++) {
-                values.add(this.configInstanceMemoryStore.removeConfigValue(valueEditModel.getKey(configEnvironment, i)));
-            }
-
-            value = values.remove(index);
-
-            setSize(0, valueEditModel, configEnvironment);
-            for (String val : values) {
-                addConfigValue(valueEditModel, val, configEnvironment);
-            }
+            throw new APSConfigException("Bad call! Can only add values to list type values!");
         }
-        this.configInstanceMemoryStore.setConfigValue(valueEditModel.getTimestampKey(configEnvironment), "" + new Date().getTime());
-
-        return value;
     }
 
     /**
-     * The APSConfigModel that represents an APSConfigList represents just the list itself. This returns a new APSConfigModel
-     * that represents an entry at a specific index in the list and can be used to set and get values for the config entry at that index.
-     * <p/>
-     * The returned model is a temporary model and should <b>only</b> be used to access and modify values of the specified index.
-     * Never ever pass such a model as input to any of the get/add/removeConfig() methods. It should only be used with
-     * the *configValue() methods.
+     * Removes a config value.
      *
-     * @param configModel The original config model representing its structural place.
-     * @param index The index the get a version for.
-     * @param configEnvironment This argument can always be null. If the config value is not config env specific then this argument has no effect.
-     *
-     * @return A config model representing the specified index.
+     * @param reference A reference to the config value to remove.
      */
-    public synchronized APSConfigEditModel getConfigListEntry(APSConfigEditModel configModel, int index, APSConfigEnvironment configEnvironment) {
-        return ((APSConfigEditModelImpl)configModel).createIndexVersion(index, configModel, configEnvironment);
+    @Override
+    public synchronized String removeConfigValue(APSConfigReference reference) {
+
+        // Handle multi value case.
+        ConfigValueKey key = toImpl(reference).getValueKey();
+
+        String retVal = null;
+
+        if (key.isMany()) {
+            List<String> values = new LinkedList<>();
+
+            int size = getListSize(reference);
+
+            for (int i = 0; i < size; i++) {
+                ConfigValueKey iKey = key.forIndex(i);
+                if (key.getIndex() != i) {
+                    values.add(getConfigValue(iKey.toString()));
+                }
+                else {
+                    retVal = getConfigValue(iKey.toString());
+                }
+                removeConfigValue(iKey.toString());
+            }
+
+            --size;
+
+            for (int i = 0; i < size; i++) {
+                ConfigValueKey iKey = key.forIndex(i);
+                setConfigValue(iKey.toString(), values.get(i));
+            }
+            values.clear();
+
+            setListSize(reference, size);
+        }
+        // Single value case.
+        else {
+            removeConfigValue(reference.toString());
+            timestamp(reference);
+        }
+
+        return retVal;
     }
 
     /**
-     * The APSConfigModel that represents an APSConfigList represents just the list itself. This creates a new list entry and
-     * returns a model representing that entry and can be used to set and get values in the entry.
-     * <p/>
-     * The returned model is a temporary model and should <b>only</b> be used to access and modify values of the specified index.
-     * Never ever pass such a model as input to any of the get/add/removeConfig() method. It should only be used with
-     * the *configValue() methods.
+     * Returns the size of the list pointed to by the specified reference.
      *
-     * @param configModel The config model representing the APSConfigList.
-     * @param configEnvironment This argument can always be null. If the config value is not config env specific then this argument has no effect.
-     *                          If the config value is config env specific then the value is removed for the specific config env when this argument
-     *                          is non null, and for all config envs if this argument is null, making null a more useful value in this case.
-     * @return A new config model representing the created list entry.
+     * @param reference The reference to get the size for.
      */
-    public synchronized APSConfigEditModel createConfigListEntry(APSConfigEditModel configModel, APSConfigEnvironment configEnvironment) {
-        int size = getSize(configModel, configEnvironment);
-        setSize(size + 1, configModel, configEnvironment);
-        return ((APSConfigEditModelImpl)configModel).createIndexVersion(size, configModel, configEnvironment);
+    @Override
+    public synchronized int getListSize(APSConfigReference reference) {
+        APSConfigReferenceImpl ro_ref = toImpl(reference);
+        String sizeKey = ro_ref.getValueKey().getSizeKey();
+        String sizeStr = getConfigValue(sizeKey);
+        return Integer.valueOf(sizeStr != null ? sizeStr : "0");
     }
 
     /**
-     * This removes a config entry in the APSConfigList represented by the specified APSConfigModel.
+     * Sets a new size of a list.
      *
-     * @param configModel The config model representing the config entry to remove.
-     * @param index The index of the entry to remove.
-     * @param configEnvironment This argument can always be null. If the config value is not config env specific then this argument has no effect.
-     *                          If the config value is config env specific then the value is removed for the specific config env when this argument
-     *                          is non null, and for all config envs if this argument is null, making null a more useful value in this case.
+     * @param reference The reference to the list.
+     * @param size The new size.
      */
-    public synchronized void removeConfigListEntry(APSConfigEditModel configModel, int index, APSConfigEnvironment configEnvironment) {
-        ConfigValueKey key = new ConfigValueKey(configModel.getKey(configEnvironment));
-        int size = getSize(configModel, configEnvironment);
-        
-        List<Map<String, String>> keepListValues = new LinkedList<Map<String, String>>();
-        for (int i = 0; i < size; i++) {
-            ConfigValueKey indexKey = key.getNodeKey(i);
-            int indexKeyLen = indexKey.length();
+    private void setListSize(APSConfigReference reference, int size) {
+        APSConfigReferenceImpl ro_ref = toImpl(reference);
+        String sizeKey = ro_ref.getValueKey().getSizeKey();
+        setConfigValue(sizeKey, "" + size);
+    }
 
-            Map<String, String> indexValues = new HashMap<String, String>();
-            for (String confKey : this.configInstanceMemoryStore.getKeys()) {
-                if (confKey.startsWith(indexKey.toString())) {
-                    String value = this.configInstanceMemoryStore.removeConfigValue(confKey);
-                    // We only save the part after our index key, or in other words, a relative key.
-                    String relKey = confKey.substring(indexKeyLen);
-                    indexValues.put(relKey, value);
+    /**
+     * Adds a config **object** list entry returning a reference to the new entry.
+     *
+     * @param reference A reference to the many list to add an entry to.
+     *
+     * @return A reference to the new entry.
+     */
+    @Override
+    public synchronized APSConfigReference addConfigList(APSConfigReference reference) {
+        int size = getListSize(reference);
+        setListSize(reference, size + 1);
+
+        return reference.index(size);
+    }
+
+    /**
+     * Removes the specified list config object using reference to it. **Note** that the reference
+     * must include a specific index!
+     *
+     * @param reference The reference to the specific config object to delete.
+     */
+    @Override
+    public synchronized void removeConfigList(APSConfigReference reference) {
+        APSConfigReferenceImpl ro_ref = toImpl(reference);
+        removeConfigListEntry(reference, ro_ref.getIndex());
+    }
+
+    /**
+     * This removes a list entry by reindexing the list and returns the no longer valid index (previously last index).
+     *
+     * @param ref The reference pointing to the list to reindex.
+     * @param from The index to start re-indexing from.
+     * @param to The index to stop re-indexing at.
+     * @param startingAt The starting index of the new indexes.
+     */
+    private int reindexMSList(APSConfigReference ref, int from, int to, int startingAt) {
+        APSConfigReference iteratorRef = ref.copy();
+        APSConfigReference newIndexRef = ref.copy();
+
+        int current = startingAt;
+        for (int i = from; i <= to; i++) {
+            APSConfigReference iRef = iteratorRef.index(i);
+
+            for (String key : this.configInstanceMemoryStore.getKeys()) {
+
+                if (key.startsWith(iRef.toString())) {
+                    String value = this.configInstanceMemoryStore.removeConfigValue(key);
+                    String newKey = key.replace(iRef.toString(), newIndexRef.index(current).toString());
+                    this.configInstanceMemoryStore.setConfigValue(newKey, value);
                 }
             }
-
-            if (i != index) { // We don't save the one we want to remove.
-                keepListValues.add(indexValues);
-            }
+            ++current;
         }
 
-        int ix = 0;
-        for (Map<String, String> indexValue : keepListValues) {
-            ConfigValueKey indexKey = key.getNodeKey(ix++);
-            
-            for (String valueKey : indexValue.keySet()) {
-                String value = indexValue.get(valueKey);
-                // Since this key is relative we add the first part again with a new index.
-                this.configInstanceMemoryStore.setConfigValue(indexKey + valueKey, value);
-            }
-        }
-
-        setSize(size - 1, configModel, configEnvironment);
+        return current;
     }
 
     /**
-     * Sets a new size of a "many" value.
+     * This removes a branch or a leaf entry in a list.
      *
-     * @param size The size to set.
-     * @param valueEditModel The value model holding the key to the value.
-     * @param configEnvironment The config environment to set the size for.
+     * @param ref The reference to the list.
+     * @param index The index in the list to remove.
      */
-    private void setSize(int size, APSConfigValueEditModel valueEditModel, APSConfigEnvironment configEnvironment) {
-        this.configInstanceMemoryStore.setConfigValue(valueEditModel.getManyValueSizeKey(configEnvironment), "" + size);
-        this.configInstanceMemoryStore.setConfigValue(valueEditModel.getManyValueSizeKey(configEnvironment) + "_time",
-                "" + new Date().getTime());
-    }
+    private void removeConfigListEntry(APSConfigReference ref, int index) {
+        int size = getListSize(ref);
+        int last = reindexMSList(ref, index + 1, size - 1, index);
+        setListSize(ref, size - 1);
 
-    /**
-     * Gets the number of values of a "many" value.
-     * <p/>
-     * Please note that APSConfigModel is a subclass of APSConfigValueModel. This method is also valid for
-     * APSConfigModels.
-     *
-     * @param valueEditModel The value model holding the key to the value.
-     * @param configEnvironment The config environment to get the number of values for.
-     *
-     * @return The size.
-     */    @Override
-    public synchronized int getSize(APSConfigValueEditModel valueEditModel, APSConfigEnvironment configEnvironment) {
-        int size = 0;
-        String sizeStr = this.configInstanceMemoryStore.getConfigValue(valueEditModel.getManyValueSizeKey(configEnvironment));
-        if (sizeStr != null) {
-            try {
-                size = Integer.valueOf(sizeStr);
+        // If the removed entry happens to be the last entry then the reindex have not removed anything.
+        // So to be safe lets do a cleanup of the last index.
+        APSConfigReference removeRef = ref.index(last);
+        for (String key : this.configInstanceMemoryStore.getKeys()) {
+            if (key.startsWith(removeRef.toString())) {
+                this.configInstanceMemoryStore.removeConfigValue(key);
             }
-            catch (NumberFormatException nfe) {/* OK */}
         }
-        return size;
+
     }
 
     /**
-     * This object represents a specific configuration. When editing a configuration you might not want changed values to
-     * have immediate effect, but rather have the user do a "save" to change the active configuration. In this case use
-     * this method to clone the config, edit that, then on save call APSConfigAdminService.updateConfiguration(clone).
+     * This object represents a specific configuration. When editing a configuration you might not want changed values
+     * to have immediate effect, but rather have the user do a "save" to change the active configuration. In this case
+     * use this method to clone the config, edit that, then on save call APSConfigAdminService.updateConfiguration(clone).
      */
     @Override
     public synchronized APSConfigAdmin cloneConfig() {
         Properties newProps = new Properties();
-        for (String key : this.configInstanceMemoryStore.getKeys()) {
-            newProps.setProperty(key, this.configInstanceMemoryStore.getConfigValue(key));
+        for (String key : getConfigKeys()) {
+            newProps.setProperty(key, getConfigValue(key));
         }
 
         return new APSConfigAdminImpl(this.configModel, new APSConfigInstanceMemoryStoreImpl(newProps));
@@ -461,6 +481,7 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
      * This needs to be called by any code that updates config values. I do not
      * want to trigger this for every changed value!
      */
+    @Override
     public void sendConfigModifiedEvent() {
         APSConfigEditModel topConfigEditModel = this.configModel;
         while (topConfigEditModel.getParent() != null) {
@@ -476,8 +497,8 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 23 * hash + (this.configId != null ? this.configId.hashCode() : 0);
-        hash = 23 * hash + (this.version != null ? this.version.hashCode() : 0);
+        hash = 23 * hash + (this.configModel.getConfigId() != null ? this.configModel.getConfigId().hashCode() : 0);
+        hash = 23 * hash + (this.configModel.getVersion() != null ? this.configModel.getVersion().hashCode() : 0);
         return hash;
     }
 
@@ -494,8 +515,8 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
             return false;
         }
         APSConfigAdmin cobj = (APSConfigAdmin)obj;
-        return this.configId.equals(cobj.getConfigId()) &&
-               this.version.equals(cobj.getVersion());
+        return this.configModel.getConfigId().equals(cobj.getConfigId()) &&
+               this.configModel.getVersion().equals(cobj.getVersion());
 
     }
 

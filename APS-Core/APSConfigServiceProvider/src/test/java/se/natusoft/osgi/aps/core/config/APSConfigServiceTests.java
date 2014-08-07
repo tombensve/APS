@@ -49,10 +49,7 @@ import se.natusoft.osgi.aps.api.core.config.annotation.APSDefaultValue;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigList;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValueList;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigAdmin;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEditModel;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
+import se.natusoft.osgi.aps.api.core.config.model.admin.*;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService.APSConfigEnvAdmin;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
@@ -141,50 +138,7 @@ public class APSConfigServiceTests {
     }
 
     /**
-     * This should be the first thing any tests calls.
-     *
-     * @param name The name of the test.
-     */
-    private void start(String name) {
-        System.out.print("Running " + name + "...");
-    }
-
-    /**
-     * This should be the last thing any test calls.
-     */
-    private void end() {
-        System.out.println("ok");
-    }
-
-//    @After
-//    public void tearDown() {
-//    }
-
-
-    /**
-     * Tests the default values that you get without editing anything. These are specified with the @APSDefaultValue
-     * in the configuration class.
-     *
-     * @throws Exception on failure.
-     */
-    @Test
-    public void testDefaultValues() throws Exception {
-        start("testDefaultValues");
-
-        this.configService.registerConfiguration(APSDiscoveryServiceConfig.class, false);
-        APSDiscoveryServiceConfig config = this.configService.getConfiguration(APSDiscoveryServiceConfig.class);
-
-        assertEquals("228.31.32.33", config.multicastAddress.toString());
-        assertEquals("14000", config.multicastPort.toString());
-        assertEquals("auto", config.udpLocalListenAddress.toString());
-        assertEquals("14001", config.udpLocalListenPort.toString());
-        assertEquals("10", config.consecutiveReadFailureLimit.toString());
-
-        end();
-    }
-
-    /**
-     * Requirements for all "testEditing*" tests. Should be the second thing called after start(...).
+     * Requirements for all "testEditing*" tests. Should be the second thing called after startTest(...).
      *
      * @throws Exception on failure.
      */
@@ -207,6 +161,70 @@ public class APSConfigServiceTests {
 
     }
 
+    private String indent = "";
+
+    private void startTest(String name) {
+        System.out.print("Running " + name + "...");
+    }
+
+    private void startStructuredTest(String name) {
+        System.out.println("Running" + name);
+    }
+
+    private void startGroup(String name) {
+        indent += "   ";
+        System.out.println(indent + name);
+    }
+
+    private void endGroup() {
+        System.out.println(indent + "ok");
+        indent = indent.substring(0, indent.length() - 3);
+    }
+
+    private void startSubTest(String name) {
+        indent += "   ";
+        System.out.print(indent + name + "...");
+    }
+
+    private void endSubTest() {
+        indent = indent.substring(0, indent.length() - 3);
+        endTest();
+    }
+
+    private void endTest() {
+        System.out.println("ok");
+    }
+
+//    @After
+//    public void tearDown() {
+//    }
+
+    //
+    // Tests
+    //
+
+    /**
+     * Tests the default values that you get without editing anything. These are specified with the @APSDefaultValue
+     * in the configuration class.
+     *
+     * @throws Exception on failure.
+     */
+    @Test
+    public void testDefaultValues() throws Exception {
+        startTest("testDefaultValues");
+
+        this.configService.registerConfiguration(APSDiscoveryServiceConfig.class, false);
+        APSDiscoveryServiceConfig config = this.configService.getConfiguration(APSDiscoveryServiceConfig.class);
+
+        assertEquals("228.31.32.33", config.multicastAddress.toString());
+        assertEquals("14000", config.multicastPort.toString());
+        assertEquals("auto", config.udpLocalListenAddress.toString());
+        assertEquals("14001", config.udpLocalListenPort.toString());
+        assertEquals("10", config.consecutiveReadFailureLimit.toString());
+
+        endTest();
+    }
+
     /**
      * Tests editing plain config values (APSConfigValue).
      *
@@ -214,18 +232,24 @@ public class APSConfigServiceTests {
      */
     @Test
     public void testEditingValues() throws Exception {
-        start("testEditingValues");
+        startTest("testEditingValues");
 
         setupEditing();
 
         assertEquals("228.31.32.33", config.multicastAddress.toString());
-        configAdmin.setConfigValue(discoverySvcConfigModel.getValueByName("multicastAddress"), "192.168.1.5", configEnv);
+        APSConfigReference discoverySvcRef = configAdmin.createRef()
+                ._(discoverySvcConfigModel);
+        APSConfigReference multicastAddressRef =
+                discoverySvcRef._(discoverySvcConfigModel.getValueByName("multicastAddress"))._(configEnv);
+        configAdmin.setConfigValue(multicastAddressRef, "192.168.1.5");
         assertEquals("192.168.1.5", config.multicastAddress.toString());
 
-        configAdmin.setConfigValue(discoverySvcConfigModel.getValueByName("multicastPort"), "15000", configEnv);
+        APSConfigReference multicastPortRef =
+                discoverySvcRef._(discoverySvcConfigModel.getValueByName("multicastPort"))._(configEnv);
+        configAdmin.setConfigValue(multicastPortRef, "15000");
         assertEquals("15000", config.multicastPort.toString());
 
-        end();
+        endTest();
     }
 
     /**
@@ -235,22 +259,26 @@ public class APSConfigServiceTests {
      */
     @Test
     public void testEditingValueLists() throws Exception {
-        start("testEditingValueLists");
+        startTest("testEditingValueLists");
 
         setupEditing();
 
-        APSConfigEditModel udpRemoteDestConfigModel = (APSConfigEditModel)discoverySvcConfigModel.getValueByName("defaultUDPTargetDiscoveryService");
+        APSConfigEditModel udpRemoteDestConfigModel =
+                (APSConfigEditModel)discoverySvcConfigModel.getValueByName("defaultUDPTargetDiscoveryService");
         assertNotNull(udpRemoteDestConfigModel);
         assertEquals(2, udpRemoteDestConfigModel.getValues().size());
 
         APSConfigValueEditModel targetPortConfigValue = udpRemoteDestConfigModel.getValueByName("targetPort");
+        APSConfigReference targetPortRef =
+                configAdmin.createRef()._(discoverySvcConfigModel)._(udpRemoteDestConfigModel)._(targetPortConfigValue)
+                        ._(configEnv);
         assertNotNull(targetPortConfigValue);
         assertEquals(true, targetPortConfigValue.isMany());
 
         assertEquals(0, config.defaultUDPTargetDiscoveryService.targetPort.size());
-        configAdmin.addConfigValue(targetPortConfigValue, "1234", configEnv);
-        configAdmin.addConfigValue(targetPortConfigValue, "5678", configEnv);
-        configAdmin.addConfigValue(targetPortConfigValue, "13579", configEnv);
+        configAdmin.addConfigValue(targetPortRef, "1234");
+        configAdmin.addConfigValue(targetPortRef, "5678");
+        configAdmin.addConfigValue(targetPortRef, "13579");
         assertEquals(3, config.defaultUDPTargetDiscoveryService.targetPort.size());
 
         assertEquals("1234", config.defaultUDPTargetDiscoveryService.targetPort.get(0).toString());
@@ -261,18 +289,18 @@ public class APSConfigServiceTests {
             config.defaultUDPTargetDiscoveryService.targetPort.get(3);
             fail("An IndexOutOfBoundsException was expected here since we referenced the 4th out of 3 elements!");
         }
-        catch (IndexOutOfBoundsException iobe) {}
+        catch (IndexOutOfBoundsException iobe) {/*OK*/}
         catch (Exception e) {
             fail("Expected an IndexOutOfBoundsException, but received an " + e.getClass().getSimpleName() + " exception!");
         }
 
         // Test of remove.
-        configAdmin.removeConfigValue(targetPortConfigValue, 1, configEnv);
+        configAdmin.removeConfigValue(targetPortRef.index(1));
         assertEquals(2, config.defaultUDPTargetDiscoveryService.targetPort.size());
         assertEquals("1234", config.defaultUDPTargetDiscoveryService.targetPort.get(0).toString());
         assertEquals("13579", config.defaultUDPTargetDiscoveryService.targetPort.get(1).toString());
 
-        end();
+        endTest();
     }
 
     /**
@@ -282,74 +310,129 @@ public class APSConfigServiceTests {
      */
     @Test
     public void testEditingConfigLists() throws Exception {
-        start("testEditingConfigLists");
+        startStructuredTest("testEditingConfigLists");
 
         setupEditing();
 
-        APSConfigEditModel udpTargetDiscoverySvcsEditModel = (APSConfigEditModel)discoverySvcConfigModel.getValueByName("udpTargetDiscoveryServices");
-        assertNotNull(udpTargetDiscoverySvcsEditModel);
-        assertEquals(true, udpTargetDiscoverySvcsEditModel.isMany());
+        APSConfigEditModel udpTargetDiscoveryServicesEditModel = (APSConfigEditModel)discoverySvcConfigModel.getValueByName("udpTargetDiscoveryServices");
+        assertNotNull(udpTargetDiscoveryServicesEditModel);
+        assertEquals(true, udpTargetDiscoveryServicesEditModel.isMany());
 
-        // Editing lists of sub config classes differs from editing lists of values. Values are values and nothing more and the key
-        // for a list value can be determined by taking the key of the model and adding the index to it (which is done internally).
-        // Lists of config classes however have a set of values after the index and possible more lists under it also. Each APSConfigModel
-        // uses a base key and then adds keys for each value to the base to get a value key. Therefore we handle lists of configs by
-        // creating a new APSConfigModel for each list entry that represents that specific entry and under the surface has a key with
-        // a specific index. This model can then only be used for accessing that specific entry in the list. This is what is happening
-        // on the next line below. newUDPTargetDiscoverySvcModel can only be used to modify that entry. To create a new entry the
-        // original udpTargetDiscoverySvcModel must be used.
-        APSConfigEditModel newUPDTargetDiscoverySvcEditModel1 = configAdmin.createConfigListEntry(udpTargetDiscoverySvcsEditModel, configEnv);
-        assertEquals(1, config.udpTargetDiscoveryServices.size());
+        {
+            startGroup("Create first list entry [0]");
+            APSConfigReference udpTargetDiscoverySvcRef0 =
+                    configAdmin.addConfigList(configAdmin.createRef()._(discoverySvcConfigModel)._(udpTargetDiscoveryServicesEditModel));
+            {
+                startSubTest("targetHost");
+                {
+                    APSConfigValueEditModel tdsTargetHostEditModel = udpTargetDiscoveryServicesEditModel.getValueByName("targetHost");
+                    APSConfigReference tdsTargetHostRef = udpTargetDiscoverySvcRef0._(tdsTargetHostEditModel)._(configEnv);
+                    configAdmin.setConfigValue(tdsTargetHostRef, "testhost");
+                    assertEquals("testhost", config.udpTargetDiscoveryServices.get(0).targetHost.toString());
+                }
+                endSubTest();
 
-        APSConfigValueEditModel tdsTargetHostEditModel = newUPDTargetDiscoverySvcEditModel1.getValueByName("targetHost");
-        configAdmin.setConfigValue(tdsTargetHostEditModel, "testhost", configEnv);
-        assertEquals("testhost", config.udpTargetDiscoveryServices.get(0).targetHost.toString());
+                startGroup("targetPort");
+                {
+                    startSubTest("Add target ports");
+                    APSConfigValueEditModel tdsTargetPortEditModel = udpTargetDiscoveryServicesEditModel.getValueByName("targetPort");
+                    APSConfigReference tdsTargetPortRef = udpTargetDiscoverySvcRef0._(tdsTargetPortEditModel)._(configEnv);
+                    configAdmin.addConfigValue(tdsTargetPortRef, "1234");
+                    configAdmin.addConfigValue(tdsTargetPortRef, "5678");
+                    endSubTest();
 
-        APSConfigValueEditModel tdsTargetPortEditModel1 = newUPDTargetDiscoverySvcEditModel1.getValueByName("targetPort");
-        configAdmin.addConfigValue(tdsTargetPortEditModel1, "1234", configEnv);
-        configAdmin.addConfigValue(tdsTargetPortEditModel1, "5678", configEnv);
-        // Test fetching values through the editing api.
-        assertEquals("1234", configAdmin.getConfigValue(tdsTargetPortEditModel1, 0, configEnv));
-        assertEquals("5678", configAdmin.getConfigValue(tdsTargetPortEditModel1, 1, configEnv));
-        assertEquals(2, configAdmin.getSize(tdsTargetPortEditModel1, configEnv));
-        // Test fetching values through the client config api.
-        assertEquals("1234", config.udpTargetDiscoveryServices.get(0).targetPort.get(0).toString());
-        assertEquals("5678", config.udpTargetDiscoveryServices.get(0).targetPort.get(1).toString());
-        assertEquals(2, config.udpTargetDiscoveryServices.get(0).targetPort.size());
+                    startSubTest("Verify fetching values through editing api");
+                    assertEquals("1234", configAdmin.getConfigValue(tdsTargetPortRef.index(0)));
+                    assertEquals("5678", configAdmin.getConfigValue(tdsTargetPortRef.index(1)));
+                    assertEquals(2, configAdmin.getListSize(tdsTargetPortRef));
+                    endSubTest();
 
-        // Second entry
-        APSConfigEditModel newUPDTargetDiscoverySvcEditModel2 = configAdmin.createConfigListEntry(udpTargetDiscoverySvcsEditModel, configEnv);
-        assertEquals(2, config.udpTargetDiscoveryServices.size());
+                    startSubTest("Verify fetching values through the client config api");
+                    assertEquals("1234", config.udpTargetDiscoveryServices.get(0).targetPort.get(0).toString());
+                    assertEquals("5678", config.udpTargetDiscoveryServices.get(0).targetPort.get(1).toString());
+                    assertEquals(2, config.udpTargetDiscoveryServices.get(0).targetPort.size());
+                    endSubTest();
+                }
+                endGroup();
+            }
+            endGroup();
 
-        APSConfigValueEditModel tdsTargetHostEditModel2 = newUPDTargetDiscoverySvcEditModel2.getValueByName("targetHost");
-        configAdmin.setConfigValue(tdsTargetHostEditModel2, "testhost2", configEnv);
-        assertEquals("testhost2", config.udpTargetDiscoveryServices.get(1).targetHost.toString());
+            startGroup("Create second list enrty [1]");
+            APSConfigReference udpTargetDiscoverySvcRef1 =
+                    configAdmin.addConfigList(configAdmin.createRef()._(discoverySvcConfigModel)._(udpTargetDiscoveryServicesEditModel));
+            {
+                startSubTest("targetHost");
+                {
+                    APSConfigValueEditModel tdsTargetHostEditModel = udpTargetDiscoveryServicesEditModel.getValueByName("targetHost");
+                    APSConfigReference tdsTargetHostRef = udpTargetDiscoverySvcRef1._(tdsTargetHostEditModel)._(configEnv);
+                    configAdmin.setConfigValue(tdsTargetHostRef, "testhost2");
+                    assertEquals("testhost2", config.udpTargetDiscoveryServices.get(1).targetHost.toString());
+                }
+                endSubTest();
 
-        APSConfigValueEditModel tdsTargetPortEditModel2 = newUPDTargetDiscoverySvcEditModel2.getValueByName("targetPort");
-        configAdmin.addConfigValue(tdsTargetPortEditModel2, "12345", configEnv);
-        configAdmin.addConfigValue(tdsTargetPortEditModel2, "56789", configEnv);
-        // Test fetching values through the editing api.
-        assertEquals("12345", configAdmin.getConfigValue(tdsTargetPortEditModel2, 0, configEnv));
-        assertEquals("56789", configAdmin.getConfigValue(tdsTargetPortEditModel2, 1, configEnv));
-        assertEquals(2, configAdmin.getSize(tdsTargetPortEditModel2, configEnv));
-        // Test fetching values through the client config api.
-        assertEquals("12345", config.udpTargetDiscoveryServices.get(1).targetPort.get(0).toString());
-        assertEquals("56789", config.udpTargetDiscoveryServices.get(1).targetPort.get(1).toString());
-        assertEquals(2, config.udpTargetDiscoveryServices.get(1).targetPort.size());
+                startGroup("targetPort");
+                {
+                    startSubTest("Add target ports");
+                    APSConfigValueEditModel tdsTargetPortEditModel = udpTargetDiscoveryServicesEditModel.getValueByName("targetPort");
+                    APSConfigReference tdsTargetPortRef = udpTargetDiscoverySvcRef1._(tdsTargetPortEditModel)._(configEnv);
+                    configAdmin.addConfigValue(tdsTargetPortRef, "12345");
+                    configAdmin.addConfigValue(tdsTargetPortRef, "56789");
+                    endSubTest();
 
-        // Now we will remove the first entry and verify that the second is still available at index 0.
-        configAdmin.removeConfigListEntry(udpTargetDiscoverySvcsEditModel, 0, configEnv);
-        assertEquals(1, config.udpTargetDiscoveryServices.size());
-        assertEquals("12345", config.udpTargetDiscoveryServices.get(0).targetPort.get(0).toString());
-        assertEquals("56789", config.udpTargetDiscoveryServices.get(0).targetPort.get(1).toString());
-        assertEquals(2, config.udpTargetDiscoveryServices.get(0).targetPort.size());
+                    startSubTest("Verify fetching values through editing api");
+                    assertEquals("12345", configAdmin.getConfigValue(tdsTargetPortRef.index(0)));
+                    assertEquals("56789", configAdmin.getConfigValue(tdsTargetPortRef.index(1)));
+                    assertEquals(2, configAdmin.getListSize(tdsTargetPortRef));
+                    endSubTest();
 
-        end();
+                    startSubTest("Verify fetching values through the client config api");
+                    assertEquals("12345", config.udpTargetDiscoveryServices.get(1).targetPort.get(0).toString());
+                    assertEquals("56789", config.udpTargetDiscoveryServices.get(1).targetPort.get(1).toString());
+                    assertEquals(2, config.udpTargetDiscoveryServices.get(1).targetPort.size());
+                    endSubTest();
+
+                }
+                endGroup();
+            }
+            endGroup();
+
+            startGroup("Test list deletion");
+            {
+                // Now we will remove the first entry and verify that the second is still available at index 0.
+                startSubTest("Remove first entry and verify that the second is still available at index 0");
+                {
+                    configAdmin.removeConfigList(udpTargetDiscoverySvcRef0);
+                    assertEquals(1, config.udpTargetDiscoveryServices.size());
+                    assertEquals("12345", config.udpTargetDiscoveryServices.get(0).targetPort.get(0).toString());
+                    assertEquals("56789", config.udpTargetDiscoveryServices.get(0).targetPort.get(1).toString());
+                    assertEquals(2, config.udpTargetDiscoveryServices.get(0).targetPort.size());
+                }
+                endSubTest();
+
+                startSubTest("Remove remaining entry and verify that #entries == 0");
+                {
+                    configAdmin.removeConfigList(udpTargetDiscoverySvcRef0);
+                    assertEquals(0, config.udpTargetDiscoveryServices.size());
+                }
+                endSubTest();
+            }
+            endGroup();
+
+            // Check that we can build a new reference from scratch.
+            startSubTest("Verify that we can build a new reference from scratch matching the one received from addConfigList(...)");
+            {
+                APSConfigReference reCreatedRef = configAdmin.createRef()._(discoverySvcConfigModel)._(udpTargetDiscoveryServicesEditModel).index(0);
+                assertEquals(udpTargetDiscoverySvcRef0.toString(), reCreatedRef.toString());
+            }
+            endSubTest();
+        }
+
+        endTest();
     }
 
     @Test
     public void testDefaultValuesAndConfigEnvs() throws Exception {
-        start("testDefaultValuesAndConfigEnvs");
+        startTest("testDefaultValuesAndConfigEnvs");
 
         APSConfigEnvAdmin configEnvAdmin = this.configAdminService.getConfigEnvAdmin();
         configEnvAdmin.addConfigEnvironment("devel", "Development");
@@ -368,19 +451,19 @@ public class APSConfigServiceTests {
         configEnvAdmin.selectActiveConfigEnvironment(configEnvAdmin.getConfigEnvironmentByName("acceptance"));
         assertEquals("asdf", config.testValue1.toString());
 
-        end();
+        endTest();
     }
 
     // Template
 //    @Test
 //    public void test() throws Exception {
-//        start("");
+//        startTest("");
 //
 //        setupEditing();
 //
 //
 //
-//        end();
+//        endTest();
 //    }
 
     //
@@ -426,7 +509,7 @@ public class APSConfigServiceTests {
          * This is a sub config model of APSDiscoveryServiceConfig!
          */
         @APSConfigDescription(
-                configId="se.natusoft.osgi.aps.discovery.static.services",
+                configId="services",
                 description="Address and targetPort for known discovery service instance at static address and port outside of local net where multicast doesn't work.",
                 version="1.0.0"
         )

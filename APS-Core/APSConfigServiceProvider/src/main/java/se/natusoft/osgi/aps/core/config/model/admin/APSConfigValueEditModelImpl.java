@@ -55,6 +55,9 @@ public class APSConfigValueEditModelImpl implements APSConfigValueEditModel {
     // Constants
     //
 
+    /** Represents a non index. */
+    public static final int NO_INDEX = -1;
+
     /** The default config environment when none have been given. */
     private static final APSConfigEnvironment DEFAULT_CONFIG_ENV = new APSConfigEnvironmentImpl("default", "default", 0);
 
@@ -65,10 +68,10 @@ public class APSConfigValueEditModelImpl implements APSConfigValueEditModel {
     /** The parent of this or null if top parent. */
     private APSConfigEditModel parent = null;
 
-    /** The key for this value. */
-    private ConfigValueKey key = null;
+    /** The localKey for this value. */
+    private ConfigPartKey key = null;
 
-    /** The name of the value. This is basically the last part of the key. */
+    /** The name of the value. This is basically the last part of the localKey. */
     private String name = null;
 
     /** The defaults for this value as a map. */
@@ -99,13 +102,26 @@ public class APSConfigValueEditModelImpl implements APSConfigValueEditModel {
     /**
      * Creates a new APSConfigValueModelImpl instance.
      *
+     * @param name the name of the value.
      * @param parent The parent of this value.
-     * @param key The key for this value.
      * @param defaultValues The default values for this value.
      */
-    APSConfigValueEditModelImpl(APSConfigEditModel parent, String key, List<APSConfigDefaultValue> defaultValues) {
+    public APSConfigValueEditModelImpl(String name, APSConfigEditModel parent, List<APSConfigDefaultValue> defaultValues) {
+        this(new ConfigPartKey(ConfigPartKey.KeyType.VALUE).name(name), name, parent, defaultValues);
+    }
+
+    /**
+     * Creates a new APSConfigValueModelImpl instance.
+     *
+     * @param key The key for this value.
+     * @param name the name of the value.
+     * @param parent The parent of this value.
+     * @param defaultValues The default values for this value.
+     */
+    protected APSConfigValueEditModelImpl(ConfigPartKey key, String name, APSConfigEditModel parent, List<APSConfigDefaultValue> defaultValues) {
+        this.key = key;
+        this.name = name;
         this.parent = parent;
-        this.key = new ConfigValueKey(key);
         for (APSConfigDefaultValue defValue : defaultValues) {
             this.defaultValuesMap.put(defValue.getConfigEnv(), defValue);
         }
@@ -114,22 +130,6 @@ public class APSConfigValueEditModelImpl implements APSConfigValueEditModel {
     //
     // Methods
     //
-
-    /**
-     * @return The internal key value.
-     */
-    protected String getInternalKey() {
-        return this.key.toString();
-    }
-
-    /**
-     * Replaces the internal key value.
-     *
-     * @param key The new key value.
-     */
-    protected void setInternalKey(String key) {
-        this.key = new ConfigValueKey(key);
-    }
 
     /**
      * Sets the description of this value.
@@ -167,6 +167,9 @@ public class APSConfigValueEditModelImpl implements APSConfigValueEditModel {
      */
     protected void setMany(boolean isMany) {
         this.isMany = isMany;
+        if (this.key != null) {
+            this.key.many(this.isMany());
+        }
     }
 
     /**
@@ -227,7 +230,7 @@ public class APSConfigValueEditModelImpl implements APSConfigValueEditModel {
     }
 
     /**
-     * The name of the value. This is basically the last part of the key.
+     * The name of the value. This is basically the last part of the localKey.
      *
      * @return the name
      */
@@ -237,7 +240,7 @@ public class APSConfigValueEditModelImpl implements APSConfigValueEditModel {
     }
 
     /**
-     * The name of the value. This is basically the last part of the key.
+     * The name of the value. This is basically the last part of the localKey.
      *
      * @param name the name to set
      */
@@ -262,6 +265,7 @@ public class APSConfigValueEditModelImpl implements APSConfigValueEditModel {
      */
     public void setConfigEnvSpecific(boolean configEnvSpecific) {
         this.configEnvSpecific = configEnvSpecific;
+        this.key.configEnvSpecific(configEnvSpecific);
     }
 
     /**
@@ -275,63 +279,12 @@ public class APSConfigValueEditModelImpl implements APSConfigValueEditModel {
     }
 
     /**
-     * The key for this value.
+     * The localKey for this value.
      *
-     * @param configEnv The configuration environment to get the key for. For values that are configuration environment specific
-     *                  a key including the configuration environment will be produced. For other values the specified config
-     *                  environment has no effect. If null is passed the key is treated as a non config environment specific.
-     *                  Only pass null if you are absolutely sure or you might end up with a bad key!
-     *
-     * @return the key
+     * @return the key.
      */
-    @Override
-    public String getKey(APSConfigEnvironment configEnv) {
-        return this.key.getValueKey(this.configEnvSpecific ? configEnv : null).toString();
-    }
-
-    /**
-     * If isMany() is true then use this method to get the key for a specific index.
-     *
-     * @param configEnv The configuration environment to get the key for. For values that are configuration environment specific
-     *                  a key including the configuration environment will be produced. For other values the specified config
-     *                  environment has no effect. If null is passed the key is treated as a non config environment specific.
-     *                  Only pass null if you are absolutely sure or you might end up with a bad key!
-     * @param index  The index of a "many" value.
-     *
-     * @return the key
-     */
-    @Override
-    public String getKey(APSConfigEnvironment configEnv, int index) {
-        return this.key.getValueKey(this.configEnvSpecific ? configEnv : null, index).toString();
-    }
-
-    /**
-     * The timestamp key for this value.
-     *
-     * @param configEnv The configuration environment to get the key for. For values that are configuration environment specific
-     *                  a key including the configuration environment will be produced. For other values the specified config
-     *                  environment has no effect. If null is passed the key is treated as a non config environment specific.
-     *                  Only pass null if you are absolutely sure or you might end up with a bad key!
-     *
-     * @return The key.
-     */
-    public String getTimestampKey(APSConfigEnvironment configEnv) {
-        return this.key.getTimestampKey(this.configEnvSpecific ? configEnv : null).toString();
-    }
-
-    /**
-     * Returns the key for the number of values of a many value.
-     *
-     * @param configEnv The configuration environment to get the key for. For values that are configuration environment specific
-     *                  a key including the configuration environment will be produced. For other values the specified config
-     *                  environment has no effect. If null is passed the key is treated as a non config environment specific.
-     *                  Only pass null if you are absolutely sure or you might end up with a bad key!
-     *
-     * @return The many value size key.
-     */
-    @Override
-    public String getManyValueSizeKey(APSConfigEnvironment configEnv) {
-        return this.key.getManyValueSizeKey(this.configEnvSpecific ? configEnv : null).toString();
+    public ConfigPartKey getKey() {
+        return this.key;
     }
 
     /**

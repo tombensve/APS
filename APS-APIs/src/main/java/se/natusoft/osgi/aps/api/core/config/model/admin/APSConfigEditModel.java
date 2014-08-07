@@ -37,6 +37,8 @@
  */
 package se.natusoft.osgi.aps.api.core.config.model.admin;
 
+import se.natusoft.osgi.aps.api.core.config.APSConfig;
+
 import java.util.List;
 import java.util.Set;
 
@@ -57,25 +59,32 @@ import java.util.Set;
 public interface APSConfigEditModel extends APSConfigValueEditModel {
 
     /**
-     *
-     * Returns the version of this configuration definition.
+     * Returns the configClass version.
      */
     String getVersion();
 
     /**
-     * Returns the configuration id of this configuration definition.
+     * Returns the configuration id specified by the configClass.
      */
     String getConfigId();
 
     /**
-     * Returns the group of the config.
+     * The group of the config.
      */
     String getGroup();
 
     /**
+     * @return The Class for the APSConfig subclass parsed by this model.
+     */
+    Class<? extends APSConfig> getConfigClass();
+
+    /**
+     * Returns the values for this configClass.
+     */
+    List<APSConfigValueEditModel> getValues();
+
+    /**
      * Gets a value by its name (java bean property name but in all lowercase).
-     *
-     * To make this a bit clearer: _(the returned value).getKey().equals(getKey() + "." + name)_ should be true.
      *
      * @param name The name of the value to get.
      *
@@ -87,10 +96,4 @@ public interface APSConfigEditModel extends APSConfigValueEditModel {
      * Returns the names of all available values of the configuration class represented by this model.
      */
     Set<String> getValueNames();
-
-    /**
-     * Returns the values of the configuration class represented by this model.
-     */
-    List<APSConfigValueEditModel> getValues();
-
 }

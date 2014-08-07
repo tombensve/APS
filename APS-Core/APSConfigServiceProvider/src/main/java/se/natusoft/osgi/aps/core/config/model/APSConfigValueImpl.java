@@ -40,8 +40,11 @@ package se.natusoft.osgi.aps.core.config.model;
 
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
+import se.natusoft.osgi.aps.core.config.model.admin.APSConfigValueEditModelImpl;
 import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
+import static se.natusoft.osgi.aps.core.config.model.StaticUtils.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -50,19 +53,23 @@ import java.util.Date;
 /**
  * This represents a configuration value.
  */
-public class APSConfigValueImpl implements APSConfigValue {
+public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer {
     //
     // Private Members
     //
 
     /** The configuration definition model representing this value. */
-    private APSConfigValueEditModel configValueEditModel = null;
+    private APSConfigValueEditModelImpl configValueEditModel = null;
 
     /** The configuration values to get our configuration value from. */
     private ConfigValueStoreProvider configValuesProvider = null;
 
     /** Provides the active config environment. */
     private ConfigEnvironmentProvider configEnvProvider = null;
+
+    /** The reference to the config value represented by this instance. */
+    private APSConfigReference ref;
+
 
     //
     // Constructors
@@ -78,15 +85,38 @@ public class APSConfigValueImpl implements APSConfigValue {
     public APSConfigValueImpl(APSConfigValueEditModel configValueEditModel,
                               ConfigValueStoreProvider configValuesProvider,
                               ConfigEnvironmentProvider configEnvProvider) {
-        this.configValueEditModel = configValueEditModel;
+        this.configValueEditModel = (APSConfigValueEditModelImpl)configValueEditModel;
         this.configValuesProvider = configValuesProvider;
         this.configEnvProvider = configEnvProvider;
     }
 
+    /**
+     * Creates a new APSConfigValueImpl instance.
+     *
+     * @param configValueEditModel The configuration definition model representing this value.
+     * @param configValuesProvider Provides configuration value store.
+     * @param configEnvProvider Provides the currently active configuration environment.
+     * @param ref The config reference to use for this instance.
+     */
+    /*package*/ APSConfigValueImpl(APSConfigValueEditModel configValueEditModel,
+                              ConfigValueStoreProvider configValuesProvider,
+                              ConfigEnvironmentProvider configEnvProvider,
+                              APSConfigReference ref) {
+        this(configValueEditModel, configValuesProvider, configEnvProvider);
+        this.ref = ref;
+    }
 
     //
     // Methods
     //
+
+    /**
+     * Ensures and returns a reference to the config value represented by this instance.
+     */
+    private APSConfigReference getRef() {
+        this.ref = ensureRef(this.ref, this.configValueEditModel);
+        return this.ref;
+    }
 
     /**
      * Returns the resolved value.
@@ -110,8 +140,11 @@ public class APSConfigValueImpl implements APSConfigValue {
      * @param ix The index of the value to get.
      */
     protected String getIndexedValue(int ix, APSConfigEnvironment configEnvironment) {
-        return this.configValuesProvider.getConfigValueStore().
-                getConfigValue(this.configValueEditModel.getKey(configEnvironment, ix));
+        return this.configValuesProvider.
+            getConfigValueStore().
+            getConfigValue(
+                    getRef().index(ix)._(configEnvironment).toString()
+            );
     }
 
     /**
@@ -139,7 +172,7 @@ public class APSConfigValueImpl implements APSConfigValue {
      */
     private String getNormalValue(APSConfigEnvironment configEnvironment) {
         return this.configValuesProvider.getConfigValueStore().
-                getConfigValue(this.configValueEditModel.getKey(configEnvironment));
+                getConfigValue(getRef()._(configEnvironment).toString());
     }
 
     /**
@@ -363,61 +396,19 @@ public class APSConfigValueImpl implements APSConfigValue {
         }
     }
 
-    //
-    // Inner Classes
-    //
-
     /**
-     * This represents one index of a list of configuration values.
+     * Receives a config value reference. This implements APSConfigRefConsumer.
+     *
+     * __NOTE__: This is only for providing config class fields with a reference. It should not be used to set
+     * the reference in any other case since it will add its edit model to the received reference. This class also
+     * has a constructor variant that takes a ref which is used to create an indexed instance. This ref is just
+     * set as is and can be used for other cases when a ref needs to be provided as is.
+     *
+     * @param ref The reference received.
      */
-    public static class APSConfigIndexedValueImpl extends APSConfigValueImpl {
-        //
-        // Private Members
-        //
-
-        /** The index of the specified instance. */
-        private int index = -1;
-
-        //
-        // Constructors
-        //
-
-        /**
-         * Creates a new APSConfigValueImpl instance.
-         *
-         * @param configDefinitionEditModel The configuration definition model representing this value.
-         * @param configValuesProvider Provides configuration value store.
-         * @param configEnvProvider Provides the currently active configuration environment.
-         * @param index The index represented by this instance.
-         */
-        public APSConfigIndexedValueImpl(APSConfigValueEditModel configDefinitionEditModel,
-                                  ConfigValueStoreProvider configValuesProvider,
-                                  ConfigEnvironmentProvider configEnvProvider,
-                                  int index) {
-            super(configDefinitionEditModel, configValuesProvider, configEnvProvider);
-            this.index = index;
-        }
-
-        //
-        // Methods
-        //
-
-        /**
-         * Returns the resolved value.
-         */
-        @Override
-        protected String getValue() {
-            return getIndexedValue(this.index);
-        }
-
-        /**
-         * Returns the resolved value.
-         *
-         * @param configEnvironment The config enviornment to get value for.
-         */
-        @Override
-        protected String getValue(String configEnvironment) {
-            return getIndexedValue(this.index, configEnvironment);
-        }
+    @Override
+    public void setConfigReference(APSConfigReference ref) {
+        this.ref = ref._(this.configValueEditModel);
     }
+
 }
