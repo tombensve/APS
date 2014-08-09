@@ -81,7 +81,7 @@
             se.natusoft.osgi.aps.api.core.config.model.admin;version="${project.version}",
             se.natusoft.osgi.aps.api.core.config.model.test;version="${project.version}",
             se.natusoft.osgi.aps.api.core.config.service;version="${project.version}",
-            se.natusoft.osig.aps.api.core.config.util;version="${project.version}",
+            se.natusoft.osgi.aps.api.core.config.util;version="${project.version}",
             se.natusoft.osgi.aps.api.core.content;version="${project.version}",
             se.natusoft.osgi.aps.api.core.content.service;version="${project.version}",
             se.natusoft.osgi.aps.api.core.filesystem;version="${project.version}",
