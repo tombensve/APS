@@ -84,7 +84,7 @@ public class ManagedConfig<Config> {
      * Waits for this config to become managed. This will never happen if the config subclass has not
      * been specified with APS-Configs in bundle manifest!
      */
-    public synchronized void waitUtilManaged() {
+    public synchronized void waitUntilManaged() {
         try {
             while (!this.managed) {
                 wait();
