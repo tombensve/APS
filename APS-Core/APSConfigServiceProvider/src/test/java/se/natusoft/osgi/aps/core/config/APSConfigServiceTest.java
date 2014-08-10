@@ -73,7 +73,7 @@ import static org.junit.Assert.*;
  * These tests uses the actual service APIs and thus tests the functionality as it would
  * work in reality.
  */
-public class APSConfigServiceTests {
+public class APSConfigServiceTest {
 
     // This is created in setUp() and are available to all tests.
     /** The client configuration service. */
@@ -102,7 +102,7 @@ public class APSConfigServiceTests {
     /**
      * Tests the APSConfigEnvStore class.
      */
-    public APSConfigServiceTests() {
+    public APSConfigServiceTest() {
     }
 
     @BeforeClass
