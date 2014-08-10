@@ -41,6 +41,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.event.ValueChangedEvent;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.event.ValueChangedListener;
@@ -69,7 +70,7 @@ public class ConfigNodeValuesEditor extends Panel {
     private ValueChangedListener valueChangedListener = new ValueChangedListener() {
         @Override
         public void valueChanged(ValueChangedEvent event) {
-            valueComponentChanged(event.getValueEditModel(), event.getValue());
+            valueComponentChanged(event.getValueReference(), event.getValue());
         }
     };
 
@@ -115,11 +116,13 @@ public class ConfigNodeValuesEditor extends Panel {
 
         // If we have a node that there can be only one of or if we have a "many" node where an instance of that
         // "many" node is selected then render the configuration values of that node.
-        if (!this.dataSource.isManyNode() || (this.dataSource.getIndex() >= 0)) {
+        if (!this.dataSource.isManyNode() || (this.dataSource.isIndexed())) {
 
-            List<APSConfigValueEditModel> nodeValues = this.dataSource.getNodeValues();
+            List<APSConfigReference> nodeValues = this.dataSource.getNodeValues();
 
-            for (APSConfigValueEditModel valueModel : nodeValues) {
+            for (APSConfigReference valueRef : nodeValues) {
+                APSConfigValueEditModel valueModel = valueRef.getConfigValueEditModel();
+
                 String nameText = "<b>" + valueModel.getName() + "</b>";
                 if (valueModel.isConfigEnvironmentSpecific()) {
                     nameText += " (" + this.dataSource.getCurrentConfigEnvironment().getName() + ")";
@@ -137,23 +140,23 @@ public class ConfigNodeValuesEditor extends Panel {
 
                 // Date value
                 if (valueModel.getDatePattern() != null && valueModel.getDatePattern().trim().length() > 0) {
-                    valueComponent = new DateValue(valueModel);
+                    valueComponent = new DateValue(valueRef);
                 }
                 // Boolean value
                 else if (valueModel.isBoolean()) {
-                    valueComponent = new BooleanValue(valueModel);
+                    valueComponent = new BooleanValue(valueRef);
                 }
                 // Value with set of valid values.
                 else if (valueModel.getValidValues().length > 0) {
-                    valueComponent = new ValidValuesValue(valueModel);
+                    valueComponent = new ValidValuesValue(valueRef);
                 }
                 // Text value by default
                 else {
-                    valueComponent = new TextValue(valueModel);
+                    valueComponent = new TextValue(valueRef);
                 }
 
                 if (valueModel.isMany()) {
-                    ValueComponentListEditor valueComponentListEditor = new ValueComponentListEditor(valueModel, valueComponent);
+                    ValueComponentListEditor valueComponentListEditor = new ValueComponentListEditor(valueRef, valueComponent);
                     valueComponentListEditor.setWidth("95%");
                     valueComponentListEditor.setDataSource(this.dataSource);
                     valueComponentListEditor.refreshData();
@@ -161,7 +164,7 @@ public class ConfigNodeValuesEditor extends Panel {
                 }
                 else {
                     valueComponent.addListener(this.valueChangedListener);
-                    valueComponent.setComponentValue(this.dataSource.getValue(valueModel), false);
+                    valueComponent.setComponentValue(this.dataSource.getValue(valueRef), false);
                     valueComponent.getComponent().setWidth("95%");
                     this.rootLayout.addComponent(valueComponent.getComponent());
                 }
@@ -188,11 +191,11 @@ public class ConfigNodeValuesEditor extends Panel {
     /**
      * Handles changes in value.
      *
-     * @param valueEditModel The model representing the config value to update.
+     * @param valueRef The config reference representing the config value to update.
      * @param newValue The new value to update the config value with.
      */
-    private void valueComponentChanged(APSConfigValueEditModel valueEditModel, String newValue) {
-        this.dataSource.updateValue(valueEditModel, newValue);
+    private void valueComponentChanged(APSConfigReference valueRef, String newValue) {
+        this.dataSource.updateValue(valueRef, newValue);
     }
 
     //
@@ -217,27 +220,17 @@ public class ConfigNodeValuesEditor extends Panel {
         /**
          * Returns the values of the current node.
          */
-        List<APSConfigValueEditModel> getNodeValues();
+        List<APSConfigReference> getNodeValues();
+
+        /**
+         * Returns the indexed state of the node.
+         */
+        public boolean isIndexed();
 
         /**
          * Returns the current index if the current node is a "many" type node or -1 otherwise.
          */
         int getIndex();
-
-        /**
-         * Returns the value represented by the specified value edit model.
-         *
-         * @param valueEditModel The value edit model to get real value for.
-         */
-        public String getValue(APSConfigValueEditModel valueEditModel);
-
-        /**
-         * Updates the value represented by the value edit model to the specified value.
-         *
-         * @param valueEditModel The value edit model representing the value to update.
-         * @param value The new value to update with.
-         */
-        public void updateValue(APSConfigValueEditModel valueEditModel, String value);
 
         /**
          * Returns the current config environment.

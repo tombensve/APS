@@ -41,6 +41,7 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.VerticalLayout;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigAdmin;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEditModel;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.ConfigEditor;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.css.CSS;
@@ -168,13 +169,14 @@ public class ConfigMenuBuilder implements MenuBuilder<APSConfigAdmin> {
 
             for (APSConfigAdmin configAdmin : configAdmins) {
 
-                APSConfigEditModel configModel = configAdmin.getConfigModel();
+                APSConfigEditModel rootModel = configAdmin.getConfigModel();
+                APSConfigReference rootRef = configAdmin.createRootRef();
 
                 itemData = new MenuItemData<>();
                 itemData.setItemRepresentative(configAdmin);
-                itemData.setToolTipText(configModel.getConfigId() + ":" + configModel.getVersion() + "<hr/>" + configModel.getDescription());
+                itemData.setToolTipText(rootModel.getConfigId() + ":" + rootModel.getVersion() + "<hr/>" + rootModel.getDescription());
                 itemData.setActions(CONFIG_ITEM_ACTIONS);
-                itemData.setSelectComponentHandler(new ConfigEditor(configModel, configAdmin, this.configAdminService, this.logger, this.userNotifier));
+                itemData.setSelectComponentHandler(new ConfigEditor(rootRef, configAdmin, this.configAdminService, this.logger, this.userNotifier));
 
                 String configId = configAdmin.getConfigId();
                 int ix = configId.lastIndexOf('.');
@@ -186,6 +188,8 @@ public class ConfigMenuBuilder implements MenuBuilder<APSConfigAdmin> {
 //            buildConfigBranch(menuModel, configModel, itemID, configAdmin);
         }
     }
+
+// Undecided on what to do here, I'm leaving this code commented out for now.
 
 //    /**
 //     * Recursively builds menu entries for sub config branches.

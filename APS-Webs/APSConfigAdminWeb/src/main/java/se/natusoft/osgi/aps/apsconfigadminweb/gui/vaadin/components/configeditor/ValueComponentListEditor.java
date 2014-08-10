@@ -42,6 +42,7 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.apsconfigadminweb.config.CAWConfig;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.event.ValueChangedEvent;
@@ -59,8 +60,8 @@ public class ValueComponentListEditor extends VerticalLayout {
     // Private Members
     //
 
-    /** The value model whose value is edited by this component instance. */
-    private APSConfigValueEditModel valueEditModel = null;
+    /** A reference to the value is edited by this component instance. */
+    private APSConfigReference valueRef = null;
 
     /** Maps between a value and its index. */
     private Map<String, Integer> valueIndexMap = new HashMap<>();
@@ -113,11 +114,11 @@ public class ValueComponentListEditor extends VerticalLayout {
     /**
      * Creates a new ValueListEditor.
      *
-     * @param valueEditModel The config value edit model representing a specific config value.
+     * @param valueRef The config value reference representing a specific config value.
      * @param valueComponent The component to edit a list of.
      */
-    public ValueComponentListEditor(APSConfigValueEditModel valueEditModel, ValueComponent valueComponent) {
-        this.valueEditModel = valueEditModel;
+    public ValueComponentListEditor(APSConfigReference valueRef, ValueComponent valueComponent) {
+        this.valueRef = valueRef;
 
         // Setup component gui.
         this.editLine = valueComponent;
@@ -181,7 +182,7 @@ public class ValueComponentListEditor extends VerticalLayout {
      * Reloads data from the data source.
      */
     public void refreshData() {
-        int size = this.dataSource.getSize(this.valueEditModel);
+        int size = this.dataSource.getSize(this.valueRef);
         this.valueByIndex = new String[size];
 
         if (size > 0) {
@@ -196,7 +197,7 @@ public class ValueComponentListEditor extends VerticalLayout {
             this.values.removeAllItems();
             this.valueIndexMap.clear();
             for (int i = 0; i < size; i++) {
-                String value = this.dataSource.getValue(this.valueEditModel, i);
+                String value = this.dataSource.getValue(this.valueRef._(i));
                 this.valueIndexMap.put(value, i);
                 this.valueByIndex[i] = value;
                 this.values.addItem(value);
@@ -259,12 +260,12 @@ public class ValueComponentListEditor extends VerticalLayout {
     private void updateValue(String value) {
         if (this.selectedIndex != null) {
             if (value != null) {
-                this.dataSource.updateValue(this.valueEditModel, value, this.selectedIndex);
+                this.dataSource.updateValue(this.valueRef._(this.selectedIndex), value);
             }
         }
         else {
             if (value != null && value.trim().length() > 0 && !this.values.containsId(value)) {
-                this.dataSource.addValue(this.valueEditModel, value);
+                this.dataSource.addValue(this.valueRef, value);
             }
             setEditLineValue("");
             focusEditLine();
@@ -291,10 +292,10 @@ public class ValueComponentListEditor extends VerticalLayout {
      * Removes the current value.
      */
     private void removeValue() {
-        int size = this.dataSource.getSize(this.valueEditModel);
+        int size = this.dataSource.getSize(this.valueRef);
         int index = this.selectedIndex;
 
-        this.dataSource.removeValue(this.valueEditModel, index);
+        this.dataSource.removeValue(this.valueRef._(index));
 
         if (index == 0) {
             if (size == 1) {
@@ -331,41 +332,38 @@ public class ValueComponentListEditor extends VerticalLayout {
         /**
          * Returns the number of values.
          *
-         * @param valueEditModel The model representing the value edited by this component instance.
+         * @param valueRef The config reference representing the value edited by this component instance.
          */
-        public int getSize(APSConfigValueEditModel valueEditModel);
+        int getSize(APSConfigReference valueRef);
 
         /**
-         * Returns the value at the specified index.
+         * Returns the value edited by this component instance.
          *
-         * @param valueEditModel The model representing the value edited by this component instance.
-         * @param index The index to get the value for.
+         * @param valueRef The config reference representing the value edited by this component instance.
          */
-        public String getValue(APSConfigValueEditModel valueEditModel, int index);
+        String getValue(APSConfigReference valueRef);
 
         /**
          * Adds the specified value to the set of values.
          *
-         * @param valueEditModel The model representing the value edited by this component instance.
+         * @param valueRef The config reference representing the value edited by this component instance.
          * @param value The value to add.
          */
-        public void addValue(APSConfigValueEditModel valueEditModel, String value);
+        void addValue(APSConfigReference valueRef, String value);
 
         /**
          * Removes a value from the set of values.
          *
-         * @param valueEditModel The model representing the value edited by this component instance.
-         * @param index The index of the value to remove.
+         * @param valueRef The config reference representing the value edited by this component instance.
          */
-        public void removeValue(APSConfigValueEditModel valueEditModel, int index);
+        void removeValue(APSConfigReference valueRef);
 
         /**
          * Updates a value.
          *
-         * @param valueEditModel The model representing the value edited by this component instance.
+         * @param valueRef The config reference representing the value edited by this component instance.
          * @param value The value to update with.
-         * @param index The index to update.
          */
-        public void updateValue(APSConfigValueEditModel valueEditModel, String value, int index);
+        void updateValue(APSConfigReference valueRef, String value);
     }
 }

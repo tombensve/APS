@@ -40,6 +40,7 @@ import com.vaadin.data.Property;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.PopupDateField;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.event.ValueChangedEvent;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.event.ValueChangedListener;
@@ -61,8 +62,8 @@ public class DateValue extends PopupDateField implements ValueComponent {
     /** The listeners on this component. */
     private List<ValueChangedListener> listeners = new LinkedList<>();
 
-    /** The config value edit model representing the config value. */
-    private APSConfigValueEditModel valueEditModel = null;
+    /** A reference to the config value. */
+    private APSConfigReference valueRef = null;
 
     /** The date format to use for this date value. */
     private SimpleDateFormat dateFormat = null;
@@ -76,13 +77,12 @@ public class DateValue extends PopupDateField implements ValueComponent {
     /**
      * Creates a new DateValue.
      *
-     * @param valueEditModel The config value edit model representing the config value.
+     * @param valueRef The config value reference representing the config value.
      */
-    public DateValue(APSConfigValueEditModel valueEditModel) {
-        this.valueEditModel = valueEditModel;
-        this.dateFormat = new SimpleDateFormat(valueEditModel.getDatePattern());
+    public DateValue(APSConfigReference valueRef) {
+        this.dateFormat = new SimpleDateFormat(valueRef.getConfigValueEditModel().getDatePattern());
 
-        setDateFormat(valueEditModel.getDatePattern());
+        setDateFormat(valueRef.getConfigValueEditModel().getDatePattern());
         setResolution(Resolution.DAY);
         super.setValue(new Date());
         setImmediate(true);
@@ -160,7 +160,7 @@ public class DateValue extends PopupDateField implements ValueComponent {
     private void fireEvent() {
         String value = this.dateFormat.format(getValue());
 
-        ValueChangedEvent event = new ValueChangedEvent(this, this.valueEditModel, value);
+        ValueChangedEvent event = new ValueChangedEvent(this, this.valueRef, value);
         for (ValueChangedListener listener : this.listeners) {
             listener.valueChanged(event);
         }

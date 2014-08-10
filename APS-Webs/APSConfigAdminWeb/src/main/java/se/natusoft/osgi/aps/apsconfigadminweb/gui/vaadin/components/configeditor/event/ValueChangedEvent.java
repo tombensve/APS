@@ -38,6 +38,7 @@ package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configedito
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Component.Event;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 
 /**
@@ -48,8 +49,8 @@ public class ValueChangedEvent extends Event {
     // Private Members
     //
 
-    /** The config value edit model representing the actual value. */
-    private APSConfigValueEditModel valueEditModel = null;
+    /** The config value reference representing the actual value. */
+    private APSConfigReference valueRef = null;
 
     /** The value that triggered the event. */
     private String value = null;
@@ -62,12 +63,12 @@ public class ValueChangedEvent extends Event {
      * Creates a new ValueChangedEvent.
      *
      * @param originator The component that is the source of the event.
-     * @param valueEditModel The config value edit model representing the actual value.
+     * @param valueRef The config value reference representing the actual value.
      * @param value The value that triggered the event.
      */
-    public ValueChangedEvent(Component originator, APSConfigValueEditModel valueEditModel, String value) {
+    public ValueChangedEvent(Component originator, APSConfigReference valueRef, String value) {
         super(originator);
-        this.valueEditModel = valueEditModel;
+        this.valueRef = valueRef;
         this.value = value;
     }
 
@@ -85,7 +86,7 @@ public class ValueChangedEvent extends Event {
     /**
      * Returns the config value edit model representing the actual value.
      */
-    public APSConfigValueEditModel getValueEditModel() {
-        return this.valueEditModel;
+    public APSConfigReference getValueReference() {
+        return this.valueRef;
     }
 }

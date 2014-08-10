@@ -39,6 +39,7 @@ package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configedito
 import com.vaadin.data.Property;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ListSelect;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.event.ValueChangedEvent;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.event.ValueChangedListener;
@@ -58,8 +59,8 @@ public class ValidValuesValue extends ListSelect implements ValueComponent {
     /** The listeners on this component. */
     private List<ValueChangedListener> listeners = new LinkedList<>();
 
-    /** The config value edit model representing the config value. */
-    private APSConfigValueEditModel valueEditModel = null;
+    /** The config value reference representing the config value. */
+    private APSConfigReference valueRef = null;
 
     private boolean doFireEvent = true;
 
@@ -70,12 +71,12 @@ public class ValidValuesValue extends ListSelect implements ValueComponent {
     /**
      * Creates a new ValidValuesValue.
      *
-     * @param valueEditModel The config value edit model representing the config value.
+     * @param valueRef The config value reference representing the config value.
      */
-    public ValidValuesValue(APSConfigValueEditModel valueEditModel) {
-        super("", Arrays.asList(valueEditModel.getValidValues()));
+    public ValidValuesValue(APSConfigReference valueRef) {
+        super("", Arrays.asList(valueRef.getConfigValueEditModel().getValidValues()));
 
-        this.valueEditModel = valueEditModel;
+        this.valueRef = valueRef;
 
         setRows(1);
         setImmediate(true);
@@ -126,7 +127,7 @@ public class ValidValuesValue extends ListSelect implements ValueComponent {
             setValue(null);
         }
         else {
-            for (String validValue : this.valueEditModel.getValidValues()) {
+            for (String validValue : this.valueRef.getConfigValueEditModel().getValidValues()) {
                 if (value.equals(validValue)) {
                     setValue(value);
                     break;
@@ -150,7 +151,7 @@ public class ValidValuesValue extends ListSelect implements ValueComponent {
      * @param value The vale to update.
      */
     private void fireEvent(String value) {
-        ValueChangedEvent event = new ValueChangedEvent(this, this.valueEditModel, value);
+        ValueChangedEvent event = new ValueChangedEvent(this, this.valueRef, value);
         for (ValueChangedListener listener : this.listeners) {
             listener.valueChanged(event);
         }

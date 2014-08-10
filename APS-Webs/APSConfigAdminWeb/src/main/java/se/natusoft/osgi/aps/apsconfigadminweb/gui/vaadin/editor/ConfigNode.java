@@ -37,10 +37,13 @@
 package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.editor;
 
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEditModel;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import static se.natusoft.osgi.aps.api.core.config.util.APSConfigStaticUtils.refToEditModel;
 
 /**
  * Manages the current config node.
@@ -48,33 +51,26 @@ import java.util.List;
 @SuppressWarnings("UnusedDeclaration")
 public class ConfigNode {
     //
-    // Constants
-    //
-
-    /** Represents a non index. */
-    public static final int NO_INDEX = -1;
-
-    //
     // Private Members
     //
 
     /** The current node. */
     private APSConfigEditModel currentNode = null;
 
-    /** The current instance node. This represents the node at a specific index. */
-    private APSConfigEditModel currentInstanceNode = null;
-
-    /** The index of the currently selected node or -1 for a non "many" type node. */
-    private int index = -1;
+    /** The current config instance reference. */
+    private APSConfigReference currentRef = null;
 
     /** The editable node values of this node. */
-    private List<APSConfigValueEditModel> nodeValues = null;
+    private List<APSConfigReference> nodeValues = null;
 
     /** The child nodes of this node. */
-    private List<APSConfigEditModel> nodeChildren = null;
+    private List<APSConfigReference> nodeChildren = null;
 
     /** The description of this node. */
     private String description = null;
+
+    /** The indexed state of the node. */
+    private boolean indexed = false;
 
     //
     // Constructors
@@ -83,10 +79,11 @@ public class ConfigNode {
     /**
      * Creates a new ConfigNavigator.
      *
-     * @param rootNode The root node of the config tree.
+     * @param rootRef The reference to the root node of the config tree.
+     * @param indexed The indexed state of this node.
      */
-    public ConfigNode(APSConfigEditModel rootNode) {
-        setCurrentNode(rootNode, -1);
+    public ConfigNode(APSConfigReference rootRef, boolean indexed) {
+        setCurrentNode(rootRef, indexed);
     }
 
     //
@@ -96,45 +93,23 @@ public class ConfigNode {
     /**
      * Changes the current node.
      *
-     * @param currentNode The new node to set.
-     * @param index The index of the node or -1 for none.
+     * @param currentRef The reference to the new node to set.
+     * @param indexed The indexed state of this node.
      */
-    public void setCurrentNode(APSConfigEditModel currentNode, int index) {
-        this.currentNode = currentNode;
-        this.index = index;
+    public void setCurrentNode(APSConfigReference currentRef, boolean indexed) {
+        this.currentRef = currentRef;
+        this.indexed = indexed;
+        this.currentNode = refToEditModel(currentRef);
 
         this.nodeValues = new LinkedList<>();
         this.nodeChildren = new LinkedList<>();
-        for (APSConfigValueEditModel nodeMember : this.currentNode.getValues()) {
-            if (APSConfigEditModel.class.isAssignableFrom(nodeMember.getClass())) {
-                this.nodeChildren.add((APSConfigEditModel)nodeMember);
-            }
-            else {
-                this.nodeValues.add(nodeMember);
-            }
-        }
-    }
-
-    /**
-     * Sets a node model that represents a specific index and note the whole list of values.
-     * This node returns false on isMany() and should not be used for anything else than
-     * referencing values for the instance.
-     *
-     * @param currentInstanceNode The instance node to set.
-     */
-    public void setCurrentInstanceNode(APSConfigEditModel currentInstanceNode) {
-        this.currentInstanceNode = currentInstanceNode;
-
-        // In this case we need to replace the node child and value lists with new ones
-        // based on this model.
-        this.nodeValues = new LinkedList<>();
-        this.nodeChildren = new LinkedList<>();
-        for (APSConfigValueEditModel nodeMember : this.currentInstanceNode.getValues()) {
-            if (APSConfigEditModel.class.isAssignableFrom(nodeMember.getClass())) {
-                this.nodeChildren.add((APSConfigEditModel)nodeMember);
-            }
-            else {
-                this.nodeValues.add(nodeMember);
+        if (this.currentNode != null && this.currentNode.getValues() != null) {
+            for (APSConfigValueEditModel nodeMember : this.currentNode.getValues()) {
+                if (APSConfigEditModel.class.isAssignableFrom(nodeMember.getClass())) {
+                    this.nodeChildren.add(this.currentRef._(nodeMember));
+                } else {
+                    this.nodeValues.add(this.currentRef._(nodeMember));
+                }
             }
         }
     }
@@ -156,25 +131,32 @@ public class ConfigNode {
     }
 
     /**
+     * Returns the indexed state of this node.
+     */
+    public boolean isIndexed() {
+        return this.indexed;
+    }
+
+    /**
      * Changes the index.
      *
      * @param index The new index.
      */
     public void setIndex(int index) {
-        this.index = index;
+        this.currentRef = this.currentRef._(index);
     }
 
     /**
      * @return The editable values of the current node.
      */
-    public List<APSConfigValueEditModel> getNodeValues() {
+    public List<APSConfigReference> getNodeValues() {
         return this.nodeValues;
     }
 
     /**
      * @return The children of the current node.
      */
-    public List<APSConfigEditModel> getNodeChildren() {
+    public List<APSConfigReference> getNodeChildren() {
         return this.nodeChildren;
     }
 
@@ -186,23 +168,17 @@ public class ConfigNode {
     }
 
     /**
-     * This returned node represents a specific instance within a 'many' list value and should only
-     * be used to reference values for that specific instance. If you do isMany() on this model it
-     * will return false!
-     * <p/>
-     * Please note that this will return null until setCurrentInstanceNode() have been done!
-     *
-     * @return The current instance node.
+     * Returns the current configuration reference.
      */
-    public APSConfigEditModel getCurrentInstanceNode() {
-        return this.currentInstanceNode;
+    public APSConfigReference getCurrentConfigReference() {
+        return this.currentRef;
     }
 
     /**
      * @return The index for the current node or -1 if the current node is not a "many" type node.
      */
     public int getIndex() {
-        return this.index;
+        return this.currentRef.getIndex();
     }
 
     /**

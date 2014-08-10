@@ -39,6 +39,7 @@ package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configedito
 import com.vaadin.data.Property;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.event.ValueChangedEvent;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.event.ValueChangedListener;
@@ -57,8 +58,8 @@ public class BooleanValue extends CheckBox implements ValueComponent {
     /** The listeners on this component. */
     private List<ValueChangedListener> listeners = new LinkedList<>();
 
-    /** The config value edit model representing the config value. */
-    private APSConfigValueEditModel valueEditModel = null;
+    /** The config value reference representing the config value. */
+    private APSConfigReference valueRef = null;
 
     private boolean doFireEvent = true;
 
@@ -69,10 +70,10 @@ public class BooleanValue extends CheckBox implements ValueComponent {
     /**
      * Creates a new BooleanValue.
      *
-     * @param valueEditModel The config value edit model representing the config value.
+     * @param valueRef The config value reference representing the config value.
      */
-    public BooleanValue(APSConfigValueEditModel valueEditModel) {
-        this.valueEditModel = valueEditModel;
+    public BooleanValue(APSConfigReference valueRef) {
+        this.valueRef = valueRef;
 
         setImmediate(true);
 
@@ -141,7 +142,7 @@ public class BooleanValue extends CheckBox implements ValueComponent {
     private void fireEvent(Boolean boolValue) {
         String value = boolValue.toString();
 
-        ValueChangedEvent event = new ValueChangedEvent(this, this.valueEditModel, value);
+        ValueChangedEvent event = new ValueChangedEvent(this, this.valueRef, value);
         for (ValueChangedListener listener : this.listeners) {
             listener.valueChanged(event);
         }

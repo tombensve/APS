@@ -39,10 +39,7 @@ package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigAdmin;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEditModel;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
+import se.natusoft.osgi.aps.api.core.config.model.admin.*;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.ConfigEnvSelector;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.ConfigEnvSelector.ConfigEnvChangeEvent;
@@ -61,6 +58,8 @@ import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.handlerapi.Comp
 import se.natusoft.osgi.aps.tools.web.vaadin.tools.Refreshable;
 
 import java.util.List;
+
+import static se.natusoft.osgi.aps.api.core.config.util.APSConfigStaticUtils.refToEditModel;
 
 /**
  * This is a component that edits a configuration based on an APSConfigAdmin instance.
@@ -119,19 +118,19 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
     /**
      * Creates a new ConfigEditor.
      *
-     * @param configEditModel The model representing the configuration to edit.
+     * @param configRef A reference representing an instance of the configuration to edit.
      * @param configAdmin The config admin api.
      * @param configAdminService The config admin service for getting config envs and updating edited configs.
      * @param logger The logger to log to.
      * @param userNotifier For sending notifications to user.
      */
-    public ConfigEditor(APSConfigEditModel configEditModel, APSConfigAdmin configAdmin,
+    public ConfigEditor(APSConfigReference configRef, APSConfigAdmin configAdmin,
                         APSConfigAdminService configAdminService, APSLogger logger, UserNotifier userNotifier) {
         this.logger = logger;
         this.liveConfigAdmin = configAdmin;
         this.editedConfigAdmin = configAdmin.cloneConfig();
         this.configAdminService = configAdminService;
-        this.currentConfigNode = new ConfigNode(configEditModel);
+        this.currentConfigNode = new ConfigNode(configRef, false);
         this.userNotifier = userNotifier;
 
         setupGUI();
@@ -183,7 +182,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
                 contentLayout.setSpacing(true);
                 contentLayout.setSizeFull();
 
-                ConfigNode configNode = new ConfigNode(this.editedConfigAdmin.getConfigModel());
+                ConfigNode configNode = this.currentConfigNode;
                 if (!configNode.getNodeChildren().isEmpty()) {
 
                     VerticalLayout nodesAndButtonsLayout = new VerticalLayout(); {
@@ -194,7 +193,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
                         nodesAndButtonsLayout.setMargin(false);
                         nodesAndButtonsLayout.setSpacing(false);
 
-                        this.nodeSelector = new NodeSelector();
+                        this.nodeSelector = new NodeSelector(this.editedConfigAdmin);
                         // Make the NodeSelector whatever size the layout is.
                         this.nodeSelector.setHeight("100%");
                         this.nodeSelector.setWidth("100%");
@@ -202,7 +201,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
                         this.nodeSelector.addListener(new NodeSelectionListener() {
                             @Override
                             public void nodeSelected(NodeSelectedEvent event) {
-                                selectCurrentNode(event.getSelectedModel(), event.getIndex());
+                                selectCurrentNode(event.getSelectedReference(), event.isIndexed());
                             }
                         });
                         nodesAndButtonsLayout.addComponent(this.nodeSelector);
@@ -328,43 +327,32 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
     /**
      * Handles selection of a config node.
      *
-     * @param configNode The config node selected.
-     * @param index The possible index of a "many" node or -1.
+     * @param configRef The reference to the config node selected.
+     * @param indexed True if the node is indexed.
      */
-    private void selectCurrentNode(APSConfigEditModel configNode, int index) {
-        this.currentConfigNode.setCurrentNode(configNode, index);
-        this.currentConfigNode.setDescription(configNode.getDescription());
+    private void selectCurrentNode(APSConfigReference configRef, boolean indexed) {
+        if (configRef == null) return;
+        this.currentConfigNode.setCurrentNode(configRef, indexed);
+        this.currentConfigNode.setDescription(configRef.getConfigValueEditModel().getDescription());
 
-        if (index >= 0) {
-
-            // We need to get a correctly indexed node! Please note that the returned APSConfigEditModel
-            // will return false for isMany()! This because it is now representing a specific entry.
-            APSConfigEditModel configInstanceNode = this.editedConfigAdmin.getConfigListEntry(configNode, index,
-                    this.editForConfigEnvSelect.getSelectedConfigEnvironment());
-
-            this.currentConfigNode.setCurrentInstanceNode(configInstanceNode);
-            this.currentConfigNode.setDescription(configInstanceNode.getDescription());
-
-        }
-
-        enableDisableAddRemoveButtons(configNode, index);
+        enableDisableAddRemoveButtons(refToEditModel(configRef).isMany(), this.editedConfigAdmin.getListSize(configRef) > 0);
 
         refresh();
     }
 
     /**
-     * Enables or disables the node add and remove buttons depending on the specified node and index.
+     * Enables or disables the node add and remove buttons.
      *
-     * @param configNode The config node selected.
-     * @param index The possible index of a "many" node or -1.
+     * @param isMany If true add button is enabled.
+     * @param haveEntries If true the remove button is enabled.
      */
-    private void enableDisableAddRemoveButtons(APSConfigEditModel configNode, int index) {
+    private void enableDisableAddRemoveButtons(boolean isMany, boolean haveEntries) {
         this.addNodeButton.setEnabled(false);
         this.removeNodeButton.setEnabled(false);
-        if (configNode.isMany()) {
+        if (isMany) {
             this.addNodeButton.setEnabled(true);
 
-            if (index >= 0) {
+            if (haveEntries) {
                 this.removeNodeButton.setEnabled(true);
             }
         }
@@ -376,12 +364,14 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
     private void addNodeInstance() {
         APSConfigEditModel selectedNode = this.currentConfigNode.getCurrentNode();
         if (selectedNode.isMany()) {
-            this.editedConfigAdmin.createConfigListEntry(selectedNode,
-                    this.editForConfigEnvSelect.getSelectedConfigEnvironment());
+            this.editedConfigAdmin.addConfigList(
+                    this.currentConfigNode.getCurrentConfigReference()._(this.editForConfigEnvSelect.getSelectedConfigEnvironment())
+            );
             this.nodeSelector.refreshData();
         }
         else {
-            this.userNotifier.error("Operation on bad node type!", "This node has only one static instance!");
+            // This will only happen if add button is incorrectly shown when not a "many" node.
+            this.userNotifier.error("BUG: Operation on bad node type!", "This node has only one static instance! Please report this!");
         }
     }
 
@@ -390,26 +380,20 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
      */
     private void removeNodeInstance() {
         APSConfigEditModel selectedNode = this.currentConfigNode.getCurrentNode();
+        APSConfigReference selectedRef = this.currentConfigNode.getCurrentConfigReference();
         APSConfigEnvironment confEnv = this.editForConfigEnvSelect.getSelectedConfigEnvironment();
-        int removeIndex = this.currentConfigNode.getIndex();
+        int removeIndex = selectedRef.getIndex();
 
-        if (selectedNode.isMany() && removeIndex >= 0 && this.editedConfigAdmin.getSize(selectedNode, confEnv) > 0) {
-            this.editedConfigAdmin.removeConfigListEntry(
-                    selectedNode,
-                    this.currentConfigNode.getIndex(),
-                    confEnv
-            );
+        if (selectedNode.isMany() && removeIndex >= 0 && this.editedConfigAdmin.getListSize(selectedRef) > 0) {
+            this.editedConfigAdmin.removeConfigList(selectedRef._(confEnv));
 
             // If we removed the last index, then set the new index to the new last index,
             // or no index if empty.
-            int size = this.editedConfigAdmin.getSize(selectedNode, confEnv);
+            int size = this.editedConfigAdmin.getListSize(selectedRef._(confEnv));
             if (removeIndex >= size) {
-                if (size > 0) {
-                    this.currentConfigNode.setIndex(removeIndex - 1);
-                }
-                else {
-                    this.currentConfigNode.setIndex(ConfigNode.NO_INDEX);
-                }
+                // If removeIndex is 0 and size is 0 (which is the requirement for getting here) then (removeIndex - 1) will be -1,
+                // which is OK since an empty list have no indexes.
+                this.currentConfigNode.setIndex(removeIndex - 1);
             }
 
             this.nodeSelector.refreshData();
@@ -477,11 +461,16 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
          * Returns the values of the current node.
          */
         @Override
-        public List<APSConfigValueEditModel> getNodeValues() {
-            // Please note that after the setCurrentInstanceNode(...) in selectCurrentNode(...)
-            // the getNodeValues() below will return nodes that are correctly indexed and can
-            // be used to set and get values.
+        public List<APSConfigReference> getNodeValues() {
             return ConfigEditor.this.currentConfigNode.getNodeValues();
+        }
+
+        /**
+         * Returns the indexed state of the node.
+         */
+        @Override
+        public boolean isIndexed() {
+            return ConfigEditor.this.currentConfigNode.isIndexed();
         }
 
         /**
@@ -490,27 +479,6 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
         @Override
         public int getIndex() {
             return ConfigEditor.this.currentConfigNode.getIndex();
-        }
-
-        /**
-         * Returns the value represented by the specified value edit model.
-         *
-         * @param valueEditModel The value edit model to get real value for.
-         */
-        @Override
-        public String getValue(APSConfigValueEditModel valueEditModel) {
-            return ConfigEditor.this.editedConfigAdmin.getConfigValue(valueEditModel, getCurrentConfigEnvironment());
-        }
-
-        /**
-         * Updates the value represented by the value edit model to the specified value.
-         *
-         * @param valueEditModel The value edit model representing the value to update.
-         * @param value The new value to update with.
-         */
-        @Override
-        public void updateValue(APSConfigValueEditModel valueEditModel, String value) {
-            ConfigEditor.this.editedConfigAdmin.setConfigValue(valueEditModel, value, getCurrentConfigEnvironment());
         }
 
         /**
@@ -526,56 +494,53 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
         /**
          * Returns the number of values.
          *
-         * @param valueEditModel The model representing the value edited by this component instance.
+         * @param valueRef The config reference representing the value edited by this component instance.
          */
         @Override
-        public int getSize(APSConfigValueEditModel valueEditModel) {
-            return ConfigEditor.this.editedConfigAdmin.getSize(valueEditModel, getCurrentConfigEnvironment());
+        public int getSize(APSConfigReference valueRef) {
+            return ConfigEditor.this.editedConfigAdmin.getListSize(valueRef._(getCurrentConfigEnvironment()));
         }
 
         /**
          * Returns the value at the specified index.
          *
-         * @param valueEditModel The model representing the value edited by this component instance.
-         * @param index The index to get the value for.
+         * @param valueRef The config reference representing the value edited by this component instance.
          */
         @Override
-        public String getValue(APSConfigValueEditModel valueEditModel, int index) {
-            return ConfigEditor.this.editedConfigAdmin.getConfigValue(valueEditModel, index, getCurrentConfigEnvironment());
+        public String getValue(APSConfigReference valueRef) {
+            return ConfigEditor.this.editedConfigAdmin.getConfigValue(valueRef._(getCurrentConfigEnvironment()));
         }
 
         /**
          * Adds the specified value to the set of values.
          *
-         * @param valueEditModel The model representing the value edited by this component instance.
+         * @param valueRef The config reference representing the value edited by this component instance.
          * @param value The value to add.
          */
         @Override
-        public void addValue(APSConfigValueEditModel valueEditModel, String value) {
-            ConfigEditor.this.editedConfigAdmin.addConfigValue(valueEditModel, value, getCurrentConfigEnvironment());
+        public void addValue(APSConfigReference valueRef, String value) {
+            ConfigEditor.this.editedConfigAdmin.addConfigValue(valueRef._(getCurrentConfigEnvironment()), value);
         }
 
         /**
          * Removes a value from the set of values.
          *
-         * @param valueEditModel The model representing the value edited by this component instance.
-         * @param index The index of the value to remove.
+         * @param valueRef The config reference representing the value edited by this component instance.
          */
         @Override
-        public void removeValue(APSConfigValueEditModel valueEditModel, int index) {
-            ConfigEditor.this.editedConfigAdmin.removeConfigValue(valueEditModel, index, getCurrentConfigEnvironment());
+        public void removeValue(APSConfigReference valueRef) {
+            ConfigEditor.this.editedConfigAdmin.removeConfigValue(valueRef._(getCurrentConfigEnvironment()));
         }
 
         /**
          * Updates a value.
          *
-         * @param valueEditModel The model representing the value edited by this component instance.
+         * @param valueRef The config reference representing the value edited by this component instance.
          * @param value The value to update with.
-         * @param index The index to update.
          */
         @Override
-        public void updateValue(APSConfigValueEditModel valueEditModel, String value, int index) {
-            ConfigEditor.this.editedConfigAdmin.setConfigValue(valueEditModel, index, value, getCurrentConfigEnvironment());
+        public void updateValue(APSConfigReference valueRef, String value) {
+            ConfigEditor.this.editedConfigAdmin.setConfigValue(valueRef._(getCurrentConfigEnvironment()), value);
         }
     };
 
@@ -586,18 +551,17 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
          * Returns the root node of the config model.
          */
         @Override
-        public APSConfigEditModel getRootModel() {
-            return ConfigEditor.this.editedConfigAdmin.getConfigModel();
+        public APSConfigReference getRootReference() {
+            return ConfigEditor.this.editedConfigAdmin.createRootRef();
         }
 
         /**
          * Returns the count of instances for the specified model. The passed model must return true for isMany()!
          */
         @Override
-        public int getInstanceCount(APSConfigEditModel configEditModel) {
-            return ConfigEditor.this.editedConfigAdmin.getSize(
-                    configEditModel,
-                    ConfigEditor.this.editForConfigEnvSelect.getSelectedConfigEnvironment()
+        public int getInstanceCount(APSConfigReference configRef) {
+            return ConfigEditor.this.editedConfigAdmin.getListSize(
+                    configRef._(ConfigEditor.this.editForConfigEnvSelect.getSelectedConfigEnvironment())
             );
         }
     };

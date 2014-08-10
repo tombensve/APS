@@ -40,7 +40,9 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.*;
 import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigAdmin;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEditModel;
+import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.css.CSS;
 import se.natusoft.osgi.aps.tools.models.ID;
@@ -59,6 +61,9 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
     //
     // Private Members
     //
+
+    /** The config admin for the config handled by the NodeSelector. */
+    private APSConfigAdmin configAdmin = null;
 
     /** An extended model also mapping a data object to each item. */
     private HierarchicalModel<NodeData> configNodeModel = null;
@@ -99,7 +104,9 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
     /**
      * Creates a new NodeSelector.
      */
-    public NodeSelector() {
+    public NodeSelector(APSConfigAdmin configAdmin) {
+        this.configAdmin = configAdmin;
+
         setStyleName(CSS.APS_CONFIG_NODE_SELECTOR);
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setMargin(true);
@@ -138,10 +145,10 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
     public void refreshData() {
         HierarchicalModel<NodeData> hmodel  = new HierarchicalModel<>(new IntID());
 
-        APSConfigEditModel root = this.dataSource.getRootModel();
+        APSConfigReference rootRef = this.dataSource.getRootReference();
 
         ID selectedID = null;
-        selectedID = buildHierarchicalModel(hmodel, null, root, selectedID);
+        selectedID = buildHierarchicalModel(hmodel, null, rootRef, selectedID);
 
         this.configNodeTree.removeValueChangeListener(this.itemSelectListener);
         this.configNodeTree.setContainerDataSource(hmodel.getHierarchicalContainer());
@@ -153,15 +160,13 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
     }
 
     /**
-     * Recursively builds the model from the config node structure.
+     * Returns the closest APSConfigEditModel from the specified reference.
      *
-     * @param hmodel The HierarchicalModel to build.
-     * @param parentID The id of the parent or null if root.
-     * @param currentNode The current node to add to the model.
-     * @param selectedID This will be returned possibly modified. The final id returned in refreshData() is the id to select in the tree.
+     * @param ref The reference to get the edit model from.
      */
-    private ID buildHierarchicalModel(HierarchicalModel<NodeData> hmodel, ID parentID, APSConfigEditModel currentNode, ID selectedID) {
-        return buildHierarchicalModel(hmodel, parentID, currentNode, selectedID, -1);
+    private APSConfigEditModel refToEditModel(APSConfigReference ref) {
+        APSConfigValueEditModel editModel = ref.getConfigValueEditModel();
+        return (editModel instanceof APSConfigEditModel) ? (APSConfigEditModel)editModel : editModel.getParent();
     }
 
     /**
@@ -169,19 +174,29 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
      *
      * @param hmodel The HierarchicalModel to build.
      * @param parentID The id of the parent or null if root.
-     * @param currentNode The current node to add to the model.
+     * @param currentRef A reference to the current node to add to the model.
+     * @param selectedID This will be returned possibly modified. The final id returned in refreshData() is the id to select in the tree.
+     */
+    private ID buildHierarchicalModel(HierarchicalModel<NodeData> hmodel, ID parentID, APSConfigReference currentRef, ID selectedID) {
+        return buildHierarchicalModel(hmodel, parentID, currentRef, selectedID, false, -1);
+    }
+
+    /**
+     * Recursively builds the model from the config node structure.
+     *
+     * @param hmodel The HierarchicalModel to build.
+     * @param parentID The id of the parent or null if root.
+     * @param currentRef A reference to the current node to add to the model.
      * @param selectedID This will be returned possibly modified. The final id returned in refreshData() is the id to select in the tree.
      * @param index the index of this node or < 0 if not indexed.
      */
-    private ID buildHierarchicalModel(HierarchicalModel<NodeData> hmodel, ID parentID, APSConfigEditModel currentNode, ID selectedID, int index) {
+    private ID buildHierarchicalModel(HierarchicalModel<NodeData> hmodel, ID parentID, APSConfigReference currentRef, ID selectedID, boolean indexed, int index) {
+
+        APSConfigEditModel currentNode = refToEditModel(currentRef);
 
         String name = getSimpleConfigId(currentNode.getConfigId());
-        NodeData nodeData = new NodeData();
-        nodeData.setConfigNodeModel(currentNode);
+        NodeData nodeData = indexed ? new NodeData(currentRef. _(index), true) : new NodeData(currentRef, false);
         nodeData.setToolTipText(currentNode.getConfigId() + ":" + currentNode.getVersion() + "<hr/>" + currentNode.getDescription());
-        if (index >= 0) {
-            nodeData.setIndex(index);
-        }
 
         ID currNodeId = null;
 
@@ -189,7 +204,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
             currNodeId = hmodel.addItem(nodeData, name);
         }
         else {
-            currNodeId = hmodel.addItem(parentID, nodeData, currentNode.isMany() ? name + " : " + this.dataSource.getInstanceCount(currentNode) : name);
+            currNodeId = hmodel.addItem(parentID, nodeData, currentNode.isMany() ? name + " : " + this.dataSource.getInstanceCount(currentRef) : name);
         }
 
         if (this.selectedNodeData != null && currentNode.equals(this.selectedNodeData.getConfigNodeModel()) && this.selectedNodeData.getIndex() < 0) {
@@ -200,20 +215,18 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
             ID instanceId = null;
 
             // In case the selected index is greater than the number of entries, then set it to the last entry.
-            int currNodeSize = this.dataSource.getInstanceCount(currentNode);
+            int currNodeSize = this.dataSource.getInstanceCount(currentRef);
             if (this.selectedNodeData != null && this.selectedNodeData.getIndex() >= currNodeSize) {
                 this.selectedNodeData.setIndex(currNodeSize - 1);
             }
 
             selectedID = null;
-            int size = this.dataSource.getInstanceCount(currentNode);
+            int size = this.dataSource.getInstanceCount(currentRef);
             for (int i = 0; i < size; i++) {
-                NodeData instanceNodeData = new NodeData();
-                instanceNodeData.setConfigNodeModel(currentNode);
-                instanceNodeData.setIndex(i);
+                NodeData instanceNodeData = new NodeData(currentRef._(i), true);
 
                 instanceId = hmodel.addItem(currNodeId, instanceNodeData, name + " : " + i);
-                selectedID = buildChildren(selectedID, hmodel, currentNode, instanceId, i);
+                selectedID = buildChildren(selectedID, hmodel, currentRef, instanceId, true, i);
 
                 // If this is the selected node model and this is the selected index of that model then set the selectedID to this id
                 // so that the tree node can be selected using this id. If we don't select it again after reloading a new built model
@@ -229,7 +242,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
             }
         }
         else {
-            selectedID = buildChildren(selectedID, hmodel, currentNode, currNodeId);
+            selectedID = buildChildren(selectedID, hmodel, currentRef, currNodeId);
         }
 
         return selectedID;
@@ -240,13 +253,13 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
      *
      * @param selectedID The current selected id.
      * @param hmodel The model being built.
-     * @param currentNode The node whose children to build.
+     * @param currentRef The reference to the node whose children to build.
      * @param currNodeId The current node that will be the parent of child nodes.
      *
      * @return A possibly updated selectedID.
      */
-    private ID buildChildren(ID selectedID, HierarchicalModel<NodeData> hmodel, APSConfigEditModel currentNode, ID currNodeId) {
-        return buildChildren(selectedID, hmodel, currentNode, currNodeId, -1);
+    private ID buildChildren(ID selectedID, HierarchicalModel<NodeData> hmodel, APSConfigReference currentRef, ID currNodeId) {
+        return buildChildren(selectedID, hmodel, currentRef, currNodeId, false,  -1);
     }
 
     /**
@@ -254,16 +267,19 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
      *
      * @param selectedID The current selected id.
      * @param hmodel The model being built.
-     * @param currentNode The node whose children to build.
+     * @param currentRef The reference to the node whose children to build.
      * @param currNodeId The current node that will be the parent of child nodes.
      * @param index The index of the node to build children for or < 0 if not indexed node.
      *
      * @return A possibly updated selectedID.
      */
-    private ID buildChildren(ID selectedID, HierarchicalModel<NodeData> hmodel, APSConfigEditModel currentNode, ID currNodeId, int index) {
+    private ID buildChildren(ID selectedID, HierarchicalModel<NodeData> hmodel, APSConfigReference currentRef, ID currNodeId, boolean indexed, int index) {
+        APSConfigEditModel currentNode = refToEditModel(currentRef);
+
         for (APSConfigValueEditModel valueEditModel : currentNode.getValues()) {
             if (valueEditModel instanceof APSConfigEditModel) { // We are only interested in nodes, not values.
-                selectedID = buildHierarchicalModel(hmodel, currNodeId, (APSConfigEditModel)valueEditModel, selectedID, index);
+                APSConfigReference childRef = currentRef._(valueEditModel);
+                selectedID = buildHierarchicalModel(hmodel, currNodeId, childRef, selectedID, indexed, index);
             }
         }
 
@@ -309,18 +325,18 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
         if (nodeData != null) {
             this.selectedNodeData = nodeData;
 
-            fireNodeSelectedEvent(nodeData.getConfigNodeModel(), nodeData.getIndex());
+            fireNodeSelectedEvent(nodeData.getConfigReference(), nodeData.isIndexed());
         }
     }
 
     /**
      * Fires a NodeSelectedEvent.
      *
-     * @param selectedModel The selected config model.
-     * @param index The index of a "many" type node.
+     * @param selectedRef The selected config reference.
+     * @param indexed True if this node is indexed.
      */
-    private void fireNodeSelectedEvent(APSConfigEditModel selectedModel, int index) {
-        NodeSelectedEvent event = new NodeSelectedEvent(this, selectedModel, index);
+    private void fireNodeSelectedEvent(APSConfigReference selectedRef, boolean indexed) {
+        NodeSelectedEvent event = new NodeSelectedEvent(this, selectedRef, indexed);
         for (NodeSelectionListener listener : this.nodeSelectionListeners) {
             listener.nodeSelected(event);
         }
@@ -362,11 +378,11 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
         /** The tooltip text. */
         private String toolTipText = null;
 
-        /** The model representing the config node. */
-        private APSConfigEditModel configNodeModel = null;
+        /** The reference to the config value represented by this node data. */
+        private APSConfigReference configRef = null;
 
-        /** The index of a "many" type node. */
-        private int index = -1;
+        /** The indexed state of this node. */
+        private boolean indexed = false;
 
         //
         // Constructors
@@ -374,8 +390,14 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
 
         /**
          * Creates a new NodeData.
+         *
+         * @param configRef The config reference of this node.
+         * @param indexed If this node is indexed or not.
          */
-        public NodeData() {}
+        public NodeData(APSConfigReference configRef, boolean indexed) {
+            setConfigReference(configRef);
+            this.indexed = indexed;
+        }
 
         //
         // Methods
@@ -399,26 +421,51 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
         }
 
         /**
-         * @return The model representing the config node.
+         * Returns the reference to the config value represented by this NodeData.
          */
-        public APSConfigEditModel getConfigNodeModel() {
-            return configNodeModel;
+        public APSConfigReference getConfigReference() {
+            return this.configRef;
         }
 
         /**
-         * Sets the model representing the config node.
+         * Sets the reference to the config value represented by this NodeData.
          *
-         * @param configNodeModel The model to set.
+         * @param configRef The config reference to set.
          */
-        public void setConfigNodeModel(APSConfigEditModel configNodeModel) {
-            this.configNodeModel = configNodeModel;
+        public void setConfigReference(APSConfigReference configRef) {
+            this.configRef = configRef;
+        }
+
+        /**
+         * @return The model representing the config node.
+         */
+        public APSConfigEditModel getConfigNodeModel() {
+            APSConfigEditModel nodeModel = null;
+
+            if (this.configRef != null) {
+                APSConfigValueEditModel ced = this.configRef.getConfigValueEditModel();
+                nodeModel = (ced instanceof APSConfigEditModel) ? (APSConfigEditModel) ced : ced.getParent();
+            }
+
+            return nodeModel;
+        }
+
+        /**
+         * Returns true if this node is indexed.
+         */
+        public boolean isIndexed() {
+            return this.indexed;
         }
 
         /**
          * @return The index of a "many" type node.
          */
         public int getIndex() {
-            return index;
+            int ix = -1;
+            if (this.configRef != null && hasMany()) {
+                ix = this.configRef.getIndex();
+            }
+            return ix;
         }
 
         /**
@@ -427,14 +474,16 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
          * @param index The index to set.
          */
         public void setIndex(int index) {
-            this.index = index;
+            if (this.configRef != null && hasMany()) {
+                this.configRef = this.configRef._(index);
+            }
         }
 
         /**
          * @return true if this represents a node of "many" type that also have an index.
          */
         public boolean hasMany() {
-            return this.index >= 0;
+            return this.configRef != null && this.configRef.getConfigValueEditModel().isMany();
         }
     }
 
@@ -444,14 +493,14 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
     public static interface DataSource {
 
         /**
-         * Returns the root node of the config model.
+         * Returns the reference to the root node of the config model.
          */
-        APSConfigEditModel getRootModel();
+        APSConfigReference getRootReference();
 
         /**
          * Returns the count of instances for the specified model. The passed model must return true for isMany()!
          */
-        int getInstanceCount(APSConfigEditModel configEditModel);
+        int getInstanceCount(APSConfigReference configRef);
     }
 
     /**
@@ -464,17 +513,10 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
         //
 
         /** The selected model. */
-        private APSConfigEditModel selectedModel = null;
+        private APSConfigReference selectedRef = null;
 
-        /**
-         * The instance index. This is only relevant if selectedModel.isMany() is true. There is a special case
-         * when selectedModel.isMany() is true, but the index is less than 0. Models with isMany() == true
-         * represents nodes that have zero or more values, and the node model itself is not enough to get to
-         * a value, and index is also required. But in the case where index < 0 the event represents a selection
-         * of the actual node (which is a placeholder in the tree) and not an instance of it. This is a non value.
-         * In this case, display a message with some info to the user that they should select an instance node.
-         **/
-        private int index = -1;
+        /** The indexed state of the node. */
+        private boolean indexed = false;
 
         //
         // Constructors
@@ -484,13 +526,12 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
          * Constructs a new event with the specified source component.
          *
          * @param source the source component of the event.
-         * @param selectedModel The model of the config node that was selected.
-         * @param index The index of a "many" type node.
+         * @param selectedRef The reference to the selected config node.
          */
-        public NodeSelectedEvent(Component source, APSConfigEditModel selectedModel, int index) {
+        public NodeSelectedEvent(Component source, APSConfigReference selectedRef, boolean indexed) {
             super(source);
-            this.selectedModel = selectedModel;
-            this.index = index;
+            this.selectedRef = selectedRef;
+            this.indexed = indexed;
         }
 
         //
@@ -498,24 +539,24 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
         //
 
         /**
-         * @return The config model of the selected node.
+         * @return The config reference of the selected node.
          */
-        public APSConfigEditModel getSelectedModel() {
-            return this.selectedModel;
-        }
-
-        /**
-         * @return The index of the selected "many" instance node.
-         */
-        public int getIndex() {
-            return this.index;
+        public APSConfigReference getSelectedReference() {
+            return this.selectedRef;
         }
 
         /**
          * @return true if this is a "many" type node also having an index.
          */
         public boolean isMany() {
-            return this.index >= 0;
+            return this.selectedRef.getConfigValueEditModel().isMany();
+        }
+
+        /**
+         * Returns true if this node is indexed.
+         */
+        public boolean isIndexed() {
+            return this.indexed;
         }
     }
 
