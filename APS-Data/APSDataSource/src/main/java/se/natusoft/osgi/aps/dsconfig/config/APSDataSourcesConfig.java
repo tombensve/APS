@@ -47,7 +47,7 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigList;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
 
 @APSConfigDescription(
-        configId = "se.natusoft.osgi.aps.dsconfig.datasources",
+        configId = "se.natusoft.osgi.aps.datasourceservice.datasources",
         group = "persistence",
         description =
                 "This provides a general APS configuration for setting up JDBC data sources. This is " +
@@ -68,7 +68,7 @@ public class APSDataSourcesConfig extends APSConfig {
 
 
     @APSConfigDescription(
-            configId = "se.natusoft.osgi.aps.dsconfig.datasource",
+            configId = "datasource",
             description = "This configures a specific data source.",
             version = "1.0.0"
     )
