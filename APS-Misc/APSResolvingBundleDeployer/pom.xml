@@ -45,7 +45,7 @@
     <parent>
         <artifactId>APS-Misc</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version>0.11.0</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>aps-resolving-bundle-deployer</artifactId>

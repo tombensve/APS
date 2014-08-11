@@ -5027,6 +5027,114 @@ As this long name suggests this service provides an implementation of APSSyncSer
 
 ## APSSyncService API
 
+public _interface_ __APSSynchDataService__   [se.natusoft.osgi.aps.api.net.sync.service] {
+
+This service allows you to store data using a unique key, similar to java.util.Map. The difference is that this data is synchronized between nodes. So if data is published on one node, that data will be available on all other member nodes where it can be fetched. It works like a distributed map.
+
+Since all data stored are also held in memory, take care in what you store here.
+
+__void publishData(String key, Object data)__
+
+Publishes for the first time or updates earlier publishings of data.
+
+_Parameters_
+
+> _key_ - The unique key of this data to identify it with. 
+
+> _data_ - The data to publish. 
+
+__void publishData(String namespace, String key, Object data)__
+
+Publishes for the first time or updates earlier publishings of data.
+
+_Parameters_
+
+> _key_ - The unique key of this data to identify it with. 
+
+> _data_ - The data to publish. 
+
+> _namespace_ - Then namespace to use. 
+
+__void unpublishData(String key)__
+
+Remove a previous publishing of data.
+
+_Parameters_
+
+> _key_ - The key for the data to remove. 
+
+__void unpublishData(String namespace, String key)__
+
+Remove a previous publishing of data.
+
+_Parameters_
+
+> _key_ - The key for the data to remove. 
+
+> _namespace_ - The namespace to use. 
+
+__Object fetchData(String key)__
+
+Fetches previosuly published data.
+
+_Returns_
+
+> The fetched data or null if it does not exist.
+
+_Parameters_
+
+> _key_ - The key for the data to fetch. 
+
+__Object fetchData(String namespace, String key)__
+
+Fetches previosuly published data.
+
+_Returns_
+
+> The fetched data or null if it does not exist.
+
+_Parameters_
+
+> _key_ - The key for the data to fetch. 
+
+> _namespace_ - The namespace to use. 
+
+__boolean haveData(String key)__
+
+Validates that data exists.
+
+_Returns_
+
+> true if data for the specified key exists.
+
+_Parameters_
+
+> _key_ - The key for the data to validate. 
+
+__boolean haveData(String namespace, String key)__
+
+Validates that data exists.
+
+_Returns_
+
+> true if data for the specified key exists.
+
+_Parameters_
+
+> _key_ - The key for the data to validate. 
+
+> _namespace_ - The namespace to use. 
+
+__long lastUpdated()__
+
+Returns the time in miliseconds since Jan 1, 1970 of the latest update.
+
+}
+
+----
+
+    
+
 public _interface_ __APSSyncService__   [se.natusoft.osgi.aps.api.net.sync.service] {
 
 Defines a data synchronization service.
@@ -5436,6 +5544,114 @@ _Parameters_
 > _message_ - The exception message. 
 
 > _cause_ - The cause of this exception. 
+
+}
+
+----
+
+    
+
+public _interface_ __APSSynchDataService__   [se.natusoft.osgi.aps.api.net.sync.service] {
+
+This service allows you to store data using a unique key, similar to java.util.Map. The difference is that this data is synchronized between nodes. So if data is published on one node, that data will be available on all other member nodes where it can be fetched. It works like a distributed map.
+
+Since all data stored are also held in memory, take care in what you store here.
+
+__void publishData(String key, Object data)__
+
+Publishes for the first time or updates earlier publishings of data.
+
+_Parameters_
+
+> _key_ - The unique key of this data to identify it with. 
+
+> _data_ - The data to publish. 
+
+__void publishData(String namespace, String key, Object data)__
+
+Publishes for the first time or updates earlier publishings of data.
+
+_Parameters_
+
+> _key_ - The unique key of this data to identify it with. 
+
+> _data_ - The data to publish. 
+
+> _namespace_ - Then namespace to use. 
+
+__void unpublishData(String key)__
+
+Remove a previous publishing of data.
+
+_Parameters_
+
+> _key_ - The key for the data to remove. 
+
+__void unpublishData(String namespace, String key)__
+
+Remove a previous publishing of data.
+
+_Parameters_
+
+> _key_ - The key for the data to remove. 
+
+> _namespace_ - The namespace to use. 
+
+__Object fetchData(String key)__
+
+Fetches previosuly published data.
+
+_Returns_
+
+> The fetched data or null if it does not exist.
+
+_Parameters_
+
+> _key_ - The key for the data to fetch. 
+
+__Object fetchData(String namespace, String key)__
+
+Fetches previosuly published data.
+
+_Returns_
+
+> The fetched data or null if it does not exist.
+
+_Parameters_
+
+> _key_ - The key for the data to fetch. 
+
+> _namespace_ - The namespace to use. 
+
+__boolean haveData(String key)__
+
+Validates that data exists.
+
+_Returns_
+
+> true if data for the specified key exists.
+
+_Parameters_
+
+> _key_ - The key for the data to validate. 
+
+__boolean haveData(String namespace, String key)__
+
+Validates that data exists.
+
+_Returns_
+
+> true if data for the specified key exists.
+
+_Parameters_
+
+> _key_ - The key for the data to validate. 
+
+> _namespace_ - The namespace to use. 
+
+__long lastUpdated()__
+
+Returns the time in miliseconds since Jan 1, 1970 of the latest update.
 
 }
 
@@ -5911,6 +6127,8 @@ The following third party products are using this license:
 * [vaadin-push-7.1.14](http://vaadin.com)
 
 * [vaadin-themes-7.1.14](http://vaadin.com)
+
+* [hazelcast-3.2.3](http://www.hazelcast.com/)
 
 * [openjpa-all-2.2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
 

@@ -43,7 +43,7 @@
     <groupId>se.natusoft.osgi.aps</groupId>
     <artifactId>APS</artifactId>
     <packaging>pom</packaging>
-    <version>0.11.0</version>
+    <version>1.0.0</version>
 
     <name>OSGi Application Platform Services</name>
 
@@ -56,12 +56,12 @@
         <!--
             The version of this project. Run the set-version profile to update all poms with this version.
         -->
-        <projectVersion>0.11.0</projectVersion>
+        <projectVersion>1.0.0</projectVersion>
 
         <!--
             This is the import package version specification for APS packages.
         -->
-        <aps.import.ver>[0.0,1)</aps.import.ver>
+        <aps.import.ver>[0,2)</aps.import.ver>
 
         <!--
             This specifies the packaging type of the produced bundle to deploy. Should be either "jar" or "war",
@@ -138,7 +138,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.8.2</version>
+            <version>4.11</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

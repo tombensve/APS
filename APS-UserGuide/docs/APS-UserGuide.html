@@ -7937,6 +7937,201 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <H2>APSSyncService API</H2>
     <p>
+      public <em>interface</em> <strong>APSSynchDataService </strong>   [se.natusoft.osgi.aps.api.net.sync.service] {      
+    </p>
+    <p>
+      This service allows you to store data using a unique key, similar to java.util.Map. The difference is that this data is synchronized between nodes. So if data is published on one node, that data will be available on all other member nodes where it can be fetched. It works like a distributed map.      
+    </p>
+    <p>
+      Since all data stored are also held in memory, take care in what you store here.      
+    </p>
+    <p>
+      <strong>void publishData(String key, Object data)</strong>      
+    </p>
+    <p>
+      Publishes for the first time or updates earlier publishings of data.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The unique key of this data to identify it with.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>data</em> - The data to publish.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void publishData(String namespace, String key, Object data)</strong>      
+    </p>
+    <p>
+      Publishes for the first time or updates earlier publishings of data.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The unique key of this data to identify it with.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>data</em> - The data to publish.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>namespace</em> - Then namespace to use.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void unpublishData(String key)</strong>      
+    </p>
+    <p>
+      Remove a previous publishing of data.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The key for the data to remove.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void unpublishData(String namespace, String key)</strong>      
+    </p>
+    <p>
+      Remove a previous publishing of data.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The key for the data to remove.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>namespace</em> - The namespace to use.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>Object fetchData(String key)</strong>      
+    </p>
+    <p>
+      Fetches previosuly published data.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The fetched data or null if it does not exist.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The key for the data to fetch.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>Object fetchData(String namespace, String key)</strong>      
+    </p>
+    <p>
+      Fetches previosuly published data.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The fetched data or null if it does not exist.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The key for the data to fetch.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>namespace</em> - The namespace to use.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean haveData(String key)</strong>      
+    </p>
+    <p>
+      Validates that data exists.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if data for the specified key exists.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The key for the data to validate.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean haveData(String namespace, String key)</strong>      
+    </p>
+    <p>
+      Validates that data exists.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if data for the specified key exists.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The key for the data to validate.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>namespace</em> - The namespace to use.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>long lastUpdated()</strong>      
+    </p>
+    <p>
+      Returns the time in miliseconds since Jan 1, 1970 of the latest update.      
+    </p>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
       public <em>interface</em> <strong>APSSyncService </strong>   [se.natusoft.osgi.aps.api.net.sync.service] {      
     </p>
     <p>
@@ -8617,6 +8812,201 @@ The above empty lines are required due to a bug in iText used to render the PDF.
         <em>cause</em> - The cause of this exception.         
       </p>
     </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>APSSynchDataService </strong>   [se.natusoft.osgi.aps.api.net.sync.service] {      
+    </p>
+    <p>
+      This service allows you to store data using a unique key, similar to java.util.Map. The difference is that this data is synchronized between nodes. So if data is published on one node, that data will be available on all other member nodes where it can be fetched. It works like a distributed map.      
+    </p>
+    <p>
+      Since all data stored are also held in memory, take care in what you store here.      
+    </p>
+    <p>
+      <strong>void publishData(String key, Object data)</strong>      
+    </p>
+    <p>
+      Publishes for the first time or updates earlier publishings of data.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The unique key of this data to identify it with.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>data</em> - The data to publish.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void publishData(String namespace, String key, Object data)</strong>      
+    </p>
+    <p>
+      Publishes for the first time or updates earlier publishings of data.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The unique key of this data to identify it with.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>data</em> - The data to publish.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>namespace</em> - Then namespace to use.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void unpublishData(String key)</strong>      
+    </p>
+    <p>
+      Remove a previous publishing of data.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The key for the data to remove.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void unpublishData(String namespace, String key)</strong>      
+    </p>
+    <p>
+      Remove a previous publishing of data.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The key for the data to remove.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>namespace</em> - The namespace to use.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>Object fetchData(String key)</strong>      
+    </p>
+    <p>
+      Fetches previosuly published data.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The fetched data or null if it does not exist.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The key for the data to fetch.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>Object fetchData(String namespace, String key)</strong>      
+    </p>
+    <p>
+      Fetches previosuly published data.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The fetched data or null if it does not exist.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The key for the data to fetch.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>namespace</em> - The namespace to use.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean haveData(String key)</strong>      
+    </p>
+    <p>
+      Validates that data exists.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if data for the specified key exists.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The key for the data to validate.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>boolean haveData(String namespace, String key)</strong>      
+    </p>
+    <p>
+      Validates that data exists.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if data for the specified key exists.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The key for the data to validate.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>namespace</em> - The namespace to use.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>long lastUpdated()</strong>      
+    </p>
+    <p>
+      Returns the time in miliseconds since Jan 1, 1970 of the latest update.      
+    </p>
     <p>
       }      
     </p>
@@ -9381,6 +9771,11 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       <li>
         <p>
           <a href='http://vaadin.com' title=''>vaadin-themes-7.1.14</a>          
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href='http://www.hazelcast.com/' title=''>hazelcast-3.2.3</a>          
         </p>
       </li>
       <li>

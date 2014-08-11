@@ -65,7 +65,7 @@ public class APSGroupsConfigRelay implements APSGroupsConfig {
      */
     private void checkManaged() {
         if (!APSGroupsServiceConfig.managed.isManaged()) {
-            APSGroupsServiceConfig.managed.waitUtilManaged();
+            APSGroupsServiceConfig.managed.waitUntilManaged();
         }
     }
 

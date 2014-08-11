@@ -41,7 +41,7 @@
     <parent>
         <artifactId>APS-Data</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
-        <version>0.11.0</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>aps-openjpa-provider</artifactId>
@@ -121,6 +121,17 @@
     </dependencies>
 
     <build>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <!--
+                    The following so that we can used variables in the MANIFEST.MF.
+                -->
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
         <plugins>
 
             <!--
@@ -131,7 +142,7 @@
                 <configuration>
                     <archive>
                         <!--manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile-->
-                        <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+                        <manifestFile>target/classes/META-INF/MANIFEST.MF</manifestFile>
                     </archive>
                 </configuration>
             </plugin>
