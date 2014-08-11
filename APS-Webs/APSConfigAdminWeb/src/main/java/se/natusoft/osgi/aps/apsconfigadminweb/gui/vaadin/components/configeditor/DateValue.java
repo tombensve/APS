@@ -98,7 +98,7 @@ public class DateValue extends PopupDateField implements ValueComponent {
     }
 
     //
-    // Methods
+    // Public Methods
     //
 
     /**
@@ -131,6 +131,7 @@ public class DateValue extends PopupDateField implements ValueComponent {
     public void setComponentValue(String value, boolean fireEvent) {
         this.doFireEvent = fireEvent;
         Date dateValue = null;
+
         if (value != null && value.trim().length() > 0) {
             try {
                 dateValue = dateFormat.parse(value);
@@ -154,18 +155,6 @@ public class DateValue extends PopupDateField implements ValueComponent {
         return this.dateFormat.format(dateValue);
     }
 
-     /**
-     * Updates the value in the configuration.
-     */
-    private void fireEvent() {
-        String value = this.dateFormat.format(getValue());
-
-        ValueChangedEvent event = new ValueChangedEvent(this, this.valueRef, value);
-        for (ValueChangedListener listener : this.listeners) {
-            listener.valueChanged(event);
-        }
-    }
-
     /**
      * Returns the Vaadin component.
      */
@@ -179,5 +168,21 @@ public class DateValue extends PopupDateField implements ValueComponent {
      */
     @Override
     public void enableNullValues() {}
+
+    //
+    // Private Methods
+    //
+
+    /**
+     * Updates the value in the configuration.
+     */
+    private void fireEvent() {
+        String value = this.dateFormat.format(getValue());
+
+        ValueChangedEvent event = new ValueChangedEvent(this, this.valueRef, value);
+        for (ValueChangedListener listener : this.listeners) {
+            listener.valueChanged(event);
+        }
+    }
 
 }

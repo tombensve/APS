@@ -108,6 +108,53 @@ public class ValueComponentListEditor extends VerticalLayout {
     };
 
     //
+    // External Information Requirements.
+    //
+
+    /**
+     * The data source for the ValueListEditor.
+     */
+    public static interface DataSource {
+
+        /**
+         * Returns the number of values.
+         *
+         * @param valueRef The config reference representing the value edited by this component instance.
+         */
+        int getSize(APSConfigReference valueRef);
+
+        /**
+         * Returns the value edited by this component instance.
+         *
+         * @param valueRef The config reference representing the value edited by this component instance.
+         */
+        String getValue(APSConfigReference valueRef);
+
+        /**
+         * Adds the specified value to the set of values.
+         *
+         * @param valueRef The config reference representing the value edited by this component instance.
+         * @param value The value to add.
+         */
+        void addValue(APSConfigReference valueRef, String value);
+
+        /**
+         * Removes a value from the set of values.
+         *
+         * @param valueRef The config reference representing the value edited by this component instance.
+         */
+        void removeValue(APSConfigReference valueRef);
+
+        /**
+         * Updates a value.
+         *
+         * @param valueRef The config reference representing the value edited by this component instance.
+         * @param value The value to update with.
+         */
+        void updateValue(APSConfigReference valueRef, String value);
+    }
+
+    //
     // Constructors
     //
 
@@ -166,7 +213,7 @@ public class ValueComponentListEditor extends VerticalLayout {
     }
 
     //
-    // Methods
+    // Public Methods
     //
 
     /**
@@ -220,6 +267,10 @@ public class ValueComponentListEditor extends VerticalLayout {
 
         this.sizeLabel.setValue("&nbsp;&nbsp;&nbsp;&nbsp;[ " + size + " ]");
     }
+
+    //
+    // Private Methods
+    //
 
     /**
      * Puts the focus on the edit line.
@@ -320,50 +371,4 @@ public class ValueComponentListEditor extends VerticalLayout {
 
     }
 
-    //
-    // Inner Classes
-    //
-
-    /**
-     * The data source for the ValueListEditor.
-     */
-    public static interface DataSource {
-
-        /**
-         * Returns the number of values.
-         *
-         * @param valueRef The config reference representing the value edited by this component instance.
-         */
-        int getSize(APSConfigReference valueRef);
-
-        /**
-         * Returns the value edited by this component instance.
-         *
-         * @param valueRef The config reference representing the value edited by this component instance.
-         */
-        String getValue(APSConfigReference valueRef);
-
-        /**
-         * Adds the specified value to the set of values.
-         *
-         * @param valueRef The config reference representing the value edited by this component instance.
-         * @param value The value to add.
-         */
-        void addValue(APSConfigReference valueRef, String value);
-
-        /**
-         * Removes a value from the set of values.
-         *
-         * @param valueRef The config reference representing the value edited by this component instance.
-         */
-        void removeValue(APSConfigReference valueRef);
-
-        /**
-         * Updates a value.
-         *
-         * @param valueRef The config reference representing the value edited by this component instance.
-         * @param value The value to update with.
-         */
-        void updateValue(APSConfigReference valueRef, String value);
-    }
 }

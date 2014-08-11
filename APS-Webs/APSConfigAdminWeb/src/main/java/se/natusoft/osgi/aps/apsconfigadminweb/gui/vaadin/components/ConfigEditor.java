@@ -137,7 +137,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
     }
     
     //
-    // Methods
+    // Public Methods
     //
 
     /**
@@ -147,6 +147,21 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
     public AbstractComponent getComponent() {
         return this;
     }
+
+    /**
+     * Refreshes all relevant components. This implements Refreshable.
+     */
+    @Override
+    public void refresh() {
+        setCaption("&nbsp;<b>Config ID:</b> " + this.currentConfigNode.getNodeConfigId());
+        this.editForConfigEnvSelect.refreshData();
+
+        this.configNodeValuesEditor.refreshData();
+    }
+
+    //
+    // Private Methods
+    //
 
     /**
      * Builds the gui of this component.
@@ -274,7 +289,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
                     }
                 });
                 saveCancelButtonsLayout.addComponent(saveButton);
-                
+
                 Button cancelButton = new Button("Cancel");
                 cancelButton.addClickListener(new ClickListener() {
                     @Override
@@ -294,21 +309,6 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
             this.nodeSelector.refreshData();
         }
     }
-
-    /**
-     * Refreshes all relevant components. This implements Refreshable.
-     */
-    @Override
-    public void refresh() {
-        setCaption("&nbsp;<b>Config ID:</b> " + this.currentConfigNode.getNodeConfigId());
-        this.editForConfigEnvSelect.refreshData();
-
-        this.configNodeValuesEditor.refreshData();
-    }
-
-    //
-    // Event Handlers
-    //
 
     /**
      * Handles configuration environment selection for config editing.
@@ -435,7 +435,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
     }
 
     //
-    // Data Sources
+    // Data Source Providers
     //
 
     /** The data source for the 'configNodeValuesEditor' instance. */

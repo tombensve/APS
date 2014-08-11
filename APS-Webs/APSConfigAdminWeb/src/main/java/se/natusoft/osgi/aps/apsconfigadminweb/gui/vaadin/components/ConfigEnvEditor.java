@@ -120,6 +120,37 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
         }
     }
 
+    //
+    // Public Methods
+    //
+
+    /**
+     * @return The component that should handle the item.
+     */
+    @Override
+    public AbstractComponent getComponent() {
+        return this;
+    }
+
+    /**
+     * Executes the menu action.
+     */
+    @Override
+    public void executeMenuAction() {
+        if (this.action == CHANGE_ACTIVE_ACTION) {
+            this.configEnvAdmin.selectActiveConfigEnvironment(this.configEnv);
+
+            notify("Changed '" + this.configEnv.getName() + "' to active configuration environment!");
+
+            this.refreshables.refresh();
+        }
+
+    }
+
+    //
+    // Private Methods
+    //
+
     /**
      * Setup for editing.
      */
@@ -249,14 +280,6 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
     }
 
     /**
-     * @return The component that should handle the item.
-     */
-    @Override
-    public AbstractComponent getComponent() {
-        return this;
-    }
-
-    /**
      * Saves the current config env.
      */
     private void saveConfigEnv() {
@@ -291,18 +314,4 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
         this.refreshables.refresh();
     }
 
-    /**
-     * Executes the menu action.
-     */
-    @Override
-    public void executeMenuAction() {
-        if (this.action == CHANGE_ACTIVE_ACTION) {
-            this.configEnvAdmin.selectActiveConfigEnvironment(this.configEnv);
-
-            notify("Changed '" + this.configEnv.getName() + "' to active configuration environment!");
-
-            this.refreshables.refresh();
-        }
-
-    }
 }

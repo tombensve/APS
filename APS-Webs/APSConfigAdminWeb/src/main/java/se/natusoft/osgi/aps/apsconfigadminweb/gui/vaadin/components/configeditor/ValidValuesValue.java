@@ -91,7 +91,7 @@ public class ValidValuesValue extends ListSelect implements ValueComponent {
     }
 
     //
-    // Methods
+    // Public Methods
     //
 
     /**
@@ -123,6 +123,7 @@ public class ValidValuesValue extends ListSelect implements ValueComponent {
     @Override
     public void setComponentValue(String value, boolean fireEvent) {
         this.doFireEvent = fireEvent;
+
         if (value == null || value.trim().length() == 0) {
             setValue(null);
         }
@@ -134,6 +135,7 @@ public class ValidValuesValue extends ListSelect implements ValueComponent {
                 }
             }
         }
+
         this.doFireEvent = true;
     }
 
@@ -143,18 +145,6 @@ public class ValidValuesValue extends ListSelect implements ValueComponent {
     @Override
     public String getComponentValue() {
         return super.getValue().toString();
-    }
-
-    /**
-     * Updates the value in the configuration.
-     *
-     * @param value The vale to update.
-     */
-    private void fireEvent(String value) {
-        ValueChangedEvent event = new ValueChangedEvent(this, this.valueRef, value);
-        for (ValueChangedListener listener : this.listeners) {
-            listener.valueChanged(event);
-        }
     }
 
     /**
@@ -173,4 +163,19 @@ public class ValidValuesValue extends ListSelect implements ValueComponent {
         setNullSelectionAllowed(true);
     }
 
+    //
+    // Private Methods
+    //
+
+    /**
+     * Updates the value in the configuration.
+     *
+     * @param value The vale to update.
+     */
+    private void fireEvent(String value) {
+        ValueChangedEvent event = new ValueChangedEvent(this, this.valueRef, value);
+        for (ValueChangedListener listener : this.listeners) {
+            listener.valueChanged(event);
+        }
+    }
 }

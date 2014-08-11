@@ -113,7 +113,7 @@ public class ConfigEnvMenuBuilder implements MenuBuilder<APSConfigAdmin>, Refres
     }
 
     //
-    // Methods
+    // Public Methods
     //
 
     /**
@@ -180,6 +180,9 @@ public class ConfigEnvMenuBuilder implements MenuBuilder<APSConfigAdmin>, Refres
         }
     }
 
+    //
+    // Private Methods
+    //
 
     /**
      * This handles the "Config Environments" menu entry.

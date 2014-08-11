@@ -61,6 +61,7 @@ public class BooleanValue extends CheckBox implements ValueComponent {
     /** The config value reference representing the config value. */
     private APSConfigReference valueRef = null;
 
+    /** Used to prevent double triggering of events. */
     private boolean doFireEvent = true;
 
     //
@@ -113,6 +114,8 @@ public class BooleanValue extends CheckBox implements ValueComponent {
      * Sets the value for this component.
      *
      * @param value The value to set.
+     * @param fireEvent Set this to false if this is done due to an event in which case you dont want
+     *                  to file a new event again. Otherwise this should be true.
      */
     @Override
     public void setComponentValue(String value, boolean fireEvent) {

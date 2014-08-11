@@ -73,110 +73,8 @@ public class ConfigEnvSelector extends VerticalLayout {
     private ValueChangeListener configEnvSelectListener = null;
 
     //
-    // Constructors
+    // Event APIs
     //
-
-    /**
-     * Creates a new ConfigEnvSelector.
-     */
-    public ConfigEnvSelector() {
-        this.editForConfigEnvSelect = new ComboBox("Edit for configuration environment:");
-        this.editForConfigEnvSelect.setImmediate(true);
-        this.editForConfigEnvSelect.setInvalidAllowed(false);
-        this.editForConfigEnvSelect.setNullSelectionAllowed(false);
-        addComponent(this.editForConfigEnvSelect);
-        
-        this.configEnvSelectListener = new ValueChangeListener() {
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                selectEditedConfigEnv(event.getProperty().getValue().toString());
-            }
-        };
-    }
-
-    //
-    // Methods
-    //
-
-    /**
-     * Sets the data source for this component.
-     *
-     * @param dataSource The data source to set.
-     */
-    public void setDataSource(APSConfigEnvAdmin dataSource) {
-        this.configEnvAdmin = dataSource;
-    }
-
-    /**
-     * Refreshes data for the component.
-     */
-    public void refreshData() {
-        if (this.selectedConfigEnv == null) {
-            this.selectedConfigEnv = this.configEnvAdmin.getActiveConfigEnvironment();
-        }
-
-        this.editForConfigEnvSelect.removeValueChangeListener(this.configEnvSelectListener);
-
-        this.editForConfigEnvSelect.removeAllItems();
-
-        for (APSConfigEnvironment configEnv : this.configEnvAdmin.getAvailableConfigEnvironments()) {
-            this.editForConfigEnvSelect.addItem(configEnv.getName());
-
-            if (configEnv.equals(this.selectedConfigEnv)) {
-                this.editForConfigEnvSelect.setValue(configEnv.getName());
-            }
-        }
-
-        this.editForConfigEnvSelect.addValueChangeListener(this.configEnvSelectListener);
-    }
-
-    /**
-     * @return The currently selected config environment.
-     */
-    public APSConfigEnvironment getSelectedConfigEnvironment() {
-        return this.selectedConfigEnv;
-    }
-
-    //
-    // Event Handling
-    //
-
-    /**
-     * Handles config env select event.
-     *
-     * @param selectedConfigEnv The newly selected config environment.
-     */
-    private void selectEditedConfigEnv(String selectedConfigEnv) {
-        for (APSConfigEnvironment configEnv : this.configEnvAdmin.getAvailableConfigEnvironments()) {
-            if (selectedConfigEnv.equals(configEnv.getName())) {
-                this.selectedConfigEnv = configEnv;
-                break;
-            }
-        }
-
-        fireConfigEnvChangedEvent(this.selectedConfigEnv);
-    }
-    
-    /**
-     * Adds a listener to this component for change of config environment.
-     *
-     * @param listener The listener to add.
-     */
-    public void addListener(ConfigEnvChangeListener listener) {
-        this.listeners.add(listener);
-    }
-
-    /**
-     * Fires a change of selected config environment event.
-     *
-     * @param selectedConfigEnv The config environment that was selected.
-     */
-    private void fireConfigEnvChangedEvent(APSConfigEnvironment selectedConfigEnv) {
-        ConfigEnvChangeEvent event = new ConfigEnvChangeEvent(this, selectedConfigEnv);
-        for (ConfigEnvChangeListener listener : this.listeners) {
-            listener.configEnvironmentChanged(event);
-        }
-    }
 
     /**
      * Event triggered by change of selected configuration environment.
@@ -227,5 +125,112 @@ public class ConfigEnvSelector extends VerticalLayout {
          * @param event The received event.
          */
         public void configEnvironmentChanged(ConfigEnvChangeEvent event);
+    }
+
+    //
+    // Constructors
+    //
+
+    /**
+     * Creates a new ConfigEnvSelector.
+     */
+    public ConfigEnvSelector() {
+        this.editForConfigEnvSelect = new ComboBox("Edit for configuration environment:");
+        this.editForConfigEnvSelect.setImmediate(true);
+        this.editForConfigEnvSelect.setInvalidAllowed(false);
+        this.editForConfigEnvSelect.setNullSelectionAllowed(false);
+        addComponent(this.editForConfigEnvSelect);
+        
+        this.configEnvSelectListener = new ValueChangeListener() {
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                selectEditedConfigEnv(event.getProperty().getValue().toString());
+            }
+        };
+    }
+
+    //
+    // Public Methods
+    //
+
+    /**
+     * Sets the data source for this component.
+     *
+     * @param dataSource The data source to set.
+     */
+    public void setDataSource(APSConfigEnvAdmin dataSource) {
+        this.configEnvAdmin = dataSource;
+    }
+
+    /**
+     * Refreshes data for the component.
+     */
+    public void refreshData() {
+        if (this.selectedConfigEnv == null) {
+            this.selectedConfigEnv = this.configEnvAdmin.getActiveConfigEnvironment();
+        }
+
+        this.editForConfigEnvSelect.removeValueChangeListener(this.configEnvSelectListener);
+
+        this.editForConfigEnvSelect.removeAllItems();
+
+        for (APSConfigEnvironment configEnv : this.configEnvAdmin.getAvailableConfigEnvironments()) {
+            this.editForConfigEnvSelect.addItem(configEnv.getName());
+
+            if (configEnv.equals(this.selectedConfigEnv)) {
+                this.editForConfigEnvSelect.setValue(configEnv.getName());
+            }
+        }
+
+        this.editForConfigEnvSelect.addValueChangeListener(this.configEnvSelectListener);
+    }
+
+    /**
+     * @return The currently selected config environment.
+     */
+    public APSConfigEnvironment getSelectedConfigEnvironment() {
+        return this.selectedConfigEnv;
+    }
+
+    /**
+     * Adds a listener to this component for change of config environment.
+     *
+     * @param listener The listener to add.
+     */
+    public void addListener(ConfigEnvChangeListener listener) {
+        this.listeners.add(listener);
+    }
+
+    //
+    // Private Methods
+    //
+
+    /**
+     * Handles config env select event.
+     *
+     * @param selectedConfigEnv The newly selected config environment.
+     */
+    private void selectEditedConfigEnv(String selectedConfigEnv) {
+        for (APSConfigEnvironment configEnv : this.configEnvAdmin.getAvailableConfigEnvironments()) {
+            if (selectedConfigEnv.equals(configEnv.getName())) {
+                this.selectedConfigEnv = configEnv;
+                break;
+            }
+        }
+
+        fireConfigEnvChangedEvent(this.selectedConfigEnv);
+    }
+
+    /**
+     * Fires a change of selected config environment event.
+     *
+     * @param selectedConfigEnv The config environment that was selected.
+     */
+    private void fireConfigEnvChangedEvent(APSConfigEnvironment selectedConfigEnv) {
+        ConfigEnvChangeEvent event = new ConfigEnvChangeEvent(this, selectedConfigEnv);
+
+        for (ConfigEnvChangeListener listener : this.listeners) {
+            listener.configEnvironmentChanged(event);
+        }
     }
 }

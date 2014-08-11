@@ -109,7 +109,7 @@ public class ConfigMenuBuilder implements MenuBuilder<APSConfigAdmin> {
     }
 
     //
-    // Methods
+    // Public Methods
     //
 
     /**
@@ -184,45 +184,12 @@ public class ConfigMenuBuilder implements MenuBuilder<APSConfigAdmin> {
                 menuModel.addItem(parent, itemData, configId);
             }
 
-//            // Sub config branches.
-//            buildConfigBranch(menuModel, configModel, itemID, configAdmin);
         }
     }
 
-// Undecided on what to do here, I'm leaving this code commented out for now.
-
-//    /**
-//     * Recursively builds menu entries for sub config branches.
-//     *
-//     * @param menuModel The menu model to add menu entries to.
-//     * @param configEditModel The config model the menu entry represents.
-//     * @param parentID The id of our parent.
-//     * @param configAdmin This represents the whole configuration and are passed along as menu item data since it is needed to edit data later.
-//     */
-//    private void buildConfigBranch(
-//            HierarchicalModel<MenuItemData<APSConfigAdmin>> menuModel,
-//            APSConfigEditModel configEditModel,
-//            ID parentID,
-//            APSConfigAdmin configAdmin
-//    ) {
-//
-//        for (APSConfigValueEditModel valueModel : configEditModel.getValues()) {
-//            if (valueModel instanceof APSConfigEditModel) {
-//                APSConfigEditModel branchModel = (APSConfigEditModel)valueModel;
-//
-//                MenuItemData itemData = new MenuItemData();
-//                itemData.setItemRepresentative(configAdmin);
-//                itemData.setToolTipText(branchModel.getConfigId() + ":" + branchModel.getVersion() + "<hr/>" + branchModel.getDescription());
-//                String name = branchModel.getName();
-//                if (branchModel.isMany()) {
-//                    name = name + "*";
-//                    int size = configAdmin.getSize(branchModel, this.activeConfigEnv);
-//                }
-//                ID itemID = menuModel.addItem(parentID, itemData, name);
-//                buildConfigBranch(menuModel, branchModel, itemID, configAdmin);
-//            }
-//        }
-//    }
+    //
+    // Internal Support Classes
+    //
 
     /**
      * This handles the "Config Environments" menu entry.

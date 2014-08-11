@@ -85,7 +85,7 @@ public class TextValue extends TextField implements ValueComponent {
     }
 
     //
-    // Methods
+    // Public Methods
     //
 
     /**
@@ -132,18 +132,6 @@ public class TextValue extends TextField implements ValueComponent {
     }
 
     /**
-     * Updates the value in the configuration.
-     *
-     * @param value The vale to update.
-     */
-    private void fireEvent(String value) {
-        ValueChangedEvent event = new ValueChangedEvent(this, this.valueRef, value);
-        for (ValueChangedListener listener : this.listeners) {
-            listener.valueChanged(event);
-        }
-    }
-
-    /**
      * Returns the Vaadin component.
      */
     @Override
@@ -156,5 +144,21 @@ public class TextValue extends TextField implements ValueComponent {
      */
     @Override
     public void enableNullValues() {}
+
+    //
+    // Private Methods
+    //
+
+    /**
+     * Updates the value in the configuration.
+     *
+     * @param value The vale to update.
+     */
+    private void fireEvent(String value) {
+        ValueChangedEvent event = new ValueChangedEvent(this, this.valueRef, value);
+        for (ValueChangedListener listener : this.listeners) {
+            listener.valueChanged(event);
+        }
+    }
 
 }

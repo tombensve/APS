@@ -87,7 +87,7 @@ public class ConfigNode {
     }
 
     //
-    // Methods
+    // Public Methods
     //
 
     /**

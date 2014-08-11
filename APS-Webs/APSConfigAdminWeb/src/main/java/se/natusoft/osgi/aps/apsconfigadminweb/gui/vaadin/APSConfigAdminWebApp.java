@@ -44,7 +44,7 @@ import com.vaadin.data.Item;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.event.Action;
-import com.vaadin.server.*;
+import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.VerticalLayout;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.LeftBar;
@@ -53,7 +53,6 @@ import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.menu.ConfigMenuBuilder;
 import se.natusoft.osgi.aps.tools.APSLogger;
 import se.natusoft.osgi.aps.tools.APSServiceTracker;
 import se.natusoft.osgi.aps.tools.models.IntID;
-import se.natusoft.osgi.aps.tools.web.APSAdminWebLoginHandler;
 import se.natusoft.osgi.aps.tools.web.WebClientContext;
 import se.natusoft.osgi.aps.tools.web.vaadin.APSVaadinOSGiApplication;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.SidesAndCenterLayout;
@@ -79,7 +78,7 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
     @WebServlet(value = "/*",
             asyncSupported = true)
     @VaadinServletConfiguration(
-            productionMode = false,
+            productionMode = true,
             ui = APSConfigAdminWebApp.class)
     public static class Servlet extends VaadinServlet {}
 
@@ -99,9 +98,6 @@ public class APSConfigAdminWebApp extends APSVaadinOSGiApplication implements Me
 
     /** The left side menu. */
     private MenuTree menuTree = null;
-
-    /** A login handler. */
-    private APSAdminWebLoginHandler loginHandler = null;
 
     //
     // Vaadin GUI init
