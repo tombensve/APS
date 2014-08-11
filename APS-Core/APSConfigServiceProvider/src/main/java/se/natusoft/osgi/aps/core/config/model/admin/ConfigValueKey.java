@@ -190,7 +190,8 @@ public class ConfigValueKey {
         String unIndexedKey = getKey();
         int ix = unIndexedKey.lastIndexOf('_');
         if (ix > 0 && unIndexedKey.length() > (ix + 1)) {
-            if (Character.isDigit(unIndexedKey.charAt(ix + 1))) {
+            // The new default value for index is "", but there might be some "-1" still hanging around!
+            if (Character.isDigit(unIndexedKey.charAt(ix + 1)) || unIndexedKey.charAt(ix + 1) == '-') {
                 unIndexedKey = unIndexedKey.substring(0, ix + 1);
             }
         }

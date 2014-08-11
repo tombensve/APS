@@ -192,7 +192,7 @@ public class ConfigPartKey {
                 .replace(VERSION, this.version)
                 .replace(NAME, this.name)
                 .replace(CONFIG_ENV, this.configEnvSpecific ? this.configEnv : "")
-                .replace(INDEX, this.isMany && !this.index.equals(NO_INDEX) ? this.index : "");
+                .replace(INDEX, /*this.isMany &&*/ !this.index.equals(NO_INDEX) ? this.index : "");
     }
 
     /**
@@ -246,7 +246,12 @@ public class ConfigPartKey {
     }
 
     public ConfigPartKey index(int index) {
-        this.index = "" + index;
+        if (index >= 0) {
+            this.index = "" + index;
+        }
+        else {
+            this.index = NO_INDEX;
+        }
         return this;
     }
 
@@ -266,7 +271,12 @@ public class ConfigPartKey {
      * Returns the index.
      */
     public int getIndex() {
-        return Integer.valueOf(this.index);
+        try {
+            return Integer.valueOf(this.index);
+        }
+        catch (NumberFormatException nfe) {
+            return 0;
+        }
     }
 
     /**
