@@ -3,6 +3,7 @@ package se.natusoft.osgi.aps.core.config.model.admin;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
+import se.natusoft.osgi.aps.api.core.config.service.APSConfigException;
 
 import static se.natusoft.osgi.aps.core.config.model.StaticUtils.*;
 
@@ -261,7 +262,7 @@ public class APSConfigReferenceImpl implements APSConfigReference {
      */
     public ConfigValueKey getValueKey() {
         return new ConfigValueKey(
-                this.configEnvironment != null ? this.configEnvironment.getName() : "default",
+                this.configEnvironment != null ? this.configEnvironment.getName() : "",
                 this.keys
         );
     }
