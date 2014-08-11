@@ -95,7 +95,19 @@ public class APSOpenJPAServiceProvider implements BundleListener, APSJPAService,
     public APSOpenJPAServiceProvider(APSLogger logger, BundleContext context) {
         this.logger = logger;
         this.thisBundle = context.getBundle();
-        scanCurrentBundles(context);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try { Thread.sleep(1000); } catch (InterruptedException ie) {/*OK*/}
+                try {
+                    scanCurrentBundles(APSOpenJPAServiceProvider.this.thisBundle.getBundleContext());
+                }
+                catch (Exception e) {
+                    APSOpenJPAServiceProvider.this.logger.error("Failed to scan current bundles!", e);
+                }
+            }
+        }).start();
     }
 
     //
@@ -128,9 +140,8 @@ public class APSOpenJPAServiceProvider implements BundleListener, APSJPAService,
      * Creates a combined key for this.openFactories. This allows for different bundles
      * to have persistent units named the same.
      *
-     * @param persistenceUnit
-     * @param bundleId
-     * @return
+     * @param persistenceUnit The persistence unit name.
+     * @param bundleId The id of the bundle.
      */
     private String factoryKey(String persistenceUnit, Long bundleId) {
         return persistenceUnit + bundleId.toString();
