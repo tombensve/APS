@@ -90,6 +90,6 @@ public enum ErrorType {
     /**
      * Bad authorization was supplied.
      */
-    BAD_AUTHORIZATION;
+    BAD_AUTHORIZATION
 
 }

@@ -129,8 +129,7 @@ public class JSONHTTP implements StreamedRPCProtocol {
                     throw new JSONRESTError(ErrorType.PARSE_ERROR, 400, "Bad JSON passed!", null, jpe);
                 }
                 catch (ClassCastException cce) {
-                    throw new JSONRESTError(ErrorType.INVALID_PARAMS, 400, "An array of JSON values/objects are required! The following " +
-                            "'" + jsonReqValue + "' was received!", null, cce);
+                    throw new JSONRESTError(ErrorType.INVALID_PARAMS, 400, "An array of JSON values/objects are required!", null, cce);
                 }
 
                 JSONRESTRequest req = new JSONRESTRequest(serviceQName, method, jsonReq.getAsList(), null);

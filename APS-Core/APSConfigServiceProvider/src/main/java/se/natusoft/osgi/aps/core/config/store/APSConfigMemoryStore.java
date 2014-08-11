@@ -52,13 +52,13 @@ public class APSConfigMemoryStore implements ConfigStoreInfo {
     //
 
     /** The stored configurations. */
-    private Map<String, APSConfigAdminImpl> configurations = new HashMap<String, APSConfigAdminImpl>();
+    private Map<String, APSConfigAdminImpl> configurations = new HashMap<>();
 
     /** Update listeners. */
-    private List<ConfigUpdateListener> configUpdateListeners = new ArrayList<ConfigUpdateListener>();
+    private List<ConfigUpdateListener> configUpdateListeners = new ArrayList<>();
 
     /** Holds the currently available config ids and all the versions for a specified config id. */
-    private Map<String /* configId */, List<String /* version */>> idsAndVersions = new HashMap<String, List<String>>();
+    private Map<String /* configId */, List<String /* version */>> idsAndVersions = new HashMap<>();
 
     //
     // Constructors
@@ -93,7 +93,7 @@ public class APSConfigMemoryStore implements ConfigStoreInfo {
 
         List<String> versions = this.idsAndVersions.get(configuration.getConfigId());
         if (versions == null) {
-            versions = new LinkedList<String>();
+            versions = new LinkedList<>();
             this.idsAndVersions.put(configuration.getConfigId(), versions);
         }
         if (!versions.contains(configuration.getVersion())) {
@@ -155,7 +155,7 @@ public class APSConfigMemoryStore implements ConfigStoreInfo {
      * Returns all configurations.
      */
     public List<APSConfigAdmin> getAllConfigurations() {
-        List<APSConfigAdmin> configs = new ArrayList<APSConfigAdmin>();
+        List<APSConfigAdmin> configs = new ArrayList<>();
         for (String key : this.configurations.keySet()) {
             configs.add(this.configurations.get(key));
         }

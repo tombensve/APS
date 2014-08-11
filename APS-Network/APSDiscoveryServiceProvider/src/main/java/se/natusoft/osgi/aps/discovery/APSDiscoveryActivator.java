@@ -84,11 +84,11 @@ public class APSDiscoveryActivator implements BundleActivator {
         this.logger.start(context);
 
         this.platformServiceTracker =
-                new APSServiceTracker<APSPlatformService>(context, APSPlatformService.class, APSServiceTracker.LARGE_TIMEOUT);
+                new APSServiceTracker<>(context, APSPlatformService.class, APSServiceTracker.LARGE_TIMEOUT);
         this.platformServiceTracker.start();
 
         this.groupsServiceTracker =
-                new APSServiceTracker<APSGroupsService>(context, APSGroupsService.class, APSServiceTracker.LARGE_TIMEOUT);
+                new APSServiceTracker<>(context, APSGroupsService.class, APSServiceTracker.LARGE_TIMEOUT);
         this.groupsServiceTracker.start();
 
         // Register our discovery service as an OSGi service.

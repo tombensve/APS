@@ -51,7 +51,6 @@
     </parent>
 
     <artifactId>aps-vaadin-web-tools</artifactId>
-    <groupId>se.natusoft.osgi.aps</groupId>
     <packaging>jar</packaging>
 
     <name>APS Vaadin Web Tools</name>

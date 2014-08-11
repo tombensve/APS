@@ -57,7 +57,7 @@ public class RabbitMQConnectionConfig extends APSConfig {
 
     /**
      * Provides an auto managed instance of this config when this class is specified with APS-Configs: in MANIFEST.MF.
-     * This also allows us to wait for the config to become managed before we try to access it. Out bundle might be
+     * This also allows us to wait for the config to become managed before we try to access it. Our bundle might be
      * upp and running before the APSConfigServiceProvider bundle which handles the auto management of the config
      * by using the extender pattern. Even if the config service is running before us we might access the config
      * before the config service have had a change to manage the config. Using this constant instance of ManagedConfig
@@ -75,7 +75,7 @@ public class RabbitMQConnectionConfig extends APSConfig {
         @Override
         public RabbitMQConnectionConfig get() {
             if (!super.isManaged()) {
-                super.waitUtilManaged();
+                super.waitUntilManaged();
             }
             return super.get();
         }

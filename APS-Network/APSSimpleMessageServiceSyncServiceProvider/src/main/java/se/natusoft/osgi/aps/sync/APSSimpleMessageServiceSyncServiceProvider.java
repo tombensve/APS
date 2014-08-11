@@ -362,6 +362,6 @@ public class APSSimpleMessageServiceSyncServiceProvider implements APSSyncServic
      */
     private enum MessageType {
         MESSAGE,
-        RESYNC_REQUEST;
+        RESYNC_REQUEST
     }
 }

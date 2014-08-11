@@ -46,7 +46,6 @@
     </parent>
 
     <artifactId>aps-tools-lib</artifactId>
-    <groupId>se.natusoft.osgi.aps</groupId>
     <packaging>bundle</packaging>
 
     <name>APS Tools Library</name>

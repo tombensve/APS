@@ -188,11 +188,29 @@ public class RoleEntity implements RoleAdmin {
      */
     @Override
     public void removeRole(Role role) {
+        if (role == null) {
+            throw new APSSimpleUserServiceException("Bad argument! Can't remove null role!");
+        }
+        if (RoleEntity.class.isAssignableFrom(role.getClass())) {
+            throw new APSSimpleUserServiceException("Don't support other implementations of Role! Must be a RoleEntity! Got:" +
+                    role.getClass());
+        }
         if (role.isMasterRole()) {
             throw new APSSimpleUserServiceException("Bad role '" + role.getId() + "'! A master role cannot be added to another role!");
         }
+        // Hmm ... the IDE thinks the cast to RoleEntity is redundant, but the roles List is of RoleEntity type, and even
+        // if RoleEntity implements Role it cannot be sure that role is a RoleEntity! It should complain about unsafe cast!
+        // But if I remove the cast it complains about suspicious call instead! So there is no way out here! Maybe the problem
+        // here is that I'm lazy and reusing the JPA entity class as a result object for my service by having the entity class
+        // implement the Role interface. Maybe I need to separate them into 2 different objects and copy back and forth.
+        // That feels somewhat annoying though. They will be identical with the exception that the Role implementation will not
+        // have the JPA annotations. Reusing the RoleEntity work perfectly fine (with the exception of this annoying warning).
+        // Sigh!
+        if (!roles.contains((RoleEntity)role)) {
+            throw new APSSimpleUserServiceException("Can't remove nonexistent role: " + role.getId());
+        }
         if (this.roles != null) {
-            this.roles.remove(role);
+            this.roles.remove((RoleEntity)role);
         }
     }
 

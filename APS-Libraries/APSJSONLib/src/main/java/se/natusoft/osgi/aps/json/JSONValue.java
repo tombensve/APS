@@ -473,7 +473,7 @@ public abstract class JSONValue {
                     c = '\t';
                 }
                 else if (c == 'u') {
-                    int[] hexDigits = new int[4];
+                    byte[] hexDigits = new byte[4];
                     char[] hexChars = new char[4];
                     hexChars[0] = getChar();
                     hexChars[1] = getChar();

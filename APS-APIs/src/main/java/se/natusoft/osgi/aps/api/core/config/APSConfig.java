@@ -118,7 +118,7 @@ public class APSConfig implements ManagedService {
     private APSConfigValueStore configValues = null;
 
     /** The event listeners on this config object. */
-    private List<APSConfigChangedListener> listeners = new LinkedList<APSConfigChangedListener>();
+    private List<APSConfigChangedListener> listeners = new LinkedList<>();
 
     //
     // Methods

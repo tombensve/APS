@@ -300,7 +300,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                 }
                 else {
                     if (!RPCServletConfig.mc.isManaged()) {
-                        RPCServletConfig.mc.waitUtilManaged();
+                        RPCServletConfig.mc.waitUntilManaged();
                     }
                     if (this.loginHandler.hasValidLogin()) {
                         doHelp(req, resp);
@@ -311,8 +311,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                         if (auth != null) {
                             if (auth.startsWith("Basic")) {
                                 String encoded = auth.substring(6);
-                                Base64 base64 = new Base64();
-                                byte[] userPwBytes = base64.decodeBase64(encoded.getBytes());
+                                byte[] userPwBytes = Base64.decodeBase64(encoded.getBytes());
                                 String[] userPw = new String(userPwBytes).split(":");
                                 if (userPw.length != 2) {
                                     resp.setHeader("WWW-Authenticate", "Basic");
@@ -386,12 +385,12 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     /**
      * Handles a service call.
      *
-     * @param req
-     * @param resp
+     * @param req The servlet request.
+     * @param resp The servlet response.
      * @throws ServletException
      * @throws IOException
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked,UnusedAssignment")
     private void doService(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         String pathInfo = req.getPathInfo();
@@ -475,7 +474,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
 
                         if (callable != null) {
                             // Handle parameters
-                            List<Object> params = new LinkedList<Object>();
+                            List<Object> params = new LinkedList<>();
                             int param = 0;
                             for (ParameterDataTypeDescription paramDesc : callable.getParameterDataDescriptions()) {
                                 Class paramClass = Void.class;
@@ -609,8 +608,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             if (auth != null) {
                 if (auth.startsWith("Basic")) {
                     String encoded = auth.substring(6);
-                    Base64 base64 = new Base64();
-                    byte[] userPwBytes = base64.decodeBase64(encoded.getBytes());
+                    byte[] userPwBytes = Base64.decodeBase64(encoded.getBytes());
                     String[] userPw = new String(userPwBytes).split(":");
                     if (userPw.length != 2) {
                         resp.setHeader("WWW-Authenticate", "Basic realm=\"aps\"");
@@ -624,7 +622,8 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
         }
 
         if (user != null && password != null) {
-            String role = null;
+            String role = null; // To make clear that the null value is a role since just passing null won't say shit about what is null!
+            //noinspection ConstantConditions
             if (!this.loginHandler.login(user, password, role)) {
                 resp.setHeader("WWW-Authenticate", "Basic realm=\"aps\"");
                 resp.sendError(401, "Authorisation failed!");
@@ -688,8 +687,8 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     /**
      * Catch our host and port information which as far as I can determine is only possible to get from a request.
      *
-     * @param req
-     * @param resp
+     * @param req Http servlet request.
+     * @param resp Http servlet response.
      * @throws ServletException
      * @throws IOException
      */
@@ -710,8 +709,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             try {
                 onServiceAvailable(this.discoveryServiceTracker.allocateService(), null);
                 this.discoveryServiceTracker.releaseService();
-            } catch (Exception e) {
-            }
+            } catch (Exception e) {/*OK*/}
         }
         super.service(req, resp);
     }
@@ -736,6 +734,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
 
                 this.discoveryServiceTracker.withAllAvailableServices(new WithService<APSSimpleDiscoveryService>() {
 
+                    @SuppressWarnings("notused")
                     public void withService(APSSimpleDiscoveryService discoverySvc, ServiceDescriptionProvider serviceDescription) throws Exception {
                         discoverySvc.publishService(serviceDescription);//                                            ^
                     }                   //                                                                            |
@@ -764,14 +763,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                 serviceDescription.setServiceId(service);
 
                 this.discoveryServiceTracker.withAllAvailableServices(new WithService<APSSimpleDiscoveryService>() {
-                    /**
-                     * Receives a service to do something with.
-                     *
-                     * @param discoverySvc The received service.
-                     *
-                     * @throws Exception Implementation can throw any exception. How it is handled depends on the APSServiceTracker method this
-                     *                   gets passed to.
-                     */
+                    @SuppressWarnings("notused")
                     public void withService(APSSimpleDiscoveryService discoverySvc, ServiceDescriptionProvider serviceDescription) throws Exception {
                         discoverySvc.unpublishService(serviceDescription);
                     }
@@ -835,14 +827,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             serviceDescription.setServiceId(service);
 
             this.discoveryServiceTracker.withAllAvailableServices(new WithService<APSSimpleDiscoveryService>() {
-                /**
-                 * Receives a service to do something with.
-                 *
-                 * @param discoverySvc The received service.
-                 *
-                 * @throws Exception Implementation can throw any exception. How it is handled depends on the APSServiceTracker method this
-                 *                   gets passed to.
-                 */
+                @SuppressWarnings("notused")
                 public void withService(APSSimpleDiscoveryService discoverySvc, ServiceDescriptionProvider serviceDescription) throws Exception {
                     discoverySvc.unpublishService(serviceDescription);
                 }
@@ -1067,6 +1052,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                     html.tagc("h3", service + " {");
                     html.tag("ul");
                     for (String method : methodNames) {
+                        @SuppressWarnings("unchecked")
                         APSExternallyCallable<Object> callable = this.externalProtocolService.getCallable(service, method);
 
 //                        String params = "";
@@ -1109,7 +1095,6 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
      * @param service The service the method belongs to.
      * @param method  The method to show information for.
      * @throws IOException
-     * @pararm request
      */
     private void handleMethodPage(HTMLWriter html, String service, String method, HttpServletRequest request) throws IOException {
         boolean execute = false;
@@ -1123,6 +1108,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                 }
             }
         }
+        @SuppressWarnings("unchecked")
         APSExternallyCallable<Object> callable = this.externalProtocolService.getCallable(service, method);
         html.tag("html");
         {
@@ -1203,7 +1189,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                         Class javaType = callable.getServiceBundle().loadClass(parameter.getObjectQName());
                         paramJavaValue = this.jsonService.jsonToJava(jsonObj, javaType);
                     } else {
-                        if (paramValue.indexOf(".") >= 0) {
+                        if (paramValue.contains(".")) {
                             if (parameter.getDataType() == DataType.DOUBLE)
                                 paramJavaValue = Double.valueOf(paramValue);
                             else if (parameter.getDataType() == DataType.FLOAT)
@@ -1408,8 +1394,9 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
          * @param content The content of the tag.
          * @throws IOException The one and only!
          */
+        @SuppressWarnings("UnusedDeclaration")
         public void tag(String tag, String content) throws IOException {
-            tag(tag, content, null);
+            tag(tag, content, (String[])null);
         }
 
         /**
@@ -1420,6 +1407,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
          * @param attributes The attributes of the tag.
          * @throws IOException
          */
+        @SuppressWarnings("UnusedDeclaration")
         public void tagc(String tag, String content, String... attributes) throws IOException {
             tag(tag, content, attributes);
             tage(tag);
@@ -1433,7 +1421,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
          * @throws IOException
          */
         public void tagc(String tag, String content) throws IOException {
-            tag(tag, content, null);
+            tag(tag, content, (String[])null);
             tage(tag);
         }
 
@@ -1444,7 +1432,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
          * @throws IOException The one and only!
          */
         public void tag(String tag) throws IOException {
-            tag(tag, "", null);
+            tag(tag, "", (String[])null);
         }
 
         /**

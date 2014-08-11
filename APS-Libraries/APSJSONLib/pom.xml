@@ -50,7 +50,6 @@
     </parent>
 
     <artifactId>aps-json-lib</artifactId>
-    <groupId>se.natusoft.osgi.aps</groupId>
     <packaging>bundle</packaging>
 
     <name>APS JSON Library</name>

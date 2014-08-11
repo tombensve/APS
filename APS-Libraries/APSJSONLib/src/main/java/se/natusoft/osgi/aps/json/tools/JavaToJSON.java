@@ -115,7 +115,12 @@ public class JavaToJSON {
                     else if (method.getName().startsWith("is")) {
                         prop = method.getName().substring(2);
                     }
-                    prop = prop.substring(0,1).toLowerCase() + prop.substring(1);
+                    if (prop != null) {
+                        prop = prop.substring(0, 1).toLowerCase() + prop.substring(1);
+                    }
+                    else {
+                        prop = "bug"; // This should not happen! :-)
+                    }
 
                     try {
                         value = method.invoke(javaBean);

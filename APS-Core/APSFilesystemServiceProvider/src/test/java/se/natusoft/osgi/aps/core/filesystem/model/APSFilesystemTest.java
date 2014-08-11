@@ -55,6 +55,7 @@ public class APSFilesystemTest extends TestCase {
         super(testName);
     }
     
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     protected void setUp() throws Exception {
         super.setUp();

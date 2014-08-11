@@ -228,7 +228,7 @@ public class APSConfigPersistentStore implements ConfigStoreInfo {
         //
 
         /** Holds information about available configurations. */
-        private Map<String /*configId*/, List<String /*version*/>> configurations = new HashMap<String, List<String>>();
+        private Map<String /*configId*/, List<String /*version*/>> configurations = new HashMap<>();
 
         //
         // Constructors
@@ -245,7 +245,7 @@ public class APSConfigPersistentStore implements ConfigStoreInfo {
                     String version = nameParts[2];
                     List<String> versions = this.configurations.get(configId);
                     if (versions == null) {
-                        versions = new ArrayList<String>();
+                        versions = new ArrayList<>();
                     }
                     versions.add(version);
                     this.configurations.put(configId, versions);

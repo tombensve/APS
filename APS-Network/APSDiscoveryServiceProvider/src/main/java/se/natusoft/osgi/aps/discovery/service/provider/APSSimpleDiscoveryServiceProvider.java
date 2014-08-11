@@ -222,7 +222,7 @@ public class APSSimpleDiscoveryServiceProvider extends Thread implements APSSimp
      */
     @Override
     public synchronized List<ServiceDescription> getRemotelyDiscoveredServices() {
-        List<ServiceDescription> list = new LinkedList<ServiceDescription>();
+        List<ServiceDescription> list = new LinkedList<>();
         list.addAll(this.remotelyPublishedServices.getAllServiceDescriptions());
         return list;
     }
@@ -232,7 +232,7 @@ public class APSSimpleDiscoveryServiceProvider extends Thread implements APSSimp
      */
     @Override
     public List<ServiceDescription> getLocallyRegisteredServices() {
-        List<ServiceDescription> list = new LinkedList<ServiceDescription>();
+        List<ServiceDescription> list = new LinkedList<>();
         list.addAll(this.locallyPublishedServices.getAllServiceDescriptions());
         return list;
     }
@@ -242,7 +242,7 @@ public class APSSimpleDiscoveryServiceProvider extends Thread implements APSSimp
      */
     @Override
     public synchronized List<ServiceDescription> getAllServices() {
-        List<ServiceDescription> allServices = new LinkedList<ServiceDescription>();
+        List<ServiceDescription> allServices = new LinkedList<>();
         allServices.addAll(getRemotelyDiscoveredServices());
         allServices.addAll(getLocallyRegisteredServices());
         return allServices;

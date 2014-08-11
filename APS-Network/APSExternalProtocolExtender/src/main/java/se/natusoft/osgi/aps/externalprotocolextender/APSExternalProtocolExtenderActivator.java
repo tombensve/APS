@@ -126,7 +126,7 @@ public class APSExternalProtocolExtenderActivator implements BundleActivator {
         // this case none of the tracked services are actually called from this start() method! The start()
         // methods on the other classes called within this start() method have the same restriction: no service
         // calls!
-        this.configServiceTracker = new APSServiceTracker<APSConfigService>(context, APSConfigService.class, APSServiceTracker.LARGE_TIMEOUT);
+        this.configServiceTracker = new APSServiceTracker<>(context, APSConfigService.class, APSServiceTracker.LARGE_TIMEOUT);
 
         this.configServiceTracker.onActiveServiceAvailable(new OnServiceAvailable<APSConfigService>() {
             @Override
@@ -147,7 +147,7 @@ public class APSExternalProtocolExtenderActivator implements BundleActivator {
 
     private void startup(APSConfigService configService) throws Exception {
         // Setup the different parts of the service implementation. They all communicate over a TrivialDataBus.
-        TrivialDataBus<ServiceDataReason, Object> trivialDataBus = new TrivialDataBus<ServiceDataReason, Object>();
+        TrivialDataBus<ServiceDataReason, Object> trivialDataBus = new TrivialDataBus<>();
 
         APSExternalProtocolServiceProvider apsExternalProtocolServiceProvider = new APSExternalProtocolServiceProvider(this.logger);
         trivialDataBus.addMember(apsExternalProtocolServiceProvider);
@@ -159,9 +159,9 @@ public class APSExternalProtocolExtenderActivator implements BundleActivator {
         trivialDataBus.addMember(this.externalizableServiceTracker);
         this.externalizableServiceTracker.start(this.context);
 
-        this.rpcProtocolTracker = new APSServiceTracker<RPCProtocol>(this.context, RPCProtocol.class, APSServiceTracker.LARGE_TIMEOUT);
+        this.rpcProtocolTracker = new APSServiceTracker<>(this.context, RPCProtocol.class, APSServiceTracker.LARGE_TIMEOUT);
         this.rpcStreamedProtocolTracker =
-                new APSServiceTracker<StreamedRPCProtocol>(this.context, StreamedRPCProtocol.class, APSServiceTracker.LARGE_TIMEOUT);
+                new APSServiceTracker<>(this.context, StreamedRPCProtocol.class, APSServiceTracker.LARGE_TIMEOUT);
         this.rpcProtocolProviderTracker = new RPCProtocolProviderTracker(this.context);
         trivialDataBus.addMember(this.rpcProtocolProviderTracker);
         this.rpcProtocolTracker.onServiceAvailable(this.rpcProtocolProviderTracker);

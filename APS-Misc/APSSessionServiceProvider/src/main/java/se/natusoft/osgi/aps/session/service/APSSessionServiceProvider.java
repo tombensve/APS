@@ -56,7 +56,7 @@ public class APSSessionServiceProvider implements APSSessionService {
     private APSLogger logger = null;
 
     /** The active sessions. */
-    private Map<UUID, APSSessionImpl> sessions = new HashMap<UUID, APSSessionImpl>();
+    private Map<UUID, APSSessionImpl> sessions = new HashMap<>();
 
     //
     // Constructors

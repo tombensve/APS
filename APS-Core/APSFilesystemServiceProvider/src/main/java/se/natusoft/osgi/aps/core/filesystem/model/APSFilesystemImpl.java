@@ -72,7 +72,8 @@ public class APSFilesystemImpl implements APSFilesystem {
      * 
      * @throws FileNotFoundException on failure.
      */
-    public APSFilesystemImpl(String fsRoot, String owner) throws FileNotFoundException {        
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public APSFilesystemImpl(String fsRoot, String owner) throws FileNotFoundException {
         File root = new File(fsRoot);
         if (!root.exists()) {
             throw new FileNotFoundException("Specified filesystem does not exist! [" + fsRoot + "]");

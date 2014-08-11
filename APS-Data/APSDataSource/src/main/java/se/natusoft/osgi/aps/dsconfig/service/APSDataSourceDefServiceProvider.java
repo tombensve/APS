@@ -101,7 +101,7 @@ public class APSDataSourceDefServiceProvider implements APSDataSourceDefService 
     @Override
     public List<DataSourceDef> getAllDefinitions() {
         List<DataSourceDef> all = null;
-        all = new LinkedList<DataSourceDef>();
+        all = new LinkedList<>();
         for (APSDataSourcesConfig.APSDataSourceConfig dsConfig : APSDataSourcesConfig.inst.dataSourceDefinitions) {
             all.add(new DataSourceDefImpl(dsConfig));
         }

@@ -57,10 +57,10 @@ public class APSAdminWebServiceProvider implements APSAdminWebService {
     private APSLogger logger;
     
     /** The list of registered admin webs. */
-    private List<AdminWebReg> registeredAdminWebs = new ArrayList<AdminWebReg>();
+    private List<AdminWebReg> registeredAdminWebs = new ArrayList<>();
     
     /** A map of registered deployment urls. */
-    private Map<String, AdminWebReg> deployUrls = new HashMap<String, AdminWebReg>();
+    private Map<String, AdminWebReg> deployUrls = new HashMap<>();
     
     //
     // Constructors
@@ -99,7 +99,8 @@ public class APSAdminWebServiceProvider implements APSAdminWebService {
             throw new IllegalArgumentException("The deployment url specified by your admin web registration is already in use by '" + 
                     existing + "'!");
         }
-        
+        this.deployUrls.put(adminWebReg.getUrl(), adminWebReg);
+
         this.registeredAdminWebs.add(adminWebReg);
         
         this.logger.debug("Registered '" + adminWebReg + "'.");

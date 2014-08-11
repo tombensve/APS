@@ -54,7 +54,7 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
 public class APSPlatformConfig extends APSConfig {
 
     /** This will be autopopulated. */
-    public static final ManagedConfig<APSPlatformConfig> managed = new ManagedConfig<APSPlatformConfig>();
+    public static final ManagedConfig<APSPlatformConfig> managed = new ManagedConfig<>();
     
     @APSConfigItemDescription(
             description="A unique specific id for this installation. Ex: \"Sys-Test-1\", \"Dev-2\", etc.",

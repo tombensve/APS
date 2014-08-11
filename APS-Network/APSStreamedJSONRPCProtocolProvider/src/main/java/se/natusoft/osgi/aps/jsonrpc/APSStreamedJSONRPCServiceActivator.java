@@ -90,7 +90,7 @@ public class APSStreamedJSONRPCServiceActivator implements BundleActivator {
         this.logger = new APSLogger(System.out);
         this.logger.start(context);
 
-        this.jsonServiceTracker = new APSServiceTracker<APSJSONExtendedService>(context, APSJSONExtendedService.class, APSServiceTracker.SHORT_TIMEOUT);
+        this.jsonServiceTracker = new APSServiceTracker<>(context, APSJSONExtendedService.class, APSServiceTracker.SHORT_TIMEOUT);
         this.jsonServiceTracker.start();
         APSJSONExtendedService jsonService = this.jsonServiceTracker.getWrappedService();
 

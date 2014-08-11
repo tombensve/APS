@@ -671,7 +671,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
         //
 
         /** Our tracked services. */
-        private List<ServiceReference> serviceRefs = new ArrayList<ServiceReference>();
+        private List<ServiceReference> serviceRefs = new ArrayList<>();
 
         /** When set it gets called when a new service becomes available. */
         private OnServiceAvailable onServiceAvailable = null;
@@ -754,7 +754,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          * @return A copy of the tracked services.
          */
         public synchronized List<ServiceReference> getServices() {
-            List<ServiceReference> refs = new ArrayList<ServiceReference>();
+            List<ServiceReference> refs = new ArrayList<>();
             refs.addAll(this.serviceRefs);
             return refs;
         }
@@ -807,7 +807,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          * Clears all tracked services.
          */
         public synchronized void clear() {
-            List<ServiceReference> toRemove = new ArrayList<ServiceReference>();
+            List<ServiceReference> toRemove = new ArrayList<>();
             toRemove.addAll(this.serviceRefs);
             for (ServiceReference sref : toRemove) {
                 removeService(sref);

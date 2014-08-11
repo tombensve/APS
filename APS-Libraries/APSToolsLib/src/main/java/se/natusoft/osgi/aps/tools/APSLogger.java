@@ -107,7 +107,7 @@ public class APSLogger {
      * @param context The bundle context.
      */
     public void start(BundleContext context) {
-        this.logServiceTracker = new APSServiceTracker<LogService>(context, LogService.class);
+        this.logServiceTracker = new APSServiceTracker<>(context, LogService.class);
         this.logServiceTracker.start();
         this.logService = this.logServiceTracker.getWrappedService();
     }
@@ -224,7 +224,7 @@ public class APSLogger {
             if (svcRef != null) {
                 Object bundleNameObj = svcRef.getProperty(Constants.BUNDLE_NAME);
                 if (bundleNameObj != null) {
-                    log.append("[" + bundleNameObj + "] ");
+                    log.append("[").append(bundleNameObj).append("] ");
                 }
             }
             log.append(this.loggingFor);

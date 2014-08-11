@@ -161,10 +161,7 @@ public class JSONArray extends JSONValue{
             c = reader.skipWhitespace(c);
 
             JSONValue value = null;
-            if (JSONArray.isArrayEnd(c)) {
-                // Do nothing, we have an empty array!
-            }
-            else {
+            if (!JSONArray.isArrayEnd(c)) {
                 value = JSONValue.resolveAndParseJSONValue(c, reader, getErrorHandler());
             }
 

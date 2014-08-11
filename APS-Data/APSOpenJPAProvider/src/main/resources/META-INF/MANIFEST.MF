@@ -7,7 +7,7 @@ Built-By: tommy
 Bundle-Name: APSOpenJPAProvider
 Created-By: Me myself and I
 Bundle-Vendor: Natusoft AB
-Bundle-Version: 0.10.0
+Bundle-Version: ${project.version}
 Bundle-ManifestVersion: 2
 Bundle-Activator: se.natusoft.osgi.aps.jpa.
  APSOpenJPAProviderActivator
@@ -52,9 +52,9 @@ Import-Package: javax.activation,
  javax.persistence,
  javax.persistence.criteria,
  javax.persistence.metamodel,
- se.natusoft.osgi.aps.api.data.jpa.service;version="[0.0,1)",
- se.natusoft.osgi.aps.tools;version="[0.0,1)",
- se.natusoft.osgi.aps.exceptions;version="[0.0,1)"
+ se.natusoft.osgi.aps.api.data.jpa.service;version="${aps.import.ver}",
+ se.natusoft.osgi.aps.tools;version="${aps.import.ver}",
+ se.natusoft.osgi.aps.exceptions;version="${aps.import.ver}"
 Export-Package: se.natusoft.osgi.aps.jpa.persistence.api,
  org.apache.openjpa.enhance;version="2.2.0",
  org.apache.openjpa.util;version="2.2.0"

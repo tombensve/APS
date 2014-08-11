@@ -105,6 +105,7 @@ public class APSConfigPersistentStoreTest {
      *
      * @throws Exception on any failure.
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Before
     public void setUp() throws Exception {
         File projRoot = new File("target");

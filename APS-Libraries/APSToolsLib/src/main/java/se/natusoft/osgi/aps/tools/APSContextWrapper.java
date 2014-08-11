@@ -91,7 +91,7 @@ public class APSContextWrapper {
         private Object serviceProvider = null;
 
         /** When the @APSRunInBundlesContext is found calling method is added to this, and this is looked at first for performance. */
-        private Map<Method, Boolean> contextEnabled = new HashMap<Method, Boolean>();
+        private Map<Method, Boolean> contextEnabled = new HashMap<>();
 
         /** A logger to log to when errors occur. */
         private APSLogger logger = null;

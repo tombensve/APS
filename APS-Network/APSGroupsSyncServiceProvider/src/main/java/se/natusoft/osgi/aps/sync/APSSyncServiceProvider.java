@@ -237,6 +237,7 @@ public class APSSyncServiceProvider implements APSSyncService {
                     if (msgType == MessageType.SYNC_DATA) {
                         int size = dataStream.readInt();
                         byte[] content = new byte[size];
+                        //noinspection ResultOfMethodCallIgnored
                         dataStream.read(content);
                         dataStream.close();
                         Message msg = new Message.Provider(SyncGroupProvider.this);

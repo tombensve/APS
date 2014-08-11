@@ -133,7 +133,8 @@ public class JSONString extends JSONValue {
         StringBuilder sb = new StringBuilder();
         c = reader.skipWhitespace(c);
         reader.assertChar(c, '"', "Expected a quote '\"' character starting a string, found '" + c + "'!");
-        boolean stringEscape = true;
+        boolean stringEscape = true; // The reason for this is to make clear what the parameter represents!
+        //noinspection ConstantConditions
         c = reader.readUntil("\"", sb, stringEscape);
         //assertChar(c, '"', "Expected a quote '\"' character ending a string, found '" + c + '!');
         this.value = sb.toString();

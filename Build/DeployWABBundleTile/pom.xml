@@ -46,7 +46,6 @@
         <version>1.0.0</version>
     </parent>
 
-    <groupId>se.natusoft.osgi.aps</groupId>
     <artifactId>DeployWABBundleTile</artifactId>
     <packaging>pom</packaging>
 

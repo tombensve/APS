@@ -159,7 +159,7 @@ public class JSONBoolean extends JSONValue {
      */
     @Override
     protected void writeJSON(JSONWriter writer, boolean compact) throws IOException {
-        writer.write(new Boolean(this.value).toString());
+        writer.write("" + this.value);
     }
 
     

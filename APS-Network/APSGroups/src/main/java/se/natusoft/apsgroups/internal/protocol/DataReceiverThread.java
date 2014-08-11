@@ -104,7 +104,7 @@ public class DataReceiverThread extends Thread implements DataReceiver {
     private Transport transport = null;
 
     /** The listeners to forwards MessagePackets to. */
-    private List<MessagePacketListener> listeners = null;
+    private final List<MessagePacketListener> listeners = Collections.synchronizedList(new LinkedList<MessagePacketListener>());
 
     /** Set to true on start and false on stop. */
     private boolean running = false;
@@ -130,8 +130,6 @@ public class DataReceiverThread extends Thread implements DataReceiver {
         this.logger = logger;
         this.config = config;
         this.transport = new MulticastTransport(this.logger, this.config);
-
-        this.listeners = Collections.synchronizedList(new LinkedList<MessagePacketListener>());
     }
 
     //

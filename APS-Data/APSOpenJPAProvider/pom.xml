@@ -104,6 +104,7 @@
             <scope>provided</scope>
         </dependency>
 
+        <!--suppress osmorcNonOsgiMavenDependency -->
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-all</artifactId>
@@ -111,6 +112,7 @@
             <scope>provided</scope>
         </dependency>
 
+        <!--suppress osmorcNonOsgiMavenDependency -->
         <dependency>
             <groupId>se.natusoft.tools.xob</groupId>
             <artifactId>xob</artifactId>

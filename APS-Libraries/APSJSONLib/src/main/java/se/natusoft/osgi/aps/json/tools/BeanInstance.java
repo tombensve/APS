@@ -88,7 +88,7 @@ public class BeanInstance {
      * Returns a list of settable properties.
      */
     public List<String> getSettableProperties() {
-        List<String> properties = new ArrayList<String>();
+        List<String> properties = new ArrayList<>();
         for (Method method : this.modelInstance.getClass().getMethods()) {
             if (method.getName().startsWith("set") && method.getParameterTypes().length == 1) {
                 String prop = method.getName().substring(3);
@@ -104,7 +104,7 @@ public class BeanInstance {
      * Returns a list of gettable properties.
      */
     public List<String> getGettableProperties() {
-        List<String> properties = new ArrayList<String>();
+        List<String> properties = new ArrayList<>();
         for (Method method : this.modelInstance.getClass().getMethods()) {
             if ((method.getName().startsWith("get") || method.getName().startsWith("is")) && method.getParameterTypes().length == 0) {
                 String prop = method.getName().substring(2);
@@ -132,19 +132,12 @@ public class BeanInstance {
         try {
             propertyType = getPropertyType(property);
 
-            boolean doSetValue = true;
-//            if (value == null && "int long byte short boolean double float".indexOf(propertyType.getSimpleName()) >= 0) {
-//                doSetValue = false;
-//            }
+            String methodName = "set" + property.substring(0,1).toUpperCase() + property.substring(1);
+            Method setter = this.modelInstance.getClass().getMethod(methodName, propertyType);
 
-            if (doSetValue) {
-                String methodName = "set" + property.substring(0,1).toUpperCase() + property.substring(1);
-                Method setter = this.modelInstance.getClass().getMethod(methodName, propertyType);
+            Object setValue = convertToPropType(value, propertyType);
 
-                Object setValue = convertToPropType(value, propertyType);
-
-                setter.invoke(this.modelInstance, setValue);
-            }
+            setter.invoke(this.modelInstance, setValue);
         }
         catch (Exception e) {
             throw new JSONConvertionException("Failed to set property '" + property + "[" + propertyType.getSimpleName() + "]' with object '" + value + "[" + value.getClass().getSimpleName() + "]' in model '" + this.modelInstance.getClass().getName() + "! Cause: " + e.getMessage(), e);

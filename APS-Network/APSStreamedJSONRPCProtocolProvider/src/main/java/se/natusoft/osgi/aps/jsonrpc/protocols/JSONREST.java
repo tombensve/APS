@@ -185,8 +185,8 @@ public class JSONREST  extends JSONHTTP {
                     throw new JSONRESTError(ErrorType.PARSE_ERROR, SC_BAD_REQUEST, "Bad JSON passed!", null, jpe);
                 }
                 catch (ClassCastException cce) {
-                    throw new JSONRESTError(ErrorType.INVALID_PARAMS, SC_BAD_REQUEST, "An array of JSON values/objects are required! The following " +
-                            "'" + jsonReqValue + "' was received!", null, cce);
+                    throw new JSONRESTError(ErrorType.INVALID_PARAMS, SC_BAD_REQUEST, "An array of JSON values/objects are required!",
+                            null, cce);
                 }
 
                 method = methods.get(requestIntention);

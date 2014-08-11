@@ -169,7 +169,7 @@ public class APSSimpleUserServiceProvider implements APSSimpleUserServiceAdmin, 
             if (dsDef == null) {
                 throw new APSPersistenceException("Could not find an 'APSSimpleUserServiceDS' in 'persistence/datasources' configuration!");
             }
-            Map<String, String> props = new HashMap<String, String>();
+            Map<String, String> props = new HashMap<>();
             props.put("javax.persistence.jdbc.user", dsDef.getConnectionUserName());
             props.put("javax.persistence.jdbc.password", dsDef.getConnectionPassword());
             props.put("javax.persistence.jdbc.url", dsDef.getConnectionURL());

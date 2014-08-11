@@ -78,14 +78,14 @@ public class Activator implements BundleActivator {
     @Override
     public void start(BundleContext context) throws Exception {
         this.adminWebSvcTracker =
-                new APSServiceTracker<APSAdminWebService>(context, APSAdminWebService.class, APSServiceTracker.SHORT_TIMEOUT);
+                new APSServiceTracker<>(context, APSAdminWebService.class, APSServiceTracker.SHORT_TIMEOUT);
         adminWebSvcTracker.start();
 
         this.adminWebSvcTracker.onServiceAvailable(new OnServiceAvailable<APSAdminWebService>() {
             @Override
             public void onServiceAvailable(APSAdminWebService adminWebService, ServiceReference serviceReference) throws Exception {
                 if (!RPCServletConfig.mc.isManaged()) {
-                    RPCServletConfig.mc.waitUtilManaged();
+                    RPCServletConfig.mc.waitUntilManaged();
                 }
                 if (RPCServletConfig.mc.get().enableHelpWeb.toBoolean()) {
                     adminWebService.registerAdminWeb(Activator.this.awr);

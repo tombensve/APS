@@ -500,6 +500,7 @@ public class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessage
                     while (keepRunning()) {
                         try {
                             QueueingConsumer.Delivery delivery = consumer.nextDelivery(5000);
+                            //noinspection StatementWithEmptyBody
                             if (delivery != null) {
                                 byte[] body = delivery.getBody();
                                 //logger.debug("======== Received message of length " + body.length + " ==========");

@@ -161,18 +161,16 @@ public class JSONToJava {
      *
      * @throws JSONConvertionException on any failure.
      */
+    @SuppressWarnings("unchecked")
     private static <T> T createAndLoadModel(JSONObject value, Class<T> beanType) throws JSONConvertionException {
         try {
             BeanInstance bean = new BeanInstance(beanType.newInstance());
-            load(bean, (JSONObject) value);
+            load(bean, value);
 
             return (T)bean.getModelInstance();
         }
-        catch (InstantiationException ie) {
-            throw new JSONConvertionException(ie.getMessage(), ie);
-        }
-        catch (IllegalAccessException iae) {
-            throw new JSONConvertionException(iae.getMessage(), iae);
+        catch (InstantiationException | IllegalAccessException e) {
+            throw new JSONConvertionException(e.getMessage(), e);
         }
     }
     
@@ -186,6 +184,7 @@ public class JSONToJava {
      *
      * @throws JSONConvertionException on any failure.
      */
+    @SuppressWarnings("unchecked")
     private static <T> T convertJSONValue(JSONValue value, Class<T> modelType) throws JSONConvertionException {
         T resVal = null;
 
@@ -229,7 +228,8 @@ public class JSONToJava {
                 resVal = (T)createAndLoadModel((JSONObject) value, modelType);
             }
         }
-        else if (value instanceof JSONNull) {
+        else //noinspection StatementWithEmptyBody
+            if (value instanceof JSONNull) {
             // Do nothing and return null.
         }
 
@@ -262,6 +262,7 @@ public class JSONToJava {
         return map;
     }
 
+    @SuppressWarnings("unchecked")
     private static List jsonArrayToList(JSONArray jsonArray) {
         List list = new ArrayList();
         for (JSONValue jsonValue : jsonArray.getAsList()) {

@@ -46,7 +46,7 @@ import java.util.StringTokenizer;
 public class Toolkit {
 
     // Make non instantiable.
-    private Toolkit() {};
+    private Toolkit() {}
 
     /**
      * Parses the passed string and creates and returns its information as Properties.

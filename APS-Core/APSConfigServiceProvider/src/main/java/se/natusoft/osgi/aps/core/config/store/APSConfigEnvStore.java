@@ -324,10 +324,10 @@ public class APSConfigEnvStore implements ConfigEnvironmentProvider {
      * @throws se.natusoft.osgi.aps.api.core.config.service.APSConfigException on failure to do so.
      */
     public void removeAllEnvironments() throws APSConfigException {
-        this.environments = new ArrayList<APSConfigEnvironment>();
+        this.environments = new ArrayList<>();
         this.activeConfigEnvironment = null;
         saveConfigEnvironments();
-        this.environmentsByName = new HashMap<String, APSConfigEnvironment>();
+        this.environmentsByName = new HashMap<>();
         fireUpdateEvents();
     }
 

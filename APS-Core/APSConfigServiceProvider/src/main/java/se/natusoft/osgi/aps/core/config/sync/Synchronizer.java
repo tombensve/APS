@@ -90,40 +90,40 @@ APSSyncService.SyncGroup.ReSyncListener {
     //
 
     /** The general service logger. We get this in the constructor. */
-    APSLogger logger = null;
+    APSLogger logger;
 
     /** The internal configuration environment storage.  */
-    private APSConfigEnvStore configEnvStore = null;
+    private final APSConfigEnvStore configEnvStore;
 
     /** The internal configuration value storage. */
-    private APSConfigMemoryStore configMemoryStore = null;
+    private final APSConfigMemoryStore configMemoryStore;
 
     /** The internal handler for accessing configurations on disk. */
-    private APSConfigPersistentStore configPersistentStore = null;
+    private final APSConfigPersistentStore configPersistentStore;
 
     /** The implementation of APSConfigAdminService. */
-    private APSConfigAdminService configAdminService = null;
+    private final APSConfigAdminService configAdminService;
 
     /** Our own config model. It is loaded in the constructor! */
-    private APSConfigServiceConfig config = null;
+    private APSConfigServiceConfig config;
 
     /** The APSSync service we use for synchronizing the configuration. */
-    private APSSyncService syncService = null;
+    private APSSyncService syncService;
 
     /** The net time service for translating time between hosts. */
-    private APSNetTimeService netTimeService = null;
+    private APSNetTimeService netTimeService;
 
     /** This is used for creating and reading sync data. */
     private APSJSONService jsonService;
 
     /** APSGroups member representing us. */
-    private APSSyncService.SyncGroup syncGroup = null;
+    private APSSyncService.SyncGroup syncGroup;
 
     /** This thread sends the freshest config timestamp out at intervals. */
-    private ConfigTimestampSendingThread configTimestampSendingThread = null;
+    private ConfigTimestampSendingThread configTimestampSendingThread;
 
     /** The time of the last message received. */
-    private Date lastGroupMsgTimestamp = null;
+    private Date lastGroupMsgTimestamp;
 
     /** Since we cannot use net time for the newest config timestamp passed with all config messages
         received we have to avoid triggering a constant "FEED_ME" message due to time difference, so
@@ -546,7 +546,7 @@ APSSyncService.SyncGroup.ReSyncListener {
     /**
      * Handles a received config timestamp and triggers a re-sync if being behind.
      *
-     * @param msgStream The message stream to read timestamp from.
+     * @param msg The JSONObject to read timestamp from.
      *
      * @throws IOException
      * @throws ClassNotFoundException
@@ -562,7 +562,7 @@ APSSyncService.SyncGroup.ReSyncListener {
     /**
      * Handles a received config value message.
      *
-     * @param msgStream The received message stream.
+     * @param msg The received message.
      *
      * @throws IOException
      * @throws ClassNotFoundException
@@ -657,7 +657,7 @@ APSSyncService.SyncGroup.ReSyncListener {
     /**
      * Handles a received config env message.
      *
-     * @param msgStream The received message stream.
+     * @param msg The received message.
      *
      * @throws IOException
      * @throws ClassNotFoundException

@@ -57,7 +57,7 @@ public class UserServiceInstConfig extends APSConfig {
 
     public static UserServiceInstConfig get() {
         if (!managed.isManaged()) {
-            managed.waitUtilManaged();
+            managed.waitUntilManaged();
         }
 
         return managed.get();

@@ -73,8 +73,8 @@ public class APSConfigServiceProvider implements APSConfigService, ConfigUpdateL
      * The standard OSGi configuration admin service. All configuration is
      * stored here during runtime. All changes are doubled on disk and
      * reloaded here on start.
-     * <p>
-     * Please note that only configuration for the active environment will
+     *
+     * Please note that only configuration for the active environment will \
      * be stored here!
      */
     private ConfigurationAdmin osgiConfigAdmin = null;
@@ -82,6 +82,7 @@ public class APSConfigServiceProvider implements APSConfigService, ConfigUpdateL
     /** Holds the active configurations in memory. */
     private APSConfigMemoryStore memoryStore;
 
+    // TODO: Remove this since it is not used!
     /** The available configuration environments. */
     private APSConfigEnvStore envStore = null;
 
@@ -89,7 +90,7 @@ public class APSConfigServiceProvider implements APSConfigService, ConfigUpdateL
     private APSConfigPersistentStore configStore = null;
 
     /** Holds configurations that are synced with the ConfigurationAdmin. */
-    private Map<APSConfigAdmin, Configuration> configAdminSynced = new HashMap<APSConfigAdmin, Configuration>();
+    private Map<APSConfigAdmin, Configuration> configAdminSynced = new HashMap<>();
 
     //
     // Constructors

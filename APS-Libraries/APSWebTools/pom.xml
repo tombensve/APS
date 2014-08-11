@@ -51,7 +51,6 @@
     </parent>
 
     <artifactId>aps-web-tools</artifactId>
-    <groupId>se.natusoft.osgi.aps</groupId>
     <packaging>jar</packaging>
 
     <name>APS Web Tools</name>

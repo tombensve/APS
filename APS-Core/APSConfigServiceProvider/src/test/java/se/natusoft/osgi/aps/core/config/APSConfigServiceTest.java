@@ -118,6 +118,7 @@ public class APSConfigServiceTest {
      *
      * @throws Exception on failure.
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Before
     public void setUp() throws Exception {
         File projRoot = new File("target");

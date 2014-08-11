@@ -149,7 +149,7 @@ public class APSConfigServiceExtender implements BundleListener {
                         // that the field is both public and static.
                         this.logger.error(
                                 "Failed to set configuration instance of type '" + configClass + "' in " +
-                                        "bundle '" + bundle.getSymbolicName() + "' of name '" + confInstField.getName() + "'!",
+                                        "bundle '" + bundle.getSymbolicName() + "' of name '" + (confInstField != null ? confInstField.getName() : "unknown") + "'!",
                                 iae
                         );
                     }

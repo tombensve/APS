@@ -141,6 +141,7 @@
         <!--
             We get the javax.persistence package from here compile time.
         -->
+        <!--suppress osmorcNonOsgiMavenDependency -->
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-all</artifactId>

@@ -176,7 +176,7 @@ public class ConfigModelTest extends TestCase {
         APSConfigReference listComplex_0_complexValue1Ref = listComplex_0_Ref._(listComplex_0_complexValue1);
         config.setConfigValue(listComplex_0_complexValue1Ref, "edc");
 
-        APSConfigValueEditModel listComplex_0_complexValue2 = (APSConfigValueEditModel)listComplex.getValueByName("complexValue2");
+        APSConfigValueEditModel listComplex_0_complexValue2 = listComplex.getValueByName("complexValue2");
         APSConfigReference listComplex_0_complexValue2Ref = listComplex_0_Ref._(listComplex_0_complexValue2);
         config.setConfigValue(listComplex_0_complexValue2Ref, "rfv");
 
@@ -222,7 +222,7 @@ public class ConfigModelTest extends TestCase {
         APSConfigReference listComplex_1_complexValue1Ref = listComplex_1_Ref._(listComplex_1_complexValue1);
         config.setConfigValue(listComplex_1_complexValue1Ref, "ujm");
 
-        APSConfigValueEditModel listComplex_1_complexValue2 = (APSConfigValueEditModel)listComplex.getValueByName("complexValue2");
+        APSConfigValueEditModel listComplex_1_complexValue2 = listComplex.getValueByName("complexValue2");
         APSConfigReference listComplex_1_complexValue2Ref = listComplex_1_Ref._(listComplex_1_complexValue2);
         config.setConfigValue(listComplex_1_complexValue2Ref, "ik,");
 

@@ -81,7 +81,7 @@ public class UUID implements ID, Serializable {
      */
     @Override
     public boolean equals(Object obj) {
-        return this.uuid.equals(obj);
+        return UUID.class.isAssignableFrom(obj.getClass()) && this.uuid.equals(obj);
     }
 
     /**

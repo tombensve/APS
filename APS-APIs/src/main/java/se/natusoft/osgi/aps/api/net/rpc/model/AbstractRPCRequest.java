@@ -58,10 +58,10 @@ public abstract class AbstractRPCRequest implements RPCRequest {
     private String serviceQName = null;
 
     /** The methods parameters as named parameters. */
-    private Map<String, Object> namedParameters = new HashMap<String, Object>();
+    private Map<String, Object> namedParameters = new HashMap<>();
 
     /** The method parameters. */
-    private List<Object> parameters = new LinkedList<Object>();
+    private List<Object> parameters = new LinkedList<>();
 
     /** The callId of the request */
     private Object callId = null;

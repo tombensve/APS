@@ -71,7 +71,7 @@ public class APSPlatformServiceProvider implements APSPlatformService {
         try {
             PlatformDescription pd = new PlatformDescription();
             if (!APSPlatformConfig.managed.isManaged()) {
-                APSPlatformConfig.managed.waitUtilManaged();
+                APSPlatformConfig.managed.waitUntilManaged();
             }
             APSPlatformConfig config = APSPlatformConfig.managed.get();
 

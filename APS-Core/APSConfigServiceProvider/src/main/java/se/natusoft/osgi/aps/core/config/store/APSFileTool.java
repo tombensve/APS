@@ -135,7 +135,7 @@ public class APSFileTool {
      */
     public List<String> loadList(String name) throws APSConfigException {
         BufferedReader listReader = null;
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         try {
             listReader = new BufferedReader(new InputStreamReader(this.fs.getRootDirectory().getFile(name + ".list").createInputStream()));
             String line;
@@ -225,7 +225,7 @@ public class APSFileTool {
      *         load and save methods above provides an automatic extension per type.
      */
     public List<String> getFileList(String begNameFilter, String endNameFilter) {
-        List<String> fileList = new ArrayList<String>();
+        List<String> fileList = new ArrayList<>();
 
         for (APSFile file : this.fs.getRootDirectory().listFiles()) {
             if (file.isFile() && file.getName().startsWith(begNameFilter) && file.getName().endsWith(endNameFilter)) {

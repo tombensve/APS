@@ -46,7 +46,6 @@
         <version>1.0.0</version>
     </parent>
 
-    <groupId>se.natusoft.osgi.aps</groupId>
     <artifactId>DeployBundleTile</artifactId>
     <packaging>pom</packaging>
 

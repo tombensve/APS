@@ -75,10 +75,10 @@ public class APSOpenJPAServiceProvider implements BundleListener, APSJPAService,
     private APSLogger logger = null;
 
     /** The currently open entity manager factories (well, they are wrapped by an APSJPAEntityManagerProviderImp!). */
-    private Map<String, APSJPAEntityManagerProviderImpl> openFactories = new HashMap<String, APSJPAEntityManagerProviderImpl>();
+    private Map<String, APSJPAEntityManagerProviderImpl> openFactories = new HashMap<>();
 
     /** The current bundles that have a persistence provider and a map of defined persistence units. */
-    private Map<Long, Map<String, PersistenceReg>> persistentBundles = new HashMap<Long, Map<String, PersistenceReg>>();
+    private Map<Long, Map<String, PersistenceReg>> persistentBundles = new HashMap<>();
 
     /** Our own bundle. We need it for class loading later. */
     private Bundle thisBundle = null;
@@ -199,7 +199,7 @@ public class APSOpenJPAServiceProvider implements BundleListener, APSJPAService,
                 PersistenceReg persistenceReg =
                         new PersistenceReg(persistenceProvider, multiBundleClassLoader);
 
-                Map<String, PersistenceReg> persistenceUnits = new HashMap<String, PersistenceReg>();
+                Map<String, PersistenceReg> persistenceUnits = new HashMap<>();
 
                 Iterator<PersistenceUnit> puit = persistence.getPersistenceUnits();
                 while(puit.hasNext()) {

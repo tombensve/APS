@@ -63,7 +63,7 @@ public class APSSessionImpl implements APSSession {
     private Date lastUsed = null;
 
     /** On object stored in the session by clients. */
-    private Map<String, Object> sessionObjects = new HashMap<String, Object>();
+    private Map<String, Object> sessionObjects = new HashMap<>();
 
 
     //

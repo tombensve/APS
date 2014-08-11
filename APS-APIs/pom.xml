@@ -44,7 +44,6 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <groupId>se.natusoft.osgi.aps</groupId>
     <artifactId>aps-apis</artifactId>
     <packaging>bundle</packaging>
 

@@ -72,7 +72,7 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
 public class APSGroupsServiceConfig extends APSConfig {
 
     /** This config is auto-managed and will be accessed through this. */
-    public static final ManagedConfig<APSGroupsServiceConfig> managed = new ManagedConfig<APSGroupsServiceConfig>();
+    public static final ManagedConfig<APSGroupsServiceConfig> managed = new ManagedConfig<>();
 
 
     @APSConfigItemDescription(description = "The multicast address to use.", defaultValue = {@APSDefaultValue("224.0.0.1")})

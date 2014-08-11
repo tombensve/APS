@@ -154,11 +154,11 @@ public class APSConfigServiceActivator implements BundleActivator {
         this.configLogger.setLoggingFor("aps-config-service-provider(APSConfigService)");
 
         // Setup ConfigurationAdmin
-        this.configurationAdminTracker = new APSServiceTracker<ConfigurationAdmin>(context, ConfigurationAdmin.class, APSServiceTracker.LARGE_TIMEOUT);
+        this.configurationAdminTracker = new APSServiceTracker<>(context, ConfigurationAdmin.class, APSServiceTracker.LARGE_TIMEOUT);
         this.configurationAdminTracker.start();
 
         // Setup APSFilesystemService
-        this.fsServiceTracker = new APSServiceTracker<APSFilesystemService>(context, APSFilesystemService.class, APSServiceTracker.LARGE_TIMEOUT);
+        this.fsServiceTracker = new APSServiceTracker<>(context, APSFilesystemService.class, APSServiceTracker.LARGE_TIMEOUT);
         this.fsServiceTracker.setDebugLogger(new APSLogger(System.out));
         this.fsServiceTracker.start();
 
@@ -227,12 +227,12 @@ public class APSConfigServiceActivator implements BundleActivator {
         this.configServiceProvider.registerConfiguration(APSConfigServiceConfig.class, false);
 
         // Setup synchronization tracker
-        this.syncServiceTracker = new APSServiceTracker<APSSyncService>(context, APSSyncService.class,
+        this.syncServiceTracker = new APSServiceTracker<>(context, APSSyncService.class,
                 APSServiceTracker.LARGE_TIMEOUT);
         this.syncServiceTracker.start();
 
         // Setup net time tracker
-        this.netTimeServiceTracker = new APSServiceTracker<APSNetTimeService>(context, APSNetTimeService.class,
+        this.netTimeServiceTracker = new APSServiceTracker<>(context, APSNetTimeService.class,
                 APSServiceTracker.LARGE_TIMEOUT);
         this.netTimeServiceTracker.start();
 

@@ -83,7 +83,8 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
     private APSGroupsLogger logger = null;
 
     /** Client listeners. */
-    private List<se.natusoft.osgi.aps.api.net.groups.service.MessageListener> messageListeners = null;
+    private final List<se.natusoft.osgi.aps.api.net.groups.service.MessageListener> messageListeners =
+            Collections.synchronizedList(new LinkedList<se.natusoft.osgi.aps.api.net.groups.service.MessageListener>());
 
     /** The transport to use. */
     private Transport transport = null;
@@ -113,8 +114,6 @@ public class GroupMemberProvider implements MessageListener, GroupMember {
         this.logger = logger;
         this.transport = transport;
         this.dataReceiver = DataReceiverThread.get();
-
-        this.messageListeners = Collections.synchronizedList(new LinkedList<se.natusoft.osgi.aps.api.net.groups.service.MessageListener>());
     }
 
     //
