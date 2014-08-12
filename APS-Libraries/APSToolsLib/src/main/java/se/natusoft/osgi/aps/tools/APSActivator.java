@@ -296,7 +296,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
         for (Tuple2<Method, Object> shutdownMethod : this.shutdownMethods) {
             try {
-                shutdownMethod.t1.invoke(shutdownMethod.t2, (Object)null);
+                shutdownMethod.t1.invoke(shutdownMethod.t2, (Object[])null);
 
                 this.activatorLogger.info("Called bundle shutdown method '" + shutdownMethod.t2.getClass() +
                         "." + shutdownMethod.t1.getName() + "() for bundle: " +
