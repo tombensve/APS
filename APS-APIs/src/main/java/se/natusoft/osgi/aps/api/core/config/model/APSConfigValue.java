@@ -152,4 +152,14 @@ public interface APSConfigValue {
      */
     Date toDate(String configEnvironment);
 
+    /**
+     * Returns true if value is empty.
+     */
+    boolean isEmpty();
+
+    /**
+     * Returns true if value is empty.
+     */
+    public boolean isEmpty(String configEnvironment);
+
 }

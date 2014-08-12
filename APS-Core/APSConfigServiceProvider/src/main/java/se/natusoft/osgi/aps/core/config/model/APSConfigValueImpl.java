@@ -397,6 +397,22 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
     }
 
     /**
+     * Returns true if value is empty.
+     */
+    @Override
+    public boolean isEmpty() {
+        return safeGetValue("").trim().length() == 0;
+    }
+
+    /**
+     * Returns true if value is empty.
+     */
+    @Override
+    public boolean isEmpty(String configEnvironment) {
+        return safeGetValue("", configEnvironment).trim().length() == 0;
+    }
+
+    /**
      * Receives a config value reference. This implements APSConfigRefConsumer.
      *
      * __NOTE__: This is only for providing config class fields with a reference. It should not be used to set
