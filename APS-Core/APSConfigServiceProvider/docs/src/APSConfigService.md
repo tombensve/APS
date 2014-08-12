@@ -11,51 +11,51 @@ The APSConfigService supports different configuration environments. The idea is 
 Here is an example:
 
     @APSConfigDescription(
-    		version="1.0",
-    		configId="se.natusoft.aps.exmple.myconfig",
-    		group="examples",  
-    		description="An example configuration model"
+        version="1.0",
+        configId="se.natusoft.aps.exmple.myconfig",
+        group="examples",  
+        description="An example configuration model"
     )
-	public class MyConfig extends APSConfig {
-		
-		@APSConfigItemDescription(
-			description="Example of simple value.",
-		)
-		public APSConfigValue simpleValue;
-		
-		@APSConfigItemDescription(
-			description="Example of list value."
-		)
-		public APSConfigValueList listValue;
-		
-		@APSConfigItemDescription(
-			description="One instance of MySubConfig model."
-		)
-		public MySubConfig mySubConfig;
-		
-		@APSConfigItemDescription(
-			description="Multiple instances of MySubConfig model."
-		)
-		public APSConfigList<MySubConfig> listOfMySubConfigs;
-		
-		@APSConfigDescription(
-			version="1.0",
-			configId="se.natusoft.aps.example.myconfig.mysubconfig",
-			description="Example of a subconfig model. Does not have to be inner class!"
-		)
-		public static class MySubConfig extends APSConfig {
-			
-			@APSConfigItemDescription(
-				description="Description of values."
-			)
-			public APSConfigValueList listOfValues;
-			
-			@APSConfigItemDescription(
-				description="Description of another value."
-			)
-			public APSConfigValue anotherValue;
-		}
-	}
+    public class MyConfig extends APSConfig {
+    	
+    @APSConfigItemDescription(
+        description="Example of simple value.",
+    )
+    public APSConfigValue simpleValue;
+    	
+        @APSConfigItemDescription(
+            description="Example of list value."
+        )
+        public APSConfigValueList listValue;
+        
+        @APSConfigItemDescription(
+            description="One instance of MySubConfig model."
+        )
+        public MySubConfig mySubConfig;
+        
+        @APSConfigItemDescription(
+            description="Multiple instances of MySubConfig model."
+        )
+        public APSConfigList<MySubConfig> listOfMySubConfigs;
+        
+        @APSConfigDescription(
+            version="1.0",
+            configId="se.natusoft.aps.example.myconfig.mysubconfig",
+            description="Example of a subconfig model. Does not have to be inner class!"
+        )
+        public static class MySubConfig extends APSConfig {
+        	
+	     @APSConfigItemDescription(
+                description="Description of values."
+            )
+            public APSConfigValueList listOfValues;
+            
+            @APSConfigItemDescription(
+	         description="Description of another value."
+            )
+            public APSConfigValue anotherValue;
+        }
+    }
 
 ### The config values 
 
@@ -173,15 +173,15 @@ __A warning__: This variant does not provide any support for determining if the 
 
 Example:
 
-    @APSConfigDescription(
-        version="1.0",
-        configId="se.natusoft.aps.exmple.myconfig",
-        group="examples",
-        description="An example configuration model"
-    )
+	@APSConfigDescription(
+		version="1.0",
+		configId="se.natusoft.aps.exmple.myconfig",
+		group="examples",
+		description="An example configuration model"
+    	)
 	public class MyConfig extends APSConfig {
 		
-	-->  public static final ManagedConfig<MyConfig> managed = new ManagedConfig<MyConfig>();  <--
+	public static final ManagedConfig<MyConfig> managed = new ManagedConfig<MyConfig>();
 		
 		@APSConfigItemDescription(
 			description="Example of simple value.",
@@ -238,7 +238,7 @@ It is quite possible to make config structures of great complexity. __DON'T!__ E
 
 ## Administration
 
-The configurations managed by the APS config service can be synchronized among a group of installations. To do this you need to enable synchronization in the _aps/config_ node in the config admin web, and also specify a group name that you want to synchronize with. All installations having the same group name will synch configuration with each other. The synchronization uses the APSGroups service so this must be deployed for synchronization to work.
+The configurations managed by the APS config service can be synchronized among a group of installations. To do this you need to enable synchronization in the _aps/config_ node in the config admin web, and also specify a group name that you want to synchronize with. All installations having the same group name will synch configuration with each other. The synchronization uses the APSSync service so an implementation of this must be deployed for synchronization to work. There are currently 2 implementations provided, one using APSGroups (multicast only) and one using RabbitMQ (which of course also requires a RabbitMQ installation).
 
 ## APSConfigAdminWeb screenshots
 
