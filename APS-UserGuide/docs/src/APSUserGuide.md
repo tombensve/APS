@@ -16,6 +16,8 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A configuration service that works with annotated configuration models where each config value can be described/documented. The configuration model can be structured with sub models that there can be one or many of. Each top level configuration model registered with the configuration service will be available for publishing in the admin web. The configuration service also supports different configuration environments and allows for configuration values to be different for different configuration environments, but doesn´t require them to be.
 
+* Synchronization of configurations across servers. There is currently 2 implementations for this, one that syncs using APSGroups service, one that syncs using RabbitMQ, and one that syncs via Hazelcast.
+
 * A filesystem service that provides a persistent filesystem outside of the OSGi server. The configuration service makes use of this to store configurations. Each client can get its own filesystem area, and can´t access anything outside of its area.
 
 * A platform service that simply identifies the local installation and provides a description of it. It is basically a read only service that provides configured information about the installation.
@@ -46,8 +48,6 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A log veiwer web application supporting reqular expression filters on log information and a live log view. This is waiting on Vaadin 7.1 which will support server push.  Another alternative is to go pure GWT and use Errai for this, but I rather continue with Vaadin having all admin webs looking and feeling the same. 
 
-* Synchronizing configurations between installations so that all configuration for all configuration environments can be edited in one place and automatically be distributed to each installation. This would also make it possible to configure installations without deployed admin webs.
-
 * Anything else relevant I come up with and consider fun to do :-).
 
 ### Ideas
@@ -56,7 +56,21 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * Support for being able to redeploy a web application and services live without loosing session nor user transactions. With OSGi it should be teoretically possible. For a limited number of redeployments at least. It is very easy to run into the "perm gen space" problem, but according to Frank Kieviet ([Classloader leaks: The dreaded permgen space](http://frankkieviet.blogspot.se/2006/10/classloader-leaks-dreaded-permgen-space.html)) it is caused by bad code and can be avoided. 
 
-### What is new in version 0.9.2
+### What is new in 
+
+#### 1.0.0
+
+* Bug fix in APSConfigService that was forced to make it non backwards compatible to fix. Sorry for that! Using the APSConfigService work exactly as before, but editing config have changed. **The big catch however is that the keys in the configuration files have changed and thus old saved configurations no longer work!** I had no choice. The old keys where part of the problem. I admit that I did something very stupid in the first version and that I should have known better, and in the end I had no other choice than to fix it, which came as no surprice! 
+
+* Added Hazelcast support with APS Hazelcast configuration service.
+
+* 
+
+#### 0.10.0
+
+Added syncrhonization services and made config synchronizable.
+
+#### 0.9.2
 
 * Small bug fixes.
 
@@ -64,7 +78,7 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A service can now be registered with an _aps-externalizable_ property with value _true_ to be made externally available by aps-external-protocol-extender.
 
-### What is new in version 0.9.1
+#### 0.9.1
 
 * Now have full REST support in aps-external-protocol-extender and aps-ext-protocol-http-transport-provider.
 

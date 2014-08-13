@@ -1,7 +1,8 @@
 # APS Hazelcast Configuration Service
+
 This service deliver a populated Hazelcast Config object. It provides APS configurations mimicing many of the Hazelcast configuration objects. The APS configurations can be edited with the APS configuration admin web (http://host:port/apsadminweb, select "Configuration" tab, then Network/Hazelcast). 
 
-Multiple named configuration instances can be defined and in the service and instance is looked up using the name. 
+Multiple named configuration instances can be defined and in the service an instance is looked up using the name. 
 
 All APS Hazelcast configurations are configuration environment specific!
 

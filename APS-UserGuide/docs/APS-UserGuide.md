@@ -16,6 +16,8 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A configuration service that works with annotated configuration models where each config value can be described/documented. The configuration model can be structured with sub models that there can be one or many of. Each top level configuration model registered with the configuration service will be available for publishing in the admin web. The configuration service also supports different configuration environments and allows for configuration values to be different for different configuration environments, but doesn´t require them to be.
 
+* Synchronization of configurations across servers. There is currently 2 implementations for this, one that syncs using APSGroups service, one that syncs using RabbitMQ, and one that syncs via Hazelcast.
+
 * A filesystem service that provides a persistent filesystem outside of the OSGi server. The configuration service makes use of this to store configurations. Each client can get its own filesystem area, and can´t access anything outside of its area.
 
 * A platform service that simply identifies the local installation and provides a description of it. It is basically a read only service that provides configured information about the installation.
@@ -46,8 +48,6 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A log veiwer web application supporting reqular expression filters on log information and a live log view. This is waiting on Vaadin 7.1 which will support server push. Another alternative is to go pure GWT and use Errai for this, but I rather continue with Vaadin having all admin webs looking and feeling the same.
 
-* Synchronizing configurations between installations so that all configuration for all configuration environments can be edited in one place and automatically be distributed to each installation. This would also make it possible to configure installations without deployed admin webs.
-
 * Anything else relevant I come up with and consider fun to do :-).
 
 ### Ideas
@@ -56,7 +56,21 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * Support for being able to redeploy a web application and services live without loosing session nor user transactions. With OSGi it should be teoretically possible. For a limited number of redeployments at least. It is very easy to run into the "perm gen space" problem, but according to Frank Kieviet ([Classloader leaks: The dreaded permgen space](http://frankkieviet.blogspot.se/2006/10/classloader-leaks-dreaded-permgen-space.html)) it is caused by bad code and can be avoided.
 
-### What is new in version 0.9.2
+### What is new in 
+
+#### 1.0.0
+
+* Bug fix in APSConfigService that was forced to make it non backwards compatible to fix. Sorry for that! Using the APSConfigService work exactly as before, but editing config have changed. __The big catch however is that the keys in the configuration files have changed and thus old saved configurations no longer work!__ I had no choice. The old keys where part of the problem. I admit that I did something very stupid in the first version and that I should have known better, and in the end I had no other choice than to fix it, which came as no surprice!
+
+* Added Hazelcast support with APS Hazelcast configuration service.
+
+* 
+
+#### 0.10.0
+
+Added syncrhonization services and made config synchronizable.
+
+#### 0.9.2
 
 * Small bug fixes.
 
@@ -64,7 +78,7 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A service can now be registered with an _aps-externalizable_ property with value _true_ to be made externally available by aps-external-protocol-extender.
 
-### What is new in version 0.9.1
+#### 0.9.1
 
 * Now have full REST support in aps-external-protocol-extender and aps-ext-protocol-http-transport-provider.
 
@@ -845,7 +859,11 @@ This is a library (exports all its packages and provides no service) for reading
 
 This basically provides a class representing each JSON type: JSONObject, JSONString, JSONNumber, JSONBoolean, JSONArray, JSONNull, and a JSONValue class that is the common base class for all the other. Each class knows how to read and write the JSON type it represents. Then there is a JavaToJSON and a JSONToJava class with static methods for converting back and forth. This mapping is very primitive. There has to be one to one between the JSON and the Java objects.
 
-## Changes  0.10.0 _readJSON(...)_ in the __JSONValue__ base class now throws JSONEOFException (extends IOException) on EOF. The reason for this is that internally it reads characters which cannot return -1 or any non JSON data valid char to represent EOF. Yes, it would be possible to replace _char_ with _Character_, but that will have a greater effect on existing code using this lib. If an JSONEOFException comes and is not handled it is still very much more clear what happened than a NullPointerException would be!  
+## Changes
+
+### 0.10.0
+
+_readJSON(...)_ in the __JSONValue__ base class now throws JSONEOFException (extends IOException) on EOF. The reason for this is that internally it reads characters which cannot return -1 or any non JSON data valid char to represent EOF. Yes, it would be possible to replace _char_ with _Character_, but that will have a greater effect on existing code using this lib. If an JSONEOFException comes and is not handled it is still very much more clear what happened than a NullPointerException would be!
 
 ## APIs
 
@@ -5322,6 +5340,62 @@ _Parameters_
 ----
 
     
+
+# APS Hazelcast Configuration Service
+
+This service deliver a populated Hazelcast Config object. It provides APS configurations mimicing many of the Hazelcast configuration objects. The APS configurations can be edited with the APS configuration admin web (http://host:port/apsadminweb, select "Configuration" tab, then Network/Hazelcast).
+
+Multiple named configuration instances can be defined and in the service an instance is looked up using the name.
+
+All APS Hazelcast configurations are configuration environment specific!
+
+The APS configurations does not cover all Hazelcast configs at the moment. Only what I have decided is probably the most common used. The Hazelcast configuration possibilities are rather large. There is however one config field called _configFile_. In this field an XML configuration file available on the server (possibly via network filesystem) or an http or ftp URL to a configuration file can be specified. This is loaded first, then any other configurations specified in the config gui will complement/override what is in the config file. The configuration file can be left blank also if what is available in the gui is enough.
+
+The service will check if a configuration gui field is empty before copying it to its counterpart Hazelcast config. This will leave you with a Hazelcast default if a config gui field is left blank.
+
+Anyone wanting more of Hazelcasts config in this gui are welcome to help in providing it ([https://github.com/tombensve/aps](https://github.com/tombensve/aps)) :-).
+
+Here is a list of the configurations provided:
+
+* Network
+
+   * Interfaces
+
+   * Multicast
+
+   * TCPIP
+
+* Group
+
+* Lists
+
+* Sets
+
+* Maps
+
+* Queues
+
+* Topics
+
+* Listeners (1)
+
+* Stores (2)
+
+(1) In Hazelcast there are several different types of listeners. They all look the same configuration wise but use different configuration classes. The APS gui config only have one "listeners" config list for all listeners and each entry has a name. The name is used to reference a listener in each configuration gui that defines listeners. This was a way of slimming the GUI a bit.
+
+(2) The handlig of stores are the same as the handlig of listeners. All types of stores are defined in stores with a name that is referenced in each config defining a store.
+
+## Service Use
+
+Well, the service API looks like this:
+
+        public interface HazelcastConfigService {    
+            Config getConfigInstance(String name);
+        }
+
+which should be self explanatory :-)
+
+Do note that Hazelcast offers stores and listeners as both configuratble fully qualified classes to direct implementations or factories, but also allows for setting instances directly. The GUI only supports the first kind for obvious reasons, but don't think you have to use those! You can as easily add your listeners in code after getting the Config instance.
 
 # APS Net Time Servcie Provider
 
