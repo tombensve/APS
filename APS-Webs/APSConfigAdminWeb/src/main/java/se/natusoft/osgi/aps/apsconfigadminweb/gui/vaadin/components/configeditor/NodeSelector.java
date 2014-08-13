@@ -107,8 +107,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
      * @param configAdmin The config admin for the config handled by the NodeSelector.
      */
     public NodeSelector(APSConfigAdmin configAdmin) {
-        /* TODO: This is actually not used anymore!*/
-        this.configAdmin = configAdmin;
+        this.configAdmin = configAdmin; // TODO: This is actually not used anymore!
 
         setStyleName(CSS.APS_CONFIG_NODE_SELECTOR);
         VerticalLayout verticalLayout = new VerticalLayout();
