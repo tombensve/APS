@@ -209,4 +209,22 @@ public class APSConfigValueTestImpl implements APSConfigValue {
         return toDate();
     }
 
+    /**
+     * Returns true if value is empty.
+     */
+    @Override
+    public boolean isEmpty() {
+        return this.value.trim().length() > 0;
+    }
+
+    /**
+     * Returns true if value is empty.
+     *
+     * @param configEnvironment
+     */
+    @Override
+    public boolean isEmpty(String configEnvironment) {
+        return isEmpty();
+    }
+
 }
