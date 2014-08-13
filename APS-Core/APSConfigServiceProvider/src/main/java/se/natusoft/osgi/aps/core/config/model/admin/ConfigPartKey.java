@@ -193,10 +193,11 @@ public class ConfigPartKey {
                 .replace(NAME, this.name)
                 .replace(CONFIG_ENV, this.configEnvSpecific ? this.configEnv : "")
                 .replace(INDEX, /*this.isMany &&*/ !this.index.equals(NO_INDEX) ? this.index : "");
+                // TODO: Hmm ... "this.isMany &&" might not do any diff, but it might not hurt either.
     }
 
     /**
-     * Sets the config ID part of the keyTemplate.
+     * Sets the config ID part of the key.
      *
      * @param configId The config ID to set.
      *
@@ -208,7 +209,7 @@ public class ConfigPartKey {
     }
 
     /**
-     * Sets the version part of the keyTemplate.
+     * Sets the version part of the key.
      *
      * @param version The version to set.
      *
@@ -220,7 +221,7 @@ public class ConfigPartKey {
     }
 
     /**
-     * Sets the name part of the keyTemplate.
+     * Sets the name part of the key.
      *
      * @param name The name to set.
      *
@@ -231,20 +232,38 @@ public class ConfigPartKey {
         return this;
     }
 
-    public ConfigPartKey configEnv(String configEnv) {
-        this.configEnv = nullSafe(configEnv);
+    /**
+     * Sets the config environment part of the key.
+     *
+     * @param configEnvironment The configuration environment to set.
+     */
+    public ConfigPartKey configEnv(String configEnvironment) {
+        this.configEnv = nullSafe(configEnvironment);
         return this;
     }
 
+    /**
+     * Sets the config environment part of the key.
+     *
+     * @param configEnvironment The configuration environment to set.
+     */
     public ConfigPartKey configEnv(APSConfigEnvironment configEnvironment) {
         return configEnv(configEnvironment.getName());
     }
 
+    /**
+     * Clears the configuration environment from the key.
+     */
     public ConfigPartKey clearConfigEnv() {
         this.configEnv = NO_CONFIG_ENV;
         return this;
     }
 
+    /**
+     * Adds an index to the key.
+     *
+     * @param index The index to add.
+     */
     public ConfigPartKey index(int index) {
         if (index >= 0) {
             this.index = "" + index;
@@ -255,6 +274,9 @@ public class ConfigPartKey {
         return this;
     }
 
+    /**
+     * Clears the index from the key if any.
+     */
     public ConfigPartKey clearIndex() {
         this.index = NO_INDEX;
         return this;

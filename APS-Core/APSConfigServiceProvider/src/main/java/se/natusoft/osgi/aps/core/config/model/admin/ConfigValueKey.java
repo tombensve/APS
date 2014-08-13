@@ -35,8 +35,10 @@ public class ConfigValueKey {
     // Private Members
     //
 
+    /** The part keys for each node of the config. */
     private LinkedList<ConfigPartKey> parts = new LinkedList<>();
 
+    /** The config environment. */
     private String configEnv;
 
     //

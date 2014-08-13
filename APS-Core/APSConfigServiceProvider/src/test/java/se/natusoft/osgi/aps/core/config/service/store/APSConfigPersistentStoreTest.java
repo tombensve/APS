@@ -149,7 +149,7 @@ public class APSConfigPersistentStoreTest {
         APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(envStore, configValueStore);
 
         APSConfigEditModel configModel = new APSConfigEditModelImpl(MyConfig.class, configObjectFactory);
-        APSConfigAdminImpl config = new APSConfigAdminImpl(configModel, configValueStore);
+        APSConfigAdminImpl config = new APSConfigAdminImpl(configModel, configValueStore, envStore);
 
         APSConfigValueEditModel southernComfort = configModel.getValueByName("southerncomfort");
         APSConfigReference southernComfortRef = config.createRef()._(configModel)._(southernComfort)._(configEnvironment);
@@ -169,7 +169,7 @@ public class APSConfigPersistentStoreTest {
         APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(this.envStore, configValueStore);
 
         APSConfigEditModel configModel = new APSConfigEditModelImpl(MyConfig2.class, configObjectFactory);
-        APSConfigAdminImpl config = new APSConfigAdminImpl(configModel, configValueStore);
+        APSConfigAdminImpl config = new APSConfigAdminImpl(configModel, configValueStore, envStore);
 
         return config;
     }

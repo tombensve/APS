@@ -51,6 +51,7 @@ import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.core.config.model.APSConfigInstanceMemoryStoreImpl;
 import se.natusoft.osgi.aps.core.config.model.APSConfigObjectFactory;
 import se.natusoft.osgi.aps.core.config.model.ConfigEnvironmentProvider;
+import se.natusoft.osgi.aps.core.config.store.APSConfigEnvStore;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -64,24 +65,26 @@ public class ConfigModelTest extends TestCase {
 
     private Properties props = new Properties();
     private APSConfigInstanceMemoryStoreImpl configValueStore = new APSConfigInstanceMemoryStoreImpl(props);
+    private APSConfigEnvStore envStore = new APSConfigEnvStore(
+            testConfigEnvironment, // Also active
+            defaultConfigEnvironment,
+            whateverConfigEnvironment
+    );
+
     private APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(new ConfigEnvironmentProvider() {
         @Override
         public APSConfigEnvironment getActiveConfigEnvironment() {
-            return testConfigEnvironment;
+            return envStore.getActiveConfigEnvironment();
         }
 
         @Override
         public List<APSConfigEnvironment> getConfigEnvironments() {
-            List<APSConfigEnvironment> envs = new LinkedList<>();
-            envs.add(testConfigEnvironment);
-            envs.add(defaultConfigEnvironment);
-            envs.add(whateverConfigEnvironment);
-            return envs;
+            return envStore.getConfigEnvironments();
         }
 
         @Override
         public APSConfigEnvironment getConfigEnvironmentByName(String name) {
-            return getActiveConfigEnvironment();
+            return envStore.getConfigEnvironmentByName(name);
         }
     }, configValueStore);
 
@@ -102,10 +105,9 @@ public class ConfigModelTest extends TestCase {
     public void testConfigModels() throws Exception {
         System.out.print("testConfigModels...");
 
-
         APSConfigEditModelImpl configModel = new APSConfigEditModelImpl(RootConfig.class, configObjectFactory);
         RootConfig rootConfig = (RootConfig)configModel.getInstance();
-        APSConfigAdminImpl config = new APSConfigAdminImpl(configModel, configValueStore);
+        APSConfigAdminImpl config = new APSConfigAdminImpl(configModel, configValueStore, envStore);
 
         // RootConfig.bool
 

@@ -173,7 +173,7 @@ public class APSConfigPersistentStore implements ConfigStoreInfo {
         APSConfigInstanceMemoryStoreImpl configValueStore = new APSConfigInstanceMemoryStoreImpl(confProps);
         APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(envStore, configValueStore);
         APSConfigEditModelImpl configModel = new APSConfigEditModelImpl(configClass, configObjectFactory);
-        APSConfigAdminImpl configuration = new APSConfigAdminImpl(configModel, configValueStore);
+        APSConfigAdminImpl configuration = new APSConfigAdminImpl(configModel, configValueStore, envStore);
         if (gotPrevConfig) {
             saveConfiguration(configuration);
         }

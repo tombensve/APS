@@ -104,6 +104,21 @@ public class APSConfigEnvStore implements ConfigEnvironmentProvider {
 
     }
 
+    /**
+     * For test constructor.
+     *
+     * @param testConfigEnvs The already defined config envs to hold. The first will become the active.
+     */
+    public APSConfigEnvStore(APSConfigEnvironment... testConfigEnvs) {
+        this.activeConfigEnvironment = testConfigEnvs[0];
+        this.environments = new LinkedList<>();
+        this.environmentsByName = new HashMap<>();
+        for (APSConfigEnvironment env : testConfigEnvs) {
+            this.environments.add(env);
+            this.environmentsByName.put(env.getName(), env);
+        }
+    }
+
     //
     // Methods
     //

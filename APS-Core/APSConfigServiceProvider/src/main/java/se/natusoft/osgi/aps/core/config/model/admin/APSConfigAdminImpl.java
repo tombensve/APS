@@ -43,6 +43,7 @@ import se.natusoft.osgi.aps.api.core.config.APSConfig;
 import se.natusoft.osgi.aps.api.core.config.model.admin.*;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigException;
 import se.natusoft.osgi.aps.core.config.model.APSConfigInstanceMemoryStoreImpl;
+import se.natusoft.osgi.aps.core.config.store.APSConfigEnvStore;
 
 import static se.natusoft.osgi.aps.core.config.model.StaticUtils.*;
 
@@ -120,6 +121,9 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
     /** The configuration values. */
     private APSConfigInstanceMemoryStoreImpl configInstanceMemoryStore;
 
+    /** The configuration environment store. */
+    private APSConfigEnvStore configEnvStore;
+
     //
     // Constructors
     //
@@ -129,10 +133,12 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
      *
      * @param configModel The config model of this configuration.
      * @param configInstanceMemoryStore The values of this configuration.
+     * @param configEnvStore The configuration environment store.
      */
-    public APSConfigAdminImpl(APSConfigEditModel configModel, APSConfigInstanceMemoryStoreImpl configInstanceMemoryStore) {
+    public APSConfigAdminImpl(APSConfigEditModel configModel, APSConfigInstanceMemoryStoreImpl configInstanceMemoryStore, APSConfigEnvStore configEnvStore) {
         this.configModel = configModel;
         this.configInstanceMemoryStore = configInstanceMemoryStore;
+        this.configEnvStore = configEnvStore;
     }
 
     //
@@ -363,6 +369,9 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
      */
     @Override
     public synchronized int getListSize(APSConfigReference reference) {
+        if (reference.getConfigEnvironment() == null) {
+            reference = reference._(this.configEnvStore.getActiveConfigEnvironment());
+        }
         APSConfigReferenceImpl ro_ref = toImpl(reference);
         String sizeKey = ro_ref.getValueKey().getSizeKey();
         String sizeStr = getConfigValue(sizeKey);
@@ -376,6 +385,9 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
      * @param size The new size.
      */
     private void setListSize(APSConfigReference reference, int size) {
+        if (reference.getConfigEnvironment() == null) {
+            reference = reference._(this.configEnvStore.getActiveConfigEnvironment());
+        }
         APSConfigReferenceImpl ro_ref = toImpl(reference);
         String sizeKey = ro_ref.getValueKey().getSizeKey();
         setConfigValue(sizeKey, "" + size);
@@ -404,6 +416,9 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
      */
     @Override
     public synchronized void removeConfigList(APSConfigReference reference) {
+        if (reference.getConfigEnvironment() == null) {
+            reference = reference._(this.configEnvStore.getActiveConfigEnvironment());
+        }
         APSConfigReferenceImpl ro_ref = toImpl(reference);
         removeConfigListEntry(reference, ro_ref.getIndex());
     }
@@ -417,6 +432,9 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
      * @param startingAt The starting index of the new indexes.
      */
     private int reindexMSList(APSConfigReference ref, int from, int to, int startingAt) {
+        if (ref.getConfigEnvironment() == null) {
+            ref = ref._(this.configEnvStore.getActiveConfigEnvironment());
+        }
         APSConfigReference iteratorRef = ref.copy();
         APSConfigReference newIndexRef = ref.copy();
 
@@ -445,6 +463,9 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
      * @param index The index in the list to remove.
      */
     private void removeConfigListEntry(APSConfigReference ref, int index) {
+        if (ref.getConfigEnvironment() == null) {
+            ref = ref._(this.configEnvStore.getActiveConfigEnvironment());
+        }
         int size = getListSize(ref);
         int last = reindexMSList(ref, index + 1, size - 1, index);
         setListSize(ref, size - 1);
@@ -472,7 +493,7 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
             newProps.setProperty(key, getConfigValue(key));
         }
 
-        return new APSConfigAdminImpl(this.configModel, new APSConfigInstanceMemoryStoreImpl(newProps));
+        return new APSConfigAdminImpl(this.configModel, new APSConfigInstanceMemoryStoreImpl(newProps), this.configEnvStore);
     }
 
     /**
