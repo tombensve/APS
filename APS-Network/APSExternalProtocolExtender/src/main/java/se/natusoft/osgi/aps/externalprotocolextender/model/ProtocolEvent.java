@@ -5,7 +5,7 @@
  *         APS External Protocol Extender
  *     
  *     Code Version
- *         0.11.0
+ *         1.0.0
  *     
  *     Description
  *         This does two things:

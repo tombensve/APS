@@ -5,7 +5,7 @@
             ServerDeployPlugin
         
         Code Version
-            0.11.0
+            1.0.0
         
         Description
             Basically copies one file from one place to another. This is however used

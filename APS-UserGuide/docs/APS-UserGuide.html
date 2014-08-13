@@ -202,17 +202,17 @@
     <pre>
       <code>
     @APSConfigDescription(
-            version="1.0",
-            configId="se.natusoft.aps.exmple.myconfig",
-            group="examples",  
-            description="An example configuration model"
+        version="1.0",
+        configId="se.natusoft.aps.exmple.myconfig",
+        group="examples",  
+        description="An example configuration model"
     )
     public class MyConfig extends APSConfig {
         
-        @APSConfigItemDescription(
-            description="Example of simple value.",
-        )
-        public APSConfigValue simpleValue;
+    @APSConfigItemDescription(
+        description="Example of simple value.",
+    )
+    public APSConfigValue simpleValue;
         
         @APSConfigItemDescription(
             description="Example of list value."
@@ -236,13 +236,13 @@
         )
         public static class MySubConfig extends APSConfig {
             
-            @APSConfigItemDescription(
+         @APSConfigItemDescription(
                 description="Description of values."
             )
             public APSConfigValueList listOfValues;
             
             @APSConfigItemDescription(
-                description="Description of another value."
+             description="Description of another value."
             )
             public APSConfigValue anotherValue;
         }
@@ -426,10 +426,10 @@
         configId="se.natusoft.aps.exmple.myconfig",
         group="examples",
         description="An example configuration model"
-    )
+        )
     public class MyConfig extends APSConfig {
         
-    --&gt;  public static final ManagedConfig&lt;MyConfig&gt; managed = new ManagedConfig&lt;MyConfig&gt;();  &lt;--
+    public static final ManagedConfig&lt;MyConfig&gt; managed = new ManagedConfig&lt;MyConfig&gt;();
         
         @APSConfigItemDescription(
             description="Example of simple value.",
@@ -503,7 +503,7 @@
     </p>
     <H2>Administration</H2>
     <p>
-      The configurations managed by the APS config service can be synchronized among a group of installations. To do this you need to enable synchronization in the <em>aps/config</em> node in the config admin web, and also specify a group name that you want to synchronize with. All installations having the same group name will synch configuration with each other. The synchronization uses the APSGroups service so this must be deployed for synchronization to work.      
+      The configurations managed by the APS config service can be synchronized among a group of installations. To do this you need to enable synchronization in the <em>aps/config</em> node in the config admin web, and also specify a group name that you want to synchronize with. All installations having the same group name will synch configuration with each other. The synchronization uses the APSSync service so an implementation of this must be deployed for synchronization to work. There are currently 2 implementations provided, one using APSGroups (multicast only) and one using RabbitMQ (which of course also requires a RabbitMQ installation).      
     </p>
     <H2>APSConfigAdminWeb screenshots</H2>
     <p>
@@ -6591,7 +6591,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       Authorization is required, but none was supplied.      
     </p>
     <p>
-      <strong>BAD_AUTHORIZATION;</strong>      
+      <strong>BAD_AUTHORIZATION</strong>      
     </p>
     <p>
       Bad authorization was supplied.      
@@ -8138,7 +8138,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       Defines a data synchronization service.      
     </p>
     <p>
-      <strong>Please note</strong> that this API is very similar to the APSSimpleMessageService! There are differences in implementations between synchronization and sync, reusing the same API would be confusing and also require services to register extra properties to identify type of service provided.      
+      <strong>Please note</strong> that this API is very similar to the APSSimpleMessageService! There are differences in implementations between messaging and sync, reusing the same API would be confusing and also require services to register extra properties to identify type of service provided.      
     </p>
     <p>
       <strong>SyncGroup joinSyncGroup(String name)</strong>      
@@ -9020,7 +9020,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       Defines a data synchronization service.      
     </p>
     <p>
-      <strong>Please note</strong> that this API is very similar to the APSSimpleMessageService! There are differences in implementations between synchronization and sync, reusing the same API would be confusing and also require services to register extra properties to identify type of service provided.      
+      <strong>Please note</strong> that this API is very similar to the APSSimpleMessageService! There are differences in implementations between messaging and sync, reusing the same API would be confusing and also require services to register extra properties to identify type of service provided.      
     </p>
     <p>
       <strong>SyncGroup joinSyncGroup(String name)</strong>      
@@ -9775,7 +9775,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       </li>
       <li>
         <p>
-          <a href='http://www.hazelcast.com/' title=''>hazelcast-3.2.3</a>          
+          <a href='http://www.hazelcast.com/' title=''>hazelcast-3.2.4</a>          
         </p>
       </li>
       <li>

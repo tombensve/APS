@@ -105,17 +105,17 @@ The APSConfigService supports different configuration environments. The idea is 
 Here is an example:
 
         @APSConfigDescription(
-                version="1.0",
-                configId="se.natusoft.aps.exmple.myconfig",
-                group="examples",  
-                description="An example configuration model"
+            version="1.0",
+            configId="se.natusoft.aps.exmple.myconfig",
+            group="examples",  
+            description="An example configuration model"
         )
         public class MyConfig extends APSConfig {
             
-            @APSConfigItemDescription(
-                description="Example of simple value.",
-            )
-            public APSConfigValue simpleValue;
+        @APSConfigItemDescription(
+            description="Example of simple value.",
+        )
+        public APSConfigValue simpleValue;
             
             @APSConfigItemDescription(
                 description="Example of list value."
@@ -139,13 +139,13 @@ Here is an example:
             )
             public static class MySubConfig extends APSConfig {
                 
-                @APSConfigItemDescription(
+             @APSConfigItemDescription(
                     description="Description of values."
                 )
                 public APSConfigValueList listOfValues;
                 
                 @APSConfigItemDescription(
-                    description="Description of another value."
+                 description="Description of another value."
                 )
                 public APSConfigValue anotherValue;
             }
@@ -277,10 +277,10 @@ Example:
             configId="se.natusoft.aps.exmple.myconfig",
             group="examples",
             description="An example configuration model"
-        )
+            )
         public class MyConfig extends APSConfig {
             
-        -->  public static final ManagedConfig<MyConfig> managed = new ManagedConfig<MyConfig>();  <--
+        public static final ManagedConfig<MyConfig> managed = new ManagedConfig<MyConfig>();
             
             @APSConfigItemDescription(
                 description="Example of simple value.",
@@ -339,7 +339,7 @@ It is quite possible to make config structures of great complexity. __DON'T!__ E
 
 ## Administration
 
-The configurations managed by the APS config service can be synchronized among a group of installations. To do this you need to enable synchronization in the _aps/config_ node in the config admin web, and also specify a group name that you want to synchronize with. All installations having the same group name will synch configuration with each other. The synchronization uses the APSGroups service so this must be deployed for synchronization to work.
+The configurations managed by the APS config service can be synchronized among a group of installations. To do this you need to enable synchronization in the _aps/config_ node in the config admin web, and also specify a group name that you want to synchronize with. All installations having the same group name will synch configuration with each other. The synchronization uses the APSSync service so an implementation of this must be deployed for synchronization to work. There are currently 2 implementations provided, one using APSGroups (multicast only) and one using RabbitMQ (which of course also requires a RabbitMQ installation).
 
 ## APSConfigAdminWeb screenshots
 
@@ -4178,7 +4178,7 @@ __AUTHORIZATION_REQUIRED__
 
 Authorization is required, but none was supplied.
 
-__BAD_AUTHORIZATION;__
+__BAD_AUTHORIZATION__
 
 Bad authorization was supplied.
 
@@ -5139,7 +5139,7 @@ public _interface_ __APSSyncService__   [se.natusoft.osgi.aps.api.net.sync.servi
 
 Defines a data synchronization service.
 
-__Please note__ that this API is very similar to the APSSimpleMessageService! There are differences in implementations between synchronization and sync, reusing the same API would be confusing and also require services to register extra properties to identify type of service provided.
+__Please note__ that this API is very similar to the APSSimpleMessageService! There are differences in implementations between messaging and sync, reusing the same API would be confusing and also require services to register extra properties to identify type of service provided.
 
 __SyncGroup joinSyncGroup(String name)__
 
@@ -5663,7 +5663,7 @@ public _interface_ __APSSyncService__   [se.natusoft.osgi.aps.api.net.sync.servi
 
 Defines a data synchronization service.
 
-__Please note__ that this API is very similar to the APSSimpleMessageService! There are differences in implementations between synchronization and sync, reusing the same API would be confusing and also require services to register extra properties to identify type of service provided.
+__Please note__ that this API is very similar to the APSSimpleMessageService! There are differences in implementations between messaging and sync, reusing the same API would be confusing and also require services to register extra properties to identify type of service provided.
 
 __SyncGroup joinSyncGroup(String name)__
 
@@ -6128,7 +6128,7 @@ The following third party products are using this license:
 
 * [vaadin-themes-7.1.14](http://vaadin.com)
 
-* [hazelcast-3.2.3](http://www.hazelcast.com/)
+* [hazelcast-3.2.4](http://www.hazelcast.com/)
 
 * [openjpa-all-2.2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
 

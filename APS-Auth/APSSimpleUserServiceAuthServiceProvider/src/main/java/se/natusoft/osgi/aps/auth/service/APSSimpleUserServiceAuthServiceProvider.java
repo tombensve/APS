@@ -2,10 +2,10 @@
  * 
  * PROJECT
  *     Name
- *         APSSimpleUserServiceAuthServiceProvider
+ *         APS Simple User Service Auth Service Provider
  *     
  *     Code Version
- *         0.11.0
+ *         1.0.0
  *     
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.

@@ -5,7 +5,7 @@
  *         APS Data Source
  *     
  *     Code Version
- *         0.11.0
+ *         1.0.0
  *     
  *     Description
  *         This bundle provides data source definitions configuration and a service to lookup

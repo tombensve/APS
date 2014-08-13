@@ -5,7 +5,7 @@
  *         APS RabbitMQ SimpleMessageService Provider
  *     
  *     Code Version
- *         0.11.0
+ *         1.0.0
  *     
  *     Description
  *         Provides an implementation of APSMessageService using RabbitMQ Java Client.
