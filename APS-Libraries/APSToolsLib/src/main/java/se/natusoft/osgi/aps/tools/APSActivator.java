@@ -87,6 +87,11 @@ import java.util.*;
  *   This should probably be used if @BundleStart is used. Please note that a method annotated with this
  *   annotation can be static!
  *
+ * * **@Initializer** -
+ *   Methods annotated with this gets called after everything else have been done, when all instances
+ *   have been created and all injections handled. This can be used as an alternative constructor
+ *   which have access to all members, even injected ones.
+ *
  * All injected service instances for @OSGiService will be APSServiceTracker wrapped
  * service instances that will automatically handle services leaving and coming. They will throw
  * APSNoServiceAvailableException on timeout!
@@ -124,6 +129,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     private List<Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>>> requiredServices;
     private Map<Class, List<Object>> managedInstances;
     private List<ListenerWrapper> listeners;
+    private List<Tuple2<Method, Class>> initMethods;
 
     @SuppressWarnings("FieldCanBeLocal")
     private boolean supportsRequired = true;
@@ -235,6 +241,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 handleMethods(entryClass, context);
             }
         }
+
+        handleInitMethodsStep2();
     }
 
     private class StartThread extends Thread {
@@ -756,6 +764,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             handleStartupMethods(method, managedClass, context);
             handleShutdownMethods(method, managedClass);
             handleListenerMethods(method, managedClass, context);
+            handleInitMethodsStep1(method, managedClass, context);
         }
     }
 
@@ -842,6 +851,13 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         }
     }
 
+    /**
+     * Handles listener methods, settingthem up to be called on relevant events.
+     *
+     * @param method The method to check for ServiceListener annotation.
+     * @param managedClass The class of the method.
+     * @param context The bundle context.
+     */
     protected void handleListenerMethods(Method method, Class managedClass, BundleContext context) {
         se.natusoft.osgi.aps.tools.annotation.activator.ServiceListener serviceListener =
                 method.getAnnotation(se.natusoft.osgi.aps.tools.annotation.activator.ServiceListener.class);
@@ -868,6 +884,48 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     new FrameworkListenerWrapper(method, getManagedInstance(managedClass));
             frameworkListenerWrapper.start(context);
             this.listeners.add(frameworkListenerWrapper);
+        }
+    }
+
+    /**
+     * Step 1 of initializer methods. These should be called after everything else is done and everything
+     * is instantiated and injected. Therefore we only collect them now, and call them in step 2.
+     *
+     * @param method The method to check for Initializer annotation.
+     * @param managedClass The class of the method.
+     * @param context The bundle contecxt.
+     */
+    protected void handleInitMethodsStep1(Method method, Class managedClass, BundleContext context) {
+        Initializer initializer = method.getAnnotation(Initializer.class);
+        if (initializer != null) {
+            if (this.initMethods == null) {
+                this.initMethods = new LinkedList<>();
+            }
+
+            Tuple2<Method, Class> initMethod = new Tuple2<>(method, managedClass);
+            this.initMethods.add(initMethod);
+        }
+    }
+
+    /**
+     * Step 2: Calls all initializer methods.
+     *
+     * @throws Exception Any exceptions thrown by initializers are forwarded upp.
+     */
+    protected void handleInitMethodsStep2() throws Exception {
+        if (this.initMethods != null) {
+            for (Tuple2<Method, Class> initMethod : this.initMethods) {
+                Object instance = getManagedInstance(initMethod.t2);
+                try {
+                    initMethod.t1.invoke(instance, (Object[]) null);
+                } catch (IllegalAccessException iae) {
+                    throw new APSActivatorException("Failed to call init method (" + initMethod.t1.getName() +
+                            ") on instance (" + instance + ")!", iae);
+                } catch (InvocationTargetException ite) {
+                    throw (Exception) ite.getCause();
+                }
+            }
+            this.initMethods = null;
         }
     }
 
@@ -959,11 +1017,52 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     if (classQName.startsWith("WEB-INF.classes.")) {
                         classQName = classQName.substring(16);
                     }
-                    Class entryClass = bundle.loadClass(classQName);
-                    // If not activatorMode is true then there will be classes in this list already on the first
-                    // call to this method. Therefore we skip duplicates.
-                    if (!entries.contains(entryClass)) {
-                        entries.add(entryClass);
+                    try {
+                        Class entryClass = bundle.loadClass(classQName);
+                        // If not activatorMode is true then there will be classes in this list already on the first
+                        // call to this method. Therefore we skip duplicates.
+                        if (!entries.contains(entryClass)) {
+                            entries.add(entryClass);
+                        }
+                    }
+                    catch (NullPointerException npe) {
+                        this.activatorLogger.error(npe.getMessage(), npe);
+                        // Felix (when used by Karaf) seems to have problems here for a perfectly good classQName!
+                        // No, it is not null, if it where null it would explain this!
+                        //
+                        // It is:
+                        //
+                        //     se.natusoft.osgi.aps.userservice.config.UserServiceInstConfig.UserServiceInstance
+                        //
+                        // that cause this NPE. It belongs to APSSimpleUserServiceProvider and is a perfectly OK
+                        // class that compiles flawlessly. The classQName also contains a perfectly correct reference
+                        // to the class.
+                        //
+                        // This is the exception thrown:
+                        //
+                        //   Caused by: java.lang.NullPointerException
+                        //   at org.apache.felix.framework.BundleWiringImpl$BundleClassLoader.findClass(BundleWiringImpl.java:2015)[org.apache.felix.framework-4.2.1.jar:]
+                        //   at org.apache.felix.framework.BundleWiringImpl.findClassOrResourceByDelegation(BundleWiringImpl.java:1501)[org.apache.felix.framework-4.2.1.jar:]
+                        //   at org.apache.felix.framework.BundleWiringImpl.access$400(BundleWiringImpl.java:75)[org.apache.felix.framework-4.2.1.jar:]
+                        //   at org.apache.felix.framework.BundleWiringImpl$BundleClassLoader.loadClass(BundleWiringImpl.java:1955)[org.apache.felix.framework-4.2.1.jar:]
+                        //   at java.lang.ClassLoader.loadClass(ClassLoader.java:358)[:1.7.0_60]
+                        //   at org.apache.felix.framework.BundleWiringImpl.getClassByDelegation(BundleWiringImpl.java:1374)[org.apache.felix.framework-4.2.1.jar:]
+                        //   at org.apache.felix.framework.BundleWiringImpl.searchImports(BundleWiringImpl.java:1553)[org.apache.felix.framework-4.2.1.jar:]
+                        //   at org.apache.felix.framework.BundleWiringImpl.findClassOrResourceByDelegation(BundleWiringImpl.java:1484)[org.apache.felix.framework-4.2.1.jar:]
+                        //   at org.apache.felix.framework.BundleWiringImpl.access$400(BundleWiringImpl.java:75)[org.apache.felix.framework-4.2.1.jar:]
+                        //   at org.apache.felix.framework.BundleWiringImpl$BundleClassLoader.loadClass(BundleWiringImpl.java:1955)[org.apache.felix.framework-4.2.1.jar:]
+                        //   at java.lang.ClassLoader.loadClass(ClassLoader.java:358)[:1.7.0_60]
+                        //   at java.lang.ClassLoader.defineClass1(Native Method)[:1.7.0_60]
+                        //   at java.lang.ClassLoader.defineClass(ClassLoader.java:800)[:1.7.0_60]
+                        //   at org.apache.felix.framework.BundleWiringImpl$BundleClassLoader.findClass(BundleWiringImpl.java:2279)[org.apache.felix.framework-4.2.1.jar:]
+                        //   at org.apache.felix.framework.BundleWiringImpl.findClassOrResourceByDelegation(BundleWiringImpl.java:1501)[org.apache.felix.framework-4.2.1.jar:]
+                        //    at org.apache.felix.framework.BundleWiringImpl.access$400(BundleWiringImpl.java:75)[org.apache.felix.framework-4.2.1.jar:]
+                        //   at org.apache.felix.framework.BundleWiringImpl$BundleClassLoader.loadClass(BundleWiringImpl.java:1955)[org.apache.felix.framework-4.2.1.jar:]
+                        //   at java.lang.ClassLoader.loadClass(ClassLoader.java:358)[:1.7.0_60]
+                        //   at org.apache.felix.framework.Felix.loadBundleClass(Felix.java:1844)[org.apache.felix.framework-4.2.1.jar:]
+                        //   at org.apache.felix.framework.BundleImpl.loadClass(BundleImpl.java:937)[org.apache.felix.framework-4.2.1.jar:]
+                        //   at se.natusoft.osgi.aps.tools.APSActivator.collectClassEntries(APSActivator.java:962)[104:aps-tools-lib:1.0.0]
+
                     }
                 }
                 catch (ClassNotFoundException | NoClassDefFoundError cnfe) {

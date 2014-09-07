@@ -2,15 +2,13 @@
  * 
  * PROJECT
  *     Name
- *         APS Configuration Service Provider
+ *         APS Tools Library
  *     
  *     Code Version
  *         1.0.0
  *     
  *     Description
- *         A more advanced configuration service that uses annotated interfaces to
- *         describe and provide access to configuration. It supports structured
- *         configuration models.
+ *         Provides a library of utilities, among them APSServiceTracker used by all other APS bundles.
  *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
@@ -31,27 +29,27 @@
  *     limitations under the License.
  *     
  * AUTHORS
- *     Tommy Svensson (tommy@natusoft.se)
+ *     Tommy Svensson (tommy.svensson@biltmore.se)
  *         Changes:
- *         2014-03-08: Created!
+ *         2012-08-19: Created!
  *         
  */
-package se.natusoft.osgi.aps.core.config.api;
+package se.natusoft.osgi.aps.tools.annotation.activator;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * This is a service that provides management functions for config synchronization.
+ * This annotation indicates that the annotated method should be called after all injections
+ * have been done. The method must have no arguments.
+ *
+ * Since a class constructor is called before APSActivator have a chance to inject dependencies
+ * this serves as an alternative constructor.
+ *
+ * This only works when APSActivator is used as bundle activator!
  */
-public interface APSConfigSyncMgmtService {
-
-    /**
-     * Returns the time of the last sync message received.
-     */
-    public String getLastMessageTimestamp();
-
-    /**
-     * Trigger this service to request updates from other nodes.
-     *
-     * A response or potential error message is returned.
-     */
-    public String requestUpdate();
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Initializer {}
