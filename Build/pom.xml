@@ -54,6 +54,7 @@
         <module>DeployBundleTile</module>
         <module>DeployWABBundleTile</module>
         <module>ServerDeployPlugin</module>
+        <module>GroovyTile</module>
     </modules>
 
 

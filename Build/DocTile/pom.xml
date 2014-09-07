@@ -124,7 +124,7 @@
                                 <subject>User Guide</subject>
                                 <version>${project.version}</version>
                                 <author>Tommy Svensson</author>
-                                <copyright>Copyright © 2013 ${project.organization.name}</copyright>
+                                <copyright>Copyright © ${project.inceptionYear} ${project.organization.name}</copyright>
                                 <generateTitlePage>true</generateTitlePage>
                                 <generateTOC>true</generateTOC>
                             </pdfGeneratorOptions>
