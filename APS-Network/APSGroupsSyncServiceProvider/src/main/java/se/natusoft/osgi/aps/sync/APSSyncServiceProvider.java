@@ -39,7 +39,7 @@ package se.natusoft.osgi.aps.sync;
 import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
 import se.natusoft.osgi.aps.api.net.groups.service.GroupMember;
 import se.natusoft.osgi.aps.api.net.groups.service.MessageListener;
-import se.natusoft.osgi.aps.api.net.sync.service.APSSyncService;
+import se.natusoft.osgi.aps.api.net.sharing.service.APSSyncService;
 import se.natusoft.osgi.aps.tools.APSLogger;
 import se.natusoft.osgi.aps.tools.annotation.activator.*;
 

@@ -39,7 +39,9 @@ package se.natusoft.osgi.aps.messaging;
 import com.rabbitmq.client.*;
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent;
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener;
-import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService;
+import se.natusoft.osgi.aps.api.net.sharing.exception.APSSharingException;
+import se.natusoft.osgi.aps.api.net.sharing.model.Content;
+import se.natusoft.osgi.aps.api.net.sharing.service.APSSimpleMessageService;
 import se.natusoft.osgi.aps.messaging.config.RabbitMQConnectionConfig;
 import se.natusoft.osgi.aps.tools.APSLogger;
 import se.natusoft.osgi.aps.tools.annotation.activator.*;
@@ -176,10 +178,10 @@ public class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessage
                         this.connection.close();
                     }
                     catch (IOException ioe2) {
-                        this.logger.error("Failed to close connection due to channel create failure!", ioe2);
+                        this.logger.error("Failed to leaveSyncGroup connection due to channel create failure!", ioe2);
                     }
                 }
-                throw new APSMessageException(ioe.getMessage(), ioe);
+                throw new APSSharingException(ioe.getMessage(), ioe);
             }
 
             this.logger.info("Connected to RabbitMQ server at " +
@@ -203,7 +205,7 @@ public class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessage
                 this.connection = null;
             }
             catch (IOException ioe) {
-                this.logger.error("Failed to close RabbitMQ connection on shutdown!", ioe);
+                this.logger.error("Failed to leaveSyncGroup RabbitMQ connection on shutdown!", ioe);
             }
 
             this.logger.info("Disconnected from RabbitMQ server at " +
@@ -237,10 +239,10 @@ public class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessage
      *
      * @return A MessageGroup instance used to send and receive messages to/from the group.
      *
-     * @throws APSSimpleMessageService.APSMessageException on any failure to join.
+     * @throws se.natusoft.osgi.aps.api.net.sharing.exception.APSSharingException on any failure to join.
      */
     @Override
-    public MessageGroup joinMessageGroup(String name) throws APSMessageException {
+    public MessageGroup joinMessageGroup(String name) throws APSSharingException {
         MessageGroupProvider messageGroup = new MessageGroupProvider(name);
         this.messageGroupProviders.put(name, messageGroup);
         return messageGroup;
@@ -302,8 +304,8 @@ public class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessage
          * Creates a new message.
          */
         @Override
-        public Message createMessage() {
-            return new Message.Provider();
+        public Content createMessage() {
+            return new Content.Provider();
         }
 
         /**
@@ -312,8 +314,8 @@ public class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessage
          * @param content The content of the message.
          */
         @Override
-        public Message createMessage(byte[] content) {
-            Message.Provider message = new Message.Provider();
+        public Content createMessage(byte[] content) {
+            Content.Provider message = new Content.Provider();
             message.setBytes(Arrays.copyOf(content, content.length));
             return message;
         }
@@ -322,17 +324,17 @@ public class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessage
          * Sends a message.
          *
          * @param message The message to send.
-         * @throws APSSimpleMessageService.APSMessageException
+         * @throws se.natusoft.osgi.aps.api.net.sharing.exception.APSSharingException
          *
          */
         @Override
-        public void sendMessage(Message message) throws APSMessageException {
+        public void sendMessage(Content message) throws APSSharingException {
             try {
                 getSendChannel().basicPublish(this.name, "", null, message.getBytes());
                 //logger.debug("Sent message of length " + message.getBytes().length);
             }
             catch (IOException ioe) {
-                throw new APSMessageException(ioe.getMessage(), ioe);
+                throw new APSSharingException(ioe.getMessage(), ioe);
             }
         }
 
@@ -342,7 +344,7 @@ public class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessage
          * @param listener The listener to add.
          */
         @Override
-        public void addMessageListener(Message.Listener listener) {
+        public void addMessageListener(Listener listener) {
             ReceiverThread receiverThread = listenerThreads.get(this.name);
             if (receiverThread == null) {
                 receiverThread = new ReceiverThread();
@@ -359,7 +361,7 @@ public class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessage
          * @param listener The listener to remove.
          */
         @Override
-        public void removeMessageListener(Message.Listener listener) {
+        public void removeMessageListener(Listener listener) {
             ReceiverThread receiverThread = listenerThreads.get(this.name);
             if (receiverThread != null) {
                 receiverThread.removeMessageListener(listener);
@@ -389,7 +391,7 @@ public class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessage
                 if (this.sendChannel != null) this.sendChannel.close();
             }
             catch (IOException ioe) {
-                logger.error("Failed to close channels!", ioe);
+                logger.error("Failed to leaveSyncGroup channels!", ioe);
             }
             ReceiverThread receiverThread = listenerThreads.remove(this.name);
             receiverThread.stopThread();
@@ -408,8 +410,8 @@ public class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessage
             private Channel recvChannel = null;
             private String recvQueueName = null;
 
-            List<MessageGroup.Message.Listener> listeners =
-                    Collections.synchronizedList(new LinkedList<MessageGroup.Message.Listener>());
+            List<Listener> listeners =
+                    Collections.synchronizedList(new LinkedList<Listener>());
 
             //
             // Constructors
@@ -443,7 +445,7 @@ public class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessage
              *
              * @param listener The listener to add.
              */
-            public void addMessageListener(Message.Listener listener) {
+            public void addMessageListener(Listener listener) {
                 this.listeners.add(listener);
             }
 
@@ -452,7 +454,7 @@ public class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessage
              *
              * @param listener The listener to remove.
              */
-            public void removeMessageListener(Message.Listener listener) {
+            public void removeMessageListener(Listener listener) {
                 this.listeners.remove(listener);
             }
 
@@ -505,7 +507,7 @@ public class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessage
                                 byte[] body = delivery.getBody();
                                 //logger.debug("======== Received message of length " + body.length + " ==========");
                                 //logger.debug("  Current no listeners: " + this.listeners.size());
-                                Message message = createMessage(body);
+                                Content message = createMessage(body);
 
                                 new ListenerCallThread(name, message, this.listeners).start();
                             }
@@ -558,10 +560,10 @@ public class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessage
              */
             private class ListenerCallThread extends Thread {
                 String name;
-                Message message;
-                LinkedList<Message.Listener> listenersCopy = new LinkedList<>();
+                Content message;
+                LinkedList<Listener> listenersCopy = new LinkedList<>();
 
-                public ListenerCallThread(String name, Message message, List<Message.Listener> listeners) {
+                public ListenerCallThread(String name, Content message, List<Listener> listeners) {
                     super("APSRabbitMQSimpleMessageServiceProvider-ListenerCallThread");
                     this.name = name;
                     this.message = message;
@@ -572,7 +574,7 @@ public class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessage
                 public void run() {
                     // TODO: This is still not optimal since if a 'listener.receiveMessage(...)' call
                     // decides to not return consecutive listeners will not be called!
-                    for (Message.Listener listener: this.listenersCopy) {
+                    for (Listener listener: this.listenersCopy) {
                         try {
                             listener.receiveMessage(this.name, message);
                         }

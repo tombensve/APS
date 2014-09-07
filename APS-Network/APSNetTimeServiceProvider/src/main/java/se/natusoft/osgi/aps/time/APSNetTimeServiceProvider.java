@@ -97,6 +97,23 @@ public class APSNetTimeServiceProvider implements APSNetTimeService {
     }
 
     /**
+     * Returns current net time.
+     */
+    @Override
+    public long getNetTime() {
+        GroupMember groupMember = getGroupMember();
+        return groupMember.createFromLocalTime(new Date()).getNetTime();
+    }
+
+    /**
+     * Returns current net time as a Date object.
+     */
+    @Override
+    public Date getNetTimeAsDate() {
+        return new Date(getNetTime());
+    }
+
+    /**
      * Converts from net time to local time.
      *
      * @param netTime The net time to convert.

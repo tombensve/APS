@@ -2,10 +2,14 @@
 <!--
     PROJECT
         Name
-            APS Hazelcast Networking Config Service
+            APS JGroups Cluster Service Provider
         
         Code Version
             1.0.0
+        
+        Description
+            This provides an implementation of APSClusterService using JGroups to provide the
+            cluster functionality.
         
     COPYRIGHTS
         Copyright (C) 2012 by Natusoft AB All rights reserved.
@@ -25,11 +29,10 @@
         See the License for the specific language governing permissions and
         limitations under the License.
         
-
     AUTHORS
         tommy ()
             Changes:
-            2014-08-13: Created!
+            2014-09-06: Created!
             
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -41,20 +44,22 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>aps-hazelcast-config-service-provider</artifactId>
+    <artifactId>aps-jgroups-cluster-service-provider</artifactId>
     <packaging>bundle</packaging>
 
-    <name>APS Hazelcast Networking Config Service</name>
+    <name>APS JGroups Cluster Service Provider</name>
 
     <description>
+        This provides an implementation of APSClusterService using JGroups to provide the
+        cluster functionality.
     </description>
 
     <properties>
-        <!--
-            Bundle properties
+        <!-- 
+            Bundle properties 
         -->
 
-        <!-- The symbolic name of the bundle. Defaults to the artifact id, but can be overriden. -->
+        <!-- The symbolic name of the bundle. Defaults to the artifact id, but can be overridden. -->
         <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
 
         <!-- The bundle activator class -->
@@ -62,7 +67,6 @@
 
         <!-- The bundle packages to export. -->
         <osgi.export.package>
-            se.natusoft.osgi.aps.hazelcast.api
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->
@@ -70,9 +74,7 @@
 
         <!-- The private packages. -->
         <osgi.private.package>
-            se.natusoft.osgi.aps.hazelcast,
-            se.natusoft.osgi.aps.hazelcast.config,
-            se.natusoft.osgi.aps.hazelcast.service
+            se.natusoft.osgi.aps.net.cluster.service
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->
@@ -94,15 +96,16 @@
         -->
 
         <!-- We register our configuration for auto registration and management. -->
-        <aps.config.classes>
-            se.natusoft.osgi.aps.hazelcast.config.APSHazelCastConfig
-        </aps.config.classes>
+        <aps.config.classes></aps.config.classes>
 
         <!--
              Trigger tiles.
          -->
+        <!-- Server deployment. -->
         <tile.deploy>${project.groupId}:DeployBundleTile:${project.version}</tile.deploy>
-        <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
+
+        <!-- Support for coding in groovy -->
+        <tile.groovy>${project.groupId}:groovy-tile:${project.version}</tile.groovy>
 
         <!--
             Other properties
@@ -114,12 +117,14 @@
         <!--
             APS
         -->
+
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-apis</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tools-lib</artifactId>
@@ -127,23 +132,24 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-configuration-service-provider</artifactId>
-            <version>0.11.0</version>
-            <scope>test</scope>
-        </dependency>
         <!--
-            aps-hazelcast-net-config-service-provider dependencies
+            aps-jgroups-cluster-service-provider dependencies
+        -->
+
+        <!--
+            This dependency needs to be deployed separately as a bundle in the OSGi container.
         -->
         <dependency>
-            <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast</artifactId>
-            <version>3.2.4</version>
+            <groupId>org.jgroups</groupId>
+            <artifactId>jgroups</artifactId>
+            <version>3.5.0.Final</version>
+            <scope>provided</scope>
         </dependency>
+
     </dependencies>
 
     <build>
+
         <plugins>
 
             <!--
@@ -151,6 +157,7 @@
             -->
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
                 <configuration>
                     <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>

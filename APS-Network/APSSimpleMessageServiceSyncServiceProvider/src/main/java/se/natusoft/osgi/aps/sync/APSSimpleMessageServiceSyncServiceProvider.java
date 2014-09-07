@@ -33,8 +33,10 @@
  */
 package se.natusoft.osgi.aps.sync;
 
-import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService;
-import se.natusoft.osgi.aps.api.net.sync.service.APSSyncService;
+import se.natusoft.osgi.aps.api.net.sharing.exception.APSSharingException;
+import se.natusoft.osgi.aps.api.net.sharing.model.Content;
+import se.natusoft.osgi.aps.api.net.sharing.service.APSSimpleMessageService;
+import se.natusoft.osgi.aps.api.net.sharing.service.APSSyncService;
 import se.natusoft.osgi.aps.tools.APSLogger;
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed;
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty;
@@ -103,7 +105,7 @@ public class APSSimpleMessageServiceSyncServiceProvider implements APSSyncServic
     // Inner Classes
     //
 
-    public class SyncGroupProvider implements SyncGroup, APSSimpleMessageService.MessageGroup.Message.Listener {
+    public class SyncGroupProvider implements SyncGroup, APSSimpleMessageService.Listener {
         //
         // Private Members
         //
@@ -175,7 +177,7 @@ public class APSSimpleMessageServiceSyncServiceProvider implements APSSyncServic
         @Override
         public void sendMessage(Message message) throws APSSyncException {
             try {
-                APSSimpleMessageService.MessageGroup.Message msg = this.messageGroup.createMessage();
+                Content msg = this.messageGroup.createMessage();
                 ObjectOutputStream dataStream = new ObjectOutputStream(msg.getOutputStream());
                 dataStream.writeInt(MSG_PROTOCOL_VERSION);
                 dataStream.writeObject(this.uuid);
@@ -185,7 +187,7 @@ public class APSSimpleMessageServiceSyncServiceProvider implements APSSyncServic
 
                this.messageGroup.sendMessage(msg);
             }
-            catch (APSSimpleMessageService.APSMessageException | IOException me) {
+            catch (APSSharingException | IOException me) {
                 throw new APSSyncException(me.getMessage(), me);
             } catch (NullPointerException npe) {
                 throw new APSSyncException("Queue '" + this.name + "' is undefined!");
@@ -219,7 +221,7 @@ public class APSSimpleMessageServiceSyncServiceProvider implements APSSyncServic
          * @param message   The received message.
          */
         @Override
-        public void receiveMessage(String queueName, APSSimpleMessageService.MessageGroup.Message message) {
+        public void receiveMessage(String queueName, Content message) {
             ObjectInputStream dataStream = null;
             try {
                 dataStream = new ObjectInputStream(message.getInputStream());
@@ -262,7 +264,7 @@ public class APSSimpleMessageServiceSyncServiceProvider implements APSSyncServic
             finally {
                 if (dataStream != null) {
                     try {dataStream.close();}
-                    catch (IOException ioe) {logger.error("Failed to close received message stream!", ioe);}
+                    catch (IOException ioe) {logger.error("Failed to leaveSyncGroup received message stream!", ioe);}
                 }
             }
         }
@@ -301,7 +303,7 @@ public class APSSimpleMessageServiceSyncServiceProvider implements APSSyncServic
          */
         private void _reSyncAll() {
             try {
-                APSSimpleMessageService.MessageGroup.Message msg = this.messageGroup.createMessage();
+                Content msg = this.messageGroup.createMessage();
                 ObjectOutputStream dataStream = new ObjectOutputStream(msg.getOutputStream());
                 dataStream.writeInt(MSG_PROTOCOL_VERSION);
                 dataStream.writeObject(this.uuid);

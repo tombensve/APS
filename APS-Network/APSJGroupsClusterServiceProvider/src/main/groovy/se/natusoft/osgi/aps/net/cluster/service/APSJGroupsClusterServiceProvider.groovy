@@ -2,11 +2,15 @@
  * 
  * PROJECT
  *     Name
- *         APS Hazelcast Networking Config Service
+ *         APS JGroups Cluster Service Provider
  *     
  *     Code Version
  *         1.0.0
  *     
+ *     Description
+ *         This provides an implementation of APSClusterService using JGroups to provide the
+ *         cluster functionality.
+ *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
  *     
@@ -28,16 +32,17 @@
  * AUTHORS
  *     tommy ()
  *         Changes:
- *         2014-08-13: Created!
+ *         2014-09-06: Created!
  *         
  */
-package se.natusoft.osgi.aps.hazelcast.config;
+package se.natusoft.osgi.aps.net.cluster.service
 
-import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigDescription;
+/**
+ * Created by tommy on 2014-09-06.
+ */
+class APSJGroupsClusterServiceProvider {
 
-@APSConfigDescription(
-        configId = "lists",
-        description = "Provides Hazelcast list configuration",
-        version = "1.0.0"
-)
-public class APSListConfig extends APSCollectionCommoConfig {}
+    public static void main(String[] args) {
+        System.out.println("Running!")
+    }
+}
