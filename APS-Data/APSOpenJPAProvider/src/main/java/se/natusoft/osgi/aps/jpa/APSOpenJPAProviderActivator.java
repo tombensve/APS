@@ -67,7 +67,7 @@ public class APSOpenJPAProviderActivator implements BundleActivator {
         this.logger = new APSLogger(System.out);
         this.logger.start(context);
 
-        Dictionary apsJPAServiceProps = new Properties();
+        Properties apsJPAServiceProps = new Properties();
         apsJPAServiceProps.put(Constants.SERVICE_PID, APSOpenJPAServiceProvider.class.getName());
         this.apsJPAServiceProvider = new APSOpenJPAServiceProvider(this.logger, context);
         this.apsOpenJPAServiceReg = context.registerService(APSJPAService.class.getName(), apsJPAServiceProvider, apsJPAServiceProps);
