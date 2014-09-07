@@ -67,7 +67,6 @@
              Trigger tiles.
          -->
         <tile.deploy>${project.groupId}:DeployBundleTile:${project.version}</tile.deploy>
-        <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
 
         <!--
             Other properties
