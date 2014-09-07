@@ -49,6 +49,16 @@ import java.util.Date;
 public interface APSNetTimeService {
 
     /**
+     * Returns current net time.
+     */
+    public long getNetTime();
+
+    /**
+     * Returns current net time as a Date object.
+     */
+    public Date getNetTimeAsDate();
+
+    /**
      * Converts from net time to local time.
      *
      * @param netTime The net time to convert.

@@ -107,7 +107,10 @@
             se.natusoft.osgi.aps.api.net.rpc.service;version="${project.version}",
             se.natusoft.osgi.aps.api.net.rpc.exceptions;version="${project.version}",
             se.natusoft.osgi.aps.api.net.groups.service;version="${project.version}",
-            se.natusoft.osgi.aps.api.net.messaging.service;version="${project.version}",
+            se.natusoft.osgi.aps.api.net.sharing.exception;version="${project.version}",
+            se.natusoft.osgi.aps.api.net.sharing.model;version="${project.version}",
+            se.natusoft.osgi.aps.api.net.sharing.model.support;version="${project.version}",
+            se.natusoft.osgi.aps.api.net.sharing.service;version="${project.version}",
             se.natusoft.osgi.aps.api.net.time.service;version="${project.version}",
             se.natusoft.osgi.aps.api.net.sync.service;version="${project.version}",
             se.natusoft.osgi.aps.api.web.config;version="${project.version}"

@@ -87,7 +87,7 @@ public interface APSSessionService {
      * Closes the session represented by the specified id. After this call APSSession.isValid() on an _APSSession_
      * representing this session will return false.
      *
-     * @param sessionId The id of the session to close.
+     * @param sessionId The id of the session to leaveSyncGroup.
      */
     void closeSession(String sessionId);
 }
