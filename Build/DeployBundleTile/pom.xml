@@ -68,27 +68,36 @@
                 <version>2.3</version>
             </extension>
         </extensions>
-
-        <plugins>
-            <plugin>
-                <groupId>se.natusoft.osgi.aps</groupId>
-                <artifactId>ServerDeployPlugin</artifactId>
-                <version>${project.version}</version>
-                <executions>
-                    <execution>
-                        <id>server-deploy</id>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <phase>install</phase>
-                        <configuration>
-                            <sourceFile>${project.build.directory}/${project.build.finalName}.jar</sourceFile>
-                            <destFile>${server.deploy.dir}/${project.build.finalName}.jar</destFile>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>deploy-bundle</id>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>se.natusoft.osgi.aps</groupId>
+                        <artifactId>ServerDeployPlugin</artifactId>
+                        <version>${project.version}</version>
+                        <executions>
+                            <execution>
+                                <id>server-deploy</id>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <phase>install</phase>
+                                <configuration>
+                                    <sourceFile>${project.build.directory}/${project.build.finalName}.jar</sourceFile>
+                                    <destFile>${server.deploy.dir}/${project.build.finalName}.jar</destFile>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+
+        </profile>
+    </profiles>
 
 </project>
