@@ -57,11 +57,12 @@
         <module>APSDiscoveryServiceProvider</module>
         <module>APSStreamedJSONRPCProtocolProvider</module>
         <module>APSGroups</module>
-        <module>APSGroupsSyncServiceProvider</module>
+        <!--<module>APSGroupsSyncServiceProvider</module>-->
         <module>APSNetTimeServiceProvider</module>
-        <module>APSRabbitMQSimpleMessageServiceProvider</module>
-        <module>APSSimpleMessageServiceSyncServiceProvider</module>
-        <module>APSHazelcastConfigService</module>
+        <!--<module>APSRabbitMQSimpleMessageServiceProvider</module>-->
+        <!--<module>APSSimpleMessageServiceSyncServiceProvider</module>-->
+        <!--<module>APSClusterServiceSyncServiceProvider</module>-->
+        <module>APSJGroupsClusterServiceProvider</module>
     </modules>
 
 </project>

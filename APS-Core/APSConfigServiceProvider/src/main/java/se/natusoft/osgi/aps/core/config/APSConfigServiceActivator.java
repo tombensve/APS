@@ -44,11 +44,9 @@ import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
-import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService;
 import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
-import se.natusoft.osgi.aps.api.net.sync.service.APSSyncService;
+import se.natusoft.osgi.aps.api.net.sharing.service.APSSyncService;
 import se.natusoft.osgi.aps.api.net.time.service.APSNetTimeService;
-import se.natusoft.osgi.aps.core.config.api.APSConfigSyncMgmtService;
 import se.natusoft.osgi.aps.core.config.config.APSConfigServiceConfig;
 import se.natusoft.osgi.aps.core.config.service.APSConfigAdminServiceProvider;
 import se.natusoft.osgi.aps.core.config.service.APSConfigServiceExtender;
@@ -64,7 +62,6 @@ import se.natusoft.osgi.aps.tools.tracker.OnServiceAvailable;
 import se.natusoft.osgi.aps.tools.tracker.OnServiceLeaving;
 
 import java.io.IOException;
-import java.util.Dictionary;
 import java.util.Properties;
 
 public class APSConfigServiceActivator implements BundleActivator {
@@ -77,9 +74,6 @@ public class APSConfigServiceActivator implements BundleActivator {
 
     /** The APS configuration service. */
     private ServiceRegistration configService = null;
-
-    /** Publish a bundle provided APSConfigSyncMgmtService. */
-    private ServiceRegistration syncMgmtService = null;
 
     //
     // Required services
@@ -96,9 +90,6 @@ public class APSConfigServiceActivator implements BundleActivator {
 
     /** Tracker for the APSNetTimeService. */
     private APSServiceTracker<APSNetTimeService> netTimeServiceTracker = null;
-
-    /** Tracker for the APSJSONService. */
-    private APSServiceTracker<APSJSONService> jsonServiceTracker = null;
 
     //
     // Other Members
@@ -180,7 +171,7 @@ public class APSConfigServiceActivator implements BundleActivator {
 
     private void setupServices(APSFilesystemService fsService) throws Exception {
         // Create or get filesystem.
-        APSFilesystem fs = null;
+        APSFilesystem fs;
         try {
             fs = fsService.getFilesystem(APSConfigServiceProvider.class.getName());
         } catch (IOException ioe) {
@@ -197,7 +188,7 @@ public class APSConfigServiceActivator implements BundleActivator {
         // Register APSConfigAdminService
         this.configAdminProvider = new APSConfigAdminServiceProvider(this.configAdminLogger,
                 memoryStore, envStore, configStore);
-        Dictionary adminProps = new Properties();
+        Properties adminProps = new Properties();
         adminProps.put(Constants.SERVICE_PID, APSConfigAdminServiceProvider.class.getName());
         this.configAdminService = this.context.registerService(APSConfigAdminService.class.getName(), this.configAdminProvider,
                 adminProps);
@@ -207,7 +198,7 @@ public class APSConfigServiceActivator implements BundleActivator {
         // Register APSConfigService
         this.configServiceProvider = new APSConfigServiceProvider(this.configLogger,
                this.configurationAdminTracker.getWrappedService(), memoryStore, envStore, configStore);
-        Dictionary props = new Properties();
+        Properties props = new Properties();
         props.put(Constants.SERVICE_PID, APSConfigServiceProvider.class.getName());
         this.configService = this.context.registerService(APSConfigService.class.getName(), this.configServiceProvider, props);
         this.configLogger.setServiceReference(this.configService.getReference());
@@ -236,28 +227,18 @@ public class APSConfigServiceActivator implements BundleActivator {
                 APSServiceTracker.LARGE_TIMEOUT);
         this.netTimeServiceTracker.start();
 
-        // Setup the JSON service
-        this.jsonServiceTracker = new APSServiceTracker<>(context, APSJSONService.class, APSServiceTracker.LARGE_TIMEOUT);
-        this.jsonServiceTracker.start();
-
         // We create and start a new Synchronizer when an active APSSyncService becomes available, and stop it when
         // the active APSSyncService leaves. This because the Synchronizer need to rejoin the group when there is a
         // new APSSyncService since membership is automatically removed when the service goes away.
 
-        this.syncServiceTracker.onActiveServiceAvailable(new OnServiceAvailable<APSSyncService> () {
-            public void onServiceAvailable(APSSyncService syncService, ServiceReference serviceReference) throws Exception {
+        this.syncServiceTracker.onActiveServiceAvailable(new OnServiceAvailable<APSSyncService<Synchronizer.ConfigSync>> () {
+            public void onServiceAvailable(APSSyncService<Synchronizer.ConfigSync> syncService, ServiceReference serviceReference)
+                    throws Exception {
                 APSConfigServiceActivator.this.synchronizer =
                         new Synchronizer(configAdminLogger, configAdminProvider, configServiceProvider, envStore, memoryStore,
                                 configStore, syncService,
-                                APSConfigServiceActivator.this.netTimeServiceTracker.getWrappedService(),
-                                APSConfigServiceActivator.this.jsonServiceTracker.getWrappedService());
+                                APSConfigServiceActivator.this.netTimeServiceTracker.getWrappedService());
                 APSConfigServiceActivator.this.synchronizer.start();
-
-                Dictionary props = new Properties();
-                props.put(Constants.SERVICE_PID, Synchronizer.class.getName());
-                APSConfigServiceActivator.this.syncMgmtService =
-                        APSConfigServiceActivator.this.context.registerService(APSConfigSyncMgmtService.class.getName(),
-                        APSConfigServiceActivator.this.synchronizer, props);
             }
         });
 
@@ -268,7 +249,6 @@ public class APSConfigServiceActivator implements BundleActivator {
                 // whole server is taken down. In that case it is possible that this executes at the same
                 // time as takedownServcies(context), which also shuts down the synchronizer.
                 synchronized (APSConfigServiceActivator.this) {
-                    APSConfigServiceActivator.this.syncMgmtService.unregister();
                     if (APSConfigServiceActivator.this.synchronizer != null) {
                         APSConfigServiceActivator.this.synchronizer.stop();
                         APSConfigServiceActivator.this.synchronizer.cleanup();

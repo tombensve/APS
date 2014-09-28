@@ -50,7 +50,7 @@ import se.natusoft.osgi.aps.api.net.sharing.exception.APSSharingException;
  * The state was inspired by JGroups.
  */
 @SuppressWarnings("UnusedDeclaration")
-public interface APSClusterService<Message> {
+public interface APSClusterService<Message, State> extends APSClusterInfoService {
 
     /**
      * Joins the named cluster.
@@ -58,7 +58,12 @@ public interface APSClusterService<Message> {
      * @param name The cluster to join.
      * @param member The member to receive cluster messages.
      */
-    APSCluster<Message> joinCluster(String name, APSClusterMember member) throws APSSharingException;
+    APSCluster<Message> joinCluster(String name, APSClusterMember<Message, State> member) throws APSSharingException;
+
+    /**
+     * Returns information about the current clusters.
+     */
+    String getClusterInfo();
 
     /**
      * This is a specific cluster.
@@ -108,11 +113,16 @@ public interface APSClusterService<Message> {
         void shared(Message message);
 
         /**
-         * The current state have been shared.
+         * The current state have been shared by another member.
          *
          * @param state The shared state.
          */
         void sharedState(State state);
+
+        /**
+         * Shares the members state.
+         */
+        State shareState();
 
     }
 

@@ -79,6 +79,7 @@
         <clm.ver>2.1.3</clm.ver>
         <vaadin.version>7.1.14</vaadin.version>
         <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+        <hazelcast.version>3.1.7</hazelcast.version>
     </properties>
 
     <!--
@@ -427,6 +428,8 @@
                                 <sourceCodeDirs>
                                     src/main/java/**/.*.java,
                                     src/test/java/**/.*.java,
+                                    src/main/groovy/**/.*.groovy,
+                                    src/test/groovy/**/.*.groovy
                                     src/main/resources/**/.*.properties,
                                     src/main/resources/**/.*.xml,
                                     src/main/resources/**/.*.png,
