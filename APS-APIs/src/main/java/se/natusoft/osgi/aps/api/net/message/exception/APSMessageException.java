@@ -31,55 +31,34 @@
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
- *         2014-08-25: Created!
+ *         2014-10-27: Created!
  *         
  */
-package se.natusoft.osgi.aps.api.net.sharing.model.support;
+package se.natusoft.osgi.aps.api.net.message.exception;
 
-import se.natusoft.osgi.aps.api.net.sharing.model.Member;
-
-import java.util.UUID;
+import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
 
 /**
- * Provides a default implementation of Member.
+ * Indicates a problem sending or receiving a message.
  */
-public class MemberProvider implements Member {
-    //
-    // Private Members
-    //
-
-    /** The id of the member. */
-    private UUID id;
-
-    //
-    // Constructors
-    //
+public class APSMessageException extends APSRuntimeException {
 
     /**
-     * Creates a new MemberProvider.
-     */
-    public MemberProvider() {
-        this.id = UUID.randomUUID();
-    }
-
-    /**
-     * Creates a new MemberProvider.
+     * Creates a new APSMessageException.
      *
-     * @param id The id of the member.
+     * @param message The exception message.
      */
-    public MemberProvider(UUID id) {
-        this.id = id;
+    public APSMessageException(String message) {
+        super(message);
     }
 
-    //
-    // Methods
-    //
-
     /**
-     * Returns the ID of this member.
+     * Creates a new APSMessageException.
+     *
+     *  @param message The exception message.
+     * @param cause The cause of this exception.
      */
-    @Override
-    public UUID getId() {
-        return null;
+    public APSMessageException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

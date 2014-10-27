@@ -6,7 +6,7 @@ This service provides an implementation of APSMessageService using [RabbitMQ](ht
 
 [Javadoc](http://apidoc.natusoft.se/APS/se/natusoft/osgi/aps/api/net/messaging/service/APSMessageService.html)
 
-public _interface_ __APSMessageService__   [se.natusoft.osgi.aps.api.net.messaging.service] {
+public _interface_ __APSMessageService__   [se.natusoft.osgi.aps.api.net.message.service] {
 
 Defines a message service.
 
@@ -76,7 +76,7 @@ _Parameters_
 
 > _name_ - The name of the queue to get. 
 
-public _interface_ __Queue__   [se.natusoft.osgi.aps.api.net.messaging.service] {
+public _interface_ __Queue__   [se.natusoft.osgi.aps.api.net.message.service] {
 
 This represents a specific named queue.
 
@@ -144,7 +144,7 @@ _Throws_
 
 > _UnsupportedOperationException_ - If this is not allowed by the implementation. 
 
-public _interface_ __Message__   [se.natusoft.osgi.aps.api.net.messaging.service] {
+public _interface_ __Message__   [se.natusoft.osgi.aps.api.net.message.service] {
 
 This represents a message to send/receive.
 
@@ -168,7 +168,7 @@ __InputStream getInputStream()__
 
 Returns an InputStream for reading the message content.
 
-public _interface_ __Listener__   [se.natusoft.osgi.aps.api.net.messaging.service] {
+public _interface_ __Listener__   [se.natusoft.osgi.aps.api.net.message.service] {
 
 This needs to be implemented to receive messages.
 
@@ -182,7 +182,7 @@ _Parameters_
 
 > _message_ - The received message. 
 
-public _class_ __Provider__ implements  Message    [se.natusoft.osgi.aps.api.net.messaging.service] {
+public _class_ __Provider__ implements  Message    [se.natusoft.osgi.aps.api.net.message.service] {
 
 A simple default implementation of message.
 
@@ -198,7 +198,7 @@ Creates a new Provider.
 
 
 
-public _static_ _class_ __APSMessageException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.messaging.service] {
+public _static_ _class_ __APSMessageException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.message.service] {
 
 Thrown on sendMessage(). Please note that this is a runtime exception!
 

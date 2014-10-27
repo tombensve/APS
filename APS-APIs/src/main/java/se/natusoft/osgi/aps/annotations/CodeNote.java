@@ -31,21 +31,23 @@
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
- *         2014-08-25: Created!
+ *         2014-10-27: Created!
  *         
  */
-package se.natusoft.osgi.aps.api.net.sharing.model;
+package se.natusoft.osgi.aps.annotations;
 
-import java.io.Serializable;
-import java.util.UUID;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Represents a member.
+ * This is an idea for special comments where an annotation makes it more connected to the item commented.
  */
-public interface Member extends Serializable {
-
-    /**
-     * Returns the ID of this member.
-     */
-    UUID getId();
+@Retention(RetentionPolicy.SOURCE)
+@Target({ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.LOCAL_VARIABLE, ElementType.METHOD,
+        ElementType.PACKAGE, ElementType.PARAMETER})
+public @interface CodeNote {
+    String value();
+    String by() default "";
 }

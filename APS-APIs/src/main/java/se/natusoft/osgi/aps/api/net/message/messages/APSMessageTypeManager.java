@@ -31,35 +31,39 @@
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
- *         2014-08-25: Created!
+ *         2014-10-27: Created!
  *         
  */
-package se.natusoft.osgi.aps.api.net.sharing.exception;
+package se.natusoft.osgi.aps.api.net.message.messages;
 
-import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
- * Exception thrown by sharing services.
+ * A manager that writes message id before message is written and reads this id and creates
+ * a correct message instance to read actual message.
  */
-public class APSSharingException extends APSRuntimeException {
+public interface APSMessageTypeManager {
 
     /**
-     * Creates a new _APSSharingException_.
+     * Creates a new APSMessage subclass based on type.
      *
-     * @param message The exception message.
+     * @param dataStream A DataInputStream to read information about what message to create from.
+     *
+     * @return A correct APSMessage subclass instance.
+     *
+     * @throws java.io.IOException on failure to read.
      */
-    public APSSharingException(String message) {
-        super(message);
-    }
+    APSMessage createMessage(DataInputStream dataStream) throws IOException;
 
     /**
-     * Creates a new _APSSharingException_.
+     * Writes message type identification before message.
      *
-     * @param message The exception message.
-     * @param cause The cause of this exception.
+     * @param message The message that is about to be written.
+     * @param dataStream The stream to write message type identification on.
+     *
+     * @throws IOException on failure to write.
      */
-    public APSSharingException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
+    void writeMessageType(APSMessage message, DataOutputStream dataStream) throws IOException;
 }
