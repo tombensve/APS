@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Tools Library
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides a library of utilities, among them APSServiceTracker used by all other APS bundles.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
  *         2011-08-04: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.tools;
 
@@ -47,10 +47,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
- * This wraps a LogService instance and simply logs to stdout when no logservice is available. 
+ * This wraps a LogService instance and simply logs to stdout when no logservice is available.
+ *
+ * Note that this also implements the LogService API!
  */
-public class APSLogger {
-    
+public class APSLogger implements LogService {
+
     //
     // Private Members
     //
@@ -66,7 +68,7 @@ public class APSLogger {
 
     /** The tracked service instance. */
     private LogService logService = null;
-    
+
     /** The stream to write to when log service is not available. */
     private PrintStream outStream = System.out;
 
@@ -95,7 +97,7 @@ public class APSLogger {
      * and at least one LogService is available.
      */
     public APSLogger() {}
-    
+
     //
     // Methods
     //
@@ -126,13 +128,13 @@ public class APSLogger {
 
     /**
      * Sets the service reference of the service to identify as logger.
-     * 
+     *
      * @param svcRef The service reference to set.
      */
     public void setServiceReference(ServiceReference svcRef) {
         this.svcRef = svcRef;
     }
-    
+
     /**
      * @return The service reference.
      */
@@ -152,12 +154,12 @@ public class APSLogger {
     /**
      * This method does the main job of this class. It forwards to the log service and
      * if that fails it logs to the stream.
-     * 
+     *
      * @param level The loglevel.
      * @param message The log message.
      * @param cause An optional Throwable that is the cause of the log.
      */
-    protected void log(int level, String message, Throwable cause) {
+    public void log(int level, String message, Throwable cause) {
         if (this.logService != null) {
             try {
                     logToService(this.logService, level, message, cause);
@@ -170,10 +172,90 @@ public class APSLogger {
             logToOutStream(level, message, cause);
         }
     }
-    
+
+    /**
+     * Provides LogService API!
+     *
+     * <hr>
+     *
+     * Logs a message.
+     * <p/>
+     * <p/>
+     * The <code>ServiceReference</code> field and the <code>Throwable</code> field
+     * of the <code>LogEntry</code> object will be set to <code>null</code>.
+     *
+     * @param level   The severity of the message. This should be one of the
+     *                defined log levels but may be any integer that is interpreted in a
+     *                user defined way.
+     * @param message Human readable string describing the condition or
+     *                <code>null</code>.
+     * @see #LOG_ERROR
+     * @see #LOG_WARNING
+     * @see #LOG_INFO
+     * @see #LOG_DEBUG
+     */
+    @Override
+    public void log(int level, String message) {
+        log(level, message, null);
+    }
+
+    /**
+     * Provides LogService API!
+     *
+     * <hr>
+     *
+     * Logs a message associated with a specific <code>ServiceReference</code>
+     * object.
+     * <p/>
+     * <p/>
+     * The <code>Throwable</code> field of the <code>LogEntry</code> will be set to
+     * <code>null</code>.
+     *
+     * @param sr      THIS IS IGNORED!
+     * @param level   The severity of the message. This should be one of the
+     *                defined log levels but may be any integer that is interpreted in a
+     *                user defined way.
+     * @param message Human readable string describing the condition or
+     *                <code>null</code>.
+     * @see #LOG_ERROR
+     * @see #LOG_WARNING
+     * @see #LOG_INFO
+     * @see #LOG_DEBUG
+     */
+    @Override()
+    public void log(ServiceReference sr, int level, String message) {
+        log(level, message);
+    }
+
+    /**
+     * Provides LogService API!
+     *
+     * <hr>
+     *
+     * Logs a message with an exception associated and a
+     * <code>ServiceReference</code> object.
+     *
+     * @param sr        THIS IS IGNORED!
+     * @param level     The severity of the message. This should be one of the
+     *                  defined log levels but may be any integer that is interpreted in a
+     *                  user defined way.
+     * @param message   Human readable string describing the condition or
+     *                  <code>null</code>.
+     * @param exception The exception that reflects the condition or
+     *                  <code>null</code>.
+     * @see #LOG_ERROR
+     * @see #LOG_WARNING
+     * @see #LOG_INFO
+     * @see #LOG_DEBUG
+     */
+    @Override
+    public void log(ServiceReference sr, int level, String message, Throwable exception) {
+        log(level, message, exception);
+    }
+
     /**
      * This logs to the log service.
-     * 
+     *
      * @param logService the LogService to log to.
      * @param level The loglevel.
      * @param message The log message.
@@ -195,12 +277,12 @@ public class APSLogger {
             else {
                 logService.log(level, this.loggingFor + message);
             }
-        }        
+        }
     }
-    
+
     /**
      * This logs to the output stream.
-     * 
+     *
      * @param level The loglevel.
      * @param message The log message.
      * @param cause An optional Throwable that is the cause of the log.
@@ -240,76 +322,76 @@ public class APSLogger {
             this.outStream.println(log.toString());
         }
     }
-    
+
     /**
      * Does a debug log.
-     * 
+     *
      * @param message The log message.
      */
     public void debug(String message) {
         log(LogService.LOG_DEBUG, message, null);
     }
-    
+
     /**
      * Does a debug log.
-     * 
+     *
      * @param message The log message.
      * @param cause The cause of the log entry.
      */
     public void debug(String message, Throwable cause) {
         log(LogService.LOG_DEBUG, message, cause);
     }
-    
+
     /**
      * Does an error log.
-     * 
+     *
      * @param message The log message.
      */
     public void error(String message) {
         log(LogService.LOG_ERROR, message, null);
     }
-    
+
     /**
      * Does an error log.
-     * 
+     *
      * @param message The log message.
      * @param cause The cause of the log entry.
      */
     public void error(String message, Throwable cause) {
         log(LogService.LOG_ERROR, message, cause);
     }
-    
+
     /**
      * Does an info log.
-     * 
+     *
      * @param message The log message.
      */
     public void info(String message) {
         log(LogService.LOG_INFO, message, null);
     }
-    
+
     /**
      * Does an info log.
-     * 
+     *
      * @param message The log message.
      * @param cause The cause of the log entry.
      */
     public void info(String message, Throwable cause) {
         log(LogService.LOG_INFO, message, cause);
     }
-    
+
     /**
      * Does a warning log.
-     * 
+     *
      * @param message The log message.
      */
     public void warn(String message) {
         log(LogService.LOG_WARNING, message, null);
     }
-    
+
     /**
      * Does a warning log.
-     * 
+     *
      * @param message The log message.
      * @param cause The cause of the log entry.
      */
