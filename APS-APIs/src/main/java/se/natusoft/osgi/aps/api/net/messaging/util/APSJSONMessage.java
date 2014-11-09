@@ -1,54 +1,55 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2014-10-27: Created!
- *         
+ *
  */
-package se.natusoft.osgi.aps.api.net.message.messages;
+package se.natusoft.osgi.aps.api.net.messaging.util;
 
+import org.osgi.service.log.LogService;
 import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONObject;
+import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService;
+import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessageException;
+import se.natusoft.osgi.aps.api.net.messaging.messages.APSMessage;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.Date;
+import java.io.*;
 
 /**
- * Possible base message class for JSON based messages. Makes use of the APSJSONService to read and write JSON.
+ * Possible base messaging class for JSON based messages. Makes use of the APSJSONService to read and write JSON.
  */
-public class APSJSONMessage extends APSMessage implements JSONErrorHandler {
+public class APSJSONMessage extends APSMessage.Provider implements JSONErrorHandler {
 
     //
     // Private Members
@@ -57,17 +58,14 @@ public class APSJSONMessage extends APSMessage implements JSONErrorHandler {
     /** The JSON service to user for creating and reading JSON. */
     private APSJSONService jsonService;
 
-    /** The time the message was received. */
-    private long receivedAt;
-
-    /** The message. */
-    private JSONObject message;
-
     /** A potential JSON read error. */
     private String jsonReadErrorMessage = null;
 
     /** A potential JSON read error cause. */
     private Throwable jsonReadErrorCause = null;
+
+    /** An OSGi LogService instance. (hint: implemented by APSToolsLib:APSLogger). This is optional. */
+    private LogService logService= null;
 
     //
     // Constructors
@@ -82,36 +80,56 @@ public class APSJSONMessage extends APSMessage implements JSONErrorHandler {
         this.jsonService = jsonService;
     }
 
+    /**
+     * Creates a new APSJSONMessage.
+     *
+     * @param jsonService The APSJSONService to use for reading and writing JSON.
+     * @param logService An OSGi LogService implementation to log to for JSON parsing errors.
+     */
+    public APSJSONMessage(APSJSONService jsonService, LogService logService) {
+        this(jsonService);
+        this.logService = logService;
+    }
+
     //
     // Methods
     //
 
-    /**
-     * This should be overridden by specific messages and super called as first thing done.
-     *
-     * @param dataStream The stream to read from.
-     *
-     * @throws java.io.IOException On failure to read.
-     */
-    protected
-    @Override
-    void readData(DataInputStream dataStream) throws IOException {
-        clearJSONErrors();
-        this.message = (JSONObject)getJsonService().readJSON(dataStream, this);
-        assertNoJSONErrors();
-        this.receivedAt = new Date().getTime();
+    public void setJSONData(String jsonData) {
+        super.setData(jsonData.getBytes());
     }
 
-    /**
-     * This should be overridden by specific messages and super called as first thing done.
-     *
-     * @param dataStream The stream to write to.
-     *
-     * @throws IOException On failure to write.
-     */
-    @Override
-    protected void writeData(DataOutputStream dataStream) throws  IOException {
-        getJsonService().writeJSON(dataStream, this.message, true);
+    public void setJSONData(JSONObject jsonMessage) throws IOException {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        getJsonService().writeJSON(stream, jsonMessage);
+        stream.close();
+        super.setData(stream.toByteArray());
+    }
+
+    public String getJSONDataAsString() {
+        return new String(super.getData());
+    }
+
+    public JSONObject getJSONDataAsObject() throws APSMessageException {
+        ByteArrayInputStream stream = new ByteArrayInputStream(super.getData());
+        JSONValue jsonValue = null;
+        try {
+            clearJSONErrors();
+            jsonValue = getJsonService().readJSON(stream, this);
+            assertNoJSONErrors();
+        }
+        catch (IOException ioe) {
+            throw new APSMessageException("Failed to read JSON from received messaging!", ioe);
+        }
+        finally {
+            try {stream.close();} catch (IOException ok) {}
+        }
+
+        if (!JSONObject.class.isAssignableFrom(jsonValue.getClass())) {
+            throw new APSMessageException("Messages must be a JSON objects!");
+        }
+
+        return (JSONObject)jsonValue;
     }
 
     /**
@@ -122,24 +140,7 @@ public class APSJSONMessage extends APSMessage implements JSONErrorHandler {
     }
 
     /**
-     * Returns the JSON message object. If not read nor updated by subclasses it will be empty.
-     */
-    public JSONObject getMessage() {
-        if (this.message == null) {
-            this.message = getJsonService().createJSONObject();
-        }
-        return this.message;
-    }
-
-    /**
-     * Returns the timestamp when the message was received.
-     */
-    public long getReceivedAt() {
-        return this.receivedAt;
-    }
-
-    /**
-     * Clears any JSON error message.
+     * Clears any JSON error messaging.
      */
     private void clearJSONErrors() {
         this.jsonReadErrorMessage = null;
@@ -160,17 +161,19 @@ public class APSJSONMessage extends APSMessage implements JSONErrorHandler {
     /**
      * Warns about something.
      *
-     * @param message The warning message.
+     * @param message The warning messaging.
      */
     @Override
     public void warning(String message) {
-        System.err.println(message);
+        if (this.logService != null) {
+            this.logService.log(LogService.LOG_WARNING, message);
+        }
     }
 
     /**
      * Indicate failure.
      *
-     * @param message The failure message.
+     * @param message The failure messaging.
      * @param cause   The cause of the failure. Can be null!
      * @throws RuntimeException This method must throw a RuntimeException.
      */
@@ -178,7 +181,8 @@ public class APSJSONMessage extends APSMessage implements JSONErrorHandler {
     public void fail(String message, Throwable cause) throws RuntimeException {
         this.jsonReadErrorMessage = message;
         this.jsonReadErrorCause = cause;
-        System.err.println(message);
-        cause.printStackTrace(System.err);
+        if (this.logService != null) {
+            this.logService.log(LogService.LOG_ERROR, message, cause);
+        }
     }
 }

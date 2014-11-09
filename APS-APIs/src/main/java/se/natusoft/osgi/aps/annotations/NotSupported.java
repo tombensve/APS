@@ -31,34 +31,20 @@
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
- *         2013-02-21: Created!
+ *         2014-10-27: Created!
  *
  */
-package se.natusoft.osgi.aps.api.auth.user.exceptions;
+package se.natusoft.osgi.aps.annotations;
 
-import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * This is thrown by APSAuthService when the implementation does not support the selected auth method.
+ * This is a pure source decorative annotation that say that some api is not supported.
  */
-public class APSAuthMethodNotSupportedException extends APSRuntimeException {
-
-    /**
-     * Creates a new APSAuthMethodNotSupportedException instance.
-     *
-     * @param message The exception messaging.
-     */
-    public APSAuthMethodNotSupportedException(String message) {
-        super(message);
-    }
-
-    /**
-     * Creates a new APSAuthMethodNotSupportedException instance.
-     *
-     * @param message The exception messaging.
-     * @param cause The exception that is the cause of this one.
-     */
-    public APSAuthMethodNotSupportedException(String message, Throwable cause) {
-        super(message, cause);
-    }
-}
+@Retention(RetentionPolicy.SOURCE)
+@Target({ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.LOCAL_VARIABLE, ElementType.METHOD,
+        ElementType.PACKAGE, ElementType.PARAMETER})
+public @interface NotSupported {}

@@ -31,34 +31,34 @@
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
- *         2013-02-21: Created!
+ *         2014-10-27: Created!
  *
  */
-package se.natusoft.osgi.aps.api.auth.user.exceptions;
+package se.natusoft.osgi.aps.api.net.messaging.exception;
 
 import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
 
 /**
- * This is thrown by APSAuthService when the implementation does not support the selected auth method.
+ * Indicates a problem sending or receiving a messaging.
  */
-public class APSAuthMethodNotSupportedException extends APSRuntimeException {
+public class APSMessageException extends APSRuntimeException {
 
     /**
-     * Creates a new APSAuthMethodNotSupportedException instance.
+     * Creates a new APSMessageException.
      *
      * @param message The exception messaging.
      */
-    public APSAuthMethodNotSupportedException(String message) {
+    public APSMessageException(String message) {
         super(message);
     }
 
     /**
-     * Creates a new APSAuthMethodNotSupportedException instance.
+     * Creates a new APSMessageException.
      *
-     * @param message The exception messaging.
-     * @param cause The exception that is the cause of this one.
+     *  @param message The exception messaging.
+     * @param cause The cause of this exception.
      */
-    public APSAuthMethodNotSupportedException(String message, Throwable cause) {
+    public APSMessageException(String message, Throwable cause) {
         super(message, cause);
     }
 }
