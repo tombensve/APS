@@ -36,7 +36,8 @@
  */
 package se.natusoft.osgi.aps.api.net.messaging.service;
 
-import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessageException;
+import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException;
+import se.natusoft.osgi.aps.api.net.messaging.messages.APSMessage;
 
 import java.util.List;
 
@@ -57,25 +58,38 @@ public interface APSMessageService {
     /**
      * Sends a messaging.
      *
-     * @param group The messaging group.
-     * @param message The actual messaging to send.
+     * @param message The message to send.
      *
-     * @throws APSMessageException on failure.
+     * @throws APSMessagingException on failure.
      *
      * @return true if the messaging was sent.
      */
-    boolean sendMessage(String group, byte[] message) throws APSMessageException;
+    boolean sendMessage(APSMessage message) throws APSMessagingException;
 
     /**
-     * Reads a messaging.
+     * Adds a listener for messages.
      *
-     * @param group The messaging group to read from.
-     * @param timeout The amount of milliseconds to wait for messaging to become available.
-     *
-     * @return The messaging bytes or null on timeout.
-     *
-     * @throws APSMessageException on any failure.
+     * @param listener The listener to add.
      */
-    byte[] readMessage(String group, int timeout) throws APSMessageException;
+    void addMessageListener(Listener listener);
 
+    /**
+     * Removes a messaging listener.
+     *
+     * @param listener The listener to remove.
+     */
+    void removeMessageListener(Listener listener);
+
+    /**
+     * Listener for messages.
+     */
+    interface Listener {
+
+        /**
+         * This is called when a messaging is received.
+         *
+         * @param message The received message.
+         */
+        void messageReceived(APSMessage message);
+    }
 }

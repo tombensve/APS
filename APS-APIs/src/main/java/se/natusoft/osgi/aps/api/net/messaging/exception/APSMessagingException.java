@@ -41,14 +41,14 @@ import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
 /**
  * Indicates a problem sending or receiving a messaging.
  */
-public class APSMessageException extends APSRuntimeException {
+public class APSMessagingException extends APSRuntimeException {
 
     /**
      * Creates a new APSMessageException.
      *
      * @param message The exception messaging.
      */
-    public APSMessageException(String message) {
+    public APSMessagingException(String message) {
         super(message);
     }
 
@@ -58,7 +58,7 @@ public class APSMessageException extends APSRuntimeException {
      *  @param message The exception messaging.
      * @param cause The cause of this exception.
      */
-    public APSMessageException(String message, Throwable cause) {
+    public APSMessagingException(String message, Throwable cause) {
         super(message, cause);
     }
 }

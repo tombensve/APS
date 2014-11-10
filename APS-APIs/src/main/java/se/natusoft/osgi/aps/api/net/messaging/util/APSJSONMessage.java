@@ -41,7 +41,7 @@ import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONObject;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService;
-import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessageException;
+import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException;
 import se.natusoft.osgi.aps.api.net.messaging.messages.APSMessage;
 
 import java.io.*;
@@ -96,21 +96,21 @@ public class APSJSONMessage extends APSMessage.Provider implements JSONErrorHand
     //
 
     public void setJSONData(String jsonData) {
-        super.setData(jsonData.getBytes());
+        super.data(jsonData.getBytes());
     }
 
     public void setJSONData(JSONObject jsonMessage) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         getJsonService().writeJSON(stream, jsonMessage);
         stream.close();
-        super.setData(stream.toByteArray());
+        super.data(stream.toByteArray());
     }
 
     public String getJSONDataAsString() {
         return new String(super.getData());
     }
 
-    public JSONObject getJSONDataAsObject() throws APSMessageException {
+    public JSONObject getJSONDataAsObject() throws APSMessagingException {
         ByteArrayInputStream stream = new ByteArrayInputStream(super.getData());
         JSONValue jsonValue = null;
         try {
@@ -119,14 +119,14 @@ public class APSJSONMessage extends APSMessage.Provider implements JSONErrorHand
             assertNoJSONErrors();
         }
         catch (IOException ioe) {
-            throw new APSMessageException("Failed to read JSON from received messaging!", ioe);
+            throw new APSMessagingException("Failed to read JSON from received messaging!", ioe);
         }
         finally {
             try {stream.close();} catch (IOException ok) {}
         }
 
         if (!JSONObject.class.isAssignableFrom(jsonValue.getClass())) {
-            throw new APSMessageException("Messages must be a JSON objects!");
+            throw new APSMessagingException("Messages must be a JSON objects!");
         }
 
         return (JSONObject)jsonValue;

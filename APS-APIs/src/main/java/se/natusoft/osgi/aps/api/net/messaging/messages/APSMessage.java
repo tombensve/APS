@@ -10,17 +10,30 @@ import java.util.Date;
  */
 public interface APSMessage {
 
-    /**
-     * Sets messaging bytes to send.
-     *
-     * @param data The messaging bytes to set.
-     */
-    void setData(byte[] data);
+    /** Indicates that timestamp is not available. */
+    public static final long NO_TIMESTAMP = 0;
 
     /**
-     * Gets messaging bytes.
+     * Set the group the message belongs to.
      *
-     * @return The bytes.
+     * @param group The group to set.
+     */
+    APSMessage group(String group);
+
+    /**
+     * Returns the group the message belongs to.
+     */
+    String getGroup();
+
+    /**
+     * Sets message bytes to send.
+     *
+     * @param data The message bytes to set.
+     */
+    APSMessage data(byte[] data);
+
+    /**
+     * Gets message bytes.
      */
     byte[] getData();
 
@@ -32,6 +45,14 @@ public interface APSMessage {
      */
     @Optional
     long getLocalDataTimestamp();
+
+    /**
+     * Sets the remote data timestamp.
+     *
+     * @param remoteDataTimestamp The timestamp to set.
+     */
+    @Optional
+    public APSMessage remoteDataTimestamp(long remoteDataTimestamp);
 
     /**
      * Returns the "localDataTimestamp" value from the sender, passed along with the
@@ -51,36 +72,38 @@ public interface APSMessage {
         // Private Members
         //
 
+        /** The group the message belongs to. */
+        private String group = "<unknown>";
+
         /** The timestamp of when the messaging was set locally. */
-        private long localDataTimestamp = 0;
+        private long localDataTimestamp = NO_TIMESTAMP;
 
         /** The timestamp of when the messaging was set remotely. */
-        private long remoteDataTimestamp = 0;
+        private long remoteDataTimestamp = NO_TIMESTAMP;
 
         /** The messaging bytes. */
         private byte[] message = new byte[0];
 
         //
-        // Constructors
-        //
-
-        /**
-         * Creates a new Provider instance.
-         */
-        public Provider() {}
-
-        /**
-         * Creates a new Provider instance.
-         *
-         * @param remoteDataTimestamp The received remote data timestamp.
-         */
-        public Provider(long remoteDataTimestamp) {
-            this.remoteDataTimestamp = remoteDataTimestamp;
-        }
-
-        //
         // Methods
         //
+
+        /**
+         * Sets the group this message belongs to.
+         *
+         * @param group The group to set.
+         */
+        public APSMessage group(String group) {
+            this.group = group;
+            return this;
+        }
+
+        /**
+         * Returns the group this message belongs to.
+         */
+        public String getGroup() {
+            return this.group;
+        }
 
         /**
          * Sets messaging bytes to send.
@@ -88,9 +111,10 @@ public interface APSMessage {
          * @param data The messaging bytes to set.
          */
         @Override
-        public void setData(byte[] data) {
+        public APSMessage data(byte[] data) {
             this.message = data;
             this.localDataTimestamp = new Date().getTime();
+            return this;
         }
 
         /**
@@ -113,6 +137,17 @@ public interface APSMessage {
         @Optional
         public long getLocalDataTimestamp() {
             return this.localDataTimestamp;
+        }
+
+        /**
+         * Sets the remote data timestamp.
+         *
+         * @param remoteDataTimestamp The timestamp to set.
+         */
+        @Optional
+        public APSMessage remoteDataTimestamp(long remoteDataTimestamp) {
+            this.remoteDataTimestamp = remoteDataTimestamp;
+            return this;
         }
 
         /**
