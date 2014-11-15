@@ -37,6 +37,7 @@
 package se.natusoft.osgi.aps.api.net.messaging.util;
 
 import org.osgi.service.log.LogService;
+import se.natusoft.osgi.aps.annotations.documentative.Implements;
 import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONObject;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
@@ -49,7 +50,7 @@ import java.io.*;
 /**
  * Possible base messaging class for JSON based messages. Makes use of the APSJSONService to read and write JSON.
  */
-public class APSJSONMessage extends APSMessage.Provider implements JSONErrorHandler {
+public class APSJSONMessage extends APSMessage.Default implements JSONErrorHandler {
 
     //
     // Private Members
@@ -64,7 +65,7 @@ public class APSJSONMessage extends APSMessage.Provider implements JSONErrorHand
     /** A potential JSON read error cause. */
     private Throwable jsonReadErrorCause = null;
 
-    /** An OSGi LogService instance. (hint: implemented by APSToolsLib:APSLogger). This is optional. */
+    /** An OSGi LogService instance. (hint: also implemented by APSToolsLib:APSLogger). This is optional. */
     private LogService logService= null;
 
     //
@@ -95,21 +96,42 @@ public class APSJSONMessage extends APSMessage.Provider implements JSONErrorHand
     // Methods
     //
 
-    public void setJSONData(String jsonData) {
-        super.data(jsonData.getBytes());
+    /**
+     * Provide JSON data as a String.
+     *
+     * @param jsonData The JSON data to provide in the message.
+     */
+    public void setJSONData(String jsonData) { super.data(jsonData.getBytes()); }
+
+    /**
+     * Provide JSON data as an APSJSONService JSONObject instance.
+     *
+     * @param jsonMessage The JSON data to provide in the message.
+     *
+     * @throws APSMessagingException on failure to serialize JSON to byte array.
+     */
+    public void setJSONData(JSONObject jsonMessage) throws APSMessagingException {
+        try {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            getJsonService().writeJSON(stream, jsonMessage);
+            stream.close();
+            super.data(stream.toByteArray());
+        }
+        catch (IOException ioe) {
+            throw new APSMessagingException("", ioe);
+        }
     }
 
-    public void setJSONData(JSONObject jsonMessage) throws IOException {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        getJsonService().writeJSON(stream, jsonMessage);
-        stream.close();
-        super.data(stream.toByteArray());
-    }
+    /**
+     * Returns the JSON data in the message as a String.
+     */
+    public String getJSONDataAsString() { return new String(super.getData()); }
 
-    public String getJSONDataAsString() {
-        return new String(super.getData());
-    }
-
+    /**
+     * Returns the JSON data in the message as a String.
+     *
+     * @throws APSMessagingException On failure to deserialize JSON from byte array.
+     */
     public JSONObject getJSONDataAsObject() throws APSMessagingException {
         ByteArrayInputStream stream = new ByteArrayInputStream(super.getData());
         JSONValue jsonValue = null;
@@ -164,6 +186,7 @@ public class APSJSONMessage extends APSMessage.Provider implements JSONErrorHand
      * @param message The warning messaging.
      */
     @Override
+    @Implements(JSONErrorHandler.class)
     public void warning(String message) {
         if (this.logService != null) {
             this.logService.log(LogService.LOG_WARNING, message);
@@ -178,7 +201,8 @@ public class APSJSONMessage extends APSMessage.Provider implements JSONErrorHand
      * @throws RuntimeException This method must throw a RuntimeException.
      */
     @Override
-    public void fail(String message, Throwable cause) throws RuntimeException {
+    @Implements(JSONErrorHandler.class)
+    public void fail(String message, Throwable cause) {
         this.jsonReadErrorMessage = message;
         this.jsonReadErrorCause = cause;
         if (this.logService != null) {

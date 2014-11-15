@@ -1,6 +1,6 @@
 package se.natusoft.osgi.aps.api.net.messaging.messages;
 
-import se.natusoft.osgi.aps.annotations.Optional;
+import se.natusoft.osgi.aps.annotations.documentative.Optional;
 
 import java.util.Date;
 
@@ -38,7 +38,7 @@ public interface APSMessage {
     byte[] getData();
 
     /**
-     * Returns the timestamp of when the messaging data was set. This can be
+     * Returns the timestamp of when the message data was set. This can be
      * because of received data or that data is about to be sent.
      *
      * This is a local value and is entirely optional. A value of 0 means not supported.
@@ -64,9 +64,9 @@ public interface APSMessage {
     long getRemoteDataTimestamp();
 
     /**
-     * This provides a default implementation of this messaging.
+     * This provides a default implementation of APSMessage.
      */
-    public static class Provider implements APSMessage {
+    public static class Default implements APSMessage {
 
         //
         // Private Members

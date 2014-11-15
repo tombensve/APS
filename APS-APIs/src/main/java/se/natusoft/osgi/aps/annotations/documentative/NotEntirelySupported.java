@@ -34,7 +34,7 @@
  *         2014-10-27: Created!
  *
  */
-package se.natusoft.osgi.aps.annotations;
+package se.natusoft.osgi.aps.annotations.documentative;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
