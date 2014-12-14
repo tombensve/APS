@@ -1,12 +1,12 @@
-package se.natusoft.osgi.aps.api.net.messaging.messages;
+package se.natusoft.osgi.aps.api.net.messaging.types;
 
-import se.natusoft.osgi.aps.annotations.documentative.Optional;
+import se.natusoft.osgi.aps.codedoc.Optional;
 
 import java.util.Date;
 
 /**
  * This represents a basic messaging that can be sent and received. More high level
- * messages can possibly be build on top of this.
+ * types can possibly be build on top of this.
  */
 public interface APSMessage {
 
@@ -14,31 +14,19 @@ public interface APSMessage {
     public static final long NO_TIMESTAMP = 0;
 
     /**
-     * Set the group the message belongs to.
+     * Sets content content.
      *
-     * @param group The group to set.
+     * @param content The content content to set.
      */
-    APSMessage group(String group);
+    APSMessage setContent(APSData content);
 
     /**
-     * Returns the group the message belongs to.
+     * Gets content content.
      */
-    String getGroup();
+    APSData getContent();
 
     /**
-     * Sets message bytes to send.
-     *
-     * @param data The message bytes to set.
-     */
-    APSMessage data(byte[] data);
-
-    /**
-     * Gets message bytes.
-     */
-    byte[] getData();
-
-    /**
-     * Returns the timestamp of when the message data was set. This can be
+     * Returns the timestamp of when the content data was set. This can be
      * because of received data or that data is about to be sent.
      *
      * This is a local value and is entirely optional. A value of 0 means not supported.
@@ -47,16 +35,8 @@ public interface APSMessage {
     long getLocalDataTimestamp();
 
     /**
-     * Sets the remote data timestamp.
-     *
-     * @param remoteDataTimestamp The timestamp to set.
-     */
-    @Optional
-    public APSMessage remoteDataTimestamp(long remoteDataTimestamp);
-
-    /**
      * Returns the "localDataTimestamp" value from the sender, passed along with the
-     * messaging.
+     * content.
      *
      * This value is entirely optional. A value of 0 means not supported.
      */
@@ -72,9 +52,6 @@ public interface APSMessage {
         // Private Members
         //
 
-        /** The group the message belongs to. */
-        private String group = "<unknown>";
-
         /** The timestamp of when the messaging was set locally. */
         private long localDataTimestamp = NO_TIMESTAMP;
 
@@ -82,49 +59,29 @@ public interface APSMessage {
         private long remoteDataTimestamp = NO_TIMESTAMP;
 
         /** The messaging bytes. */
-        private byte[] message = new byte[0];
+        private APSData content = null;
 
         //
         // Methods
         //
 
         /**
-         * Sets the group this message belongs to.
-         *
-         * @param group The group to set.
-         */
-        public APSMessage group(String group) {
-            this.group = group;
-            return this;
-        }
-
-        /**
-         * Returns the group this message belongs to.
-         */
-        public String getGroup() {
-            return this.group;
-        }
-
-        /**
          * Sets messaging bytes to send.
          *
-         * @param data The messaging bytes to set.
+         * @param content The content content to set.
          */
-        @Override
-        public APSMessage data(byte[] data) {
-            this.message = data;
+        public APSMessage setContent(APSData content) {
+            this.content = content;
             this.localDataTimestamp = new Date().getTime();
             return this;
         }
 
         /**
-         * Gets messaging bytes.
-         *
-         * @return The bytes.
+         * Returns content content.
          */
         @Override
-        public byte[] getData() {
-            return this.message;
+        public APSData getContent() {
+            return this.content;
         }
 
         /**

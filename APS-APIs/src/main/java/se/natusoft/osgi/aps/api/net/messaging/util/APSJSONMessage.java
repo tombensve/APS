@@ -37,18 +37,19 @@
 package se.natusoft.osgi.aps.api.net.messaging.util;
 
 import org.osgi.service.log.LogService;
-import se.natusoft.osgi.aps.annotations.documentative.Implements;
+import se.natusoft.osgi.aps.api.net.messaging.types.APSData;
+import se.natusoft.osgi.aps.codedoc.Implements;
 import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONObject;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService;
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException;
-import se.natusoft.osgi.aps.api.net.messaging.messages.APSMessage;
+import se.natusoft.osgi.aps.api.net.messaging.types.APSMessage;
 
 import java.io.*;
 
 /**
- * Possible base messaging class for JSON based messages. Makes use of the APSJSONService to read and write JSON.
+ * Possible base messaging class for JSON based types. Makes use of the APSJSONService to read and write JSON.
  */
 public class APSJSONMessage extends APSMessage.Default implements JSONErrorHandler {
 
@@ -101,7 +102,7 @@ public class APSJSONMessage extends APSMessage.Default implements JSONErrorHandl
      *
      * @param jsonData The JSON data to provide in the message.
      */
-    public void setJSONData(String jsonData) { super.data(jsonData.getBytes()); }
+    public void setJSONData(String jsonData) { super.setContent(new APSData.Default(jsonData.getBytes())); }
 
     /**
      * Provide JSON data as an APSJSONService JSONObject instance.
@@ -112,10 +113,11 @@ public class APSJSONMessage extends APSMessage.Default implements JSONErrorHandl
      */
     public void setJSONData(JSONObject jsonMessage) throws APSMessagingException {
         try {
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            APSData content = new APSData.Default();
+            OutputStream stream = content.getContentOutputStream();
             getJsonService().writeJSON(stream, jsonMessage);
             stream.close();
-            super.data(stream.toByteArray());
+            super.setContent(content);
         }
         catch (IOException ioe) {
             throw new APSMessagingException("", ioe);
@@ -125,7 +127,7 @@ public class APSJSONMessage extends APSMessage.Default implements JSONErrorHandl
     /**
      * Returns the JSON data in the message as a String.
      */
-    public String getJSONDataAsString() { return new String(super.getData()); }
+    public String getJSONDataAsString() { return new String(super.getContent().getContent()); }
 
     /**
      * Returns the JSON data in the message as a String.
@@ -133,7 +135,7 @@ public class APSJSONMessage extends APSMessage.Default implements JSONErrorHandl
      * @throws APSMessagingException On failure to deserialize JSON from byte array.
      */
     public JSONObject getJSONDataAsObject() throws APSMessagingException {
-        ByteArrayInputStream stream = new ByteArrayInputStream(super.getData());
+        InputStream stream = super.getContent().getContentInputStream();
         JSONValue jsonValue = null;
         try {
             clearJSONErrors();
