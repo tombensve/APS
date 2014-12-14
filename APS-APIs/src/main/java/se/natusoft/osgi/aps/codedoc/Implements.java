@@ -34,7 +34,7 @@
  *         2014-10-27: Created!
  *
  */
-package se.natusoft.osgi.aps.annotations.documentative;
+package se.natusoft.osgi.aps.codedoc;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -42,12 +42,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This is an idea for special comments where an annotation makes it more connected to the item commented.
+ * A documentative annotation for pointing out what interface(s) is being implemented by a method.
  */
 @Retention(RetentionPolicy.SOURCE)
-@Target({ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.LOCAL_VARIABLE, ElementType.METHOD,
-        ElementType.PACKAGE, ElementType.PARAMETER})
-public @interface CodeNote {
-    String value();
-    String by() default "";
+@Target(ElementType.METHOD)
+public @interface Implements {
+    Class[] value();
 }
