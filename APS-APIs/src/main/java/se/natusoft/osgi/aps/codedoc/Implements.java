@@ -42,7 +42,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A documentative annotation for pointing out what interface(s) is being implemented by a method.
+ * A documentative annotation for pointing out what interface(s) is being implemented by a method. This shows
+ * very clearly that a method is part of an interface implementation.
  */
 @Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.METHOD)
