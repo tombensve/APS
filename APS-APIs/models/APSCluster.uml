@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement />
+  <nodes>
+    <node x="0.0" y="402.0">se.natusoft.osgi.aps.api.net.messaging.types.APSCluster.Member.Default</node>
+    <node x="473.47916666666674" y="4.0">se.natusoft.osgi.aps.api.net.messaging.service.APSClusterService</node>
+    <node x="51.5" y="256.0">se.natusoft.osgi.aps.api.net.messaging.types.APSCluster.Member</node>
+    <node x="0.0" y="922.5">se.natusoft.osgi.aps.api.net.messaging.types.APSData.Default</node>
+    <node x="131.25" y="0.0">se.natusoft.osgi.aps.api.net.messaging.types.APSCluster</node>
+    <node x="65.47916666666669" y="732.5">se.natusoft.osgi.aps.api.net.messaging.types.APSData</node>
+    <node x="390.4791666666667" y="721.0">se.natusoft.osgi.aps.api.net.messaging.types.APSMessage</node>
+    <node x="270.5" y="278.0">se.natusoft.osgi.aps.api.net.messaging.types.APSCluster.Listener</node>
+    <node x="281.0" y="912.0">se.natusoft.osgi.aps.api.net.messaging.types.APSMessage.Default</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="se.natusoft.osgi.aps.api.net.messaging.types.APSMessage.Default" target="se.natusoft.osgi.aps.api.net.messaging.types.APSData">
+      <point x="-118.33333333333326" y="-103.5" />
+      <point x="340.16666666666674" y="887.0" />
+      <point x="279.64583333333337" y="887.0" />
+      <point x="85.66666666666669" y="59.0" />
+    </edge>
+    <edge source="se.natusoft.osgi.aps.api.net.messaging.types.APSCluster.Listener" target="se.natusoft.osgi.aps.api.net.messaging.types.APSCluster">
+      <point x="0.0" y="-26.0" />
+      <point x="410.5" y="231.0" />
+      <point x="355.5" y="231.0" />
+      <point x="74.75" y="103.0" />
+    </edge>
+    <edge source="se.natusoft.osgi.aps.api.net.messaging.types.APSData.Default" target="se.natusoft.osgi.aps.api.net.messaging.types.APSData">
+      <point x="65.25" y="-93.0" />
+      <point x="195.75" y="887.0" />
+      <point x="193.97916666666669" y="887.0" />
+      <point x="0.0" y="59.0" />
+    </edge>
+    <edge source="se.natusoft.osgi.aps.api.net.messaging.types.APSMessage.Default" target="se.natusoft.osgi.aps.api.net.messaging.types.APSMessage">
+      <point x="118.33333333333337" y="-103.5" />
+      <point x="576.8333333333334" y="887.0" />
+      <point x="589.2291666666667" y="887.0" />
+      <point x="66.25" y="70.5" />
+    </edge>
+    <edge source="se.natusoft.osgi.aps.api.net.messaging.types.APSCluster.Member.Default" target="se.natusoft.osgi.aps.api.net.messaging.types.APSCluster.Member">
+      <point x="-75.5" y="-137.0" />
+      <point x="75.5" y="377.0" />
+      <point x="101.25" y="377.0" />
+      <point x="-49.75" y="48.0" />
+    </edge>
+    <edge source="se.natusoft.osgi.aps.api.net.messaging.types.APSCluster.Member" target="se.natusoft.osgi.aps.api.net.messaging.types.APSCluster">
+      <point x="0.0" y="-48.0" />
+      <point x="151.0" y="231.0" />
+      <point x="206.0" y="231.0" />
+      <point x="-74.75" y="103.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="515.5" y="620.0" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Constructors</Category>
+    <Category>Fields</Category>
+    <Category>Methods</Category>
+    <Category>Inner Classes</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

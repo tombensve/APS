@@ -193,7 +193,7 @@ public class APSSyncServiceProvider implements APSSyncService {
         }
 
         /**
-         * Adds a listener to received messages.
+         * Adds a listener to received types.
          *
          * @param listener The listener to add.
          */

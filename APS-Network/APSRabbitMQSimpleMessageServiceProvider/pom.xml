@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    
+
     PROJECT
         Name
             APS RabbitMQ SimpleMessageService Provider
-        
+
         Code Version
             1.0.0
-        
+
         Description
             Provides an implementation of APSMessageService using RabbitMQ Java Client.
-        
+
     COPYRIGHTS
         Copyright (C) 2012 by Natusoft AB All rights reserved.
-        
+
     LICENSE
         Apache 2.0 (Open Source)
-        
+
         Licensed under the Apache License, Version 2.0 (the "License");
         you may not use this file except in compliance with the License.
         You may obtain a copy of the License at
-        
+
           http://www.apache.org/licenses/LICENSE-2.0
-        
+
         Unless required by applicable law or agreed to in writing, software
         distributed under the License is distributed on an "AS IS" BASIS,
         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
         See the License for the specific language governing permissions and
         limitations under the License.
-        
+
     AUTHORS
         tommy ()
             Changes:
             2013-09-01: Created!
-            
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -44,7 +44,7 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>aps-rabbitmq-simple-message-service-provider</artifactId>
+    <artifactId>aps-rabbitmq-message-service-provider</artifactId>
     <packaging>bundle</packaging>
 
     <name>APS RabbitMQ SimpleMessageService Provider</name>
@@ -54,8 +54,8 @@
     </description>
 
     <properties>
-        <!-- 
-            Bundle properties 
+        <!--
+            Bundle properties
         -->
 
         <!-- The symbolic name of the bundle. Defaults to the artifact id, but can be overriden. -->
@@ -73,8 +73,8 @@
 
         <!-- The private packages. -->
         <osgi.private.package>
-            se.natusoft.osgi.aps.messaging,
-            se.natusoft.osgi.aps.messaging.config
+            se.natusoft.osgi.aps.net.messaging,
+            se.natusoft.osgi.aps.net.messaging.config
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->
@@ -96,7 +96,7 @@
         -->
 
         <!-- We register our configuration for auto registration and management. -->
-        <aps.config.classes>se.natusoft.osgi.aps.messaging.config.RabbitMQConnectionConfig</aps.config.classes>
+        <aps.config.classes>se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig</aps.config.classes>
 
         <!--
              Trigger tiles.
