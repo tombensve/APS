@@ -1,8 +1,10 @@
 package se.natusoft.osgi.aps.api.net.messaging.types;
 
+import org.joda.time.DateTime;
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException;
 import se.natusoft.osgi.aps.codedoc.Optional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
@@ -15,12 +17,12 @@ public interface APSCluster {
     /**
      * Returns the name of this cluster.
      */
-    public String getName();
+    String getName();
 
     /**
      * Returns the id of this cluster.
      */
-    public UUID getId();
+    UUID getId();
 
     /**
      * Returns a list of cluster members.
@@ -38,11 +40,18 @@ public interface APSCluster {
     Properties getProperties();
 
     /**
+     * Returns the Clusters common DateTime that is independent of local machine times.
+     *
+     * Always returns now time.
+     */
+    DateTime getDateTime();
+
+    /**
      * Sends a messaging.
      *
      * @param message The message to send.
      *
-     * @throws se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException on failure.
+     * @throws APSMessagingException on failure.
      *
      * @return true if the messaging was sent.
      */
