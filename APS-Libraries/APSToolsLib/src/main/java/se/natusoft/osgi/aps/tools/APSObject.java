@@ -66,13 +66,15 @@ public class APSObject {
      * @param exceptionClass Only listen to this exception class and subclasses.
      * @param exceptionListener The listener to call.
      */
-    public void addExceptionListener(Class<?> exceptionClass, ExceptionListener<? extends Throwable> exceptionListener) {
+    public APSObject addExceptionListener(Class<?> exceptionClass, ExceptionListener<? extends Throwable> exceptionListener) {
         if (this.delegate != null) {
             this.delegate.addExceptionListener(exceptionClass, exceptionListener);
         }
         else {
             this.exceptionListeners.add(new Tuple2<Class<?>, ExceptionListener>(exceptionClass, exceptionListener));
         }
+
+        return this;
     }
 
     /**
