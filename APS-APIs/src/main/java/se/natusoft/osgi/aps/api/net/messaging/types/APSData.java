@@ -8,28 +8,28 @@ import java.io.*;
 public interface APSData {
 
     /**
-     * Sets the packet content.
+     * Sets the data content.
      *
      * @param content The content to set.
      */
     public void setContent(byte[] content);
 
     /**
-     * Gets the packet content.
+     * Gets the data content.
      */
     public byte[] getContent();
 
     /**
-     * Returns the packet content as an InputStream.
+     * Returns the data content as an InputStream.
      */
-    public InputStream getContentInputStream();
+    public DataInputStream getContentInputStream();
 
     /**
-     * Returns an OutputStream for writing packet content.
+     * Returns an OutputStream for writing data content.
      * <p/>
      * The content will be set on close() of stream.
      */
-    public OutputStream getContentOutputStream();
+    public DataOutputStream getContentOutputStream();
 
     //
     // Default provider
@@ -43,7 +43,9 @@ public interface APSData {
         // Private Members
         //
 
-        /** The packet data. */
+        /**
+         * The packet data.
+         */
         private byte[] content;
 
         //
@@ -53,7 +55,8 @@ public interface APSData {
         /**
          * Creates a new Provider.
          */
-        public Default() {}
+        public Default() {
+        }
 
         /**
          * Creates a new Provider.
@@ -90,8 +93,8 @@ public interface APSData {
          * Returns the packet content as an InputStream.
          */
         @Override
-        public InputStream getContentInputStream() {
-            return new ByteArrayInputStream(this.content);
+        public DataInputStream getContentInputStream() {
+            return new DataInputStream(new ByteArrayInputStream(this.content));
         }
 
         /**
@@ -100,14 +103,14 @@ public interface APSData {
          * The content will be set on close() of stream.
          */
         @Override
-        public OutputStream getContentOutputStream() {
-            return new ByteArrayOutputStream() {
+        public DataOutputStream getContentOutputStream() {
+            return new DataOutputStream(new ByteArrayOutputStream() {
                 @Override
                 public void close() throws IOException {
                     super.close();
                     Default.this.content = toByteArray();
                 }
-            };
+            });
         }
     }
 }

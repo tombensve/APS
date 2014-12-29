@@ -34,8 +34,10 @@
  *         2013-09-01: Created!
  *
  */
-package se.natusoft.osgi.aps.net.messaging.config;
+package se.natusoft.osgi.aps.net.messaging.config
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked;
 import se.natusoft.osgi.aps.api.core.config.APSConfig;
 import se.natusoft.osgi.aps.api.core.config.ManagedConfig;
 import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigDescription;
@@ -43,19 +45,20 @@ import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigItemDescription;
 import se.natusoft.osgi.aps.api.core.config.annotation.APSDefaultValue;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigList;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
-import se.natusoft.osgi.aps.api.core.config.model.APSConfigValueList;
 
 /**
  * Configuration for RabbitMQ connections.
  */
 @APSConfigDescription(
-        configId = "se.natusoft.osgi.aps.messaging.rabbitmq-message-service",
-        description = "This provides configuration of aps-rabbitmq-message-service-provider.",
+        configId = "se.natusoft.osgi.aps.messaging.rabbitmq-cluster-service",
+        description = "This provides configuration of aps-rabbitmq-cluster-service-provider.",
         version = "1.0.0",
         // APSConfigAdminWeb GUI tree placement.
         group = "network.messaging"
 )
-public final class RabbitMQMessageServiceConfig extends APSConfig {
+@CompileStatic
+@TypeChecked
+public final class RabbitMQClusterServiceConfig extends APSConfig {
 
     /**
      * Provides an auto managed instance of this config when this class is specified with APS-Configs: in MANIFEST.MF.
@@ -65,7 +68,7 @@ public final class RabbitMQMessageServiceConfig extends APSConfig {
      * before the config service have had a change to manage the config. Using this constant instance of ManagedConfig
      * is the safest way to handle auto managed configurations.
      */
-    public static final ManagedConfig<RabbitMQMessageServiceConfig> managed = new ManagedConfig<RabbitMQMessageServiceConfig>() {
+    public static final ManagedConfig<RabbitMQClusterServiceConfig> managed = new ManagedConfig<RabbitMQClusterServiceConfig>() {
 
         /**
          * This makes it safe to do:
@@ -75,63 +78,63 @@ public final class RabbitMQMessageServiceConfig extends APSConfig {
          * directly.
          */
         @Override
-        public RabbitMQMessageServiceConfig get() {
+        public RabbitMQClusterServiceConfig get() {
             if (!super.isManaged()) {
-                super.waitUntilManaged();
+                super.waitUntilManaged()
             }
-            return super.get();
+            return super.get() as RabbitMQClusterServiceConfig
         }
     };
 
     @APSConfigItemDescription(description = "The host where the RabbitMQ server runs.", environmentSpecific = true)
-    public APSConfigValue host;
+    public APSConfigValue host
 
     @APSConfigItemDescription(description = "The port the RabbitMQ service is listening on.",
             environmentSpecific = true, defaultValue = @APSDefaultValue("5672"))
-    public APSConfigValue port;
+    public APSConfigValue port
 
     @APSConfigItemDescription(description = "A user if such is required by the RabbitMQ server.",
             environmentSpecific = true, defaultValue = @APSDefaultValue("guest"))
-    public APSConfigValue user;
+    public APSConfigValue user
 
     @APSConfigItemDescription(description = "A password if such is required by the RabbitMQ server.",
             environmentSpecific = true, defaultValue = @APSDefaultValue("guest"))
-    public APSConfigValue password;
+    public APSConfigValue password
 
     @APSConfigItemDescription(description = "A virtual host name to use if specified. Can be blank.",
             environmentSpecific = true)
-    public APSConfigValue virtualHost;
+    public APSConfigValue virtualHost
 
     @APSConfigItemDescription(description = "Changes the default timeout to this. Can be blank.",
             environmentSpecific = true)
-    public APSConfigValue timeout;
+    public APSConfigValue timeout
 
-    @APSConfigItemDescription(description = "Defines 'messaging' groups provided by the service.",
+    @APSConfigItemDescription(description = "Defines 'messaging' clusters provided by the service.",
             environmentSpecific = true)
-    public APSConfigList<GEQ> groups;
+    public APSConfigList<RMQCluster> clusters
 
 
     @APSConfigDescription(
-            configId = "geq",
-            description = "Defines a group and an exchange and queue to be used for the group.",
+            configId = "rmqcluster",
+            description = "Defines a name and an exchange and queue to be used for the cluster.",
             version = "1.0.0"
     )
-    public static final class GEQ extends APSConfig {
+    public static final class RMQCluster extends APSConfig {
 
-        @APSConfigItemDescription(description = "This defines a provided group.", environmentSpecific = true)
-        public APSConfigValue group;
+        @APSConfigItemDescription(description = "This defines a name that can be looked up in code.", environmentSpecific = true)
+        public APSConfigValue name
 
-        @APSConfigItemDescription(description = "This defines the exchange to use by the group.", environmentSpecific = true)
-        public APSConfigValue exchange;
+        @APSConfigItemDescription(description = "This defines the exchange to use by the cluster.", environmentSpecific = true)
+        public APSConfigValue exchange
 
         @APSConfigItemDescription(description = "The exchange type. Default 'fanout'", environmentSpecific = true,
-        defaultValue = {@APSDefaultValue("fanout")}, validValues = {"fanout", "direct"})
-        public APSConfigValue exchangeType;
+                defaultValue = [@APSDefaultValue("fanout")], validValues = ["fanout", "direct"])
+        public APSConfigValue exchangeType
 
-        @APSConfigItemDescription(description = "This defines the queue to use by the group.", environmentSpecific = true)
-        public APSConfigValue queue;
+        @APSConfigItemDescription(description = "This defines the queue to use by the cluster.", environmentSpecific = true)
+        public APSConfigValue queue
 
-        @APSConfigItemDescription(description = "This is the routing key to use when sending types.", environmentSpecific = true)
-        public APSConfigValue routingKey;
+        @APSConfigItemDescription(description = "This is the routing key to use when sending messages.", environmentSpecific = true)
+        public APSConfigValue routingKey
     }
 }

@@ -25,10 +25,4 @@ public interface APSClusterService {
      * @param name The name of the cluster to get.
      */
     APSCluster getClusterByName(String name);
-
-    /**
-     * Returns a List of all available clusters.
-     */
-    List<APSCluster> getClusters();
-
 }

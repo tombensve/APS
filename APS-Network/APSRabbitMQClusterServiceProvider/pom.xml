@@ -44,13 +44,13 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>aps-rabbitmq-message-service-provider</artifactId>
+    <artifactId>aps-rabbitmq-cluster-service-provider</artifactId>
     <packaging>bundle</packaging>
 
-    <name>APS RabbitMQ SimpleMessageService Provider</name>
+    <name>APS RabbitMQ Cluster Service Provider</name>
 
     <description>
-        Provides an implementation of APSMessageService using RabbitMQ Java Client.
+        Provides an implementation of APSClusterService using RabbitMQ Java Client.
     </description>
 
     <properties>
@@ -96,11 +96,14 @@
         -->
 
         <!-- We register our configuration for auto registration and management. -->
-        <aps.config.classes>se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig</aps.config.classes>
+        <aps.config.classes>se.natusoft.osgi.aps.net.messaging.config.RabbitMQClusterServiceConfig</aps.config.classes>
 
         <!--
              Trigger tiles.
          -->
+
+        <tile.groovy>${project.groupId}:groovy-tile:${project.version}</tile.groovy>
+
         <tile.deploy>${project.groupId}:DeployBundleTile:${project.version}</tile.deploy>
 
         <!--

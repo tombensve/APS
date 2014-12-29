@@ -34,24 +34,31 @@
  *         2014-10-27: Created!
  *
  */
-package se.natusoft.osgi.aps.api.net.messaging.util;
+package se.natusoft.osgi.aps.api.net.messaging.messages;
 
 import org.osgi.service.log.LogService;
-import se.natusoft.osgi.aps.api.net.messaging.types.APSData;
+import se.natusoft.osgi.aps.api.net.messaging.types.APSMessage;
 import se.natusoft.osgi.aps.codedoc.Implements;
 import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONObject;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService;
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException;
-import se.natusoft.osgi.aps.api.net.messaging.types.APSMessage;
 
 import java.io.*;
 
 /**
  * Possible base messaging class for JSON based types. Makes use of the APSJSONService to read and write JSON.
+ *
+ * This requires each message to be a JSON object. The object must also contain a string member called "messageType".
  */
-public class APSJSONMessage extends APSMessage.Default implements JSONErrorHandler {
+public class APSJSONMessage implements APSMessage, JSONErrorHandler {
+
+    //
+    // Constants
+    //
+
+    private static final String MESSAGE_TYPE = "messageType";
 
     //
     // Private Members
@@ -69,9 +76,17 @@ public class APSJSONMessage extends APSMessage.Default implements JSONErrorHandl
     /** An OSGi LogService instance. (hint: also implemented by APSToolsLib:APSLogger). This is optional. */
     private LogService logService= null;
 
+    /** The JSON message. */
+    private JSONObject json;
+
     //
     // Constructors
     //
+
+    /**
+     * Creates a new APSJSONMessage. (This to support Groovy properties constructor).
+     */
+    public APSJSONMessage() {}
 
     /**
      * Creates a new APSJSONMessage.
@@ -97,71 +112,143 @@ public class APSJSONMessage extends APSMessage.Default implements JSONErrorHandl
     // Methods
     //
 
+    private void validate() {
+        if (this.jsonService == null) {
+            throw new APSMessagingException("No APSJSONService instance have been provided to the message! This is required!");
+        }
+    }
+
     /**
-     * Provide JSON data as a String.
+     * Sets the APSJSONService instance to use. (This to support Groovy properties constructor).
      *
-     * @param jsonData The JSON data to provide in the message.
+     * @param jsonService The APSJSONService instance to set.
      */
-    public void setJSONData(String jsonData) { super.setContent(new APSData.Default(jsonData.getBytes())); }
+    public void setJsonService(APSJSONService jsonService) {
+        this.jsonService = jsonService;
+    }
+
+    /**
+     * Sets a LogService to log to. (This to support Groovy properties constructor).
+     *
+     * @param logService The LogService to set.
+     */
+    public void setLogService(LogService logService) {
+        this.logService = logService;
+    }
 
     /**
      * Provide JSON data as an APSJSONService JSONObject instance.
      *
      * @param jsonMessage The JSON data to provide in the message.
-     *
-     * @throws APSMessagingException on failure to serialize JSON to byte array.
      */
-    public void setJSONData(JSONObject jsonMessage) throws APSMessagingException {
-        try {
-            APSData content = new APSData.Default();
-            OutputStream stream = content.getContentOutputStream();
-            getJsonService().writeJSON(stream, jsonMessage);
-            stream.close();
-            super.setContent(content);
-        }
-        catch (IOException ioe) {
-            throw new APSMessagingException("", ioe);
-        }
+    public void setJSON(JSONObject jsonMessage)  {
+        this.json = jsonMessage;
     }
 
     /**
-     * Returns the JSON data in the message as a String.
+     * Returns the internal APSJSONService JSONObject.
      */
-    public String getJSONDataAsString() { return new String(super.getContent().getContent()); }
+    public JSONObject getJSON() {
+        validate();
+        if (this.json == null) {
+            this.json = this.jsonService.createJSONObject();
+            this.json.addValue(MESSAGE_TYPE, this.jsonService.createJSONString("UNTYPED"));
+        }
+        return this.json;
+    }
 
     /**
-     * Returns the JSON data in the message as a String.
+     * Provide JSON data as a String.
      *
-     * @throws APSMessagingException On failure to deserialize JSON from byte array.
+     * @param jsonData The JSON data to provide in the message.
+     *
+     * @throws APSMessagingException on failure to parse JSON.
      */
-    public JSONObject getJSONDataAsObject() throws APSMessagingException {
-        InputStream stream = super.getContent().getContentInputStream();
-        JSONValue jsonValue = null;
+    public void setJSONFromString(String jsonData) throws APSMessagingException {
+        validate();
         try {
+            ByteArrayInputStream jstream = new ByteArrayInputStream(jsonData.getBytes("UTF-8"));
             clearJSONErrors();
-            jsonValue = getJsonService().readJSON(stream, this);
+            JSONValue value = this.jsonService.readJSON(jstream, this);
             assertNoJSONErrors();
+            if (!JSONObject.class.isAssignableFrom(value.getClass())) {
+                throw new IOException("Expected JSON object! Got: " + value.getClass().getSimpleName());
+            }
+        }
+        catch (IOException ioe){
+            throw new APSMessagingException("Bad JSON string! - " + ioe.getMessage(), ioe);
+        }
+    }
+
+    /**
+     * Returns the JSON data in the message as a String.
+     */
+    public String getJSONAsString() {
+        validate();
+        String jsonStr = null;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            this.jsonService.writeJSON(baos, this.json, true);
+            jsonStr = new String(baos.toByteArray(), "UTF-8");
         }
         catch (IOException ioe) {
-            throw new APSMessagingException("Failed to read JSON from received messaging!", ioe);
-        }
-        finally {
-            try {stream.close();} catch (IOException ok) {}
+            throw new APSMessagingException("This should not happen since we are writing to a byte array!", ioe);
         }
 
-        if (!JSONObject.class.isAssignableFrom(jsonValue.getClass())) {
-            throw new APSMessagingException("Messages must be a JSON objects!");
-        }
-
-        return (JSONObject)jsonValue;
+        return jsonStr;
     }
+
 
     /**
      * Provides the JSON service.
      */
     protected APSJSONService getJsonService() {
+        validate();
         return this.jsonService;
     }
+
+    /**
+     * Returns the type of the message.
+     */
+    @Override
+    @Implements(APSMessage.class)
+    public String getType() {
+        return getJSON().getValue(MESSAGE_TYPE).toString();
+    }
+
+    /**
+     * Returns the complete message as a byte array.
+     */
+    @Override
+    @Implements(APSMessage.class)
+    public byte[] getBytes() {
+        try {
+            return getJSONAsString().getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // I strongly suspect that this will never happen :-)
+            throw new APSMessagingException("UTF-8 is unknown to this system!", e);
+        }
+    }
+
+    /**
+     * Sets the message bytes.
+     *
+     * @param bytes The bytes to set.
+     */
+    @Override
+    @Implements(APSMessage.class)
+    public void setBytes(byte[] bytes) {
+        try {
+            setJSONFromString(new String(bytes, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            // I strongly suspect that this will never happen :-)
+            throw new APSMessagingException("UTF-8 is unknown to this system!", e);
+        }
+    }
+
+    //
+    // JSON Parsing support methods
+    //
 
     /**
      * Clears any JSON error messaging.
@@ -211,4 +298,5 @@ public class APSJSONMessage extends APSMessage.Default implements JSONErrorHandl
             this.logService.log(LogService.LOG_ERROR, message, cause);
         }
     }
+
 }

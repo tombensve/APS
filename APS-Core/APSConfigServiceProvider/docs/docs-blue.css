@@ -35,11 +35,14 @@
  */
 
 body {
-    font-family: Helvetica, Arial, Freesans, clean, sans-serif;
-padding:1em;
-margin:auto;
-max-width:55em;
-background:#eeeeee;
+    /*font-family: Helvetica, Arial, Freesans, clean, sans-serif;*/
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-style: normal;
+    padding:1em;
+    margin:auto;
+    max-width:55em;
+    background: #edf3f6;
+    color: #293249;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -93,8 +96,8 @@ blockquote {
 
 code, pre {
     border-radius: 5px;
-    background-color: #F8F8F8;
-    color: inherit;
+    background-color: #f7f8fc;
+    color: #434343;
 }
 
 code {

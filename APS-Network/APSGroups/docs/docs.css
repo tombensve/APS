@@ -1,10 +1,11 @@
 @charset "utf-8";
 
 /**
- * This is based on Florian Wolters markdown.css, just slightly modified:
- * - Grayer background.
+ * This is based on Florian Wolters markdown.css. Modifications:
+ * - Colors
  * - Slightly more rounded corners for code.
- * - separate style for blockquote with grey text and more indent.
+ * - separate style for blockquote with more indent.
+ * /Tommy
  * ______________________________________________________________________________
  *
  * markdown.css
@@ -36,10 +37,11 @@
 
 body {
     font-family: Helvetica, Arial, Freesans, clean, sans-serif;
-padding:1em;
-margin:auto;
-max-width:55em;
-background:#eeeeee;
+    padding:1em;
+    margin:auto;
+    max-width:55em;
+    background: #fcf7e8;
+    color: #3e1f1f;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -47,25 +49,30 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
+    background-color: inherit;
     color: #000000;
     font-size: 28px;
 }
 
 h2 {
+    background-color: inherit;
     border-bottom: 1px solid #CCCCCC;
     color: #000000;
     font-size: 24px;
 }
 
 h3 {
+    background-color: inherit;
     font-size: 18px;
 }
 
 h4 {
+    background-color: inherit;
     font-size: 16px;
 }
 
 h5 {
+    background-color: inherit;
     font-size: 14px;
 }
 
@@ -93,8 +100,8 @@ blockquote {
 
 code, pre {
     border-radius: 5px;
-    background-color: #F8F8F8;
-    color: inherit;
+    background: #fcf8ed;
+    color: #2f0a0a;
 }
 
 code {
@@ -117,7 +124,7 @@ pre > code {
 }
 
 a, a:visited {
-    color: #4183C4;
+    color: #b76351;
     background-color: inherit;
     text-decoration: none;
 }

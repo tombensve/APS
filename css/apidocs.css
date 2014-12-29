@@ -3,15 +3,15 @@
  */
 #content table, #content tr td {border:none;}
 body {
-    background-color: #fafafa;
-    color:#353833;
+    background: #fcf7e8;
+    color: #3e1f1f;
     font-family:Arial, Helvetica, sans-serif;
     font-size:76%;
     margin:15px;
 }
 a:link, a:visited {
     text-decoration:none;
-    color:#4c6b87;
+    color: #b76351;
 }
 a:hover, a:focus {
     text-decoration:none;
