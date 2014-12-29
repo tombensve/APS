@@ -4,16 +4,19 @@ import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.Channel
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import org.joda.time.DateTime
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
+import se.natusoft.osgi.aps.api.net.messaging.messages.APSRootMessage
 import se.natusoft.osgi.aps.api.net.messaging.types.APSCluster
+import se.natusoft.osgi.aps.api.net.messaging.types.APSClusterDateTime
 import se.natusoft.osgi.aps.api.net.messaging.types.APSMessage
-import se.natusoft.osgi.aps.codedoc.CodeNote
 import se.natusoft.osgi.aps.codedoc.Implements
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
-import se.natusoft.osgi.aps.net.messaging.apis.TimestampProvider
 import se.natusoft.osgi.aps.net.messaging.config.RabbitMQClusterServiceConfig
-import se.natusoft.osgi.aps.net.messaging.rabbitmq.ClusterReceiveThread
+import se.natusoft.osgi.aps.net.messaging.messages.ClusterTimeMasterChallengeMessage
+import se.natusoft.osgi.aps.net.messaging.messages.ClusterTimeMasterMessage
+import se.natusoft.osgi.aps.net.messaging.messages.ClusterTimeRequestMessage
+import se.natusoft.osgi.aps.net.messaging.messages.ClusterTimeValueMessage
+import se.natusoft.osgi.aps.net.messaging.rabbitmq.ReceiveThread
 import se.natusoft.osgi.aps.tools.APSLogger
 
 /**
@@ -21,7 +24,8 @@ import se.natusoft.osgi.aps.tools.APSLogger
  */
 @CompileStatic
 @TypeChecked
-public class APSClusterProvider implements APSCluster {
+public class APSClusterProvider implements
+        APSCluster, APSCluster.Listener, APSCluster.MessageResolver, APSClusterDateTimeProvider.ControlChannelSender {
 
     //
     // Private Members
@@ -30,14 +34,23 @@ public class APSClusterProvider implements APSCluster {
     /** Basic RabbitMQ config for sending messages. */
     private AMQP.BasicProperties basicProperties
 
-    /** Our sending channel. */
-    private Channel channel
+    /** Our cluster channel. */
+    private Channel clusterChannel
+
+    /** Control channel for internal messages. */
+    private Channel controlChannel
 
     /** This receives messages from the cluster. */
-    private ClusterReceiveThread clusterReceiveThread
+    private ReceiveThread clusterReceiveThread
 
-    /** The cluster time. */
-    private DateTime clusterTime
+    /** This receives messages from the control exchange. */
+    private ReceiveThread controlReceiveThread
+
+    /** Handles cluster date and time. */
+    private APSClusterDateTimeProvider clusterDateTimeProvider
+
+    /** The name of the control exchange. */
+    private String controlExchange
 
     //
     // Properties
@@ -58,6 +71,9 @@ public class APSClusterProvider implements APSCluster {
     /** Configured properties for this cluster. */
     Properties props
 
+    /** For resolving received messages. */
+    APSCluster.MessageResolver messageResolver
+
     //
     // Constructors
     //
@@ -71,47 +87,106 @@ public class APSClusterProvider implements APSCluster {
     // Methods
     //
 
+    // ----- Side effects of using Groovy properties constructor ...
+
+    private validate(Object what, String message) {
+        if (what == null) throw new IllegalArgumentException(message)
+    }
+
+    private void validate() {
+        validate(this.connectionProvider, "Missing required 'connectionProvider'!")
+        validate(this.clusterConfig, "Missing required 'clusterConfig'!")
+    }
+
+    // -----
+
     /**
-     * Ensures an open channel and returns it.
+     * Ensures an open clusterChannel and returns it.
      *
      * @throws IOException
      */
-    private Channel ensureOpenChannel() throws IOException {
+    private Channel ensureClusterChannel() throws IOException {
+        validate()
 
-        if (this.channel == null || !this.channel.isOpen()) {
-            this.channel = this.connectionProvider.connection.createChannel()
-            this.channel.exchangeDeclare(this.clusterConfig.exchange.toString(), this.clusterConfig.exchangeType.toString())
-            this.channel.queueDeclare(this.clusterConfig.queue.toString(), true, false, false, null)
+        if (this.clusterChannel == null || !this.clusterChannel.isOpen()) {
+            this.clusterChannel = this.connectionProvider.connection.createChannel()
+            this.clusterChannel.exchangeDeclare(this.clusterConfig.exchange.toString(), this.clusterConfig.exchangeType.toString())
+            this.clusterChannel.queueDeclare(this.clusterConfig.queue.toString(), true, false, false, null)
             String routingKey = this.clusterConfig.routingKey.toString()
             if (routingKey != null && routingKey.isEmpty()) {
                 routingKey = null
             }
-            this.channel.queueBind(this.clusterConfig.queue.toString(), this.clusterConfig.exchange.toString(), routingKey)
+            this.clusterChannel.queueBind(this.clusterConfig.queue.toString(), this.clusterConfig.exchange.toString(), routingKey)
         }
 
-        return this.channel
+        return this.clusterChannel
+    }
+
+    /**
+     * Ensures an open controlChannel and returns it.
+     *
+     * @throws IOException
+     */
+    private Channel ensureControlChannel() throws IOException {
+        validate()
+
+        if (this.controlChannel == null || !this.controlChannel.isOpen()) {
+            this.controlChannel = this.connectionProvider.connection.createChannel()
+            this.controlExchange = this.clusterConfig.exchange.toString() + "-control";
+            this.controlChannel.exchangeDeclare(this.controlExchange, this.clusterConfig.exchangeType.toString())
+            String queue = this.clusterConfig.queue.toString() + "-control"
+            this.controlChannel.queueDeclare(queue, true, false, false, null)
+            String routingKey = this.clusterConfig.routingKey.toString()
+            if (routingKey != null && routingKey.isEmpty()) {
+                routingKey = null
+            }
+            this.controlChannel.queueBind(queue, this.controlExchange, routingKey)
+        }
+
+        return this.controlChannel
     }
 
     /**
      * Ensures a cluster receive thread and returns it.
      */
-    private ClusterReceiveThread ensureClusterReceiveThread() {
+    private ReceiveThread ensureClusterReceiveThread() {
+        validate()
+        validate(this.messageResolver, "Missing required 'messageResolver'!")
+
         if (this.clusterReceiveThread == null) {
-            this.clusterReceiveThread = new ClusterReceiveThread(
+            this.clusterReceiveThread = new ReceiveThread(
+                    exchange: this.clusterConfig.exchange.toString(),
                     name: "cluster-receive-thread-" + getName(),
                     connectionProvider: this.connectionProvider,
                     clusterConfig: this.clusterConfig,
-                    timestampProvider: new TimestampProvider() {
-                        @Override
-                        long getDateTime() {
-                            return 0 // TODO: Fix.
-                        }
-                    },
-                    logger: this.logger)
+                    logger: this.logger,
+                    messageResolver: this.messageResolver
+            )
             this.clusterReceiveThread.start()
         }
 
         return this.clusterReceiveThread
+    }
+
+    /**
+     * Ensures a control receive thread and returns it.
+     */
+    private ReceiveThread ensureControlReceiveThread() {
+        validate()
+
+        if (this.controlReceiveThread == null) {
+            this.controlReceiveThread = new ReceiveThread(
+                    exchange: this.controlExchange,
+                    name: "control-receive-thread-" + getName(),
+                    connectionProvider: this.connectionProvider,
+                    clusterConfig: this.clusterConfig,
+                    logger: this.logger,
+                    messageResolver: this
+            )
+            this.controlReceiveThread.start()
+        }
+
+        return this.controlReceiveThread
     }
 
     /**
@@ -134,13 +209,26 @@ public class APSClusterProvider implements APSCluster {
 
     /**
      * Returns the Clusters common DateTime that is independent of local machine times.
-     * <p/>
+     *
      * Always returns now time.
      */
-    @Override
-    @Implements(APSCluster.class)
-    public DateTime getDateTime() {
-        return this.clusterTime
+    APSClusterDateTime getClusterDateTime() {
+        return this.clusterDateTime
+    }
+
+    /**
+     * Sends a message on the RabbitMQ bus.
+     *
+     * @param channel The channel to send on.
+     * @param exchange The exchange to send to.
+     * @param message The message to send.
+     */
+    private void sendBusMessage(Channel channel, String exchange, APSMessage message) {
+        String routingKey = this.clusterConfig.routingKey.toString()
+        if (routingKey.isEmpty()) {
+            routingKey = null
+        }
+        channel.basicPublish(exchange,routingKey, this.basicProperties, message.bytes)
     }
 
     /**
@@ -154,19 +242,24 @@ public class APSClusterProvider implements APSCluster {
     @Implements(APSCluster.class)
     public boolean sendMessage(APSMessage message) throws APSMessagingException {
         try {
-            String routingKey = this.clusterConfig.routingKey.toString()
-            if (routingKey.isEmpty()) {
-                routingKey = null
-            }
-            ensureOpenChannel()
-                    .basicPublish(this.clusterConfig.exchange.toString(),routingKey, this.basicProperties, message.bytes)
-
+            sendBusMessage(ensureClusterChannel(), this.clusterConfig.exchange.toString(), message)
         }
         catch (Exception e) {
             throw new APSMessagingException(e.getMessage(), e);
         }
 
         return true
+    }
+
+    /**
+     * Sends a control message on the control channel and exchange.
+     *
+     * @param message The message to send.
+     */
+    @Override
+    @Implements(APSClusterDateTimeProvider.ControlChannelSender.class)
+    public void sendControlMessage(APSMessage message) {
+        sendBusMessage(ensureControlChannel(), this.controlExchange, message)
     }
 
     /**
@@ -193,20 +286,98 @@ public class APSClusterProvider implements APSCluster {
     }
 
     /**
+     * Start the cluster provider.
+     */
+    public APSClusterProvider start() {
+        ensureControlReceiveThread().addMessageListener(this)
+        this.clusterDateTimeProvider = new APSClusterDateTimeProvider(
+                controlChannelSender: this
+        )
+        this.clusterDateTimeProvider.sendTimeRequest()
+
+        return this
+    }
+
+    /**
      * Stops this cluster.
      *
      * @throws IOException
      */
-    void stop() throws IOException {
+    public void stop() throws IOException {
         if (this.clusterReceiveThread != null) {
             this.clusterReceiveThread.stopThread();
             try {
-                this.clusterReceiveThread.wait(60000 * 2)
+                this.clusterReceiveThread.wait(1000 * 60)
             }
             catch (Exception e) {
                 throw new APSMessagingException("Failed waiting for cluster receive thread to stop!", e)
             }
         }
-        this.channel.close()
+        if (this.clusterChannel != null && this.clusterChannel.isOpen()) {
+            this.clusterChannel.close()
+        }
+
+        if (this.controlReceiveThread != null) {
+            this.controlReceiveThread.stopThread()
+            try {
+                this.clusterReceiveThread.wait(1000 * 60)
+            }
+            catch (Exception e) {
+                throw new APSMessagingException("Failed waiting for control receive thread to stop!", e)
+            }
+        }
+        if (this.controlChannel != null && this.controlChannel.isOpen()) {
+            this.controlChannel.close()
+        }
+    }
+
+    /**
+     * This is called when a message is received.
+     *
+     * @param message The received message.
+     */
+    @Override
+    public void messageReceived(APSMessage message) {
+        switch (message.class) {
+            case ClusterTimeRequestMessage.class:
+            case ClusterTimeValueMessage.class:
+            case ClusterTimeMasterMessage.class:
+            case ClusterTimeMasterChallengeMessage.class:
+                this.clusterDateTimeProvider.messageReceived(message)
+                break
+        }
+    }
+
+    /**
+     * Returns an APSMessage implementation based on the message data.
+     *
+     * @param messageData The message data.
+     */
+    @Override
+    APSMessage resolveMessage(byte[] messageData) {
+        APSMessage message = null
+        String msgType = APSRootMessage.getType(messageData)
+        switch (msgType) {
+            case ClusterTimeValueMessage.MESSAGE_TYPE:
+                message = new ClusterTimeValueMessage()
+                break
+            case ClusterTimeRequestMessage.MESSAGE_TYPE:
+                message = new ClusterTimeRequestMessage()
+                break
+            case ClusterTimeMasterMessage.MESSAGE_TYPE:
+                message = new ClusterTimeMasterMessage()
+                break
+            case ClusterTimeMasterChallengeMessage.MESSAGE_TYPE:
+                message = new ClusterTimeMasterChallengeMessage()
+                break
+            default:
+                this.logger.error("Received unknown message type! [" + msgType + "]")
+        }
+
+        if (message != null) {
+            message.bytes = messageData
+        }
+
+        return message
     }
 }

@@ -6,7 +6,6 @@ import com.rabbitmq.client.QueueingConsumer
 import com.rabbitmq.client.ShutdownSignalException
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.net.messaging.messages.APSRootMessage
 import se.natusoft.osgi.aps.api.net.messaging.types.APSCluster
 import se.natusoft.osgi.aps.api.net.messaging.types.APSMessage
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
@@ -19,7 +18,7 @@ import se.natusoft.osgi.aps.tools.APSLogger
  */
 @CompileStatic
 @TypeChecked
-public class ClusterReceiveThread extends Thread {
+public class ReceiveThread extends Thread {
 
     //
     // Private Members
@@ -28,7 +27,7 @@ public class ClusterReceiveThread extends Thread {
     /** Used to stop thread. It will be running as long as this is true. */
     private boolean running = true
 
-    /** The channel we receive messages on.  */
+    /** The clusterChannel we receive messages on.  */
     private Channel recvChannel = null
 
     /** The name of the receive queue. */
@@ -51,11 +50,14 @@ public class ClusterReceiveThread extends Thread {
      */
     ConnectionProvider connectionProvider;
 
-    /** Provides current time. */
-    TimestampProvider timestampProvider;
-
     /** The config for this receiver. */
     RabbitMQClusterServiceConfig.RMQCluster clusterConfig
+
+    /** For resolving received messages. */
+    APSCluster.MessageResolver messageResolver
+
+    /** The exchange to listen to. */
+    String exchange
 
     //
     // Methods
@@ -108,16 +110,20 @@ public class ClusterReceiveThread extends Thread {
     }
 
     /**
-     * Returns the receive channel.
+     * Returns the receive clusterChannel.
      *
      * @throws Exception
      */
     private Channel getRecvChannel() throws IOException {
         if (this.recvChannel == null || !this.recvChannel.isOpen()) {
             this.recvChannel = this.connectionProvider.connection.createChannel()
-            this.recvChannel.exchangeDeclare(this.clusterConfig.name.toString(), "fanout")
+            this.recvChannel.exchangeDeclare(exchange, "fanout")
             this.recvQueueName = this.recvChannel.queueDeclare().getQueue()
-            this.recvChannel.queueBind(this.recvQueueName, this.clusterConfig.name.toString(), "")
+            String routingKey = this.clusterConfig.routingKey.toString()
+            if (routingKey != null && routingKey.isEmpty()) {
+                routingKey = null
+            }
+            this.recvChannel.queueBind(this.recvQueueName, this.clusterConfig.exchange.toString(), routingKey)
         }
         return this.recvChannel
     }
@@ -150,7 +156,7 @@ public class ClusterReceiveThread extends Thread {
                         byte[] body = delivery.getBody()
                         //logger.debug("======== Received message of length " + body.length + " ==========")
                         //logger.debug("  Current no listeners: " + this.listeners.size())
-                        APSMessage message = new APSRootMessage(bytes: body)kjh
+                        APSMessage message = this.messageResolver.resolveMessage(body)
 
                         for (APSCluster.Listener listener : this.listeners) {
                             try {

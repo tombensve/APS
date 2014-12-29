@@ -65,7 +65,7 @@ public class PeskyWabbitConnectionManager {
                     }
                     catch (IOException ioe2) { /* It has already failed and that failure is handled below. */ }
                 }
-                throw new IOException("Failed to ensure connection to RabbitMQ due to channel create failure!", ioe)
+                throw new IOException("Failed to ensure connection to RabbitMQ due to clusterChannel create failure!", ioe)
             }
         }
 

@@ -1,13 +1,8 @@
 package se.natusoft.osgi.aps.api.net.messaging.types;
 
-import org.joda.time.DateTime;
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException;
-import se.natusoft.osgi.aps.codedoc.Optional;
 
-import java.util.Date;
-import java.util.List;
 import java.util.Properties;
-import java.util.UUID;
 
 /**
  * This represents a specific cluster.
@@ -29,7 +24,7 @@ public interface APSCluster {
      *
      * Always returns now time.
      */
-    DateTime getDateTime();
+    APSClusterDateTime getClusterDateTime();
 
     /**
      * Sets the resolver to use for resolving received messages.

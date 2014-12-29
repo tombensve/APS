@@ -56,7 +56,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
  *
  * Please note that message clusters are represented by RabbitMQ exchanges. When a name is joined
  * an exchange with that name and type "fanout" is created. The receiver uses an anonymous queue.
- * Each "name" has its own receiver and sender channel. Each name will also have its own receiver
+ * Each "name" has its own receiver and sender clusterChannel. Each name will also have its own receiver
  * thread. My first attempt was to reuse channels as much as possible, but that did not work
  * very well, but I'm rather new to RabbitMQ and have to admit I haven't yet fully understood
  * all its features. It was however rather easy to install and get upp and running.
@@ -201,7 +201,7 @@ public class APSRabbitMQClusterServiceProvider implements APSClusterService {
                         },
                         clusterConfig: cluster,
                         logger: this.logger
-                )
+                ).start()
         )
     }
 

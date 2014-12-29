@@ -61,40 +61,82 @@ public class APSRootMessage implements APSMessage {
         return this.type;
     }
 
+    /**
+     * Returns the message bytes.
+     */
     @Override
     public byte[] getBytes() {
+        write();
         return this.content.getContent();
     }
 
+    /**
+     * Sets the message bytes.
+     *
+     * @param bytes The bytes to set.
+     */
     @Override
     public void setBytes(byte[] bytes) {
         this.content.setContent(bytes);
+        read();
     }
 
     /**
-     * Returns the data content as an InputStream.
+     * Reads the content bytes into local model data.
      */
-    public DataInputStream getContentInputStream() {
-        DataInputStream in = this.content.getContentInputStream();
+    private void read() {
         try {
-            this.type = in.readUTF();
+            read(this.content.getContentInputStream());
         }
         catch (IOException ioe) {/* This will not happen since we are reading from a byte array in memory. */}
-        return in;
     }
 
     /**
-     * Returns an OutputStream for writing data content.
-     * <p/>
-     * The content will be set on close() of stream.
+     * Reads the content bytes into local model data. This method should be overridden by subclasses which
+     * should start with super.read(in);.
+     *
+     * @param in The DataInputStream to read from.
      */
-    public DataOutputStream getContentOutputStream() {
-        DataOutputStream out = this.content.getContentOutputStream();
+    protected void read(DataInputStream in) throws IOException {
+            this.type = in.readUTF();
+    }
+
+    /**
+     * Writes the model data into the content bytes.
+     */
+    private void write() {
+        this.content = new APSData.Default();
         try {
-            out.writeUTF(this.type);
+            write(this.content.getContentOutputStream());
         }
         catch (IOException ioe) {/* This will not happen since we are writing to a byte array in  memory. */}
-        return out;
+    }
+
+    /**
+     * Writes the model data into the content bytes. This method should be overridden by subclasses which
+     * should start with super.write(out);.
+     *
+     * @param out The DataOutputStream to write to.
+     */
+    protected void write(DataOutputStream out) throws IOException {
+        out.writeUTF(this.type);
+    }
+
+    //
+    // Static tool methods
+    //
+
+    /**
+     * Returns the message type in the received message data.
+     *
+     * @param messageData The message data to extract message type from.
+     *
+     * @return The extracted message type.
+     */
+    public static String getType(byte[] messageData) {
+        APSRootMessage msg = new APSRootMessage();
+        msg.setBytes(messageData);
+        return msg.getType();
     }
 
     //

@@ -111,7 +111,7 @@
             se.natusoft.osgi.aps.api.net.messaging.exception;version="${project.version}",
             se.natusoft.osgi.aps.api.net.messaging.service;version="${project.version}",
             se.natusoft.osgi.aps.api.net.messaging.types;version="${project.version}",
-            se.natusoft.osgi.aps.api.net.messaging.util;version="${project.version}",
+            se.natusoft.osgi.aps.api.net.messaging.messages;version="${project.version}",
             se.natusoft.osgi.aps.api.net.time.service.util;version="${project.version}",
             se.natusoft.osgi.aps.api.net.sync.service;version="${project.version}",
             se.natusoft.osgi.aps.api.web.config;version="${project.version}"
