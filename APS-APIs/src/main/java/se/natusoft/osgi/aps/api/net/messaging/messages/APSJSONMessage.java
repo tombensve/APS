@@ -37,6 +37,7 @@
 package se.natusoft.osgi.aps.api.net.messaging.messages;
 
 import org.osgi.service.log.LogService;
+import se.natusoft.osgi.aps.api.net.messaging.types.APSCluster;
 import se.natusoft.osgi.aps.api.net.messaging.types.APSMessage;
 import se.natusoft.osgi.aps.codedoc.Implements;
 import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
@@ -299,4 +300,37 @@ public class APSJSONMessage implements APSMessage, JSONErrorHandler {
         }
     }
 
+    //
+    // Inner Classes
+    //
+
+    /**
+     * A slightly more useful default MessageResolver can be provided for APSJSONMessage since it
+     * is not totally dependent on subclasses if you work with the JSONObject object.
+     *
+     * Subclasses using standard Java Bean APIs can of course be used with JSON messages also, but
+     * then you need to provide your own implementation of the MessageResolver interface.
+     */
+    public static class DefaultMessageResolver implements APSCluster.MessageResolver {
+
+        private APSJSONService jsonService;
+        private LogService logService;
+
+        public DefaultMessageResolver(APSJSONService jsonService, LogService logService) {
+            this.jsonService = jsonService;
+            this.logService = logService;
+        }
+
+        /**
+         * Returns an APSMessage implementation based on the message data.
+         *
+         * @param messageData The message data.
+         */
+        @Override
+        public APSMessage resolveMessage(byte[] messageData) {
+            APSMessage message = new APSJSONMessage(this.jsonService, this.logService);
+            message.setBytes(messageData);
+            return message;
+        }
+    }
 }

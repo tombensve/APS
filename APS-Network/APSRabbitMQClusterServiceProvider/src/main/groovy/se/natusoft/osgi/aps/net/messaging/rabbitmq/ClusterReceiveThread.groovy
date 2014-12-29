@@ -150,7 +150,7 @@ public class ClusterReceiveThread extends Thread {
                         byte[] body = delivery.getBody()
                         //logger.debug("======== Received message of length " + body.length + " ==========")
                         //logger.debug("  Current no listeners: " + this.listeners.size())
-                        APSMessage message = new APSRootMessage(content: body, timestamp: timestampProvider.dateTime)
+                        APSMessage message = new APSRootMessage(bytes: body)kjh
 
                         for (APSCluster.Listener listener : this.listeners) {
                             try {

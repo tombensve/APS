@@ -61,6 +61,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
  * very well, but I'm rather new to RabbitMQ and have to admit I haven't yet fully understood
  * all its features. It was however rather easy to install and get upp and running.
  */
+@SuppressWarnings("UnnecessaryQualifiedReference")
 @OSGiServiceProvider(properties = [
         @OSGiProperty(name = APSClusterService.CLUSTER_PROVIDER_PROPERTY, value = "RabbitMQ")
 ], threadStart = true)

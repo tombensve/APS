@@ -32,6 +32,13 @@ public interface APSCluster {
     DateTime getDateTime();
 
     /**
+     * Sets the resolver to use for resolving received messages.
+     *
+     * @param messageResolver The MessageResolver to set.
+     */
+    void setMessageResolver(MessageResolver messageResolver);
+
+    /**
      * Sends a messaging.
      *
      * @param message The message to send.
@@ -70,4 +77,16 @@ public interface APSCluster {
         void messageReceived(APSMessage message);
     }
 
+    /**
+     * This resolves received messages.
+     */
+    interface MessageResolver {
+
+        /**
+         * Returns an APSMessage implementation based on the message data.
+         *
+         * @param messageData The message data.
+         */
+        APSMessage resolveMessage(byte[] messageData);
+    }
 }

@@ -159,7 +159,7 @@ public class APSClusterProvider implements APSCluster {
                 routingKey = null
             }
             ensureOpenChannel()
-                    .basicPublish(this.clusterConfig.exchange.toString(),routingKey, this.basicProperties, message.content)
+                    .basicPublish(this.clusterConfig.exchange.toString(),routingKey, this.basicProperties, message.bytes)
 
         }
         catch (Exception e) {

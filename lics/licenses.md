@@ -18,11 +18,17 @@ The following third party products are using this license:
 
 * [MarkdownDoclet-3.0-null](http://code.google.com/p/markdown-doclet/)
 
+__[Eclipse Public License - v version 1.0](http://www.eclipse.org/legal/epl-v10.html)__
+
+The following third party products are using this license:
+
+* [javax.persistence-2.0.0](http://www.eclipse.org/eclipselink)
+
 __[Apache Software License version 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)__
 
 The following third party products are using this license:
 
+* [joda-time-2.6](http://www.joda.org/joda-time/)
 * [annotations-13.0](http://www.jetbrains.org)
-* [groovy-all-2.3.6](http://groovy.codehaus.org/)
 
 <!-- CLM -->

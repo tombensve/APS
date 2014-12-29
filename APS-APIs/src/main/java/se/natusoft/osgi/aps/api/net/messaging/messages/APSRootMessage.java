@@ -1,5 +1,6 @@
 package se.natusoft.osgi.aps.api.net.messaging.messages;
 
+import se.natusoft.osgi.aps.api.net.messaging.types.APSCluster;
 import se.natusoft.osgi.aps.api.net.messaging.types.APSData;
 import se.natusoft.osgi.aps.api.net.messaging.types.APSMessage;
 
@@ -96,4 +97,27 @@ public class APSRootMessage implements APSMessage {
         return out;
     }
 
+    //
+    // Inner Classes
+    //
+
+    /**
+     * A default MessageResolver for APSRootMessage that can possibly be used for simple cases.
+     *
+     * Otherwise a resolver need to resolve to an APSRootMessage subclass depending on type.
+     */
+    public static class DefaultMessageResolver implements APSCluster.MessageResolver {
+
+        /**
+         * Returns an APSMessage implementation based on the message data.
+         *
+         * @param messageData The message data.
+         */
+        @Override
+        public APSMessage resolveMessage(byte[] messageData) {
+            APSMessage message = new APSRootMessage();
+            message.setBytes(messageData);
+            return message;
+        }
+    }
 }
