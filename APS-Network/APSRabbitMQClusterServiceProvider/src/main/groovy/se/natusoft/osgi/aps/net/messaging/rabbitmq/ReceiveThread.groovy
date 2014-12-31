@@ -148,48 +148,52 @@ public class ReceiveThread extends Thread {
             QueueingConsumer consumer = setupConsumer()
 
             while (keepRunning()) {
-                try {
-                    QueueingConsumer.Delivery delivery = consumer.nextDelivery(5000)
-                    //noinspection StatementWithEmptyBody
-                    if (delivery != null) {
-                        byte[] body = delivery.getBody()
-                        //logger.debug("======== Received message of length " + body.length + " ==========")
-                        //logger.debug("  Current no listeners: " + this.listeners.size())
-                        APSMessage message = this.messageResolver.resolveMessage(body)
+                if (!this.listeners.isEmpty()) {
+                    try {
+                        QueueingConsumer.Delivery delivery = consumer.nextDelivery(5000)
+                        //noinspection StatementWithEmptyBody
+                        if (delivery != null) {
+                            byte[] body = delivery.getBody()
+                            //logger.debug("======== Received message of length " + body.length + " ==========")
+                            //logger.debug("  Current no listeners: " + this.listeners.size())
+                            APSMessage message = this.messageResolver.resolveMessage(body)
 
-                        for (APSCluster.Listener listener : this.listeners) {
-                            try {
-                                listener.messageReceived(message)
+                            for (APSCluster.Listener listener : this.listeners) {
+                                try {
+                                    listener.messageReceived(message)
+                                }
+                                catch (RuntimeException re) {
+                                    this.logger.error("Failure during listener call: " + re.getMessage(), re)
+                                }
                             }
-                            catch (RuntimeException re) {
-                                this.logger.error("Failure during listener call: " + re.getMessage(), re)
-                            }
+                        } else {
+                            //logger.debug("====== TIMEOUT ======")
+                        }
+
+                    }
+                    catch (ShutdownSignalException | ConsumerCancelledException sse) {
+                        throw sse
+                    }
+                    // We don't want this thread to die on Exception!
+                    catch (Exception e) {
+                        this.logger.error("ReceiverThread got an Exception!", e)
+                        if (failureCount < 3) {
+                            ++failureCount
+                            //noinspection UnnecessaryQualifiedReference
+                            Thread.sleep(1000);
+                            consumer = setupConsumer()
+                        } else {
+                            this.logger.error("Sleeping for 15 seconds hoping for better times! If this keeps recurring " +
+                                    "there is a serious problem!")
+                            //noinspection UnnecessaryQualifiedReference
+                            Thread.sleep(15000)
+                            failureCount = 0
                         }
                     }
-                    else {
-                        //logger.debug("====== TIMEOUT ======")
-                    }
-
                 }
-                catch (ShutdownSignalException | ConsumerCancelledException sse) {
-                    throw sse
-                }
-                // We don't want this thread to die on Exception!
-                catch (Exception e) {
-                    this.logger.error("ReceiverThread got an Exception!", e)
-                    if (failureCount < 3) {
-                        ++failureCount
-                        //noinspection UnnecessaryQualifiedReference
-                        Thread.sleep 1000;
-                        consumer = setupConsumer()
-                    }
-                    else {
-                        this.logger.error("Sleeping for 15 seconds hoping for better times! If this keeps recurring " +
-                                "there is a serious problem!")
-                        //noinspection UnnecessaryQualifiedReference
-                        Thread.sleep(15000)
-                        failureCount = 0
-                    }
+                else {
+                    // If we don't have any listeners, then we don't fetch any messages.
+                    Thread.sleep(10000)
                 }
             }
 
