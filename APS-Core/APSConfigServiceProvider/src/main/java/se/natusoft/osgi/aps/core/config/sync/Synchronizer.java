@@ -1,40 +1,40 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Configuration Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         A more advanced configuration service that uses annotated interfaces to
  *         describe and provide access to configuration. It supports structured
  *         configuration models.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
  *         2013-08-02: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.core.config.sync;
 
@@ -43,8 +43,10 @@ import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigAdmin;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
-import se.natusoft.osgi.aps.api.net.sharing.service.APSSyncService;
-import se.natusoft.osgi.aps.api.net.time.service.APSNetTimeService;
+//import se.natusoft.osgi.aps.api.net.sharing.service.APSSyncService;
+//import se.natusoft.osgi.aps.api.net.time.service.APSNetTimeService;
+import se.natusoft.osgi.aps.api.net.messaging.types.APSCluster;
+import se.natusoft.osgi.aps.api.net.messaging.types.APSMessage;
 import se.natusoft.osgi.aps.core.config.config.APSConfigServiceConfig;
 import se.natusoft.osgi.aps.core.config.model.admin.APSConfigAdminImpl;
 import se.natusoft.osgi.aps.core.config.store.APSConfigEnvStore;
@@ -62,7 +64,7 @@ import java.util.Properties;
  * Responsible for synchronizing with other installations.
  */
 public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener,
-        APSConfigEnvStore.ConfigEnvUpdateListener, APSConfigChangedListener, APSSyncService.APSSyncListener<Synchronizer.ConfigSync> {
+        APSConfigEnvStore.ConfigEnvUpdateListener, APSConfigChangedListener, APSCluster.Listener {
 
     //
     // Private Members
@@ -86,14 +88,8 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener,
     /** Our own config model. It is loaded in the constructor! */
     private APSConfigServiceConfig config;
 
-    /** The APSSync service we use for synchronizing the configuration. */
-    private APSSyncService<ConfigSync> syncService;
-
-    /** The net time service for translating time between hosts. */
-    private APSNetTimeService netTimeService;
-
-    /** APSGroups member representing us. */
-    private APSSyncService.APSSync<ConfigSync> syncGroup;
+    /** The cluster we sync on. */
+    private APSCluster syncCluster;
 
     /**
      * Determines if we are synchronizing or not. This is used to be able to turn on or off sync
@@ -175,8 +171,7 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener,
      * @param configEnvStore The local APSConfigEnvStore.
      * @param configMemoryStore The memory store to listen for changes on.
      * @param configPersistentStore For persisting changes.
-     * @param syncService The APSSyncService to sync with.
-     * @param netTimeService The APSNetTimeService to resolve time difference between hosts with.
+     * @param syncCluster The cluster to sync on.
      */
     public Synchronizer(
             APSLogger logger,
@@ -185,16 +180,14 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener,
             APSConfigEnvStore configEnvStore,
             APSConfigMemoryStore configMemoryStore,
             APSConfigPersistentStore configPersistentStore,
-            APSSyncService<ConfigSync> syncService,
-            APSNetTimeService netTimeService
+            APSCluster syncCluster
     ) {
         this.logger = logger;
         this.configAdminService = configAdminService;
         this.configEnvStore = configEnvStore;
         this.configMemoryStore = configMemoryStore;
         this.configPersistentStore = configPersistentStore;
-        this.syncService = syncService;
-        this.netTimeService = netTimeService;
+        this.syncCluster = syncCluster;
 
         this.config = configService.getConfiguration(APSConfigServiceConfig.class);
         this.config.addConfigChangedListener(this);
@@ -220,7 +213,7 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener,
         if (this.config.synchronize.toBoolean()) {
             this.synchronizing = true;
 
-            this.syncGroup = this.syncService.joinSyncGroup(this.config.synchronizationGroup.toString(), this);
+            this.syncCluster.addMessageListener(this);
 
             this.configEnvStore.addUpdateListener(this);
             this.configMemoryStore.addUpdateListener(this);
@@ -237,11 +230,22 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener,
 
             this.configEnvStore.removeUpdateListener(this);
             this.configMemoryStore.removeUpdateListener(this);
-            if (this.syncGroup != null) {
-                this.syncGroup.leaveSyncGroup();
-            }
+            this.syncCluster.
+//            if (this.syncGroup != null) {
+//                this.syncGroup.leaveSyncGroup();
+//            }
             this.logger.info("Stopped config synchronizer!");
         }
+    }
+
+    /**
+     * This is called when a messaging is received.
+     *
+     * @param message The received message.
+     */
+    @Override
+    public void messageReceived(APSMessage message) {
+
     }
 
     /**
@@ -281,7 +285,8 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener,
     private final TimePropertyConverter Local_2_Net_Time_Converter = new TimePropertyConverter() {
         @Override
         public long convertTime(long time) {
-            return Synchronizer.this.netTimeService.localToNetTime(time);
+//            return Synchronizer.this.netTimeService.localToNetTime(time);
+            return -1;
         }
     };
 
@@ -289,7 +294,8 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener,
     private final TimePropertyConverter Net_2_Local_Time_Converter = new TimePropertyConverter() {
         @Override
         public long convertTime(long time) {
-            return Synchronizer.this.netTimeService.netToLocalTime(time);
+//            return Synchronizer.this.netTimeService.netToLocalTime(time);
+            return -1;
         }
     };
 
@@ -337,7 +343,7 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener,
             ConfigSync configSync = new ConfigSync(ConfigSync.ContentType.CONFIG_ENV);
             configSync.content = convertPropTime(configEnvStore.getAsProperties(), Config_Env_Matcher, Local_2_Net_Time_Converter);
 
-            this.syncGroup.sync(configSync);
+//            this.syncGroup.sync(configSync);
         }
         catch (Exception e) {
             this.logger.error("Send of config env message failed: " + e.getMessage(), e);
@@ -370,7 +376,7 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener,
                     Local_2_Net_Time_Converter
             );
 
-            this.syncGroup.sync(configSync);
+//            this.syncGroup.sync(configSync);
 
         }
         catch (Exception e) {
@@ -383,7 +389,7 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener,
      *
      * @param syncData The received synchronization data.
      */
-    @Override
+//    @Override
     public void synced(ConfigSync syncData) {
         switch(syncData.contentType) {
             case CONFIG:
@@ -399,7 +405,7 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener,
     /**
      * If this gets called then this synchronization member should resync all of its information.
      */
-    @Override
+//    @Override
     public void updateOthers() {
         syncSend(this.configEnvStore);
 

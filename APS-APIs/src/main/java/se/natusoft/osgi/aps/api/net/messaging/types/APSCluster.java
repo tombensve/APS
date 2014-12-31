@@ -54,10 +54,9 @@ public interface APSCluster {
     /**
      * Removes a messaging listener.
      *
-     * @param group The group listening to.
      * @param listener The listener to remove.
      */
-    void removeMessageListener(String group, Listener listener);
+    void removeMessageListener(Listener listener);
 
     /**
      * Listener for types.

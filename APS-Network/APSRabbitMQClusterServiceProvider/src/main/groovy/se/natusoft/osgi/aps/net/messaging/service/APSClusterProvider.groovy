@@ -281,7 +281,7 @@ public class APSClusterProvider implements
      */
     @Override
     @Implements(APSCluster.class)
-    public void removeMessageListener(String group, APSCluster.Listener listener) {
+    public void removeMessageListener(APSCluster.Listener listener) {
         ensureClusterReceiveThread().removeMessageListener(listener)
     }
 

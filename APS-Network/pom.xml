@@ -59,6 +59,7 @@
         <module>APSGroups</module>
         <module>APSNetTimeServiceProvider</module>
         <module>APSRabbitMQClusterServiceProvider</module>
+        <module>APSStreamedJSONRPCProtocolProvider</module>
     </modules>
 
 </project>

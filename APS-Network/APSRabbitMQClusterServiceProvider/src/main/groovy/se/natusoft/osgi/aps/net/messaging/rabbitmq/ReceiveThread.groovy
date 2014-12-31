@@ -9,7 +9,6 @@ import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.net.messaging.types.APSCluster
 import se.natusoft.osgi.aps.api.net.messaging.types.APSMessage
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
-import se.natusoft.osgi.aps.net.messaging.apis.TimestampProvider
 import se.natusoft.osgi.aps.net.messaging.config.RabbitMQClusterServiceConfig
 import se.natusoft.osgi.aps.tools.APSLogger
 

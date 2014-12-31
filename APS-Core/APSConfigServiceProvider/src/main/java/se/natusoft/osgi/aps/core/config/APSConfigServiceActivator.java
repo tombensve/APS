@@ -3,33 +3,33 @@
  * PROJECT
  *     Name
  *         APS Configuration Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         A more advanced configuration service that uses annotated interfaces to
  *         describe and provide access to configuration. It supports structured
  *         configuration models.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -45,8 +45,8 @@ import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
 import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
-import se.natusoft.osgi.aps.api.net.sharing.service.APSSyncService;
-import se.natusoft.osgi.aps.api.net.time.service.APSNetTimeService;
+//import se.natusoft.osgi.aps.api.net.sharing.service.APSSyncService;
+//import se.natusoft.osgi.aps.api.net.time.service.APSNetTimeService;
 import se.natusoft.osgi.aps.core.config.config.APSConfigServiceConfig;
 import se.natusoft.osgi.aps.core.config.service.APSConfigAdminServiceProvider;
 import se.natusoft.osgi.aps.core.config.service.APSConfigServiceExtender;
@@ -85,11 +85,11 @@ public class APSConfigServiceActivator implements BundleActivator {
     /** The APS filesystem service used for storing config data. */
     private APSServiceTracker<APSFilesystemService> fsServiceTracker = null;
 
-    /** Tracker for the APSGroupsService. */
-    private APSServiceTracker<APSSyncService> syncServiceTracker = null;
-
-    /** Tracker for the APSNetTimeService. */
-    private APSServiceTracker<APSNetTimeService> netTimeServiceTracker = null;
+//    /** Tracker for the APSGroupsService. */
+//    private APSServiceTracker<APSSyncService> syncServiceTracker = null;
+//
+//    /** Tracker for the APSNetTimeService. */
+//    private APSServiceTracker<APSNetTimeService> netTimeServiceTracker = null;
 
     //
     // Other Members
@@ -217,46 +217,46 @@ public class APSConfigServiceActivator implements BundleActivator {
         // Since we cannot auto manage our self, we have to do this the "hard" way :-)
         this.configServiceProvider.registerConfiguration(APSConfigServiceConfig.class, false);
 
-        // Setup synchronization tracker
-        this.syncServiceTracker = new APSServiceTracker<>(context, APSSyncService.class,
-                APSServiceTracker.LARGE_TIMEOUT);
-        this.syncServiceTracker.start();
-
-        // Setup net time tracker
-        this.netTimeServiceTracker = new APSServiceTracker<>(context, APSNetTimeService.class,
-                APSServiceTracker.LARGE_TIMEOUT);
-        this.netTimeServiceTracker.start();
-
-        // We create and start a new Synchronizer when an active APSSyncService becomes available, and stop it when
-        // the active APSSyncService leaves. This because the Synchronizer need to rejoin the group when there is a
-        // new APSSyncService since membership is automatically removed when the service goes away.
-
-        this.syncServiceTracker.onActiveServiceAvailable(new OnServiceAvailable<APSSyncService<Synchronizer.ConfigSync>> () {
-            public void onServiceAvailable(APSSyncService<Synchronizer.ConfigSync> syncService, ServiceReference serviceReference)
-                    throws Exception {
-                APSConfigServiceActivator.this.synchronizer =
-                        new Synchronizer(configAdminLogger, configAdminProvider, configServiceProvider, envStore, memoryStore,
-                                configStore, syncService,
-                                APSConfigServiceActivator.this.netTimeServiceTracker.getWrappedService());
-                APSConfigServiceActivator.this.synchronizer.start();
-            }
-        });
-
-        this.syncServiceTracker.onActiveServiceLeaving(new OnServiceLeaving<APSGroupsService>() {
-            @Override
-            public void onServiceLeaving(ServiceReference service, Class serviceAPI) throws Exception {
-                // We have to synchronize here since there will be a potential shutdown conflict if the
-                // whole server is taken down. In that case it is possible that this executes at the same
-                // time as takedownServcies(context), which also shuts down the synchronizer.
-                synchronized (APSConfigServiceActivator.this) {
-                    if (APSConfigServiceActivator.this.synchronizer != null) {
-                        APSConfigServiceActivator.this.synchronizer.stop();
-                        APSConfigServiceActivator.this.synchronizer.cleanup();
-                        APSConfigServiceActivator.this.synchronizer = null;
-                    }
-                }
-            }
-        });
+//        // Setup synchronization tracker
+//        this.syncServiceTracker = new APSServiceTracker<>(context, APSSyncService.class,
+//                APSServiceTracker.LARGE_TIMEOUT);
+//        this.syncServiceTracker.start();
+//
+//        // Setup net time tracker
+//        this.netTimeServiceTracker = new APSServiceTracker<>(context, APSNetTimeService.class,
+//                APSServiceTracker.LARGE_TIMEOUT);
+//        this.netTimeServiceTracker.start();
+//
+//        // We create and start a new Synchronizer when an active APSSyncService becomes available, and stop it when
+//        // the active APSSyncService leaves. This because the Synchronizer need to rejoin the group when there is a
+//        // new APSSyncService since membership is automatically removed when the service goes away.
+//
+//        this.syncServiceTracker.onActiveServiceAvailable(new OnServiceAvailable<APSSyncService<Synchronizer.ConfigSync>> () {
+//            public void onServiceAvailable(APSSyncService<Synchronizer.ConfigSync> syncService, ServiceReference serviceReference)
+//                    throws Exception {
+//                APSConfigServiceActivator.this.synchronizer =
+//                        new Synchronizer(configAdminLogger, configAdminProvider, configServiceProvider, envStore, memoryStore,
+//                                configStore, syncService,
+//                                APSConfigServiceActivator.this.netTimeServiceTracker.getWrappedService());
+//                APSConfigServiceActivator.this.synchronizer.start();
+//            }
+//        });
+//
+//        this.syncServiceTracker.onActiveServiceLeaving(new OnServiceLeaving<APSGroupsService>() {
+//            @Override
+//            public void onServiceLeaving(ServiceReference service, Class serviceAPI) throws Exception {
+//                // We have to synchronize here since there will be a potential shutdown conflict if the
+//                // whole server is taken down. In that case it is possible that this executes at the same
+//                // time as takedownServcies(context), which also shuts down the synchronizer.
+//                synchronized (APSConfigServiceActivator.this) {
+//                    if (APSConfigServiceActivator.this.synchronizer != null) {
+//                        APSConfigServiceActivator.this.synchronizer.stop();
+//                        APSConfigServiceActivator.this.synchronizer.cleanup();
+//                        APSConfigServiceActivator.this.synchronizer = null;
+//                    }
+//                }
+//            }
+//        });
     }
 
     @Override
@@ -277,10 +277,10 @@ public class APSConfigServiceActivator implements BundleActivator {
             }
         }
 
-        if (this.syncServiceTracker != null) {
-            this.syncServiceTracker.stop(context);
-            this.syncServiceTracker = null;
-        }
+//        if (this.syncServiceTracker != null) {
+//            this.syncServiceTracker.stop(context);
+//            this.syncServiceTracker = null;
+//        }
 
         if (this.configured) {
             if (this.configAdminService != null) {
