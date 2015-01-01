@@ -18,13 +18,6 @@ import se.natusoft.osgi.aps.api.net.messaging.types.APSSyncEvent;
 public interface APSSyncService<SyncGroup> {
 
     /**
-     * Returns a sync group by specifying a configured name.
-     *
-     * @param name The name of the sync group to get.
-     */
-    SyncGroup getSyncGroupByName(String name);
-
-    /**
      * Gets a Synchronizer for the specified group.
      *
      * @param group The group to synchronize with.
