@@ -3,33 +3,33 @@
  * PROJECT
  *     Name
  *         APS Configuration Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         A more advanced configuration service that uses annotated interfaces to
  *         describe and provide access to configuration. It supports structured
  *         configuration models.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -236,7 +236,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * Returns the value as a String.
      */
     @Override
-    public String toString() {
+    public String getString() {
         return safeGetValue("");
     }
 
@@ -244,7 +244,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * Returns the value is a byte.
      */
     @Override
-    public byte toByte() {
+    public byte getByte() {
         return Byte.valueOf(safeGetValue("0"));
     }
 
@@ -252,7 +252,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * Returns the value as a short.
      */
     @Override
-    public short toShort() {
+    public short getShort() {
         return Short.valueOf(safeGetValue("0"));
     }
 
@@ -260,7 +260,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * Returns the value as an int.
      */
     @Override
-    public int toInt() {
+    public int getInt() {
         return Integer.valueOf(safeGetValue("0"));
     }
 
@@ -268,7 +268,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * Returns the value as a long.
      */
     @Override
-    public long toLong() {
+    public long getLong() {
         return Long.valueOf(safeGetValue("0"));
     }
 
@@ -276,7 +276,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * Returns the value as a float.
      */
     @Override
-    public float toFloat() {
+    public float getFloat() {
         return Float.valueOf(safeGetValue("0.0"));
     }
 
@@ -284,7 +284,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * Returns the value as a double.
      */
     @Override
-    public double toDouble() {
+    public double getDouble() {
         return Double.valueOf(safeGetValue("0.0"));
     }
 
@@ -292,7 +292,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * Returns the value as a boolean.
      */
     @Override
-    public boolean toBoolean() {
+    public boolean getBoolean() {
         return Boolean.valueOf(safeGetValue("false"));
     }
 
@@ -302,7 +302,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * @throws APSRuntimeException on no specified date pattern or no valid date in config.
      */
     @Override
-    public Date toDate() {
+    public Date getDate() {
         if (this.configValueEditModel.getDatePattern() == null) {
             throw new APSRuntimeException("Trying to convert value to a Date object without any specification of date format!");
         }
@@ -318,7 +318,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * Returns the value as a String.
      */
     @Override
-    public String toString(String configEnvironment) {
+    public String getString(String configEnvironment) {
         return safeGetValue("", configEnvironment);
     }
 
@@ -326,7 +326,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * Returns the value is a byte.
      */
     @Override
-    public byte toByte(String configEnvironment) {
+    public byte getByte(String configEnvironment) {
         return Byte.valueOf(safeGetValue("0", configEnvironment));
     }
 
@@ -334,7 +334,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * Returns the value as a short.
      */
     @Override
-    public short toShort(String configEnvironment) {
+    public short getShort(String configEnvironment) {
         return Short.valueOf(safeGetValue("0", configEnvironment));
     }
 
@@ -342,7 +342,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * Returns the value as an int.
      */
     @Override
-    public int toInt(String configEnvironment) {
+    public int getInt(String configEnvironment) {
         return Integer.valueOf(safeGetValue("0", configEnvironment));
     }
 
@@ -350,7 +350,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * Returns the value as a long.
      */
     @Override
-    public long toLong(String configEnvironment) {
+    public long getLong(String configEnvironment) {
         return Long.valueOf(safeGetValue("0", configEnvironment));
     }
 
@@ -358,7 +358,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * Returns the value as a float.
      */
     @Override
-    public float toFloat(String configEnvironment) {
+    public float getFloat(String configEnvironment) {
         return Float.valueOf(safeGetValue("0.0", configEnvironment));
     }
 
@@ -366,7 +366,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * Returns the value as a double.
      */
     @Override
-    public double toDouble(String configEnvironment) {
+    public double getDouble(String configEnvironment) {
         return Double.valueOf(safeGetValue("0.0", configEnvironment));
     }
 
@@ -374,7 +374,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * Returns the value as a boolean.
      */
     @Override
-    public boolean toBoolean(String configEnvironment) {
+    public boolean getBoolean(String configEnvironment) {
         return Boolean.valueOf(safeGetValue("false", configEnvironment));
     }
 
@@ -384,7 +384,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * @throws APSRuntimeException on no specified date pattern or no valid date in config.
      */
     @Override
-    public Date toDate(String configEnvironment) {
+    public Date getDate(String configEnvironment) {
         if (this.configValueEditModel.getDatePattern() == null) {
             throw new APSRuntimeException("Trying to convert value to a Date object without any specification of date format!");
         }
@@ -425,6 +425,176 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
     @Override
     public void setConfigReference(APSConfigReference ref) {
         this.ref = ref._(this.configValueEditModel);
+    }
+
+    //
+    // Deprecated APIs
+    //
+
+    /**
+     * Returns the value as a String.
+     */
+    @Override
+    @Deprecated
+    public String toString() {
+        return getString();
+    }
+
+    /**
+     * Returns the value is a byte.
+     */
+    @Override
+    @Deprecated
+    public byte toByte() {
+        return getByte();
+    }
+
+    /**
+     * Returns the value as a short.
+     */
+    @Override
+    @Deprecated
+    public short toShort() {
+        return getShort();
+    }
+
+    /**
+     * Returns the value as an int.
+     */
+    @Override
+    @Deprecated
+    public int toInt() {
+        return getInt();
+    }
+
+    /**
+     * Returns the value as a long.
+     */
+    @Override
+    @Deprecated
+    public long toLong() {
+        return getLong();
+    }
+
+    /**
+     * Returns the value as a float.
+     */
+    @Override
+    @Deprecated
+    public float toFloat() {
+        return getFloat();
+    }
+
+    /**
+     * Returns the value as a double.
+     */
+    @Override
+    @Deprecated
+    public double toDouble() {
+        return getDouble();
+    }
+
+    /**
+     * Returns the value as a boolean.
+     */
+    @Override
+    @Deprecated
+    public boolean toBoolean() {
+        return getBoolean();
+    }
+
+    /**
+     * Returns the value as a Date.
+     *
+     * @throws APSRuntimeException on no specified date pattern or no valid date in config.
+     */
+    @Override
+    @Deprecated
+    public Date toDate() {
+        return getDate();
+    }
+
+    /**
+     * Returns the value as a String.
+     */
+    @Override
+    @Deprecated
+    public String toString(String configEnvironment) {
+        return getString(configEnvironment);
+    }
+
+    /**
+     * Returns the value is a byte.
+     */
+    @Override
+    @Deprecated
+    public byte toByte(String configEnvironment) {
+        return getByte(configEnvironment);
+    }
+
+    /**
+     * Returns the value as a short.
+     */
+    @Override
+    @Deprecated
+    public short toShort(String configEnvironment) {
+        return getShort(configEnvironment);
+    }
+
+    /**
+     * Returns the value as an int.
+     */
+    @Override
+    @Deprecated
+    public int toInt(String configEnvironment) {
+        return getInt(configEnvironment);
+    }
+
+    /**
+     * Returns the value as a long.
+     */
+    @Override
+    @Deprecated
+    public long toLong(String configEnvironment) {
+        return getLong(configEnvironment);
+    }
+
+    /**
+     * Returns the value as a float.
+     */
+    @Override
+    @Deprecated
+    public float toFloat(String configEnvironment) {
+        return getFloat(configEnvironment);
+    }
+
+    /**
+     * Returns the value as a double.
+     */
+    @Override
+    @Deprecated
+    public double toDouble(String configEnvironment) {
+        return getDouble(configEnvironment);
+    }
+
+    /**
+     * Returns the value as a boolean.
+     */
+    @Override
+    @Deprecated
+    public boolean toBoolean(String configEnvironment) {
+        return getBoolean(configEnvironment);
+    }
+
+    /**
+     * Returns the value as a Date.
+     *
+     * @throws APSRuntimeException on no specified date pattern or no valid date in config.
+     */
+    @Override
+    @Deprecated
+    public Date toDate(String configEnvironment) {
+        return getDate(configEnvironment);
     }
 
 }

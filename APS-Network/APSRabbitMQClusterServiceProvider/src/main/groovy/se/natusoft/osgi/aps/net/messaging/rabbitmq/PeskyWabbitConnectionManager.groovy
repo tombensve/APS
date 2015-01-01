@@ -34,23 +34,23 @@ public class PeskyWabbitConnectionManager {
     public synchronized String ensureConnection() throws IOException {
         if (this.connectionFactory == null) {
             this.connectionFactory = new ConnectionFactory()
-            connectionFactory.setHost(RabbitMQClusterServiceConfig.managed.get().host.toString())
-            connectionFactory.setPort(RabbitMQClusterServiceConfig.managed.get().port.toInt())
+            connectionFactory.setHost(RabbitMQClusterServiceConfig.managed.get().host.string)
+            connectionFactory.setPort(RabbitMQClusterServiceConfig.managed.get().port.int)
 
-            if (RabbitMQClusterServiceConfig.managed.get().user.toString().length() > 0) {
-                connectionFactory.setUsername(RabbitMQClusterServiceConfig.managed.get().user.toString())
+            if (RabbitMQClusterServiceConfig.managed.get().user.string.length() > 0) {
+                connectionFactory.setUsername(RabbitMQClusterServiceConfig.managed.get().user.string)
             }
 
-            if (RabbitMQClusterServiceConfig.managed.get().password.toString().length() > 0) {
-                connectionFactory.setPassword(RabbitMQClusterServiceConfig.managed.get().password.toString())
+            if (RabbitMQClusterServiceConfig.managed.get().password.string.length() > 0) {
+                connectionFactory.setPassword(RabbitMQClusterServiceConfig.managed.get().password.string)
             }
 
-            if (RabbitMQClusterServiceConfig.managed.get().virtualHost.toString().length() > 0) {
-                connectionFactory.setVirtualHost(RabbitMQClusterServiceConfig.managed.get().virtualHost.toString())
+            if (RabbitMQClusterServiceConfig.managed.get().virtualHost.string.length() > 0) {
+                connectionFactory.setVirtualHost(RabbitMQClusterServiceConfig.managed.get().virtualHost.string)
             }
 
-            if (RabbitMQClusterServiceConfig.managed.get().timeout.toInt() > 0) {
-                connectionFactory.setConnectionTimeout(RabbitMQClusterServiceConfig.managed.get().timeout.toInt())
+            if (RabbitMQClusterServiceConfig.managed.get().timeout.int > 0) {
+                connectionFactory.setConnectionTimeout(RabbitMQClusterServiceConfig.managed.get().timeout.int)
             }
         }
 

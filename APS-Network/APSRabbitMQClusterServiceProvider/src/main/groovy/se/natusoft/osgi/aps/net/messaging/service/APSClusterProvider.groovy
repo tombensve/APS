@@ -110,13 +110,13 @@ public class APSClusterProvider implements
 
         if (this.clusterChannel == null || !this.clusterChannel.isOpen()) {
             this.clusterChannel = this.connectionProvider.connection.createChannel()
-            this.clusterChannel.exchangeDeclare(this.clusterConfig.exchange.toString(), this.clusterConfig.exchangeType.toString())
-            this.clusterChannel.queueDeclare(this.clusterConfig.queue.toString(), true, false, false, null)
-            String routingKey = this.clusterConfig.routingKey.toString()
+            this.clusterChannel.exchangeDeclare(this.clusterConfig.exchange.string, this.clusterConfig.exchangeType.string)
+            this.clusterChannel.queueDeclare(this.clusterConfig.queue.string, true, false, false, null)
+            String routingKey = this.clusterConfig.routingKey.string
             if (routingKey != null && routingKey.isEmpty()) {
                 routingKey = null
             }
-            this.clusterChannel.queueBind(this.clusterConfig.queue.toString(), this.clusterConfig.exchange.toString(), routingKey)
+            this.clusterChannel.queueBind(this.clusterConfig.queue.string, this.clusterConfig.exchange.string, routingKey)
         }
 
         return this.clusterChannel
@@ -132,11 +132,11 @@ public class APSClusterProvider implements
 
         if (this.controlChannel == null || !this.controlChannel.isOpen()) {
             this.controlChannel = this.connectionProvider.connection.createChannel()
-            this.controlExchange = this.clusterConfig.exchange.toString() + "-control";
-            this.controlChannel.exchangeDeclare(this.controlExchange, this.clusterConfig.exchangeType.toString())
-            String queue = this.clusterConfig.queue.toString() + "-control"
+            this.controlExchange = this.clusterConfig.exchange.string + "-control";
+            this.controlChannel.exchangeDeclare(this.controlExchange, this.clusterConfig.exchangeType.string)
+            String queue = this.clusterConfig.queue.string + "-control"
             this.controlChannel.queueDeclare(queue, true, false, false, null)
-            String routingKey = this.clusterConfig.routingKey.toString()
+            String routingKey = this.clusterConfig.routingKey.string
             if (routingKey != null && routingKey.isEmpty()) {
                 routingKey = null
             }
@@ -155,7 +155,7 @@ public class APSClusterProvider implements
 
         if (this.clusterReceiveThread == null) {
             this.clusterReceiveThread = new ReceiveThread(
-                    exchange: this.clusterConfig.exchange.toString(),
+                    exchange: this.clusterConfig.exchange.string,
                     name: "cluster-receive-thread-" + getName(),
                     connectionProvider: this.connectionProvider,
                     clusterConfig: this.clusterConfig,
@@ -224,7 +224,7 @@ public class APSClusterProvider implements
      * @param message The message to send.
      */
     private void sendBusMessage(Channel channel, String exchange, APSMessage message) {
-        String routingKey = this.clusterConfig.routingKey.toString()
+        String routingKey = this.clusterConfig.routingKey.string
         if (routingKey.isEmpty()) {
             routingKey = null
         }

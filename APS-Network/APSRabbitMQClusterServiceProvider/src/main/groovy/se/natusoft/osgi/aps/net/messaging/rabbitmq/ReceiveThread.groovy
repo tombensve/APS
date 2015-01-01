@@ -118,11 +118,11 @@ public class ReceiveThread extends Thread {
             this.recvChannel = this.connectionProvider.connection.createChannel()
             this.recvChannel.exchangeDeclare(exchange, "fanout")
             this.recvQueueName = this.recvChannel.queueDeclare().getQueue()
-            String routingKey = this.clusterConfig.routingKey.toString()
+            String routingKey = this.clusterConfig.routingKey.string
             if (routingKey != null && routingKey.isEmpty()) {
                 routingKey = null
             }
-            this.recvChannel.queueBind(this.recvQueueName, this.clusterConfig.exchange.toString(), routingKey)
+            this.recvChannel.queueBind(this.recvQueueName, this.clusterConfig.exchange.string, routingKey)
         }
         return this.recvChannel
     }
