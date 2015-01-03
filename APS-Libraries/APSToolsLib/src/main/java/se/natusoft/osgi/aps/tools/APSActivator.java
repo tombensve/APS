@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Tools Library
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides a library of utilities, among them APSServiceTracker used by all other APS bundles.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
  *         2013-08-02: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.tools;
 
@@ -41,11 +41,11 @@ import org.osgi.framework.BundleListener;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceListener;
 import se.natusoft.osgi.aps.tools.annotation.activator.*;
+import se.natusoft.osgi.aps.tools.apis.APSActivatorServiceSetupProvider;
 import se.natusoft.osgi.aps.tools.exceptions.APSActivatorException;
 import se.natusoft.osgi.aps.tools.tracker.OnServiceAvailable;
 import se.natusoft.osgi.aps.tools.tracker.OnTimeout;
 import se.natusoft.osgi.aps.tools.tuples.Tuple2;
-import se.natusoft.osgi.aps.tools.tuples.Tuple3;
 import se.natusoft.osgi.aps.tools.tuples.Tuple4;
 
 import java.io.File;
@@ -111,10 +111,23 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * This means that already existing instances are provided in constructor and/or addManagedInstance(...).
      * This way you can manage injections in a servlet for example. Please note that in addition to the
      * already provided instances like servlets or other framework instances all classes in the bundle
-     * will still be scanned and handled! It will ofcourse sort out any duplicates due to the already
+     * will still be scanned and handled! It will of course sort out any duplicates due to the already
      * passed instances can be instances of a bundle class.
      */
     public static final boolean EXISTING_INSTANCES_MODE = false;
+
+    //
+    // Support Classes
+    //
+
+    private class InstanceRepresentative {
+        private Object instance;
+        private Properties props;
+        private List<String> serviceAPIs = new LinkedList<>();
+
+        private InstanceRepresentative() {}
+        private InstanceRepresentative(Object instance) { this.instance = instance; }
+    }
 
     //
     // Private Members
@@ -122,21 +135,41 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
     private APSLogger activatorLogger;
 
+    /** Active service registrations. */
     private List<ServiceRegistration> services;
+
+    /** Currently tracked services (who are injected into managedInstances). */
     private Map<String, APSServiceTracker> trackers;
+
+    /** Instances created and injected into managedInstances. */
     private Map<String, Object> namedInstances;
+
+    /** Annotated shutdown methods. */
     private List<Tuple2<Method, Object>> shutdownMethods;
+
+    /**
+     * Services annotated as required. A service provider will not be registered if it has any required service
+     * that is not available yet. It will be registered when all required services are available.
+     */
     private List<Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>>> requiredServices;
-    private Map<Class, List<Object>> managedInstances;
+
+    /** The managed instances to receive injections. This includes mostly service providers. */
+    private Map<Class, List<InstanceRepresentative>> managedInstances;
+
+    /** Annotated service listeners. */
     private List<ListenerWrapper> listeners;
+
+    /** Annotated init methods. These are called after all injections are done. */
     private List<Tuple2<Method, Class>> initMethods;
+
+    /** The bundles context received on bundle start. */
+    private BundleContext context;
+
+    /** The mode of this activator instance.  */
+    private boolean activatorMode = ACTIVATOR_MODE;
 
     @SuppressWarnings("FieldCanBeLocal")
     private boolean supportsRequired = true;
-
-    private BundleContext context;
-
-    private boolean activatorMode = ACTIVATOR_MODE;
 
     //
     // Constructors
@@ -153,7 +186,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param instances Instances to manage.
      */
     public APSActivator(Object... instances) {
-        this.managedInstances = Collections.synchronizedMap(new HashMap<Class, List<Object>>());
+        this.managedInstances = Collections.synchronizedMap(new HashMap<Class, List<InstanceRepresentative>>());
         this.activatorMode = EXISTING_INSTANCES_MODE;
         for (Object inst : instances) {
             System.out.println("[APSActivator] Adding instance of '" + inst.getClass().getName() + "' as already " +
@@ -172,8 +205,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param instance The instance to add.
      */
     public void addManagedInstance(Object instance) {
-        List<Object> instances = new LinkedList<>();
-        instances.add(instance);
+        List<InstanceRepresentative> instances = new LinkedList<>();
+        instances.add(new InstanceRepresentative(instance));
         this.managedInstances.put(instance.getClass(), instances);
     }
 
@@ -187,7 +220,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             this.namedInstances = Collections.synchronizedMap(new HashMap<String, Object>());
             this.shutdownMethods = Collections.synchronizedList(new LinkedList<Tuple2<Method, Object>>());
             if (this.activatorMode) this.managedInstances =
-                    Collections.synchronizedMap(new HashMap<Class, List<Object>>());
+                    Collections.synchronizedMap(new HashMap<Class, List<InstanceRepresentative>>());
             this.requiredServices =
                     Collections.synchronizedList(
                             new LinkedList<Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>>>()
@@ -235,16 +268,19 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 new StartThread(entryClass, context).start();
             }
             else {
-                handleServiceInstances(entryClass);
-                handleFieldInjections(entryClass, context);
-                handleServiceRegistrations(entryClass, context);
-                handleMethods(entryClass, context);
+                collectInjecteeInstancesToManage(entryClass);
+                doFieldInjectionsIntoManagedInstances(entryClass, context);
+                doServiceRegistrationsOfManagedServiceInstances(entryClass, context);
+                handleMethodInvocationsOnManagedInstances(entryClass, context);
             }
         }
 
-        handleInitMethodsStep2();
+        callInitMethods();
     }
 
+    /**
+     * This is used for threaded start.
+     */
     private class StartThread extends Thread {
 
         private Class entryClass;
@@ -258,10 +294,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         @Override
         public void run() {
             try {
-                handleServiceInstances(this.entryClass);
-                handleFieldInjections(this.entryClass, this.context);
-                handleServiceRegistrations(this.entryClass, this.context);
-                handleMethods(this.entryClass, this.context);
+                collectInjecteeInstancesToManage(this.entryClass);
+                doFieldInjectionsIntoManagedInstances(this.entryClass, this.context);
+                doServiceRegistrationsOfManagedServiceInstances(this.entryClass, this.context);
+                handleMethodInvocationsOnManagedInstances(this.entryClass, this.context);
             }
             catch (Exception e) {
                 APSActivator.this.activatorLogger.error("Threaded start: Failed to manage class: " + this.entryClass, e);
@@ -383,25 +419,64 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param managedClass The manages class to create instances of.
      * @throws Exception
      */
-    protected void handleServiceInstances(Class managedClass) throws Exception {
+    protected void collectInjecteeInstancesToManage(Class managedClass) throws Exception {
         OSGiServiceProvider serviceProvider = (OSGiServiceProvider)managedClass.getAnnotation(OSGiServiceProvider.class);
         if (serviceProvider != null) {
-            int noInstances = 1;
+            if (managedClass.getInterfaces().length == 0) {
+                throw new APSActivatorException("Managed service provider class '" + managedClass.getName() + "' " +
+                        "does not implement any service interface!");
+            }
 
             if (serviceProvider.instances().length > 0) {
-                noInstances = serviceProvider.instances().length;
+                for (OSGiServiceInstance inst : serviceProvider.instances()) {
+                    InstanceRepresentative ir = new InstanceRepresentative(createInstance(managedClass));
+                    ir.props = osgiPropertiesToProperties(inst.properties());
+                    for (Class svcAPI : inst.serviceAPIs()) {
+                        ir.serviceAPIs.add(svcAPI.getName());
+                    }
+                    addManagedInstanceRep(managedClass, ir);
+                }
             }
             else if (!serviceProvider.instanceFactoryClass().equals(InstanceFactory.class)) {
-                InstanceFactory instanceFactory = (InstanceFactory)getManagedInstance(serviceProvider.instanceFactoryClass());
+                InstanceFactory instanceFactory = (InstanceFactory) getManagedInstanceRep(serviceProvider.instanceFactoryClass()).instance;
                 if (instanceFactory == null) {
                     instanceFactory = serviceProvider.instanceFactoryClass().newInstance();
                 }
-                noInstances = instanceFactory.getPropertiesPerInstance().size();
+                for (Properties props : instanceFactory.getPropertiesPerInstance()) {
+                    InstanceRepresentative ir = new InstanceRepresentative(createInstance(managedClass));
+                    ir.props = props;
+                    String svcAPIList = props.getProperty(InstanceFactory.SERVICE_API_CLASSES_PROPERTY);
+                    if (svcAPIList != null) {
+                        Collections.addAll(ir.serviceAPIs, svcAPIList.split(":"));
+                    }
+                    else {
+                        ir.serviceAPIs.add(managedClass.getInterfaces()[0].getName());
+                    }
+                    addManagedInstanceRep(managedClass, ir);
+                }
             }
-
-            // This will just instantiate and cache the number of instances. Right now we don't care
-            // about the instances themselves.
-            getManagedInstances(managedClass, noInstances);
+            else if (!serviceProvider.serviceSetupProvider().equals(APSActivatorServiceSetupProvider.class)) {
+                APSActivatorServiceSetupProvider setupProvider = serviceProvider.serviceSetupProvider().newInstance();
+                for (APSActivatorServiceSetupProvider.Setup setup : setupProvider.provideServiceInstancesSetup()) {
+                    InstanceRepresentative ir = new InstanceRepresentative(setup.serviceInstance);
+                    ir.props = setup.props;
+                    ir.serviceAPIs.addAll(setup.serviceAPIs);
+                    addManagedInstanceRep(managedClass, ir);
+                }
+            }
+            else {
+                InstanceRepresentative ir = new InstanceRepresentative(createInstance(managedClass));
+                ir.props = new Properties();
+                if (serviceProvider.serviceAPIs().length > 0) {
+                    for (Class svcAPI : serviceProvider.serviceAPIs()) {
+                        ir.serviceAPIs.add(svcAPI.getName());
+                    }
+                }
+                else {
+                    ir.serviceAPIs.add(managedClass.getInterfaces()[0].getName());
+                }
+                addManagedInstanceRep(managedClass, ir);
+            }
         }
     }
 
@@ -415,7 +490,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param context The bundles context.
      * @throws Exception
      */
-    protected void handleServiceRegistrations(final Class managedClass, final BundleContext context) throws Exception {
+    protected void doServiceRegistrationsOfManagedServiceInstances(final Class managedClass, final BundleContext context) throws Exception {
         OSGiServiceProvider serviceProvider = (OSGiServiceProvider)managedClass.getAnnotation(OSGiServiceProvider.class);
 
         if (serviceProvider != null) {
@@ -529,95 +604,25 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      *
      * @param managedClass The managed class to instantiate and register as an OSGi service.
      * @param context The bundle context.
-     * @param serviceRegs The list to save all service registrations to for later unregistration.
+     * @param serviceRegs The list to save all service registrations to for later deregistration.
      * @throws Exception
      */
     protected void registerServices(Class managedClass, BundleContext context, List<ServiceRegistration> serviceRegs) throws Exception {
         OSGiServiceProvider serviceProvider = (OSGiServiceProvider)managedClass.getAnnotation(OSGiServiceProvider.class);
         if (serviceProvider != null) {
-            List<Tuple3<Properties, Object, List<String>>> serviceInstData = new LinkedList<>();
 
-            if (serviceProvider.properties().length > 0) {
-                Tuple3<Properties, Object, List<String>> sd = new Tuple3<>();
-                sd.t1 = osgiPropertiesToProperties(serviceProvider.properties());
-                serviceInstData.add(sd);
-            }
-            else if (serviceProvider.instances().length > 0) {
-                for (OSGiServiceInstance serviceInst : serviceProvider.instances()) {
-                    Tuple3<Properties, Object, List<String>> sd = new Tuple3<>();
-                    sd.t1 = osgiPropertiesToProperties(serviceInst.properties());
-                    serviceInstData.add(sd);
-                }
-            }
-            else if (!serviceProvider.instanceFactoryClass().equals(InstanceFactory.class)) {
-                InstanceFactory instanceFactory = (InstanceFactory)getManagedInstance(serviceProvider.instanceFactoryClass());
-                if (instanceFactory == null) {
-                    instanceFactory = serviceProvider.instanceFactoryClass().newInstance();
-                }
-                for (Properties props : instanceFactory.getPropertiesPerInstance()) {
-                    Tuple3<Properties, Object, List<String>> sd = new Tuple3<>();
-                    sd.t1 = props;
-                    serviceInstData.add(sd);
-                }
-            }
-            else {
-                Tuple3<Properties, Object, List<String>> sd = new Tuple3<>();
-                sd.t1 = new Properties();
-                serviceInstData.add(sd);
-            }
+            List<InstanceRepresentative> instanceReps = getManagedInstanceReps(managedClass);
 
-            // The number of managedInstances and serviceInstData will always be the same. They both originate
-            // from the same information.
-            List<Object> managedInstances = getManagedInstances(managedClass);
-            for (int i = 0; i < serviceInstData.size(); i++) {
-
-                List<String> serviceAPIs = new LinkedList<>();
-
-                if (serviceProvider.serviceAPIs().length > 0) {
-                    for (Class svcAPI : serviceProvider.serviceAPIs()) {
-                        serviceAPIs.add(svcAPI.getName());
-                    }
-                }
-                else if (serviceProvider.instances().length > 0) {
-                    OSGiServiceInstance svsInstAnn = serviceProvider.instances()[i];
-                    for (Class svcAPI : svsInstAnn.serviceAPIs()) {
-                        serviceAPIs.add(svcAPI.getName());
-                    }
-                }
-                else if (!serviceProvider.instanceFactoryClass().equals(InstanceFactory.class)) {
-                    String svcAPIList = serviceInstData.get(i).t1.getProperty(InstanceFactory.SERVICE_API_CLASSES_PROPERTY);
-                    if (svcAPIList != null) {
-                        Collections.addAll(serviceAPIs, svcAPIList.split(":"));
-                    }
-                    else {
-                        Class[] interfaces = managedClass.getInterfaces();
-                        if (interfaces != null && interfaces.length > 0) {
-                            serviceAPIs.add(interfaces[0].getName());
-                        }
-                    }
-                }
-                else {
-                    Class[] interfaces = managedClass.getInterfaces();
-                    if (interfaces != null && interfaces.length > 0) {
-                        serviceAPIs.add(interfaces[0].getName());
-                    }
-                }
-
-                Tuple3<Properties, Object, List<String>> sd = serviceInstData.get(i);
-                sd.t3 = serviceAPIs;
-                sd.t2 = managedInstances.get(i);
-            }
-
-            for (Tuple3<Properties, Object, List<String>> sd : serviceInstData) {
-                sd.t1.put(Constants.SERVICE_PID, managedClass.getName());
-                if (!sd.t3.isEmpty()) {
-                    injectInstanceProps(sd.t2, sd.t1);
-                    for (String svcAPI : sd.t3) {
+            for (InstanceRepresentative instRep : instanceReps) {
+                instRep.props.put(Constants.SERVICE_PID, managedClass.getName());
+                if (!instRep.serviceAPIs.isEmpty()) {
+                    injectInstanceProps(instRep.instance, instRep.props);
+                    for (String svcAPI : instRep.serviceAPIs) {
                         ServiceRegistration serviceReg =
                                 context.registerService(
                                         svcAPI,
-                                        sd.t2,
-                                        sd.t1
+                                        instRep.instance,
+                                        instRep.props
                                 );
 
                         serviceRegs.add(serviceReg);
@@ -633,6 +638,14 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         }
     }
 
+    /**
+     * Injects properties into the first member of Properties type found if any.
+     *
+     * @param instance The instance to inject into.
+     * @param props The properties to inject.
+     *
+     * @throws Exception as always!
+     */
     protected void injectInstanceProps(Object instance, Properties props) throws Exception {
         for (Field field : instance.getClass().getDeclaredFields()) {
             if (field.getType().equals(java.util.Properties.class)) {
@@ -651,10 +664,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param managedClass The managed class to inject into.
      * @param context The bundles context.
      */
-    protected void handleFieldInjections(Class managedClass, BundleContext context) {
+    protected void doFieldInjectionsIntoManagedInstances(Class managedClass, BundleContext context) {
         for (Field field : managedClass.getDeclaredFields()) {
-            handleServiceInjections(field, managedClass, context);
-            handleInstanceInjections(field, managedClass, context);
+            doServiceInjection(field, managedClass, context);
+            doInstanceInjection(field, managedClass, context);
         }
     }
 
@@ -666,7 +679,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param managedClass Used to lookup or create an instance of this class to inject into.
      * @param context The bundle context.
      */
-    protected void handleServiceInjections(Field field, Class managedClass, BundleContext context) {
+    protected void doServiceInjection(Field field, Class managedClass, BundleContext context) {
         OSGiService service = field.getAnnotation(OSGiService.class);
         if (service != null) {
             String trackerKey = field.getType().getName() + service.additionalSearchCriteria();
@@ -679,13 +692,13 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             }
             tracker.start();
 
-            List<Object> managedInstances = getManagedInstances(managedClass);
-            for (Object managedInstance : managedInstances) {
+            List<InstanceRepresentative> managedInstanceReps = getManagedInstanceReps(managedClass);
+            for (InstanceRepresentative managedInstanceRep : managedInstanceReps) {
                 if (field.getType().equals(APSServiceTracker.class)) {
-                    injectObject(managedInstance, tracker, field);
+                    injectObject(managedInstanceRep.instance, tracker, field);
                 }
                 else {
-                    injectObject(managedInstance, tracker.getWrappedService(), field);
+                    injectObject(managedInstanceRep.instance, tracker.getWrappedService(), field);
                 }
             }
 
@@ -698,7 +711,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             this.activatorLogger.info("Injected tracked service '" + field.getType().getName() +
                     (service.additionalSearchCriteria().length() > 0 ? " " + service.additionalSearchCriteria() : "") +
                     "' " + "into '" + managedClass.getName() + "." + field.getName() + "' for bundle: " +
-                    context.getBundle().getSymbolicName() + " for " + managedInstances.size() + " instance(s)!");
+                    context.getBundle().getSymbolicName() + " for " + managedInstanceReps.size() + " instance(s)!");
         }
     }
 
@@ -709,7 +722,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param managedClass Used to lookup or create an instance of this class to inject into.
      * @param context The bundle context.
      */
-    protected void handleInstanceInjections(Field field, Class managedClass, BundleContext context) {
+    protected void doInstanceInjection(Field field, Class managedClass, BundleContext context) {
         Managed managed = field.getAnnotation(Managed.class);
         if (managed != null) {
             String namedInstanceKey = managed.name() + field.getType().getName();
@@ -726,7 +739,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     namedInstance = context;
                 }
                 else {
-                    namedInstance = getManagedInstance(field.getType());
+                    namedInstance = getManagedInstanceRep(field.getType()).instance;
                 }
                 this.namedInstances.put(namedInstanceKey, namedInstance);
             }
@@ -735,13 +748,15 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                         namedInstance.getClass().getName());
             }
 
-            // Do note that we pass the size of 1 here which solves the case of managedClass not being managed yet due
-            // to it not being a service class, but it have managed fields in it so we need at least one instance of it.
-            // If the managedClass is a service with multiple instances then those have already been created before we
-            // reach here and thus the size passed here does not matter since it only affects first time creation.
-            List<Object> managedInstances = getManagedInstances(managedClass, 1);
-            for (Object managedInstance : managedInstances) {
-                injectObject(managedInstance, namedInstance, field);
+            if (!isManagedClass(managedClass)) {
+                InstanceRepresentative ir = new InstanceRepresentative(createInstance(managedClass));
+                addManagedInstanceRep(managedClass, ir);
+            }
+
+            List<InstanceRepresentative> managedInstanceReps = getManagedInstanceReps(managedClass);
+
+            for (InstanceRepresentative managedInstanceRep : managedInstanceReps) {
+                injectObject(managedInstanceRep.instance, namedInstance, field);
             }
 
             this.activatorLogger.info("Injected '" + namedInstance.getClass().getName() +
@@ -759,12 +774,12 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param managedClass Used to lookup or create an instance of this class containing the method to call.
      * @param context The bundle context.
      */
-    protected void handleMethods(Class managedClass, BundleContext context) {
+    protected void handleMethodInvocationsOnManagedInstances(Class managedClass, BundleContext context) {
         for (Method method : managedClass.getDeclaredMethods()) {
-            handleStartupMethods(method, managedClass, context);
-            handleShutdownMethods(method, managedClass);
-            handleListenerMethods(method, managedClass, context);
-            handleInitMethodsStep1(method, managedClass, context);
+            doStartupMethodInvocations(method, managedClass, context);
+            collectShutdownMethods(method, managedClass);
+            registerListenerMethodWrappers(method, managedClass, context);
+            collectInitMethods(method, managedClass, context);
         }
     }
 
@@ -775,7 +790,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param managedClass Used to lookup or create an instance of this class containing the method to call.
      * @param context The bundle context.
      */
-    protected void handleStartupMethods(final Method method, final Class managedClass, final BundleContext context) {
+    protected void doStartupMethodInvocations(final Method method, final Class managedClass, final BundleContext context) {
         BundleStart bundleStart = method.getAnnotation(BundleStart.class);
         if (bundleStart != null) {
             if (method.getParameterTypes().length > 0) {
@@ -790,7 +805,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                         try {
                             Object managedInstance = null;
                             if (!Modifier.isStatic(method.getModifiers())) {
-                                managedInstance = getManagedInstance(managedClass);
+                                managedInstance = getManagedInstanceRep(managedClass).instance;
                             }
                             method.invoke(managedInstance, (Object)null);
 
@@ -815,7 +830,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 try {
                     Object managedInstance = null;
                     if (!Modifier.isStatic(method.getModifiers())) {
-                        managedInstance = getManagedInstance(managedClass);
+                        managedInstance = getManagedInstanceRep(managedClass).instance;
                     }
                     method.invoke(managedInstance, (Object)null);
 
@@ -839,12 +854,12 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param method The annotated method to call.
      * @param managedClass Used to lookup or create an instance of this class containing the method to call.
      */
-    protected void handleShutdownMethods(Method method, Class managedClass) {
+    protected void collectShutdownMethods(Method method, Class managedClass) {
         BundleStop bundleStop = method.getAnnotation(BundleStop.class);
         if (bundleStop != null) {
             Tuple2<Method, Object> shutdownMethod = new Tuple2<>(method, null);
             if (!Modifier.isStatic(method.getModifiers())) {
-                shutdownMethod.t2 = getManagedInstance(managedClass);
+                shutdownMethod.t2 = getManagedInstanceRep(managedClass).instance;
             }
 
             this.shutdownMethods.add(shutdownMethod);
@@ -858,12 +873,12 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param managedClass The class of the method.
      * @param context The bundle context.
      */
-    protected void handleListenerMethods(Method method, Class managedClass, BundleContext context) {
+    protected void registerListenerMethodWrappers(Method method, Class managedClass, BundleContext context) {
         se.natusoft.osgi.aps.tools.annotation.activator.ServiceListener serviceListener =
                 method.getAnnotation(se.natusoft.osgi.aps.tools.annotation.activator.ServiceListener.class);
         if (serviceListener != null) {
             ServiceListenerWrapper serviceListenerWrapper =
-                    new ServiceListenerWrapper(method, getManagedInstance(managedClass));
+                    new ServiceListenerWrapper(method, getManagedInstanceRep(managedClass).instance);
             serviceListenerWrapper.start(context);
             this.listeners.add(serviceListenerWrapper);
         }
@@ -872,7 +887,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 method.getAnnotation(se.natusoft.osgi.aps.tools.annotation.activator.BundleListener.class);
         if (bundleListener != null) {
             BundleListenerWrapper bundleListenerWrapper =
-                    new BundleListenerWrapper(method, getManagedInstance(managedClass));
+                    new BundleListenerWrapper(method, getManagedInstanceRep(managedClass).instance);
             bundleListenerWrapper.start(context);
             this.listeners.add(bundleListenerWrapper);
         }
@@ -881,7 +896,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 method.getAnnotation(se.natusoft.osgi.aps.tools.annotation.activator.FrameworkListener.class);
         if (frameworkListener != null) {
             FrameworkListenerWrapper frameworkListenerWrapper =
-                    new FrameworkListenerWrapper(method, getManagedInstance(managedClass));
+                    new FrameworkListenerWrapper(method, getManagedInstanceRep(managedClass).instance);
             frameworkListenerWrapper.start(context);
             this.listeners.add(frameworkListenerWrapper);
         }
@@ -889,13 +904,13 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
     /**
      * Step 1 of initializer methods. These should be called after everything else is done and everything
-     * is instantiated and injected. Therefore we only collect them now, and call them in step 2.
+     * is instantiated and injected. Therefore we only collect them now, and call them in callInitMethods().
      *
      * @param method The method to check for Initializer annotation.
      * @param managedClass The class of the method.
      * @param context The bundle contecxt.
      */
-    protected void handleInitMethodsStep1(Method method, Class managedClass, BundleContext context) {
+    protected void collectInitMethods(Method method, Class managedClass, BundleContext context) {
         Initializer initializer = method.getAnnotation(Initializer.class);
         if (initializer != null) {
             if (this.initMethods == null) {
@@ -912,10 +927,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      *
      * @throws Exception Any exceptions thrown by initializers are forwarded upp.
      */
-    protected void handleInitMethodsStep2() throws Exception {
+    protected void callInitMethods() throws Exception {
         if (this.initMethods != null) {
             for (Tuple2<Method, Class> initMethod : this.initMethods) {
-                Object instance = getManagedInstance(initMethod.t2);
+                Object instance = getManagedInstanceRep(initMethod.t2).instance;
                 try {
                     initMethod.t1.invoke(instance, (Object[]) null);
                 } catch (IllegalAccessException iae) {
@@ -936,47 +951,74 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      *
      * @param managedClass The managed class to get instance for.
      */
-    protected Object getManagedInstance(Class managedClass) {
-        return getManagedInstances(managedClass, 1).get(0);
-    }
-
-    /**
-     * Returns previously created instances.
-     *
-     * @param managedClass The managed class to get instances for.
-     */
-    protected List<Object> getManagedInstances(Class managedClass) {
-        return getManagedInstances(managedClass, -1);
+    protected InstanceRepresentative getManagedInstanceRep(Class managedClass) {
+        return getManagedInstanceReps(managedClass).get(0);
     }
 
     /**
      * Returns a managed instance of a class.
      *
      * @param managedClass The managed class to get instance for.
-     * @param size The number of instances.
      */
-    protected List<Object> getManagedInstances(Class managedClass, int size) {
-        List<Object> managedInstances = this.managedInstances.get(managedClass);
-        if (managedInstances == null) {
-            managedInstances = new LinkedList<>();
+    protected List<InstanceRepresentative> getManagedInstanceReps(Class managedClass) {
+        List<InstanceRepresentative> instances = this.managedInstances.get(managedClass);
+        if (instances == null) {
+            InstanceRepresentative ir = new InstanceRepresentative(createInstance(managedClass));
+            addManagedInstanceRep(managedClass, ir);
+            instances = this.managedInstances.get(managedClass);
         }
 
-        if (managedInstances.isEmpty()) {
-            if (size == -1) throw new IllegalStateException("Expected instances are not available!");
-            try {
-                for (int i = 0; i < size; i++) {
-                    Object managedInstance = managedClass.newInstance();
-                    managedInstances.add(managedInstance);
-                    this.managedInstances.put(managedClass, managedInstances);
-                    this.activatorLogger.info("Instantiated '" + managedClass.getName() + "': "+ managedInstance);
-                }
-            }
-            catch (InstantiationException | IllegalAccessException e) {
-                throw new APSActivatorException("Failed to instantiate activator managed class!", e);
+        return instances;
+    }
+
+    /**
+     * Returns true if the specified class already is managed. Otherwise false is returned.
+     *
+     * @param clazz The class to check.
+     */
+    protected boolean isManagedClass(Class clazz) {
+        return this.managedInstances.containsKey(clazz);
+    }
+
+    /**
+     * Adds a managed instance representative.
+     *
+     * @param managedClass The class of the managed instance.
+     * @param instanceRepresentative The instance representative to add.
+     */
+    protected void addManagedInstanceRep(Class managedClass, InstanceRepresentative instanceRepresentative) {
+        List<InstanceRepresentative> instances = this.managedInstances.get(managedClass);
+        if (instances == null) {
+            instances = new LinkedList<>();
+            this.managedInstances.put(managedClass, instances);
+        }
+
+        // Cleanup InstanceRepresentative if needed.
+        for (InstanceRepresentative ir : instances) {
+            if (ir.instance == null) {
+                ir.instance = createInstance(managedClass);
             }
         }
 
-        return managedInstances;
+        // Add it.
+        instances.add(instanceRepresentative);
+    }
+
+    /**
+     * Creates a new instance of the specified class.
+     *
+     * @param managedClass The class to instantiate.
+     */
+    protected Object createInstance(Class managedClass) {
+        Object instance = null;
+
+        try {
+            instance = managedClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new APSActivatorException("Failed to instantiate managed class! [" + e.getMessage() + "]", e);
+        }
+
+        return instance;
     }
 
     /**
@@ -1131,7 +1173,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         @Override
         public void serviceChanged(ServiceEvent event) {
             try {
-                method.invoke(instance,event);
+                method.invoke(instance, event);
             }
             catch (IllegalAccessException | InvocationTargetException e) {
                 APSActivator.this.activatorLogger.error("Failed to invoke ServiceListener method [" + method + "]!", e);
