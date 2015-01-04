@@ -4,6 +4,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
 
 /**
@@ -15,8 +16,8 @@ public class TestServiceReference implements ServiceReference {
     //
 
     private TestBundleContext bundleContext = null;
-
     private List<Bundle> usingBundles = new ArrayList<>();
+    private Dictionary props;
 
     //
     // Constructors
@@ -27,8 +28,9 @@ public class TestServiceReference implements ServiceReference {
      *
      * @param bundleContext The context of the bundle the service belongs to.
      */
-    public TestServiceReference(TestBundleContext bundleContext) {
+    public TestServiceReference(TestBundleContext bundleContext, Dictionary props) {
         this.bundleContext = bundleContext;
+        this.props = props;
     }
 
     //
@@ -46,7 +48,7 @@ public class TestServiceReference implements ServiceReference {
 
     @Override
     public Object getProperty(String key) {
-        return this.bundleContext.getProperty(key);
+        return this.props.get(key);
     }
 
     @Override

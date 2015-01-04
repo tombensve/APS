@@ -90,14 +90,19 @@ public class ServiceRegistry {
     }
 
     public ServiceReference[] getAllServiceReferences(String clazz, String filter) {
-        List<ServiceReference> refs = new ArrayList<>();
-        for (Map.Entry<TestServiceRegistration, Object> entry : this.services.entrySet()) {
-            if (entry.getValue().getClass().getName().equals(clazz)) {
-                refs.add(entry.getKey().getReference());
+        try {
+            Filter svcFilter = FrameworkUtil.createFilter(filter);
+            List<ServiceReference> refs = new ArrayList<>();
+            for (Map.Entry<TestServiceRegistration, Object> entry : this.services.entrySet()) {
+                if (svcFilter.match(entry.getKey().getReference())) {
+                    refs.add(entry.getKey().getReference());
+                }
             }
+            ServiceReference[] refsArray = new ServiceReference[refs.size()];
+            return refs.toArray(refsArray);
+        } catch (InvalidSyntaxException e) {
+            throw new RuntimeException("Failed to parse search filter!", e);
         }
-        ServiceReference[] refsArray = new ServiceReference[refs.size()];
-        return refs.toArray(refsArray);
     }
 
     public ServiceReference getServiceReference(String clazz) {
@@ -129,7 +134,6 @@ public class ServiceRegistry {
 
     /**
      * Currently returns the same as getRegisteredServices!
-     * @return
      */
     public ServiceReference[] getServicesInUse() {
         return getRegisteredServices();

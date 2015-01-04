@@ -153,7 +153,10 @@ public class TestBundleContext implements BundleContext {
 
     @Override
     public ServiceRegistration registerService(String clazz, Object service, Dictionary properties) {
-        TestServiceRegistration sr = new TestServiceRegistration(clazz, new TestServiceReference(this), this.bundle);
+        if(properties.get(Constants.OBJECTCLASS) == null) {
+            properties.put(Constants.OBJECTCLASS, clazz);
+        }
+        TestServiceRegistration sr = new TestServiceRegistration(clazz, new TestServiceReference(this, properties), this.bundle);
         this.bundle.getServiceRegistry().registerService(sr, service);
         return sr;
     }

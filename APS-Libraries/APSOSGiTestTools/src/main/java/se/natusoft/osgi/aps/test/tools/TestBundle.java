@@ -58,7 +58,9 @@ public class TestBundle implements Bundle {
      * @param service The service to provide.
      */
     public void addServiceInstance(Object service) {
-        this.serviceRegistry.registerService(new TestServiceRegistration(service.getClass().getName(), new TestServiceReference(this.bundleContext), this), service);
+        Properties properties = new Properties();
+        properties.setProperty(Constants.OBJECTCLASS, service.getClass().getInterfaces()[0].getName());
+        this.serviceRegistry.registerService(new TestServiceRegistration(service.getClass().getName(), new TestServiceReference(this.bundleContext, properties), this), service);
     }
 
     /**
