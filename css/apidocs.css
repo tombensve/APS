@@ -72,22 +72,32 @@ h6 {
     font-size: 14px;
 }
 .TableHeadingColor {
-    background-color: #f0f0f0;
+    background-color: #f0ecdc;
     color: #585858;
 }
+.TableRowColor {
+    background-color: #fefbf5;
+}
+
 blockquote {
     margin: 20px;
     color: #777777;
 }
 
-code, pre {
+pre {
     border-radius: 5px;
-    background-color: #ffffff;
+    background-color: #fefbf5;
     color: inherit;
 }
 
 code {
-    border: 1px solid #EAEAEA;
+    border-radius: 0px;
+    background-color: #fefbf5;
+    color: inherit;
+}
+
+code {
+    /*border: 1px solid #EAEAEA;*/
     margin: 0 2px;
     padding: 0 5px;
 }
@@ -236,7 +246,7 @@ ul.subNavList li{
 }
 .NavBarCell1 {
     /*background-image:url(resources/tab.gif);*/
-    background-color:#f0f0f0;
+    background-color: #f0e7b0;
     color:#555555;
     margin: auto 5px;
     border:0px solid;
@@ -463,7 +473,7 @@ ul.blockList ul.blockList li.blockList table {
 */
 
 .TableSubHeadingColor {
-    background-color: #f0f0f0;
+    background-color: #f6efe3;
     color: #585858;
 }
 /*
@@ -472,7 +482,7 @@ ul.blockList ul.blockList li.blockList table {
 }
 */
 .rowColor {
-    background-color:#ffffff;
+    background-color: #fefbee;
 }
 .overviewSummary td, .packageSummary td, .contentContainer ul.blockList li.blockList td, .summary td, .classUseContainer td, .constantValuesContainer td {
     text-align:left;
@@ -489,22 +499,26 @@ td.colOne a:link, td.colOne a:active, td.colOne a:visited, td.colOne a:hover, td
     font-weight:bold;
     border: none #fafafa !important;
     border-collapse: collapse;
+    background: #fefbee;
 }
 td.colFirst, th.colFirst {
     white-space:nowrap;
     border: none #fafafa !important;
     border-collapse: collapse;
+    background: #fefbee;
 }
 td.colLast, th.colLast {
     border: none #fafafa !important;
     border-collapse: collapse;
+    background: #fefbee;
 }
 td.colOne, th.colOne {
     border: none #fafafa !important;
     border-collapse: collapse;
+    background: #fefbee;
 }
 td.NavBarCell2 {
-    background-color: #fafafa;
+    background-color: #faf9cf;
 }
 table {
     margin-right: 15px;
