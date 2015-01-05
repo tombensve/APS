@@ -41,6 +41,7 @@ import org.osgi.framework.BundleListener;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceListener;
 import se.natusoft.osgi.aps.tools.annotation.activator.*;
+import se.natusoft.osgi.aps.tools.apis.APSActivatorSearchCriteriaProvider;
 import se.natusoft.osgi.aps.tools.apis.APSActivatorServiceSetupProvider;
 import se.natusoft.osgi.aps.tools.exceptions.APSActivatorException;
 import se.natusoft.osgi.aps.tools.tracker.OnServiceAvailable;
@@ -686,8 +687,19 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             APSServiceTracker tracker = this.trackers.get(trackerKey);
 
             if (tracker == null) {
-                tracker = new APSServiceTracker<>(context, field.getType(), service.additionalSearchCriteria(),
-                        service.timeout());
+                String searchCriteria = service.additionalSearchCriteria();
+                Class<? extends APSActivatorSearchCriteriaProvider> searchCriteriaProviderClass = service.searchCriteriaProvider();
+                if (searchCriteriaProviderClass != APSActivatorSearchCriteriaProvider.class) {
+                    try {
+                        APSActivatorSearchCriteriaProvider searchCriteriaProvider =
+                                searchCriteriaProviderClass.newInstance();
+                        searchCriteria = searchCriteriaProvider.provideSearchCriteria();
+                    } catch (InstantiationException | IllegalAccessException e) {
+                        throw new APSActivatorException("Failed to instantiate APSActivatorSearchCriteriaProvider " +
+                                "implementation '" + searchCriteriaProviderClass.getName() + "'!", e);
+                    }
+                }
+                tracker = new APSServiceTracker<>(context, field.getType(), searchCriteria, service.timeout());
                 this.trackers.put(trackerKey, tracker);
             }
             tracker.start();

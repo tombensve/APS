@@ -8,7 +8,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider;
 * Created by tommy on 2015-01-03.
 */
 @OSGiServiceProvider
-public class OSGiService implements TestService {
+public class SimpleService implements TestService {
 
     @Managed
     private APSLogger logger;

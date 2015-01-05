@@ -41,21 +41,21 @@ public class ServicesSetupProviderTestService implements TestService {
             List<Setup> setups = new LinkedList<>();
 
             Setup setup = new Setup();
-            setup.serviceAPIs.add("e.natusoft.osgi.aps.tools.services.TestService");
+            setup.serviceAPIs.add("se.natusoft.osgi.aps.tools.services.TestService");
             setup.props = new Properties();
             setup.props.setProperty("instance", "first");
             setup.serviceInstance = new ServicesSetupProviderTestService("first");
             setups.add(setup);
 
             setup = new Setup();
-            setup.serviceAPIs.add("e.natusoft.osgi.aps.tools.services.TestService");
+            setup.serviceAPIs.add("se.natusoft.osgi.aps.tools.services.TestService");
             setup.props = new Properties();
             setup.props.setProperty("instance", "second");
             setup.serviceInstance = new ServicesSetupProviderTestService("second");
             setups.add(setup);
 
             setup = new Setup();
-            setup.serviceAPIs.add("e.natusoft.osgi.aps.tools.services.TestService");
+            setup.serviceAPIs.add("se.natusoft.osgi.aps.tools.services.TestService");
             setup.props = new Properties();
             setup.props.setProperty("instance", "third");
             setup.serviceInstance = new ServicesSetupProviderTestService("third");

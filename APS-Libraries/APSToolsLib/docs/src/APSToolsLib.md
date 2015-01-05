@@ -1,21 +1,21 @@
 # APSToolsLib
 
-This is a library of utilities including a service tracker that beats the (beep) out of the default one including exception rather than null response, timeout specification, getting a proxied service implementation that automatically uses the tracker, allocating a service, calling it, and deallocating it again. This makes it trivially easy to handle a service being restarted or redeployed. It also includes a logger utility that will lookup the standard log service and log to that if found.
+This is a library of utilities including a service tracker that beats the \<BEEEP\> out of the default one, including exception rather than null response on timeout, timeout specification, getting a proxied service implementation that automatically uses the tracker, allocating a service, calling it, and deallocating it again. This makes it trivially easy to handle a service being restarted or redeployed. It also includes a logger utility that will lookup the standard log service and log to that if found, otherwise just log to stdout.
 
 This bundle provides no services. It just makes all its packages public. Every bundle included in APS makes use of APSToolsLib so it must be deployed for things to work.
 
-Please note that this bundle has no dependencies! That is, it can be used as is without requireing any other APS bundle.
+Please note that this bundle has no dependencies! That is, it can be used as is without requireing any other APS bundle. It however requires APSOSGiTestTools to build, but that is only a test dependency.
 
 ## APSServiceTracker
 
-This does the same thing as the standard service tracker included with OSGi, but does it better with more options and flexibility. One of the differences between this tracker and the OSGi one is that this throws an _APSNoServiceAvailableException_ if the service is not available. Personally I think this is easier to work with than having to check for a null result. 
+This does the same thing as the standard service tracker included with OSGi, but does it better with more options and flexibility. One of the differences between this tracker and the OSGi one is that this throws an _APSNoServiceAvailableException_ if the service is not available. Personally I think this is easier to work with than having to check for a null result. I also think that trying to keep bundles and services  up are better than pulling them down as soon as one depencency goes away for a short while, for example due to redeploy of newer version. 
 
 There are several variants of constructors, but here is an example of one of the most used ones within the APS services:
 
     APSServiceTracker<Service> tracker = 
         new APSServiceTracker<Service>(context, Service.class, "20 seconds");
     tracker.start();
-	
+
 Note that the third argument, which is a timeout can also be specified as an int in which case it is always in miliseconds. The string variant supports the a second word of "sec\[onds\]" and "min\[utes\]" which indicates the type of the first numeric value. "forever" means just that and requires just one word. Any other second words than those will be treated as milliseconds. The APSServiceTracker also has a set of constants for the timeout string value:
 
     public static final String SHORT_TIMEOUT = "3 seconds";
@@ -33,7 +33,7 @@ So that the tracker unregisters itself from receiving bundle/service events.
 
 ### Services and active service
 
-The tracker tracks all instances of the service being tracked. It however have the notion of an active service. The active service is the service instance that will be returned by allocateService() (which is internally used by all other access methods also). On startup it will be the first service instance received. It will keep tracking other instances comming in, but as long as the active service does not go away it will be the one used. If the active service goes away then the the one that is at the beginning of the list of the other tracked instances will become active. If that list is empty there will be no active, which will trigger a wait for a service to become available again if allocateService() is called. 
+The tracker tracks all instances of the service being tracked. It however have the notion of an active service. The active service is the service instance that will be returned by allocateService() (which is internally used by all other access methods also). On startup the active service will be the first service instance received. It will keep tracking other instances comming in, but as long as the active service does not go away it will be the one used. If the active service goes away then the the one that is at the beginning of the list of the other tracked instances will become active. If that list is empty there will be no active, which will trigger a wait for a service to become available again if allocateService() is called. 
 
 ### Providing a logger
 
@@ -149,7 +149,7 @@ The APSLogger can be used by just creating an instance and then start using the 
 
 	APSLogger logger = new APSLogger();
 	logger.start(context);
-	
+
 then the logger will try to get hold of the standard OSGi LogService and if that is available log to that. If the log service is not available it will fallback to the OutputStream. 
 
 If you call the `setServiceRefrence(serviceRef);` method on the logger then information about that service will be provied with each log. 
@@ -172,33 +172,40 @@ The following annotations are available:
     }
 
     public @interface OSGiServiceInstance {
-
+    
         /** Extra properties to register the service with. */
         OSGiProperty[] properties() default {};
 
         /** The service API to register instance with. If not specified the first implemented interface will be used. */
         Class[] serviceAPIs() default {};
     }
-
+    
     public @interface OSGiServiceProvider {
-
         /** Extra properties to register the service with. */
         OSGiProperty[] properties() default {};
-
+        
         /** The service API to register instance with. If not specified the first implemented interface will be used. */
         Class[] serviceAPIs() default {};
-
+        
         /** This can be used as an alternative to properties() and also supports several instances. */
         OSGiServiceInstance[] instances() default {};
-
+        
+        /**
+         * An alternative to providing static information. This class will be instantiated if specified and
+         * provideServiceInstancesSetup() will be called to provide implemented service APIs, service
+         * properties, and a service instance. In this last, it differs from instanceFactoryClass() since
+         * that does not provide an instance. This allows for more easy configuration of each instance.
+         */
+        Class<? extends APSActivatorServiceSetupProvider> serviceSetupProvider() default APSActivatorServiceSetupProvider.class;
+        
         /**
          * This can be used as an alternative and will instantiate the specified factory class which will deliver
          * one set of Properties per instance.
          */
         Class<? extends APSActivator.InstanceFactory> instanceFactoryClass() default APSActivator.InstanceFactory.class;
-
+        
         /**
-         * If true this service will be stared in a separate thread. This means the bundle start
+         * If true this service will be started in a separate thread. This means the bundle start
          * will continue in parallel and that any failures in startup will be logged, but will
          * not stop the bundle from being started. If this is true it wins over required service
          * dependencies of the service class. Specifying this as true allows you to do things that
@@ -206,29 +213,38 @@ The following annotations are available:
          * APSServiceTracker, without causing a deadlock.
          */
         boolean threadStart() default false;
-
     }
+
+Do note that for the _serviceSetupProvider()_ another solution is to use the _@BundleStart_ (see below) and just create instances of your service and register them with the BundleContext. But if you use _@OSGiServiceProvider_ to instantiate and register other "one instance" services, then using _serviceSetupProvider()_ would look a bit more consistent.
 
 **@OSGiService** - This should be specified on a field having a type of a service interface to have a service of that type injected, and continuously tracked. Any call to the service will throw an APSNoServiceAvailableException (runtime) if no service has become available before the specified timeout. It is also possible to have APSServiceTracker as field type in which case the underlying configured tracker will be injected instead.
 
 If _required=true_ is specified and this field is in a class annotated with _@OSGiServiceProvider_ then the class will not be registered as a service until the service dependency is actually available, and will also be unregistered if the tracker for the service does a timeout waiting for a service to become available. It will then be reregistered again when the dependent service becomes available again. Please note that unlike iPOJO the bundle is never stopped on dependent service unavailability, only the actual service is unregistered as an OSGi service. A bundle might have more than one service registered and when a dependency that is only required by one service goes away the other service is still available.
 
     public @interface OSGiService {
-
+    
         /** The timeout for a service to become available. Defaults to 30 seconds. */
         String timeout() default "30 seconds";
-
+        
         /** Any additional search criteria. Should start with '(' and end with ')'. Defaults to none. */
         String additionalSearchCriteria() default "";
-
+        
+        /**
+         * This should specify a Class implementing APSActivatorSearchCriteriaProvider. If specified it will be
+         * used instead of additionalSearchCriteria() by instantiating the Class and calling its method to get
+         * a search criteria back. This allows for search criteria coming from configuration, which a static
+         * annotation String does not.
+         */
+        Class<? extends APSActivatorSearchCriteriaProvider> searchCriteriaProvider() default APSActivatorSearchCriteriaProvider.class;
+         
         /** If set to true the service using this service will not be registered until the service becomes available. */
         boolean required() default false;
-
     }
 
 **@Managed** - This will have an instance managed and injected. There will be a unique instance for each name specified with the default name of "default" being used if none is specified. There are 2 field types handled specially: BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger instance the 'loggingFor' annotation property can be specified. Please note that any other type must have a default constructor to be instantiated and injected!
 
     public @interface Managed {
+    
         /**
          * The name of the instance to inject. If the same is used in multiple classes the same instance will
          * be injected.
@@ -242,7 +258,7 @@ If _required=true_ is specified and this field is in a class annotated with _@OS
         String loggingFor() default "";
     }
 
-**@BundleStart** - This should be used on a method and will be called on bundle start. The method should take no arguments. If you need a BundleContext just inject it with @APSInejct. The use of this annotation is only needed for things not supported by this activator. Please note that a method annotated with this annotation can be static (in which case the class it belongs to will not be instantiaded -- due to this!). You can provide this annotation on as many methods in as many classes as you want. They will all be called (in the order classes are discovered in the bundle).
+**@BundleStart** - This should be used on a method and will be called on bundle start. The method should take no arguments. If you need a BundleContext just inject it with _@Managed_. The use of this annotation is only needed for things not supported by this activator. Please note that a method annotated with this annotation can be static (in which case the class it belongs to will not be instantiaded). You can provide this annotation on as many methods in as many classes as you want. They will all be called (in the order classes are discovered in the bundle).
 
     public @interface BundleStart {
 
@@ -253,7 +269,7 @@ If _required=true_ is specified and this field is in a class annotated with _@OS
         boolean thread() default false;
     }
 
-**@BundleStop** - This should be used on a method and will be called on bundle stop. The method should take no arguments. This should probably be used if @APSBundleStart is used. Please note that a method annotated with this annotation can be static!
+**@BundleStop** - This should be used on a method and will be called on bundle stop. The method should take no arguments. This should probably be used if _@BundleStart_ is used. Please note that a method annotated with this annotation can be static!
 
     public @interface BundleStop {}
 
@@ -269,11 +285,11 @@ Therefore APSActivator has another constructor that takes a vararg of instances:
 
 **Please note** that if you create an instance of APSActivator in a servlet and provide the servlet instance to it and start it (you still need to do _start(BundleContext)_ and _stop(BundleContext)_ when used this way!), then you need to catch the close of the servlet and do _stop_ then. 
 
-There are 2 support classes in _APSWebTools_:
+There are 2 support classes:
 
-* APSVaadinOSGiApplication - This is subclassed by your Vaading application.
+* \[APSVaadinWebTools\]: APSVaadinOSGiApplication - This is subclassed by your Vaading application.
 
-* APSOSGiSupport - You create an instance of this in a servlet and let your servlet implement the _APSOSGiSupportCallbacks_ interface which is then passed to the constructor of APSOSGiSupport. 
+* \[APSWebTools\]: APSOSGiSupport - You create an instance of this in a servlet and let your servlet implement the _APSOSGiSupportCallbacks_ interface which is then passed to the constructor of APSOSGiSupport. 
 
 Both of these creates and manages an APSActivator internally and catches shutdown to take it down. They also provide other utilities like providing the BundleContext. See _APSWebTools_ for more information.
 
