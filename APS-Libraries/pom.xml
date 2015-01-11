@@ -56,6 +56,5 @@
         <module>APSJSONLib</module>
         <module>APSWebTools</module>
         <module>APSVaadinWebTools</module>
-        <module>APSOSGiTestTools</module>
     </modules>
 </project>

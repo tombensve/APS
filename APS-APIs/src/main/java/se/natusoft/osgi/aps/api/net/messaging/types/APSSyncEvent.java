@@ -1,3 +1,39 @@
+/*
+ *
+ * PROJECT
+ *     Name
+ *         APS APIs
+ *     
+ *     Code Version
+ *         1.0.0
+ *     
+ *     Description
+ *         Provides the APIs for the application platform services.
+ *         
+ * COPYRIGHTS
+ *     Copyright (C) 2012 by Natusoft AB All rights reserved.
+ *     
+ * LICENSE
+ *     Apache 2.0 (Open Source)
+ *     
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *     
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *     
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *     
+ * AUTHORS
+ *     tommy ()
+ *         Changes:
+ *         2015-01-09: Created!
+ *
+ */
 package se.natusoft.osgi.aps.api.net.messaging.types;
 
 import se.natusoft.osgi.aps.codedoc.Implements;
@@ -8,24 +44,9 @@ import se.natusoft.osgi.aps.codedoc.Implements;
 public interface APSSyncEvent {
 
     /**
-     * Indicates that the timestamp is not provided.
-     */
-    public static final long NO_TIMESTAMP = 0;
-
-    /**
      * Returns the key of the sync content in this event.
      */
     public String getKey();
-
-    /**
-     * Returns the content of this sync event.
-     */
-    public APSData getContent();
-
-    /**
-     * Returns the timestamp of the content in this sync event.
-     */
-    public long getTimestamp();
 
 
     /**
@@ -35,12 +56,6 @@ public interface APSSyncEvent {
 
         /** The key of the sync content. */
         private String key;
-
-        /** The sync content. */
-        private APSData content;
-
-        /** A possible timestamp of the sync content. */
-        private long _timestamp = NO_TIMESTAMP;
 
         /**
          * Creates a new APSSyncEvent.Default.
@@ -59,23 +74,12 @@ public interface APSSyncEvent {
         }
 
         /**
-         * Sets the sync content of this event.
+         * Sets the key of the sync content in this event.
          *
-         * @param content The content to set.
+         * @param key The key to set.
          */
-        public Default content(APSData content) {
-            this.content = content;
-            return this;
-        }
-
-        /**
-         * Sets the timestamp of the sync content in this event.
-         *
-         * @param timestamp The timestamp to set.
-         */
-        public Default timestamp(long timestamp) {
-            this._timestamp = timestamp;
-            return this;
+        public void setKey(String key) {
+            this.key = key;
         }
 
         /**
@@ -87,22 +91,5 @@ public interface APSSyncEvent {
             return this.key;
         }
 
-        /**
-         * Returns the content of this sync event.
-         */
-        @Override
-        @Implements(APSSyncEvent.class)
-        public APSData getContent() {
-            return this.content;
-        }
-
-        /**
-         * Returns the timestamp of the content in this sync event.
-         */
-        @Override
-        @Implements(APSSyncEvent.class)
-        public long getTimestamp() {
-            return this._timestamp;
-        }
     }
 }

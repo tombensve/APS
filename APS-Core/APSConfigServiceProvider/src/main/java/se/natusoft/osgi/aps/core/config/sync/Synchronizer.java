@@ -47,6 +47,7 @@ import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
 //import se.natusoft.osgi.aps.api.net.time.service.APSNetTimeService;
 import se.natusoft.osgi.aps.api.net.messaging.types.APSCluster;
 import se.natusoft.osgi.aps.api.net.messaging.types.APSMessage;
+import se.natusoft.osgi.aps.api.net.messaging.types.APSMessageListener;
 import se.natusoft.osgi.aps.core.config.config.APSConfigServiceConfig;
 import se.natusoft.osgi.aps.core.config.model.admin.APSConfigAdminImpl;
 import se.natusoft.osgi.aps.core.config.store.APSConfigEnvStore;
@@ -64,7 +65,7 @@ import java.util.Properties;
  * Responsible for synchronizing with other installations.
  */
 public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener,
-        APSConfigEnvStore.ConfigEnvUpdateListener, APSConfigChangedListener, APSCluster.Listener {
+        APSConfigEnvStore.ConfigEnvUpdateListener, APSConfigChangedListener, APSMessageListener {
 
     //
     // Private Members
@@ -230,10 +231,7 @@ public class Synchronizer implements APSConfigMemoryStore.ConfigUpdateListener,
 
             this.configEnvStore.removeUpdateListener(this);
             this.configMemoryStore.removeUpdateListener(this);
-            this.syncCluster.
-//            if (this.syncGroup != null) {
-//                this.syncGroup.leaveSyncGroup();
-//            }
+            this.syncCluster.removeMessageListener(this);
             this.logger.info("Stopped config synchronizer!");
         }
     }

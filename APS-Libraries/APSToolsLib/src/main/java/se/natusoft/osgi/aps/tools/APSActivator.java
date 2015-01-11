@@ -50,6 +50,7 @@ import se.natusoft.osgi.aps.tools.tuples.Tuple2;
 import se.natusoft.osgi.aps.tools.tuples.Tuple4;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -122,6 +123,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     //
 
     private class InstanceRepresentative {
+        private boolean service = true;
         private Object instance;
         private Properties props;
         private List<String> serviceAPIs = new LinkedList<>();
@@ -479,7 +481,23 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 addManagedInstanceRep(managedClass, ir);
             }
         }
+        else {
+            done: for (Method method : managedClass.getDeclaredMethods()) {
+                for (Annotation methodAnn : method.getDeclaredAnnotations()) {
+                    for (Class activatorMethodAnnClass : methodAnnotations) {
+                        if (methodAnn.getClass().equals(activatorMethodAnnClass)) {
+                            InstanceRepresentative ir = new InstanceRepresentative(createInstance(managedClass));
+                            ir.service = false;
+                            addManagedInstanceRep(managedClass, ir);
+                            break done;
+                        }
+                    }
+                }
+            }
+        }
     }
+
+    private static final Class[] methodAnnotations = {se.natusoft.osgi.aps.tools.annotation.activator.BundleListener.class, BundleStart.class, BundleStop.class, se.natusoft.osgi.aps.tools.annotation.activator.FrameworkListener.class, Initializer.class, se.natusoft.osgi.aps.tools.annotation.activator.ServiceListener.class};
 
     /**
      * Handles publishing of bundle services. If a published service has any dependencies to
@@ -615,25 +633,26 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             List<InstanceRepresentative> instanceReps = getManagedInstanceReps(managedClass);
 
             for (InstanceRepresentative instRep : instanceReps) {
-                instRep.props.put(Constants.SERVICE_PID, managedClass.getName());
-                if (!instRep.serviceAPIs.isEmpty()) {
-                    injectInstanceProps(instRep.instance, instRep.props);
-                    for (String svcAPI : instRep.serviceAPIs) {
-                        ServiceRegistration serviceReg =
-                                context.registerService(
-                                        svcAPI,
-                                        instRep.instance,
-                                        instRep.props
-                                );
+                if (instRep.service) {
+                    instRep.props.put(Constants.SERVICE_PID, managedClass.getName());
+                    if (!instRep.serviceAPIs.isEmpty()) {
+                        injectInstanceProps(instRep.instance, instRep.props);
+                        for (String svcAPI : instRep.serviceAPIs) {
+                            ServiceRegistration serviceReg =
+                                    context.registerService(
+                                            svcAPI,
+                                            instRep.instance,
+                                            instRep.props
+                                    );
 
-                        serviceRegs.add(serviceReg);
-                        this.activatorLogger.info("Registered '" + managedClass.getName() + "' as a service provider of '" +
-                                svcAPI + "' for bundle: " + context.getBundle().getSymbolicName() + "!");
+                            serviceRegs.add(serviceReg);
+                            this.activatorLogger.info("Registered '" + managedClass.getName() + "' as a service provider of '" +
+                                    svcAPI + "' for bundle: " + context.getBundle().getSymbolicName() + "!");
+                        }
+                    } else {
+                        throw new IllegalArgumentException("The @OSGiServiceProvider annotated service of class '" +
+                                managedClass.getName() + "' does not implement a service interface!");
                     }
-                }
-                else {
-                    throw new IllegalArgumentException("The @OSGiServiceProvider annotated service of class '" +
-                        managedClass.getName() + "' does not implement a service interface!");
                 }
             }
         }
@@ -819,7 +838,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                             if (!Modifier.isStatic(method.getModifiers())) {
                                 managedInstance = getManagedInstanceRep(managedClass).instance;
                             }
-                            method.invoke(managedInstance, (Object)null);
+                            // Gigantically strange: When called from JUnit and the second argument is null
+                            // you get an IllegalArgumentException with a "Wrong number of arguments!" message!
+                            // An empty array however works fine!
+                            method.invoke(managedInstance, new Object[0]);
 
                             APSActivator.this.activatorLogger.info("Called bundle start method '" + managedClass.getName() +
                                     "." + method.getName() + "()' for bundle: " + context.getBundle().getSymbolicName() + "!");
@@ -844,7 +866,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     if (!Modifier.isStatic(method.getModifiers())) {
                         managedInstance = getManagedInstanceRep(managedClass).instance;
                     }
-                    method.invoke(managedInstance, (Object)null);
+                    // Gigantically strange: When called from JUnit and the second argument is null
+                    // you get an IllegalArgumentException with a "Wrong number of arguments!" message!
+                    // An empty array however works fine!
+                    method.invoke(managedInstance, new Object[0]);
 
                     this.activatorLogger.info("Called bundle start method '" + managedClass.getName() +
                             "." + method.getName() + "()' for bundle: " + context.getBundle().getSymbolicName() + "!");

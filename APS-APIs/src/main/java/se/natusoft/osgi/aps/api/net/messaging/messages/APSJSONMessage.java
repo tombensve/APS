@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS APIs
- *
+ *     
  *     Code Version
  *         1.0.0
- *
+ *     
  *     Description
  *         Provides the APIs for the application platform services.
- *
+ *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *
+ *     
  * LICENSE
  *     Apache 2.0 (Open Source)
- *
+ *     
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *
+ *     
  *       http://www.apache.org/licenses/LICENSE-2.0
- *
+ *     
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *
+ *     
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
@@ -37,7 +37,6 @@
 package se.natusoft.osgi.aps.api.net.messaging.messages;
 
 import org.osgi.service.log.LogService;
-import se.natusoft.osgi.aps.api.net.messaging.types.APSCluster;
 import se.natusoft.osgi.aps.api.net.messaging.types.APSMessage;
 import se.natusoft.osgi.aps.codedoc.Implements;
 import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
@@ -47,6 +46,7 @@ import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService;
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException;
 
 import java.io.*;
+import java.util.UUID;
 
 /**
  * Possible base messaging class for JSON based types. Makes use of the APSJSONService to read and write JSON.
@@ -117,6 +117,24 @@ public class APSJSONMessage implements APSMessage, JSONErrorHandler {
         if (this.jsonService == null) {
             throw new APSMessagingException("No APSJSONService instance have been provided to the message! This is required!");
         }
+    }
+
+    /**
+     * Every service implementation should have a UUID, which also gets passed in messages.
+     *
+     * There must be a "senderUUID" member in the top object with the sender UUID.
+     */
+    public UUID getSenderUUID() {
+        return UUID.fromString(getJSON().getValue("senderUUID").toString());
+    }
+
+    /**
+     * Sets the sender UUID.
+     *
+     * @param senderUUID The UUID to set.
+     */
+    public void setSenderUUID(UUID senderUUID) {
+        getJSON().addValue("senderUUID", this.jsonService.createJSONString(senderUUID.toString()));
     }
 
     /**
@@ -211,8 +229,6 @@ public class APSJSONMessage implements APSMessage, JSONErrorHandler {
     /**
      * Returns the type of the message.
      */
-    @Override
-    @Implements(APSMessage.class)
     public String getType() {
         return getJSON().getValue(MESSAGE_TYPE).toString();
     }
@@ -297,40 +313,6 @@ public class APSJSONMessage implements APSMessage, JSONErrorHandler {
         this.jsonReadErrorCause = cause;
         if (this.logService != null) {
             this.logService.log(LogService.LOG_ERROR, message, cause);
-        }
-    }
-
-    //
-    // Inner Classes
-    //
-
-    /**
-     * A slightly more useful default MessageResolver can be provided for APSJSONMessage since it
-     * is not totally dependent on subclasses if you work with the JSONObject object.
-     *
-     * Subclasses using standard Java Bean APIs can of course be used with JSON messages also, but
-     * then you need to provide your own implementation of the MessageResolver interface.
-     */
-    public static class DefaultMessageResolver implements APSCluster.MessageResolver {
-
-        private APSJSONService jsonService;
-        private LogService logService;
-
-        public DefaultMessageResolver(APSJSONService jsonService, LogService logService) {
-            this.jsonService = jsonService;
-            this.logService = logService;
-        }
-
-        /**
-         * Returns an APSMessage implementation based on the message data.
-         *
-         * @param messageData The message data.
-         */
-        @Override
-        public APSMessage resolveMessage(byte[] messageData) {
-            APSMessage message = new APSJSONMessage(this.jsonService, this.logService);
-            message.setBytes(messageData);
-            return message;
         }
     }
 }

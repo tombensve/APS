@@ -156,6 +156,7 @@
         <module>Build</module>
         <module>APS-UserGuide</module>
         <module>APS-Archetypes</module>
+        <module>Test</module>
         <!--<module>Test</module>-->
     </modules>
 
