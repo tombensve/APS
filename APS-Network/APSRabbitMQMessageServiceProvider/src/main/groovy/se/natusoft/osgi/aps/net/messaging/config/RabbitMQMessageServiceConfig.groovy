@@ -68,23 +68,7 @@ public final class RabbitMQMessageServiceConfig extends APSConfig {
      * before the config service have had a change to manage the config. Using this constant instance of ManagedConfig
      * is the safest way to handle auto managed configurations.
      */
-    public static final ManagedConfig<RabbitMQMessageServiceConfig> managed = new ManagedConfig<RabbitMQMessageServiceConfig>() {
-
-        /**
-         * This makes it safe to do:
-         * <pre>
-         *     RabbitMQConnectionConfig.managed.get().host.toString();
-         * </pre>
-         * directly.
-         */
-        @Override
-        public RabbitMQMessageServiceConfig get() {
-            if (!super.isManaged()) {
-                super.waitUntilManaged()
-            }
-            return super.get() as RabbitMQMessageServiceConfig
-        }
-    };
+    public static final ManagedConfig<RabbitMQMessageServiceConfig> managed = new ManagedConfig<RabbitMQMessageServiceConfig>();
 
     @APSConfigItemDescription(description = "The host where the RabbitMQ server runs.", environmentSpecific = true)
     public APSConfigValue host

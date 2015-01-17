@@ -64,23 +64,7 @@ public final class SyncServiceConfig extends APSConfig {
      * before the config service have had a change to manage the config. Using this constant instance of ManagedConfig
      * is the safest way to handle auto managed configurations.
      */
-    public static final ManagedConfig<SyncServiceConfig> managed = new ManagedConfig<SyncServiceConfig>() {
-
-        /**
-         * This makes it safe to do:
-         * <pre>
-         *     SyncServiceConfig.managed.get().something.string
-         * </pre>
-         * directly.
-         */
-        @Override
-        public SyncServiceConfig get() {
-            if (!super.isManaged()) {
-                super.waitUntilManaged()
-            }
-            return super.get() as SyncServiceConfig
-        }
-    };
+    public static final ManagedConfig<SyncServiceConfig> managed = new ManagedConfig<SyncServiceConfig>();
 
     @APSConfigItemDescription(description = "If selected then the UUID of received messages will be validated that they come from the same sender software.",
             isBoolean = true, environmentSpecific = true)

@@ -1,5 +1,5 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS APIs
@@ -32,7 +32,7 @@
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2012-12-28: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.api.core.config;
 
@@ -113,9 +113,14 @@ public class ManagedConfig<Config> {
     }
 
     /**
+     * This makes sure the config is managed and then returns the managed config instance.
+     *
      * @return The managed config instance.
      */
     public Config get() {
+        if (!isManaged()) {
+            waitUntilManaged();
+        }
         return this.configInstance;
     }
 
