@@ -12,7 +12,7 @@ This does the same thing as the standard service tracker included with OSGi, but
 
 There are several variants of constructors, but here is an example of one of the most used ones within the APS services:
 
-        APSServiceTracker<Service> tracker = 
+        APSServiceTracker<Service> tracker =
             new APSServiceTracker<Service>(context, Service.class, "20 seconds");
         tracker.start();
 
@@ -28,7 +28,6 @@ Note that the third argument, which is a timeout can also be specified as an int
 On bundle stop you should do:
 
         tracker.stop(context);
-        
 
 So that the tracker unregisters itself from receiving bundle/service events.
 
@@ -41,7 +40,6 @@ The tracker tracks all instances of the service being tracked. It however have t
 You can provide an APSLogger (see further down about APSLogger) to the tracker:
 
         tracker.setLogger(apsLogger);
-        
 
 When available the tracker will log to this.
 
@@ -50,7 +48,6 @@ When available the tracker will log to this.
 The tracker can be used as a wrapped service:
 
         Service service = tracker.getWrappedService();
-        
 
 This gives you a proxied _service_ instance that gets the real service, calls it, releases it and return the result. This handles transparently if a service has been restarted or one instance of the service has gone away and another came available. It will wait for the specified timeout for a service to become available and if that does not happen the _APSNoServiceAvailableException_ will be thrown. This is of course a runtime exception which makes the service wrapping possible without loosing the possibility to handle the case where the service is not available.
 
@@ -59,7 +56,6 @@ This gives you a proxied _service_ instance that gets the real service, calls it
 To get a service instance you do:
 
         Service service = tracker.allocateService();
-        
 
 Note that if the tracker has a timeout set then this call will wait for the service to become available if it is currently not available until an instance becomes available or the timeout time is reached. It will throw _APSNoServiceAvailableException_ on failure in any case.
 
@@ -77,7 +73,10 @@ This will result in a callback when any instance of the service becomes availabl
 
             tracker.onServiceAvailable(new OnServiceAvailable<Service>() {
                 @Override
-                public void onServiceAvailable(Service service, ServiceReference serviceReference) throws Exception {
+                public void onServiceAvailable(
+                    Service service,
+                    ServiceReference serviceReference
+                ) throws Exception {
                     // Do something.
                 }
             });
@@ -89,7 +88,10 @@ This will result in a callback when any instance of the service goes away. If th
             onServiceLeaving(new OnServiceLeaving<Service>() {
         
                 @Override
-                public void onServiceLeaving(ServiceReference service, Class serviceAPI) throws Exception {
+                public void onServiceLeaving(
+                    ServiceReference service,
+                    Class serviceAPI
+                ) throws Exception {
                     // Handle the service leaving.
                 }
             });
@@ -112,7 +114,10 @@ Don't use this in an activator start() method! onActiveServiceAvailable() and on
 
             tracker.withService(new WithService<Service>() {
                 @Override
-                public void withService(Service service, Object... args) throws Exception {
+                public void withService(
+                    Service service,
+                    Object... args
+                ) throws Exception {
                     // do something here.
                 }
             }, arg1, arg2);
@@ -121,7 +126,9 @@ If you don't have any arguments this will also work:
 
             tracker.withService(new WithService<Service>() {
                 @Override
-                public void withService(Service service) throws Exception {
+                public void withService(
+                    Service service
+                ) throws Exception {
                     // do something here
                 }
             });
@@ -143,7 +150,7 @@ This allows for a callback when the tracker times out waiting for a service. Thi
             public void onTimeout() {
                 // do something here
             }
-        }); 
+        });
 
 ## APSLogger
 
@@ -180,41 +187,59 @@ __@OSGiServiceProvider__ - This should be specified on a class that implements a
             /** Extra properties to register the service with. */
             OSGiProperty[] properties() default {};
         
-            /** The service API to register instance with. If not specified the first implemented interface will be used. */
+            /**
+             * The service API to register instance with. If not specified the first
+             * implemented interface will be used.
+             */
             Class[] serviceAPIs() default {};
         }
         
         public @interface OSGiServiceProvider {
             /** Extra properties to register the service with. */
             OSGiProperty[] properties() default {};
-            
-            /** The service API to register instance with. If not specified the first implemented interface will be used. */
+        
+            /**
+             * The service API to register instance with. If not specified the first
+             * implemented interface will be used.
+             */
             Class[] serviceAPIs() default {};
-            
-            /** This can be used as an alternative to properties() and also supports several instances. */
+        
+            /**
+             * This can be used as an alternative to properties() and also supports
+             * several instances.
+             */
             OSGiServiceInstance[] instances() default {};
-            
+        
             /**
-             * An alternative to providing static information. This class will be instantiated if specified and
-             * provideServiceInstancesSetup() will be called to provide implemented service APIs, service
-             * properties, and a service instance. In this last, it differs from instanceFactoryClass() since
-             * that does not provide an instance. This allows for more easy configuration of each instance.
+             * An alternative to providing static information. This class will be
+             * instantiated if specified and provideServiceInstancesSetup() will
+             * be called to provide implemented service APIs, service properties,
+             * and a service instance. In this last, it differs from
+             * instanceFactoryClass() since that does not provide an instance.
+             * This allows for more easy configuration of each instance.
              */
-            Class<? extends APSActivatorServiceSetupProvider> serviceSetupProvider() default APSActivatorServiceSetupProvider.class;
-            
+            Class<? extends APSActivatorServiceSetupProvider>
+                serviceSetupProvider()
+                default APSActivatorServiceSetupProvider.class;
+        
             /**
-             * This can be used as an alternative and will instantiate the specified factory class which will deliver
-             * one set of Properties per instance.
+             * This can be used as an alternative and will instantiate the
+             * specified factory class which will deliver one set of
+             * Properties per instance.
              */
-            Class<? extends APSActivator.InstanceFactory> instanceFactoryClass() default APSActivator.InstanceFactory.class;
-            
+            Class<? extends APSActivator.InstanceFactory> instanceFactoryClass()
+                default APSActivator.InstanceFactory.class;
+        
             /**
-             * If true this service will be started in a separate thread. This means the bundle start
-             * will continue in parallel and that any failures in startup will be logged, but will
-             * not stop the bundle from being started. If this is true it wins over required service
-             * dependencies of the service class. Specifying this as true allows you to do things that
-             * cannot be done in a bunde activator start method, like calling a service tracked by 
-             * APSServiceTracker, without causing a deadlock.
+             * If true this service will be started in a separate thread.
+             * This means the bundle start will continue in parallel and
+             * that any failures in startup will be logged, but will
+             * not stop the bundle from being started. If this is true
+             * it wins over required service dependencies of the service
+             * class. Specifying this as true allows you to do things that
+             * cannot be done in a bunde activator start method, like
+             * calling a service tracked by APSServiceTracker, without
+             * causing a deadlock.
              */
             boolean threadStart() default false;
         }
@@ -227,21 +252,35 @@ If _required=true_ is specified and this field is in a class annotated with _@OS
 
         public @interface OSGiService {
         
-            /** The timeout for a service to become available. Defaults to 30 seconds. */
-            String timeout() default "30 seconds";
-            
-            /** Any additional search criteria. Should start with '(' and end with ')'. Defaults to none. */
-            String additionalSearchCriteria() default "";
-            
             /**
-             * This should specify a Class implementing APSActivatorSearchCriteriaProvider. If specified it will be
-             * used instead of additionalSearchCriteria() by instantiating the Class and calling its method to get
-             * a search criteria back. This allows for search criteria coming from configuration, which a static
-             * annotation String does not.
+             * The timeout for a service to become available. Defaults
+             * to 30 seconds.
              */
-            Class<? extends APSActivatorSearchCriteriaProvider> searchCriteriaProvider() default APSActivatorSearchCriteriaProvider.class;
-             
-            /** If set to true the service using this service will not be registered until the service becomes available. */
+            String timeout() default "30 seconds";
+        
+            /**
+             * Any additional search criteria. Should start with
+             * '(' and end with ')'. Defaults to none.
+             */
+            String additionalSearchCriteria() default "";
+        
+            /**
+             * This should specify a Class implementing
+             * APSActivatorSearchCriteriaProvider. If specified it will
+             * be used instead of additionalSearchCriteria() by
+             * instantiating the Class and calling its method to get
+             * a search criteria back. This allows for search criteria
+             * coming from configuration, which a static annotation String
+             * does not.
+             */
+            Class<? extends APSActivatorSearchCriteriaProvider>
+                searchCriteriaProvider()
+                default APSActivatorSearchCriteriaProvider.class;
+        
+            /**
+             * If set to true the service using this service will not
+             * be registered until the service becomes available.
+             */
             boolean required() default false;
         }
 
@@ -250,13 +289,14 @@ __@Managed__ - This will have an instance managed and injected. There will be a 
         public @interface Managed {
         
             /**
-             * The name of the instance to inject. If the same is used in multiple classes the same instance will
-             * be injected.
+             * The name of the instance to inject. If the same is used
+             * in multiple classes the same instance will be injected.
              */
             String name() default "default";
         
             /**
-             * A label indicating who is logging. If not specified the bundle name will be used. This is only
+             * A label indicating who is logging. If not specified the
+             * bundle name will be used. This is only
              * relevant if the injected type is APSLogger.
              */
             String loggingFor() default "";
@@ -267,7 +307,8 @@ __@BundleStart__ - This should be used on a method and will be called on bundle 
         public @interface BundleStart {
         
             /**
-             * If true the start method will run in a new thread. Any failures in this case will not fail
+             * If true the start method will run in a new thread.
+             * Any failures in this case will not fail
              * the bundle startup, but will be logged.
              */
             boolean thread() default false;
@@ -302,7 +343,6 @@ Both of these creates and manages an APSActivator internally and catches shutdow
 This provides a static wrap(...) method:
 
         Service providedService = APSContextWrapper.wrap(serviceProvider, Service.class);
-        
 
 where _serviceProvider_ is an instance of a class that implements _Service_. The resulting instance is a java.lang.reflect.Proxy implementation of _Service_ that ensures that the _serviceProvider_ ClassLoader is the context class loader during each call to all service methods that are annotated with @APSRunInBundlesContext annotation in _Service_. The wrapped instance can then be registered as the OSGi service provider.
 
@@ -313,7 +353,7 @@ Normally the threads context class loader is the original service callers contex
 There is one interface:
 
         /**
-         * This is a generic interface for representing IDs. 
+         * This is a generic interface for representing IDs.
          */
         public interface ID extends Comparable<ID> {
         

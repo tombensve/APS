@@ -36,7 +36,6 @@
  */
 package se.natusoft.osgi.aps.tools;
 
-import org.jetbrains.annotations.NotNull;
 import org.osgi.framework.*;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.FrameworkListener;
@@ -58,7 +57,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class can be specified as bundle activator in which case you use the following annotations:
@@ -164,9 +165,6 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     /** Annotated service listeners. */
     private List<ListenerWrapper> listeners;
 
-    /** Annotated init methods. These are called after all injections are done. */
-    private List<Tuple2<Method, Class>> initMethods;
-
     /** The bundles context received on bundle start. */
     private BundleContext context;
 
@@ -267,27 +265,53 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         }
         collectClassEntries(bundle, classEntries, "/");
 
+        // Classes annotated with @OSGiServiceProvider having threadStart=true need to run the
+        // startup setup, injections, etc in a separate thread and this start method should not
+        // care about when they finnish, nor what their results were. The others should have
+        // have done all that before returning from this method.
+        //
+        // I however simplify things by running both variants using single thread ExecutorService,
+        // and waiting for the "non threaded" variant to finnish before returning.
         ExecutorService parallelExecutorService = Executors.newSingleThreadExecutor();
         ExecutorService waitedForExecutorService = Executors.newSingleThreadExecutor();
         ExecutorService executorService;
 
+        final InitMethods parallelInitMethods = new InitMethods();
+        final InitMethods waitedForInitMethods = new InitMethods();
+        InitMethods initMethods;
+
         for (Class entryClass : classEntries) {
             executorService = waitedForExecutorService;
+            initMethods = waitedForInitMethods;
 
             OSGiServiceProvider serviceProvider = (OSGiServiceProvider)entryClass.getAnnotation(OSGiServiceProvider.class);
             if (serviceProvider != null && (serviceProvider.threadStart() || serviceProvider.serviceSetupProvider() != APSActivatorServiceSetupProvider.class)) {
                 executorService = parallelExecutorService;
+                initMethods = parallelInitMethods;
             }
-            executorService.submit(new PerClassWorkRunnable(entryClass, context));
+            executorService.submit(new PerClassWorkRunnable(entryClass, context, initMethods));
         }
+
+        parallelExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    callInitMethods(parallelInitMethods);
+                    parallelInitMethods.clean();
+                } catch (Exception e) {
+                    activatorLogger.error("Failed to call callInitMethods(parallelInitMethods)!", e);
+                }
+            }
+        });
 
         waitedForExecutorService.submit(new Runnable() {
             @Override
             public void run() {
                 try {
-                    callInitMethods();
+                    callInitMethods(waitedForInitMethods);
+                    waitedForInitMethods.clean();
                 } catch (Exception e) {
-                    activatorLogger.error("Failed to call callInitMethods()!", e);
+                    activatorLogger.error("Failed to call callInitMethods(waitedForInitMethods)!", e);
                 }
             }
         });
@@ -295,30 +319,6 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         parallelExecutorService.shutdown();
         waitedForExecutorService.shutdown();
         waitedForExecutorService.awaitTermination(20, TimeUnit.SECONDS);
-    }
-
-    private class PerClassWorkRunnable implements Runnable {
-
-        private Class entryClass;
-        private BundleContext context;
-
-        public PerClassWorkRunnable(Class entryClass, BundleContext context) {
-            this.entryClass = entryClass;
-            this.context = context;
-        }
-
-        @Override
-        public void run() {
-            try {
-                collectInjecteeInstancesToManage(entryClass);
-                doFieldInjectionsIntoManagedInstances(entryClass, context);
-                doServiceRegistrationsOfManagedServiceInstances(entryClass, context);
-                handleMethodInvocationsOnManagedInstances(entryClass, context);
-            }
-            catch (Exception e) {
-                activatorLogger.error("Failed to execute PerClassWorkRunnable!", e);
-            }
-        }
     }
 
     /**
@@ -829,13 +829,14 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      *
      * @param managedClass Used to lookup or create an instance of this class containing the method to call.
      * @param context The bundle context.
+     * @param initMethods The init methods container to add any found init methods to.
      */
-    protected void handleMethodInvocationsOnManagedInstances(Class managedClass, BundleContext context) {
+    protected void handleMethodInvocationsOnManagedInstances(Class managedClass, BundleContext context, InitMethods initMethods) {
         for (Method method : managedClass.getDeclaredMethods()) {
             doStartupMethodInvocations(method, managedClass, context);
             collectShutdownMethods(method, managedClass);
             registerListenerMethodWrappers(method, managedClass, context);
-            collectInitMethods(method, managedClass, context);
+            collectInitMethods(method, managedClass, context, initMethods);
         }
     }
 
@@ -972,28 +973,26 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param method The method to check for Initializer annotation.
      * @param managedClass The class of the method.
      * @param context The bundle context.
+     * @param initMethods The init methods container to add any found init methods to.
      */
     @SuppressWarnings("UnusedParameters")
-    protected void collectInitMethods(Method method, Class managedClass, BundleContext context) {
+    protected void collectInitMethods(Method method, Class managedClass, BundleContext context, InitMethods initMethods) {
         Initializer initializer = method.getAnnotation(Initializer.class);
         if (initializer != null) {
-            if (this.initMethods == null) {
-                this.initMethods = new LinkedList<>();
-            }
-
-            Tuple2<Method, Class> initMethod = new Tuple2<>(method, managedClass);
-            this.initMethods.add(initMethod);
+            initMethods.addInitMethod(method, managedClass);
         }
     }
 
     /**
      * Step 2: Calls all initializer methods.
      *
+     * @param initMethods The init methods to call.
+     *
      * @throws Exception Any exceptions thrown by initializers are forwarded upp.
      */
-    protected void callInitMethods() throws Exception {
-        if (this.initMethods != null) {
-            for (Tuple2<Method, Class> initMethod : this.initMethods) {
+    protected void callInitMethods(InitMethods initMethods) throws Exception {
+        if (!initMethods.isEmpty()) {
+            for (Tuple2<Method, Class> initMethod : initMethods) {
                 Object instance = getManagedInstanceRep(initMethod.t2).instance;
                 try {
                     initMethod.t1.invoke(instance, (Object[]) null);
@@ -1004,7 +1003,6 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     throw (Exception) ite.getCause();
                 }
             }
-            this.initMethods = null;
         }
     }
 
@@ -1183,6 +1181,59 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     //
 
     /**
+     * Provides a Runnable for each entry class that scans the class for annotations and acts on them.
+     */
+    private class PerClassWorkRunnable implements Runnable {
+
+        private Class entryClass;
+        private BundleContext context;
+        private InitMethods initMethods;
+
+        public PerClassWorkRunnable(Class entryClass, BundleContext context, InitMethods initMethods) {
+            this.entryClass = entryClass;
+            this.context = context;
+            this.initMethods = initMethods;
+        }
+
+        @Override
+        public void run() {
+            try {
+                collectInjecteeInstancesToManage(entryClass);
+                doFieldInjectionsIntoManagedInstances(entryClass, context);
+                doServiceRegistrationsOfManagedServiceInstances(entryClass, context);
+                handleMethodInvocationsOnManagedInstances(entryClass, context, initMethods);
+            }
+            catch (Exception e) {
+                activatorLogger.error("Failed to execute PerClassWorkRunnable!", e);
+            }
+        }
+    }
+
+    /**
+     * Holds a set if init methods that should be called lastly, after all other setup is done.
+     */
+    private static class InitMethods implements Iterable<Tuple2<Method, Class>> {
+        private List<Tuple2<Method, Class>> initMethods = new LinkedList<>();
+
+        public void addInitMethod(Method method, Class clazz) {
+            this.initMethods.add(new Tuple2<>(method, clazz));
+        }
+
+        @Override
+        public Iterator<Tuple2<Method, Class>> iterator() {
+            return this.initMethods.iterator();
+        }
+
+        public boolean isEmpty() {
+            return this.initMethods.isEmpty();
+        }
+
+        public void clean() {
+            this.initMethods = new LinkedList<>();
+        }
+    }
+
+    /**
      * Implementations of this provide properties for each instance of a service to publish.
      */
     public interface InstanceFactory {
@@ -1205,6 +1256,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
          */
         List<Properties> getPropertiesPerInstance();
     }
+
+    // The following are wrappers for the OSGi framework listeners: ServiceListener, BundleListener, and FrameworkListener.
+    // The point of these is that the implement the listener interfaces, but in turn forwards listener calls to annotated
+    // method of class that does not need to implement the interfaces.
 
     protected interface ListenerWrapper {
         public void start(BundleContext context);
