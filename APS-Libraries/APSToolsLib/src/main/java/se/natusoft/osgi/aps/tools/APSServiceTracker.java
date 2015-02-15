@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS Tools Library
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides a library of utilities, among them APSServiceTracker used by all other APS bundles.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
@@ -141,6 +141,9 @@ public class APSServiceTracker<Service>  implements ServiceListener{
 
     /** If this is provided it will be called before APSNoServiceAvailableException is thrown. */
     private OnTimeout onTimeout = null;
+
+    /** Handle start() being called more than once. */
+    private boolean started = false;
 
     //
     // Constructors
@@ -306,30 +309,33 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * Starts tracking services.
      */
     public synchronized void start() {
-        // A note to yourself: The reason we don't specify versions here is that they are already specified
-        // in bundle manifest import.
-        String filter = "(" + Constants.OBJECTCLASS + "=" + this.serviceClass.getName() + ")";
-        if (this.additionalSearchCriteria != null) {
-            filter = "(&" + filter + this.additionalSearchCriteria + ")";
-        }
-        try {
-            ServiceReference[] svcRefs = this.context.getServiceReferences(this.serviceClass.getName(), filter);
-            if (svcRefs != null) {
-                for (ServiceReference sref : svcRefs) {
-                    this.trackedServices.addService(sref);
-                    if (!this.active.hasActiveService()) {
-                        this.active.setActive(sref);
+        if (!this.started) {
+            // A note to yourself: The reason we don't specify versions here is that they are already specified
+            // in bundle manifest import.
+            String filter = "(" + Constants.OBJECTCLASS + "=" + this.serviceClass.getName() + ")";
+            if (this.additionalSearchCriteria != null) {
+                filter = "(&" + filter + this.additionalSearchCriteria + ")";
+            }
+            try {
+                ServiceReference[] svcRefs = this.context.getServiceReferences(this.serviceClass.getName(), filter);
+                if (svcRefs != null) {
+                    for (ServiceReference sref : svcRefs) {
+                        this.trackedServices.addService(sref);
+                        if (!this.active.hasActiveService()) {
+                            this.active.setActive(sref);
+                        }
                     }
                 }
+            } catch (InvalidSyntaxException e) {
+                throw new RuntimeException("Failed to start APSServiceTracker!", e);
             }
-        } catch (InvalidSyntaxException e) {
-            // Should not be able to happen since we use a class object to get name.
-        }
-        try {
-            this.context.addServiceListener(this, filter);
-        } catch (InvalidSyntaxException e) {
-            // Since we are using an actuall class object and not a string as input this should not be able to happen.
-            throw new RuntimeException("Failed to add ServiceListener!", e);
+            try {
+                this.context.addServiceListener(this, filter);
+            } catch (InvalidSyntaxException e) {
+                throw new RuntimeException("Failed to start APSServiceTracker!", e);
+            }
+
+            this.started = true;
         }
     }
 
@@ -343,6 +349,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
         this.trackedServices.clear();
         this.active.wakeAllWaiting();
         this.active.closeActiveService();
+        this.started = false;
     }
 
     /**
@@ -528,7 +535,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
                 waitForService(this.timeout);
             }
             if (!hasTrackedService()) {
-                throw new APSNoServiceAvailableException(this.serviceClass.getName());
+                throw new APSNoServiceAvailableException("Service '" + this.serviceClass.getName() + "' is not available!");
             }
         }
 
@@ -638,7 +645,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
                 if (this.onTimeout != null) {
                     onTimeout.onTimeout();
                 }
-                throw new APSNoServiceAvailableException("No '" + this.serviceClass.getName() + "' service is available!");
+                throw new APSNoServiceAvailableException("Service '" + this.serviceClass.getName() + "' is not available!");
             }
         }
         return this.active.allocateActiveService();

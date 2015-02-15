@@ -1,51 +1,49 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Tools Library
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides a library of utilities, among them APSServiceTracker used by all other APS bundles.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
  *         2015-01-10: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.tools.services;
 
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider;
 import se.natusoft.osgi.aps.tools.apis.APSActivatorServiceSetupProvider;
+import se.natusoft.osgi.aps.tools.apis.ServiceSetup;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-/**
- *
- */
 @OSGiServiceProvider(serviceSetupProvider = ServicesSetupProviderTestService.SetupProvider.class)
 public class ServicesSetupProviderTestService implements TestService {
 
@@ -73,28 +71,25 @@ public class ServicesSetupProviderTestService implements TestService {
          * that can be searched for during service lookup/tracking.
          */
         @Override
-        public List<Setup> provideServiceInstancesSetup() {
-            List<Setup> setups = new LinkedList<>();
+        public List<ServiceSetup> provideServiceInstancesSetup() {
+            List<ServiceSetup> setups = new LinkedList<>();
 
-            Setup setup = new Setup();
-            setup.serviceAPIs.add("se.natusoft.osgi.aps.tools.services.TestService");
-            setup.props = new Properties();
-            setup.props.setProperty("instance", "first");
-            setup.serviceInstance = new ServicesSetupProviderTestService("first");
+            ServiceSetup setup = new ServiceSetup();
+            setup.getServiceAPIs().add("se.natusoft.osgi.aps.tools.services.TestService");
+            setup.getProps().setProperty("instance", "first");
+            setup.setServiceInstance(new ServicesSetupProviderTestService("first"));
             setups.add(setup);
 
-            setup = new Setup();
-            setup.serviceAPIs.add("se.natusoft.osgi.aps.tools.services.TestService");
-            setup.props = new Properties();
-            setup.props.setProperty("instance", "second");
-            setup.serviceInstance = new ServicesSetupProviderTestService("second");
+            setup = new ServiceSetup();
+            setup.getServiceAPIs().add("se.natusoft.osgi.aps.tools.services.TestService");
+            setup.getProps().setProperty("instance", "second");
+            setup.setServiceInstance(new ServicesSetupProviderTestService("second"));
             setups.add(setup);
 
-            setup = new Setup();
-            setup.serviceAPIs.add("se.natusoft.osgi.aps.tools.services.TestService");
-            setup.props = new Properties();
-            setup.props.setProperty("instance", "third");
-            setup.serviceInstance = new ServicesSetupProviderTestService("third");
+            setup = new ServiceSetup();
+            setup.getServiceAPIs().add("se.natusoft.osgi.aps.tools.services.TestService");
+            setup.getProps().setProperty("instance", "third");
+            setup.setServiceInstance(new ServicesSetupProviderTestService("third"));
             setups.add(setup);
 
             return setups;
