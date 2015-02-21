@@ -42,6 +42,7 @@ import se.natusoft.osgi.aps.tools.tracker.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  *  Provides an alternative service tracker.
@@ -187,7 +188,19 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      */
     public APSServiceTracker(BundleContext context, Class<Service> serviceClass, int timeout) {
         this(context, serviceClass);
-        this.timeout = timeout * 1000;
+        this.timeout = (int)TimeUnit.SECONDS.toMillis(timeout);
+    }
+
+    /**
+     * Creates a new _APSServiceTracker_ instance.
+     *
+     * @param context The bundles context.
+     * @param serviceClass The class of the service to track.
+     * @param timeout The time to wait for a service to become available.
+     * @param timeUnit The unit of time in timeout.
+     */
+    public APSServiceTracker(BundleContext context, Class<Service> serviceClass, long timeout, TimeUnit timeUnit) {
+        this(context, serviceClass, (int)timeUnit.toSeconds(timeout));
     }
 
     /**
@@ -235,6 +248,24 @@ public class APSServiceTracker<Service>  implements ServiceListener{
         this(context, serviceClass);
         this.additionalSearchCriteria = additionalSearchCriteria;
         setTimeout(timeout);
+    }
+
+    /**
+     * Creates a new _APSServiceTracker_ instance.
+     *
+     * @param context The bundles context.
+     * @param serviceClass The class of the service to track.
+     * @param additionalSearchCriteria An LDAP search string not including the service! The final search string will
+     *                                 be "(&(objectClass=service)additionalSearchCriteria)". This parameter should
+     *                                 thereby always start with an '(' and end with an ')'!
+     * @param timeout The time to wait for a service to become available.
+     * @param timeUnit The unit of time in timeout.
+     */
+    public APSServiceTracker(BundleContext context, Class<Service> serviceClass, String additionalSearchCriteria, long timeout,
+                             TimeUnit timeUnit) {
+        this(context, serviceClass);
+        this.additionalSearchCriteria = additionalSearchCriteria;
+        this.timeout = (int)timeUnit.toMillis(timeout);
     }
 
     /**
