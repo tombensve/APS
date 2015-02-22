@@ -20,30 +20,30 @@
     </description>
 
     <properties>
-        <!-- 
-            Bundle properties 
+        <!--
+            Bundle properties
         -->
-        
-        <!-- The symbolic name of the bundle. Defaults to the artifact id, but can be overriden. -->
+
+        <!-- The symbolic name of the bundle. Defaults to the artifact id, but can be overridden. -->
         <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
-        
+
         <!-- The bundle activator class -->
         <osgi.bundle.activator>se.natusoft.osgi.aps.tools.APSActivator</osgi.bundle.activator>
-        
+
         <!-- The bundle packages to export. -->
         <osgi.export.package>
         </osgi.export.package>
-        
+
         <!-- The packages to import for the bundle. -->
         <osgi.import.package>*</osgi.import.package>
-                
+
         <!-- The private packages. -->
         <osgi.private.package>
             se.natusoft.osgi.aps
         </osgi.private.package>
-        
+
         <!-- The packages to export from dependent & embeded jars -->
-        <osgi.export.dependency.package>    
+        <osgi.export.dependency.package>
         </osgi.export.dependency.package>
 
         <!-- The resources to include in the bundle -->
@@ -52,7 +52,7 @@
 
         <!-- The default for embedding dependencies in bundle. -->
         <osgi.embed.dependency>*;scope=system</osgi.embed.dependency>
-        
+
         <!-- The directory whose content should be embeded into the bundle jar. -->
         <osgi.embed.directory>lib</osgi.embed.directory>
 
@@ -66,8 +66,6 @@
         <!--
              Trigger tiles.
          -->
-        <tile.deploy>${project.groupId}:DeployBundleTile:${project.version}</tile.deploy>
-        <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
 
         <!--
             Other properties
@@ -100,7 +98,7 @@
 
     <build>
         <plugins>
-            
+
             <!--
                 Force the jar plugin to use the maven-bundle-plugin generated manifest.
             -->
@@ -109,9 +107,9 @@
                 <configuration>
                     <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive> 
+                    </archive>
                 </configuration>
-            </plugin>  
+            </plugin>
 
             <!--
                 OSGi bundle handling.
@@ -139,7 +137,7 @@
                         <manifestEntries>
                             <APS-Configs>${aps.config.classes}</APS-Configs>
                             <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
-                        </manifestEntries>                        
+                        </manifestEntries>
                     </archive>
                     <instructions>
                         <Export-Package>${osgi.export.package}</Export-Package>
@@ -154,8 +152,8 @@
                     </instructions>
                 </configuration>
             </plugin>
-            
+
         </plugins>
     </build>
-    
+
 </project>
