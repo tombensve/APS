@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -37,6 +37,8 @@
 package se.natusoft.osgi.aps.api.net.messaging.types;
 
 import se.natusoft.osgi.aps.codedoc.Implements;
+
+import java.util.Date;
 
 /**
  * This is a synchronization event.
@@ -51,12 +53,12 @@ public interface APSSyncDataEvent extends APSSyncEvent {
     /**
      * Returns the content of this sync event.
      */
-    public APSDataPacket getContent();
+    APSDataPacket getContent();
 
     /**
      * Returns the timestamp of the content in this sync event.
      */
-    public long getTimestamp();
+    long getTimestamp();
 
 
     /**
@@ -97,6 +99,25 @@ public interface APSSyncDataEvent extends APSSyncEvent {
         }
 
         /**
+         * Sets the sync content of this event.
+         *
+         * @param content The content to set.
+         */
+        public APSSyncDataEvent.Default content(byte[] content) {
+            this.content = new APSDataPacket.Default(content);
+            return this;
+        }
+
+        /**
+         * Sets the sync content of this event.
+         *
+         * @param content The content to set.
+         */
+        public APSSyncDataEvent.Default content(String content) {
+            return content(content.getBytes());
+        }
+
+        /**
          * Sets the timestamp of the sync content in this event.
          *
          * @param timestamp The timestamp to set.
@@ -107,12 +128,38 @@ public interface APSSyncDataEvent extends APSSyncEvent {
         }
 
         /**
+         * Set timestamp to now.
+         */
+        public APSSyncDataEvent.Default now() {
+            this._timestamp = new Date().getTime();
+            return this;
+        }
+
+        /**
          * Sets the sync content of this event.
          *
          * @param content The content to set.
          */
         public void setContent(APSDataPacket content) {
             this.content = content;
+        }
+
+        /**
+         * Sets the sync content of this event.
+         *
+         * @param content The content to set.
+         */
+        public void setContent(byte[] content) {
+            this.content = new APSDataPacket.Default(content);
+        }
+
+        /**
+         * Sets the sync content of this event.
+         *
+         * @param content The content to set.
+         */
+        public void setContent(String content) {
+            setContent(content.getBytes());
         }
 
         /**
