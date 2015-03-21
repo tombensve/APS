@@ -122,6 +122,20 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-service-test-support</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-apis</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+
         <!--suppress NonOsgiMavenDependency -->
         <dependency>
             <groupId>se.natusoft.annotation</groupId>

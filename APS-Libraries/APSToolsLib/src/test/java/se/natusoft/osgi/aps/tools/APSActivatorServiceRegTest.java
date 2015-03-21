@@ -90,9 +90,12 @@ public class APSActivatorServiceRegTest {
         activator.start(testBundle.getBundleContext());
 
         try {
-            if (testBundle.getRegisteredServices().length != 3) {
+            int not3Count = 0;
+            while (testBundle.getRegisteredServices().length != 3 && not3Count < 3) {
                 Thread.sleep(500); // Short delay to give activator threads time to finnish.
+                ++not3Count;
             }
+            if (not3Count >= 3) fail("Took too long for 3 services to be registered!");
 
             assertTrue("There should be 3 registered service instances!", testBundle.getRegisteredServices().length == 3);
 

@@ -376,7 +376,8 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * @param context The stop context.
      */
     public synchronized void stop(BundleContext context) {
-        if (context != null) context.removeServiceListener(this);
+        if (context == null) context = this.context;
+        context.removeServiceListener(this);
         this.trackedServices.clear();
         this.active.wakeAllWaiting();
         this.active.closeActiveService();

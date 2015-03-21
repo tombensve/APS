@@ -98,6 +98,10 @@ import java.util.concurrent.TimeUnit;
  *   have been created and all injections handled. This can be used as an alternative constructor
  *   which have access to all members, even injected ones.
  *
+ * * **@ConfiguredInstance** -
+ *   This points out configuration that is used to create instances of a service and is only used
+ *   in conjunction with @OSGiServiceProvider. See the javadoc for this annotation for more info.
+ *
  * All injected service instances for @OSGiService will be APSServiceTracker wrapped
  * service instances that will automatically handle services leaving and coming. They will throw
  * APSNoServiceAvailableException on timeout!
@@ -109,6 +113,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     //
     // Constants
     //
+
+    /** This property is set on instances configured from names. */
+    public static final String SERVICE_INSTANCE_NAME = "aps-service-instance-name";
 
     /** This means that this class will find all annotated classes in a bundle and manage those. */
     public static final boolean ACTIVATOR_MODE = true;
@@ -126,6 +133,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     // Support Classes
     //
 
+    /**
+     * This is used for certain variants of specifying instances.
+     */
     private class InstanceRepresentative {
         private boolean service = true;
         private Object instance;
@@ -214,7 +224,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     }
 
     /**
-     * Called on start() to reset internal instances.
+     * Called on start() to reset internal instances. These are null:ed on stop().
      */
     protected void initMembers() {
         if (this.services == null) {
@@ -285,10 +295,11 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             initMethods = waitedForInitMethods;
 
             OSGiServiceProvider serviceProvider = (OSGiServiceProvider)entryClass.getAnnotation(OSGiServiceProvider.class);
-            if (serviceProvider != null && (serviceProvider.threadStart() || serviceProvider.serviceSetupProvider() != APSActivatorServiceSetupProvider.class)) {
+            if (serviceProvider != null && (serviceProvider.threadStart() || serviceProvider.serviceSetupProvider() != APSActivatorServiceSetupProvider.class || hasConfiguredInstance(entryClass))) {
                 executorService = parallelExecutorService;
                 initMethods = parallelInitMethods;
             }
+
             executorService.submit(new PerClassWorkRunnable(entryClass, context, initMethods));
         }
 
@@ -318,7 +329,33 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
         parallelExecutorService.shutdown();
         waitedForExecutorService.shutdown();
-        waitedForExecutorService.awaitTermination(20, TimeUnit.SECONDS);
+        waitedForExecutorService.awaitTermination(30, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Returns the field annotated with @ConfiguredInstance or null if not found.
+     *
+     * @param clazz The class to search for the annotated field.
+     */
+    private Field getConfiguredInstance(Class clazz) {
+        Field found = null;
+        for (Field field : clazz.getDeclaredFields()) {
+            if (field.getAnnotation(ConfiguredInstance.class) != null) {
+                found = field;
+                break;
+            }
+        }
+
+        return found;
+    }
+
+    /**
+     * Returns true if the specified class have a field annotated with @ConfiguredInstance. Otherwise false is returned.
+     *
+     * @param clazz The class to check.
+     */
+    private boolean hasConfiguredInstance(Class clazz) {
+        return getConfiguredInstance(clazz) != null;
     }
 
     /**
@@ -431,80 +468,180 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     }
 
     /**
-     * This is the first thing done to instantiate all service instances needed, so that they all can be injected later.
+     * This is the first thing done to instantiate all instances needed. Do note that this handles both service providers
+     * and client injections.
      *
      * @param managedClass The manages class to create instances of.
      * @throws Exception
      */
-    protected void collectInjecteeInstancesToManage(Class managedClass) throws Exception {
+    protected void collectInjecteeAndServiceInstancesToManage(Class managedClass) throws Exception {
         OSGiServiceProvider serviceProvider = (OSGiServiceProvider)managedClass.getAnnotation(OSGiServiceProvider.class);
         if (serviceProvider != null) {
-            if (managedClass.getInterfaces().length == 0) {
-                throw new APSActivatorException("Managed service provider class '" + managedClass.getName() + "' " +
-                        "does not implement any service interface!");
+            collectServiceInstancesToManage(managedClass, serviceProvider);
+        }
+        else {
+            collectInjecteeInstancesToManage(managedClass);
+        }
+    }
+
+    /**
+     * Handle collection of services to manage.
+     *
+     * @param managedClass The managed class to inspect.
+     * @param serviceProvider The found @OSGiServiceProvider annotation on managedClass.
+     *
+     * @throws Exception
+     */
+    protected void collectServiceInstancesToManage(Class managedClass, OSGiServiceProvider serviceProvider) throws Exception {
+        if (managedClass.getInterfaces().length == 0) {
+            throw new APSActivatorException("Managed service provider class '" + managedClass.getName() + "' " +
+                    "does not implement any service interface!");
+        }
+
+        if (hasConfiguredInstance(managedClass)) {
+            handleConfiguredServiceInstances(managedClass);
+        }
+        else if (serviceProvider.instances().length > 0) {
+            handleAnnotationInstancesServiceInstances(managedClass, serviceProvider);
+        }
+        else if (!serviceProvider.instanceFactoryClass().equals(InstanceFactory.class)) {
+            handleAnnotationInstanceFactoryServiceInstances(managedClass, serviceProvider);
+        }
+        else if (!serviceProvider.serviceSetupProvider().equals(APSActivatorServiceSetupProvider.class)) {
+            handleAnnotationServiceSetupProviderServiceInstances(managedClass, serviceProvider);
+        }
+        else {
+            handleDefaultServiceInstance(managedClass, serviceProvider);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void handleConfiguredServiceInstances(Class managedClass) throws Exception {
+        // We know we always will get this since we wouldn't get here if this wasn't available!
+        Field injectToField = getConfiguredInstance(managedClass);
+
+        ConfiguredInstance configuredInstance = injectToField.getAnnotation(ConfiguredInstance.class);
+        Class configClass = verifyAPSConfigClass(configuredInstance.configClass(), managedClass);
+
+        // getNamedConfigEntryNames() are part of the APSConfig base class! We call it through reflection
+        // since we don't have compile dependency on APS-APIs.
+        Method getNamedConfigEntryNamesMethod = configClass.getSuperclass().getMethod("getNamedConfigEntryNames", Class.class, String.class);
+        List<String> names =
+                (List<String>)getNamedConfigEntryNamesMethod.invoke(null, configuredInstance.configClass(),
+                        configuredInstance.instNamePath());
+
+        for (String name : names) {
+            Object instance = createInstance(managedClass);
+
+            injectObject(instance, name, injectToField);
+
+            InstanceRepresentative ir = new InstanceRepresentative(instance);
+            ir.service = true;
+            Properties props = new Properties();
+            props.setProperty(configuredInstance.instanceNamePropertyKey(), name);
+            ir.props = props;
+            ir.instance = instance;
+            OSGiServiceProvider serviceProvider = (OSGiServiceProvider)managedClass.getAnnotation(OSGiServiceProvider.class);
+            if (serviceProvider == null) {
+                throw new IllegalArgumentException("A managed class containing a @ConfiguredInstance annotation on a field must " +
+                        "also have the class annotated with @OSGiServiceProvider!");
+            }
+            for (Class svcAPI : serviceProvider.serviceAPIs()) {
+                ir.serviceAPIs.add(svcAPI.getName());
+            }
+            if (ir.serviceAPIs.isEmpty()) {
+                if (managedClass.getInterfaces().length == 0) {
+                    throw new IllegalArgumentException("An OSGi service class must implement at least one service API interface!");
+                }
+                ir.serviceAPIs.add(managedClass.getInterfaces()[0].getName());
             }
 
-            if (serviceProvider.instances().length > 0) {
-                for (OSGiServiceInstance inst : serviceProvider.instances()) {
-                    InstanceRepresentative ir = new InstanceRepresentative(createInstance(managedClass));
-                    ir.props = osgiPropertiesToProperties(inst.properties());
-                    for (Class svcAPI : inst.serviceAPIs()) {
-                        ir.serviceAPIs.add(svcAPI.getName());
-                    }
-                    addManagedInstanceRep(managedClass, ir);
-                }
+            addManagedInstanceRep(managedClass, ir);
+        }
+    }
+
+    private Class verifyAPSConfigClass(Class toVerify, Class managedClass) {
+        Class check = toVerify;
+        while (!check.getSimpleName().equals("APSConfig")) {
+            check = check.getSuperclass();
+            if (check == null || check.getSimpleName().equals("Object"))
+                throw new IllegalArgumentException("Bad config class in @ConfiguredInstance of " + managedClass.getName() + "!");
+        }
+        return toVerify;
+    }
+
+    protected void handleAnnotationInstancesServiceInstances(Class managedClass, OSGiServiceProvider serviceProvider) throws Exception {
+        for (OSGiServiceInstance inst : serviceProvider.instances()) {
+            InstanceRepresentative ir = new InstanceRepresentative(createInstance(managedClass));
+            ir.props = osgiPropertiesToProperties(inst.properties());
+            for (Class svcAPI : inst.serviceAPIs()) {
+                ir.serviceAPIs.add(svcAPI.getName());
             }
-            else if (!serviceProvider.instanceFactoryClass().equals(InstanceFactory.class)) {
-                InstanceFactory instanceFactory = (InstanceFactory) getManagedInstanceRep(serviceProvider.instanceFactoryClass()).instance;
-                if (instanceFactory == null) {
-                    instanceFactory = serviceProvider.instanceFactoryClass().newInstance();
-                }
-                for (Properties props : instanceFactory.getPropertiesPerInstance()) {
-                    InstanceRepresentative ir = new InstanceRepresentative(createInstance(managedClass));
-                    ir.props = props;
-                    String svcAPIList = props.getProperty(InstanceFactory.SERVICE_API_CLASSES_PROPERTY);
-                    if (svcAPIList != null) {
-                        Collections.addAll(ir.serviceAPIs, svcAPIList.split(":"));
-                    }
-                    else {
-                        ir.serviceAPIs.add(managedClass.getInterfaces()[0].getName());
-                    }
-                    addManagedInstanceRep(managedClass, ir);
-                }
-            }
-            else if (!serviceProvider.serviceSetupProvider().equals(APSActivatorServiceSetupProvider.class)) {
-                APSActivatorServiceSetupProvider setupProvider = serviceProvider.serviceSetupProvider().newInstance();
-                for (ServiceSetup setup : setupProvider.provideServiceInstancesSetup()) {
-                    InstanceRepresentative ir = new InstanceRepresentative(setup.getServiceInstance());
-                    ir.props = setup.getProps();
-                    ir.serviceAPIs.addAll(setup.getServiceAPIs());
-                    addManagedInstanceRep(managedClass, ir);
-                }
+            addManagedInstanceRep(managedClass, ir);
+        }
+    }
+
+    protected void handleAnnotationInstanceFactoryServiceInstances(Class managedClass, OSGiServiceProvider serviceProvider) throws Exception {
+        InstanceFactory instanceFactory = (InstanceFactory) getManagedInstanceRep(serviceProvider.instanceFactoryClass()).instance;
+        if (instanceFactory == null) {
+            instanceFactory = serviceProvider.instanceFactoryClass().newInstance();
+        }
+        for (Properties props : instanceFactory.getPropertiesPerInstance()) {
+            InstanceRepresentative ir = new InstanceRepresentative(createInstance(managedClass));
+            ir.props = props;
+            String svcAPIList = props.getProperty(InstanceFactory.SERVICE_API_CLASSES_PROPERTY);
+            if (svcAPIList != null) {
+                Collections.addAll(ir.serviceAPIs, svcAPIList.split(":"));
             }
             else {
-                InstanceRepresentative ir = new InstanceRepresentative(createInstance(managedClass));
-                ir.props = new Properties();
-                if (serviceProvider.serviceAPIs().length > 0) {
-                    for (Class svcAPI : serviceProvider.serviceAPIs()) {
-                        ir.serviceAPIs.add(svcAPI.getName());
-                    }
-                }
-                else {
-                    ir.serviceAPIs.add(managedClass.getInterfaces()[0].getName());
-                }
-                addManagedInstanceRep(managedClass, ir);
+                ir.serviceAPIs.add(managedClass.getInterfaces()[0].getName());
+            }
+            addManagedInstanceRep(managedClass, ir);
+        }
+    }
+
+    protected void handleAnnotationServiceSetupProviderServiceInstances(Class managedClass, OSGiServiceProvider serviceProvider) throws Exception {
+        APSActivatorServiceSetupProvider setupProvider = serviceProvider.serviceSetupProvider().newInstance();
+        for (ServiceSetup setup : setupProvider.provideServiceInstancesSetup()) {
+            InstanceRepresentative ir = new InstanceRepresentative(setup.getServiceInstance());
+            ir.props = setup.getProps();
+            ir.serviceAPIs.addAll(setup.getServiceAPIs());
+            addManagedInstanceRep(managedClass, ir);
+        }
+    }
+
+    protected void handleDefaultServiceInstance(Class managedClass, OSGiServiceProvider serviceProvider) throws Exception {
+        InstanceRepresentative ir = new InstanceRepresentative(createInstance(managedClass));
+        ir.props = new Properties();
+        if (serviceProvider.serviceAPIs().length > 0) {
+            for (Class svcAPI : serviceProvider.serviceAPIs()) {
+                ir.serviceAPIs.add(svcAPI.getName());
             }
         }
         else {
-            done: for (Method method : managedClass.getDeclaredMethods()) {
-                for (Annotation methodAnn : method.getDeclaredAnnotations()) {
-                    for (Class activatorMethodAnnClass : methodAnnotations) {
-                        if (methodAnn.getClass().equals(activatorMethodAnnClass)) {
-                            InstanceRepresentative ir = new InstanceRepresentative(createInstance(managedClass));
-                            ir.service = false;
-                            addManagedInstanceRep(managedClass, ir);
-                            break done;
-                        }
+            ir.serviceAPIs.add(managedClass.getInterfaces()[0].getName());
+        }
+        addManagedInstanceRep(managedClass, ir);
+    }
+
+
+    /**
+     * Handles collection of non service instances to manage.
+     *
+     * @param managedClass The managed class to inspect.
+     *
+     * @throws Exception
+     */
+    protected void collectInjecteeInstancesToManage(Class managedClass) throws Exception {
+        done:
+        for (Method method : managedClass.getDeclaredMethods()) {
+            for (Annotation methodAnn : method.getDeclaredAnnotations()) {
+                for (Class activatorMethodAnnClass : methodAnnotations) {
+                    if (methodAnn.getClass().equals(activatorMethodAnnClass)) {
+                        InstanceRepresentative ir = new InstanceRepresentative(createInstance(managedClass));
+                        ir.service = false;
+                        addManagedInstanceRep(managedClass, ir);
+                        break done; // This will break out of the outer for loop!
                     }
                 }
             }
@@ -1198,7 +1335,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         @Override
         public void run() {
             try {
-                collectInjecteeInstancesToManage(entryClass);
+                collectInjecteeAndServiceInstancesToManage(entryClass);
                 doFieldInjectionsIntoManagedInstances(entryClass, context);
                 doServiceRegistrationsOfManagedServiceInstances(entryClass, context);
                 handleMethodInvocationsOnManagedInstances(entryClass, context, initMethods);
@@ -1258,14 +1395,20 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     }
 
     // The following are wrappers for the OSGi framework listeners: ServiceListener, BundleListener, and FrameworkListener.
-    // The point of these is that the implement the listener interfaces, but in turn forwards listener calls to annotated
+    // The point of these is that they implement the listener interfaces, but in turn forwards listener calls to annotated
     // method of class that does not need to implement the interfaces.
 
+    /**
+     * This is implemented by all listener wrappers.
+     */
     protected interface ListenerWrapper {
         public void start(BundleContext context);
         public void stop(BundleContext context);
     }
 
+    /**
+     * Listens on and forwards service events.
+     */
     protected class ServiceListenerWrapper implements ListenerWrapper, ServiceListener {
 
         private Method method;
@@ -1300,6 +1443,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         }
     }
 
+    /**
+     * Listens on and forwards bundle events.
+     */
     protected class BundleListenerWrapper implements ListenerWrapper, BundleListener {
 
         private Method method;
@@ -1334,6 +1480,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         }
     }
 
+    /**
+     * Listens on and forwards framework events.
+     */
     protected class FrameworkListenerWrapper implements ListenerWrapper, FrameworkListener {
 
         private Method method;
