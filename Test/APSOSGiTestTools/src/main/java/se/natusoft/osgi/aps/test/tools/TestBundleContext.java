@@ -1,3 +1,39 @@
+/*
+ *
+ * PROJECT
+ *     Name
+ *         APSOSGiTestTools
+ *
+ *     Code Version
+ *         1.0.0
+ *
+ *     Description
+ *         Provides tools for testing OSGi services.
+ *
+ * COPYRIGHTS
+ *     Copyright (C) 2012 by Natusoft AB All rights reserved.
+ *
+ * LICENSE
+ *     Apache 2.0 (Open Source)
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *
+ * AUTHORS
+ *     tommy ()
+ *         Changes:
+ *         2015-01-23: Created!
+ *
+ */
 package se.natusoft.osgi.aps.test.tools;
 
 import org.osgi.framework.*;
@@ -154,10 +190,15 @@ public class TestBundleContext implements BundleContext {
     @Override
     public ServiceRegistration registerService(String clazz, Object service, Dictionary properties) {
         if(properties.get(Constants.OBJECTCLASS) == null) {
-            properties.put(Constants.OBJECTCLASS, clazz);
+            properties.put(Constants.OBJECTCLASS, new String[] {clazz});
         }
         TestServiceRegistration sr = new TestServiceRegistration(clazz, new TestServiceReference(this, properties), this.bundle);
-        this.bundle.getServiceRegistry().registerService(sr, service);
+        try {
+            this.bundle.getServiceRegistry().registerService(sr, service, Class.forName(clazz));
+        }
+        catch (ClassNotFoundException cnfe) {
+            throw new IllegalArgumentException("Bad value passed for 'clazz' parameter!", cnfe);
+        }
         return sr;
     }
 
