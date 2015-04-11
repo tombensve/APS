@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-
     PROJECT
         Name
-            APS Tools Library
+            APS TCPIP Service NonSecure Provider
 
         Code Version
             1.0.0
 
         Description
-            Provides a library of utilities, among them APSServiceTracker used by all other APS bundles.
+            Provides a nonsecure implementation of APSTCPIPService.
 
     COPYRIGHTS
         Copyright (C) 2012 by Natusoft AB All rights reserved.
@@ -30,28 +29,27 @@
         limitations under the License.
 
     AUTHORS
-        Tommy Svensson (tommy@natusoft.se)
+        tommy ()
             Changes:
-            2013-02-03: Created!
+            2015-04-11: Created!
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>APS-Libraries</artifactId>
+        <artifactId>APS-Network</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
         <version>1.0.0</version>
-        <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>aps-tools-lib</artifactId>
+    <artifactId>aps-tcpip-service-nonsecure-provider</artifactId>
     <packaging>bundle</packaging>
 
-    <name>APS Tools Library</name>
+    <name>APS TCPIP Service NonSecure Provider</name>
 
     <description>
-        Provides a library of utilities, among them APSServiceTracker used by all other APS bundles.
+        Provides a nonsecure implementation of APSTCPIPService.
     </description>
 
     <properties>
@@ -59,25 +57,14 @@
             Bundle properties
         -->
 
-        <!-- The symbolic name of the bundle. Defaults to the artifact id, but can be overriden. -->
+        <!-- The symbolic name of the bundle. Defaults to the artifact id, but can be overridden. -->
         <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
 
         <!-- The bundle activator class -->
-        <!--suppress CheckTagEmptyBody -->
-        <osgi.bundle.activator></osgi.bundle.activator>
+        <osgi.bundle.activator>se.natusoft.osgi.aps.tools.APSActivator</osgi.bundle.activator>
 
         <!-- The bundle packages to export. -->
         <osgi.export.package>
-            se.natusoft.osgi.aps.tools;version="${project.version}",
-            se.natusoft.osgi.aps.tools.tracker;version="${project.version}",
-            se.natusoft.osgi.aps.tools.models;version="${project.version}",
-            se.natusoft.osgi.aps.tools.data;version="${project.version}",
-            se.natusoft.osgi.aps.tools.annotation;version="${project.version}",
-            se.natusoft.osgi.aps.tools.annotation.activator;version="${project.version}",
-            se.natusoft.osgi.aps.tools.apis;version="${project.version}",
-            se.natusoft.osgi.aps.tools.exceptions;version="${project.version}",
-            se.natusoft.osgi.aps.tools.tuples;version="${project.version}",
-            se.natusoft.osgi.aps.tools.util;version="${project.version}"
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->
@@ -85,44 +72,68 @@
 
         <!-- The private packages. -->
         <osgi.private.package>
+            se.natusoft.osgi.aps.tcpipsvc,
+            se.natusoft.osgi.aps.tcpipsvc.config
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->
         <osgi.export.dependency.package>
         </osgi.export.dependency.package>
 
-        <!-- Resources to include in bundle. -->
+        <!-- The resources to include in the bundle -->
         <osgi.include.resource>
         </osgi.include.resource>
 
         <!-- The default for embedding dependencies in bundle. -->
-        <osgi.embed.dependency>*;scope=compile</osgi.embed.dependency>
+        <osgi.embed.dependency>*;scope=system</osgi.embed.dependency>
 
         <!-- The directory whose content should be embeded into the bundle jar. -->
         <osgi.embed.directory>lib</osgi.embed.directory>
 
         <!--
-            Trigger tiles.
+            APS properties.
         -->
-        <tile.deploy>${project.groupId}:DeployBundleTile:${project.version}</tile.deploy>
+
+        <!-- We register our configuration for auto registration and management. -->
+        <aps.config.classes>se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig</aps.config.classes>
 
         <!--
-            Misc properties
+             Trigger tiles.
+         -->
+        <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
+        <tile.groovy>${project.groupId}:groovy-tile:${project.version}</tile.groovy>
+
+        <!--
+            Other properties
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <profiles>
-    </profiles>
-
     <dependencies>
+        <!--
+            APS
+        -->
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-osgi-test-tools</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
+            <artifactId>aps-apis</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-tools-lib</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
 
+        <!--
+            Test
+
+                NOTE: The tests run for this compile send and receive network traffic. One test listens
+                      to TCP connections. This might cause problems if this is run in a CI server and
+                      there are parallel builds building the same code. To avoid such problems, pass
+                      -Daps.test.disabled=true to the build.
+        -->
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-service-test-support</artifactId>
@@ -130,29 +141,11 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-apis</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
+        <!--
+            aps-tcpip-service-nonsecure-provider dependencies
+        -->
 
-        <!--suppress NonOsgiMavenDependency -->
-        <dependency>
-            <groupId>se.natusoft.annotation</groupId>
-            <artifactId>bean-annotation-processor</artifactId>
-            <version>1.1</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>bintray-tommy-maven</id>
-            <name>Tommys Bintray Maven Repo</name>
-            <url>http://dl.bintray.com/tommy/maven</url>
-        </repository>
-    </repositories>
 
     <build>
         <plugins>
@@ -193,6 +186,7 @@
                     </supportedProjectTypes>
                     <archive>
                         <manifestEntries>
+                            <APS-Configs>${aps.config.classes}</APS-Configs>
                             <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
                         </manifestEntries>
                     </archive>
@@ -210,67 +204,6 @@
                 </configuration>
             </plugin>
 
-            <!--
-                Deploy plugins
-            -->
-            <plugin>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9</version>
-                <configuration>
-                    <docletPath>${project.basedir}/../../lib/MarkdownDoclet-3-1.0.jar</docletPath>
-                    <doclet>com.visural.doclets.markdown.standard.Standard</doclet>
-                    <stylesheetfile>${project.basedir}/../../css/apidocs.css</stylesheetfile>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <phase>deploy</phase>
-                    </execution>
-                    <execution>
-                        <id>gendocs</id>
-                        <goals>
-                            <goal>javadoc</goal>
-                        </goals>
-                        <phase>deploy</phase>
-                    </execution>
-                    <execution>
-                        <id>jar-javadoc</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <phase>deploy</phase>
-                        <configuration>
-                            <attach>true</attach>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>se.natusoft.maven.plugin</groupId>
-                <artifactId>ftp-maven-plugin</artifactId>
-                <version>${ftpPlugin.ver}</version>
-                <executions>
-                    <execution>
-                        <id>upload</id>
-                        <goals>
-                            <goal>upload</goal>
-                        </goals>
-                        <phase>deploy</phase>
-                        <configuration>
-                            <files>**/.*</files>
-                            <targetHost>${javadoc.upload}</targetHost>
-                            <targetPort>21</targetPort>
-                            <userName>${web.server.user}</userName>
-                            <password>${web.server.pw}</password>
-                            <targetPath>${javadoc.base.path}/APSToolsLib</targetPath>
-                            <baseDir>${basedir}/target/site/apidocs</baseDir>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 

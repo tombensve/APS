@@ -56,7 +56,11 @@
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
-            <version>2.3.6</version>
+            <!--
+                Can't upgrade to 2.4.* until the += bugs on collections are fixed.
+                https://issues.apache.org/jira/browse/GROOVY-7380
+            -->
+            <version>2.3.11</version>
             <scope>provided</scope>
             <classifier>indy</classifier>
         </dependency>
@@ -94,7 +98,7 @@
 
                     <execution>
                         <id>test-compile</id>
-                        <phase>test</phase>
+                        <phase>test-compile</phase>
                         <configuration>
                             <target>
                                 <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">

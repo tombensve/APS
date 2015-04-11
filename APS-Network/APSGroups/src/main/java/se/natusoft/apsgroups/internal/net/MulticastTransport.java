@@ -69,7 +69,7 @@ public class MulticastTransport implements Transport {
     // Private Members
     //
 
-    /** The multicast socket to listen to. */
+    /** The multicast tcpip to listen to. */
     private MulticastSocket msocket = null;
 
     /** The multicast group to join. */
@@ -104,7 +104,7 @@ public class MulticastTransport implements Transport {
     //
 
     /**
-     * Sets up the multicast socket.
+     * Sets up the multicast tcpip.
      *
      * @throws java.net.UnknownHostException
      * @throws java.net.SocketException
@@ -117,7 +117,6 @@ public class MulticastTransport implements Transport {
             this.group = InetAddress.getByName(multicastAddress);
             this.msocket = new MulticastSocket(this.port);
             this.msocket.setLoopbackMode(false);
-            this.msocket.setSoTimeout(5000);
             this.msocket.setReuseAddress(true);
             this.msocket.setBroadcast(false);
             this.msocket.setSoTimeout(1000);
@@ -156,20 +155,7 @@ public class MulticastTransport implements Transport {
             );
         }
         catch (SocketException se) {
-            Exception fail = null;
-            try {
-                this.msocket.send(packet);
-            }
-            catch (UnknownHostException uhe) {
-                fail = uhe;
-            }
-            catch (IOException ioe) {
-                fail = ioe;
-            }
-
-            if (fail != null) {
-                this.logger.error("Multicast socket failed, and failed to recreate socket! MESSAGES CANNOT BE SENT! Reason: " + fail.getMessage());
-            }
+            this.logger.error("Multicast tcpip failed, and failed to recreate tcpip! MESSAGES CANNOT BE SENT! Reason: " + se.getMessage());
         }
     }
 

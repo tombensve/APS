@@ -31,32 +31,20 @@
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
- *         2012-08-10: Created!
+ *         2014-10-27: Created!
  *
  */
-package se.natusoft.osgi.aps.exceptions;
+package se.natusoft.osgi.aps.codedoc;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * This indicates an invalid context in which execution cannot continue.
+ * This is a pure source decorative annotation that say that whatever is annotated is required.
  */
-public class APSInvalidContextException extends APSRuntimeException {
-
-    /**
-     * Creates a new _APSInvalidContextException_ instance.
-     *
-     * @param message The exception message.
-     */
-    public APSInvalidContextException(String message) {
-        super(message);
-    }
-
-    /**
-     * Creates a new _APSInvalidContextException_ instance.
-     *
-     * @param message The exception message.
-     * @param cause The cause of the exception.
-     */
-    public APSInvalidContextException(String message, Throwable cause) {
-        super(message, cause);
-    }
-}
+@Retention(RetentionPolicy.SOURCE)
+@Target({ElementType.TYPE, ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.LOCAL_VARIABLE, ElementType.METHOD,
+        ElementType.PACKAGE, ElementType.PARAMETER})
+public @interface Required {}

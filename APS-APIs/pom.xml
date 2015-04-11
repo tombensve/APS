@@ -67,6 +67,7 @@
             se.natusoft.osgi.aps.codedoc;version="${project.version}",
             se.natusoft.osgi.aps.annotations;version="${project.version}",
             se.natusoft.osgi.aps.exceptions;version="${project.version}",
+            se.natusoft.osgi.aps.api;version="${project.version}",
             se.natusoft.osgi.aps.api.auth.user;version="${project.version}",
             se.natusoft.osgi.aps.api.auth.user.exceptions;version="${project.version}",
             se.natusoft.osgi.aps.api.auth.user.model;version="${project.version}",
@@ -113,7 +114,9 @@
             se.natusoft.osgi.aps.api.net.messaging.types;version="${project.version}",
             se.natusoft.osgi.aps.api.net.messaging.messages;version="${project.version}",
             se.natusoft.osgi.aps.api.net.time.service;version="${project.version}",
-            se.natusoft.osgi.aps.api.web.config;version="${project.version}"
+            se.natusoft.osgi.aps.api.net.tcpip;version="${project.version}",
+            se.natusoft.osgi.aps.api.web.config;version="${project.version}",
+            se.natusoft.osgi.aps.util;version="${project.version}"
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->

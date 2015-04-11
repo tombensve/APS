@@ -46,7 +46,7 @@ import java.util.UUID;
 
 /**
  * This defines a simple message service. Can be implemented by using a message bus like RabbitMQ, Active MQ, etc
- * or just a simple socket server or whatever.
+ * or just a simple tcpip server or whatever.
  *
  * Since the actual members are outside of this service API, it doesn't really know who they are and doesn't
  * care, all members are defined by configuration to make a cluster of members.
