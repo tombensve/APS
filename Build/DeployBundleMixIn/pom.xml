@@ -2,38 +2,38 @@
 <!--
     PROJECT
         Name
-            DeployWABBundleTile
-        
+            DeployBundleTile
+
         Code Version
             1.0.0
-        
+
         Description
             APS (Application Platform Services) - A smörgåsbord of OSGi platform type services.
-        
+
     COPYRIGHTS
         Copyright (C) 2012 by Natusoft AB All rights reserved.
-        
+
     LICENSE
         Apache 2.0 (Open Source)
-        
+
         Licensed under the Apache License, Version 2.0 (the "License");
         you may not use this file except in compliance with the License.
         You may obtain a copy of the License at
-        
+
           http://www.apache.org/licenses/LICENSE-2.0
-        
+
         Unless required by applicable law or agreed to in writing, software
         distributed under the License is distributed on an "AS IS" BASIS,
         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
         See the License for the specific language governing permissions and
         limitations under the License.
-        
+
     AUTHORS
         Tommy Svensson (tommy@natusoft.se)
             Changes:
             2013-02-04: Created!
-            
-    This tile deploys a WAB (.war) bundle to the ${server.deploy.dir} defines in settings.xml.
+
+    This tile deploys a jar bundle to the ${server.deploy.dir} defines in settings.xml.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -46,28 +46,10 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>DeployWABBundleTile</artifactId>
+    <artifactId>deploy-bundle-mixin</artifactId>
     <packaging>pom</packaging>
 
-    <!--
-        This is needed for it to compile during a deploy phase.
-    -->
-    <distributionManagement>
-        <repository>
-            <id>maven-repository-upload</id>
-            <url>ftp://${maven.repo.upload}/${maven.base.path}</url>
-        </repository>
-    </distributionManagement>
-
     <build>
-        <extensions>
-            <!-- Enabling the use of FTP -->
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ftp</artifactId>
-                <version>2.3</version>
-            </extension>
-        </extensions>
 
         <plugins>
             <plugin>
@@ -82,8 +64,8 @@
                         </goals>
                         <phase>install</phase>
                         <configuration>
-                            <sourceFile>${project.build.directory}/${project.build.finalName}.war</sourceFile>
-                            <destFile>${server.deploy.dir}/${project.build.finalName}.war</destFile>
+                            <sourceFile>${project.build.directory}/${project.build.finalName}.jar</sourceFile>
+                            <destFile>${server.deploy.dir}/${project.build.finalName}.jar</destFile>
                         </configuration>
                     </execution>
                 </executions>
