@@ -100,8 +100,7 @@
         <!--
              Trigger tiles.
          -->
-        <tile.doc>${project.groupId}:DocTile:${project.version}</tile.doc>
-        <tile.groovy>${project.groupId}:groovy-tile:${project.version}</tile.groovy>
+        <!--tile.groovy>${project.groupId}:groovy-tile:${project.version}</tile.groovy-->
 
         <!--
             Other properties
@@ -149,6 +148,11 @@
 
     <build>
         <plugins>
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+            </plugin>
 
             <!--
                 Force the jar plugin to use the maven-bundle-plugin generated manifest.

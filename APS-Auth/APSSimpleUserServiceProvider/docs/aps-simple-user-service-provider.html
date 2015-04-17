@@ -8,10 +8,10 @@
   <body>
     <H1>APSSimpleUserService</H1>
     <p>
-      This is an simple, easy to use service for handling logged in users. It provides two services: APSSimpleUserService and APSSimpleUserServiceAdmin. The latter handles all creation, editing, and deletion of roles and users. This service in itself does not require any authentication to use! Thereby you have to trust all code in the server! The APSUserAdminWeb WAB bundle however does require a user with role ’apsadmin’ to be logged in or it will simply repsond with a 401 (UNAUTHORIZED).      
+      This is an simple, easy to use service for handling logged in users. It provides two services: APSSimpleUserService and APSSimpleUserServiceAdmin. The latter handles all creation, editing, and deletion of roles and users. This service in itself does not require any authentication to use! Thereby you have to trust all code in the server! The APSUserAdminWeb WAB bundle however does require a user with role <em>apsadmin</em> to be logged in or it will simply repsond with a 401 (UNAUTHORIZED).      
     </p>
     <p>
-      So why this and not org.osgi.service.useradmin ? Well, maybe I’m just stupid, but <em>useradmin</em> does not make sense to me. It seems to be missing things, specially for creating. You can create a role, but you cannot create a user. There is no obvious authentication of users. Maybee that should be done via the credentials Dictionary, but what are the expected keys in there ? This service is intended to make user and role handling simple and clear.      
+      So why this and not org.osgi.service.useradmin ? Well, maybe I'm just stupid, but <em>useradmin</em> does not make sense to me. It seems to be missing things, specially for creating. You can create a role, but you cannot create a user. There is no obvious authentication of users. Maybee that should be done via the credentials Dictionary, but what are the expected keys in there ? APSSimpleUserService is intended to make user and role handling simple and clear.      
     </p>
     <H2>Basic example</H2>
     <p>
@@ -23,13 +23,13 @@
     ...
     User user = userService.getUser(userId);
     if (user == null) {
-        throw new AuthException(”Bad login!”);
+        throw new AuthException("Bad login!");
     }
     if (!userService.authenticateUser(user, password, APSSimpleUserService.AUTH_METHOD_PASSWORD)) {
-        throw new AuthException(”Bad login!”);
+        throw new AuthException("Bad login!");
     }
     ...
-    if (user.isAuthenticated() &amp;&amp; user.hasRole(”apsadmin”)) {
+    if (user.isAuthenticated() &amp;&amp; user.hasRole("apsadmin")) {
         ...
     }
     
@@ -154,10 +154,22 @@ The above empty lines are required due to a bug in iText used to render the PDF.
             <img src='http://download.natusoft.se/Images/APS/APS-Auth/APSSimpleUserServiceProvider/docs/images/DataSourceConfig.png' title='' alt='Picture of datasource config gui.'/>      
     </p>
     <p>
-      Please note that the above picture is just an example. The data source name <strong>APSSimpleUserServiceDS</strong> is however important. The service will be looking up the entry with that name! The rest of the entry depends on your database and where it is running. Also note that the ”(default)” after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.      
+      Please note that the above picture is just an example. The data source name <em>APSSimpleUserServiceDS</em> in this example should be configured in the <em>persistence/dsRefs</em> config where you provide a name and a datasource reference. The service will be looking up the entry with that name, and use the specified datasource! For example:      
+    </p>
+    <pre>
+      <code>
+    name: aps-admin-web
+    dsRef: APSSimpleUserServiceDS
+      </code>
+    </pre>
+    <p>
+      This example happens to be the default if no instances have been configured and is required if you want to use authentication for the APS admin web. You should probably define your own instance if you are going to use this service. The <em>dsRef</em> part is exactly the same name as defined in the data source configuration (<em>persistence/datasources</em>).      
     </p>
     <p>
-      When the datasource is configured and saved then you can go to <em>”Configuration tab</em>,<em> Configurations/aps/adminweb”</em> and enable the ”requireauthentication” config. If you do this before setting up the datasource and you have choosen to use the provided implementation of APSAuthService that uses APSSimpleUserService to login then you will be completely locked out.      
+      The rest of the datasource entry in the picture above depends on your database and where it is running. Also note that the "(default)" after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.      
+    </p>
+    <p>
+      When the datasource is configured and saved then you can go to <em>"Configuration tab</em>,<em> Configurations/aps/adminweb"</em> and enable the "requireauthentication" config. <strong>If you do this before setting up the datasource and you have choosen to use the provided implementation of APSAuthService that uses APSSimpleUserService to login then you will be completely locked out!</strong>      
     </p>
     <H2>Troubleshooting</H2>
     <p>
@@ -171,6 +183,43 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </pre>
     <p>
       to <em>false</em> instead. Then restart the server. Also se the APSFilesystemService documentation for more information. The APSConfigService is using that service to store its configurations.      
+    </p>
+    <H2>JDBC Drivers</H2>
+    <p>
+      There is a catch with OSGi and its classpath isolation. The <em>APSSimpleUserService</em> makes use of the <em>APSJPAService</em> whose implementation <em>APSOpenJPAProvider</em> cheats OSGi a bit by using <em>MultiBundleClassLoader</em> (is available in aps-tools-library bundle) and merges the service classpath with the client classpath which is a requirement for the JPA framework to work (it needs access to both framework code in the service classpath and client entities in the client classpath). This also has the side effect that the client can provide a JDBC driver in its bundle. The <em>APSSimpleUserService</em> do provide a JDBC driver for <em>Derby 10.9.1.0</em>.      
+    </p>
+    <p>
+      Another catch with this is that users of <em>APSSimpleUserService</em> are not part of this collective classpath and can thereby not make drivers available in their bundles, or at least not right off, there is however a workaround to this. There is a natsty way that you can pass on the client bundle class loader right through the <em>APSSimpleUserService</em> to <em>APSJPAService</em> by creating an instance of <em>MultiBundleClassLoader</em> and set it as context classloader:      
+    </p>
+    <pre>
+      <code>
+    MultiBundleClassLoader mbClassLoader = new MultiBundleClassLoader(bundleContext.getBundle());
+    Thread.currentThread().setContextClassLoader(mbClassLoader);
+      </code>
+    </pre>
+    <p>
+      Do this before the first call to <em>APSSimpleUserService</em>. The <em>APSJPAService</em> will check if the current context class loader is a MultiBundleClassLoader and if so extract the bundles from it and add to its own MultiBundleClassLoader. This way you have extended the classpath that the JPA framework will se to 3 bundles: aps-openjpa-provider, aps-simple-user-service-provider, and your client bundle, which can then contain a JDBC driver.      
+    </p>
+    <p>
+      The catches are unfortunately not over yet! You also need to configure your own instance of <em>APSSimpleUserService</em> with its own data source in the configuration, and your client needs to add the name of this configuration to the tracker for the <em>APSSimpleUserService</em> :      
+    </p>
+    <pre>
+      <code>
+    APSServiceTracker&lt;APSSimpleUserService&gt; userServiceTracker = 
+        new APSServiceTracker&lt;&gt;(bundleContext, APSSimpleUserService.class, "(instance=instName)", "30 seconds");
+      </code>
+    </pre>
+    <p>
+      or      
+    </p>
+    <pre>
+      <code>
+    @OSGiService(additionalSearchCriteria="(instance=instName)", timeout="30 seconds")
+    APSSimpleUserService userService;
+      </code>
+    </pre>
+    <p>
+      where <em>instName</em> is whatever name you gave the instance in the configuration. Then try to have only one bundle call this service since each different bundle calling the service will extend the service classpath with that bundle!      
     </p>
     <H2>APIs</H2>
     <p>
@@ -186,7 +235,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       <strong>public static final String AUTH_METHOD_PASSWORD = "password"</strong>      
     </p>
     <p>
-      Password authentication method for authenticateUser().      
+       Password authentication method for authenticateUser().      
     </p>
     <p>
       <strong>public Role getRole(String roleId)</strong>      
@@ -435,7 +484,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The exception message.         
+        <em>message</em> - The exception messaging.         
       </p>
     </blockquote>
     <p>
@@ -449,7 +498,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The exception message.         
+        <em>message</em> - The exception messaging.         
       </p>
     </blockquote>
     <blockquote>
@@ -480,7 +529,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The exception message.         
+        <em>message</em> - The exception messaging.         
       </p>
     </blockquote>
     <p>
@@ -494,7 +543,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The exception message.         
+        <em>message</em> - The exception messaging.         
       </p>
     </blockquote>
     <blockquote>
@@ -686,31 +735,31 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       <strong>public static final String USER_NAME = "name"</strong>      
     </p>
     <p>
-      Optional suggestion for user properties key.      
+       Optional suggestion for user properties key.      
     </p>
     <p>
       <strong>public static final String USER_PHONE = "phone"</strong>      
     </p>
     <p>
-      Optional suggestion for user properties key.      
+       Optional suggestion for user properties key.      
     </p>
     <p>
       <strong>public static final String USER_PHONE_WORK = "phone.work"</strong>      
     </p>
     <p>
-      Optional suggestion for user properties key.      
+       Optional suggestion for user properties key.      
     </p>
     <p>
       <strong>public static final String USER_PHONE_HOME = "phone.home"</strong>      
     </p>
     <p>
-      Optional suggestion for user properties key.      
+       Optional suggestion for user properties key.      
     </p>
     <p>
       <strong>public static final String USER_EMAIL = "email"</strong>      
     </p>
     <p>
-      Optional suggestion for user properties key.      
+       Optional suggestion for user properties key.      
     </p>
     <p>
       }      

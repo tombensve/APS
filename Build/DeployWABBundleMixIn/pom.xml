@@ -46,7 +46,7 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>deploy-web-bunlde-mixin</artifactId>
+    <artifactId>deploy-web-bundle-mixin</artifactId>
     <packaging>pom</packaging>
 
     <build>

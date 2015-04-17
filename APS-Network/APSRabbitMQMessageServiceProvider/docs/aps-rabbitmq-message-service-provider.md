@@ -6,97 +6,61 @@ This service provides an implementation of APSMessageService using [RabbitMQ](ht
 
 [Javadoc](http://apidoc.natusoft.se/APS/se/natusoft/osgi/aps/api/net/messaging/service/APSMessageService.html)
 
-public _interface_ __APSMessageService__   [se.natusoft.osgi.aps.api.net.message.service] {
+public _interface_ __APSClusterService__ extends  APSMessageService    [se.natusoft.osgi.aps.api.net.messaging.service] {
 
-Defines a message service.
+All of APSMessageService, APSSynchronizedMapService, and APSSyncService are part of some cluster which they communicate with. This represents that cluster in a general form.
 
-__boolean queueExists(String name)__
-
-Checks if the named queue exists.
-
-_Returns_
-
-> true if queue exists, false otherwise.
-
-_Parameters_
-
-> _name_ - The name of the queue to check. 
-
-__Queue defineQueue(String name) throws APSMessageException__
-
-Defines a queue that lives as long as the queue providing service lives.
-
-If the queue already exist nothing happens. If the queue is of another type an _APSMessageException_ could possibly be throws depending on implementation and underlying service used.
-
-_Parameters_
-
-> _name_ - The name of the queue to define. 
-
-_Throws_
-
-> _APSMessageException_ - (possibly) on trying to redefine type. 
-
-__Queue defineDurableQueue(String name) throws APSMessageException, UnsupportedOperationException__
-
-Defines a queue that lives for a long time.
-
-If the queue already exist nothing happens. If the queue is of another type an _APSMessageException_ could possibly be thrown depending on implementation and underlying service used.
-
-_Parameters_
-
-> _name_ - The name of the queue to define. 
-
-_Throws_
-
-> _APSMessageException_ - (possibly) on trying to redefine type. 
-
-> _UnsupportedOperationException_ - If this type of queue is not supported by the implementation. 
-
-__Queue defineTemporaryQueue(String name) throws APSMessageException, UnsupportedOperationException__
-
-Defines a queue that is temporary and gets deleted when no longer used.
-
-If the queue already exist nothing happens. If the queue is of another type an _APSMessageException_ could possibly be thrown depending on implementation and underlying service used.
-
-_Parameters_
-
-> _name_ - The name of the queue to define. 
-
-_Throws_
-
-> _APSMessageException_ - (possibly) on trying to redefine type. 
-
-> _UnsupportedOperationException_ - If this type of queue is not supported by the implementation. 
-
-__Queue getQueue(String name)__
-
-Returns the named queue or null if no such queue exists.
-
-_Parameters_
-
-> _name_ - The name of the queue to get. 
-
-public _interface_ __Queue__   [se.natusoft.osgi.aps.api.net.message.service] {
-
-This represents a specific named queue.
+Since APSClusterService extends APSMessageService both are provided by the same bundle. The sync services can also be part of the same bundle, but can also be implemented on top of APSMessageService.
 
 __String getName()__
 
-Returns the name of the queue.
+Returns the name of the cluster.
 
-__Message createMessage()__
+__boolean isMasterNode()__
 
-Creates a new message.
+If the implementation has the notion of a master and this node is the master then true is returned. In all other cases false is returned.
 
-__Message createMessage(byte[] content)__
+__APSCommonDateTime getCommonDateTime()__
 
-Creates a new message.
+Returns the network common DateTime that is independent of local machine times.
+
+}
+
+----
+
+    
+
+public _interface_ __APSMessageService__   [se.natusoft.osgi.aps.api.net.messaging.service] {
+
+This defines a simple message service. Can be implemented by using a message bus like RabbitMQ, Active MQ, etc or just a simple tcpip server or whatever.
+
+Since the actual members are outside of this service API, it doesn't really know who they are and doesn't care, all members are defined by configuration to make a cluster of members.
+
+__public static final String APS_MESSAGE_SERVICE_PROVIDER = "aps-message-service-provider"__
+
+Multiple providers of this service can be deployed at the same time. Using this property when registering services for a provider allows clients to lookup a specific provider.
+
+__public static final String APS_MESSAGE_SERVICE_INSTANCE_NAME = "aps-message-service-instance-name"__
+
+Each configured instance of this service should have this property with a unique instance name so that client can lookup a specific instance of the service.
+
+__void addMessageListener(APSMessageListener listener)__
+
+Adds a listener for types.
 
 _Parameters_
 
-> _content_ - The content of the message. 
+> _listener_ - The listener to add. 
 
-__void sendMessage(Message message) throws APSMessageException__
+__void removeMessageListener(APSMessageListener listener)__
+
+Removes a messaging listener.
+
+_Parameters_
+
+> _listener_ - The listener to remove. 
+
+__void sendMessage(APSMessage message) throws APSMessagingException__
 
 Sends a message.
 
@@ -106,119 +70,121 @@ _Parameters_
 
 _Throws_
 
-> _APSMessageException_
+> _se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException_ - on failure. 
 
-__void addMessageListener(Message.Listener listener)__
+public _static_ _abstract_ _class_ __AbstractMessageServiceProvider__ implements  APSMessageService    [se.natusoft.osgi.aps.api.net.messaging.service] {
 
-Adds a listener to received messages.
+Provides an abstract implementation of the APSMessageService interface.
+
+
+
+
+
+
+
+__protected void sendToListeners(APSMessage message)__
+
+Sends a message to the registered listeners.
+
+_Parameters_
+
+> _message_ - The message to send. 
+
+}
+
+----
+
+    
+
+public _interface_ __APSSynchronizedMapService__   [se.natusoft.osgi.aps.api.net.messaging.service] {
+
+This service makes a synchronized named map available.
+
+__Map<String, String> getNamedMap(String name)__
+
+Returns a named map into which objects can be stored with a name.
+
+If the named map does not exists it should be created and an empty map be returned.
+
+__List<String> getAvailableNamedMaps()__
+
+Returns the available names.
+
+__boolean supportsNamedMapPersistence()__
+
+Returns true if the implementation supports persistence for stored objects. If false is returned objects are in memory only.
+
+}
+
+----
+
+    
+
+public _interface_ __APSSyncService__   [se.natusoft.osgi.aps.api.net.messaging.service] {
+
+This defines a data synchronization service.
+
+__public static final String SYNC_PROVIDER = "aps-sync-provider"__
+
+A property key that should be registered with each service instance to indicate the specific implementation of the service. This to allow multiple implementations to be deployed and clients can ask for a specific if needed.
+
+__public static final String SYNC_INSTANCE_NAME = "aps-sync-instance-name"__
+
+There should be one service instance registered for each configured synchronization group. Each instance should include this property with a unique name so that clients can get the synchronizer for the correct group.
+
+__void syncData(APSSyncDataEvent syncEvent) throws APSMessagingException__
+
+Synchronizes data.
+
+_Parameters_
+
+> _syncEvent_ - The sync event to send. 
+
+_Throws_
+
+> _APSMessagingException_ - on failure. 
+
+__void resync()__
+
+Triggers a resynchronization.
+
+__void resync(String key)__
+
+Triggers a resynchronization of the specified key.
+
+_Parameters_
+
+> _key_ - The key to resync. 
+
+__void addSyncListener(Listener listener)__
+
+Adds a synchronization listener.
 
 _Parameters_
 
 > _listener_ - The listener to add. 
 
-__void removeMessageListener(Message.Listener listener)__
+__void removeSyncListener(Listener listener)__
 
-Removes a listener from receiving messages.
+Removes a synchronization listener.
 
 _Parameters_
 
 > _listener_ - The listener to remove. 
 
-__void delete() throws APSMessageException, UnsupportedOperationException__
 
-Deletes this queue.
 
-_Throws_
+__void syncDataReceived(APSSyncEvent syncEvent)__
 
-> _APSMessageException_ - on failure. 
+Called to deliver a sync event. This can currently be one of:
 
-> _UnsupportedOperationException_ - if this is not allowed by the implementation. 
+* APSSyncDataEvent
 
-__void clear() throws APSMessageException, UnsupportedOperationException__
-
-Clears all the messages from the queue.
-
-_Throws_
-
-> _APSMessageException_ - on failure. 
-
-> _UnsupportedOperationException_ - If this is not allowed by the implementation. 
-
-public _interface_ __Message__   [se.natusoft.osgi.aps.api.net.message.service] {
-
-This represents a message to send/receive.
-
-__void setBytes(byte[] content)__
-
-Sets the message content bytes overwriting any previous content.
+* APSReSyncEvent
 
 _Parameters_
 
-> _content_ - The content to set. 
-
-__byte[] getBytes()__
-
-Returns the message content bytes.
-
-__OutputStream getOutputStream()__
-
-Returns an OutputStream for writing message content. This will replace any previous content.
-
-__InputStream getInputStream()__
-
-Returns an InputStream for reading the message content.
-
-public _interface_ __Listener__   [se.natusoft.osgi.aps.api.net.message.service] {
-
-This needs to be implemented to receive messages.
-
-__void receiveMessage(String queueName, Message message)__
-
-Called when a message is received.
-
-_Parameters_
-
-> _queueName_ - The name of the queue that delivered the message. 
-
-> _message_ - The received message. 
-
-public _class_ __Provider__ implements  Message    [se.natusoft.osgi.aps.api.net.message.service] {
-
-A simple default implementation of message.
-
-__public Provider()__
-
-Creates a new Provider.
-
-
-
-
-
-
-
-
-
-public _static_ _class_ __APSMessageException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.message.service] {
-
-Thrown on sendMessage(). Please note that this is a runtime exception!
-
-__public APSMessageException(String message)__
-
-Creates a new _APSMessageException_.
-
-_Parameters_
-
-> _message_ - The exception message. 
-
-__public APSMessageException(String message, Throwable cause)__
-
-Creates a new _APSMessageException_.
-
-_Parameters_
-
-> _message_ - The exception message. 
-
-> _cause_ - The cause of this exception. 
+> _syncEvent_ - The received sync event. 
 
 }
 

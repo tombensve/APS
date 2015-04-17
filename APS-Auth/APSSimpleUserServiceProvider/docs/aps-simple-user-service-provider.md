@@ -1,8 +1,8 @@
 # APSSimpleUserService
 
-This is an simple, easy to use service for handling logged in users. It provides two services: APSSimpleUserService and APSSimpleUserServiceAdmin. The latter handles all creation, editing, and deletion of roles and users. This service in itself does not require any authentication to use! Thereby you have to trust all code in the server! The APSUserAdminWeb WAB bundle however does require a user with role ’apsadmin’ to be logged in or it will simply repsond with a 401 (UNAUTHORIZED).
+This is an simple, easy to use service for handling logged in users. It provides two services: APSSimpleUserService and APSSimpleUserServiceAdmin. The latter handles all creation, editing, and deletion of roles and users. This service in itself does not require any authentication to use! Thereby you have to trust all code in the server! The APSUserAdminWeb WAB bundle however does require a user with role _apsadmin_ to be logged in or it will simply repsond with a 401 (UNAUTHORIZED).
 
-So why this and not org.osgi.service.useradmin ? Well, maybe I’m just stupid, but _useradmin_ does not make sense to me. It seems to be missing things, specially for creating. You can create a role, but you cannot create a user. There is no obvious authentication of users. Maybee that should be done via the credentials Dictionary, but what are the expected keys in there ? This service is intended to make user and role handling simple and clear.
+So why this and not org.osgi.service.useradmin ? Well, maybe I'm just stupid, but _useradmin_ does not make sense to me. It seems to be missing things, specially for creating. You can create a role, but you cannot create a user. There is no obvious authentication of users. Maybee that should be done via the credentials Dictionary, but what are the expected keys in there ? APSSimpleUserService is intended to make user and role handling simple and clear.
 
 ## Basic example
 
@@ -12,13 +12,13 @@ To login a user do something like this:
         ...
         User user = userService.getUser(userId);
         if (user == null) {
-            throw new AuthException(”Bad login!”);
+            throw new AuthException("Bad login!");
         }
         if (!userService.authenticateUser(user, password, APSSimpleUserService.AUTH_METHOD_PASSWORD)) {
-            throw new AuthException(”Bad login!”);
+            throw new AuthException("Bad login!");
         }
         ...
-        if (user.isAuthenticated() && user.hasRole(”apsadmin”)) {
+        if (user.isAuthenticated() && user.hasRole("apsadmin")) {
             ...
         }
         
@@ -136,9 +136,16 @@ After the tables have been created you need to configure a datasource for it in 
 
 ![Picture of datasource config gui.](http://download.natusoft.se/Images/APS/APS-Auth/APSSimpleUserServiceProvider/docs/images/DataSourceConfig.png)
 
-Please note that the above picture is just an example. The data source name __APSSimpleUserServiceDS__ is however important. The service will be looking up the entry with that name! The rest of the entry depends on your database and where it is running. Also note that the ”(default)” after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.
+Please note that the above picture is just an example. The data source name _APSSimpleUserServiceDS_ in this example should be configured in the _persistence/dsRefs_ config where you provide a name and a datasource reference. The service will be looking up the entry with that name, and use the specified datasource! For example:
 
-When the datasource is configured and saved then you can go to _”Configuration tab_,_Configurations/aps/adminweb”_ and enable the ”requireauthentication” config. If you do this before setting up the datasource and you have choosen to use the provided implementation of APSAuthService that uses APSSimpleUserService to login then you will be completely locked out.
+        name: aps-admin-web
+        dsRef: APSSimpleUserServiceDS
+
+This example happens to be the default if no instances have been configured and is required if you want to use authentication for the APS admin web. You should probably define your own instance if you are going to use this service. The _dsRef_ part is exactly the same name as defined in the data source configuration (_persistence/datasources_).
+
+The rest of the datasource entry in the picture above depends on your database and where it is running. Also note that the "(default)" after the field names in the above picture are the name of the currently selected configuration environment. This configuration is configuration environment specific. You can point out different database servers for different environments for example.
+
+When the datasource is configured and saved then you can go to _"Configuration tab_,_Configurations/aps/adminweb"_ and enable the "requireauthentication" config. __If you do this before setting up the datasource and you have choosen to use the provided implementation of APSAuthService that uses APSSimpleUserService to login then you will be completely locked out!__
 
 ## Troubleshooting
 
@@ -148,6 +155,29 @@ If you have managed to lock yourself out of /apsadminweb as described above then
         
 
 to _false_ instead. Then restart the server. Also se the APSFilesystemService documentation for more information. The APSConfigService is using that service to store its configurations.
+
+## JDBC Drivers
+
+There is a catch with OSGi and its classpath isolation. The _APSSimpleUserService_ makes use of the _APSJPAService_ whose implementation _APSOpenJPAProvider_ cheats OSGi a bit by using _MultiBundleClassLoader_ (is available in aps-tools-library bundle) and merges the service classpath with the client classpath which is a requirement for the JPA framework to work (it needs access to both framework code in the service classpath and client entities in the client classpath). This also has the side effect that the client can provide a JDBC driver in its bundle. The _APSSimpleUserService_ do provide a JDBC driver for _Derby 10.9.1.0_.
+
+Another catch with this is that users of _APSSimpleUserService_ are not part of this collective classpath and can thereby not make drivers available in their bundles, or at least not right off, there is however a workaround to this. There is a natsty way that you can pass on the client bundle class loader right through the _APSSimpleUserService_ to _APSJPAService_ by creating an instance of _MultiBundleClassLoader_ and set it as context classloader:
+
+        MultiBundleClassLoader mbClassLoader = new MultiBundleClassLoader(bundleContext.getBundle());
+        Thread.currentThread().setContextClassLoader(mbClassLoader);
+
+Do this before the first call to _APSSimpleUserService_. The _APSJPAService_ will check if the current context class loader is a MultiBundleClassLoader and if so extract the bundles from it and add to its own MultiBundleClassLoader. This way you have extended the classpath that the JPA framework will se to 3 bundles: aps-openjpa-provider, aps-simple-user-service-provider, and your client bundle, which can then contain a JDBC driver.
+
+The catches are unfortunately not over yet! You also need to configure your own instance of _APSSimpleUserService_ with its own data source in the configuration, and your client needs to add the name of this configuration to the tracker for the _APSSimpleUserService_ :
+
+        APSServiceTracker<APSSimpleUserService> userServiceTracker = 
+            new APSServiceTracker<>(bundleContext, APSSimpleUserService.class, "(instance=instName)", "30 seconds");
+
+or
+
+        @OSGiService(additionalSearchCriteria="(instance=instName)", timeout="30 seconds")
+        APSSimpleUserService userService;
+
+where _instName_ is whatever name you gave the instance in the configuration. Then try to have only one bundle call this service since each different bundle calling the service will extend the service classpath with that bundle!
 
 ## APIs
 
@@ -159,7 +189,7 @@ Please note that this API does not declare any exceptions! In the case of an exc
 
 __public static final String AUTH_METHOD_PASSWORD = "password"__
 
-Password authentication method for authenticateUser().
+ Password authentication method for authenticateUser().
 
 __public Role getRole(String roleId)__
 
@@ -303,7 +333,7 @@ Creates a new APSAuthMethodNotSupportedException instance.
 
 _Parameters_
 
-> _message_ - The exception message. 
+> _message_ - The exception messaging. 
 
 __public APSAuthMethodNotSupportedException(String message, Throwable cause)__
 
@@ -311,7 +341,7 @@ Creates a new APSAuthMethodNotSupportedException instance.
 
 _Parameters_
 
-> _message_ - The exception message. 
+> _message_ - The exception messaging. 
 
 > _cause_ - The exception that is the cause of this one. 
 
@@ -331,7 +361,7 @@ Creates a new APSSimpleUserServiceException instance.
 
 _Parameters_
 
-> _message_ - The exception message. 
+> _message_ - The exception messaging. 
 
 __public APSSimpleUserServiceException(String message, Throwable cause)__
 
@@ -339,7 +369,7 @@ Creates a new APSSimpleUserServiceException instance.
 
 _Parameters_
 
-> _message_ - The exception message. 
+> _message_ - The exception messaging. 
 
 > _cause_ - The cause of the exception. 
 
@@ -459,23 +489,23 @@ Please note that the returned properties are read only!
 
 __public static final String USER_NAME = "name"__
 
-Optional suggestion for user properties key.
+ Optional suggestion for user properties key.
 
 __public static final String USER_PHONE = "phone"__
 
-Optional suggestion for user properties key.
+ Optional suggestion for user properties key.
 
 __public static final String USER_PHONE_WORK = "phone.work"__
 
-Optional suggestion for user properties key.
+ Optional suggestion for user properties key.
 
 __public static final String USER_PHONE_HOME = "phone.home"__
 
-Optional suggestion for user properties key.
+ Optional suggestion for user properties key.
 
 __public static final String USER_EMAIL = "email"__
 
-Optional suggestion for user properties key.
+ Optional suggestion for user properties key.
 
 }
 

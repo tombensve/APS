@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>Build</artifactId>
+        <groupId>se.natusoft.osgi.aps</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>documentation-mixin</artifactId>
+
+    <name>Documentation MixIn</name>
+
+    <build>
+        <plugins>
+            <!--
+                Generate Documentation
+            -->
+            <plugin>
+                <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
+                <artifactId>markdowndoc-maven-plugin</artifactId>
+                <version>1.3.8</version>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
+                        <artifactId>markdown-doc-lib</artifactId>
+                        <version>1.3.8</version>
+                    </dependency>
+                </dependencies>
+
+                <executions>
+                    <execution>
+                        <id>generate-pdf-doc</id>
+                        <goals>
+                            <goal>doc</goal>
+                        </goals>
+                        <phase>install</phase>
+                        <configuration>
+
+                            <generatorOptions>
+                                <generator>pdf</generator>
+                                <inputPaths>${project.basedir}/docs/**/.*.fs</inputPaths>
+                                <parserOptions>markdownJavadoc=true</parserOptions>
+                            </generatorOptions>
+
+                            <pdfGeneratorOptions>
+                                <resultFile>${project.basedir}/docs/${project.artifactId}.pdf</resultFile>
+                                <pageSize>A4</pageSize>
+                                <title>${project.name}</title>
+                                <subject>User Guide</subject>
+                                <version>${project.version}</version>
+                                <author>Tommy Svensson</author>
+                                <copyright>Copyright © ${project.inceptionYear} ${project.organization.name}</copyright>
+                                <generateTitlePage>true</generateTitlePage>
+                                <generateTOC>true</generateTOC>
+                            </pdfGeneratorOptions>
+
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-html-doc</id>
+                        <goals>
+                            <goal>doc</goal>
+                        </goals>
+                        <phase>install</phase>
+                        <configuration>
+
+                            <generatorOptions>
+                                <generator>html</generator>
+                                <inputPaths>${project.basedir}/docs/**/.*.fs</inputPaths>
+                                <parserOptions>markdownJavadoc=true</parserOptions>
+                            </generatorOptions>
+
+                            <htmlGeneratorOptions>
+                                <resultFile>${project.basedir}/docs/${project.artifactId}.html</resultFile>
+                                <makeFileLinksRelativeTo>${project.basedir}/docs/src+images/</makeFileLinksRelativeTo>
+                                <css>docs.css</css>
+                            </htmlGeneratorOptions>
+
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-markdown-doc</id>
+                        <goals>
+                            <goal>doc</goal>
+                        </goals>
+                        <phase>install</phase>
+                        <configuration>
+
+                            <generatorOptions>
+                                <generator>md</generator>
+                                <inputPaths>${project.basedir}/docs/**/.*.fs</inputPaths>
+                                <parserOptions>markdownJavadoc=true</parserOptions>
+                            </generatorOptions>
+
+                            <mdGeneratorOptions>
+                                <resultFile>${project.basedir}/docs/${project.artifactId}.md</resultFile>
+                                <makeFileLinksRelativeTo>${project.basedir}/docs/src+images/</makeFileLinksRelativeTo>
+                            </mdGeneratorOptions>
+
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

@@ -30,7 +30,7 @@
     <H3>Joining a group</H3>
     <pre>
       <code>
-    GroupMember groupMember = apsGroupsService.joinGroup(”mygroup”);
+    GroupMember groupMember = apsGroupsService.joinGroup("mygroup");
     
       </code>
     </pre>
@@ -99,7 +99,7 @@
       </code>
     </pre>
     <p>
-      The config passed as argument to APSGroups will be explained further down under ”Configuration”.      
+      The config passed as argument to APSGroups will be explained further down under "Configuration".      
     </p>
     <p>
       The <em>logger</em> is an instance of an implementation of the APSGroupsLogger interface. Either you provide your own implementation of that or your use the APSGroupsSystemOutLogger implementation.      
@@ -107,7 +107,7 @@
     <H3>Joining a group</H3>
     <pre>
       <code>
-    GroupMember groupMember = apsGroups.joinGroup(”mygroup”);
+    GroupMember groupMember = apsGroups.joinGroup("mygroup");
       </code>
     </pre>
     <H3>Sending and receiving messages</H3>
@@ -129,7 +129,7 @@
     </pre>
     <H2>Net time</H2>
     <p>
-      All APSGroups instances connected will try to sync their time. I call this synced time ”net time”.      
+      All APSGroups instances connected will try to sync their time. I call this synced time "net time".      
     </p>
     <p>
       It works like this: When an APSGroups instance comes up it waits a while for NET_TIME packets. If it gets such a packet then it enters receive mode and takes the time in the received NET_TIME packet and stores a diff to that time and local time. This diff can then be used to translate back and forth between local and net time. If no such packet arrives in expected time it enters send mode and starts sending NET_TIME packets itself using its current net time. If a NET_TIME packet is received when in send mode it directly goes over to listen mode. If in listen mode and no NET_TIME packet comes in reasonable time it goes over to send mode. So among all instances on the network only one is responsible for sending NET_TIME. If that instance leaves then there might be a short fight for succession, but it will resolve itself rather quickly.      
@@ -140,14 +140,20 @@
     <H2>Configuration</H2>
     <H3>OSGi service </H3>
     <p>
-      The OSGi service provides a configuration model that gets managed by the APSConfigService. It can be configured in the APS adminweb (http://host:port/apsadminweb/). Here is a screenshot of the config admin:      
+      The OSGi service provides a configuration model that gets managed by the APSConfigService. It can be configured in the APS adminweb (http://host:port/apsadminweb/). Here are some screenshots of the config admin:      
     </p>
     <p>
-            <img src='http://download.natusoft.se/Images/APS/APS-Network/APSGroups/docs/images/config.png' title='' alt='/apsconfigadmin web gui for configuring APSGroups'/>      
+            <img src='http://download.natusoft.se/Images/APS/APS-Network/APSGroups/docs/images/groups-config-1.png' title='' alt='/apsconfigadmin web gui for configuring APSGroups 1'/>       <img src='http://download.natusoft.se/Images/APS/APS-Network/APSGroups/docs/images/groups-config-2.png' title='' alt='/apsconfigadmin web gui for configuring APSGroups 2'/>       <img src='http://download.natusoft.se/Images/APS/APS-Network/APSGroups/docs/images/groups-config-3.png' title='' alt='/apsconfigadmin web gui for configuring APSGroups 3'/>       <img src='http://download.natusoft.se/Images/APS/APS-Network/APSGroups/docs/images/groups-config-4.png' title='' alt='/apsconfigadmin web gui for configuring APSGroups 4'/>      
+    </p>
+    <p>
+      As can bee seen in the above screenshots transports need to be configured for communication to work. If you only need to talk to members on the same subnet the multicast transport is enough! The multicast transport makes sure that all transmitted data is received by all known group members. It will do resends if required, and throw an exception on failure of any member to acknowledge all sent packets.      
+    </p>
+    <p>
+      If you need to talk to members on a different subnet then you need to use the TCP transports. Note that there are 2 of these: <em>TCP_SENDER</em>, and <em>TCP_RECEIVER</em>. One receiver must be configured and can receive messages from anyone. A sender is needed for each APSGroups installation you want to talk to, and should point to the receiver of that installation. Note that for a receiver you only need to specify a port. The host part is ignored by the receiver.      
     </p>
     <H3>Library </H3>
     <p>
-      The library wants an implementation of the APSGroupsConfig interface as its first argument to APSGroups(config, logger) constructor. Either you implement your own or use the APSGroupsConfigProvider implementation. This is a plain java bean with both setters and getters for the config values. It comes with quite reasonable default values. It contains exactly the same properties as shown in the picture above.      
+      The library wants an implementation of the APSGroupsConfig interface as its first argument to APSGroups(config, logger) constructor. Either you implement your own or use the APSGroupsConfigProvider implementation. This is a plain java bean with both setters and getters for the config values. It comes with quite reasonable default values. It contains exactly the same properties as shown in the screenshots above.      
     </p>
     <H2>APIs</H2>
     <p>
@@ -214,6 +220,41 @@
     <blockquote>
       <p>
         <em>name</em> - The name of the group to join.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>java.io.IOException</em> - The unavoidable one!         
+      </p>
+    </blockquote>
+    <p>
+      <strong>GroupMember joinGroup(String name, Properties memberUserData) throws IOException</strong>      
+    </p>
+    <p>
+      Joins a group.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A GroupMember that provides the API for sending and receiving data in the group.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the group to join.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>memberUserData</em> - Data provided by users of the service.         
       </p>
     </blockquote>
     <p>
@@ -296,14 +337,14 @@
       <strong>void sendMessage(Message message) throws IOException</strong>      
     </p>
     <p>
-      Sends a previously created message to all current members of the group. If this returns without an exception then all members have received the message.      
+      Sends a previously created messaging to all current members of the group. If this returns without an exception then all members have received the messaging.      
     </p>
     <p>
       <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The message to send.         
+        <em>message</em> - The messaging to send.         
       </p>
     </blockquote>
     <p>
@@ -330,6 +371,12 @@
     </p>
     <p>
       Returns information about members.      
+    </p>
+    <p>
+      <strong>List&lt;Properties&gt; getMembersUserProperties()</strong>      
+    </p>
+    <p>
+      Returns the user properties for the members.      
     </p>
     <p>
       <strong>NetTime getNow()</strong>      
@@ -408,25 +455,25 @@
       public <em>interface</em> <strong>Message </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
     </p>
     <p>
-      This represents a complete message containing any data you want to send to the group. You provide the message with data using the <em>OutputStream</em>, and read message data using the <em>InputStream</em>.      
+      This represents a complete messaging containing any data you want to send to the group. You provide the messaging with data using the <em>OutputStream</em>, and read messaging data using the <em>InputStream</em>.      
     </p>
     <p>
       <strong>OutputStream getOutputStream()</strong>      
     </p>
     <p>
-      Returns an <em>OutputStream</em> to write message on. Multiple calls to this will return the same <em>OutputStream</em>!      
+      Returns an <em>OutputStream</em> to write messaging on. Multiple calls to this will return the same <em>OutputStream</em>!      
     </p>
     <p>
       <strong>InputStream getInputStream()</strong>      
     </p>
     <p>
-      Returns an <em>InputStream</em> for reading the message. Multiple calls to this will return new <em>InputStream</em>:s starting from the beginning!      
+      Returns an <em>InputStream</em> for reading the messaging. Multiple calls to this will return new <em>InputStream</em>:s starting from the beginning!      
     </p>
     <p>
       <strong>UUID getId()</strong>      
     </p>
     <p>
-      Returns the id of this message.      
+      Returns the id of this messaging.      
     </p>
     <p>
       <strong>String getMemberId()</strong>      
@@ -447,7 +494,7 @@
     </p>
     <blockquote>
       <p>
-        The name of the group this message belongs to.        
+        The name of the group this messaging belongs to.        
       </p>
     </blockquote>
     <p>
@@ -466,14 +513,14 @@
       <strong>public void messageReceived(Message message)</strong>      
     </p>
     <p>
-      Notification of received message.      
+      Notification of received messaging.      
     </p>
     <p>
       <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The received message.         
+        <em>message</em> - The received messaging.         
       </p>
     </blockquote>
     <p>

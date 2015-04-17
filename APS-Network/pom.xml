@@ -60,7 +60,6 @@
         <module>APSNetTimeServiceProvider</module>
         <module>APSRabbitMQMessageServiceProvider</module>
         <module>APSMessageSyncServiceProvider</module>
-        <module>APSTCPClusterServiceProvider</module>
         <module>APSTCPIPServiceNonSecureProvider</module>
     </modules>
 

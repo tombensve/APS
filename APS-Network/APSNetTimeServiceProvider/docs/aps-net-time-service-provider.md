@@ -16,6 +16,14 @@ This service provides network neutral time. Even with NTP it is difficult to kee
 
 Please note that the network time will not be accurate down to milliseconds, but will be reasonable correct for most usages.
 
+__public long getNetTime()__
+
+Returns current net time.
+
+__public Date getNetTimeAsDate()__
+
+Returns current net time as a Date object.
+
 __public long netToLocalTime(long netTime)__
 
 Converts from net time to local time.

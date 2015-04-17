@@ -44,7 +44,7 @@ _Parameters_
 
 > _name_ - The name of the directory to create. 
 
-> _duplicateMessage_ - The exception message if directory already exists. 
+> _duplicateMessage_ - The exception messaging if directory already exists. 
 
 _Throws_
 
@@ -240,6 +240,18 @@ _See_
 
 > java.io.File.exists()
 
+__boolean exists(String name)__
+
+Checks if the named file/directory exists.
+
+_Returns_
+
+> true or false.
+
+_Parameters_
+
+> _name_ - The name to check. 
+
 __boolean isDirectory()__
 
 _See_
@@ -291,6 +303,14 @@ _See_
 __String toString()__
 
 Returns a string representation of this _APSFile_.
+
+__File toFile()__
+
+This API tries to hide the real path and don't allow access outside of its root, but sometimes you just need the real path to pass on to other code requiring it. This provides that. Use it only when needed!
+
+_Returns_
+
+> A File object representing the real/full path to this file.
 
 }
 

@@ -13,8 +13,10 @@
     <p>
       This basically provides a class representing each JSON type: JSONObject, JSONString, JSONNumber, JSONBoolean, JSONArray, JSONNull, and a JSONValue class that is the common base class for all the other. Each class knows how to read and write the JSON type it represents. Then there is a JavaToJSON and a JSONToJava class with static methods for converting back and forth. This mapping is very primitive. There has to be one to one between the JSON and the Java objects.      
     </p>
+    <H2>Changes</H2>
+    <H3>0.10.0</H3>
     <p>
-      This does not try to be an alternative to Jackson! This is used internally by other services.      
+      <em>readJSON(...)</em> in the <strong>JSONValue</strong> base class now throws JSONEOFException (extends IOException) on EOF. The reason for this is that internally it reads characters which cannot return -1 or any non JSON data valid char to represent EOF. Yes, it would be possible to replace <em>char</em> with <em>Character</em>, but that will have a greater effect on existing code using this lib. If an JSONEOFException comes and is not handled it is still very much more clear what happened than a NullPointerException would be!      
     </p>
     <H2>APIs</H2>
     <p>
@@ -311,6 +313,18 @@
     </p>
     <p>
             
+    </p>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>JSONEOFException </strong> extends  IOException  }  [se.natusoft.osgi.aps.json] {      
+    </p>
+    <p>
+      Thrown if a JSON structure is tried to be read from a stream that has no more data.      
     </p>
     <p>
       }      

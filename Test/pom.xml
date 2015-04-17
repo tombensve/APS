@@ -12,7 +12,7 @@
     <artifactId>Test</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>APSMessageServiceTestProvider</module>
+        <module>APSServiceTestSupport</module>
         <module>APSOSGiTestTools</module>
     </modules>
 

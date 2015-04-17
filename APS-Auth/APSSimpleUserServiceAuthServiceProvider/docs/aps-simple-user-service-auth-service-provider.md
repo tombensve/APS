@@ -10,7 +10,9 @@ The APS web applications that use this only uses password authentication.
 
 ## APSSimpleUserServiceAuthServiceProvider
 
-This provides an APSAuthService that uses the APSSimpleUserService to authenticate users. It only supports password authentication. If you don’t have your own implementation of APSAuthService then you can deploy this one along with APSSimpleUserService, and probably APSUserAdminWeb.
+This provides an APSAuthService that uses the APSSimpleUserService to authenticate users. It only supports password authentication. If you don't have your own implementation of APSAuthService then you can deploy this one along with APSSimpleUserService, and probably APSUserAdminWeb.
+
+__Please note__ however that the standard implementation of APSSimpleUserService can register several instances with an "instance=name" property where name is unique for each instance, and each instance can reference a different data source. This is configured under _persistence/dsrefs_ in the configuration. If no instances are configured an instance of "aps-admin-web" will be created by default. If instances are configured the default will not be created. And now the the point: APSSimpleuserServiceAuthServiceProvider will as of now track the "aps-admin-web" instance of APSSimpleUserService! If no such instance is configured it will fail after a timeout of not finding a service!
 
 ## API
 
@@ -74,27 +76,27 @@ This hints at how to use the credentials.
 
 __NONE__
 
-Only userid is required.
+ Only userid is required.
 
 __PASSWORD__
 
-toString() on the credentials object should return a password.
+ toString() on the credentials object should return a password.
 
 __KEY__
 
-The credential object is a key of some sort.
+ The credential object is a key of some sort.
 
 __CERTIFICATE__
 
-The credential object is a certificate of some sort.
+ The credential object is a certificate of some sort.
 
 __DIGEST__
 
-The credential object is a digest password.
+ The credential object is a digest password.
 
 __SSO__
 
-The credential object contains information for participating in a single sign on.
+ The credential object contains information for participating in a single sign on.
 
 }
 

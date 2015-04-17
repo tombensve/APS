@@ -16,7 +16,7 @@ Creates a new _APSDiscoveryPublishException_ instance.
 
 _Parameters_
 
-> _message_ - The exception message. 
+> _message_ - The exception messaging. 
 
 __public APSDiscoveryPublishException(String message, Throwable cause)__
 
@@ -24,7 +24,7 @@ Creates a new _APSDiscoveryPublishException_ instance.
 
 _Parameters_
 
-> _message_ - The exception message. 
+> _message_ - The exception messaging. 
 
 > _cause_ - The cause of this exception. 
 

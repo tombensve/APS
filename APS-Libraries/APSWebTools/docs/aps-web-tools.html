@@ -55,6 +55,20 @@
       </p>
     </blockquote>
     <p>
+      <strong>public void setSessionIdFromRequestCookie(CookieTool.CookieReader cookieReader)</strong>      
+    </p>
+    <p>
+      Sets the session id from a cookie in the specified request.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>cookieReader</em> - The cookie reader to get the session id cookie from.         
+      </p>
+    </blockquote>
+    <p>
       <strong>public void saveSessionIdOnResponse(HttpServletResponse response)</strong>      
     </p>
     <p>
@@ -66,6 +80,20 @@
     <blockquote>
       <p>
         <em>response</em> - The response to save the session id cookie on.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public void saveSessionIdOnResponse(CookieTool.CookieWriter cookieWriter)</strong>      
+    </p>
+    <p>
+      Saves the current session id on the specified response.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>cookieWriter</em> - The cookie writer to save the session id cookie on.         
       </p>
     </blockquote>
     <p>
@@ -132,19 +160,8 @@
             
     </p>
     <p>
-      <strong>public APSLoginHandler(BundleContext context, HandlerInfo handlerInfo)</strong>      
+            
     </p>
-    <p>
-      Creates a new VaadinLoginDialogHandler.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>context</em> - The bundles BundleContext.         
-      </p>
-    </blockquote>
     <p>
       <strong>protected void setHandlerInfo(HandlerInfo handlerInfo)</strong>      
     </p>

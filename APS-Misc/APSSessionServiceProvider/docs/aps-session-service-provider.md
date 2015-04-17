@@ -100,7 +100,7 @@ Closes the session represented by the specified id. After this call APSSession.i
 
 _Parameters_
 
-> _sessionId_ - The id of the session to close. 
+> _sessionId_ - The id of the session to leaveSyncGroup. 
 
 }
 

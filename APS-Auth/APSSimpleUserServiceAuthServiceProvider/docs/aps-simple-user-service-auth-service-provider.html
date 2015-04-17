@@ -21,7 +21,10 @@
     </p>
     <H2>APSSimpleUserServiceAuthServiceProvider</H2>
     <p>
-      This provides an APSAuthService that uses the APSSimpleUserService to authenticate users. It only supports password authentication. If you don’t have your own implementation of APSAuthService then you can deploy this one along with APSSimpleUserService, and probably APSUserAdminWeb.      
+      This provides an APSAuthService that uses the APSSimpleUserService to authenticate users. It only supports password authentication. If you don't have your own implementation of APSAuthService then you can deploy this one along with APSSimpleUserService, and probably APSUserAdminWeb.      
+    </p>
+    <p>
+      <strong>Please note</strong> however that the standard implementation of APSSimpleUserService can register several instances with an "instance=name" property where name is unique for each instance, and each instance can reference a different data source. This is configured under <em>persistence/dsrefs</em> in the configuration. If no instances are configured an instance of "aps-admin-web" will be created by default. If instances are configured the default will not be created. And now the the point: APSSimpleuserServiceAuthServiceProvider will as of now track the "aps-admin-web" instance of APSSimpleUserService! If no such instance is configured it will fail after a timeout of not finding a service!      
     </p>
     <H2>API</H2>
     <p>
@@ -137,37 +140,37 @@
       <strong>NONE</strong>      
     </p>
     <p>
-      Only userid is required.      
+       Only userid is required.      
     </p>
     <p>
       <strong>PASSWORD</strong>      
     </p>
     <p>
-      toString() on the credentials object should return a password.      
+       toString() on the credentials object should return a password.      
     </p>
     <p>
       <strong>KEY</strong>      
     </p>
     <p>
-      The credential object is a key of some sort.      
+       The credential object is a key of some sort.      
     </p>
     <p>
       <strong>CERTIFICATE</strong>      
     </p>
     <p>
-      The credential object is a certificate of some sort.      
+       The credential object is a certificate of some sort.      
     </p>
     <p>
       <strong>DIGEST</strong>      
     </p>
     <p>
-      The credential object is a digest password.      
+       The credential object is a digest password.      
     </p>
     <p>
       <strong>SSO</strong>      
     </p>
     <p>
-      The credential object contains information for participating in a single sign on.      
+       The credential object contains information for participating in a single sign on.      
     </p>
     <p>
       }      

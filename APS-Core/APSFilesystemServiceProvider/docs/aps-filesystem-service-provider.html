@@ -75,7 +75,7 @@
     </blockquote>
     <blockquote>
       <p>
-        <em>duplicateMessage</em> - The exception message if directory already exists.         
+        <em>duplicateMessage</em> - The exception messaging if directory already exists.         
       </p>
     </blockquote>
     <p>
@@ -421,6 +421,28 @@
       </p>
     </blockquote>
     <p>
+      <strong>boolean exists(String name)</strong>      
+    </p>
+    <p>
+      Checks if the named file/directory exists.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true or false.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name to check.         
+      </p>
+    </blockquote>
+    <p>
       <strong>boolean isDirectory()</strong>      
     </p>
     <p>
@@ -514,6 +536,20 @@
     <p>
       Returns a string representation of this <em>APSFile</em>.      
     </p>
+    <p>
+      <strong>File toFile()</strong>      
+    </p>
+    <p>
+      This API tries to hide the real path and don't allow access outside of its root, but sometimes you just need the real path to pass on to other code requiring it. This provides that. Use it only when needed!      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A File object representing the real/full path to this file.        
+      </p>
+    </blockquote>
     <p>
       }      
     </p>

@@ -32,6 +32,14 @@ _Parameters_
 
 > _request_ - The request to get the session id cookie from. 
 
+__public void setSessionIdFromRequestCookie(CookieTool.CookieReader cookieReader)__
+
+Sets the session id from a cookie in the specified request.
+
+_Parameters_
+
+> _cookieReader_ - The cookie reader to get the session id cookie from. 
+
 __public void saveSessionIdOnResponse(HttpServletResponse response)__
 
 Saves the current session id on the specified response.
@@ -39,6 +47,14 @@ Saves the current session id on the specified response.
 _Parameters_
 
 > _response_ - The response to save the session id cookie on. 
+
+__public void saveSessionIdOnResponse(CookieTool.CookieWriter cookieWriter)__
+
+Saves the current session id on the specified response.
+
+_Parameters_
+
+> _cookieWriter_ - The cookie writer to save the session id cookie on. 
 
 
 
@@ -83,13 +99,7 @@ The bundle needs to import the following packages for this class to work:
 
 
 
-__public APSLoginHandler(BundleContext context, HandlerInfo handlerInfo)__
 
-Creates a new VaadinLoginDialogHandler.
-
-_Parameters_
-
-> _context_ - The bundles BundleContext. 
 
 __protected void setHandlerInfo(HandlerInfo handlerInfo)__
 
