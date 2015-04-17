@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS TCPIP Service NonSecure Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides a nonsecure implementation of APSTCPIPService.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
  *         2015-04-11: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.tcpipsvc
 
@@ -197,41 +197,4 @@ class APSTCPIPServiceNonSecureProvider implements APSTCPIPService {
         receiver.removeListener(listener)
     }
 
-    /**
-     * Returns true if there is a config for the specified name.
-     *
-     * @param name The name of the config to check.
-     *
-     * @throws IllegalArgumentException on bad name.
-     */
-    @Override
-    public boolean hasConfig(String name) {
-        return false
-    }
-
-    /**
-     * Creates a config entry for a specific config name. The intention with this is to be able to
-     * set a default config if none has been configured.
-     *
-     * Also note that this independent of TCP or UDP config. The multicast value is only relevant for UDP.
-     *
-     * This method is optional and if not implemented the supportsSetConfig() should return false.
-     *
-     * @param name The name of the config to set.
-     * @param address The ip address to set.
-     * @param port The port to set.
-     * @param multicast Set true if this config is for multicast in which case the address is ignored and only the port is used.
-     */
-    @Override
-    public void setConfig(String name, String address, int port, boolean multicast) {
-
-    }
-
-    /**
-     * Returns true if setConfig() is supported.
-     */
-    @Override
-    public boolean supportsSetConfig() {
-        return true
-    }
 }

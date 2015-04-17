@@ -101,32 +101,4 @@ public interface APSTCPIPService extends APSServiceProperties {
      */
     void removeTCPRequestListener(String name, TCPListener listener);
 
-    /**
-     * Returns true if there is a config for the specified name.
-     *
-     * @param name The name of the config to check.
-     *
-     * @throws IllegalArgumentException on bad name.
-     */
-    boolean hasConfig(String name);
-
-    /**
-     * Creates a config entry for a specific config name. The intention with this is to be able to
-     * set a default config if none has been configured.
-     *
-     * Also note that this independent of TCP or UDP config. The multicast value is only relevant for UDP.
-     *
-     * This method is optional and if not implemented the supportsSetConfig() should return false.
-     *
-     * @param name The name of the config to set.
-     * @param address The ip address to set.
-     * @param port The port to set.
-     * @param multicast Set true if this config is for multicast in which case the address is ignored and only the port is used.
-     */
-    void setConfig(String name, String address, int port, boolean multicast);
-
-    /**
-     * Returns true if setConfig() is supported.
-     */
-    boolean supportsSetConfig();
 }
