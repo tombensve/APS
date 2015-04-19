@@ -52,10 +52,7 @@ import se.natusoft.osgi.aps.tools.tuples.Tuple4;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -881,7 +878,14 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                         }
                     }
                     if (tracker == null) {
-                        tracker = new APSServiceTracker<>(context, field.getType(), searchCriteria, service.timeout());
+                        Class svcClass = field.getType();
+                        if (field.getType().equals(APSServiceTracker.class)) {
+                            Type svcType = field.getGenericType();
+                            if (svcType instanceof ParameterizedType) {
+                                svcClass = (Class)((ParameterizedType) svcType).getActualTypeArguments()[0];
+                            }
+                        }
+                        tracker = new APSServiceTracker(context, svcClass, searchCriteria, service.timeout());
                         tracker.start();
                         this.trackers.put(trackerKey, tracker);
                     }
