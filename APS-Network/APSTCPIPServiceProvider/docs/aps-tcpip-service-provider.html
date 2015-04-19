@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="generated-by" content="MarkdownDoc"/>
+    <link href="docs.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body>
+    <H1>APSTCPIPService</H1>
+    <p>
+      This service provides, in ways of communication, plain simple TCP/IP communication. Users of this service will however have very little contact with the java.net classes.      
+    </p>
+    <p>
+      The following are the points of this service:      
+    </p>
+    <ul>
+      <li>
+        <p>
+          Simple TCP/IP usage.          
+        </p>
+      </li>
+      <li>
+        <p>
+          Remove all host, port, and partly protocol from the client code by only referencing a named configuration provided by the service.          
+        </p>
+      </li>
+      <li>
+        <p>
+          Being able to transparently provide different implementations, like a plain non secure implementation as this is, or an SSL:ed version for TCP. A Test implementation that opens no real sockets nor sends any real packets that can be used by tests are also a possibility.          
+        </p>
+      </li>
+    </ul>
+    <H2>Security</H2>
+    <p>
+      This implementation is non secure! It sets the following property on the registered service:      
+    </p>
+    <pre>
+      <code>
+    aps.props.security=nonsecure
+      </code>
+    </pre>
+    <H2>How it works</H2>
+    <p>
+      The service registers an APSConfigService configuration with that service where configurations for TCP, UDP or Multicast connections can be defined. Each configuration entry basically specifies host, port and protocol in addition to a unique name for the entry. Do note that in most cases there needs to be separate entries for clients and services.      
+    </p>
+    <p>
+      The client code should have a configuration of itself that specifies the named entry to use. This name is then passed to the service which then only reads or writes data without having to care where from or to.      
+    </p>
+    <H2>Examples</H2>
+    <H3>TCP</H3>
+    <H4>Write</H4>
+    <pre>
+      <code>
+    APSTCPIPService tcpipSvc;
+    ...
+    tcpipSvc.sendTCPRequest("somesvc", new TCPRequest() {
+        void tcpRequest(OutputStream requestStream, InputStream responseStream) throws IOException {
+            // write to requestStream ...
+    
+            // read from response stream ...
+        }
+    })
+    
+      </code>
+    </pre>
+    <H4>Read</H4>
+    <pre>
+      <code>
+    APSTCPIPService tcpipSvc;
+    ...
+    tcpipSvc.setTCPRequestListener("remotesvc", this);
+    ...
+    void tcpRequestReceived(String name, InetAddress address, InputStream reqStreamn, OutputStream respStream) throws IOException {
+        // Read request from reqStream ...
+    
+        // Write response to respStream ...
+    }
+      </code>
+    </pre>
+    <H3>UDP / Multicast</H3>
+    <p>
+      Since Multicast uses UDP packets there is no difference between host and port connected UDP or Multicast. The only difference is in the configuration where "UDP" is specified for point to point UDP packets and "Multicast" is specified for multicast packets.      
+    </p>
+    <H4>Write</H4>
+    <pre>
+      <code>
+    APSTCPIPService tcpipSvc;
+    ...
+    bytes[] bytes = "Some data".getBytes();
+    tcpipSvc.sendUDP("myudptarget",  bytes);
+      </code>
+    </pre>
+    <H4>READ</H4>
+    <pre>
+      <code>
+    APSTCPIPService tcpipSvc;
+    ...
+    byte[] packetBuff = new byte[4000];
+    DatagramPacket packet = tcpiipSvc.readUDP("myudpsomething", packetBuff);
+    byte[] data = packet.getData(); // This is actually packetBuff being returned!
+      </code>
+    </pre>
+  </body>
+</html>

@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    PROJECT
+        Name
+            APS TCPIP Service NonSecure Provider
+
+        Code Version
+            1.0.0
+
+        Description
+            Provides a nonsecure implementation of APSTCPIPService.
+
+    COPYRIGHTS
+        Copyright (C) 2012 by Natusoft AB All rights reserved.
+
+    LICENSE
+        Apache 2.0 (Open Source)
+
+        Licensed under the Apache License, Version 2.0 (the "License");
+        you may not use this file except in compliance with the License.
+        You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+        Unless required by applicable law or agreed to in writing, software
+        distributed under the License is distributed on an "AS IS" BASIS,
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        See the License for the specific language governing permissions and
+        limitations under the License.
+
+    AUTHORS
+        tommy ()
+            Changes:
+            2015-04-11: Created!
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>APS-Network</artifactId>
+        <groupId>se.natusoft.osgi.aps</groupId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>aps-tcpip-service-provider</artifactId>
+    <packaging>bundle</packaging>
+
+    <name>APS TCPIP Service Provider</name>
+
+    <description>
+        Provides a nonsecure implementation of APSTCPIPService.
+    </description>
+
+    <properties>
+        <!--
+            Bundle properties
+        -->
+
+        <!-- The symbolic name of the bundle. Defaults to the artifact id, but can be overridden. -->
+        <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
+
+        <!-- The bundle activator class -->
+        <osgi.bundle.activator>se.natusoft.osgi.aps.tools.APSActivator</osgi.bundle.activator>
+
+        <!-- The bundle packages to export. -->
+        <osgi.export.package>
+        </osgi.export.package>
+
+        <!-- The packages to import for the bundle. -->
+        <osgi.import.package>*</osgi.import.package>
+
+        <!-- The private packages. -->
+        <osgi.private.package>
+            se.natusoft.osgi.aps.tcpipsvc,
+            se.natusoft.osgi.aps.tcpipsvc.config
+        </osgi.private.package>
+
+        <!-- The packages to export from dependent & embeded jars -->
+        <osgi.export.dependency.package>
+        </osgi.export.dependency.package>
+
+        <!-- The resources to include in the bundle -->
+        <osgi.include.resource>
+        </osgi.include.resource>
+
+        <!-- The default for embedding dependencies in bundle. -->
+        <osgi.embed.dependency>*;scope=system</osgi.embed.dependency>
+
+        <!-- The directory whose content should be embeded into the bundle jar. -->
+        <osgi.embed.directory>lib</osgi.embed.directory>
+
+        <!--
+            APS properties.
+        -->
+
+        <!-- We register our configuration for auto registration and management. -->
+        <aps.config.classes>se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig</aps.config.classes>
+
+        <!--
+             Trigger tiles.
+         -->
+        <!--tile.groovy>${project.groupId}:groovy-tile:${project.version}</tile.groovy-->
+
+        <!--
+            Other properties
+        -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!--
+            APS
+        -->
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-apis</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-tools-lib</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--
+            Test
+
+                NOTE: The tests run for this compile send and receive network traffic. One test listens
+                      to TCP connections. This might cause problems if this is run in a CI server and
+                      there are parallel builds building the same code. To avoid such problems, pass
+                      -Daps.test.disabled=true to the build.
+        -->
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-service-test-support</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--
+            aps-tcpip-service-nonsecure-provider dependencies
+        -->
+
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>2.4.3</version>
+            <scope>compile</scope>
+            <classifier>indy</classifier>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+            </plugin>
+
+            <!--
+                Force the jar plugin to use the maven-bundle-plugin generated manifest.
+            -->
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.github.odavid.maven.plugins</groupId>
+                <artifactId>mixin-maven-plugin</artifactId>
+                <configuration>
+                    <mixins>
+                        <mixin>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>groovy-mixin</artifactId>
+                            <version>${project.version}</version>
+                        </mixin>
+                    </mixins>
+                </configuration>
+            </plugin>
+
+            <!--
+                OSGi bundle handling.
+            -->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.5</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <supportedProjectTypes>
+                        <supportedProjectType>jar</supportedProjectType>
+                        <supportedProjectType>bundle</supportedProjectType>
+                    </supportedProjectTypes>
+                    <archive>
+                        <manifestEntries>
+                            <APS-Configs>${aps.config.classes}</APS-Configs>
+                            <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
+                        </manifestEntries>
+                    </archive>
+                    <instructions>
+                        <Export-Package>${osgi.export.package}</Export-Package>
+                        <Import-Package>${osgi.import.package}</Import-Package>
+                        <_exportcontents>${osgi.export.dependency.package}</_exportcontents>
+                        <Private-Package>${osgi.private.package}</Private-Package>
+                        <Include-Resource>${osgi.include.resource}</Include-Resource>
+                        <Bundle-SymbolicName>${osgi.bundle.symbolic.name}</Bundle-SymbolicName>
+                        <Bundle-Activator>${osgi.bundle.activator}</Bundle-Activator>
+                        <Embed-Directory>${osgi.embed.directory}</Embed-Directory>
+                        <Embed-Dependency>${osgi.embed.dependency}</Embed-Dependency>
+                    </instructions>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

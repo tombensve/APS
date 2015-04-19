@@ -12,17 +12,13 @@ import java.net.DatagramPacket;
  *
  * * External configurations of network connections.
  *
- * * Default configuration setters if no configurations have been provided.
- *
- * * Possibility to drop in a secure version using for example SSL when security is wanted.
- *
  * * Decoupling from java.net classes allowing for test implementations where network traffic can be
  *   simulated in unittests without causing problems when run concurrently in a CI server.
  *
  * The users of this service should also have a config that specifies which config of this service
  * to use.
  *
- * If a service both sends TCP request and receives them there obviously need to be 2 different config entries
+ * If a service both sends TCP request and receives them there need to be 2 different config entries
  * for this.
  */
 public interface APSTCPIPService extends APSServiceProperties {

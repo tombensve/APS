@@ -1,0 +1,35 @@
+Manifest-Version: 1.0
+APS-Configs: se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
+Embed-Directory: lib
+Built-By: tommy
+Tool: Bnd-1.43.0
+Bundle-Name: APS TCPIP Service Provider
+Created-By: Apache Maven Bundle Plugin
+Bundle-Vendor: Natusoft AB
+Build-Jdk: 1.7.0_71
+Bundle-Version: 1.0.0
+Bnd-LastModified: 1429467088665
+Bundle-ManifestVersion: 2
+Bundle-Activator: se.natusoft.osgi.aps.tools.APSActivator
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0
+Bundle-Description: Provides a nonsecure implementation of APSTCPIPSer
+ vice.
+Bundle-SymbolicName: aps-tcpip-service-provider
+Import-Package: groovy.lang;version="[2.4,3)",org.codehaus.groovy.refl
+ ection;version="[2.4,3)",org.codehaus.groovy.runtime;version="[2.4,3)
+ ",org.codehaus.groovy.runtime.callsite;version="[2.4,3)",org.codehaus
+ .groovy.runtime.dgmimpl;version="[2.4,3)",org.codehaus.groovy.runtime
+ .typehandling;version="[2.4,3)",org.codehaus.groovy.transform;version
+ ="[2.4,3)",se.natusoft.osgi.aps.api.core.config;version="[1.0,2)",se.
+ natusoft.osgi.aps.api.core.config.annotation;version="[1.0,2)",se.nat
+ usoft.osgi.aps.api.core.config.event;version="[1.0,2)",se.natusoft.os
+ gi.aps.api.core.config.model;version="[1.0,2)",se.natusoft.osgi.aps.a
+ pi.core.config.service;version="[1.0,2)",se.natusoft.osgi.aps.api.net
+ .tcpip;version="[1.0,2)",se.natusoft.osgi.aps.exceptions;version="[1.
+ 0,2)",se.natusoft.osgi.aps.tcpipsvc.security,se.natusoft.osgi.aps.too
+ ls;version="[1.0,2)",se.natusoft.osgi.aps.tools.annotation.activator;
+ version="[1.0,2)",se.natusoft.osgi.aps.tools.util;version="[1.0,2)",s
+ e.natusoft.osgi.aps.util;version="[1.0,2)"
+Embed-Dependency: *;scope=system
+Bundle-DocURL: http://www.natusoft.se/
+
