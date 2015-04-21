@@ -83,6 +83,21 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
     }
 
     /**
+     * Returns a list of names matching the specified regexp criteria.
+     *
+     * @param regexp The regexp to get names for.
+     */
+    public List<String> getNames(String regexp) {
+        List<String> result = new LinkedList<>()
+
+        this.connectionProviders.keySet().each { String key ->
+            if (key.matches(regexp)) result += key
+        }
+
+        return result
+    }
+
+    /**
      * Resolves a configuration name returning a ConnectionProvider.
      *
      * @param name The name of the configuration to get a ConnectionProvider for.
@@ -155,6 +170,10 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
     @BundleStop
     public void cleanup() {
         TCPIPConfig.managed.get().removeConfigChangedListener(this)
+        this.connectionProviders.keySet().each { String key ->
+            ConnectionProvider connectionProvider = this.connectionProviders.get(key)
+            connectionProvider.stop()
+        }
     }
 
     /**

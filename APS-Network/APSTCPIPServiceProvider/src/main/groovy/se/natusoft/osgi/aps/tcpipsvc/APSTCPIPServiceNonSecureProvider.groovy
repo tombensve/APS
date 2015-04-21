@@ -46,6 +46,7 @@ import se.natusoft.osgi.aps.api.net.tcpip.TCPListener
 import se.natusoft.osgi.aps.api.net.tcpip.UDPListener
 import se.natusoft.osgi.aps.tcpipsvc.ConnectionProvider.Direction
 import se.natusoft.osgi.aps.tcpipsvc.ConnectionProvider.Type
+import se.natusoft.osgi.aps.tcpipsvc.security.UDPSecurityHandler
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
@@ -71,10 +72,13 @@ class APSTCPIPServiceNonSecureProvider implements APSTCPIPService {
     private APSLogger logger
 
     @Managed
-    private ConfigResolver _configResolver = null
+    private TCPSecurityHandler tcpSecurityHandler
 
     @Managed
-    private TCPSecurityHandler tcpSecurityHandler
+    private UDPSecurityHandler updSecurityHandler
+
+    /** The real ConfigResolve instance. This is accessed via the getConfigResolver() method, which will delay its creation. */
+    private ConfigResolver _configResolver = null
 
     //
     // Methods
@@ -86,9 +90,13 @@ class APSTCPIPServiceNonSecureProvider implements APSTCPIPService {
      */
     private ConfigResolver getConfigResolver() {
         if (this._configResolver == null) {
-            this._configResolver = new ConfigResolver(logger: this.logger, tcpSecurityHandler: this.tcpSecurityHandler)
+            this._configResolver = new ConfigResolver(
+                    logger: this.logger,
+                    tcpSecurityHandler: this.tcpSecurityHandler,
+                    udpSecurityHandler: this.updSecurityHandler
+            )
         }
-        return this.configResolver
+        return this._configResolver
     }
 
     /**
@@ -198,4 +206,15 @@ class APSTCPIPServiceNonSecureProvider implements APSTCPIPService {
         receiver.removeListener(listener)
     }
 
+    /**
+     * Returns a list of names matching the specified regexp.
+     *
+     * @param regexp The regexp to get names for.
+     *
+     * @return A list of the matching names. If none were found the list will be empty.
+     */
+    @Override
+    List<String> getNames(String regexp) {
+        return this.configResolver.getNames(regexp)
+    }
 }
