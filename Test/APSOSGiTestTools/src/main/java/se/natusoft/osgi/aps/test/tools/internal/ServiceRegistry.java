@@ -65,7 +65,7 @@ public class ServiceRegistry {
     //
 
     /** Holds all listeners */
-    private Map<String/*service API*/, List<ListenerEntry>> serviceListenerMap = new HashMap<>();
+    private Map<String/*service API*/, List<ListenerEntry>> serviceListenerMap = Collections.synchronizedMap(new HashMap<String, List<ListenerEntry>>());
 
     /** Holds registered services. */
     private Map<TestServiceRegistration, Object> services = Collections.synchronizedMap(new HashMap<TestServiceRegistration, Object>());
@@ -113,7 +113,7 @@ public class ServiceRegistry {
      * @param service The service instance.
      * @param serviceAPI The service API class.
      */
-    public void registerService(TestServiceRegistration serviceRegistration, Object service, Class serviceAPI) {
+    public synchronized void registerService(TestServiceRegistration serviceRegistration, Object service, Class serviceAPI) {
         this.services.put(serviceRegistration, service);
 
         sendListenerEvents(serviceRegistration, ServiceEvent.REGISTERED, serviceAPI.getName());
@@ -124,7 +124,7 @@ public class ServiceRegistry {
      *
      * @param serviceRegistration The internal TestServiceRegistration implementation of ServiceRegistration.
      */
-    public void unregisterService(TestServiceRegistration serviceRegistration) {
+    public synchronized void unregisterService(TestServiceRegistration serviceRegistration) {
         this.services.remove(serviceRegistration);
 
         sendListenerEvents(serviceRegistration, ServiceEvent.UNREGISTERING, serviceRegistration.getServiceName());
@@ -138,7 +138,7 @@ public class ServiceRegistry {
      *
      * @throws InvalidSyntaxException
      */
-    public void addServiceListener(ServiceListener listener, String filter) throws InvalidSyntaxException {
+    public synchronized void addServiceListener(ServiceListener listener, String filter) throws InvalidSyntaxException {
         int ix = filter.indexOf(Constants.OBJECTCLASS);
         String filter2 = filter.substring(ix + Constants.OBJECTCLASS.length() + 1);
         String[] filterParts = filter2.split("[ )]");
@@ -157,7 +157,7 @@ public class ServiceRegistry {
      *
      * @param listener The listener to add.
      */
-    public void addServiceListener(ServiceListener listener) {
+    public synchronized void addServiceListener(ServiceListener listener) {
         List<ListenerEntry> listenerEntries = this.serviceListenerMap.get("all");
         if (listenerEntries == null) {
             listenerEntries = new LinkedList<>();
@@ -171,7 +171,7 @@ public class ServiceRegistry {
      *
      * @param listener The listener to remove.
      */
-    public void removeServiceListener(ServiceListener listener) {
+    public synchronized void removeServiceListener(ServiceListener listener) {
         for (Map.Entry<String, List<ListenerEntry>> entry : this.serviceListenerMap.entrySet()) {
             for (ListenerEntry listenerEntry : entry.getValue()) {
                 if (listener == listenerEntry.listener) {
