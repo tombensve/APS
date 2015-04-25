@@ -140,6 +140,13 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-osgi-test-tools</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+
         <!--
             aps-tcpip-service-nonsecure-provider dependencies
         -->

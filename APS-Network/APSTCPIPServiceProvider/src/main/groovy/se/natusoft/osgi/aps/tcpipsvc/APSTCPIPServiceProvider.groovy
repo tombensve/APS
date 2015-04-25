@@ -56,14 +56,10 @@ import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
 /**
  * Provides an implementation of APSTCPIPService for nonsecure connections.
  */
-@OSGiServiceProvider(
-        properties = [
-                @OSGiProperty(name=APSServiceProperties.Security.Key, value = APSServiceProperties.Security.NonSecure)
-        ]
-)
+@OSGiServiceProvider
 @CompileStatic
 @TypeChecked
-class APSTCPIPServiceNonSecureProvider implements APSTCPIPService {
+class APSTCPIPServiceProvider implements APSTCPIPService {
     //
     // Private Members
     //

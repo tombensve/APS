@@ -3,12 +3,17 @@ package se.natusoft.osgi.aps.tcpipsvc
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
+import se.natusoft.osgi.aps.api.net.tcpip.APSTCPIPService
 import se.natusoft.osgi.aps.api.net.tcpip.UDPListener
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.tcpipsvc.security.UDPSecurityHandler
+import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
+import se.natusoft.osgi.aps.test.tools.TestBundle
+import se.natusoft.osgi.aps.tools.APSActivator
 import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.tools.APSServiceTracker
 
 import static org.junit.Assert.assertTrue
 
@@ -69,43 +74,59 @@ class MulticastConProviderTest {
             assertTrue("Config failure!", TCPIPConfig.managed.get().namedConfigs.get(0).name.string == "testsvc")
             assertTrue("Config failure!", TCPIPConfig.managed.get().namedConfigs.get(1).name.string == "testclient")
 
-            APSLogger logger = new APSLogger()
+            OSGIServiceTestTools testTools = new OSGIServiceTestTools()
+            TestBundle testBundle = testTools.createBundle("test-bundle")
+            testBundle.addEntryPaths(
+                    "/se/natusoft/osgi/aps/tcpipsvc/APSTCPIPServiceProvider.class"
+            );
 
-            UDPSecurityHandler securityHandler = new UDPSecurityHandler()
+            APSActivator activator = new APSActivator()
+            activator.start(testBundle.bundleContext)
 
-            MulticastReceiver receiver = new MulticastReceiver(
-                    config: new ConfigWrapper(name: "testsvc"),
-                    logger: logger,
-                    securityHandler: securityHandler
-            )
+            try {
 
-            boolean success = false
+                APSServiceTracker<APSTCPIPService> tcpipSvcTracker =
+                        new APSServiceTracker<APSTCPIPService>(
+                                testBundle.bundleContext,
+                                APSTCPIPService.class,
+                                "5 seconds"
+                        );
+                tcpipSvcTracker.start()
 
-            receiver.addListener(new UDPListener() {
-                @Override
-                void udpDataReceived(String name, DatagramPacket dataGramPacket) {
-                    println("name: ${name}")
+                APSTCPIPService tcpipService = tcpipSvcTracker.allocateService()
 
-                    String received = new String(dataGramPacket.data, 0 , dataGramPacket.length)
-                    println("Received: ${received}")
+                boolean success = false
 
-                    if (received == "This is a multicasted string!") success = true
-                }
-            })
+                String testString = "This is a multicasted string!"
+                int test = 0
 
-            receiver.start()
+                tcpipService.addUDPListener("testsvc", new UDPListener() {
+                    @Override
+                    void udpDataReceived(String name, DatagramPacket dataGramPacket) {
+                        println("name: ${name}")
+                        println "" + ++test
 
-                MulticastSender sender = new MulticastSender(
-                        config: new ConfigWrapper(name: "testclient"),
-                        securityHandler: securityHandler
-                )
-                sender.start()
-                    sender.send("This is a multicasted string!".bytes)
-                sender.stop()
+                        String received = new String(dataGramPacket.data, 0, dataGramPacket.length)
+                        println("Received: ${received}")
 
-            receiver.stop()
+                        if (received == testString) success = true
+                    }
+                })
 
-            assertTrue("Failed to receive correct message!", success)
+                tcpipService.sendUDP("testclient", testString.bytes)
+                println("Send: ${testString}")
+
+                tcpipSvcTracker.releaseService()
+
+                Thread.sleep(2000)
+
+                assertTrue("Failed to receive correct message!", success)
+            }
+            finally {
+                // This logs a ConcurrentModificationException where it should be impossible for that to happen as far
+                // as I can determine. This is only test code, so we skip this for now.
+                // try {activator.stop(testBundle.bundleContext)} catch (Exception cme) {}
+            }
 
         }
         else {
