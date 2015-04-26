@@ -101,7 +101,7 @@ class TCPConProviderTest {
                         securityHandler: tcpSecurityHandler
                 )
                 sender.start()
-                    String resp
+                    String resp = ""
 
                     sender.send(new TCPRequest() {
                         @Override
