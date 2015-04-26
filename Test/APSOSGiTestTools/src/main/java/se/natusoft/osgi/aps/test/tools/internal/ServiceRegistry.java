@@ -81,7 +81,7 @@ public class ServiceRegistry {
      * @param event The event to send.
      * @param serviceAPI Used to find the listeners to send to.
      */
-    private void sendListenerEvents(TestServiceRegistration serviceRegistration, int event, String serviceAPI) {
+    private synchronized void sendListenerEvents(TestServiceRegistration serviceRegistration, int event, String serviceAPI) {
         try {
             List<ListenerEntry> listeners = this.serviceListenerMap.get(serviceAPI);
             if (listeners != null) {
@@ -145,7 +145,7 @@ public class ServiceRegistry {
         String serviceClass = filterParts[0];
         List<ListenerEntry> listenerEntries = this.serviceListenerMap.get(serviceClass);
         if (listenerEntries == null) {
-            listenerEntries = new LinkedList<>();
+            listenerEntries = Collections.synchronizedList(new LinkedList<ListenerEntry>());
             this.serviceListenerMap.put(serviceClass, listenerEntries);
         }
         ListenerEntry entry = new ListenerEntry(listener, filter);
@@ -160,7 +160,7 @@ public class ServiceRegistry {
     public synchronized void addServiceListener(ServiceListener listener) {
         List<ListenerEntry> listenerEntries = this.serviceListenerMap.get("all");
         if (listenerEntries == null) {
-            listenerEntries = new LinkedList<>();
+            listenerEntries = Collections.synchronizedList(new LinkedList<ListenerEntry>());
             this.serviceListenerMap.put("all", listenerEntries);
         }
         listenerEntries.add(new ListenerEntry(listener, null));
@@ -172,13 +172,20 @@ public class ServiceRegistry {
      * @param listener The listener to remove.
      */
     public synchronized void removeServiceListener(ServiceListener listener) {
+        List<String> removeKeys = new LinkedList<>();
         for (Map.Entry<String, List<ListenerEntry>> entry : this.serviceListenerMap.entrySet()) {
             for (ListenerEntry listenerEntry : entry.getValue()) {
                 if (listener == listenerEntry.listener) {
-                    this.serviceListenerMap.remove(entry.getKey());
+                    // Bloody brilliant! I was deleting entries within the loop over the entries being deleted.
+                    // The entries to delete is now added to a list and deleted later.
+                    removeKeys.add(entry.getKey());
                     break;
                 }
             }
+        }
+
+        for (String removeKey : removeKeys) {
+            this.serviceListenerMap.remove(removeKey);
         }
     }
 
