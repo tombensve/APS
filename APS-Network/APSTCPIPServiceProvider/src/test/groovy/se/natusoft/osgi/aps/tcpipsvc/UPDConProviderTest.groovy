@@ -108,7 +108,7 @@ class UPDConProviderTest {
                 tcpipService.sendUDP("testclient", testString.bytes)
                 println("Send: ${testString}")
 
-                Thread.sleep(1000)
+                Thread.sleep(500)
 
                 tcpipService.removeUDPListener("testsvc", APSTCPIPService.ALL_LISTENERS)
 
@@ -117,9 +117,7 @@ class UPDConProviderTest {
                 assertTrue("Failed to receive correct message!", success)
             }
             finally {
-                // This logs a ConcurrentModificationException where it should be impossible for that to happen as far
-                // as I can determine. This is only test code, so we skip this for now.
-                // try {activator.stop(testBundle.bundleContext)} catch (Exception cme) {}
+                activator.stop(testBundle.bundleContext)
             }
 
         }

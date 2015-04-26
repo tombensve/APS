@@ -64,7 +64,7 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
     // Private Members
     //
 
-    @Managed(name = "APSTCPIPServiceLogger", loggingFor = "aps-tcpip-service-nonsecure-provider")
+    @Managed(name = "APSTCPIPServiceLogger", loggingFor = "aps-tcpip-service-provider")
     private APSLogger logger
 
     @Managed
