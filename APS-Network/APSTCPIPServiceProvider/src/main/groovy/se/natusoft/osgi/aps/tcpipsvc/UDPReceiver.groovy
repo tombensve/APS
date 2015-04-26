@@ -200,7 +200,12 @@ class UDPReceiver implements ConnectionProvider {
      * @param listener The listener to remove.
      */
     public synchronized void removeListener(UDPListener listener) {
-        this.listeners -= listener
+        if (listener == null) {
+            this.listeners.clear()
+        }
+        else {
+            this.listeners -= listener
+        }
         if (this.listeners.size() == 0) {
             if (this.receiverThread != null) {
                 this.receiverThread.stopThread()

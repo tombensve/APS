@@ -38,24 +38,24 @@ package se.natusoft.osgi.aps.tcpipsvc
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.APSServiceProperties
-import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService
 import se.natusoft.osgi.aps.api.net.tcpip.APSTCPIPService
-import se.natusoft.osgi.aps.api.net.tcpip.TCPRequest
 import se.natusoft.osgi.aps.api.net.tcpip.TCPListener
+import se.natusoft.osgi.aps.api.net.tcpip.TCPRequest
 import se.natusoft.osgi.aps.api.net.tcpip.UDPListener
 import se.natusoft.osgi.aps.tcpipsvc.ConnectionProvider.Direction
 import se.natusoft.osgi.aps.tcpipsvc.ConnectionProvider.Type
+import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
 import se.natusoft.osgi.aps.tcpipsvc.security.UDPSecurityHandler
 import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
 
 /**
  * Provides an implementation of APSTCPIPService for nonsecure connections.
  */
+@SuppressWarnings("GroovyUnusedDeclaration") // APSActivator instantiates this through reflection, and it will
+                                             // only be called via the interface so IDEs will never see a
+                                             // reference to this.
 @OSGiServiceProvider
 @CompileStatic
 @TypeChecked
@@ -192,14 +192,13 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
      * Removes a listener for incoming TCP requests.
      *
      * @param name Thge named config to remove a listener for.
-     * @param listener The listener to remove.
      *
      * @throws IllegalArgumentException on bad name.
      */
     @Override
-    public void removeTCPRequestListener(String name, TCPListener listener) {
+    public void removeTCPRequestListener(String name) {
         TCPReceiver receiver = (TCPReceiver)this.configResolver.resolve(name, Direction.Read, Type.TCP)
-        receiver.removeListener(listener)
+        receiver.removeListener()
     }
 
     /**

@@ -8,11 +8,9 @@ import se.natusoft.osgi.aps.api.net.tcpip.UDPListener
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
-import se.natusoft.osgi.aps.tcpipsvc.security.UDPSecurityHandler
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.test.tools.TestBundle
 import se.natusoft.osgi.aps.tools.APSActivator
-import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.APSServiceTracker
 
 import static org.junit.Assert.assertTrue
@@ -24,12 +22,8 @@ import static org.junit.Assert.assertTrue
 @TypeChecked
 class MulticastConProviderTest {
 
-    /** We don't want to open sockets on a normal build.  */
-//    private static final boolean testActiveFlag = false
-    private static final boolean testActiveFlag = true
-
     private static boolean isTestActive() {
-        return testActiveFlag || System.getProperty("aps.test.activate.disabled") == "true"
+        return !(System.getProperty("aps.test.disabled") == "true")
     }
 
     private static void configSetup1() {
@@ -98,13 +92,16 @@ class MulticastConProviderTest {
                 boolean success = false
 
                 String testString = "This is a multicasted string!"
-                int test = 0
 
+                // Do note: On my machine (and possibly all Macs) one sent multicast packet are received twice.
+                // I've tried binding the sender to just one interface to make sure it is not going out on both
+                // public and loopback. This however made no difference. A non multicast UDP packet is only received
+                // once, and that is exactly the same code with the exception of creation of the socket. I can
+                // also see that the multicast packet are actually received twice on the network.
                 tcpipService.addUDPListener("testsvc", new UDPListener() {
                     @Override
                     void udpDataReceived(String name, DatagramPacket dataGramPacket) {
                         println("name: ${name}")
-                        println "" + ++test
 
                         String received = new String(dataGramPacket.data, 0, dataGramPacket.length)
                         println("Received: ${received}")
@@ -116,9 +113,12 @@ class MulticastConProviderTest {
                 tcpipService.sendUDP("testclient", testString.bytes)
                 println("Send: ${testString}")
 
+                Thread.sleep(1000)
+
+                tcpipService.removeUDPListener("testsvc", APSTCPIPService.ALL_LISTENERS)
+
                 tcpipSvcTracker.releaseService()
 
-                Thread.sleep(2000)
 
                 assertTrue("Failed to receive correct message!", success)
             }
@@ -130,8 +130,8 @@ class MulticastConProviderTest {
 
         }
         else {
-            println("This test is currently disabled since we don't want to run it during normal builds due to TCP/IP traffic.")
-            println("Add -Daps.test.activate.disabled=true to actually run it.")
+            println("This test is currently disabled!")
+            println("Remove -Daps.test.disabled=true to run it.")
         }
     }
 

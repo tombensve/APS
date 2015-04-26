@@ -4,12 +4,17 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigList
+import se.natusoft.osgi.aps.api.net.tcpip.APSTCPIPService
 import se.natusoft.osgi.aps.api.net.tcpip.UDPListener
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.tcpipsvc.security.UDPSecurityHandler
+import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
+import se.natusoft.osgi.aps.test.tools.TestBundle
+import se.natusoft.osgi.aps.tools.APSActivator
 import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.tools.APSServiceTracker
 
 import static org.junit.Assert.*
 
@@ -20,12 +25,8 @@ import static org.junit.Assert.*
 @TypeChecked
 class UPDConProviderTest {
 
-    /** We don't want to open sockets on a normal build.  */
-//    private static final boolean testActiveFlag = false
-    private static final boolean testActiveFlag = true
-
     private static boolean isTestActive() {
-        return testActiveFlag && !(System.getProperty("aps.test.disabled") == "true")
+        return !(System.getProperty("aps.test.disabled") == "true")
     }
 
     private static void configSetup1() {
@@ -70,43 +71,59 @@ class UPDConProviderTest {
             assertTrue("Config failure!", TCPIPConfig.managed.get().namedConfigs.get(0).name.string == "testsvc")
             assertTrue("Config failure!", TCPIPConfig.managed.get().namedConfigs.get(1).name.string == "testclient")
 
-            APSLogger logger = new APSLogger()
+            OSGIServiceTestTools testTools = new OSGIServiceTestTools()
+            TestBundle testBundle = testTools.createBundle("test-bundle")
+            testBundle.addEntryPaths(
+                    "/se/natusoft/osgi/aps/tcpipsvc/APSTCPIPServiceProvider.class"
+            );
 
-            UDPSecurityHandler securityHandler = new UDPSecurityHandler()
+            APSActivator activator = new APSActivator()
+            activator.start(testBundle.bundleContext)
 
-            UDPReceiver receiver = new UDPReceiver(
-                    config: new ConfigWrapper(name: "testsvc"),
-                    logger: logger,
-                    securityHandler: securityHandler
-            )
+            try {
 
-            boolean success = false
+                APSServiceTracker<APSTCPIPService> tcpipSvcTracker =
+                        new APSServiceTracker<APSTCPIPService>(
+                                testBundle.bundleContext,
+                                APSTCPIPService.class,
+                                "5 seconds"
+                        );
+                tcpipSvcTracker.start()
 
-            receiver.addListener(new UDPListener() {
-                @Override
-                void udpDataReceived(String name, DatagramPacket dataGramPacket) {
-                    println("name: ${name}")
+                APSTCPIPService tcpipService = tcpipSvcTracker.allocateService()
 
-                    String received = new String(dataGramPacket.data, 0 , dataGramPacket.length)
-                    println("Received: ${received}")
+                boolean success = false
 
-                    if (received == "This is a test string!") success = true
-                }
-            })
+                String testString = "This is an UDP sent string!"
 
-            receiver.start()
+                tcpipService.addUDPListener("testsvc", new UDPListener() {
+                    @Override
+                    void udpDataReceived(String name, DatagramPacket dataGramPacket) {
+                        println("name: ${name}")
 
-                UDPSender sender = new UDPSender(
-                        config: new ConfigWrapper(name: "testclient"),
-                        securityHandler: securityHandler
-                )
-                sender.start()
-                    sender.send("This is a test string!".bytes)
-                sender.stop()
+                        String received = new String(dataGramPacket.data, 0, dataGramPacket.length)
+                        println("Received: ${received}")
 
-            receiver.stop()
+                        if (received == testString) success = true
+                    }
+                })
 
-            assertTrue("Failed to receive correct message!", success)
+                tcpipService.sendUDP("testclient", testString.bytes)
+                println("Send: ${testString}")
+
+                Thread.sleep(1000)
+
+                tcpipService.removeUDPListener("testsvc", APSTCPIPService.ALL_LISTENERS)
+
+                tcpipSvcTracker.releaseService()
+
+                assertTrue("Failed to receive correct message!", success)
+            }
+            finally {
+                // This logs a ConcurrentModificationException where it should be impossible for that to happen as far
+                // as I can determine. This is only test code, so we skip this for now.
+                // try {activator.stop(testBundle.bundleContext)} catch (Exception cme) {}
+            }
 
         }
         else {

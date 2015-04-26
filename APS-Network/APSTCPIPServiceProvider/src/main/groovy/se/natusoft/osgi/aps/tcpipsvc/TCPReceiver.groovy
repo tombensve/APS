@@ -159,10 +159,8 @@ class TCPReceiver implements ConnectionProvider {
 
     /**
      * Removes a TCP listener.
-     *
-     * @param listener The listener to remove.
      */
-    public synchronized void removeListener(TCPListener listener) {
+    public synchronized void removeListener() {
         this.listener = null
         if (this.active) {
             stopReceiverThread()

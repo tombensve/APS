@@ -20,12 +20,8 @@ import static org.junit.Assert.assertTrue
 @TypeChecked
 class TCPConProviderTest {
 
-    /** We don't want to open sockets on a normal build.  */
-//    private static final boolean testActiveFlag = false
-    private static final boolean testActiveFlag = true
-
     private static boolean isTestActive() {
-        return testActiveFlag && !(System.getProperty("aps.test.disabled") == "true")
+        return !(System.getProperty("aps.test.disabled") == "true")
     }
 
     private static void configSetup1() {
