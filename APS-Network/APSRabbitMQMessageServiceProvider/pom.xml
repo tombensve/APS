@@ -102,14 +102,6 @@
         <aps.config.classes>se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig</aps.config.classes>
 
         <!--
-             Trigger tiles.
-         -->
-
-        <tile.groovy>${project.groupId}:groovy-tile:${project.version}</tile.groovy>
-
-        <tile.deploy>${project.groupId}:DeployBundleTile:${project.version}</tile.deploy>
-
-        <!--
             Other properties
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -156,6 +148,18 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/rabbitmq-client.jar</systemPath>
         </dependency>
+
+        <!--
+            Groovy
+        -->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>2.4.3</version>
+            <scope>provided</scope>
+            <classifier>indy</classifier>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -170,6 +174,20 @@
                     <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                     </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.github.odavid.maven.plugins</groupId>
+                <artifactId>mixin-maven-plugin</artifactId>
+                <configuration>
+                    <mixins>
+                        <mixin>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>groovy-mixin</artifactId>
+                            <version>${project.version}</version>
+                        </mixin>
+                    </mixins>
                 </configuration>
             </plugin>
 

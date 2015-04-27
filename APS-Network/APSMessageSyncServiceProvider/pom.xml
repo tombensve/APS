@@ -3,28 +3,28 @@
     PROJECT
         Name
             APS Message Sync Service Provider
-        
+
         Code Version
             1.0.0
-        
+
     COPYRIGHTS
         Copyright (C) 2012 by Natusoft AB All rights reserved.
-        
+
     LICENSE
         Apache 2.0 (Open Source)
-        
+
         Licensed under the Apache License, Version 2.0 (the "License");
         you may not use this file except in compliance with the License.
         You may obtain a copy of the License at
-        
+
           http://www.apache.org/licenses/LICENSE-2.0
-        
+
         Unless required by applicable law or agreed to in writing, software
         distributed under the License is distributed on an "AS IS" BASIS,
         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
         See the License for the specific language governing permissions and
         limitations under the License.
-        
+
     AUTHORS
         tommy ()
             Changes:
@@ -40,7 +40,7 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>aps-message-svc-common-datetime-service-provider</artifactId>
+    <artifactId>aps-message-sync-service-provider</artifactId>
     <packaging>bundle</packaging>
 
     <name>APS Message Sync Service Provider</name>
@@ -68,7 +68,6 @@
 
         <!-- The private packages. -->
         <osgi.private.package>
-            se.natusoft.osgi.aps.net.messaging,
             se.natusoft.osgi.aps.net.messaging.config,
             se.natusoft.osgi.aps.net.messaging.messages,
             se.natusoft.osgi.aps.net.messaging.service
@@ -96,13 +95,6 @@
         <aps.config.classes></aps.config.classes>
 
         <!--
-             Trigger tiles.
-         -->
-        <tile.groovy>${project.groupId}:groovy-tile:${project.version}</tile.groovy>
-
-        <tile.deploy>${project.groupId}:DeployBundleTile:${project.version}</tile.deploy>
-
-        <!--
             Other properties
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -126,8 +118,32 @@
         </dependency>
 
         <!--
-            APSMessageSvcClusterServiceProvider dependencies
+            Groovy
         -->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>2.4.3</version>
+            <scope>provided</scope>
+            <classifier>indy</classifier>
+        </dependency>
+
+        <!--
+            Test
+        -->
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-service-test-support</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-osgi-test-tools</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
@@ -143,6 +159,20 @@
                     <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                     </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.github.odavid.maven.plugins</groupId>
+                <artifactId>mixin-maven-plugin</artifactId>
+                <configuration>
+                    <mixins>
+                        <mixin>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>groovy-mixin</artifactId>
+                            <version>${project.version}</version>
+                        </mixin>
+                    </mixins>
                 </configuration>
             </plugin>
 
