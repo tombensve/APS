@@ -4,6 +4,7 @@ import se.natusoft.osgi.aps.api.APSServiceProperties;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.util.List;
 
 /**
  * This service provides the following functions:
@@ -21,7 +22,11 @@ import java.net.DatagramPacket;
  * If a service both sends TCP request and receives them there need to be 2 different config entries
  * for this.
  */
+@SuppressWarnings("unused")
 public interface APSTCPIPService extends APSServiceProperties {
+
+    /** This can be used for remove UDPListener. */
+    UDPListener ALL_LISTENERS = null;
 
     /**
      * Sends UDP data.
@@ -61,7 +66,7 @@ public interface APSTCPIPService extends APSServiceProperties {
      * Removes a listener for received udp data.
      *
      * @param name The name of a configuration specifying address and port or multicast and port.
-     * @param listener The listener to remove.
+     * @param listener The listener to remove, or null for all.
      *
      * @throws IllegalArgumentException on bad name.
      */
@@ -90,11 +95,18 @@ public interface APSTCPIPService extends APSServiceProperties {
     /**
      * Removes a listener for incoming TCP requests.
      *
-     * @param name Thge named config to remove a listener for.
-     * @param listener The listener to remove.
+     * @param name The named config to remove a listener for.
      *
      * @throws IllegalArgumentException on bad name.
      */
-    void removeTCPRequestListener(String name, TCPListener listener);
+    void removeTCPRequestListener(String name);
 
+    /**
+     * Returns a list of names matching the specified regexp.
+     *
+     * @param regexp The regexp to get names for.
+     *
+     * @return A list of the matching names. If none were found the list will be empty.
+     */
+    List<String> getNames(String regexp);
 }
