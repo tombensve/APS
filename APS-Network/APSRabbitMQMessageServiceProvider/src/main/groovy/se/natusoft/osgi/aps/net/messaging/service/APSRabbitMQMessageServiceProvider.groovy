@@ -40,10 +40,12 @@ import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.Channel
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import se.natusoft.osgi.aps.api.misc.json.model.JSONObject
+import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
 import se.natusoft.osgi.aps.api.net.messaging.types.APSMessage
-import se.natusoft.osgi.aps.api.net.messaging.types.APSMessageListener
+
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.ReceiveThread
@@ -62,8 +64,6 @@ import se.natusoft.osgi.aps.tools.APSLogger
 @CompileStatic
 @TypeChecked
 public class APSRabbitMQMessageServiceProvider implements APSMessageService {
-
-    public static final UUID PROVIDER_UUID = UUID.fromString("5E72A925-2890-4364-B04B-BD42D4CE226C");
 
     //
     // Private Members
@@ -92,10 +92,13 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
      * Provides a RabbitMQ Connection. Rather than taking a Connection directly, this can
      * always provide a fresh connection.
      */
-    ConnectionProvider connectionProvider;
+    ConnectionProvider connectionProvider
 
     /** A configuration for this specific cluster provider instance. */
-    RabbitMQMessageServiceConfig.RMQInstance instanceConfig;
+    RabbitMQMessageServiceConfig.RMQInstance instanceConfig
+
+    /** For handling JSON. */
+    APSJSONService jsonService
 
     //
     // Constructors
@@ -113,18 +116,9 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
     // Methods
     //
 
-    /**
-     * Every service implementation should have a UUID, which also gets passed in messages.
-     */
-    @Override
-    UUID getProviderUUID() {
-        return PROVIDER_UUID
-    }
-
-
     // ----- Side effects of using Groovy properties constructor ...
 
-    private validate(Object what, String message) {
+    private static validate(Object what, String message) {
         if (what == null) throw new IllegalArgumentException(message)
     }
 
@@ -168,6 +162,7 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
                     name: "cluster-receive-thread-" + getName(),
                     connectionProvider: this.connectionProvider,
                     instanceConfig: this.instanceConfig,
+                    jsonService: this.jsonService,
                     logger: this.logger
             )
             this.instanceReceiveThread.start()
@@ -194,16 +189,6 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
         stopReceiveThread()
     }
 
-
-    /**
-     * Returns general informative information about this instance. Implementations can return "" if they want.
-     */
-    @Override
-    String getMessagingProviderInfo() {
-        return """{"implementation": "RabbitMQ", "name": "${this.name}", "exchange": "${this.instanceConfig.exchange.string}", "queue": "${this.instanceConfig.queue.string}"}"""
-
-    }
-
     /**
      * Sends a message.
      *
@@ -212,13 +197,14 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
      * @throws se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException on failure.
      */
     @Override
-    void sendMessage(APSMessage message) throws APSMessagingException {
-        message.setSenderUUID(PROVIDER_UUID)
+    void sendMessage(JSONObject message) throws APSMessagingException {
         String routingKey = this.instanceConfig.routingKey.string
         if (routingKey.isEmpty()) {
             routingKey = null
         }
-        ensureInstanceChannel().basicPublish(this.instanceConfig.exchange.string, routingKey, this.basicProperties, message.bytes)
+
+        byte[] msgBytes = APSJSONService.Tools.toBytes(message, this.jsonService)
+        ensureInstanceChannel().basicPublish(this.instanceConfig.exchange.string, routingKey, this.basicProperties, msgBytes)
     }
 
     /**
@@ -227,7 +213,7 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
      * @param listener The listener to add.
      */
     @Override
-    void addMessageListener(APSMessageListener listener) {
+    void addMessageListener(APSMessageService.APSMessageListener listener) {
         this.instanceReceiveThread.addMessageListener(listener)
     }
 
@@ -237,7 +223,7 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
      * @param listener The listener to remove.
      */
     @Override
-    void removeMessageListener(APSMessageListener listener) {
+    void removeMessageListener(APSMessageService.APSMessageListener listener) {
         this.instanceReceiveThread.removeMessageListener(listener)
     }
 }

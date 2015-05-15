@@ -2,9 +2,10 @@ package se.natusoft.osgi.aps.net.messaging.service
 
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
 import se.natusoft.osgi.aps.api.net.messaging.service.APSClusterService
+import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
 import se.natusoft.osgi.aps.api.net.messaging.types.APSCommonDateTime
 import se.natusoft.osgi.aps.api.net.messaging.types.APSMessage
-import se.natusoft.osgi.aps.api.net.messaging.types.APSMessageListener
+
 import se.natusoft.osgi.aps.net.messaging.config.ClusterServiceConfig
 
 /**
@@ -67,7 +68,7 @@ class APSClusterServiceProvider implements APSClusterService {
      * @param listener The listener to add.
      */
     @Override
-    void addMessageListener(APSMessageListener listener) {
+    void addMessageListener(APSMessageService.APSMessageListener listener) {
 
     }
 
@@ -77,7 +78,7 @@ class APSClusterServiceProvider implements APSClusterService {
      * @param listener The listener to remove.
      */
     @Override
-    void removeMessageListener(APSMessageListener listener) {
+    void removeMessageListener(APSMessageService.APSMessageListener listener) {
 
     }
 

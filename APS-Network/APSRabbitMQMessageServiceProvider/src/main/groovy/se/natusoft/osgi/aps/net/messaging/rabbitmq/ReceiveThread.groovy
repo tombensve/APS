@@ -6,7 +6,10 @@ import com.rabbitmq.client.QueueingConsumer
 import com.rabbitmq.client.ShutdownSignalException
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.net.messaging.types.APSMessageListener
+import se.natusoft.osgi.aps.api.misc.json.model.JSONObject
+import se.natusoft.osgi.aps.api.misc.json.model.JSONValue
+import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService
+import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -32,8 +35,8 @@ public class ReceiveThread extends Thread {
     private String recvQueueName;
 
     /** The listeners to notify of received messages. */
-    private List<APSMessageListener> listeners =
-            Collections.synchronizedList(new LinkedList<APSMessageListener>())
+    private List<APSMessageService.APSMessageListener> listeners =
+            Collections.synchronizedList(new LinkedList<APSMessageService.APSMessageListener>())
 
     //
     // Properties
@@ -50,6 +53,9 @@ public class ReceiveThread extends Thread {
 
     /** The config for this receiver. */
     RabbitMQMessageServiceConfig.RMQInstance instanceConfig
+
+    /** The APSJSONService to use. */
+    APSJSONService jsonService
 
     //
     // Methods
@@ -74,7 +80,7 @@ public class ReceiveThread extends Thread {
      *
      * @param listener The listener to add.
      */
-    public void addMessageListener(APSMessageListener listener) {
+    public void addMessageListener(APSMessageService.APSMessageListener listener) {
         this.listeners.add(listener)
     }
 
@@ -83,13 +89,14 @@ public class ReceiveThread extends Thread {
      *
      * @param listener The listener to remove.
      */
-    public void removeMessageListener(APSMessageListener listener) {
+    public void removeMessageListener(APSMessageService.APSMessageListener listener) {
         this.listeners.remove(listener)
     }
 
     /**
      * Returns true if there are listeners available.
      */
+    @SuppressWarnings("GroovyUnusedDeclaration")
     public boolean haveListeners() {
         return !this.listeners.isEmpty()
     }
@@ -97,6 +104,7 @@ public class ReceiveThread extends Thread {
     /**
      * Removes all listeners.
      */
+    @SuppressWarnings("GroovyUnusedDeclaration")
     public void removeAllListeners() {
         this.listeners.clear()
     }
@@ -147,16 +155,24 @@ public class ReceiveThread extends Thread {
                         //noinspection StatementWithEmptyBody
                         if (delivery != null) {
                             byte[] body = delivery.getBody()
+                            JSONValue jsonValue = APSJSONService.Tools.fromBytes(body, this.jsonService, null)
+
                             //logger.debug("======== Received message of length " + body.length + " ==========")
                             //logger.debug("  Current no listeners: " + this.listeners.size())
 
-                            for (APSMessageListener listener : this.listeners) {
-                                try {
-                                    listener.messageReceived(body)
+                            if (JSONObject.class.isAssignableFrom(jsonValue.getClass())) {
+                                for (APSMessageService.APSMessageListener listener : this.listeners) {
+                                    try {
+                                        listener.messageReceived((JSONObject)jsonValue)
+                                    }
+                                    catch (RuntimeException re) {
+                                        this.logger.error("Failure during listener call: " + re.getMessage(), re)
+                                    }
                                 }
-                                catch (RuntimeException re) {
-                                    this.logger.error("Failure during listener call: " + re.getMessage(), re)
-                                }
+                            }
+                            else {
+                                this.logger.error("Expected JSONObject, got '" + jsonValue.getClass().getSimpleName() +
+                                        "'! This can thereby not be forwarded to listeners!")
                             }
                         } else {
                             //logger.debug("====== TIMEOUT ======")
@@ -172,7 +188,7 @@ public class ReceiveThread extends Thread {
                         if (failureCount < 3) {
                             ++failureCount
                             //noinspection UnnecessaryQualifiedReference
-                            Thread.sleep(1000);
+                            Thread.sleep(2000);
                             consumer = setupConsumer()
                         } else {
                             this.logger.error("Sleeping for 15 seconds hoping for better times! If this keeps recurring " +
@@ -185,7 +201,7 @@ public class ReceiveThread extends Thread {
                 }
                 else {
                     // If we don't have any listeners, then we don't fetch any messages.
-                    Thread.sleep(10000)
+                    sleep(5000)
                 }
             }
 

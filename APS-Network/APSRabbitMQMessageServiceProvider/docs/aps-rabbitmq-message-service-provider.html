@@ -15,31 +15,169 @@
       <a href='http://apidoc.natusoft.se/APS/se/natusoft/osgi/aps/api/net/messaging/service/APSMessageService.html' title=''>Javadoc</a>      
     </p>
     <p>
-      public <em>interface</em> <strong>APSClusterService </strong> extends  APSMessageService    [se.natusoft.osgi.aps.api.net.messaging.service] {      
+      public <em>interface</em> <strong>APSClusterService </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
     </p>
     <p>
-      All of APSMessageService, APSSynchronizedMapService, and APSSyncService are part of some cluster which they communicate with. This represents that cluster in a general form.      
+      This service defines a synchronized cluster.      
     </p>
     <p>
-      Since APSClusterService extends APSMessageService both are provided by the same bundle. The sync services can also be part of the same bundle, but can also be implemented on top of APSMessageService.      
+            
     </p>
     <p>
-      <strong>String getName()</strong>      
+            
     </p>
     <p>
-      Returns the name of the cluster.      
+            
     </p>
     <p>
-      <strong>boolean isMasterNode()</strong>      
+      <strong>void clusterUpdated(String key, JSONValue value)</strong>      
     </p>
     <p>
-      If the implementation has the notion of a master and this node is the master then true is returned. In all other cases false is returned.      
+      Receives an updated value.      
     </p>
     <p>
-      <strong>APSCommonDateTime getCommonDateTime()</strong>      
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The key of the updated value.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>value</em> - The actual value.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void update(String key, JSONValue value)</strong>      
     </p>
     <p>
-      Returns the network common DateTime that is independent of local machine times.      
+      Updates a keyed value to the cluster.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - This uniquely specifies what value this is. How it is used is upp tp the actual cluster using it.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>value</em> - The modified value to update.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void addUpdateListener(UpdateListener updateListener)</strong>      
+    </p>
+    <p>
+      Adds an update listener.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>updateListener</em> - The update listener to add.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void removeUpdateListener(UpdateListener updateListener)</strong>      
+    </p>
+    <p>
+      Removes an update listener.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>updateListener</em> - The listener to remove.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>JSONObject getNamedObject(String name)</strong>      
+    </p>
+    <p>
+      Gets named cluster-wide object. If it does not exist it will be created.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the cluster object to get.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>UnsupportedOperationException</em> - if this feature is not supported.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>List&lt;JSONValue&gt; getNamedList(String name)</strong>      
+    </p>
+    <p>
+      Gets a cluster-wide named list. If it does not exist it will be created.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the list to get.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>UnsupportedOperationException</em> - if this feature is not supported.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>List&lt;UpdateListener&gt; listeners = Collections.synchronizedList(new LinkedList&lt;UpdateListener&gt;())</strong>      
+    </p>
+    <p>
+       The listeners.      
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>protected void updateListeners(String key, JSONValue value)</strong>      
+    </p>
+    <p>
+      Updates all listeners.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The key of the update.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>value</em> - The value of the update.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>protected List&lt;UpdateListener&gt; getListeners()</strong>      
+    </p>
+    <p>
+      Returns the listeners.      
     </p>
     <p>
       }      
@@ -57,16 +195,10 @@
       Since the actual members are outside of this service API, it doesn't really know who they are and doesn't care, all members are defined by configuration to make a cluster of members.      
     </p>
     <p>
-      <strong>public static final String APS_MESSAGE_SERVICE_PROVIDER = "aps-message-service-provider"</strong>      
+            
     </p>
     <p>
-      Multiple providers of this service can be deployed at the same time. Using this property when registering services for a provider allows clients to lookup a specific provider.      
-    </p>
-    <p>
-      <strong>public static final String APS_MESSAGE_SERVICE_INSTANCE_NAME = "aps-message-service-instance-name"</strong>      
-    </p>
-    <p>
-      Each configured instance of this service should have this property with a unique instance name so that client can lookup a specific instance of the service.      
+            
     </p>
     <p>
       <strong>void addMessageListener(APSMessageListener listener)</strong>      
@@ -97,7 +229,7 @@
       </p>
     </blockquote>
     <p>
-      <strong>void sendMessage(APSMessage message) throws APSMessagingException</strong>      
+      <strong>void sendMessage(JSONObject message) throws APSMessagingException</strong>      
     </p>
     <p>
       Sends a message.      
@@ -119,6 +251,23 @@
       </p>
     </blockquote>
     <p>
+            
+    </p>
+    <p>
+      <strong>void messageReceived(JSONObject message)</strong>      
+    </p>
+    <p>
+      This is called when a message is received.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The received message.         
+      </p>
+    </blockquote>
+    <p>
       public <em>static</em> <em>abstract</em> <em>class</em> <strong>AbstractMessageServiceProvider </strong> implements  APSMessageService    [se.natusoft.osgi.aps.api.net.messaging.service] {      
     </p>
     <p>
@@ -134,7 +283,7 @@
             
     </p>
     <p>
-      <strong>protected void sendToListeners(APSMessage message)</strong>      
+      <strong>protected void sendToListeners(JSONObject message)</strong>      
     </p>
     <p>
       Sends a message to the registered listeners.      
@@ -148,161 +297,11 @@
       </p>
     </blockquote>
     <p>
-      }      
-    </p>
-    <hr/>    <p>
-                
+      <strong>protected List&lt;APSMessageListener&gt; getMessageListeners()</strong>      
     </p>
     <p>
-      public <em>interface</em> <strong>APSSynchronizedMapService </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
+      Returns the message listeners.      
     </p>
-    <p>
-      This service makes a synchronized named map available.      
-    </p>
-    <p>
-      <strong>Map&lt;String, String&gt; getNamedMap(String name)</strong>      
-    </p>
-    <p>
-      Returns a named map into which objects can be stored with a name.      
-    </p>
-    <p>
-      If the named map does not exists it should be created and an empty map be returned.      
-    </p>
-    <p>
-      <strong>List&lt;String&gt; getAvailableNamedMaps()</strong>      
-    </p>
-    <p>
-      Returns the available names.      
-    </p>
-    <p>
-      <strong>boolean supportsNamedMapPersistence()</strong>      
-    </p>
-    <p>
-      Returns true if the implementation supports persistence for stored objects. If false is returned objects are in memory only.      
-    </p>
-    <p>
-      }      
-    </p>
-    <hr/>    <p>
-                
-    </p>
-    <p>
-      public <em>interface</em> <strong>APSSyncService </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
-    </p>
-    <p>
-      This defines a data synchronization service.      
-    </p>
-    <p>
-      <strong>public static final String SYNC_PROVIDER = "aps-sync-provider"</strong>      
-    </p>
-    <p>
-      A property key that should be registered with each service instance to indicate the specific implementation of the service. This to allow multiple implementations to be deployed and clients can ask for a specific if needed.      
-    </p>
-    <p>
-      <strong>public static final String SYNC_INSTANCE_NAME = "aps-sync-instance-name"</strong>      
-    </p>
-    <p>
-      There should be one service instance registered for each configured synchronization group. Each instance should include this property with a unique name so that clients can get the synchronizer for the correct group.      
-    </p>
-    <p>
-      <strong>void syncData(APSSyncDataEvent syncEvent) throws APSMessagingException</strong>      
-    </p>
-    <p>
-      Synchronizes data.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>syncEvent</em> - The sync event to send.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>APSMessagingException</em> - on failure.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>void resync()</strong>      
-    </p>
-    <p>
-      Triggers a resynchronization.      
-    </p>
-    <p>
-      <strong>void resync(String key)</strong>      
-    </p>
-    <p>
-      Triggers a resynchronization of the specified key.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>key</em> - The key to resync.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>void addSyncListener(Listener listener)</strong>      
-    </p>
-    <p>
-      Adds a synchronization listener.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>listener</em> - The listener to add.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>void removeSyncListener(Listener listener)</strong>      
-    </p>
-    <p>
-      Removes a synchronization listener.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>listener</em> - The listener to remove.         
-      </p>
-    </blockquote>
-    <p>
-            
-    </p>
-    <p>
-      <strong>void syncDataReceived(APSSyncEvent syncEvent)</strong>      
-    </p>
-    <p>
-      Called to deliver a sync event. This can currently be one of:      
-    </p>
-    <ul>
-      <li>
-        <p>
-          APSSyncDataEvent          
-        </p>
-      </li>
-      <li>
-        <p>
-          APSReSyncEvent          
-        </p>
-      </li>
-    </ul>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>syncEvent</em> - The received sync event.         
-      </p>
-    </blockquote>
     <p>
       }      
     </p>

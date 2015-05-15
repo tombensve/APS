@@ -36,13 +36,12 @@
  */
 package se.natusoft.osgi.aps.api.net.messaging.service;
 
+import se.natusoft.osgi.aps.api.misc.json.model.JSONObject;
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException;
-import se.natusoft.osgi.aps.api.net.messaging.types.APSMessage;
-import se.natusoft.osgi.aps.api.net.messaging.types.APSMessageListener;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * This defines a simple message service. Can be implemented by using a message bus like RabbitMQ, Active MQ, etc
@@ -57,13 +56,13 @@ public interface APSMessageService {
      * Multiple providers of this service can be deployed at the same time. Using this property
      * when registering services for a provider allows clients to lookup a specific provider.
      */
-    public static final String APS_MESSAGE_SERVICE_PROVIDER = "aps-message-service-provider";
+    String APS_MESSAGE_SERVICE_PROVIDER = "aps-message-service-provider";
 
     /**
      * Each configured instance of this service should have this property with a unique
      * instance name so that client can lookup a specific instance of the service.
      */
-    public static final String APS_MESSAGE_SERVICE_INSTANCE_NAME = "aps-message-service-instance-name";
+    String APS_MESSAGE_SERVICE_INSTANCE_NAME = "aps-message-service-instance-name";
 
     /**
      * Adds a listener for types.
@@ -86,11 +85,24 @@ public interface APSMessageService {
      *
      * @throws se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException on failure.
      */
-    void sendMessage(APSMessage message) throws APSMessagingException;
+    void sendMessage(JSONObject message) throws APSMessagingException;
 
     //
     // Inner Classes
     //
+
+    /**
+     * Listener for APSMessage.
+     */
+    interface APSMessageListener {
+
+        /**
+         * This is called when a message is received.
+         *
+         * @param message The received message.
+         */
+        void messageReceived(JSONObject message);
+    }
 
     /**
      * Provides an abstract implementation of the APSMessageService interface.
@@ -101,7 +113,7 @@ public interface APSMessageService {
         //
 
         /** Registered listeners. */
-        private List<APSMessageListener> messageListeners = new LinkedList<>();
+        private List<APSMessageListener> messageListeners = Collections.synchronizedList(new LinkedList<APSMessageListener>());
 
         //
         // Methods
@@ -132,10 +144,17 @@ public interface APSMessageService {
          *
          * @param message The message to send.
          */
-        protected void sendToListeners(APSMessage message) {
+        protected void sendToListeners(JSONObject message) {
             for (APSMessageListener messageListener : this.messageListeners) {
-                messageListener.messageReceived(message.getBytes());
+                messageListener.messageReceived(message);
             }
+        }
+
+        /**
+         * Returns the message listeners.
+         */
+        protected List<APSMessageListener> getMessageListeners() {
+            return this.messageListeners;
         }
     }
 

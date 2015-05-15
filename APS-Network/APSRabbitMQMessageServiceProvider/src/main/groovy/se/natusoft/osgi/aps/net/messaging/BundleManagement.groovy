@@ -7,6 +7,7 @@ import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceRegistration
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener
+import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
 import se.natusoft.osgi.aps.codedoc.Issue
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
@@ -17,6 +18,7 @@ import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStart
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
+import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
 
 /**
  * Manages starting and stopping of this bundle.
@@ -35,6 +37,9 @@ class BundleManagement {
 
     @Managed
     private BundleContext bundleContext
+
+    @OSGiService
+    private APSJSONService jsonService
 
     /** Listens to configuration changes. */
     private APSConfigChangedListener configChangedListener
@@ -123,9 +128,8 @@ class BundleManagement {
     }
 
     private void stopAllInstances() {
-        this.instances.keySet().each { String name ->
-            APSRabbitMQMessageServiceProvider messageService = this.instances.get(name)
-            stopInstance(messageService)
+        this.instances.each { String name, APSRabbitMQMessageServiceProvider msp ->
+            stopInstance(msp)
         }
     }
 
@@ -140,15 +144,16 @@ class BundleManagement {
                         return BundleManagement.this.rabbitMQConnectionManager.connection
                     }
                 },
-                instanceConfig: instance
+                instanceConfig: instance,
+                jsonService: this.jsonService
         )
         messageService.start()
 
         this.instances.put(instance.name.string, messageService);
 
         Properties props = new Properties()
-        props.setProperty(APSMessageService.MESSAGING_PROVIDER, "rabbitmq")
-        props.setProperty(APSMessageService.MESSAGING_INSTANCE_NAME, instance.name.string)
+        props.setProperty(APSMessageService.APS_MESSAGE_SERVICE_PROVIDER, "rabbitmq")
+        props.setProperty(APSMessageService.APS_MESSAGE_SERVICE_INSTANCE_NAME, instance.name.string)
         ServiceRegistration reg = this.bundleContext.registerService(APSMessageService.class.name, messageService, props)
         this.serviceRegistrations.put(instance.name.string, reg)
     }
@@ -175,12 +180,9 @@ class BundleManagement {
     private void closeRemovedInstances() {
         this.instances.findAll { String name, APSRabbitMQMessageServiceProvider instance ->
             !RabbitMQMessageServiceConfig.managed.get().instances.any {
-                RabbitMQMessageServiceConfig.RMQInstance instanceConfig ->
-                    return instanceConfig.name.string.equals(name)
+                RabbitMQMessageServiceConfig.RMQInstance instanceConfig -> instanceConfig.name.string.equals(name)
             }
-        }.each { String name, APSRabbitMQMessageServiceProvider instance ->
-            stopInstance(instance)
-        }
+        }.each { String name, APSRabbitMQMessageServiceProvider instance -> stopInstance(instance) }
     }
 
     @Issue(
