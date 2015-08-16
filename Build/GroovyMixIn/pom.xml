@@ -49,6 +49,7 @@
     <packaging>pom</packaging>
 
     <properties>
+        <groovy.version>2.4.3</groovy.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -65,11 +66,7 @@
                         <dependency>
                             <groupId>org.codehaus.groovy</groupId>
                             <artifactId>groovy-all</artifactId>
-                            <!--
-                                Can't upgrade to 2.4.* until the += bugs on collections are fixed.
-                                https://issues.apache.org/jira/browse/GROOVY-7380
-                            -->
-                            <version>2.3.11</version>
+                            <version>${groovy.version}</version>
                             <scope>compile</scope>
                             <classifier>indy</classifier>
                         </dependency>

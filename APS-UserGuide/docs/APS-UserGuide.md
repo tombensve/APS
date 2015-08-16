@@ -411,7 +411,7 @@ _Parameters_
 
 > _name_ - The name of the directory to create. 
 
-> _duplicateMessage_ - The exception message if directory already exists. 
+> _duplicateMessage_ - The exception messaging if directory already exists. 
 
 _Throws_
 
@@ -1987,22 +1987,21 @@ A simple implementation of _JSONErrorHandler_ that simply displays messages on S
 
 # APSToolsLib
 
-This is a library of utilities including a service tracker that beats the (beep) out of the default one including exception rather than null response, timeout specification, getting a proxied service implementation that automatically uses the tracker, allocating a service, calling it, and deallocating it again. This makes it trivially easy to handle a service being restarted or redeployed. It also includes a logger utility that will lookup the standard log service and log to that if found.
+This is a library of utilities including a service tracker that beats the <BEEEP> out of the default one, including exception rather than null response on timeout, timeout specification, getting a proxied service implementation that automatically uses the tracker, allocating a service, calling it, and deallocating it again. This makes it trivially easy to handle a service being restarted or redeployed. It also includes a logger utility that will lookup the standard log service and log to that if found, otherwise just log to stdout.
 
 This bundle provides no services. It just makes all its packages public. Every bundle included in APS makes use of APSToolsLib so it must be deployed for things to work.
 
-Please note that this bundle has no dependencies! That is, it can be used as is without requireing any other APS bundle.
+Please note that this bundle has no dependencies! That is, it can be used as is without requireing any other APS bundle. It however requires APSOSGiTestTools to build, but that is only a test dependency.
 
 ## APSServiceTracker
 
-This does the same thing as the standard service tracker included with OSGi, but does it better with more options and flexibility. One of the differences between this tracker and the OSGi one is that this throws an _APSNoServiceAvailableException_ if the service is not available. Personally I think this is easier to work with than having to check for a null result.
+This does the same thing as the standard service tracker included with OSGi, but does it better with more options and flexibility. One of the differences between this tracker and the OSGi one is that this throws an _APSNoServiceAvailableException_ if the service is not available. Personally I think this is easier to work with than having to check for a null result. I also think that trying to keep bundles and services up are better than pulling them down as soon as one depencency goes away for a short while, for example due to redeploy of newer version.
 
 There are several variants of constructors, but here is an example of one of the most used ones within the APS services:
 
         APSServiceTracker<Service> tracker = 
             new APSServiceTracker<Service>(context, Service.class, "20 seconds");
         tracker.start();
-        
 
 Note that the third argument, which is a timeout can also be specified as an int in which case it is always in miliseconds. The string variant supports the a second word of "sec[onds]" and "min[utes]" which indicates the type of the first numeric value. "forever" means just that and requires just one word. Any other second words than those will be treated as milliseconds. The APSServiceTracker also has a set of constants for the timeout string value:
 
@@ -2022,7 +2021,7 @@ So that the tracker unregisters itself from receiving bundle/service events.
 
 ### Services and active service
 
-The tracker tracks all instances of the service being tracked. It however have the notion of an active service. The active service is the service instance that will be returned by allocateService() (which is internally used by all other access methods also). On startup it will be the first service instance received. It will keep tracking other instances comming in, but as long as the active service does not go away it will be the one used. If the active service goes away then the the one that is at the beginning of the list of the other tracked instances will become active. If that list is empty there will be no active, which will trigger a wait for a service to become available again if allocateService() is called.
+The tracker tracks all instances of the service being tracked. It however have the notion of an active service. The active service is the service instance that will be returned by allocateService() (which is internally used by all other access methods also). On startup the active service will be the first service instance received. It will keep tracking other instances comming in, but as long as the active service does not go away it will be the one used. If the active service goes away then the the one that is at the beginning of the list of the other tracked instances will become active. If that list is empty there will be no active, which will trigger a wait for a service to become available again if allocateService() is called.
 
 ### Providing a logger
 
@@ -2141,7 +2140,6 @@ The APSLogger can be used by just creating an instance and then start using the 
 
         APSLogger logger = new APSLogger();
         logger.start(context);
-        
 
 then the logger will try to get hold of the standard OSGi LogService and if that is available log to that. If the log service is not available it will fallback to the OutputStream.
 
@@ -2174,24 +2172,31 @@ __@OSGiServiceProvider__ - This should be specified on a class that implements a
         }
         
         public @interface OSGiServiceProvider {
-        
             /** Extra properties to register the service with. */
             OSGiProperty[] properties() default {};
-        
+            
             /** The service API to register instance with. If not specified the first implemented interface will be used. */
             Class[] serviceAPIs() default {};
-        
+            
             /** This can be used as an alternative to properties() and also supports several instances. */
             OSGiServiceInstance[] instances() default {};
-        
+            
+            /**
+             * An alternative to providing static information. This class will be instantiated if specified and
+             * provideServiceInstancesSetup() will be called to provide implemented service APIs, service
+             * properties, and a service instance. In this last, it differs from instanceFactoryClass() since
+             * that does not provide an instance. This allows for more easy configuration of each instance.
+             */
+            Class<? extends APSActivatorServiceSetupProvider> serviceSetupProvider() default APSActivatorServiceSetupProvider.class;
+            
             /**
              * This can be used as an alternative and will instantiate the specified factory class which will deliver
              * one set of Properties per instance.
              */
             Class<? extends APSActivator.InstanceFactory> instanceFactoryClass() default APSActivator.InstanceFactory.class;
-        
+            
             /**
-             * If true this service will be stared in a separate thread. This means the bundle start
+             * If true this service will be started in a separate thread. This means the bundle start
              * will continue in parallel and that any failures in startup will be logged, but will
              * not stop the bundle from being started. If this is true it wins over required service
              * dependencies of the service class. Specifying this as true allows you to do things that
@@ -2199,8 +2204,9 @@ __@OSGiServiceProvider__ - This should be specified on a class that implements a
              * APSServiceTracker, without causing a deadlock.
              */
             boolean threadStart() default false;
-        
         }
+
+Do note that for the _serviceSetupProvider()_ another solution is to use the _@BundleStart_ (see below) and just create instances of your service and register them with the BundleContext. But if you use _@OSGiServiceProvider_ to instantiate and register other "one instance" services, then using _serviceSetupProvider()_ would look a bit more consistent.
 
 __@OSGiService__ - This should be specified on a field having a type of a service interface to have a service of that type injected, and continuously tracked. Any call to the service will throw an APSNoServiceAvailableException (runtime) if no service has become available before the specified timeout. It is also possible to have APSServiceTracker as field type in which case the underlying configured tracker will be injected instead.
 
@@ -2210,18 +2216,26 @@ If _required=true_ is specified and this field is in a class annotated with _@OS
         
             /** The timeout for a service to become available. Defaults to 30 seconds. */
             String timeout() default "30 seconds";
-        
+            
             /** Any additional search criteria. Should start with '(' and end with ')'. Defaults to none. */
             String additionalSearchCriteria() default "";
-        
+            
+            /**
+             * This should specify a Class implementing APSActivatorSearchCriteriaProvider. If specified it will be
+             * used instead of additionalSearchCriteria() by instantiating the Class and calling its method to get
+             * a search criteria back. This allows for search criteria coming from configuration, which a static
+             * annotation String does not.
+             */
+            Class<? extends APSActivatorSearchCriteriaProvider> searchCriteriaProvider() default APSActivatorSearchCriteriaProvider.class;
+             
             /** If set to true the service using this service will not be registered until the service becomes available. */
             boolean required() default false;
-        
         }
 
 __@Managed__ - This will have an instance managed and injected. There will be a unique instance for each name specified with the default name of "default" being used if none is specified. There are 2 field types handled specially: BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger instance the 'loggingFor' annotation property can be specified. Please note that any other type must have a default constructor to be instantiated and injected!
 
         public @interface Managed {
+        
             /**
              * The name of the instance to inject. If the same is used in multiple classes the same instance will
              * be injected.
@@ -2235,7 +2249,7 @@ __@Managed__ - This will have an instance managed and injected. There will be a 
             String loggingFor() default "";
         }
 
-__@BundleStart__ - This should be used on a method and will be called on bundle start. The method should take no arguments. If you need a BundleContext just inject it with @APSInejct. The use of this annotation is only needed for things not supported by this activator. Please note that a method annotated with this annotation can be static (in which case the class it belongs to will not be instantiaded -- due to this!). You can provide this annotation on as many methods in as many classes as you want. They will all be called (in the order classes are discovered in the bundle).
+__@BundleStart__ - This should be used on a method and will be called on bundle start. The method should take no arguments. If you need a BundleContext just inject it with _@Managed_. The use of this annotation is only needed for things not supported by this activator. Please note that a method annotated with this annotation can be static (in which case the class it belongs to will not be instantiaded). You can provide this annotation on as many methods in as many classes as you want. They will all be called (in the order classes are discovered in the bundle).
 
         public @interface BundleStart {
         
@@ -2246,7 +2260,7 @@ __@BundleStart__ - This should be used on a method and will be called on bundle 
             boolean thread() default false;
         }
 
-__@BundleStop__ - This should be used on a method and will be called on bundle stop. The method should take no arguments. This should probably be used if @APSBundleStart is used. Please note that a method annotated with this annotation can be static!
+__@BundleStop__ - This should be used on a method and will be called on bundle stop. The method should take no arguments. This should probably be used if _@BundleStart_ is used. Please note that a method annotated with this annotation can be static!
 
         public @interface BundleStop {}
 
@@ -2262,11 +2276,11 @@ Therefore APSActivator has another constructor that takes a vararg of instances:
 
 __Please note__ that if you create an instance of APSActivator in a servlet and provide the servlet instance to it and start it (you still need to do _start(BundleContext)_ and _stop(BundleContext)_ when used this way!), then you need to catch the close of the servlet and do _stop_ then.
 
-There are 2 support classes in _APSWebTools_:
+There are 2 support classes:
 
-* APSVaadinOSGiApplication - This is subclassed by your Vaading application.
+* [APSVaadinWebTools]: APSVaadinOSGiApplication - This is subclassed by your Vaading application.
 
-* APSOSGiSupport - You create an instance of this in a servlet and let your servlet implement the _APSOSGiSupportCallbacks_ interface which is then passed to the constructor of APSOSGiSupport.
+* [APSWebTools]: APSOSGiSupport - You create an instance of this in a servlet and let your servlet implement the _APSOSGiSupportCallbacks_ interface which is then passed to the constructor of APSOSGiSupport.
 
 Both of these creates and manages an APSActivator internally and catches shutdown to take it down. They also provide other utilities like providing the BundleContext. See _APSWebTools_ for more information.
 
@@ -2630,27 +2644,27 @@ This hints at how to use the credentials.
 
 __NONE__
 
-Only userid is required.
+ Only userid is required.
 
 __PASSWORD__
 
-toString() on the credentials object should return a password.
+ toString() on the credentials object should return a password.
 
 __KEY__
 
-The credential object is a key of some sort.
+ The credential object is a key of some sort.
 
 __CERTIFICATE__
 
-The credential object is a certificate of some sort.
+ The credential object is a certificate of some sort.
 
 __DIGEST__
 
-The credential object is a digest password.
+ The credential object is a digest password.
 
 __SSO__
 
-The credential object contains information for participating in a single sign on.
+ The credential object contains information for participating in a single sign on.
 
 }
 
@@ -2849,7 +2863,7 @@ Please note that this API does not declare any exceptions! In the case of an exc
 
 __public static final String AUTH_METHOD_PASSWORD = "password"__
 
-Password authentication method for authenticateUser().
+ Password authentication method for authenticateUser().
 
 __public Role getRole(String roleId)__
 
@@ -2993,7 +3007,7 @@ Creates a new APSAuthMethodNotSupportedException instance.
 
 _Parameters_
 
-> _message_ - The exception message. 
+> _message_ - The exception messaging. 
 
 __public APSAuthMethodNotSupportedException(String message, Throwable cause)__
 
@@ -3001,7 +3015,7 @@ Creates a new APSAuthMethodNotSupportedException instance.
 
 _Parameters_
 
-> _message_ - The exception message. 
+> _message_ - The exception messaging. 
 
 > _cause_ - The exception that is the cause of this one. 
 
@@ -3021,7 +3035,7 @@ Creates a new APSSimpleUserServiceException instance.
 
 _Parameters_
 
-> _message_ - The exception message. 
+> _message_ - The exception messaging. 
 
 __public APSSimpleUserServiceException(String message, Throwable cause)__
 
@@ -3029,7 +3043,7 @@ Creates a new APSSimpleUserServiceException instance.
 
 _Parameters_
 
-> _message_ - The exception message. 
+> _message_ - The exception messaging. 
 
 > _cause_ - The cause of the exception. 
 
@@ -3149,23 +3163,23 @@ Please note that the returned properties are read only!
 
 __public static final String USER_NAME = "name"__
 
-Optional suggestion for user properties key.
+ Optional suggestion for user properties key.
 
 __public static final String USER_PHONE = "phone"__
 
-Optional suggestion for user properties key.
+ Optional suggestion for user properties key.
 
 __public static final String USER_PHONE_WORK = "phone.work"__
 
-Optional suggestion for user properties key.
+ Optional suggestion for user properties key.
 
 __public static final String USER_PHONE_HOME = "phone.home"__
 
-Optional suggestion for user properties key.
+ Optional suggestion for user properties key.
 
 __public static final String USER_EMAIL = "email"__
 
-Optional suggestion for user properties key.
+ Optional suggestion for user properties key.
 
 }
 
@@ -3572,7 +3586,7 @@ Creates a new _APSDiscoveryPublishException_ instance.
 
 _Parameters_
 
-> _message_ - The exception message. 
+> _message_ - The exception messaging. 
 
 __public APSDiscoveryPublishException(String message, Throwable cause)__
 
@@ -3580,7 +3594,7 @@ Creates a new _APSDiscoveryPublishException_ instance.
 
 _Parameters_
 
-> _message_ - The exception message. 
+> _message_ - The exception messaging. 
 
 > _cause_ - The cause of this exception. 
 
@@ -3834,7 +3848,7 @@ _parseRequest(...)_ parameters now also contain the class of the service and a n
 
 _APSExtProtocolHTTPTransportProvider_ - Provides a HTTP transport.
 
-_APSStreamedJSONRPCProtocolProvider_ - Provides version 1.0 and 2.0 of JSONRPC, JSONHTTP and JSONREST.
+ _APSStreamedJSONRPCProtocolProvider_ - Provides version 1.0 and 2.0 of JSONRPC, JSONHTTP and JSONREST.
 
 ## APIs
 
@@ -4140,7 +4154,7 @@ _Parameters_
 
 > _httpStatusCode_ - The http status code to return. 
 
-> _message_ - An error message. 
+> _message_ - An error messaging. 
 
 __public int getHttpStatusCode()__
 
@@ -4236,7 +4250,7 @@ A potential error code.
 
 __public String getMessage()__
 
-Returns an error message. This is also optional.
+Returns an error messaging. This is also optional.
 
 __public boolean hasOptionalData()__
 
@@ -4262,7 +4276,7 @@ Creates a new _RequestedParamNotAvailableException_ instance.
 
 _Parameters_
 
-> _message_ - The exception message. 
+> _message_ - The exception messaging. 
 
 __public RequestedParamNotAvailableException(String message, Throwable cause)__
 
@@ -4270,7 +4284,7 @@ Creates a new _RequestedParamNotAvailableException_ instance.
 
 _Parameters_
 
-> _message_ - The exception message. 
+> _message_ - The exception messaging. 
 
 > _cause_ - The cause of this exception. 
 
@@ -4486,7 +4500,7 @@ _Parameters_
 
 > _errorType_ - The type of the error. 
 
-> _message_ - An error message. 
+> _message_ - An error messaging. 
 
 > _optionalData_ - Whatever optional data you want to pass along or null. 
 
@@ -4873,11 +4887,11 @@ Creates a new Message to send. Use the sendMessage() method when ready to send i
 
 __void sendMessage(Message message) throws IOException__
 
-Sends a previously created message to all current members of the group. If this returns without an exception then all members have received the message.
+Sends a previously created messaging to all current members of the group. If this returns without an exception then all members have received the messaging.
 
 _Parameters_
 
-> _message_ - The message to send. 
+> _message_ - The messaging to send. 
 
 _Throws_
 
@@ -4943,19 +4957,19 @@ _Parameters_
 
 public _interface_ __Message__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
-This represents a complete message containing any data you want to send to the group. You provide the message with data using the _OutputStream_, and read message data using the _InputStream_.
+This represents a complete messaging containing any data you want to send to the group. You provide the messaging with data using the _OutputStream_, and read messaging data using the _InputStream_.
 
 __OutputStream getOutputStream()__
 
-Returns an _OutputStream_ to write message on. Multiple calls to this will return the same _OutputStream_!
+Returns an _OutputStream_ to write messaging on. Multiple calls to this will return the same _OutputStream_!
 
 __InputStream getInputStream()__
 
-Returns an _InputStream_ for reading the message. Multiple calls to this will return new _InputStream_:s starting from the beginning!
+Returns an _InputStream_ for reading the messaging. Multiple calls to this will return new _InputStream_:s starting from the beginning!
 
 __UUID getId()__
 
-Returns the id of this message.
+Returns the id of this messaging.
 
 __String getMemberId()__
 
@@ -4967,7 +4981,7 @@ __String getGroupName()__
 
 _Returns_
 
-> The name of the group this message belongs to.
+> The name of the group this messaging belongs to.
 
 }
 
@@ -4981,11 +4995,11 @@ For listening on messages from the group.
 
 __public void messageReceived(Message message)__
 
-Notification of received message.
+Notification of received messaging.
 
 _Parameters_
 
-> _message_ - The received message. 
+> _message_ - The received messaging. 
 
 }
 
@@ -5118,6 +5132,190 @@ _Returns_
 _Parameters_
 
 > _localTime_ - The local time to convert. 
+
+}
+
+----
+
+    
+
+# APS RabbitMQ Message Service Provider
+
+This service provides an implementation of APSMessageService using [RabbitMQ](http://www.rabbitmq.com/).
+
+## APSMessageService API
+
+[Javadoc](http://apidoc.natusoft.se/APS/se/natusoft/osgi/aps/api/net/messaging/service/APSMessageService.html)
+
+public _interface_ __APSClusterService<Type>__ extends  APSMessageService    [se.natusoft.osgi.aps.api.net.messaging.service] {
+
+This extends APSMessageService providing cluster common data.
+
+__Map<String, Type> getNamedMap(String name)__
+
+Returns a named map into which objects can be stored with a name.
+
+If the named map does not exists it should be created and an empty map be returned.
+
+__List<String> getAvailableNames()__
+
+Returns the available names.
+
+__boolean supportsPersistence()__
+
+Returns true if the implementation supports persistence for stored objects. If false is returned objects are in memory only.
+
+}
+
+----
+
+    
+
+public _interface_ __APSMessageService__   [se.natusoft.osgi.aps.api.net.messaging.service] {
+
+This defines a simple cluster service. Can be implemented by using a message bus like RabbitMQ, Active MQ, etc or just a simple socket server or whatever.
+
+I've had a real hard decision on what to name this! Its been between APSMessageService and APSClusterService. For a while i even called it APSMessageClusterService but I decided that was to unclear. Yes, the service sends and received messages! That is basically all it does. But what would a cluster service do ? Well, send messages among the cluster members. What does this service to ? It sends messages among members ...
+
+Since the actual members are outside of this service API, it doesn't really know who they are and doesn't care, all members are defined by configuration to make a cluster of members which is why I finally went with APSClusterService.
+
+__public static final String CLUSTER_PROVIDER = "aps-messaging-provider"__
+
+Multiple providers of this service can be deployed at the same time. Using this property when registering services for a provider allows clients to lookup a specific provider.
+
+__public static final String CLUSTER_INSTANCE_NAME = "aps-messaging-instance-name"__
+
+Each configured instance of this service should have this property with a unique instance name so that client can lookup a specific instance of the service.
+
+__String getName()__
+
+Returns the name of this instance.
+
+__UUID getProviderUUID()__
+
+Every service implementation should have a UUID, which also gets passed in messages.
+
+__void addMessageListener(APSMessageListener listener)__
+
+Adds a listener for types.
+
+_Parameters_
+
+> _listener_ - The listener to add. 
+
+__void removeMessageListener(APSMessageListener listener)__
+
+Removes a messaging listener.
+
+_Parameters_
+
+> _listener_ - The listener to remove. 
+
+__void sendMessage(APSMessage message) throws APSMessagingException__
+
+Sends a message.
+
+_Parameters_
+
+> _message_ - The message to send. 
+
+_Throws_
+
+> _se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException_ - on failure. 
+
+public _static_ _abstract_ _class_ __AbstractMessageServiceProvider__ implements  APSMessageService    [se.natusoft.osgi.aps.api.net.messaging.service] {
+
+Provides an abstract implementation of the APSMessageService interface.
+
+
+
+
+
+
+
+__protected void sendToListeners(APSMessage message)__
+
+Sends a message to the registered listeners.
+
+_Parameters_
+
+> _message_ - The message to send. 
+
+}
+
+----
+
+    
+
+public _interface_ __APSSyncService__   [se.natusoft.osgi.aps.api.net.messaging.service] {
+
+This defines a data synchronization service.
+
+__public static final String SYNC_PROVIDER = "aps-sync-provider"__
+
+A property key that should be registered with each service instance to indicate the specific implementation of the service. This to allow multiple implementations to be deployed and clients can ask for a specific if needed.
+
+__public static final String SYNC_INSTANCE_NAME = "aps-sync-instance-name"__
+
+There should be one service instance registered for each configured synchronization group. Each instance should include this property with a unique name so that clients can get the synchronizer for the correct group.
+
+__APSCommonDateTime getCommonDateTime()__
+
+Returns the network common DateTime that is independent of local machine times.
+
+__void syncData(APSSyncDataEvent syncEvent) throws APSMessagingException__
+
+Synchronizes data.
+
+_Parameters_
+
+> _syncEvent_ - The sync event to send. 
+
+_Throws_
+
+> _APSMessagingException_ - on failure. 
+
+__void resync()__
+
+Makes all members resync everything.
+
+__void resync(String key)__
+
+Makes all members resync the specified key.
+
+_Parameters_
+
+> _key_ - The key to resync. 
+
+__void addSyncListener(Listener listener)__
+
+Adds a synchronization listener.
+
+_Parameters_
+
+> _listener_ - The listener to add. 
+
+__void removeSyncListener(Listener listener)__
+
+Removes a synchronization listener.
+
+_Parameters_
+
+> _listener_ - The listener to remove. 
+
+
+
+__void syncDataReceived(APSSyncEvent syncEvent)__
+
+Called to deliver a sync event. This can currently be one of:
+
+* APSSyncDataEvent
+
+* APSReSyncEvent
+
+_Parameters_
+
+> _syncEvent_ - The received sync event. 
 
 }
 
@@ -5396,44 +5594,6 @@ The following third party products are using this license:
 
 * [annotations-13.0](http://www.jetbrains.org)
 
-* [vaadin-server-7.1.14](http://vaadin.com)
-
-* [vaadin-client-compiled-7.1.14](http://vaadin.com)
-
-* [vaadin-client-7.1.14](http://vaadin.com)
-
-* [vaadin-push-7.1.14](http://vaadin.com)
-
-* [vaadin-themes-7.1.14](http://vaadin.com)
-
-* [jgroups-3.5.0.Final](http://www.jgroups.org)
-
-* [groovy-all-2.3.6](http://groovy.codehaus.org/)
-
-* [openjpa-all-2.2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
-
-* [derbyclient-10.9.1.0](http://db.apache.org/derby/)
-
-____[Eclipse Public License - v version 1.0](http://www.eclipse.org/legal/epl-v10.html)____
-
-The following third party products are using this license:
-
-* [javax.persistence-2.0.0](http://www.eclipse.org/eclipselink)
-
-____[Day Specification version License](http://www.day.com/dam/day/downloads/jsr283/day-spec-license.htm)____
-
-The following third party products are using this license:
-
-* [jcr-2.0](http://www.day.com)
-
-____[CDDL + GPLv2 with classpath version exception](https://glassfish.dev.java.net/nonav/public/CDDL+GPL.html)____
-
-The following third party products are using this license:
-
-* [javax.servlet-api-3.0.1](http://servlet-spec.java.net)
-
-* [javaee-web-api-6.0](http://java.sun.com/javaee/6/docs/api/index.html)
-
 <!--
   CLM
 -->
@@ -5445,51 +5605,51 @@ __TERMS AND CONDITIONS FOR USE__,__REPRODUCTION__,__AND DISTRIBUTION__
 
 1. Definitions.
 
-"License" shall mean the terms and conditions for use, reproduction, and distribution as defined by Sections 1 through 9 of this document.
+ "License" shall mean the terms and conditions for use, reproduction,  and distribution as defined by Sections 1 through 9 of this document.
 
-"Licensor" shall mean the copyright owner or entity authorized by the copyright owner that is granting the License.
+ "Licensor" shall mean the copyright owner or entity authorized by  the copyright owner that is granting the License.
 
-"Legal Entity" shall mean the union of the acting entity and all other entities that control, are controlled by, or are under common control with that entity. For the purposes of this definition, "control" means (i) the power, direct or indirect, to cause the direction or management of such entity, whether by contract or otherwise, or (ii) ownership of fifty percent (50%) or more of the outstanding shares, or (iii) beneficial ownership of such entity.
+ "Legal Entity" shall mean the union of the acting entity and all  other entities that control, are controlled by, or are under common  control with that entity. For the purposes of this definition,  "control" means (i) the power, direct or indirect, to cause the  direction or management of such entity, whether by contract or  otherwise, or (ii) ownership of fifty percent (50%) or more of the  outstanding shares, or (iii) beneficial ownership of such entity.
 
-"You" (or "Your") shall mean an individual or Legal Entity exercising permissions granted by this License.
+ "You" (or "Your") shall mean an individual or Legal Entity  exercising permissions granted by this License.
 
-"Source" form shall mean the preferred form for making modifications, including but not limited to software source code, documentation source, and configuration files.
+ "Source" form shall mean the preferred form for making modifications,  including but not limited to software source code, documentation  source, and configuration files.
 
-"Object" form shall mean any form resulting from mechanical transformation or translation of a Source form, including but not limited to compiled object code, generated documentation, and conversions to other media types.
+ "Object" form shall mean any form resulting from mechanical  transformation or translation of a Source form, including but  not limited to compiled object code, generated documentation,  and conversions to other media types.
 
-"Work" shall mean the work of authorship, whether in Source or Object form, made available under the License, as indicated by a copyright notice that is included in or attached to the work (an example is provided in the Appendix below).
+ "Work" shall mean the work of authorship, whether in Source or  Object form, made available under the License, as indicated by a  copyright notice that is included in or attached to the work  (an example is provided in the Appendix below).
 
-"Derivative Works" shall mean any work, whether in Source or Object form, that is based on (or derived from) the Work and for which the editorial revisions, annotations, elaborations, or other modifications represent, as a whole, an original work of authorship. For the purposes of this License, Derivative Works shall not include works that remain separable from, or merely link (or bind by name) to the interfaces of, the Work and Derivative Works thereof.
+ "Derivative Works" shall mean any work, whether in Source or Object  form, that is based on (or derived from) the Work and for which the  editorial revisions, annotations, elaborations, or other modifications  represent, as a whole, an original work of authorship. For the purposes  of this License, Derivative Works shall not include works that remain  separable from, or merely link (or bind by name) to the interfaces of,  the Work and Derivative Works thereof.
 
-"Contribution" shall mean any work of authorship, including the original version of the Work and any modifications or additions to that Work or Derivative Works thereof, that is intentionally submitted to Licensor for inclusion in the Work by the copyright owner or by an individual or Legal Entity authorized to submit on behalf of the copyright owner. For the purposes of this definition, "submitted" means any form of electronic, verbal, or written communication sent to the Licensor or its representatives, including but not limited to communication on electronic mailing lists, source code control systems, and issue tracking systems that are managed by, or on behalf of, the Licensor for the purpose of discussing and improving the Work, but excluding communication that is conspicuously marked or otherwise designated in writing by the copyright owner as "Not a Contribution."
+ "Contribution" shall mean any work of authorship, including  the original version of the Work and any modifications or additions  to that Work or Derivative Works thereof, that is intentionally  submitted to Licensor for inclusion in the Work by the copyright owner  or by an individual or Legal Entity authorized to submit on behalf of  the copyright owner. For the purposes of this definition, "submitted"  means any form of electronic, verbal, or written communication sent  to the Licensor or its representatives, including but not limited to  communication on electronic mailing lists, source code control systems,  and issue tracking systems that are managed by, or on behalf of, the  Licensor for the purpose of discussing and improving the Work, but  excluding communication that is conspicuously marked or otherwise  designated in writing by the copyright owner as "Not a Contribution."
 
-"Contributor" shall mean Licensor and any individual or Legal Entity on behalf of whom a Contribution has been received by Licensor and subsequently incorporated within the Work.
+ "Contributor" shall mean Licensor and any individual or Legal Entity  on behalf of whom a Contribution has been received by Licensor and  subsequently incorporated within the Work.
 
-1. Grant of Copyright License. Subject to the terms and conditions of this License, each Contributor hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable copyright license to reproduce, prepare Derivative Works of, publicly display, publicly perform, sublicense, and distribute the Work and such Derivative Works in Source or Object form.
+1. Grant of Copyright License. Subject to the terms and conditions of  this License, each Contributor hereby grants to You a perpetual,  worldwide, non-exclusive, no-charge, royalty-free, irrevocable  copyright license to reproduce, prepare Derivative Works of,  publicly display, publicly perform, sublicense, and distribute the  Work and such Derivative Works in Source or Object form.
 
-2. Grant of Patent License. Subject to the terms and conditions of this License, each Contributor hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable (except as stated in this section) patent license to make, have made, use, offer to sell, sell, import, and otherwise transfer the Work, where such license applies only to those patent claims licensable by such Contributor that are necessarily infringed by their Contribution(s) alone or by combination of their Contribution(s) with the Work to which such Contribution(s) was submitted. If You institute patent litigation against any entity (including a cross-claim or counterclaim in a lawsuit) alleging that the Work or a Contribution incorporated within the Work constitutes direct or contributory patent infringement, then any patent licenses granted to You under this License for that Work shall terminate as of the date such litigation is filed.
+2. Grant of Patent License. Subject to the terms and conditions of  this License, each Contributor hereby grants to You a perpetual,  worldwide, non-exclusive, no-charge, royalty-free, irrevocable  (except as stated in this section) patent license to make, have made,  use, offer to sell, sell, import, and otherwise transfer the Work,  where such license applies only to those patent claims licensable  by such Contributor that are necessarily infringed by their  Contribution(s) alone or by combination of their Contribution(s)  with the Work to which such Contribution(s) was submitted. If You  institute patent litigation against any entity (including a  cross-claim or counterclaim in a lawsuit) alleging that the Work  or a Contribution incorporated within the Work constitutes direct  or contributory patent infringement, then any patent licenses  granted to You under this License for that Work shall terminate  as of the date such litigation is filed.
 
-3. Redistribution. You may reproduce and distribute copies of the Work or Derivative Works thereof in any medium, with or without modifications, and in Source or Object form, provided that You meet the following conditions:
+3. Redistribution. You may reproduce and distribute copies of the  Work or Derivative Works thereof in any medium, with or without  modifications, and in Source or Object form, provided that You  meet the following conditions:
 
-   1. You must give any other recipients of the Work or Derivative Works a copy of this License; and
+   1. 1. You must give any other recipients of the Work or  Derivative Works a copy of this License; and
 
-   2. You must cause any modified files to carry prominent notices stating that You changed the files; and
+   2. 2. You must cause any modified files to carry prominent notices  stating that You changed the files; and
 
-   3. You must retain, in the Source form of any Derivative Works that You distribute, all copyright, patent, trademark, and attribution notices from the Source form of the Work, excluding those notices that do not pertain to any part of the Derivative Works; and
+   3. 3. You must retain, in the Source form of any Derivative Works  that You distribute, all copyright, patent, trademark, and  attribution notices from the Source form of the Work,  excluding those notices that do not pertain to any part of  the Derivative Works; and
 
-   4. If the Work includes a "NOTICE" text file as part of its distribution, then any Derivative Works that You distribute must include a readable copy of the attribution notices contained within such NOTICE file, excluding those notices that do not pertain to any part of the Derivative Works, in at least one of the following places: within a NOTICE text file distributed as part of the Derivative Works; within the Source form or documentation, if provided along with the Derivative Works; or, within a display generated by the Derivative Works, if and wherever such third-party notices normally appear. The contents of the NOTICE file are for informational purposes only and do not modify the License. You may add Your own attribution notices within Derivative Works that You distribute, alongside or as an addendum to the NOTICE text from the Work, provided that such additional attribution notices cannot be construed as modifying the License.
+   4. 4. If the Work includes a "NOTICE" text file as part of its  distribution, then any Derivative Works that You distribute must  include a readable copy of the attribution notices contained  within such NOTICE file, excluding those notices that do not  pertain to any part of the Derivative Works, in at least one  of the following places: within a NOTICE text file distributed  as part of the Derivative Works; within the Source form or  documentation, if provided along with the Derivative Works; or,  within a display generated by the Derivative Works, if and  wherever such third-party notices normally appear. The contents  of the NOTICE file are for informational purposes only and  do not modify the License. You may add Your own attribution  notices within Derivative Works that You distribute, alongside  or as an addendum to the NOTICE text from the Work, provided  that such additional attribution notices cannot be construed  as modifying the License.
 
-You may add Your own copyright statement to Your modifications and may provide additional or different license terms and conditions for use, reproduction, or distribution of Your modifications, or for any such Derivative Works as a whole, provided Your use, reproduction, and distribution of the Work otherwise complies with the conditions stated in this License.
+ You may add Your own copyright statement to Your modifications and  may provide additional or different license terms and conditions  for use, reproduction, or distribution of Your modifications, or  for any such Derivative Works as a whole, provided Your use,  reproduction, and distribution of the Work otherwise complies with  the conditions stated in this License.
 
-4. Submission of Contributions. Unless You explicitly state otherwise, any Contribution intentionally submitted for inclusion in the Work by You to the Licensor shall be under the terms and conditions of this License, without any additional terms or conditions. Notwithstanding the above, nothing herein shall supersede or modify the terms of any separate license agreement you may have executed with Licensor regarding such Contributions.
+4. Submission of Contributions. Unless You explicitly state otherwise,  any Contribution intentionally submitted for inclusion in the Work  by You to the Licensor shall be under the terms and conditions of  this License, without any additional terms or conditions.  Notwithstanding the above, nothing herein shall supersede or modify  the terms of any separate license agreement you may have executed  with Licensor regarding such Contributions.
 
-5. Trademarks. This License does not grant permission to use the trade names, trademarks, service marks, or product names of the Licensor, except as required for reasonable and customary use in describing the origin of the Work and reproducing the content of the NOTICE file.
+5. Trademarks. This License does not grant permission to use the trade  names, trademarks, service marks, or product names of the Licensor,  except as required for reasonable and customary use in describing the  origin of the Work and reproducing the content of the NOTICE file.
 
-6. Disclaimer of Warranty. Unless required by applicable law or agreed to in writing, Licensor provides the Work (and each Contributor provides its Contributions) on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied, including, without limitation, any warranties or conditions of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE. You are solely responsible for determining the appropriateness of using or redistributing the Work and assume any risks associated with Your exercise of permissions under this License.
+6. Disclaimer of Warranty. Unless required by applicable law or  agreed to in writing, Licensor provides the Work (and each  Contributor provides its Contributions) on an "AS IS" BASIS,  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or  implied, including, without limitation, any warranties or conditions  of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A  PARTICULAR PURPOSE. You are solely responsible for determining the  appropriateness of using or redistributing the Work and assume any  risks associated with Your exercise of permissions under this License.
 
-7. Limitation of Liability. In no event and under no legal theory, whether in tort (including negligence), contract, or otherwise, unless required by applicable law (such as deliberate and grossly negligent acts) or agreed to in writing, shall any Contributor be liable to You for damages, including any direct, indirect, special, incidental, or consequential damages of any character arising as a result of this License or out of the use or inability to use the Work (including but not limited to damages for loss of goodwill, work stoppage, computer failure or malfunction, or any and all other commercial damages or losses), even if such Contributor has been advised of the possibility of such damages.
+7. Limitation of Liability. In no event and under no legal theory,  whether in tort (including negligence), contract, or otherwise,  unless required by applicable law (such as deliberate and grossly  negligent acts) or agreed to in writing, shall any Contributor be  liable to You for damages, including any direct, indirect, special,  incidental, or consequential damages of any character arising as a  result of this License or out of the use or inability to use the  Work (including but not limited to damages for loss of goodwill,  work stoppage, computer failure or malfunction, or any and all  other commercial damages or losses), even if such Contributor  has been advised of the possibility of such damages.
 
-8. Accepting Warranty or Additional Liability. While redistributing the Work or Derivative Works thereof, You may choose to offer, and charge a fee for, acceptance of support, warranty, indemnity, or other liability obligations and/or rights consistent with this License. However, in accepting such obligations, You may act only on Your own behalf and on Your sole responsibility, not on behalf of any other Contributor, and only if You agree to indemnify, defend, and hold each Contributor harmless for any liability incurred by, or claims asserted against, such Contributor by reason of your accepting any such warranty or additional liability.
+8. Accepting Warranty or Additional Liability. While redistributing  the Work or Derivative Works thereof, You may choose to offer,  and charge a fee for, acceptance of support, warranty, indemnity,  or other liability obligations and/or rights consistent with this  License. However, in accepting such obligations, You may act only  on Your own behalf and on Your sole responsibility, not on behalf  of any other Contributor, and only if You agree to indemnify,  defend, and hold each Contributor harmless for any liability  incurred by, or claims asserted against, such Contributor by reason  of your accepting any such warranty or additional liability.
 
 __END OF TERMS AND CONDITIONS__
 
@@ -5519,7 +5679,7 @@ To apply the Apache License to your work, attach the following boilerplate notic
 
 Day Management AG ("Licensor") is willing to license this specification to you ONLY UPON THE CONDITION THAT YOU ACCEPT ALL OF THE TERMS CONTAINED IN THIS LICENSE AGREEMENT ("Agreement"). Please read the terms and conditions of this Agreement carefully.
 
-Content Repository for JavaTM Technology API Specification ("Specification") Version: 2.0 Status: FCS Release: 10 August 2009
+Content Repository for JavaTM  Technology API Specification ("Specification") Version: 2.0 Status: FCS Release: 10 August 2009
 
 Copyright 2009 Day Management AG Barf&#252;sserplatz 6, 4001 Basel, Switzerland. All rights reserved.
 

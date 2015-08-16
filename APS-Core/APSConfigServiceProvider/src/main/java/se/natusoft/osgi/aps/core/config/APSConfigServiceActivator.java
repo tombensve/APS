@@ -55,7 +55,7 @@ import se.natusoft.osgi.aps.core.config.store.APSConfigEnvStore;
 import se.natusoft.osgi.aps.core.config.store.APSConfigMemoryStore;
 import se.natusoft.osgi.aps.core.config.store.APSConfigPersistentStore;
 import se.natusoft.osgi.aps.core.config.store.APSFileTool;
-import se.natusoft.osgi.aps.core.config.sync.Synchronizer;
+//import se.natusoft.osgi.aps.core.config.sync.Synchronizer;
 import se.natusoft.osgi.aps.tools.APSLogger;
 import se.natusoft.osgi.aps.tools.APSServiceTracker;
 import se.natusoft.osgi.aps.tools.tracker.OnServiceAvailable;
@@ -126,7 +126,7 @@ public class APSConfigServiceActivator implements BundleActivator {
     private APSConfigPersistentStore configStore = null;
 
     /** Used for sychronizing between installations. */
-    private Synchronizer synchronizer = null;
+//    private Synchronizer synchronizer = null;
 
     //
     // Bundle Management
@@ -270,12 +270,12 @@ public class APSConfigServiceActivator implements BundleActivator {
             this.configServiceExtender = null;
         }
 
-        synchronized (this) {
-            if (this.synchronizer != null) {
-                this.synchronizer.stop();
-                this.synchronizer = null;
-            }
-        }
+//        synchronized (this) {
+//            if (this.synchronizer != null) {
+//                this.synchronizer.stop();
+//                this.synchronizer = null;
+//            }
+//        }
 
 //        if (this.syncServiceTracker != null) {
 //            this.syncServiceTracker.stop(context);

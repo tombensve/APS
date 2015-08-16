@@ -610,7 +610,7 @@
     </blockquote>
     <blockquote>
       <p>
-        <em>duplicateMessage</em> - The exception message if directory already exists.         
+        <em>duplicateMessage</em> - The exception messaging if directory already exists.         
       </p>
     </blockquote>
     <p>
@@ -3249,17 +3249,17 @@
     </p>
     <H1>APSToolsLib</H1>
     <p>
-      This is a library of utilities including a service tracker that beats the (beep) out of the default one including exception rather than null response, timeout specification, getting a proxied service implementation that automatically uses the tracker, allocating a service, calling it, and deallocating it again. This makes it trivially easy to handle a service being restarted or redeployed. It also includes a logger utility that will lookup the standard log service and log to that if found.      
+      This is a library of utilities including a service tracker that beats the &lt;BEEEP&gt; out of the default one, including exception rather than null response on timeout, timeout specification, getting a proxied service implementation that automatically uses the tracker, allocating a service, calling it, and deallocating it again. This makes it trivially easy to handle a service being restarted or redeployed. It also includes a logger utility that will lookup the standard log service and log to that if found, otherwise just log to stdout.      
     </p>
     <p>
       This bundle provides no services. It just makes all its packages public. Every bundle included in APS makes use of APSToolsLib so it must be deployed for things to work.      
     </p>
     <p>
-      Please note that this bundle has no dependencies! That is, it can be used as is without requireing any other APS bundle.      
+      Please note that this bundle has no dependencies! That is, it can be used as is without requireing any other APS bundle. It however requires APSOSGiTestTools to build, but that is only a test dependency.      
     </p>
     <H2>APSServiceTracker</H2>
     <p>
-      This does the same thing as the standard service tracker included with OSGi, but does it better with more options and flexibility. One of the differences between this tracker and the OSGi one is that this throws an <em>APSNoServiceAvailableException</em> if the service is not available. Personally I think this is easier to work with than having to check for a null result.      
+      This does the same thing as the standard service tracker included with OSGi, but does it better with more options and flexibility. One of the differences between this tracker and the OSGi one is that this throws an <em>APSNoServiceAvailableException</em> if the service is not available. Personally I think this is easier to work with than having to check for a null result. I also think that trying to keep bundles and services up are better than pulling them down as soon as one depencency goes away for a short while, for example due to redeploy of newer version.      
     </p>
     <p>
       There are several variants of constructors, but here is an example of one of the most used ones within the APS services:      
@@ -3269,7 +3269,6 @@
     APSServiceTracker&lt;Service&gt; tracker = 
         new APSServiceTracker&lt;Service&gt;(context, Service.class, "20 seconds");
     tracker.start();
-    
       </code>
     </pre>
     <p>
@@ -3299,7 +3298,7 @@
     </p>
     <H3>Services and active service</H3>
     <p>
-      The tracker tracks all instances of the service being tracked. It however have the notion of an active service. The active service is the service instance that will be returned by allocateService() (which is internally used by all other access methods also). On startup it will be the first service instance received. It will keep tracking other instances comming in, but as long as the active service does not go away it will be the one used. If the active service goes away then the the one that is at the beginning of the list of the other tracked instances will become active. If that list is empty there will be no active, which will trigger a wait for a service to become available again if allocateService() is called.      
+      The tracker tracks all instances of the service being tracked. It however have the notion of an active service. The active service is the service instance that will be returned by allocateService() (which is internally used by all other access methods also). On startup the active service will be the first service instance received. It will keep tracking other instances comming in, but as long as the active service does not go away it will be the one used. If the active service goes away then the the one that is at the beginning of the list of the other tracked instances will become active. If that list is empty there will be no active, which will trigger a wait for a service to become available again if allocateService() is called.      
     </p>
     <H3>Providing a logger</H3>
     <p>
@@ -3455,7 +3454,6 @@
       <code>
     APSLogger logger = new APSLogger();
     logger.start(context);
-    
       </code>
     </pre>
     <p>
@@ -3497,24 +3495,31 @@
     }
     
     public @interface OSGiServiceProvider {
-    
         /** Extra properties to register the service with. */
         OSGiProperty[] properties() default {};
-    
+        
         /** The service API to register instance with. If not specified the first implemented interface will be used. */
         Class[] serviceAPIs() default {};
-    
+        
         /** This can be used as an alternative to properties() and also supports several instances. */
         OSGiServiceInstance[] instances() default {};
-    
+        
+        /**
+         * An alternative to providing static information. This class will be instantiated if specified and
+         * provideServiceInstancesSetup() will be called to provide implemented service APIs, service
+         * properties, and a service instance. In this last, it differs from instanceFactoryClass() since
+         * that does not provide an instance. This allows for more easy configuration of each instance.
+         */
+        Class&lt;? extends APSActivatorServiceSetupProvider&gt; serviceSetupProvider() default APSActivatorServiceSetupProvider.class;
+        
         /**
          * This can be used as an alternative and will instantiate the specified factory class which will deliver
          * one set of Properties per instance.
          */
         Class&lt;? extends APSActivator.InstanceFactory&gt; instanceFactoryClass() default APSActivator.InstanceFactory.class;
-    
+        
         /**
-         * If true this service will be stared in a separate thread. This means the bundle start
+         * If true this service will be started in a separate thread. This means the bundle start
          * will continue in parallel and that any failures in startup will be logged, but will
          * not stop the bundle from being started. If this is true it wins over required service
          * dependencies of the service class. Specifying this as true allows you to do things that
@@ -3522,10 +3527,12 @@
          * APSServiceTracker, without causing a deadlock.
          */
         boolean threadStart() default false;
-    
     }
       </code>
     </pre>
+    <p>
+      Do note that for the <em>serviceSetupProvider()</em> another solution is to use the <em>@BundleStart</em> (see below) and just create instances of your service and register them with the BundleContext. But if you use <em>@OSGiServiceProvider</em> to instantiate and register other "one instance" services, then using <em>serviceSetupProvider()</em> would look a bit more consistent.      
+    </p>
     <p>
       <strong>@OSGiService</strong> - This should be specified on a field having a type of a service interface to have a service of that type injected, and continuously tracked. Any call to the service will throw an APSNoServiceAvailableException (runtime) if no service has become available before the specified timeout. It is also possible to have APSServiceTracker as field type in which case the underlying configured tracker will be injected instead.      
     </p>
@@ -3538,13 +3545,20 @@
     
         /** The timeout for a service to become available. Defaults to 30 seconds. */
         String timeout() default "30 seconds";
-    
+        
         /** Any additional search criteria. Should start with '(' and end with ')'. Defaults to none. */
         String additionalSearchCriteria() default "";
-    
+        
+        /**
+         * This should specify a Class implementing APSActivatorSearchCriteriaProvider. If specified it will be
+         * used instead of additionalSearchCriteria() by instantiating the Class and calling its method to get
+         * a search criteria back. This allows for search criteria coming from configuration, which a static
+         * annotation String does not.
+         */
+        Class&lt;? extends APSActivatorSearchCriteriaProvider&gt; searchCriteriaProvider() default APSActivatorSearchCriteriaProvider.class;
+         
         /** If set to true the service using this service will not be registered until the service becomes available. */
         boolean required() default false;
-    
     }
       </code>
     </pre>
@@ -3554,6 +3568,7 @@
     <pre>
       <code>
     public @interface Managed {
+    
         /**
          * The name of the instance to inject. If the same is used in multiple classes the same instance will
          * be injected.
@@ -3569,7 +3584,7 @@
       </code>
     </pre>
     <p>
-      <strong>@BundleStart</strong> - This should be used on a method and will be called on bundle start. The method should take no arguments. If you need a BundleContext just inject it with @APSInejct. The use of this annotation is only needed for things not supported by this activator. Please note that a method annotated with this annotation can be static (in which case the class it belongs to will not be instantiaded -- due to this!). You can provide this annotation on as many methods in as many classes as you want. They will all be called (in the order classes are discovered in the bundle).      
+      <strong>@BundleStart</strong> - This should be used on a method and will be called on bundle start. The method should take no arguments. If you need a BundleContext just inject it with <em>@Managed</em>. The use of this annotation is only needed for things not supported by this activator. Please note that a method annotated with this annotation can be static (in which case the class it belongs to will not be instantiaded). You can provide this annotation on as many methods in as many classes as you want. They will all be called (in the order classes are discovered in the bundle).      
     </p>
     <pre>
       <code>
@@ -3584,7 +3599,7 @@
       </code>
     </pre>
     <p>
-      <strong>@BundleStop</strong> - This should be used on a method and will be called on bundle stop. The method should take no arguments. This should probably be used if @APSBundleStart is used. Please note that a method annotated with this annotation can be static!      
+      <strong>@BundleStop</strong> - This should be used on a method and will be called on bundle stop. The method should take no arguments. This should probably be used if <em>@BundleStart</em> is used. Please note that a method annotated with this annotation can be static!      
     </p>
     <pre>
       <code>
@@ -3606,17 +3621,17 @@
       <strong>Please note</strong> that if you create an instance of APSActivator in a servlet and provide the servlet instance to it and start it (you still need to do <em>start(BundleContext)</em> and <em>stop(BundleContext)</em> when used this way!), then you need to catch the close of the servlet and do <em>stop</em> then.      
     </p>
     <p>
-      There are 2 support classes in <em>APSWebTools</em>:      
+      There are 2 support classes:      
     </p>
     <ul>
       <li>
         <p>
-          APSVaadinOSGiApplication - This is subclassed by your Vaading application.          
+          [APSVaadinWebTools]: APSVaadinOSGiApplication - This is subclassed by your Vaading application.          
         </p>
       </li>
       <li>
         <p>
-          APSOSGiSupport - You create an instance of this in a servlet and let your servlet implement the <em>APSOSGiSupportCallbacks</em> interface which is then passed to the constructor of APSOSGiSupport.          
+          [APSWebTools]: APSOSGiSupport - You create an instance of this in a servlet and let your servlet implement the <em>APSOSGiSupportCallbacks</em> interface which is then passed to the constructor of APSOSGiSupport.          
         </p>
       </li>
     </ul>
@@ -4195,37 +4210,37 @@
       <strong>NONE</strong>      
     </p>
     <p>
-      Only userid is required.      
+       Only userid is required.      
     </p>
     <p>
       <strong>PASSWORD</strong>      
     </p>
     <p>
-      toString() on the credentials object should return a password.      
+       toString() on the credentials object should return a password.      
     </p>
     <p>
       <strong>KEY</strong>      
     </p>
     <p>
-      The credential object is a key of some sort.      
+       The credential object is a key of some sort.      
     </p>
     <p>
       <strong>CERTIFICATE</strong>      
     </p>
     <p>
-      The credential object is a certificate of some sort.      
+       The credential object is a certificate of some sort.      
     </p>
     <p>
       <strong>DIGEST</strong>      
     </p>
     <p>
-      The credential object is a digest password.      
+       The credential object is a digest password.      
     </p>
     <p>
       <strong>SSO</strong>      
     </p>
     <p>
-      The credential object contains information for participating in a single sign on.      
+       The credential object contains information for participating in a single sign on.      
     </p>
     <p>
       }      
@@ -4462,7 +4477,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       <strong>public static final String AUTH_METHOD_PASSWORD = "password"</strong>      
     </p>
     <p>
-      Password authentication method for authenticateUser().      
+       Password authentication method for authenticateUser().      
     </p>
     <p>
       <strong>public Role getRole(String roleId)</strong>      
@@ -4711,7 +4726,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The exception message.         
+        <em>message</em> - The exception messaging.         
       </p>
     </blockquote>
     <p>
@@ -4725,7 +4740,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The exception message.         
+        <em>message</em> - The exception messaging.         
       </p>
     </blockquote>
     <blockquote>
@@ -4756,7 +4771,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The exception message.         
+        <em>message</em> - The exception messaging.         
       </p>
     </blockquote>
     <p>
@@ -4770,7 +4785,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The exception message.         
+        <em>message</em> - The exception messaging.         
       </p>
     </blockquote>
     <blockquote>
@@ -4962,31 +4977,31 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       <strong>public static final String USER_NAME = "name"</strong>      
     </p>
     <p>
-      Optional suggestion for user properties key.      
+       Optional suggestion for user properties key.      
     </p>
     <p>
       <strong>public static final String USER_PHONE = "phone"</strong>      
     </p>
     <p>
-      Optional suggestion for user properties key.      
+       Optional suggestion for user properties key.      
     </p>
     <p>
       <strong>public static final String USER_PHONE_WORK = "phone.work"</strong>      
     </p>
     <p>
-      Optional suggestion for user properties key.      
+       Optional suggestion for user properties key.      
     </p>
     <p>
       <strong>public static final String USER_PHONE_HOME = "phone.home"</strong>      
     </p>
     <p>
-      Optional suggestion for user properties key.      
+       Optional suggestion for user properties key.      
     </p>
     <p>
       <strong>public static final String USER_EMAIL = "email"</strong>      
     </p>
     <p>
-      Optional suggestion for user properties key.      
+       Optional suggestion for user properties key.      
     </p>
     <p>
       }      
@@ -5597,7 +5612,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The exception message.         
+        <em>message</em> - The exception messaging.         
       </p>
     </blockquote>
     <p>
@@ -5611,7 +5626,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The exception message.         
+        <em>message</em> - The exception messaging.         
       </p>
     </blockquote>
     <blockquote>
@@ -6007,7 +6022,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       <em>APSExtProtocolHTTPTransportProvider</em> - Provides a HTTP transport.      
     </p>
     <p>
-      <em>APSStreamedJSONRPCProtocolProvider</em> - Provides version 1.0 and 2.0 of JSONRPC, JSONHTTP and JSONREST.      
+       <em>APSStreamedJSONRPCProtocolProvider</em> - Provides version 1.0 and 2.0 of JSONRPC, JSONHTTP and JSONREST.      
     </p>
     <H2>APIs</H2>
     <p>
@@ -6528,7 +6543,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </blockquote>
     <blockquote>
       <p>
-        <em>message</em> - An error message.         
+        <em>message</em> - An error messaging.         
       </p>
     </blockquote>
     <p>
@@ -6674,7 +6689,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       <strong>public String getMessage()</strong>      
     </p>
     <p>
-      Returns an error message. This is also optional.      
+      Returns an error messaging. This is also optional.      
     </p>
     <p>
       <strong>public boolean hasOptionalData()</strong>      
@@ -6711,7 +6726,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The exception message.         
+        <em>message</em> - The exception messaging.         
       </p>
     </blockquote>
     <p>
@@ -6725,7 +6740,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The exception message.         
+        <em>message</em> - The exception messaging.         
       </p>
     </blockquote>
     <blockquote>
@@ -7079,7 +7094,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </blockquote>
     <blockquote>
       <p>
-        <em>message</em> - An error message.         
+        <em>message</em> - An error messaging.         
       </p>
     </blockquote>
     <blockquote>
@@ -7696,14 +7711,14 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       <strong>void sendMessage(Message message) throws IOException</strong>      
     </p>
     <p>
-      Sends a previously created message to all current members of the group. If this returns without an exception then all members have received the message.      
+      Sends a previously created messaging to all current members of the group. If this returns without an exception then all members have received the messaging.      
     </p>
     <p>
       <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The message to send.         
+        <em>message</em> - The messaging to send.         
       </p>
     </blockquote>
     <p>
@@ -7814,25 +7829,25 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       public <em>interface</em> <strong>Message </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
     </p>
     <p>
-      This represents a complete message containing any data you want to send to the group. You provide the message with data using the <em>OutputStream</em>, and read message data using the <em>InputStream</em>.      
+      This represents a complete messaging containing any data you want to send to the group. You provide the messaging with data using the <em>OutputStream</em>, and read messaging data using the <em>InputStream</em>.      
     </p>
     <p>
       <strong>OutputStream getOutputStream()</strong>      
     </p>
     <p>
-      Returns an <em>OutputStream</em> to write message on. Multiple calls to this will return the same <em>OutputStream</em>!      
+      Returns an <em>OutputStream</em> to write messaging on. Multiple calls to this will return the same <em>OutputStream</em>!      
     </p>
     <p>
       <strong>InputStream getInputStream()</strong>      
     </p>
     <p>
-      Returns an <em>InputStream</em> for reading the message. Multiple calls to this will return new <em>InputStream</em>:s starting from the beginning!      
+      Returns an <em>InputStream</em> for reading the messaging. Multiple calls to this will return new <em>InputStream</em>:s starting from the beginning!      
     </p>
     <p>
       <strong>UUID getId()</strong>      
     </p>
     <p>
-      Returns the id of this message.      
+      Returns the id of this messaging.      
     </p>
     <p>
       <strong>String getMemberId()</strong>      
@@ -7853,7 +7868,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
-        The name of the group this message belongs to.        
+        The name of the group this messaging belongs to.        
       </p>
     </blockquote>
     <p>
@@ -7872,14 +7887,14 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       <strong>public void messageReceived(Message message)</strong>      
     </p>
     <p>
-      Notification of received message.      
+      Notification of received messaging.      
     </p>
     <p>
       <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The received message.         
+        <em>message</em> - The received messaging.         
       </p>
     </blockquote>
     <p>
@@ -8084,6 +8099,297 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <blockquote>
       <p>
         <em>localTime</em> - The local time to convert.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <H1>APS RabbitMQ Message Service Provider</H1>
+    <p>
+      This service provides an implementation of APSMessageService using <a href='http://www.rabbitmq.com/' title=''>RabbitMQ</a>.      
+    </p>
+    <H2>APSMessageService API</H2>
+    <p>
+      <a href='http://apidoc.natusoft.se/APS/se/natusoft/osgi/aps/api/net/messaging/service/APSMessageService.html' title=''>Javadoc</a>      
+    </p>
+    <p>
+      public <em>interface</em> <strong>APSClusterService&lt;Type&gt; </strong> extends  APSMessageService    [se.natusoft.osgi.aps.api.net.messaging.service] {      
+    </p>
+    <p>
+      This extends APSMessageService providing cluster common data.      
+    </p>
+    <p>
+      <strong>Map&lt;String, Type&gt; getNamedMap(String name)</strong>      
+    </p>
+    <p>
+      Returns a named map into which objects can be stored with a name.      
+    </p>
+    <p>
+      If the named map does not exists it should be created and an empty map be returned.      
+    </p>
+    <p>
+      <strong>List&lt;String&gt; getAvailableNames()</strong>      
+    </p>
+    <p>
+      Returns the available names.      
+    </p>
+    <p>
+      <strong>boolean supportsPersistence()</strong>      
+    </p>
+    <p>
+      Returns true if the implementation supports persistence for stored objects. If false is returned objects are in memory only.      
+    </p>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>APSMessageService </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
+    </p>
+    <p>
+      This defines a simple cluster service. Can be implemented by using a message bus like RabbitMQ, Active MQ, etc or just a simple socket server or whatever.      
+    </p>
+    <p>
+      I've had a real hard decision on what to name this! Its been between APSMessageService and APSClusterService. For a while i even called it APSMessageClusterService but I decided that was to unclear. Yes, the service sends and received messages! That is basically all it does. But what would a cluster service do ? Well, send messages among the cluster members. What does this service to ? It sends messages among members ...      
+    </p>
+    <p>
+      Since the actual members are outside of this service API, it doesn't really know who they are and doesn't care, all members are defined by configuration to make a cluster of members which is why I finally went with APSClusterService.      
+    </p>
+    <p>
+      <strong>public static final String CLUSTER_PROVIDER = "aps-messaging-provider"</strong>      
+    </p>
+    <p>
+      Multiple providers of this service can be deployed at the same time. Using this property when registering services for a provider allows clients to lookup a specific provider.      
+    </p>
+    <p>
+      <strong>public static final String CLUSTER_INSTANCE_NAME = "aps-messaging-instance-name"</strong>      
+    </p>
+    <p>
+      Each configured instance of this service should have this property with a unique instance name so that client can lookup a specific instance of the service.      
+    </p>
+    <p>
+      <strong>String getName()</strong>      
+    </p>
+    <p>
+      Returns the name of this instance.      
+    </p>
+    <p>
+      <strong>UUID getProviderUUID()</strong>      
+    </p>
+    <p>
+      Every service implementation should have a UUID, which also gets passed in messages.      
+    </p>
+    <p>
+      <strong>void addMessageListener(APSMessageListener listener)</strong>      
+    </p>
+    <p>
+      Adds a listener for types.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>listener</em> - The listener to add.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void removeMessageListener(APSMessageListener listener)</strong>      
+    </p>
+    <p>
+      Removes a messaging listener.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>listener</em> - The listener to remove.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void sendMessage(APSMessage message) throws APSMessagingException</strong>      
+    </p>
+    <p>
+      Sends a message.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The message to send.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException</em> - on failure.         
+      </p>
+    </blockquote>
+    <p>
+      public <em>static</em> <em>abstract</em> <em>class</em> <strong>AbstractMessageServiceProvider </strong> implements  APSMessageService    [se.natusoft.osgi.aps.api.net.messaging.service] {      
+    </p>
+    <p>
+      Provides an abstract implementation of the APSMessageService interface.      
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>protected void sendToListeners(APSMessage message)</strong>      
+    </p>
+    <p>
+      Sends a message to the registered listeners.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The message to send.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>APSSyncService </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
+    </p>
+    <p>
+      This defines a data synchronization service.      
+    </p>
+    <p>
+      <strong>public static final String SYNC_PROVIDER = "aps-sync-provider"</strong>      
+    </p>
+    <p>
+      A property key that should be registered with each service instance to indicate the specific implementation of the service. This to allow multiple implementations to be deployed and clients can ask for a specific if needed.      
+    </p>
+    <p>
+      <strong>public static final String SYNC_INSTANCE_NAME = "aps-sync-instance-name"</strong>      
+    </p>
+    <p>
+      There should be one service instance registered for each configured synchronization group. Each instance should include this property with a unique name so that clients can get the synchronizer for the correct group.      
+    </p>
+    <p>
+      <strong>APSCommonDateTime getCommonDateTime()</strong>      
+    </p>
+    <p>
+      Returns the network common DateTime that is independent of local machine times.      
+    </p>
+    <p>
+      <strong>void syncData(APSSyncDataEvent syncEvent) throws APSMessagingException</strong>      
+    </p>
+    <p>
+      Synchronizes data.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>syncEvent</em> - The sync event to send.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>APSMessagingException</em> - on failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void resync()</strong>      
+    </p>
+    <p>
+      Makes all members resync everything.      
+    </p>
+    <p>
+      <strong>void resync(String key)</strong>      
+    </p>
+    <p>
+      Makes all members resync the specified key.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>key</em> - The key to resync.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void addSyncListener(Listener listener)</strong>      
+    </p>
+    <p>
+      Adds a synchronization listener.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>listener</em> - The listener to add.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void removeSyncListener(Listener listener)</strong>      
+    </p>
+    <p>
+      Removes a synchronization listener.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>listener</em> - The listener to remove.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+      <strong>void syncDataReceived(APSSyncEvent syncEvent)</strong>      
+    </p>
+    <p>
+      Called to deliver a sync event. This can currently be one of:      
+    </p>
+    <ul>
+      <li>
+        <p>
+          APSSyncDataEvent          
+        </p>
+      </li>
+      <li>
+        <p>
+          APSReSyncEvent          
+        </p>
+      </li>
+    </ul>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>syncEvent</em> - The received sync event.         
       </p>
     </blockquote>
     <p>
@@ -8516,95 +8822,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
           <a href='http://www.jetbrains.org' title=''>annotations-13.0</a>          
         </p>
       </li>
-      <li>
-        <p>
-          <a href='http://vaadin.com' title=''>vaadin-server-7.1.14</a>          
-        </p>
-      </li>
-      <li>
-        <p>
-          <a href='http://vaadin.com' title=''>vaadin-client-compiled-7.1.14</a>          
-        </p>
-      </li>
-      <li>
-        <p>
-          <a href='http://vaadin.com' title=''>vaadin-client-7.1.14</a>          
-        </p>
-      </li>
-      <li>
-        <p>
-          <a href='http://vaadin.com' title=''>vaadin-push-7.1.14</a>          
-        </p>
-      </li>
-      <li>
-        <p>
-          <a href='http://vaadin.com' title=''>vaadin-themes-7.1.14</a>          
-        </p>
-      </li>
-      <li>
-        <p>
-          <a href='http://www.jgroups.org' title=''>jgroups-3.5.0.Final</a>          
-        </p>
-      </li>
-      <li>
-        <p>
-          <a href='http://groovy.codehaus.org/' title=''>groovy-all-2.3.6</a>          
-        </p>
-      </li>
-      <li>
-        <p>
-          <a href='http://www.apache.org/licenses/LICENSE-2.0.txt' title=''>openjpa-all-2.2.0</a>          
-        </p>
-      </li>
-      <li>
-        <p>
-          <a href='http://db.apache.org/derby/' title=''>derbyclient-10.9.1.0</a>          
-        </p>
-      </li>
-    </ul>
-    <p>
-      <strong></strong><a href='http://www.eclipse.org/legal/epl-v10.html' title=''>Eclipse Public License - v version 1.0</a><strong></strong>      
-    </p>
-    <p>
-      The following third party products are using this license:      
-    </p>
-    <ul>
-      <li>
-        <p>
-          <a href='http://www.eclipse.org/eclipselink' title=''>javax.persistence-2.0.0</a>          
-        </p>
-      </li>
-    </ul>
-    <p>
-      <strong></strong><a href='http://www.day.com/dam/day/downloads/jsr283/day-spec-license.htm' title=''>Day Specification version License</a><strong></strong>      
-    </p>
-    <p>
-      The following third party products are using this license:      
-    </p>
-    <ul>
-      <li>
-        <p>
-          <a href='http://www.day.com' title=''>jcr-2.0</a>          
-        </p>
-      </li>
-    </ul>
-    <p>
-      <strong></strong><a href='https://glassfish.dev.java.net/nonav/public/CDDL+GPL.html' title=''>CDDL + GPLv2 with classpath version exception</a><strong></strong>      
-    </p>
-    <p>
-      The following third party products are using this license:      
-    </p>
-    <ul>
-      <li>
-        <p>
-          <a href='http://servlet-spec.java.net' title=''>javax.servlet-api-3.0.1</a>          
-        </p>
-      </li>
-      <li>
-        <p>
-          <a href='http://java.sun.com/javaee/6/docs/api/index.html' title=''>javaee-web-api-6.0</a>          
-        </p>
-      </li>
     </ul>
     <!--
       CLM
@@ -8624,99 +8841,99 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       </li>
     </ol>
     <p>
-      "License" shall mean the terms and conditions for use, reproduction, and distribution as defined by Sections 1 through 9 of this document.      
+       "License" shall mean the terms and conditions for use, reproduction,  and distribution as defined by Sections 1 through 9 of this document.      
     </p>
     <p>
-      "Licensor" shall mean the copyright owner or entity authorized by the copyright owner that is granting the License.      
+       "Licensor" shall mean the copyright owner or entity authorized by  the copyright owner that is granting the License.      
     </p>
     <p>
-      "Legal Entity" shall mean the union of the acting entity and all other entities that control, are controlled by, or are under common control with that entity. For the purposes of this definition, "control" means (i) the power, direct or indirect, to cause the direction or management of such entity, whether by contract or otherwise, or (ii) ownership of fifty percent (50%) or more of the outstanding shares, or (iii) beneficial ownership of such entity.      
+       "Legal Entity" shall mean the union of the acting entity and all  other entities that control, are controlled by, or are under common  control with that entity. For the purposes of this definition,  "control" means (i) the power, direct or indirect, to cause the  direction or management of such entity, whether by contract or  otherwise, or (ii) ownership of fifty percent (50%) or more of the  outstanding shares, or (iii) beneficial ownership of such entity.      
     </p>
     <p>
-      "You" (or "Your") shall mean an individual or Legal Entity exercising permissions granted by this License.      
+       "You" (or "Your") shall mean an individual or Legal Entity  exercising permissions granted by this License.      
     </p>
     <p>
-      "Source" form shall mean the preferred form for making modifications, including but not limited to software source code, documentation source, and configuration files.      
+       "Source" form shall mean the preferred form for making modifications,  including but not limited to software source code, documentation  source, and configuration files.      
     </p>
     <p>
-      "Object" form shall mean any form resulting from mechanical transformation or translation of a Source form, including but not limited to compiled object code, generated documentation, and conversions to other media types.      
+       "Object" form shall mean any form resulting from mechanical  transformation or translation of a Source form, including but  not limited to compiled object code, generated documentation,  and conversions to other media types.      
     </p>
     <p>
-      "Work" shall mean the work of authorship, whether in Source or Object form, made available under the License, as indicated by a copyright notice that is included in or attached to the work (an example is provided in the Appendix below).      
+       "Work" shall mean the work of authorship, whether in Source or  Object form, made available under the License, as indicated by a  copyright notice that is included in or attached to the work  (an example is provided in the Appendix below).      
     </p>
     <p>
-      "Derivative Works" shall mean any work, whether in Source or Object form, that is based on (or derived from) the Work and for which the editorial revisions, annotations, elaborations, or other modifications represent, as a whole, an original work of authorship. For the purposes of this License, Derivative Works shall not include works that remain separable from, or merely link (or bind by name) to the interfaces of, the Work and Derivative Works thereof.      
+       "Derivative Works" shall mean any work, whether in Source or Object  form, that is based on (or derived from) the Work and for which the  editorial revisions, annotations, elaborations, or other modifications  represent, as a whole, an original work of authorship. For the purposes  of this License, Derivative Works shall not include works that remain  separable from, or merely link (or bind by name) to the interfaces of,  the Work and Derivative Works thereof.      
     </p>
     <p>
-      "Contribution" shall mean any work of authorship, including the original version of the Work and any modifications or additions to that Work or Derivative Works thereof, that is intentionally submitted to Licensor for inclusion in the Work by the copyright owner or by an individual or Legal Entity authorized to submit on behalf of the copyright owner. For the purposes of this definition, "submitted" means any form of electronic, verbal, or written communication sent to the Licensor or its representatives, including but not limited to communication on electronic mailing lists, source code control systems, and issue tracking systems that are managed by, or on behalf of, the Licensor for the purpose of discussing and improving the Work, but excluding communication that is conspicuously marked or otherwise designated in writing by the copyright owner as "Not a Contribution."      
+       "Contribution" shall mean any work of authorship, including  the original version of the Work and any modifications or additions  to that Work or Derivative Works thereof, that is intentionally  submitted to Licensor for inclusion in the Work by the copyright owner  or by an individual or Legal Entity authorized to submit on behalf of  the copyright owner. For the purposes of this definition, "submitted"  means any form of electronic, verbal, or written communication sent  to the Licensor or its representatives, including but not limited to  communication on electronic mailing lists, source code control systems,  and issue tracking systems that are managed by, or on behalf of, the  Licensor for the purpose of discussing and improving the Work, but  excluding communication that is conspicuously marked or otherwise  designated in writing by the copyright owner as "Not a Contribution."      
     </p>
     <p>
-      "Contributor" shall mean Licensor and any individual or Legal Entity on behalf of whom a Contribution has been received by Licensor and subsequently incorporated within the Work.      
+       "Contributor" shall mean Licensor and any individual or Legal Entity  on behalf of whom a Contribution has been received by Licensor and  subsequently incorporated within the Work.      
     </p>
     <ol>
       <li>
         <p>
-          Grant of Copyright License. Subject to the terms and conditions of this License, each Contributor hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable copyright license to reproduce, prepare Derivative Works of, publicly display, publicly perform, sublicense, and distribute the Work and such Derivative Works in Source or Object form.          
+          Grant of Copyright License. Subject to the terms and conditions of  this License, each Contributor hereby grants to You a perpetual,  worldwide, non-exclusive, no-charge, royalty-free, irrevocable  copyright license to reproduce, prepare Derivative Works of,  publicly display, publicly perform, sublicense, and distribute the  Work and such Derivative Works in Source or Object form.          
         </p>
       </li>
       <li>
         <p>
-          Grant of Patent License. Subject to the terms and conditions of this License, each Contributor hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable (except as stated in this section) patent license to make, have made, use, offer to sell, sell, import, and otherwise transfer the Work, where such license applies only to those patent claims licensable by such Contributor that are necessarily infringed by their Contribution(s) alone or by combination of their Contribution(s) with the Work to which such Contribution(s) was submitted. If You institute patent litigation against any entity (including a cross-claim or counterclaim in a lawsuit) alleging that the Work or a Contribution incorporated within the Work constitutes direct or contributory patent infringement, then any patent licenses granted to You under this License for that Work shall terminate as of the date such litigation is filed.          
+          Grant of Patent License. Subject to the terms and conditions of  this License, each Contributor hereby grants to You a perpetual,  worldwide, non-exclusive, no-charge, royalty-free, irrevocable  (except as stated in this section) patent license to make, have made,  use, offer to sell, sell, import, and otherwise transfer the Work,  where such license applies only to those patent claims licensable  by such Contributor that are necessarily infringed by their  Contribution(s) alone or by combination of their Contribution(s)  with the Work to which such Contribution(s) was submitted. If You  institute patent litigation against any entity (including a  cross-claim or counterclaim in a lawsuit) alleging that the Work  or a Contribution incorporated within the Work constitutes direct  or contributory patent infringement, then any patent licenses  granted to You under this License for that Work shall terminate  as of the date such litigation is filed.          
         </p>
       </li>
       <li>
         <p>
-          Redistribution. You may reproduce and distribute copies of the Work or Derivative Works thereof in any medium, with or without modifications, and in Source or Object form, provided that You meet the following conditions:          
+          Redistribution. You may reproduce and distribute copies of the  Work or Derivative Works thereof in any medium, with or without  modifications, and in Source or Object form, provided that You  meet the following conditions:          
         </p>
       </li>
       <ol>
         <li>
           <p>
-            You must give any other recipients of the Work or Derivative Works a copy of this License; and            
+            1. You must give any other recipients of the Work or  Derivative Works a copy of this License; and            
           </p>
         </li>
         <li>
           <p>
-            You must cause any modified files to carry prominent notices stating that You changed the files; and            
+            2. You must cause any modified files to carry prominent notices  stating that You changed the files; and            
           </p>
         </li>
         <li>
           <p>
-            You must retain, in the Source form of any Derivative Works that You distribute, all copyright, patent, trademark, and attribution notices from the Source form of the Work, excluding those notices that do not pertain to any part of the Derivative Works; and            
+            3. You must retain, in the Source form of any Derivative Works  that You distribute, all copyright, patent, trademark, and  attribution notices from the Source form of the Work,  excluding those notices that do not pertain to any part of  the Derivative Works; and            
           </p>
         </li>
         <li>
           <p>
-            If the Work includes a "NOTICE" text file as part of its distribution, then any Derivative Works that You distribute must include a readable copy of the attribution notices contained within such NOTICE file, excluding those notices that do not pertain to any part of the Derivative Works, in at least one of the following places: within a NOTICE text file distributed as part of the Derivative Works; within the Source form or documentation, if provided along with the Derivative Works; or, within a display generated by the Derivative Works, if and wherever such third-party notices normally appear. The contents of the NOTICE file are for informational purposes only and do not modify the License. You may add Your own attribution notices within Derivative Works that You distribute, alongside or as an addendum to the NOTICE text from the Work, provided that such additional attribution notices cannot be construed as modifying the License.            
+            4. If the Work includes a "NOTICE" text file as part of its  distribution, then any Derivative Works that You distribute must  include a readable copy of the attribution notices contained  within such NOTICE file, excluding those notices that do not  pertain to any part of the Derivative Works, in at least one  of the following places: within a NOTICE text file distributed  as part of the Derivative Works; within the Source form or  documentation, if provided along with the Derivative Works; or,  within a display generated by the Derivative Works, if and  wherever such third-party notices normally appear. The contents  of the NOTICE file are for informational purposes only and  do not modify the License. You may add Your own attribution  notices within Derivative Works that You distribute, alongside  or as an addendum to the NOTICE text from the Work, provided  that such additional attribution notices cannot be construed  as modifying the License.            
           </p>
           <p>
-            You may add Your own copyright statement to Your modifications and may provide additional or different license terms and conditions for use, reproduction, or distribution of Your modifications, or for any such Derivative Works as a whole, provided Your use, reproduction, and distribution of the Work otherwise complies with the conditions stated in this License.            
+             You may add Your own copyright statement to Your modifications and  may provide additional or different license terms and conditions  for use, reproduction, or distribution of Your modifications, or  for any such Derivative Works as a whole, provided Your use,  reproduction, and distribution of the Work otherwise complies with  the conditions stated in this License.            
           </p>
         </li>
       </ol>
       <li>
         <p>
-          Submission of Contributions. Unless You explicitly state otherwise, any Contribution intentionally submitted for inclusion in the Work by You to the Licensor shall be under the terms and conditions of this License, without any additional terms or conditions. Notwithstanding the above, nothing herein shall supersede or modify the terms of any separate license agreement you may have executed with Licensor regarding such Contributions.          
+          Submission of Contributions. Unless You explicitly state otherwise,  any Contribution intentionally submitted for inclusion in the Work  by You to the Licensor shall be under the terms and conditions of  this License, without any additional terms or conditions.  Notwithstanding the above, nothing herein shall supersede or modify  the terms of any separate license agreement you may have executed  with Licensor regarding such Contributions.          
         </p>
       </li>
       <li>
         <p>
-          Trademarks. This License does not grant permission to use the trade names, trademarks, service marks, or product names of the Licensor, except as required for reasonable and customary use in describing the origin of the Work and reproducing the content of the NOTICE file.          
+          Trademarks. This License does not grant permission to use the trade  names, trademarks, service marks, or product names of the Licensor,  except as required for reasonable and customary use in describing the  origin of the Work and reproducing the content of the NOTICE file.          
         </p>
       </li>
       <li>
         <p>
-          Disclaimer of Warranty. Unless required by applicable law or agreed to in writing, Licensor provides the Work (and each Contributor provides its Contributions) on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied, including, without limitation, any warranties or conditions of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE. You are solely responsible for determining the appropriateness of using or redistributing the Work and assume any risks associated with Your exercise of permissions under this License.          
+          Disclaimer of Warranty. Unless required by applicable law or  agreed to in writing, Licensor provides the Work (and each  Contributor provides its Contributions) on an "AS IS" BASIS,  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or  implied, including, without limitation, any warranties or conditions  of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A  PARTICULAR PURPOSE. You are solely responsible for determining the  appropriateness of using or redistributing the Work and assume any  risks associated with Your exercise of permissions under this License.          
         </p>
       </li>
       <li>
         <p>
-          Limitation of Liability. In no event and under no legal theory, whether in tort (including negligence), contract, or otherwise, unless required by applicable law (such as deliberate and grossly negligent acts) or agreed to in writing, shall any Contributor be liable to You for damages, including any direct, indirect, special, incidental, or consequential damages of any character arising as a result of this License or out of the use or inability to use the Work (including but not limited to damages for loss of goodwill, work stoppage, computer failure or malfunction, or any and all other commercial damages or losses), even if such Contributor has been advised of the possibility of such damages.          
+          Limitation of Liability. In no event and under no legal theory,  whether in tort (including negligence), contract, or otherwise,  unless required by applicable law (such as deliberate and grossly  negligent acts) or agreed to in writing, shall any Contributor be  liable to You for damages, including any direct, indirect, special,  incidental, or consequential damages of any character arising as a  result of this License or out of the use or inability to use the  Work (including but not limited to damages for loss of goodwill,  work stoppage, computer failure or malfunction, or any and all  other commercial damages or losses), even if such Contributor  has been advised of the possibility of such damages.          
         </p>
       </li>
       <li>
         <p>
-          Accepting Warranty or Additional Liability. While redistributing the Work or Derivative Works thereof, You may choose to offer, and charge a fee for, acceptance of support, warranty, indemnity, or other liability obligations and/or rights consistent with this License. However, in accepting such obligations, You may act only on Your own behalf and on Your sole responsibility, not on behalf of any other Contributor, and only if You agree to indemnify, defend, and hold each Contributor harmless for any liability incurred by, or claims asserted against, such Contributor by reason of your accepting any such warranty or additional liability.          
+          Accepting Warranty or Additional Liability. While redistributing  the Work or Derivative Works thereof, You may choose to offer,  and charge a fee for, acceptance of support, warranty, indemnity,  or other liability obligations and/or rights consistent with this  License. However, in accepting such obligations, You may act only  on Your own behalf and on Your sole responsibility, not on behalf  of any other Contributor, and only if You agree to indemnify,  defend, and hold each Contributor harmless for any liability  incurred by, or claims asserted against, such Contributor by reason  of your accepting any such warranty or additional liability.          
         </p>
       </li>
     </ol>
@@ -8753,7 +8970,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       Day Management AG ("Licensor") is willing to license this specification to you ONLY UPON THE CONDITION THAT YOU ACCEPT ALL OF THE TERMS CONTAINED IN THIS LICENSE AGREEMENT ("Agreement"). Please read the terms and conditions of this Agreement carefully.      
     </p>
     <p>
-      Content Repository for JavaTM Technology API Specification ("Specification") Version: 2.0 Status: FCS Release: 10 August 2009      
+      Content Repository for JavaTM  Technology API Specification ("Specification") Version: 2.0 Status: FCS Release: 10 August 2009      
     </p>
     <p>
       Copyright 2009 Day Management AG Barf&amp;#252;sserplatz 6, 4001 Basel, Switzerland. All rights reserved.      

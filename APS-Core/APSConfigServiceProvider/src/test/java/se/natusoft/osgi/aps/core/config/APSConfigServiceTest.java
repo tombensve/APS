@@ -3,33 +3,33 @@
  * PROJECT
  *     Name
  *         APS Configuration Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         A more advanced configuration service that uses annotated interfaces to
  *         describe and provide access to configuration. It supports structured
  *         configuration models.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -42,18 +42,14 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import se.natusoft.osgi.aps.api.core.config.APSConfig;
-import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigDescription;
-import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigItemDescription;
-import se.natusoft.osgi.aps.api.core.config.annotation.APSDefaultValue;
-import se.natusoft.osgi.aps.api.core.config.model.APSConfigList;
-import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
-import se.natusoft.osgi.aps.api.core.config.model.APSConfigValueList;
-import se.natusoft.osgi.aps.api.core.config.model.admin.*;
+import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService.APSConfigEnvAdmin;
-import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
-import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
+import se.natusoft.osgi.aps.api.core.config.model.admin.*;
+import se.natusoft.osgi.aps.api.core.config.*;
+import se.natusoft.osgi.aps.api.core.config.annotation.*;
+import se.natusoft.osgi.aps.api.core.config.model.*;
+import se.natusoft.osgi.aps.api.core.filesystem.model.*;
 import se.natusoft.osgi.aps.core.config.service.APSConfigAdminServiceProvider;
 import se.natusoft.osgi.aps.core.config.service.APSConfigServiceProvider;
 import se.natusoft.osgi.aps.core.config.store.APSConfigEnvStore;
@@ -226,6 +222,45 @@ public class APSConfigServiceTest {
         endTest();
     }
 
+    @Test
+    public void testAPSConfig_lookup() throws Exception {
+        startTest("testAPSConfig_lookup");
+
+        setupEditing();
+
+        APSConfigEditModel udpRemoteDestConfigModel =
+                (APSConfigEditModel)discoverySvcConfigModel.getValueByName("defaultUDPTargetDiscoveryService");
+        assertNotNull(udpRemoteDestConfigModel);
+        assertEquals(2, udpRemoteDestConfigModel.getValues().size());
+
+        APSConfigValueEditModel targetPortConfigValue = udpRemoteDestConfigModel.getValueByName("targetPort");
+        APSConfigReference targetPortRef =
+                configAdmin.createRef()._(discoverySvcConfigModel)._(udpRemoteDestConfigModel)._(targetPortConfigValue)
+                        ._(configEnv);
+        assertNotNull(targetPortConfigValue);
+        assertEquals(true, targetPortConfigValue.isMany());
+
+        assertEquals(0, config.defaultUDPTargetDiscoveryService.targetPort.size());
+        configAdmin.addConfigValue(targetPortRef, "1234");
+        configAdmin.addConfigValue(targetPortRef, "5678");
+        configAdmin.addConfigValue(targetPortRef, "13579");
+        assertEquals(3, config.defaultUDPTargetDiscoveryService.targetPort.size());
+
+        APSConfigValueEditModel targetHostConfigValue = udpRemoteDestConfigModel.getValueByName("targetHost");
+        APSConfigReference targetHostRef =
+                configAdmin.createRef()._(discoverySvcConfigModel)._(udpRemoteDestConfigModel)._(targetHostConfigValue)
+                        ._(configEnv);
+
+        configAdmin.setConfigValue(targetHostRef, "my.test.host");
+
+        Object cfo = this.config.lookup("defaultUDPTargetDiscoveryService.targetHost");
+        assertNotNull(cfo);
+        assertTrue("Expected an APSConfigValue instance. Got: '" + cfo.getClass().getSimpleName() + "'", APSConfigValue.class.isAssignableFrom(cfo.getClass()));
+        assertEquals("my.test.host", cfo.toString());
+
+        endTest();
+    }
+
     /**
      * Tests editing plain config values (APSConfigValue).
      *
@@ -358,7 +393,7 @@ public class APSConfigServiceTest {
             }
             endGroup();
 
-            startGroup("Create second list enrty [1]");
+            startGroup("Create second list entry [1]");
             APSConfigReference udpTargetDiscoverySvcRef1 =
                     configAdmin.addConfigList(configAdmin.createRef()._(discoverySvcConfigModel)._(udpTargetDiscoveryServicesEditModel));
             {
@@ -516,7 +551,7 @@ public class APSConfigServiceTest {
         )
         public static class APSUDPRemoteDestinationDiscoveryServiceConfig extends APSConfig {
 
-            @APSConfigItemDescription(description = "The targetHost where a known discovery service runs.")
+            @APSConfigItemDescription(description = "The targetHost where a known discovery service runs.", defaultValue = {@APSDefaultValue(value = "testHost")})
             public APSConfigValue targetHost;
 
             @APSConfigItemDescription(description = "The targetPort where the known discovery service listens to.")

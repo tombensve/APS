@@ -3,28 +3,28 @@
  * PROJECT
  *     Name
  *         APS Message Sync Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -42,7 +42,7 @@ import se.natusoft.osgi.aps.api.net.messaging.service.APSSyncService
 import se.natusoft.osgi.aps.api.net.messaging.types.APSCommonDateTime
 import se.natusoft.osgi.aps.api.net.messaging.types.APSReSyncEvent
 import se.natusoft.osgi.aps.api.net.messaging.types.APSSyncDataEvent
-import se.natusoft.osgi.aps.api.net.messaging.types.APSMessageListener
+
 import se.natusoft.osgi.aps.api.net.messaging.types.APSSyncEvent
 import se.natusoft.osgi.aps.codedoc.Implements
 import se.natusoft.osgi.aps.net.messaging.config.SyncServiceConfig
@@ -58,14 +58,22 @@ import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
 import se.natusoft.osgi.aps.tools.apis.APSActivatorSearchCriteriaProvider
 import se.natusoft.osgi.aps.tools.apis.APSActivatorServiceSetupProvider
+import se.natusoft.osgi.aps.tools.apis.ServiceSetup
 
 /**
- * Represents one cluster node member.
+ * This is an implementation of APSSyncService that uses APSMessageClusterService
+ * to sync. Each instance represents one cluster member.
+ *
+ * Each service instance will be registered with the following properties:
+ *
+ *     aps-sync-provider=aps-message-service-sync-provider
+ *     aps-sync-instance-name=<configured instance name>
  */
 @CompileStatic
 @TypeChecked
 @OSGiServiceProvider(serviceSetupProvider = SetupProvider.class, threadStart = true)
-public class APSSyncServiceProvider implements APSSyncService, APSMessageListener {
+public class APSSyncServiceProvider implements APSActivatorSearchCriteriaProvider.SearchCriteriaProviderFactory, APSSyncService,
+        APSMessageService.APSMessageListener {
 
     public static class SetupProvider implements APSActivatorServiceSetupProvider {
 
@@ -79,19 +87,21 @@ public class APSSyncServiceProvider implements APSSyncService, APSMessageListene
          */
         @SuppressWarnings("UnnecessaryQualifiedReference") // This warning is BS and have been reported to JetBrains.
         @Override
-        List<APSActivatorServiceSetupProvider.Setup> provideServiceInstancesSetup() {
-            List<APSActivatorServiceSetupProvider.Setup> instances = new LinkedList<>()
+        List<ServiceSetup> provideServiceInstancesSetup() {
+            List<ServiceSetup> instances = new LinkedList<>()
 
             SyncServiceConfig.managed.get().instances.each { SyncServiceConfig.SyncInstance syncInstance ->
-                APSActivatorServiceSetupProvider.Setup setup = new APSActivatorServiceSetupProvider.Setup()
-                setup.props = new Properties()
-                setup.serviceAPIs = new LinkedList<String>()
-                setup.serviceInstance = new APSSyncServiceProvider(messageInstanceName: syncInstance.messageInstanceName.string)
-                instances.add(setup)
+                ServiceSetup setup = new ServiceSetup(
+                        serviceInstance: new APSSyncServiceProvider(messageInstanceName: syncInstance.messageInstanceName.string)
+                )
+                instances += setup
 
-                setup.props.setProperty(APSSyncService.SYNC_INSTANCE_NAME, syncInstance.name.string)
-                setup.props.setProperty(APSSyncService.SYNC_PROVIDER, "aps-message-service-sync-provider")
-                setup.serviceAPIs.add(APSSyncService.class.name)
+                setup.props = [
+                        "${APSSyncService.SYNC_INSTANCE_NAME}": syncInstance.name.string,
+                        "${APSSyncService.SYNC_PROVIDER}": "aps-message-service-sync-provider"
+                ]
+
+                setup.serviceAPIs += APSSyncService.class.name
             }
 
             return instances
@@ -102,15 +112,23 @@ public class APSSyncServiceProvider implements APSSyncService, APSMessageListene
 
         /**
          * This should return a String starting with '(' and ending with ')'. The final ServiceListener
-         * criteria will be (&(objectClass=MyService)(_providedSearchCriteria()_))
+         * criteria will be (&(objectClass=MyService)_providedSearchCriteria()_)
          *
          * Whatever is returned it will probably  reference a property and a value that the service you
          * are looking for where registered with.
          */
         @Override
         String provideSearchCriteria() {
-            return "(${APSMessageService.MESSAGING_INSTANCE_NAME}=${messageInstanceName})"
+            return "(" + APSMessageService.APS_MESSAGE_SERVICE_INSTANCE_NAME + "=" + messageInstanceName + ")"
         }
+    }
+
+    /**
+     * Returns an instance of an APSActivatorSearchCriteriaProvider.
+     */
+    @Override
+    APSActivatorSearchCriteriaProvider createSearchCriteriaProvider() {
+        return new SearchCriteriaProvider()
     }
 
     //
@@ -144,7 +162,7 @@ public class APSSyncServiceProvider implements APSSyncService, APSMessageListene
     private boolean timeSenderRunning = true
 
     /** Our sync listeners. */
-    private List<APSSyncService.Listener> syncListeners = new LinkedList<>()
+    private List<APSSyncService.APSSyncListener> syncListeners = new LinkedList<>()
 
     //
     // Properties
@@ -237,7 +255,7 @@ public class APSSyncServiceProvider implements APSSyncService, APSMessageListene
      */
     @Override
     @Implements(APSSyncService.class)
-    public synchronized void addSyncListener(APSSyncService.Listener listener) {
+    public synchronized void addSyncListener(APSSyncService.APSSyncListener listener) {
         this.syncListeners.add(listener)
     }
 
@@ -248,7 +266,7 @@ public class APSSyncServiceProvider implements APSSyncService, APSMessageListene
      */
     @Override
     @Implements(APSSyncService.class)
-    public synchronized void removeSyncListener(APSSyncService.Listener listener) {
+    public synchronized void removeSyncListener(APSSyncService.APSSyncListener listener) {
         this.syncListeners.remove(listener)
     }
 
@@ -259,7 +277,7 @@ public class APSSyncServiceProvider implements APSSyncService, APSMessageListene
      */
     private void sendToListeners(APSSyncEvent syncEvent) {
         int count = 1
-        this.syncListeners.each { APSSyncService.Listener listener ->
+        this.syncListeners.each { APSSyncService.APSSyncListener listener ->
             // Since we are calling code we have no control over and don't know what it does, we play is safe.
             // Every listener will get its callback even if one or more does something stupid and puts itself
             // in a deadlock or something else very time consuming. For example do a REST call to fetch 20000+ lines
@@ -286,7 +304,7 @@ public class APSSyncServiceProvider implements APSSyncService, APSMessageListene
      * @param message The received message.
      */
     @Override
-    @Implements(APSMessageListener.class)
+    @Implements(APSMessageService.APSMessageListener.class)
     void messageReceived(byte[] message) {
         String type = null
         if (SyncServiceConfig.managed.get().validateSenderUUID.boolean) {
@@ -371,8 +389,8 @@ public class APSSyncServiceProvider implements APSSyncService, APSMessageListene
      */
     private void checkIfTimeValueHaveBeenReceived() {
         long now = this.commonDateTime.currentLocalDateTime
-        if (this.lastTimeValueTime != 0 && (now - this.lastTimeValueTime) > ((1000 * 60 * 5) + 15000)) {
-            // We have not received any time value for 5.15 seconds. It should be sent out every 5 by the master.
+        if (this.lastTimeValueTime != 0 && (now - this.lastTimeValueTime) > ((1000 * 60 * 5) + 20000)) {
+            // We have not received any time value for 5.20 seconds. It should be sent out every 5 by the master.
             // So we do a sleep for a random time and then send a time message ourselves. The random
             // wait inhibits all members to fight for the mastership at the same time. The member with
             // the shortest random sleep time will become the new master.

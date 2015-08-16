@@ -66,18 +66,16 @@ public final class SyncServiceConfig extends APSConfig {
      */
     public static final ManagedConfig<SyncServiceConfig> managed = new ManagedConfig<SyncServiceConfig>();
 
-    @APSConfigItemDescription(description = "If selected then the UUID of received messages will be validated that they come from the same sender software.",
-            isBoolean = true, environmentSpecific = true)
-    APSConfigValue validateSenderUUID
-
-    @APSConfigItemDescription(description = "Defines 'sync' instances provided by the service.",
-            environmentSpecific = true)
+    @APSConfigItemDescription(
+            description = "Defines 'sync' instances provided by the service.",
+            environmentSpecific = true
+    )
     public APSConfigList<SyncInstance> instances
 
 
     @APSConfigDescription(
             configId = "sync-instance",
-            description = "Sync instance config. An APSSyncService instance will be registered as an OSGi service for each of this.",
+            description = "Sync instance config. An APSSyncService instance will be registered as an OSGi service for each of these.",
             version = "1.0.0"
     )
     public static final class SyncInstance extends APSConfig {

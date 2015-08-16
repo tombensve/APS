@@ -103,6 +103,8 @@ public final class RabbitMQMessageServiceConfig extends APSConfig {
             description = "Defines a name and an exchange and queue to be used for this instance.",
             version = "1.0.0"
     )
+    @CompileStatic
+    @TypeChecked
     public static final class RMQInstance extends APSConfig {
 
         @APSConfigItemDescription(description = "This defines a name that can be looked up in code.", environmentSpecific = true)
