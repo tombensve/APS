@@ -66,11 +66,6 @@
         <aps.config.classes>se.natusoft.osgi.aps.net.messaging.config.ClusterServiceConfig</aps.config.classes>
 
         <!--
-             Trigger tiles.
-         -->
-        <tile.groovy>${project.groupId}:groovy-tile:${project.version}</tile.groovy>
-
-        <!--
             Other properties
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -251,7 +251,7 @@
             <plugin>
                 <groupId>se.natusoft.maven.plugin</groupId>
                 <artifactId>ftp-maven-plugin</artifactId>
-                <version>${ftpPlugin.ver}</version>
+                <version>${ftpPlugin.version}</version>
                 <executions>
                     <execution>
                         <id>upload</id>

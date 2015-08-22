@@ -1999,7 +1999,7 @@ This does the same thing as the standard service tracker included with OSGi, but
 
 There are several variants of constructors, but here is an example of one of the most used ones within the APS services:
 
-        APSServiceTracker<Service> tracker = 
+        APSServiceTracker<Service> tracker =
             new APSServiceTracker<Service>(context, Service.class, "20 seconds");
         tracker.start();
 
@@ -2015,7 +2015,6 @@ Note that the third argument, which is a timeout can also be specified as an int
 On bundle stop you should do:
 
         tracker.stop(context);
-        
 
 So that the tracker unregisters itself from receiving bundle/service events.
 
@@ -2028,7 +2027,6 @@ The tracker tracks all instances of the service being tracked. It however have t
 You can provide an APSLogger (see further down about APSLogger) to the tracker:
 
         tracker.setLogger(apsLogger);
-        
 
 When available the tracker will log to this.
 
@@ -2037,7 +2035,6 @@ When available the tracker will log to this.
 The tracker can be used as a wrapped service:
 
         Service service = tracker.getWrappedService();
-        
 
 This gives you a proxied _service_ instance that gets the real service, calls it, releases it and return the result. This handles transparently if a service has been restarted or one instance of the service has gone away and another came available. It will wait for the specified timeout for a service to become available and if that does not happen the _APSNoServiceAvailableException_ will be thrown. This is of course a runtime exception which makes the service wrapping possible without loosing the possibility to handle the case where the service is not available.
 
@@ -2046,7 +2043,6 @@ This gives you a proxied _service_ instance that gets the real service, calls it
 To get a service instance you do:
 
         Service service = tracker.allocateService();
-        
 
 Note that if the tracker has a timeout set then this call will wait for the service to become available if it is currently not available until an instance becomes available or the timeout time is reached. It will throw _APSNoServiceAvailableException_ on failure in any case.
 
@@ -2064,7 +2060,10 @@ This will result in a callback when any instance of the service becomes availabl
 
             tracker.onServiceAvailable(new OnServiceAvailable<Service>() {
                 @Override
-                public void onServiceAvailable(Service service, ServiceReference serviceReference) throws Exception {
+                public void onServiceAvailable(
+                    Service service,
+                    ServiceReference serviceReference
+                ) throws Exception {
                     // Do something.
                 }
             });
@@ -2076,7 +2075,10 @@ This will result in a callback when any instance of the service goes away. If th
             onServiceLeaving(new OnServiceLeaving<Service>() {
         
                 @Override
-                public void onServiceLeaving(ServiceReference service, Class serviceAPI) throws Exception {
+                public void onServiceLeaving(
+                    ServiceReference service,
+                    Class serviceAPI
+                ) throws Exception {
                     // Handle the service leaving.
                 }
             });
@@ -2099,7 +2101,10 @@ Don't use this in an activator start() method! onActiveServiceAvailable() and on
 
             tracker.withService(new WithService<Service>() {
                 @Override
-                public void withService(Service service, Object... args) throws Exception {
+                public void withService(
+                    Service service,
+                    Object... args
+                ) throws Exception {
                     // do something here.
                 }
             }, arg1, arg2);
@@ -2108,7 +2113,9 @@ If you don't have any arguments this will also work:
 
             tracker.withService(new WithService<Service>() {
                 @Override
-                public void withService(Service service) throws Exception {
+                public void withService(
+                    Service service
+                ) throws Exception {
                     // do something here
                 }
             });
@@ -2130,7 +2137,7 @@ This allows for a callback when the tracker times out waiting for a service. Thi
             public void onTimeout() {
                 // do something here
             }
-        }); 
+        });
 
 ## APSLogger
 
@@ -2167,41 +2174,59 @@ __@OSGiServiceProvider__ - This should be specified on a class that implements a
             /** Extra properties to register the service with. */
             OSGiProperty[] properties() default {};
         
-            /** The service API to register instance with. If not specified the first implemented interface will be used. */
+            /**
+             * The service API to register instance with. If not specified the first
+             * implemented interface will be used.
+             */
             Class[] serviceAPIs() default {};
         }
         
         public @interface OSGiServiceProvider {
             /** Extra properties to register the service with. */
             OSGiProperty[] properties() default {};
-            
-            /** The service API to register instance with. If not specified the first implemented interface will be used. */
+        
+            /**
+             * The service API to register instance with. If not specified the first
+             * implemented interface will be used.
+             */
             Class[] serviceAPIs() default {};
-            
-            /** This can be used as an alternative to properties() and also supports several instances. */
+        
+            /**
+             * This can be used as an alternative to properties() and also supports
+             * several instances.
+             */
             OSGiServiceInstance[] instances() default {};
-            
+        
             /**
-             * An alternative to providing static information. This class will be instantiated if specified and
-             * provideServiceInstancesSetup() will be called to provide implemented service APIs, service
-             * properties, and a service instance. In this last, it differs from instanceFactoryClass() since
-             * that does not provide an instance. This allows for more easy configuration of each instance.
+             * An alternative to providing static information. This class will be
+             * instantiated if specified and provideServiceInstancesSetup() will
+             * be called to provide implemented service APIs, service properties,
+             * and a service instance. In this last, it differs from
+             * instanceFactoryClass() since that does not provide an instance.
+             * This allows for more easy configuration of each instance.
              */
-            Class<? extends APSActivatorServiceSetupProvider> serviceSetupProvider() default APSActivatorServiceSetupProvider.class;
-            
+            Class<? extends APSActivatorServiceSetupProvider>
+                serviceSetupProvider()
+                default APSActivatorServiceSetupProvider.class;
+        
             /**
-             * This can be used as an alternative and will instantiate the specified factory class which will deliver
-             * one set of Properties per instance.
+             * This can be used as an alternative and will instantiate the
+             * specified factory class which will deliver one set of
+             * Properties per instance.
              */
-            Class<? extends APSActivator.InstanceFactory> instanceFactoryClass() default APSActivator.InstanceFactory.class;
-            
+            Class<? extends APSActivator.InstanceFactory> instanceFactoryClass()
+                default APSActivator.InstanceFactory.class;
+        
             /**
-             * If true this service will be started in a separate thread. This means the bundle start
-             * will continue in parallel and that any failures in startup will be logged, but will
-             * not stop the bundle from being started. If this is true it wins over required service
-             * dependencies of the service class. Specifying this as true allows you to do things that
-             * cannot be done in a bunde activator start method, like calling a service tracked by 
-             * APSServiceTracker, without causing a deadlock.
+             * If true this service will be started in a separate thread.
+             * This means the bundle start will continue in parallel and
+             * that any failures in startup will be logged, but will
+             * not stop the bundle from being started. If this is true
+             * it wins over required service dependencies of the service
+             * class. Specifying this as true allows you to do things that
+             * cannot be done in a bunde activator start method, like
+             * calling a service tracked by APSServiceTracker, without
+             * causing a deadlock.
              */
             boolean threadStart() default false;
         }
@@ -2214,21 +2239,35 @@ If _required=true_ is specified and this field is in a class annotated with _@OS
 
         public @interface OSGiService {
         
-            /** The timeout for a service to become available. Defaults to 30 seconds. */
-            String timeout() default "30 seconds";
-            
-            /** Any additional search criteria. Should start with '(' and end with ')'. Defaults to none. */
-            String additionalSearchCriteria() default "";
-            
             /**
-             * This should specify a Class implementing APSActivatorSearchCriteriaProvider. If specified it will be
-             * used instead of additionalSearchCriteria() by instantiating the Class and calling its method to get
-             * a search criteria back. This allows for search criteria coming from configuration, which a static
-             * annotation String does not.
+             * The timeout for a service to become available. Defaults
+             * to 30 seconds.
              */
-            Class<? extends APSActivatorSearchCriteriaProvider> searchCriteriaProvider() default APSActivatorSearchCriteriaProvider.class;
-             
-            /** If set to true the service using this service will not be registered until the service becomes available. */
+            String timeout() default "30 seconds";
+        
+            /**
+             * Any additional search criteria. Should start with
+             * '(' and end with ')'. Defaults to none.
+             */
+            String additionalSearchCriteria() default "";
+        
+            /**
+             * This should specify a Class implementing
+             * APSActivatorSearchCriteriaProvider. If specified it will
+             * be used instead of additionalSearchCriteria() by
+             * instantiating the Class and calling its method to get
+             * a search criteria back. This allows for search criteria
+             * coming from configuration, which a static annotation String
+             * does not.
+             */
+            Class<? extends APSActivatorSearchCriteriaProvider>
+                searchCriteriaProvider()
+                default APSActivatorSearchCriteriaProvider.class;
+        
+            /**
+             * If set to true the service using this service will not
+             * be registered until the service becomes available.
+             */
             boolean required() default false;
         }
 
@@ -2237,13 +2276,14 @@ __@Managed__ - This will have an instance managed and injected. There will be a 
         public @interface Managed {
         
             /**
-             * The name of the instance to inject. If the same is used in multiple classes the same instance will
-             * be injected.
+             * The name of the instance to inject. If the same is used
+             * in multiple classes the same instance will be injected.
              */
             String name() default "default";
         
             /**
-             * A label indicating who is logging. If not specified the bundle name will be used. This is only
+             * A label indicating who is logging. If not specified the
+             * bundle name will be used. This is only
              * relevant if the injected type is APSLogger.
              */
             String loggingFor() default "";
@@ -2254,7 +2294,8 @@ __@BundleStart__ - This should be used on a method and will be called on bundle 
         public @interface BundleStart {
         
             /**
-             * If true the start method will run in a new thread. Any failures in this case will not fail
+             * If true the start method will run in a new thread.
+             * Any failures in this case will not fail
              * the bundle startup, but will be logged.
              */
             boolean thread() default false;
@@ -2289,7 +2330,6 @@ Both of these creates and manages an APSActivator internally and catches shutdow
 This provides a static wrap(...) method:
 
         Service providedService = APSContextWrapper.wrap(serviceProvider, Service.class);
-        
 
 where _serviceProvider_ is an instance of a class that implements _Service_. The resulting instance is a java.lang.reflect.Proxy implementation of _Service_ that ensures that the _serviceProvider_ ClassLoader is the context class loader during each call to all service methods that are annotated with @APSRunInBundlesContext annotation in _Service_. The wrapped instance can then be registered as the OSGi service provider.
 
@@ -2300,7 +2340,7 @@ Normally the threads context class loader is the original service callers contex
 There is one interface:
 
         /**
-         * This is a generic interface for representing IDs. 
+         * This is a generic interface for representing IDs.
          */
         public interface ID extends Comparable<ID> {
         
@@ -5147,23 +5187,99 @@ This service provides an implementation of APSMessageService using [RabbitMQ](ht
 
 [Javadoc](http://apidoc.natusoft.se/APS/se/natusoft/osgi/aps/api/net/messaging/service/APSMessageService.html)
 
-public _interface_ __APSClusterService<Type>__ extends  APSMessageService    [se.natusoft.osgi.aps.api.net.messaging.service] {
+public _interface_ __APSClusterService__   [se.natusoft.osgi.aps.api.net.messaging.service] {
 
-This extends APSMessageService providing cluster common data.
+This service defines a synchronized cluster.
 
-__Map<String, Type> getNamedMap(String name)__
 
-Returns a named map into which objects can be stored with a name.
 
-If the named map does not exists it should be created and an empty map be returned.
 
-__List<String> getAvailableNames()__
 
-Returns the available names.
 
-__boolean supportsPersistence()__
 
-Returns true if the implementation supports persistence for stored objects. If false is returned objects are in memory only.
+__void clusterUpdated(String key, JSONValue value)__
+
+Receives an updated value.
+
+_Parameters_
+
+> _key_ - The key of the updated value. 
+
+> _value_ - The actual value. 
+
+__void update(String key, JSONValue value)__
+
+Updates a keyed value to the cluster.
+
+_Parameters_
+
+> _key_ - This uniquely specifies what value this is. How it is used is upp tp the actual cluster using it. 
+
+> _value_ - The modified value to update. 
+
+__void addUpdateListener(UpdateListener updateListener)__
+
+Adds an update listener.
+
+_Parameters_
+
+> _updateListener_ - The update listener to add. 
+
+__void removeUpdateListener(UpdateListener updateListener)__
+
+Removes an update listener.
+
+_Parameters_
+
+> _updateListener_ - The listener to remove. 
+
+__JSONObject getNamedObject(String name)__
+
+Gets named cluster-wide object. If it does not exist it will be created.
+
+_Parameters_
+
+> _name_ - The name of the cluster object to get. 
+
+_Throws_
+
+> _UnsupportedOperationException_ - if this feature is not supported. 
+
+__List<JSONValue> getNamedList(String name)__
+
+Gets a cluster-wide named list. If it does not exist it will be created.
+
+_Parameters_
+
+> _name_ - The name of the list to get. 
+
+_Throws_
+
+> _UnsupportedOperationException_ - if this feature is not supported. 
+
+
+
+__List<UpdateListener> listeners = Collections.synchronizedList(new LinkedList<UpdateListener>())__
+
+ The listeners.
+
+
+
+
+
+__protected void updateListeners(String key, JSONValue value)__
+
+Updates all listeners.
+
+_Parameters_
+
+> _key_ - The key of the update. 
+
+> _value_ - The value of the update. 
+
+__protected List<UpdateListener> getListeners()__
+
+Returns the listeners.
 
 }
 
@@ -5173,27 +5289,13 @@ Returns true if the implementation supports persistence for stored objects. If f
 
 public _interface_ __APSMessageService__   [se.natusoft.osgi.aps.api.net.messaging.service] {
 
-This defines a simple cluster service. Can be implemented by using a message bus like RabbitMQ, Active MQ, etc or just a simple socket server or whatever.
+This defines a simple message service. Can be implemented by using a message bus like RabbitMQ, Active MQ, etc or just a simple tcpip server or whatever.
 
-I've had a real hard decision on what to name this! Its been between APSMessageService and APSClusterService. For a while i even called it APSMessageClusterService but I decided that was to unclear. Yes, the service sends and received messages! That is basically all it does. But what would a cluster service do ? Well, send messages among the cluster members. What does this service to ? It sends messages among members ...
+Since the actual members are outside of this service API, it doesn't really know who they are and doesn't care, all members are defined by configuration to make a cluster of members.
 
-Since the actual members are outside of this service API, it doesn't really know who they are and doesn't care, all members are defined by configuration to make a cluster of members which is why I finally went with APSClusterService.
 
-__public static final String CLUSTER_PROVIDER = "aps-messaging-provider"__
 
-Multiple providers of this service can be deployed at the same time. Using this property when registering services for a provider allows clients to lookup a specific provider.
 
-__public static final String CLUSTER_INSTANCE_NAME = "aps-messaging-instance-name"__
-
-Each configured instance of this service should have this property with a unique instance name so that client can lookup a specific instance of the service.
-
-__String getName()__
-
-Returns the name of this instance.
-
-__UUID getProviderUUID()__
-
-Every service implementation should have a UUID, which also gets passed in messages.
 
 __void addMessageListener(APSMessageListener listener)__
 
@@ -5211,7 +5313,7 @@ _Parameters_
 
 > _listener_ - The listener to remove. 
 
-__void sendMessage(APSMessage message) throws APSMessagingException__
+__void sendMessage(JSONObject message) throws APSMessagingException__
 
 Sends a message.
 
@@ -5223,6 +5325,16 @@ _Throws_
 
 > _se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException_ - on failure. 
 
+
+
+__void messageReceived(JSONObject message)__
+
+This is called when a message is received.
+
+_Parameters_
+
+> _message_ - The received message. 
+
 public _static_ _abstract_ _class_ __AbstractMessageServiceProvider__ implements  APSMessageService    [se.natusoft.osgi.aps.api.net.messaging.service] {
 
 Provides an abstract implementation of the APSMessageService interface.
@@ -5233,7 +5345,7 @@ Provides an abstract implementation of the APSMessageService interface.
 
 
 
-__protected void sendToListeners(APSMessage message)__
+__protected void sendToListeners(JSONObject message)__
 
 Sends a message to the registered listeners.
 
@@ -5241,81 +5353,9 @@ _Parameters_
 
 > _message_ - The message to send. 
 
-}
+__protected List<APSMessageListener> getMessageListeners()__
 
-----
-
-    
-
-public _interface_ __APSSyncService__   [se.natusoft.osgi.aps.api.net.messaging.service] {
-
-This defines a data synchronization service.
-
-__public static final String SYNC_PROVIDER = "aps-sync-provider"__
-
-A property key that should be registered with each service instance to indicate the specific implementation of the service. This to allow multiple implementations to be deployed and clients can ask for a specific if needed.
-
-__public static final String SYNC_INSTANCE_NAME = "aps-sync-instance-name"__
-
-There should be one service instance registered for each configured synchronization group. Each instance should include this property with a unique name so that clients can get the synchronizer for the correct group.
-
-__APSCommonDateTime getCommonDateTime()__
-
-Returns the network common DateTime that is independent of local machine times.
-
-__void syncData(APSSyncDataEvent syncEvent) throws APSMessagingException__
-
-Synchronizes data.
-
-_Parameters_
-
-> _syncEvent_ - The sync event to send. 
-
-_Throws_
-
-> _APSMessagingException_ - on failure. 
-
-__void resync()__
-
-Makes all members resync everything.
-
-__void resync(String key)__
-
-Makes all members resync the specified key.
-
-_Parameters_
-
-> _key_ - The key to resync. 
-
-__void addSyncListener(Listener listener)__
-
-Adds a synchronization listener.
-
-_Parameters_
-
-> _listener_ - The listener to add. 
-
-__void removeSyncListener(Listener listener)__
-
-Removes a synchronization listener.
-
-_Parameters_
-
-> _listener_ - The listener to remove. 
-
-
-
-__void syncDataReceived(APSSyncEvent syncEvent)__
-
-Called to deliver a sync event. This can currently be one of:
-
-* APSSyncDataEvent
-
-* APSReSyncEvent
-
-_Parameters_
-
-> _syncEvent_ - The received sync event. 
+Returns the message listeners.
 
 }
 
@@ -5377,6 +5417,78 @@ These examples only works if you have disabled the _requireAuthentication_ confi
 Se the documentation for _APSExtProtocolHTTPTransportProvider_ for an HTTP transport through which these protocols can be used.
 
 Se the documentation for _APSExternalProtocolExtender_ for a description of how services are made available and what services it provides for transport providers.
+
+# APSTCPIPService
+
+This service provides, in ways of communication, plain simple TCP/IP communication. Users of this service will however have very little contact with the java.net classes.
+
+The following are the points of this service:
+
+* Simple TCP/IP usage.
+
+* Remove all host, port, and partly protocol from the client code by only referencing a named configuration provided by the service.
+
+* Being able to transparently provide different implementations, like a plain non secure implementation as this is, or an SSL:ed version for TCP. A Test implementation that opens no real sockets nor sends any real packets that can be used by tests are also a possibility.
+
+## Security
+
+This implementation is non secure! It sets the following property on the registered service:
+
+        aps.props.security=nonsecure
+
+## How it works
+
+The service registers an APSConfigService configuration with that service where configurations for TCP, UDP or Multicast connections can be defined. Each configuration entry basically specifies host, port and protocol in addition to a unique name for the entry. Do note that in most cases there needs to be separate entries for clients and services.
+
+The client code should have a configuration of itself that specifies the named entry to use. This name is then passed to the service which then only reads or writes data without having to care where from or to.
+
+## Examples
+
+### TCP
+
+#### Write
+
+        APSTCPIPService tcpipSvc;
+        ...
+        tcpipSvc.sendTCPRequest("somesvc", new TCPRequest() {
+            void tcpRequest(OutputStream requestStream, InputStream responseStream) throws IOException {
+                // write to requestStream ...
+        
+                // read from response stream ...
+            }
+        })
+        
+
+#### Read
+
+        APSTCPIPService tcpipSvc;
+        ...
+        tcpipSvc.setTCPRequestListener("remotesvc", this);
+        ...
+        void tcpRequestReceived(String name, InetAddress address, InputStream reqStreamn, OutputStream respStream) throws IOException {
+            // Read request from reqStream ...
+        
+            // Write response to respStream ...
+        }
+
+### UDP / Multicast
+
+Since Multicast uses UDP packets there is no difference between host and port connected UDP or Multicast. The only difference is in the configuration where "UDP" is specified for point to point UDP packets and "Multicast" is specified for multicast packets.
+
+#### Write
+
+        APSTCPIPService tcpipSvc;
+        ...
+        bytes[] bytes = "Some data".getBytes();
+        tcpipSvc.sendUDP("myudptarget",  bytes);
+
+#### READ
+
+        APSTCPIPService tcpipSvc;
+        ...
+        byte[] packetBuff = new byte[4000];
+        DatagramPacket packet = tcpiipSvc.readUDP("myudpsomething", packetBuff);
+        byte[] data = packet.getData(); // This is actually packetBuff being returned!
 
 # APSAdminWeb
 
@@ -5592,7 +5704,37 @@ ____[Apache Software License version 2.0](http://www.apache.org/licenses/LICENSE
 
 The following third party products are using this license:
 
-* [annotations-13.0](http://www.jetbrains.org)
+* [vaadin-server-7.1.14](http://vaadin.com)
+
+* [vaadin-client-compiled-7.1.14](http://vaadin.com)
+
+* [vaadin-client-7.1.14](http://vaadin.com)
+
+* [vaadin-push-7.1.14](http://vaadin.com)
+
+* [vaadin-themes-7.1.14](http://vaadin.com)
+
+* [groovy-all-2.4.3](http://groovy.codehaus.org/)
+
+* [bigqueue-0.7.0](https://github.com/bulldog2011/bigqueue)
+
+* [openjpa-all-2.2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+* [derbyclient-10.9.1.0](http://db.apache.org/derby/)
+
+____[Eclipse Public License - v version 1.0](http://www.eclipse.org/legal/epl-v10.html)____
+
+The following third party products are using this license:
+
+* [javax.persistence-2.0.0](http://www.eclipse.org/eclipselink)
+
+____[CDDL + GPLv2 with classpath version exception](https://glassfish.dev.java.net/nonav/public/CDDL+GPL.html)____
+
+The following third party products are using this license:
+
+* [javax.servlet-api-3.0.1](http://servlet-spec.java.net)
+
+* [javaee-web-api-6.0](http://java.sun.com/javaee/6/docs/api/index.html)
 
 <!--
   CLM

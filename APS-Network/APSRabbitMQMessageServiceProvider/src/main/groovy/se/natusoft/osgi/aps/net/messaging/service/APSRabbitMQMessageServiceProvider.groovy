@@ -44,8 +44,6 @@ import se.natusoft.osgi.aps.api.misc.json.model.JSONObject
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
-import se.natusoft.osgi.aps.api.net.messaging.types.APSMessage
-
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.ReceiveThread

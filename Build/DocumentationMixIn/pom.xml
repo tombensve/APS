@@ -74,6 +74,10 @@
 
     <name>Documentation MixIn</name>
 
+    <properties>
+        <markdownDoc.version>1.4</markdownDoc.version>
+    </properties>
+
     <build>
         <plugins>
             <!--
@@ -82,13 +86,13 @@
             <plugin>
                 <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
                 <artifactId>markdowndoc-maven-plugin</artifactId>
-                <version>1.3.8</version>
+                <version>${markdownDoc.version}</version>
 
                 <dependencies>
                     <dependency>
                         <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
                         <artifactId>markdown-doc-lib</artifactId>
-                        <version>1.3.8</version>
+                        <version>${markdownDoc.version}</version>
                     </dependency>
                 </dependencies>
 

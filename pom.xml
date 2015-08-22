@@ -74,11 +74,12 @@
             Dependency versions
         -->
         <maven.bundle.plugin.version>2.3.6</maven.bundle.plugin.version>
-        <markdownDoc.ver>1.3.2</markdownDoc.ver>
-        <ftpPlugin.ver>1.0.1</ftpPlugin.ver>
-        <clm.ver>2.1.3</clm.ver>
         <vaadin.version>7.1.14</vaadin.version>
-        <vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+        <osgi.version>4.2.0</osgi.version>
+        <mixin.plugin.version>0.1-alpha-34</mixin.plugin.version>
+        <clm.version>2.1.3</clm.version>
+        <ftpPlugin.version>1.0.1</ftpPlugin.version>
+        <markdownDoc.version>1.4</markdownDoc.version>
     </properties>
 
     <!--
@@ -119,14 +120,14 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>4.2.0</version>
+            <version>${osgi.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
-            <version>4.2.0</version>
+            <version>${osgi.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -176,8 +177,21 @@
                 <plugin>
                     <groupId>com.github.odavid.maven.plugins</groupId>
                     <artifactId>mixin-maven-plugin</artifactId>
-                    <version>0.1-alpha-34</version>
+                    <version>${mixin.plugin.version}</version>
                     <extensions>true</extensions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>${maven.bundle.plugin.version}</version>
+                    <extensions>true</extensions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.6</version>
                 </plugin>
             </plugins>
 
@@ -242,13 +256,13 @@
             <plugin>
                 <groupId>se.natusoft.tools.codelicmgr</groupId>
                 <artifactId>CodeLicenseManager-maven-plugin</artifactId>
-                <version>${clm.ver}</version>
+                <version>${clm.version}</version>
 
                 <dependencies>
                     <dependency>
                         <groupId>se.natusoft.tools.codelicmgr</groupId>
                         <artifactId>CodeLicenseManager-licenses-common-opensource</artifactId>
-                        <version>${clm.ver}</version>
+                        <version>${clm.version}</version>
                     </dependency>
                 </dependencies>
 
@@ -335,7 +349,7 @@
                     <plugin>
                         <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
                         <artifactId>markdowndoc-maven-plugin</artifactId>
-                        <version>1.3.8</version>
+                        <version>${markdownDoc.version}</version>
 
                         <executions>
                             <execution>
@@ -441,50 +455,6 @@
         </profile>
 
         <!--
-            Triggers groovy compilation if src/main/groovy exists.
-        -->
-        <profile>
-            <id>build-groovy</id>
-            <activation>
-                <file>
-                    <exists>src/main/groovy</exists>
-                </file>
-            </activation>
-
-            <dependencies>
-                <dependency>
-                    <groupId>org.codehaus.groovy</groupId>
-                    <artifactId>groovy-all</artifactId>
-                    <!--
-                        Can't upgrade to 2.4.* until the += bugs on collections are fixed.
-                        https://issues.apache.org/jira/browse/GROOVY-7380
-                    -->
-                    <version>2.3.11</version>
-                    <scope>provided</scope>
-                    <classifier>indy</classifier>
-                </dependency>
-            </dependencies>
-
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.github.odavid.maven.plugins</groupId>
-                        <artifactId>mixin-maven-plugin</artifactId>
-                        <configuration>
-                            <mixins>
-                                <mixin>
-                                    <groupId>${project.groupId}</groupId>
-                                    <artifactId>groovy-mixin</artifactId>
-                                    <version>${project.version}</version>
-                                </mixin>
-                            </mixins>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <!--
             This profile deploys bundles to a server.
         -->
         <profile>
@@ -552,23 +522,23 @@
 
                         <groupId>se.natusoft.tools.codelicmgr</groupId>
                         <artifactId>CodeLicenseManager-maven-plugin</artifactId>
-                        <version>${clm.ver}</version>
+                        <version>${clm.version}</version>
 
                         <dependencies>
                             <dependency>
                                 <groupId>se.natusoft.tools.codelicmgr</groupId>
                                 <artifactId>CodeLicenseManager-licenses-common-opensource</artifactId>
-                                <version>${clm.ver}</version>
+                                <version>${clm.version}</version>
                             </dependency>
                             <dependency>
                                 <groupId>se.natusoft.tools.codelicmgr</groupId>
                                 <artifactId>CodeLicenseManager-source-updater-slashstar-comment</artifactId>
-                                <version>${clm.ver}</version>
+                                <version>${clm.version}</version>
                             </dependency>
                             <dependency>
                                 <groupId>se.natusoft.tools.codelicmgr</groupId>
                                 <artifactId>CodeLicenseManager-source-updater-html-xml</artifactId>
-                                <version>${clm.ver}</version>
+                                <version>${clm.version}</version>
                             </dependency>
                         </dependencies>
 

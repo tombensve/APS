@@ -57,97 +57,95 @@
         <sourceDirectory>src/main/groovy</sourceDirectory>
         <testSourceDirectory>src/test/groovy</testSourceDirectory>
 
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <artifactId>maven-antrun-plugin</artifactId>
-                    <version>1.7</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.codehaus.groovy</groupId>
-                            <artifactId>groovy-all</artifactId>
-                            <version>${groovy.version}</version>
-                            <scope>compile</scope>
-                            <classifier>indy</classifier>
-                        </dependency>
-                    </dependencies>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-all</artifactId>
+                        <version>${groovy.version}</version>
+                        <scope>compile</scope>
+                        <classifier>indy</classifier>
+                    </dependency>
+                </dependencies>
 
-                    <executions>
+                <executions>
 
-                        <execution>
-                            <id>compile</id>
-                            <phase>compile</phase>
-                            <configuration>
-                                <target>
-                                    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">
-                                        <classpath refid="maven.compile.classpath"/>
-                                    </taskdef>
-                                    <mkdir dir="${project.build.outputDirectory}"/>
-                                    <groovyc srcdir="${basedir}/src/main/groovy" destdir="${project.build.outputDirectory}"
-                                             encoding="${project.build.sourceEncoding}">
-                                        <classpath refid="maven.compile.classpath"/>
-                                    </groovyc>
-                                </target>
-                            </configuration>
-                            <goals>
-                                <goal>run</goal>
-                            </goals>
-                        </execution>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <configuration>
+                            <target>
+                                <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">
+                                    <classpath refid="maven.compile.classpath"/>
+                                </taskdef>
+                                <mkdir dir="${project.build.outputDirectory}"/>
+                                <groovyc srcdir="${basedir}/src/main/groovy" destdir="${project.build.outputDirectory}"
+                                         encoding="${project.build.sourceEncoding}">
+                                    <classpath refid="maven.compile.classpath"/>
+                                </groovyc>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
 
-                        <execution>
-                            <id>test-compile</id>
-                            <phase>test-compile</phase>
-                            <configuration>
-                                <target>
-                                    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">
-                                        <classpath refid="maven.test.classpath"/>
-                                    </taskdef>
-                                    <mkdir dir="${project.build.testOutputDirectory}"/>
-                                    <groovyc srcdir="${basedir}/src/test/groovy" destdir="${project.build.testOutputDirectory}"
-                                             encoding="${project.build.sourceEncoding}">
-                                        <classpath refid="maven.test.classpath"/>
-                                    </groovyc>
-                                </target>
-                            </configuration>
-                            <goals>
-                                <goal>run</goal>
-                            </goals>
-                        </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <configuration>
+                            <target>
+                                <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">
+                                    <classpath refid="maven.test.classpath"/>
+                                </taskdef>
+                                <mkdir dir="${project.build.testOutputDirectory}"/>
+                                <groovyc srcdir="${basedir}/src/test/groovy" destdir="${project.build.testOutputDirectory}"
+                                         encoding="${project.build.sourceEncoding}">
+                                    <classpath refid="maven.test.classpath"/>
+                                </groovyc>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
 
-                        <execution>
-                            <id>groovydoc</id>
-                            <phase>deploy</phase>
-                            <goals>
-                                <goal>run</goal>
-                            </goals>
-                            <configuration>
-                                <target>
-                                    <taskdef name="groovydoc"
-                                             classname="org.codehaus.groovy.ant.Groovydoc"
-                                             classpathref="maven.compile.classpath"
-                                            />
-                                    <groovydoc destdir="${project.reporting.outputDirectory}/groovydoc"
-                                               sourcepath="${basedir}/src/main/groovy" use="true"
-                                               windowtitle="${project.name}"
-                                               doctitle="${project.name}"
-                                            >
-                                        <link packages="java.,org.xml.,javax.,org.xml."
-                                              href="http://download.oracle.com/javase/6/docs/api"/>
-                                        <link packages="org.apache.tools.ant."
-                                              href="http://evgeny-goldin.org/javadoc/ant/api"/>
-                                        <link packages="groovy.,org.codehaus.groovy."
-                                              href="http://groovy.codehaus.org/api/"/>
-                                        <link packages="org.codehaus.gmaven."
-                                              href="http://evgeny-goldin.org/javadoc/gmaven"/>
-                                    </groovydoc>
-                                </target>
-                            </configuration>
-                        </execution>
+                    <execution>
+                        <id>groovydoc</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <taskdef name="groovydoc"
+                                         classname="org.codehaus.groovy.ant.Groovydoc"
+                                         classpathref="maven.compile.classpath"
+                                        />
+                                <groovydoc destdir="${project.reporting.outputDirectory}/groovydoc"
+                                           sourcepath="${basedir}/src/main/groovy" use="true"
+                                           windowtitle="${project.name}"
+                                           doctitle="${project.name}"
+                                        >
+                                    <link packages="java.,org.xml.,javax.,org.xml."
+                                          href="http://download.oracle.com/javase/6/docs/api"/>
+                                    <link packages="org.apache.tools.ant."
+                                          href="http://evgeny-goldin.org/javadoc/ant/api"/>
+                                    <link packages="groovy.,org.codehaus.groovy."
+                                          href="http://groovy.codehaus.org/api/"/>
+                                    <link packages="org.codehaus.gmaven."
+                                          href="http://evgeny-goldin.org/javadoc/gmaven"/>
+                                </groovydoc>
+                            </target>
+                        </configuration>
+                    </execution>
 
-                    </executions>
-                </plugin>
-            </plugins>
-        </pluginManagement>
+                </executions>
+            </plugin>
+        </plugins>
 
     </build>
 
