@@ -36,7 +36,6 @@
  */
 package se.natusoft.osgi.aps.api.net.messaging.service;
 
-import se.natusoft.osgi.aps.api.misc.json.model.JSONObject;
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException;
 
 import java.util.Collections;
@@ -48,7 +47,7 @@ import java.util.List;
  * or just a simple tcpip server or whatever.
  *
  * Since the actual members are outside of this service API, it doesn't really know who they are and doesn't
- * care, all members are defined by configuration to make a cluster of members.
+ * care, all members are defined by configuration.
  */
 public interface APSMessageService {
 
@@ -85,24 +84,11 @@ public interface APSMessageService {
      *
      * @throws se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException on failure.
      */
-    void sendMessage(JSONObject message) throws APSMessagingException;
+    void sendMessage(APSBox message) throws APSMessagingException;
 
     //
     // Inner Classes
     //
-
-    /**
-     * Listener for APSMessage.
-     */
-    interface APSMessageListener {
-
-        /**
-         * This is called when a message is received.
-         *
-         * @param message The received message.
-         */
-        void messageReceived(JSONObject message);
-    }
 
     /**
      * Provides an abstract implementation of the APSMessageService interface.
@@ -144,7 +130,7 @@ public interface APSMessageService {
          *
          * @param message The message to send.
          */
-        protected void sendToListeners(JSONObject message) {
+        protected void sendToListeners(APSBox message) {
             for (APSMessageListener messageListener : this.messageListeners) {
                 messageListener.messageReceived(message);
             }

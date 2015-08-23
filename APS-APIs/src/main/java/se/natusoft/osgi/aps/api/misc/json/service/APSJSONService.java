@@ -57,7 +57,7 @@ public interface APSJSONService extends JSONValueFactory {
      *
      * @throws IOException on IO failure.
      */
-    public JSONValue readJSON(InputStream in, JSONErrorHandler errorHandler) throws IOException;
+    JSONValue readJSON(InputStream in, JSONErrorHandler errorHandler) throws IOException;
 
     /**
      * Writes a _JSONValue_ to an _OutputStream_ in compact format.
@@ -67,7 +67,7 @@ public interface APSJSONService extends JSONValueFactory {
      *
      * @throws IOException on IO failure.
      */
-    public void writeJSON(OutputStream out, JSONValue jsonValue) throws IOException;
+    void writeJSON(OutputStream out, JSONValue jsonValue) throws IOException;
 
     /**
      * Writes a _JSONValue_ to an _OutputStream_.
@@ -78,7 +78,7 @@ public interface APSJSONService extends JSONValueFactory {
      *
      * @throws IOException on IO failure.
      */
-    public void writeJSON(OutputStream out, JSONValue jsonValue, boolean compact) throws IOException;
+    void writeJSON(OutputStream out, JSONValue jsonValue, boolean compact) throws IOException;
 
     /**
      * Provides some static tools for this service that is independent of the service implementation.
