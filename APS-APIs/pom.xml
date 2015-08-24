@@ -88,7 +88,7 @@
             se.natusoft.osgi.aps.api.core.filesystem;version="${project.version}",
             se.natusoft.osgi.aps.api.core.filesystem.model;version="${project.version}",
             se.natusoft.osgi.aps.api.core.filesystem.service;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.model;version="${project.version}",
+            se.natusoft.osgi.aps.api.core.meta.service;version="${project.version}",
             se.natusoft.osgi.aps.api.data.jdbc.model;version="${project.version}",
             se.natusoft.osgi.aps.api.data.jdbc.service;version="${project.version}",
             se.natusoft.osgi.aps.api.data.jpa.service;version="${project.version}",
