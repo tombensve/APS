@@ -128,6 +128,7 @@
 
         <!-- The packages to export from dependent & embeded jars -->
         <osgi.export.dependency.package>
+            <!--
             javax.jcr,
             javax.jcr.lock,
             javax.jcr.nodetype,
@@ -138,6 +139,7 @@
             javax.jcr.security,
             javax.jcr.util,
             javax.jcr.version
+            -->
         </osgi.export.dependency.package>
 
         <!-- Resources to include -->
