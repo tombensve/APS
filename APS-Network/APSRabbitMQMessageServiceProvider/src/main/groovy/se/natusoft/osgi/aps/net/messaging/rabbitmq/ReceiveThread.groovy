@@ -6,10 +6,7 @@ import com.rabbitmq.client.QueueingConsumer
 import com.rabbitmq.client.ShutdownSignalException
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.misc.json.model.JSONObject
-import se.natusoft.osgi.aps.api.misc.json.model.JSONValue
-import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService
-import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
+import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageListener
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -35,8 +32,8 @@ public class ReceiveThread extends Thread {
     private String recvQueueName;
 
     /** The listeners to notify of received messages. */
-    private List<APSMessageService.APSMessageListener> listeners =
-            Collections.synchronizedList(new LinkedList<APSMessageService.APSMessageListener>())
+    private List<APSMessageListener> listeners =
+            Collections.synchronizedList(new LinkedList<APSMessageListener>())
 
     //
     // Properties
@@ -53,9 +50,6 @@ public class ReceiveThread extends Thread {
 
     /** The config for this receiver. */
     RabbitMQMessageServiceConfig.RMQInstance instanceConfig
-
-    /** The APSJSONService to use. */
-    APSJSONService jsonService
 
     //
     // Methods
@@ -80,7 +74,7 @@ public class ReceiveThread extends Thread {
      *
      * @param listener The listener to add.
      */
-    public void addMessageListener(APSMessageService.APSMessageListener listener) {
+    public void addMessageListener(APSMessageListener listener) {
         this.listeners.add(listener)
     }
 
@@ -89,7 +83,7 @@ public class ReceiveThread extends Thread {
      *
      * @param listener The listener to remove.
      */
-    public void removeMessageListener(APSMessageService.APSMessageListener listener) {
+    public void removeMessageListener(APSMessageListener listener) {
         this.listeners.remove(listener)
     }
 
@@ -154,25 +148,16 @@ public class ReceiveThread extends Thread {
                         QueueingConsumer.Delivery delivery = consumer.nextDelivery(5000)
                         //noinspection StatementWithEmptyBody
                         if (delivery != null) {
-                            byte[] body = delivery.getBody()
-                            JSONValue jsonValue = APSJSONService.Tools.fromBytes(body, this.jsonService, null)
-
                             //logger.debug("======== Received message of length " + body.length + " ==========")
                             //logger.debug("  Current no listeners: " + this.listeners.size())
 
-                            if (JSONObject.class.isAssignableFrom(jsonValue.getClass())) {
-                                for (APSMessageService.APSMessageListener listener : this.listeners) {
-                                    try {
-                                        listener.messageReceived((JSONObject)jsonValue)
-                                    }
-                                    catch (RuntimeException re) {
-                                        this.logger.error("Failure during listener call: " + re.getMessage(), re)
-                                    }
+                            for (APSMessageListener listener : this.listeners) {
+                                try {
+                                    listener.messageReceived(delivery.body)
                                 }
-                            }
-                            else {
-                                this.logger.error("Expected JSONObject, got '" + jsonValue.getClass().getSimpleName() +
-                                        "'! This can thereby not be forwarded to listeners!")
+                                catch (RuntimeException re) {
+                                    this.logger.error("Failure during listener call: " + re.getMessage(), re)
+                                }
                             }
                         } else {
                             //logger.debug("====== TIMEOUT ======")

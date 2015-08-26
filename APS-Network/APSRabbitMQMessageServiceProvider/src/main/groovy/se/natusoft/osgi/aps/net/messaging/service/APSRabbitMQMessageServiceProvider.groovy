@@ -40,9 +40,8 @@ import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.Channel
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.misc.json.model.JSONObject
-import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
+import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageListener
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
@@ -94,9 +93,6 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
 
     /** A configuration for this specific cluster provider instance. */
     RabbitMQMessageServiceConfig.RMQInstance instanceConfig
-
-    /** For handling JSON. */
-    APSJSONService jsonService
 
     //
     // Constructors
@@ -160,7 +156,6 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
                     name: "cluster-receive-thread-" + getName(),
                     connectionProvider: this.connectionProvider,
                     instanceConfig: this.instanceConfig,
-                    jsonService: this.jsonService,
                     logger: this.logger
             )
             this.instanceReceiveThread.start()
@@ -192,17 +187,16 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
      *
      * @param message The message to send.
      *
-     * @throws se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException on failure.
+     * @throws APSMessagingException on failure.
      */
     @Override
-    void sendMessage(JSONObject message) throws APSMessagingException {
+    void sendMessage(byte[] message) throws APSMessagingException {
         String routingKey = this.instanceConfig.routingKey.string
         if (routingKey.isEmpty()) {
             routingKey = null
         }
 
-        byte[] msgBytes = APSJSONService.Tools.toBytes(message, this.jsonService)
-        ensureInstanceChannel().basicPublish(this.instanceConfig.exchange.string, routingKey, this.basicProperties, msgBytes)
+        ensureInstanceChannel().basicPublish(this.instanceConfig.exchange.string, routingKey, this.basicProperties, message)
     }
 
     /**
@@ -211,7 +205,7 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
      * @param listener The listener to add.
      */
     @Override
-    void addMessageListener(APSMessageService.APSMessageListener listener) {
+    void addMessageListener(APSMessageListener listener) {
         this.instanceReceiveThread.addMessageListener(listener)
     }
 
@@ -221,7 +215,7 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
      * @param listener The listener to remove.
      */
     @Override
-    void removeMessageListener(APSMessageService.APSMessageListener listener) {
+    void removeMessageListener(APSMessageListener listener) {
         this.instanceReceiveThread.removeMessageListener(listener)
     }
 }

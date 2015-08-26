@@ -1,4 +1,4 @@
-package se.natusoft.osgi.aps.api.net.messaging.service;
+package se.natusoft.osgi.aps.api.net.util;
 
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;

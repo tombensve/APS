@@ -82,9 +82,9 @@ public interface APSMessageService {
      *
      * @param message The message to send.
      *
-     * @throws se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException on failure.
+     * @throws APSMessagingException on failure.
      */
-    void sendMessage(APSBox message) throws APSMessagingException;
+    void sendMessage(byte[] message) throws APSMessagingException;
 
     //
     // Inner Classes
@@ -130,7 +130,7 @@ public interface APSMessageService {
          *
          * @param message The message to send.
          */
-        protected void sendToListeners(APSBox message) {
+        protected void sendToListeners(byte[] message) {
             for (APSMessageListener messageListener : this.messageListeners) {
                 messageListener.messageReceived(message);
             }

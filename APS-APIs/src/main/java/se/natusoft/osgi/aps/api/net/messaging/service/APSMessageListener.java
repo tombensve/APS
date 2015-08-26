@@ -10,5 +10,5 @@ public interface APSMessageListener {
      *
      * @param message The received message.
      */
-    void messageReceived(APSBox message);
+    void messageReceived(byte[] message);
 }

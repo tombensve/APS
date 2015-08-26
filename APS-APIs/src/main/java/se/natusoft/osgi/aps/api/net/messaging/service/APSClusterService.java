@@ -1,5 +1,7 @@
 package se.natusoft.osgi.aps.api.net.messaging.service;
 
+import se.natusoft.osgi.aps.api.net.util.APSBox;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;

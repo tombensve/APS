@@ -38,9 +38,6 @@ class BundleManagement {
     @Managed
     private BundleContext bundleContext
 
-    @OSGiService
-    private APSJSONService jsonService
-
     /** Listens to configuration changes. */
     private APSConfigChangedListener configChangedListener
 
@@ -144,8 +141,7 @@ class BundleManagement {
                         return BundleManagement.this.rabbitMQConnectionManager.connection
                     }
                 },
-                instanceConfig: instance,
-                jsonService: this.jsonService
+                instanceConfig: instance
         )
         messageService.start()
 

@@ -73,8 +73,8 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
     @Managed
     private UDPSecurityHandler updSecurityHandler
 
-    /** The real ConfigResolve instance. This is accessed via the getConfigResolver() method, which will delay its creation. */
-    private ConfigResolver _configResolver = null
+    /** The real ConfigResolver instance. This is accessed via the getConfigResolver() method, which will delay its creation. */
+    private se.natusoft.osgi.aps.tcpipsvc.ConfigResolver _configResolver = null
 
     //
     // Methods
@@ -84,9 +84,9 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
      * Delay creating the config resolver until first client call. This way we don't have to thread
      * the service just so that we can access config without deadlocking startup.
      */
-    private ConfigResolver getConfigResolver() {
+    private se.natusoft.osgi.aps.tcpipsvc.ConfigResolver getConfigResolver() {
         if (this._configResolver == null) {
-            this._configResolver = new ConfigResolver(
+            this._configResolver = new se.natusoft.osgi.aps.tcpipsvc.ConfigResolver(
                     logger: this.logger,
                     tcpSecurityHandler: this.tcpSecurityHandler,
                     udpSecurityHandler: this.updSecurityHandler
@@ -107,7 +107,7 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
     @Override
     public void sendUDP(String name, byte[] data) throws IOException {
         // Do note that MulticastSender extends UDPSender!
-        UDPSender sender = (UDPSender)this.configResolver.resolve(name, Direction.Write, Type.UDP)
+        se.natusoft.osgi.aps.tcpipsvc.UDPSender sender = (se.natusoft.osgi.aps.tcpipsvc.UDPSender)this.configResolver.resolve(name, Direction.Write, Type.UDP)
         sender.send(data)
     }
 
