@@ -7,7 +7,8 @@ import java.util.Date;
 /**
  * Utility to track the intensiveness of exceptions and limit the number of such that can occur.
  */
-public class ExceptionGuard<E extends Exception> {
+public class IntensiveExceptionsGuard<E extends Exception> {
+
     private APSLogger logger;
     private long timeBetweenConsecutiveExceptions = 500;
     private int maxExceptions = 10;
@@ -27,7 +28,7 @@ public class ExceptionGuard<E extends Exception> {
      *                                         in milliseconds!
      * @param maxExceptions The max number of consecutive exceptions before triggering on the problem.
      */
-    public ExceptionGuard(APSLogger logger, long timeBetweenConsecutiveExceptions, int maxExceptions) {
+    public IntensiveExceptionsGuard(APSLogger logger, long timeBetweenConsecutiveExceptions, int maxExceptions) {
         this.logger = logger;
         this.timeBetweenConsecutiveExceptions = timeBetweenConsecutiveExceptions;
         this.maxExceptions = maxExceptions;
@@ -38,14 +39,14 @@ public class ExceptionGuard<E extends Exception> {
      *
      * @param logger The APSLogger to log to. Can be null for no logging, but the no args constructor would be better then.
      */
-    public ExceptionGuard(APSLogger logger) {
+    public IntensiveExceptionsGuard(APSLogger logger) {
         this.logger = logger;
     }
 
     /**
      * Creates a new ExceptionGuard with default config.
      */
-    public ExceptionGuard() {}
+    public IntensiveExceptionsGuard() {}
 
     //
     // Methods
@@ -63,7 +64,7 @@ public class ExceptionGuard<E extends Exception> {
             ++this.noExceptions;
             if (this.noExceptions >= this.maxExceptions) {
                 if (this.logger != null) {
-                    this.logger.error("Intensive exceptions detected! Stopping TCP receiver thread! YES, this is a SERIOUS problem!", e);
+                    this.logger.error("Intensive exceptions detected!", e);
                 }
                 this.failed = true;
                 return false;

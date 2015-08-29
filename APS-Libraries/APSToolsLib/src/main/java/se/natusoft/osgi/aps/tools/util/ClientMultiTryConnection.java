@@ -6,7 +6,7 @@ import java.net.UnknownHostException;
 /**
  * This is a utility that lets clients do multiple tries to connect with waiting time between before failing.
  */
-public class ClientConnectionSupport<T> {
+public class ClientMultiTryConnection<T> implements ClientConnection<T> {
     //
     // Private Members
     //
@@ -31,7 +31,7 @@ public class ClientConnectionSupport<T> {
      * @param delay The delay between each try in milliseconds.
      * @param clientConnection The connection to make.
      */
-    public ClientConnectionSupport(int maxTries, long delay, ClientConnection<T> clientConnection) {
+    public ClientMultiTryConnection(int maxTries, long delay, ClientConnection<T> clientConnection) {
         this.maxTries = maxTries;
         this.delay = delay;
         this.clientConnection = clientConnection;
