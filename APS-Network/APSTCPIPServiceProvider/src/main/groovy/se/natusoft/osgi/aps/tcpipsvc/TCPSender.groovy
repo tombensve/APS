@@ -42,7 +42,7 @@ import se.natusoft.osgi.aps.api.net.tcpip.TCPRequest
 import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.util.ClientConnection
-import se.natusoft.osgi.aps.tools.util.ClientConnectionSupport
+import se.natusoft.osgi.aps.tools.util.ClientMultiTryConnection
 
 /**
  * Handles TCP request connections.
@@ -112,7 +112,7 @@ class TCPSender implements ConnectionProvider {
     }
 
     public void send(TCPRequest request) throws IOException {
-        ClientConnectionSupport<Socket> clientConnectionSupport = new ClientConnectionSupport<>(6, 5000, new ClientConnection<Socket>() {
+        ClientConnection<Socket> clientConnectionSupport = new ClientMultiTryConnection<>(6, 5000, new ClientConnection<Socket>() {
             @Override
             Socket connect() throws IOException {
                 securityHandler.createSocket(InetAddress.getByName(config.host), config.port, config.secure)

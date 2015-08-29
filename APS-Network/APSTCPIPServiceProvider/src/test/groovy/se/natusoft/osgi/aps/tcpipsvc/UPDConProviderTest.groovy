@@ -123,7 +123,7 @@ class UPDConProviderTest {
         }
         else {
             println("This test is currently disabled!")
-            println("Remove -Daps.test.disabled=true to run it.")
+            println("Run with -Daps.test.disabled=false to run it.")
         }
     }
 

@@ -244,7 +244,7 @@ class UDPReceiver implements ConnectionProvider {
 // NOTE: The following was originally an inner class of UDPReceiver. Groovy language constructs however fail
 // at runtime when they are part of an inner class, but works fine when part of a top level class.
 //
-// https://issues.apache.org/jira/browse/GROOVY-7379
+// This is fixed in version 2.4.3 of groovy, but I've decided to not move these back as inner classes.
 
 /**
  * Listens to traffic on the UDP socket and calls listeners with packets received.
@@ -317,7 +317,7 @@ public class UDPReceiverThread extends Thread {
                     }
                 }
             }
-            catch (SocketTimeoutException ste) {
+            catch (SocketTimeoutException ignore) {
                 // This not only will happen, it must happen or we cannot shut down the thread!
             }
         }

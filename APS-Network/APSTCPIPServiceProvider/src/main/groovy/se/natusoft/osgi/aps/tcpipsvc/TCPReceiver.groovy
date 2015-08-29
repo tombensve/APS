@@ -42,7 +42,7 @@ import se.natusoft.osgi.aps.api.net.tcpip.TCPListener
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
 import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.util.ExceptionGuard
+import se.natusoft.osgi.aps.tools.util.IntensiveExceptionsGuard
 
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -147,7 +147,7 @@ class TCPReceiver implements ConnectionProvider {
     /**
      * Adds a TCP listener.
      *
-     * @param listener The listener to add.
+     * @param listener The listener to set.
      */
     public synchronized void setListener(TCPListener listener) {
         boolean hasOldListener = this.listener != null
@@ -289,8 +289,8 @@ public class TCPReceiverThread extends Thread {
             maxExceptions = 10
         }
 
-        ExceptionGuard<IOException> exceptionGuard = new ExceptionGuard<>(logger, intensity, maxExceptions)
-        ExceptionGuard<Exception> exceptionGuardCallback = new ExceptionGuard<>(logger, intensity, maxExceptions)
+        IntensiveExceptionsGuard<IOException> exceptionGuard = new IntensiveExceptionsGuard<>(logger, intensity, maxExceptions)
+        IntensiveExceptionsGuard<Exception> exceptionGuardCallback = new IntensiveExceptionsGuard<>(logger, intensity, maxExceptions)
 
         this.callbackPool = Executors.newFixedThreadPool(TCPIPConfig.managed.get().expert.tcpCallbackThreadPoolSize.int)
 
@@ -321,7 +321,7 @@ public class TCPReceiverThread extends Thread {
                         break
                     }
                 }
-                catch (SocketTimeoutException ste) {
+                catch (SocketTimeoutException ignore) {
                     // We have to set a timeout on the server socket so that accept() above does timeout
                     // otherwise the thread loop could not be stopped without data being received. So
                     // when timeouts occur they are expected and thus we do nothing here.
@@ -363,7 +363,7 @@ public class SocketCallbackTask implements Runnable {
     Socket clientSocket
 
     /** Protects against runaway exceptions. */
-    ExceptionGuard<Exception> exceptionGuard
+    IntensiveExceptionsGuard<Exception> exceptionGuard
 
     /** The listener to call. */
     TCPListener listener
