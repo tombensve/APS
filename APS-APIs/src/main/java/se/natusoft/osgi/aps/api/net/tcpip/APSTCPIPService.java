@@ -14,7 +14,7 @@ import java.util.List;
  * * External configurations of network connections.
  *
  * * Decoupling from java.net classes allowing for test implementations where network traffic can be
- *   simulated in unittests without causing problems when run concurrently in a CI server.
+ *   simulated in unit-tests without causing problems when run concurrently in a CI server.
  *
  * The users of this service should also have a config that specifies which config of this service
  * to use.
@@ -35,7 +35,7 @@ public interface APSTCPIPService extends APSServiceProperties {
      * @param data The data to send.
      *
      * @throws IOException The one and only!
-     * @throws IllegalArgumentException on bad name.
+     * @throws IllegalArgumentException on unconfigured name.
      */
     void sendUDP(String name, byte[] data) throws IOException;
 
@@ -48,7 +48,7 @@ public interface APSTCPIPService extends APSServiceProperties {
      * @return the data buffer.
      *
      * @throws IOException
-     * @throws IllegalArgumentException on bad name.
+     * @throws IllegalArgumentException on unconfigured name.
      */
     DatagramPacket readUDP(String name, byte[] data) throws IOException;
 
@@ -58,7 +58,7 @@ public interface APSTCPIPService extends APSServiceProperties {
      * @param name The name of a configuration specifying address and port or multicast and port.
      * @param listener The listener to call back with messages.
      *
-     * @throws IllegalArgumentException on bad name.
+     * @throws IllegalArgumentException on unconfigured name.
      */
     void addUDPListener(String name, UDPListener listener);
 
@@ -68,7 +68,7 @@ public interface APSTCPIPService extends APSServiceProperties {
      * @param name The name of a configuration specifying address and port or multicast and port.
      * @param listener The listener to remove, or null for all.
      *
-     * @throws IllegalArgumentException on bad name.
+     * @throws IllegalArgumentException on unconfigured name.
      */
     void removeUDPListener(String name, UDPListener listener);
 
@@ -78,7 +78,7 @@ public interface APSTCPIPService extends APSServiceProperties {
      * @param name The named config to send to.
      * @param request A callback that provides a request output stream and a response input stream.
      *
-     * @throws IllegalArgumentException on bad name.
+     * @throws IllegalArgumentException on unconfigured name.
      */
     void sendTCPRequest(String name, TCPRequest request) throws IOException;
 
@@ -88,7 +88,7 @@ public interface APSTCPIPService extends APSServiceProperties {
      * @param name The named config to add listener for.
      * @param listener The listener to add.
      *
-     * @throws IllegalArgumentException on bad name.
+     * @throws IllegalArgumentException on unconfigured name.
      */
     void setTCPRequestListener(String name, TCPListener listener);
 
@@ -97,7 +97,7 @@ public interface APSTCPIPService extends APSServiceProperties {
      *
      * @param name The named config to remove a listener for.
      *
-     * @throws IllegalArgumentException on bad name.
+     * @throws IllegalArgumentException on unconfigured name.
      */
     void removeTCPRequestListener(String name);
 
