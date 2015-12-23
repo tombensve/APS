@@ -75,7 +75,7 @@ import java.util.concurrent.TimeUnit;
  *
  * * **@Managed** -
  *   This will have an instance injected. There will be a unique instance for each name specified with the
- *   default name of "default" being used in none is specified. There are 2 field types handled specially:
+ *   default name of "default" being used if none is specified. There are 2 field types handled specially:
  *   BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger
  *   instance the 'loggingFor' annotation property can be specified.
  *
