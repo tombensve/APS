@@ -3,33 +3,33 @@
  * PROJECT
  *     Name
  *         APS Configuration Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         A more advanced configuration service that uses annotated interfaces to
  *         describe and provide access to configuration. It supports structured
  *         configuration models.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -222,7 +222,7 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
      */
     @Override
     public APSConfigReference createRootRef() {
-        return createRef()._(getConfigModel());
+        return createRef().__(getConfigModel());
     }
 
     /**
@@ -370,7 +370,7 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
     @Override
     public synchronized int getListSize(APSConfigReference reference) {
         if (reference.getConfigEnvironment() == null) {
-            reference = reference._(this.configEnvStore.getActiveConfigEnvironment());
+            reference = reference.__(this.configEnvStore.getActiveConfigEnvironment());
         }
         APSConfigReferenceImpl ro_ref = toImpl(reference);
         String sizeKey = ro_ref.getValueKey().getSizeKey();
@@ -386,7 +386,7 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
      */
     private void setListSize(APSConfigReference reference, int size) {
         if (reference.getConfigEnvironment() == null) {
-            reference = reference._(this.configEnvStore.getActiveConfigEnvironment());
+            reference = reference.__(this.configEnvStore.getActiveConfigEnvironment());
         }
         APSConfigReferenceImpl ro_ref = toImpl(reference);
         String sizeKey = ro_ref.getValueKey().getSizeKey();
@@ -417,7 +417,7 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
     @Override
     public synchronized void removeConfigList(APSConfigReference reference) {
         if (reference.getConfigEnvironment() == null) {
-            reference = reference._(this.configEnvStore.getActiveConfigEnvironment());
+            reference = reference.__(this.configEnvStore.getActiveConfigEnvironment());
         }
         APSConfigReferenceImpl ro_ref = toImpl(reference);
         removeConfigListEntry(reference, ro_ref.getIndex());
@@ -433,7 +433,7 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
      */
     private int reindexMSList(APSConfigReference ref, int from, int to, int startingAt) {
         if (ref.getConfigEnvironment() == null) {
-            ref = ref._(this.configEnvStore.getActiveConfigEnvironment());
+            ref = ref.__(this.configEnvStore.getActiveConfigEnvironment());
         }
         APSConfigReference iteratorRef = ref.copy();
         APSConfigReference newIndexRef = ref.copy();
@@ -464,7 +464,7 @@ public class APSConfigAdminImpl implements APSConfigAdmin {
      */
     private void removeConfigListEntry(APSConfigReference ref, int index) {
         if (ref.getConfigEnvironment() == null) {
-            ref = ref._(this.configEnvStore.getActiveConfigEnvironment());
+            ref = ref.__(this.configEnvStore.getActiveConfigEnvironment());
         }
         int size = getListSize(ref);
         int last = reindexMSList(ref, index + 1, size - 1, index);

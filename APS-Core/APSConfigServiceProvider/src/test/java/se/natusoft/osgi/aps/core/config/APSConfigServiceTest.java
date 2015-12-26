@@ -55,7 +55,7 @@ import se.natusoft.osgi.aps.core.config.service.APSConfigServiceProvider;
 import se.natusoft.osgi.aps.core.config.store.APSConfigEnvStore;
 import se.natusoft.osgi.aps.core.config.store.APSConfigMemoryStore;
 import se.natusoft.osgi.aps.core.config.store.APSConfigPersistentStore;
-import se.natusoft.osgi.aps.core.config.store.APSFileTool;
+import se.natusoft.osgi.aps.core.config.store.APSConfigServiceFileTool;
 import se.natusoft.osgi.aps.core.test.support.filesystem.model.APSFilesystemImpl;
 import se.natusoft.osgi.aps.tools.APSLogger;
 
@@ -121,7 +121,7 @@ public class APSConfigServiceTest {
         File testFs = new File(projRoot, "testfs");
         testFs.mkdirs();
         APSFilesystem fs = new APSFilesystemImpl(testFs.getAbsolutePath(), "APSConfigEnvStoreTest");
-        APSFileTool fileTool = new APSFileTool(fs);
+        APSConfigServiceFileTool fileTool = new APSConfigServiceFileTool(fs);
 
         APSLogger logger = new APSLogger(System.out);
         APSConfigMemoryStore memStore = new APSConfigMemoryStore();
@@ -235,8 +235,8 @@ public class APSConfigServiceTest {
 
         APSConfigValueEditModel targetPortConfigValue = udpRemoteDestConfigModel.getValueByName("targetPort");
         APSConfigReference targetPortRef =
-                configAdmin.createRef()._(discoverySvcConfigModel)._(udpRemoteDestConfigModel)._(targetPortConfigValue)
-                        ._(configEnv);
+                configAdmin.createRef().__(discoverySvcConfigModel).__(udpRemoteDestConfigModel).__(targetPortConfigValue)
+                        .__(configEnv);
         assertNotNull(targetPortConfigValue);
         assertEquals(true, targetPortConfigValue.isMany());
 
@@ -248,8 +248,8 @@ public class APSConfigServiceTest {
 
         APSConfigValueEditModel targetHostConfigValue = udpRemoteDestConfigModel.getValueByName("targetHost");
         APSConfigReference targetHostRef =
-                configAdmin.createRef()._(discoverySvcConfigModel)._(udpRemoteDestConfigModel)._(targetHostConfigValue)
-                        ._(configEnv);
+                configAdmin.createRef().__(discoverySvcConfigModel).__(udpRemoteDestConfigModel).__(targetHostConfigValue)
+                        .__(configEnv);
 
         configAdmin.setConfigValue(targetHostRef, "my.test.host");
 
@@ -274,14 +274,14 @@ public class APSConfigServiceTest {
 
         assertEquals("228.31.32.33", config.multicastAddress.toString());
         APSConfigReference discoverySvcRef = configAdmin.createRef()
-                ._(discoverySvcConfigModel);
+                .__(discoverySvcConfigModel);
         APSConfigReference multicastAddressRef =
-                discoverySvcRef._(discoverySvcConfigModel.getValueByName("multicastAddress"))._(configEnv);
+                discoverySvcRef.__(discoverySvcConfigModel.getValueByName("multicastAddress")).__(configEnv);
         configAdmin.setConfigValue(multicastAddressRef, "192.168.1.5");
         assertEquals("192.168.1.5", config.multicastAddress.toString());
 
         APSConfigReference multicastPortRef =
-                discoverySvcRef._(discoverySvcConfigModel.getValueByName("multicastPort"))._(configEnv);
+                discoverySvcRef.__(discoverySvcConfigModel.getValueByName("multicastPort")).__(configEnv);
         configAdmin.setConfigValue(multicastPortRef, "15000");
         assertEquals("15000", config.multicastPort.toString());
 
@@ -306,8 +306,8 @@ public class APSConfigServiceTest {
 
         APSConfigValueEditModel targetPortConfigValue = udpRemoteDestConfigModel.getValueByName("targetPort");
         APSConfigReference targetPortRef =
-                configAdmin.createRef()._(discoverySvcConfigModel)._(udpRemoteDestConfigModel)._(targetPortConfigValue)
-                        ._(configEnv);
+                configAdmin.createRef().__(discoverySvcConfigModel).__(udpRemoteDestConfigModel).__(targetPortConfigValue)
+                        .__(configEnv);
         assertNotNull(targetPortConfigValue);
         assertEquals(true, targetPortConfigValue.isMany());
 
@@ -357,12 +357,12 @@ public class APSConfigServiceTest {
         {
             startGroup("Create first list entry [0]");
             APSConfigReference udpTargetDiscoverySvcRef0 =
-                    configAdmin.addConfigList(configAdmin.createRef()._(discoverySvcConfigModel)._(udpTargetDiscoveryServicesEditModel));
+                    configAdmin.addConfigList(configAdmin.createRef().__(discoverySvcConfigModel).__(udpTargetDiscoveryServicesEditModel));
             {
                 startSubTest("targetHost");
                 {
                     APSConfigValueEditModel tdsTargetHostEditModel = udpTargetDiscoveryServicesEditModel.getValueByName("targetHost");
-                    APSConfigReference tdsTargetHostRef = udpTargetDiscoverySvcRef0._(tdsTargetHostEditModel)._(configEnv);
+                    APSConfigReference tdsTargetHostRef = udpTargetDiscoverySvcRef0.__(tdsTargetHostEditModel).__(configEnv);
                     configAdmin.setConfigValue(tdsTargetHostRef, "testhost");
                     assertEquals("testhost", config.udpTargetDiscoveryServices.get(0).targetHost.toString());
                 }
@@ -372,7 +372,7 @@ public class APSConfigServiceTest {
                 {
                     startSubTest("Add target ports");
                     APSConfigValueEditModel tdsTargetPortEditModel = udpTargetDiscoveryServicesEditModel.getValueByName("targetPort");
-                    APSConfigReference tdsTargetPortRef = udpTargetDiscoverySvcRef0._(tdsTargetPortEditModel)._(configEnv);
+                    APSConfigReference tdsTargetPortRef = udpTargetDiscoverySvcRef0.__(tdsTargetPortEditModel).__(configEnv);
                     configAdmin.addConfigValue(tdsTargetPortRef, "1234");
                     configAdmin.addConfigValue(tdsTargetPortRef, "5678");
                     endSubTest();
@@ -395,12 +395,12 @@ public class APSConfigServiceTest {
 
             startGroup("Create second list entry [1]");
             APSConfigReference udpTargetDiscoverySvcRef1 =
-                    configAdmin.addConfigList(configAdmin.createRef()._(discoverySvcConfigModel)._(udpTargetDiscoveryServicesEditModel));
+                    configAdmin.addConfigList(configAdmin.createRef().__(discoverySvcConfigModel).__(udpTargetDiscoveryServicesEditModel));
             {
                 startSubTest("targetHost");
                 {
                     APSConfigValueEditModel tdsTargetHostEditModel = udpTargetDiscoveryServicesEditModel.getValueByName("targetHost");
-                    APSConfigReference tdsTargetHostRef = udpTargetDiscoverySvcRef1._(tdsTargetHostEditModel)._(configEnv);
+                    APSConfigReference tdsTargetHostRef = udpTargetDiscoverySvcRef1.__(tdsTargetHostEditModel).__(configEnv);
                     configAdmin.setConfigValue(tdsTargetHostRef, "testhost2");
                     assertEquals("testhost2", config.udpTargetDiscoveryServices.get(1).targetHost.toString());
                 }
@@ -410,7 +410,7 @@ public class APSConfigServiceTest {
                 {
                     startSubTest("Add target ports");
                     APSConfigValueEditModel tdsTargetPortEditModel = udpTargetDiscoveryServicesEditModel.getValueByName("targetPort");
-                    APSConfigReference tdsTargetPortRef = udpTargetDiscoverySvcRef1._(tdsTargetPortEditModel)._(configEnv);
+                    APSConfigReference tdsTargetPortRef = udpTargetDiscoverySvcRef1.__(tdsTargetPortEditModel).__(configEnv);
                     configAdmin.addConfigValue(tdsTargetPortRef, "12345");
                     configAdmin.addConfigValue(tdsTargetPortRef, "56789");
                     endSubTest();
@@ -457,7 +457,7 @@ public class APSConfigServiceTest {
             // Check that we can build a new reference from scratch.
             startSubTest("Verify that we can build a new reference from scratch matching the one received from addConfigList(...)");
             {
-                APSConfigReference reCreatedRef = configAdmin.createRef()._(discoverySvcConfigModel)._(udpTargetDiscoveryServicesEditModel).index(0);
+                APSConfigReference reCreatedRef = configAdmin.createRef().__(discoverySvcConfigModel).__(udpTargetDiscoveryServicesEditModel).index(0);
                 assertEquals(udpTargetDiscoverySvcRef0.toString(), reCreatedRef.toString());
             }
             endSubTest();

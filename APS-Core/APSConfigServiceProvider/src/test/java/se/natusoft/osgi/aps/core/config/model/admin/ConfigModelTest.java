@@ -2,33 +2,33 @@
  * PROJECT
  *     Name
  *         APS Configuration Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         A more advanced configuration service that uses annotated interfaces to
  *         describe and provide access to configuration. It supports structured
  *         configuration models.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -52,8 +52,8 @@ import se.natusoft.osgi.aps.core.config.model.APSConfigInstanceMemoryStoreImpl;
 import se.natusoft.osgi.aps.core.config.model.APSConfigObjectFactory;
 import se.natusoft.osgi.aps.core.config.model.ConfigEnvironmentProvider;
 import se.natusoft.osgi.aps.core.config.store.APSConfigEnvStore;
+import se.natusoft.osgi.aps.tools.APSLogger;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -71,6 +71,8 @@ public class ConfigModelTest extends TestCase {
             whateverConfigEnvironment
     );
 
+    private APSLogger logger = new APSLogger(System.out);
+
     private APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(new ConfigEnvironmentProvider() {
         @Override
         public APSConfigEnvironment getActiveConfigEnvironment() {
@@ -86,7 +88,7 @@ public class ConfigModelTest extends TestCase {
         public APSConfigEnvironment getConfigEnvironmentByName(String name) {
             return envStore.getConfigEnvironmentByName(name);
         }
-    }, configValueStore);
+    }, configValueStore, this.logger);
 
 
     /**
@@ -105,14 +107,14 @@ public class ConfigModelTest extends TestCase {
     public void testConfigModels() throws Exception {
         System.out.print("testConfigModels...");
 
-        APSConfigEditModelImpl configModel = new APSConfigEditModelImpl(RootConfig.class, configObjectFactory);
+        APSConfigEditModelImpl<? extends APSConfig> configModel = new APSConfigEditModelImpl<>(RootConfig.class, configObjectFactory);
         RootConfig rootConfig = (RootConfig)configModel.getInstance();
         APSConfigAdminImpl config = new APSConfigAdminImpl(configModel, configValueStore, envStore);
 
         // RootConfig.bool
 
         APSConfigValueEditModel bool = configModel.getValueByName("bool");
-        APSConfigReference boolRef = config.createRef()._(configModel)._(bool);
+        APSConfigReference boolRef = config.createRef().__(configModel).__(bool);
 
         String boolRefValue = config.getConfigValue(boolRef.configEnvironment(testConfigEnvironment));
         assertEquals("true", boolRefValue);
@@ -120,48 +122,48 @@ public class ConfigModelTest extends TestCase {
         boolRefValue = config.getConfigValue(boolRef.configEnvironment(defaultConfigEnvironment));
         assertEquals("false", boolRefValue);
 
-        assertEquals(rootConfig.bool.toBoolean(), true);
+        assertEquals(rootConfig.bool.getBoolean(), true);
 
         config.setConfigValue(boolRef.configEnvironment(configObjectFactory.getActiveConfigEnvironment()), "false");
 
-        assertEquals(rootConfig.bool.toBoolean(), false);
+        assertEquals(rootConfig.bool.getBoolean(), false);
 
 
         // RootConfig.str
 
         APSConfigValueEditModel str = configModel.getValueByName("str");
-        APSConfigReference strRef = config.createRef()._(configModel)._(str);
+        APSConfigReference strRef = config.createRef().__(configModel).__(str);
 
         String strRefValue = config.getConfigValue(strRef.configEnvironment(configObjectFactory.getActiveConfigEnvironment()));
         // This has no default values and have not been set so it will be null.
         assertTrue(strRefValue == null);
 
         config.setConfigValue(strRef.configEnvironment(configObjectFactory.getActiveConfigEnvironment()), "testValue");
-        assertEquals("testValue", rootConfig.str.toString());
+        assertEquals("testValue", rootConfig.str.getString());
 
         // RootConfig.simple
 
         assertTrue(rootConfig.simple != null);
 
-        assertEquals("", rootConfig.simple.simpleValue1.toString());
-        assertEquals("", rootConfig.simple.simpleValue2.toString());
+        assertEquals("", rootConfig.simple.simpleValue1.getString());
+        assertEquals("", rootConfig.simple.simpleValue2.getString());
 
         APSConfigEditModel simple = (APSConfigEditModel)configModel.getValueByName("simple");
         assertNotNull(simple);
-        APSConfigReference simpleRef = config.createRef()._(configModel)._(simple);
+        APSConfigReference simpleRef = config.createRef().__(configModel).__(simple);
 
         APSConfigValueEditModel simpleValue1 = simple.getValueByName("simpleValue1");
-        APSConfigReference simpleValue1Ref = simpleRef._(simpleValue1);
+        APSConfigReference simpleValue1Ref = simpleRef.__(simpleValue1);
         config.setConfigValue(simpleValue1Ref, "qaz");
 
         APSConfigValueEditModel simpleValue2 = simple.getValueByName("simpleValue2");
-        APSConfigReference simpleValue2Ref = simpleRef._(simpleValue2);
+        APSConfigReference simpleValue2Ref = simpleRef.__(simpleValue2);
         config.setConfigValue(simpleValue2Ref, "wsx");
 
         assertEquals("qaz", config.getConfigValue(simpleValue1Ref));
         assertEquals("wsx", config.getConfigValue(simpleValue2Ref));
-        assertEquals("qaz", rootConfig.simple.simpleValue1.toString());
-        assertEquals("wsx", rootConfig.simple.simpleValue2.toString());
+        assertEquals("qaz", rootConfig.simple.simpleValue1.getString());
+        assertEquals("wsx", rootConfig.simple.simpleValue2.getString());
 
         // RootConfig.listComplex.
 
@@ -169,27 +171,27 @@ public class ConfigModelTest extends TestCase {
 
         APSConfigEditModel listComplex = (APSConfigEditModel)configModel.getValueByName("listComplex");
         assertNotNull(listComplex);
-        APSConfigReference listComplexRef = config.createRef()._(configModel)._(listComplex);
+        APSConfigReference listComplexRef = config.createRef().__(configModel).__(listComplex);
 
         APSConfigReference listComplex_0_Ref = config.addConfigList(listComplexRef);
         assertEquals(config.getListSize(listComplexRef), 1);
 
         APSConfigValueEditModel listComplex_0_complexValue1 = listComplex.getValueByName("complexValue1");
-        APSConfigReference listComplex_0_complexValue1Ref = listComplex_0_Ref._(listComplex_0_complexValue1);
+        APSConfigReference listComplex_0_complexValue1Ref = listComplex_0_Ref.__(listComplex_0_complexValue1);
         config.setConfigValue(listComplex_0_complexValue1Ref, "edc");
 
         APSConfigValueEditModel listComplex_0_complexValue2 = listComplex.getValueByName("complexValue2");
-        APSConfigReference listComplex_0_complexValue2Ref = listComplex_0_Ref._(listComplex_0_complexValue2);
+        APSConfigReference listComplex_0_complexValue2Ref = listComplex_0_Ref.__(listComplex_0_complexValue2);
         config.setConfigValue(listComplex_0_complexValue2Ref, "rfv");
 
-        assertEquals("edc", rootConfig.listComplex.get(0).complexValue1.toString());
-        assertEquals("rfv", rootConfig.listComplex.get(0).complexValue2.toString());
+        assertEquals("edc", rootConfig.listComplex.get(0).complexValue1.getString());
+        assertEquals("rfv", rootConfig.listComplex.get(0).complexValue2.getString());
 
         // RootConfig.listComplex.listSimple
 
         APSConfigEditModel listComplex_0_listSimple = (APSConfigEditModel)listComplex.getValueByName("listSimple");
         assertNotNull(listComplex_0_listSimple);
-        APSConfigReference listComplex_0_listSimpleRef = listComplex_0_Ref._(listComplex_0_listSimple);
+        APSConfigReference listComplex_0_listSimpleRef = listComplex_0_Ref.__(listComplex_0_listSimple);
 
         APSConfigReference listComplex_0_listSimple_0_Ref = config.addConfigList(listComplex_0_listSimpleRef);
         assertEquals(1, config.getListSize(listComplex_0_listSimpleRef));
@@ -197,20 +199,20 @@ public class ConfigModelTest extends TestCase {
         APSConfigValueEditModel listComplex_0_listSimple_0_simpleValue1 =
                 listComplex_0_listSimple.getValueByName("simpleValue1");
         APSConfigReference listComplex_0_listSimple_0_simpleValue1Ref =
-                listComplex_0_listSimple_0_Ref._(listComplex_0_listSimple_0_simpleValue1);
+                listComplex_0_listSimple_0_Ref.__(listComplex_0_listSimple_0_simpleValue1);
         config.setConfigValue(listComplex_0_listSimple_0_simpleValue1Ref, "tgb");
 
         APSConfigValueEditModel listComplex_0_listSimple_0_simpleValue2 =
                 listComplex_0_listSimple.getValueByName("simpleValue2");
         APSConfigReference listComplex_0_listSimple_0_simpleValue2Ref =
-                listComplex_0_listSimple_0_Ref._(listComplex_0_listSimple_0_simpleValue2);
+                listComplex_0_listSimple_0_Ref.__(listComplex_0_listSimple_0_simpleValue2);
         config.setConfigValue(listComplex_0_listSimple_0_simpleValue2Ref, "yhn");
 
-        assertEquals("tgb", rootConfig.listComplex.get(0).listSimple.get(0).simpleValue1.toString());
-        assertEquals("yhn", rootConfig.listComplex.get(0).listSimple.get(0).simpleValue2.toString());
+        assertEquals("tgb", rootConfig.listComplex.get(0).listSimple.get(0).simpleValue1.getString());
+        assertEquals("yhn", rootConfig.listComplex.get(0).listSimple.get(0).simpleValue2.getString());
 
         try {
-            assertEquals("", rootConfig.listComplex.get(1).listSimple.get(0).simpleValue2.toString());
+            assertEquals("", rootConfig.listComplex.get(1).listSimple.get(0).simpleValue2.getString());
             fail("This should have thrown an IndexOutOfBoundException since we are referencing index 1 and there are only 1 entry.");
         }
         catch (IndexOutOfBoundsException iobe) {/*OK*/}
@@ -221,19 +223,19 @@ public class ConfigModelTest extends TestCase {
         assertEquals(config.getListSize(listComplexRef), 2);
 
         APSConfigValueEditModel listComplex_1_complexValue1 = listComplex.getValueByName("complexValue1");
-        APSConfigReference listComplex_1_complexValue1Ref = listComplex_1_Ref._(listComplex_1_complexValue1);
+        APSConfigReference listComplex_1_complexValue1Ref = listComplex_1_Ref.__(listComplex_1_complexValue1);
         config.setConfigValue(listComplex_1_complexValue1Ref, "ujm");
 
         APSConfigValueEditModel listComplex_1_complexValue2 = listComplex.getValueByName("complexValue2");
-        APSConfigReference listComplex_1_complexValue2Ref = listComplex_1_Ref._(listComplex_1_complexValue2);
+        APSConfigReference listComplex_1_complexValue2Ref = listComplex_1_Ref.__(listComplex_1_complexValue2);
         config.setConfigValue(listComplex_1_complexValue2Ref, "ik,");
 
-        assertEquals("ujm", rootConfig.listComplex.get(1).complexValue1.toString());
-        assertEquals("ik,", rootConfig.listComplex.get(1).complexValue2.toString());
+        assertEquals("ujm", rootConfig.listComplex.get(1).complexValue1.getString());
+        assertEquals("ik,", rootConfig.listComplex.get(1).complexValue2.getString());
 
         APSConfigEditModel listComplex_1_listSimple = (APSConfigEditModel)listComplex.getValueByName("listSimple");
         assertNotNull(listComplex_1_listSimple);
-        APSConfigReference listComplex_1_listSimpleRef = listComplex_1_Ref._(listComplex_1_listSimple);
+        APSConfigReference listComplex_1_listSimpleRef = listComplex_1_Ref.__(listComplex_1_listSimple);
 
         APSConfigReference listComplex_1_listSimple_0_Ref = config.addConfigList(listComplex_1_listSimpleRef);
         assertEquals(1, config.getListSize(listComplex_1_listSimpleRef));
@@ -241,22 +243,22 @@ public class ConfigModelTest extends TestCase {
         APSConfigValueEditModel listComplex_1_listSimple_0_simpleValue1 =
                 listComplex_1_listSimple.getValueByName("simpleValue1");
         APSConfigReference listComplex_1_listSimple_0_simpleValue1Ref =
-                listComplex_1_listSimple_0_Ref._(listComplex_1_listSimple_0_simpleValue1);
+                listComplex_1_listSimple_0_Ref.__(listComplex_1_listSimple_0_simpleValue1);
         config.setConfigValue(listComplex_1_listSimple_0_simpleValue1Ref, "ol.");
 
         APSConfigValueEditModel listComplex_1_listSimple_0_simpleValue2 =
                 listComplex_1_listSimple.getValueByName("simpleValue2");
         APSConfigReference listComplex_1_listSimple_0_simpleValue2Ref =
-                listComplex_1_listSimple_0_Ref._(listComplex_1_listSimple_0_simpleValue2);
+                listComplex_1_listSimple_0_Ref.__(listComplex_1_listSimple_0_simpleValue2);
         config.setConfigValue(listComplex_1_listSimple_0_simpleValue2Ref, "po-");
 
-        assertEquals("ol.", rootConfig.listComplex.get(1).listSimple.get(0).simpleValue1.toString());
-        assertEquals("po-", rootConfig.listComplex.get(1).listSimple.get(0).simpleValue2.toString());
+        assertEquals("ol.", rootConfig.listComplex.get(1).listSimple.get(0).simpleValue1.getString());
+        assertEquals("po-", rootConfig.listComplex.get(1).listSimple.get(0).simpleValue2.getString());
 
         // Double check that the previous index  hasn't changed.
 
-        assertEquals("tgb", rootConfig.listComplex.get(0).listSimple.get(0).simpleValue1.toString());
-        assertEquals("yhn", rootConfig.listComplex.get(0).listSimple.get(0).simpleValue2.toString());
+        assertEquals("tgb", rootConfig.listComplex.get(0).listSimple.get(0).simpleValue1.getString());
+        assertEquals("yhn", rootConfig.listComplex.get(0).listSimple.get(0).simpleValue2.getString());
 
 
         System.out.println("ok");

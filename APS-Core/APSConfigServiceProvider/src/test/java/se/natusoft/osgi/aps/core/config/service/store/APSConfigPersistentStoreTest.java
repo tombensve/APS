@@ -3,33 +3,33 @@
  * PROJECT
  *     Name
  *         APS Configuration Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         A more advanced configuration service that uses annotated interfaces to
  *         describe and provide access to configuration. It supports structured
  *         configuration models.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -59,7 +59,7 @@ import se.natusoft.osgi.aps.core.config.model.admin.APSConfigEditModelImpl;
 import se.natusoft.osgi.aps.core.config.model.admin.APSConfigEnvironmentImpl;
 import se.natusoft.osgi.aps.core.config.store.APSConfigEnvStore;
 import se.natusoft.osgi.aps.core.config.store.APSConfigPersistentStore;
-import se.natusoft.osgi.aps.core.config.store.APSFileTool;
+import se.natusoft.osgi.aps.core.config.store.APSConfigServiceFileTool;
 import se.natusoft.osgi.aps.core.test.support.filesystem.model.APSFilesystemImpl;
 import se.natusoft.osgi.aps.tools.APSLogger;
 
@@ -84,7 +84,9 @@ public class APSConfigPersistentStoreTest {
     private APSConfigEnvStore envStore = null;
 
     /** This is needed by the APSConfigPersistentStore. */
-    private APSFileTool fileTool = null;
+    private APSConfigServiceFileTool fileTool = null;
+
+    private APSLogger logger = new APSLogger(System.out);
 
     /**
      * Creates a new APSConfigPersistentStoreTest.
@@ -112,7 +114,7 @@ public class APSConfigPersistentStoreTest {
         File testFs = new File(projRoot, "testfs");
         testFs.mkdirs();
         APSFilesystemImpl fs = new APSFilesystemImpl(testFs.getAbsolutePath(), "APSConfigPersistentStoreTest");
-        this.fileTool = new APSFileTool(fs);
+        this.fileTool = new APSConfigServiceFileTool(fs);
         this.envStore = new APSConfigEnvStore(fileTool);
         this.envStore.removeAllEnvironments();
         this.envStore.addEnvironment(new APSConfigEnvironmentImpl("devel", "The development configuration environment", 0));
@@ -146,13 +148,13 @@ public class APSConfigPersistentStoreTest {
         Properties confProps = new Properties();
         APSConfigInstanceMemoryStoreImpl configValueStore = new APSConfigInstanceMemoryStoreImpl(confProps);
         APSConfigEnvironment configEnvironment = this.envStore.getConfigEnvironmentByName("devel");
-        APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(envStore, configValueStore);
+        APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(envStore, configValueStore, this.logger);
 
-        APSConfigEditModel configModel = new APSConfigEditModelImpl(MyConfig.class, configObjectFactory);
+        APSConfigEditModel configModel = new APSConfigEditModelImpl<>(MyConfig.class, configObjectFactory);
         APSConfigAdminImpl config = new APSConfigAdminImpl(configModel, configValueStore, envStore);
 
         APSConfigValueEditModel southernComfort = configModel.getValueByName("southerncomfort");
-        APSConfigReference southernComfortRef = config.createRef()._(configModel)._(southernComfort)._(configEnvironment);
+        APSConfigReference southernComfortRef = config.createRef().__(configModel).__(southernComfort).__(configEnvironment);
         config.setConfigValue(southernComfortRef, "false");
 
         return config;
@@ -165,13 +167,10 @@ public class APSConfigPersistentStoreTest {
     private APSConfigAdminImpl createConfig2() throws Exception {
         Properties confProps = new Properties();
         APSConfigInstanceMemoryStoreImpl configValueStore = new APSConfigInstanceMemoryStoreImpl(confProps);
-        APSConfigEnvironment configEnvironment = this.envStore.getConfigEnvironmentByName("devel");
-        APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(this.envStore, configValueStore);
+        APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(this.envStore, configValueStore, this.logger);
 
-        APSConfigEditModel configModel = new APSConfigEditModelImpl(MyConfig2.class, configObjectFactory);
-        APSConfigAdminImpl config = new APSConfigAdminImpl(configModel, configValueStore, envStore);
-
-        return config;
+        APSConfigEditModel configModel = new APSConfigEditModelImpl<>(MyConfig2.class, configObjectFactory);
+        return new APSConfigAdminImpl(configModel, configValueStore, envStore);
     }
 
     /**
@@ -219,8 +218,8 @@ public class APSConfigPersistentStoreTest {
         List<String> versions = configStore.getAvailableVersions(configId);
 
         assertEquals(2, versions.size());
-        assertEquals("1.0", versions.get(0).toString());
-        assertEquals("1.1", versions.get(1).toString());
+        assertEquals("1.0", versions.get(0));
+        assertEquals("1.1", versions.get(1));
 
         System.out.println("ok");
     }
@@ -241,10 +240,10 @@ public class APSConfigPersistentStoreTest {
         assertNotNull(config);
         APSConfigEditModel otherChoicesEditModel = (APSConfigEditModel)config.getConfigModel().getValueByName("otherchoices");
         APSConfigValueEditModel otherFishEditModel = otherChoicesEditModel.getValueByName("otherfish");
-        APSConfigReference otherFishRef = config.createRef()._(config.getConfigModel())._(otherChoicesEditModel)._(otherFishEditModel);
+        APSConfigReference otherFishRef = config.createRef().__(config.getConfigModel()).__(otherChoicesEditModel).__(otherFishEditModel);
 
         // Please note that we actually get the default value back here since we have not set this to anything.
-        assertEquals("false", config.getConfigValue(otherFishRef._(this.envStore.getActiveConfigEnvironment())));
+        assertEquals("false", config.getConfigValue(otherFishRef.__(this.envStore.getActiveConfigEnvironment())));
 
         System.out.println("ok");
     }
@@ -265,14 +264,14 @@ public class APSConfigPersistentStoreTest {
         assertNotNull(config);
         APSConfigEditModel otherChoicesEditModel = (APSConfigEditModel)config.getConfigModel().getValueByName("otherchoices");
         APSConfigValueEditModel otherFishEditModel = otherChoicesEditModel.getValueByName("otherfish");
-        APSConfigReference otherFishRef = config.createRef()._(config.getConfigModel())._(otherChoicesEditModel)._(otherFishEditModel);
+        APSConfigReference otherFishRef = config.createRef().__(config.getConfigModel()).__(otherChoicesEditModel).__(otherFishEditModel);
 
-        config.setConfigValue(otherFishRef._(this.envStore.getActiveConfigEnvironment()), "true");
+        config.setConfigValue(otherFishRef.__(this.envStore.getActiveConfigEnvironment()), "true");
 
-        MyConfig2 mc2 = ((APSConfigEditModelImpl<MyConfig2>)config.getConfigModel()).getInstance();
-        try {((ManagedService)mc2).updated(config.getConfigInstanceMemoryStore().getProperties());} catch (Exception e) {}
+        @SuppressWarnings("unchecked") MyConfig2 mc2 = ((APSConfigEditModelImpl<MyConfig2>)config.getConfigModel()).getInstance();
+        try {mc2.updated(config.getConfigInstanceMemoryStore().getProperties());} catch (Exception ignore) {}
 
-        assertEquals("true", mc2.otherChoices.otherFish.toString());
+        assertEquals("true", mc2.otherChoices.otherFish.getString());
 
         System.out.println("ok");
     }

@@ -3,33 +3,33 @@
  * PROJECT
  *     Name
  *         APS Configuration Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         A more advanced configuration service that uses annotated interfaces to
  *         describe and provide access to configuration. It supports structured
  *         configuration models.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -43,7 +43,7 @@ import org.junit.Test;
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
 import se.natusoft.osgi.aps.core.config.model.admin.APSConfigEnvironmentImpl;
 import se.natusoft.osgi.aps.core.config.store.APSConfigEnvStore;
-import se.natusoft.osgi.aps.core.config.store.APSFileTool;
+import se.natusoft.osgi.aps.core.config.store.APSConfigServiceFileTool;
 import se.natusoft.osgi.aps.core.test.support.filesystem.model.APSFilesystemImpl;
 
 import java.io.File;
@@ -53,7 +53,7 @@ import static org.junit.Assert.assertEquals;
 public class APSConfigEnvStoreTest {
 
     /** Needed for tests. */
-    private APSFileTool fileTool;
+    private APSConfigServiceFileTool fileTool;
 
     /**
      * Tests the APSConfigEnvStore class.
@@ -81,7 +81,7 @@ public class APSConfigEnvStoreTest {
         File testFs = new File(projRoot, "testfs");
         testFs.mkdirs();
         APSFilesystem fs = new APSFilesystemImpl(testFs.getAbsolutePath(), "APSConfigEnvStoreTest");
-        this.fileTool = new APSFileTool(fs);
+        this.fileTool = new APSConfigServiceFileTool(fs);
     }
 
 //    @After

@@ -44,7 +44,6 @@ import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
-import se.natusoft.osgi.aps.api.net.groups.service.APSGroupsService;
 //import se.natusoft.osgi.aps.api.net.sharing.service.APSSyncService;
 //import se.natusoft.osgi.aps.api.net.time.service.APSNetTimeService;
 import se.natusoft.osgi.aps.core.config.config.APSConfigServiceConfig;
@@ -54,7 +53,7 @@ import se.natusoft.osgi.aps.core.config.service.APSConfigServiceProvider;
 import se.natusoft.osgi.aps.core.config.store.APSConfigEnvStore;
 import se.natusoft.osgi.aps.core.config.store.APSConfigMemoryStore;
 import se.natusoft.osgi.aps.core.config.store.APSConfigPersistentStore;
-import se.natusoft.osgi.aps.core.config.store.APSFileTool;
+import se.natusoft.osgi.aps.core.config.store.APSConfigServiceFileTool;
 //import se.natusoft.osgi.aps.core.config.sync.Synchronizer;
 import se.natusoft.osgi.aps.tools.APSLogger;
 import se.natusoft.osgi.aps.tools.APSServiceTracker;
@@ -139,10 +138,10 @@ public class APSConfigServiceActivator implements BundleActivator {
         // Setup logging
         this.configAdminLogger = new APSLogger(System.out);
         this.configAdminLogger.start(context);
-        this.configAdminLogger.setLoggingFor("aps-config-service-provider(APSConfigAdminService)");
+        this.configAdminLogger.setLoggingFor("aps-config-service-provider:admin");
         this.configLogger = new APSLogger(System.out);
         this.configLogger.start(context);
-        this.configLogger.setLoggingFor("aps-config-service-provider(APSConfigService)");
+        this.configLogger.setLoggingFor("aps-config-service-provider");
 
         // Setup ConfigurationAdmin
         this.configurationAdminTracker = new APSServiceTracker<>(context, ConfigurationAdmin.class, APSServiceTracker.LARGE_TIMEOUT);
@@ -178,7 +177,7 @@ public class APSConfigServiceActivator implements BundleActivator {
             fs = fsService.createFilesystem(APSConfigServiceProvider.class.getName());
         }
 
-        APSFileTool fileTool = new APSFileTool(fs);
+        APSConfigServiceFileTool fileTool = new APSConfigServiceFileTool(fs);
 
         // Create the different config data stores.
         this.envStore = new APSConfigEnvStore(fileTool);

@@ -3,33 +3,33 @@
  * PROJECT
  *     Name
  *         APS Configuration Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         A more advanced configuration service that uses annotated interfaces to
  *         describe and provide access to configuration. It supports structured
  *         configuration models.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
@@ -41,15 +41,13 @@ package se.natusoft.osgi.aps.core.config.model;
 import se.natusoft.osgi.aps.api.core.config.APSConfig;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigList;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
-import se.natusoft.osgi.aps.api.core.config.service.APSConfigException;
 import se.natusoft.osgi.aps.core.config.model.admin.APSConfigEditModelImpl;
+import se.natusoft.osgi.aps.tools.APSLogger;
 
 import static se.natusoft.osgi.aps.core.config.model.StaticUtils.*;
 
 import java.lang.reflect.Field;
 import java.util.Iterator;
-import java.util.Stack;
 
 /**
  * This represents a list of sub configuration classes.
@@ -77,6 +75,8 @@ public class APSConfigListImpl<APSConfigSubclass extends APSConfig> implements A
 
     private APSConfigReference ref = null;
 
+    private APSLogger logger;
+
     //
     // Constructors
     //
@@ -88,17 +88,20 @@ public class APSConfigListImpl<APSConfigSubclass extends APSConfig> implements A
      * @param configObjectFactory Factory for creating APSConfig* objects.
      * @param configEnvironmentProvider Provides the active config environment.
      * @param configValueStoreProvider Provides the config value storage.
+     * @param logger The logger to log to.
      */
     public APSConfigListImpl(
             APSConfigEditModelImpl configModel,
             APSConfigObjectFactory configObjectFactory,
             ConfigEnvironmentProvider configEnvironmentProvider,
-            ConfigValueStoreProvider configValueStoreProvider
+            ConfigValueStoreProvider configValueStoreProvider,
+            APSLogger logger
     ) {
         this.configModel = configModel;
         this.configObjectFactory = configObjectFactory;
         this.configEnvironmentProvider = configEnvironmentProvider;
         this.configValueStoreProvider = configValueStoreProvider;
+        this.logger = logger;
     }
 
     //
@@ -137,6 +140,7 @@ public class APSConfigListImpl<APSConfigSubclass extends APSConfig> implements A
         APSConfigSubclass inst = acem.getInstance();
 
         for (Field f : inst.getClass().getDeclaredFields()) {
+            f.setAccessible(true);
             try {
                 Object fieldInst = f.get(inst);
                 if (fieldInst instanceof APSConfigRefConsumer) {
@@ -145,7 +149,7 @@ public class APSConfigListImpl<APSConfigSubclass extends APSConfig> implements A
                 }
             }
             catch (IllegalAccessException iae) {
-                throw new APSConfigException("Failed to get configuration field instance!", iae);
+                this.logger.error("Problem accessing field: " + iae.getMessage(), iae);
             }
         }
 
@@ -203,7 +207,7 @@ public class APSConfigListImpl<APSConfigSubclass extends APSConfig> implements A
      */
     @Override
     public void setConfigReference(APSConfigReference ref) {
-        this.ref = ref._(this.configModel);
+        this.ref = ref.__(this.configModel);
     }
 
     //

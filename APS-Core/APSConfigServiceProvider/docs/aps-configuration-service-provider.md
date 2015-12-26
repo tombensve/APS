@@ -11,47 +11,47 @@ The APSConfigService supports different configuration environments. The idea is 
 Here is an example:
 
         @APSConfigDescription(
-                version="1.0",
-                configId=”se.natusoft.aps.exmple.myconfig”,
-                group=”examples”,  
-                description=”An example configuration model”
+            version="1.0",
+            configId="se.natusoft.aps.exmple.myconfig",
+            group="examples",  
+            description="An example configuration model"
         )
         public class MyConfig extends APSConfig {
             
-            @APSConfigItemDescription(
-                description=”Example of simple value.”,
-            )
-            public APSConfigValue simpleValue;
+        @APSConfigItemDescription(
+            description="Example of simple value.",
+        )
+        public APSConfigValue simpleValue;
             
             @APSConfigItemDescription(
-                description=”Example of list value.”
+                description="Example of list value."
             )
             public APSConfigValueList listValue;
             
             @APSConfigItemDescription(
-                description=”One instance of MySubConfig model.”
+                description="One instance of MySubConfig model."
             )
             public MySubConfig mySubConfig;
             
             @APSConfigItemDescription(
-                description=”Multiple instances of MySubConfig model.”
+                description="Multiple instances of MySubConfig model."
             )
             public APSConfigList<MySubConfig> listOfMySubConfigs;
             
             @APSConfigDescription(
-                version=”1.0”,
-                configId=”se.natusoft.aps.example.myconfig.mysubconfig”,
-                description=”Example of a subconfig model. Does not have to be inner class!”
+                version="1.0",
+                configId="se.natusoft.aps.example.myconfig.mysubconfig",
+                description="Example of a subconfig model. Does not have to be inner class!"
             )
             public static class MySubConfig extends APSConfig {
                 
-                @APSConfigItemDescription(
-                    description=”Description of values.”
+             @APSConfigItemDescription(
+                    description="Description of values."
                 )
                 public APSConfigValueList listOfValues;
                 
                 @APSConfigItemDescription(
-                    description=”Description of another value.”
+                 description="Description of another value."
                 )
                 public APSConfigValue anotherValue;
             }
@@ -85,9 +85,9 @@ The following 3 annotations are available for use on configuration models.
 
         @APSConfigDescription(
             version="1.0",
-            configId=”se.natusoft.aps.exmple.myconfig”,
-            group=”docs.examples”,
-            description=”An example configuration model”
+            configId="se.natusoft.aps.exmple.myconfig",
+            group="docs.examples",
+            description="An example configuration model"
         )
 
 This is an annotation for a configuration model.
@@ -103,11 +103,11 @@ __description__ - This describes the configuration model.
 #### @APSConfigItemDescription
 
         @APSConfigItemDescription(
-            description=”Example of simple value.”,
-            datePattern=”yyMMdd”,  
+            description="Example of simple value.",
+            datePattern="yyMMdd",  
             environmentSpecific=true/false,  
             isBoolean=true/false,  
-            validValues={”high”, ”medium”, ”low”}, 
+            validValues={"high", "medium", "low"}, 
         )
 
 This is an annotation for a configuration item whithin a configuration model.
@@ -120,18 +120,18 @@ __environmentSpecific__ - This indicates that the config value can have differen
 
 __isBoolean__ - This indicates that the config value is of boolean type. This is used by the configuration admin web app to turn this into a checkbox rather than a text field. This defaults to false and is this optional.
 
-__validValues__ - This is an array of strings ( {”...”, ..., ”...”} ) containing the only valid values for this config value. This is used by the configuration admin web app to provide a dropdown menu of the alternatives rather than a text field. This defaults to {} and is thus optional.
+__validValues__ - This is an array of strings ( {"...", ..., "..."} ) containing the only valid values for this config value. This is used by the configuration admin web app to provide a dropdown menu of the alternatives rather than a text field. This defaults to {} and is thus optional.
 
 __defaultValue__ - This is an array of @APSDefaultValue annotations. Se the description of this annotation below. This allows not only for providing a default value, but for providing a default value per config environment (which is why there is an array of @APSDefaultValue annotations!). Thus you can deliver pre configured configuration for all configuration environments. If a config environment is not specified for a default value then it applies for all configuration environments. Some configuration values are better off without default values, like hosts and ports for other remote services. The application/server maintenance people responsible for an installation in general knows this information better than the developers.
 
 #### @APSDefaultValue
 
         @APSDefaultValue {
-            configEnv=”production”,
-            value=”15”
+            configEnv="production",
+            value="15"
         }
 
-__configEnv__ - This specifies the configuration environment this default value applies to. ”default” means all/any configuration environment and is the default value if not specified.
+__configEnv__ - This specifies the configuration environment this default value applies to. "default" means all/any configuration environment and is the default value if not specified.
 
 __value__ - This is the default value of the configuration value for the configuration environment specified by configEnv.
 
@@ -147,21 +147,21 @@ Example:
 
         @APSConfigDescription(
             version="1.0",
-            configId=”se.natusoft.aps.exmple.myconfig”,
-            group=”examples”,
-            description=”An example configuration model”
+            configId="se.natusoft.aps.exmple.myconfig",
+            group="examples",
+            description="An example configuration model"
         )
         public class MyConfig extends APSConfig {
             
-        —>  public static MyConfig myConfig;  <—
+        -->  public static MyConfig myConfig;  <--
             
             @APSConfigItemDescription(
-                description=”Example of simple value.”,
+                description="Example of simple value.",
             )
             public APSConfigValue simpleValue;
             
             @APSConfigItemDescription(
-                description=”Example of list value.”
+                description="Example of list value."
             )
             public APSConfigValueList listValue;
             ...
@@ -180,21 +180,21 @@ Example:
 
         @APSConfigDescription(
             version="1.0",
-            configId=”se.natusoft.aps.exmple.myconfig”,
-            group=”examples”,
-            description=”An example configuration model”
-        )
+            configId="se.natusoft.aps.exmple.myconfig",
+            group="examples",
+            description="An example configuration model"
+            )
         public class MyConfig extends APSConfig {
             
-        —>  public static final ManagedConfig<MyConfig> managed = new ManagedConfig<MyConfig>();  <—
+        public static final ManagedConfig<MyConfig> managed = new ManagedConfig<MyConfig>();
             
             @APSConfigItemDescription(
-                description=”Example of simple value.”,
+                description="Example of simple value.",
             )
             public APSConfigValue simpleValue;
             
             @APSConfigItemDescription(
-                description=”Example of list value.”
+                description="Example of list value."
             )
             public APSConfigValueList listValue;
             ...
@@ -227,7 +227,7 @@ The APSConfigService API looks like this:
 
 On bundle start you register the configuration. On bundle stop you unregister it. Inbetween you access it. It is a good idea to call getConfiguration(...) after register on bundle start and the pass this instance to your services, etc.
 
-If the _forServices_ flag is _true_ then this configuration will also be registered in the standard OSGi configuration service. Please be warned however that APSConfigService stores its configuration values in properties files, but with rather complex keys. For non structured, flat configurations it might make some sense to register it with the standard osgi service also, but in most cases there is no point in doing this. I’m not even sure why I have this option!
+If the _forServices_ flag is _true_ then this configuration will also be registered in the standard OSGi configuration service. Please be warned however that APSConfigService stores its configuration values in properties files, but with rather complex keys. For non structured, flat configurations it might make some sense to register it with the standard osgi service also, but in most cases there is no point in doing this. I'm not even sure why I have this option!
 
 _Please note_ that if you are using managed configs (see above) then you never need to call this service API, not even lookup/track the APSConfigService!
 
@@ -243,13 +243,17 @@ The complete APS javadoc can be found at [http://apidoc.natusoft.se/APS/](http:/
 
 It is quite possible to make config structures of great complexity. __DON'T!__ Even if it seems manageable from a code perspective it might not be that from a admin perspective. Keep it simple always apply!
 
+## Administration
+
+The configurations managed by the APS config service can be synchronized among a group of installations. To do this you need to enable synchronization in the _aps/config_ node in the config admin web, and also specify a group name that you want to synchronize with. All installations having the same group name will synch configuration with each other. The synchronization uses the APSSync service so an implementation of this must be deployed for synchronization to work. There are currently 2 implementations provided, one using APSGroups (multicast only) and one using RabbitMQ (which of course also requires a RabbitMQ installation).
+
 ## APSConfigAdminWeb screenshots
 
 ![Config environment screenshot](http://download.natusoft.se/Images/APS/APS-Core/APSConfigServiceProvider/docs/images/config-env.png)
 
 ![Config environment help screenshot](http://download.natusoft.se/Images/APS/APS-Core/APSConfigServiceProvider/docs/images/config-env-help.png)
 
-![Config screenshot](http://download.natusoft.se/Images/APS/APS-Core/APSConfigServiceProvider/docs/images/config.png)
+![Config screenshot](http://download.natusoft.se/Images/APS/APS-Network/APSGroups/docs/images/groups-config-1.png)
 
 ![Config list item screenshot](http://download.natusoft.se/Images/APS/APS-Core/APSConfigServiceProvider/docs/images/config-list.png)
 

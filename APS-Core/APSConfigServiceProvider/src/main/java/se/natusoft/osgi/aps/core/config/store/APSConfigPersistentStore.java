@@ -3,33 +3,33 @@
  * PROJECT
  *     Name
  *         APS Configuration Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         A more advanced configuration service that uses annotated interfaces to
  *         describe and provide access to configuration. It supports structured
  *         configuration models.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -63,7 +63,7 @@ public class APSConfigPersistentStore implements ConfigStoreInfo {
     private APSLogger logger = null;
 
     /** Used for reading and writing properties files. */
-    private APSFileTool fileTool = null;
+    private APSConfigServiceFileTool fileTool = null;
 
     /** The environment store. */
     private APSConfigEnvStore envStore = null;
@@ -84,7 +84,7 @@ public class APSConfigPersistentStore implements ConfigStoreInfo {
      *
      * @throws APSConfigException On failure to read config information.
      */
-    public APSConfigPersistentStore(APSFileTool fileTool, APSConfigEnvStore envStore, APSLogger logger) throws APSConfigException {
+    public APSConfigPersistentStore(APSConfigServiceFileTool fileTool, APSConfigEnvStore envStore, APSLogger logger) throws APSConfigException {
         this.fileTool = fileTool;
         this.envStore = envStore;
         this.logger = logger;
@@ -142,12 +142,12 @@ public class APSConfigPersistentStore implements ConfigStoreInfo {
     /**
      * Returns the configuration with the specified config id and version.
      *
-     * @param configEnv The configuraiton enviornment to load configuration for.
+     * @param configEnv The configuration environment to load configuration for.
      * @param configClass The configClass of the configuration to load.
      *
      * @throws APSConfigException On failure to get the configuration.
      */
-    public APSConfigAdminImpl loadConfiguration(APSConfigEnvironment configEnv, Class<? extends APSConfig> configClass) throws APSConfigException {
+    public APSConfigAdminImpl loadConfiguration(@SuppressWarnings("UnusedParameters") APSConfigEnvironment configEnv, Class<? extends APSConfig> configClass) throws APSConfigException {
         APSConfigDescription configAnn = configClass.getAnnotation(APSConfigDescription.class);
         String configId= configAnn.configId();
         String version = configAnn.version();
@@ -171,8 +171,8 @@ public class APSConfigPersistentStore implements ConfigStoreInfo {
             confProps = new Properties();
         }
         APSConfigInstanceMemoryStoreImpl configValueStore = new APSConfigInstanceMemoryStoreImpl(confProps);
-        APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(envStore, configValueStore);
-        APSConfigEditModelImpl configModel = new APSConfigEditModelImpl(configClass, configObjectFactory);
+        APSConfigObjectFactory configObjectFactory = new APSConfigObjectFactory(envStore, configValueStore, this.logger);
+        APSConfigEditModelImpl<? extends APSConfig> configModel = new APSConfigEditModelImpl<>(configClass, configObjectFactory);
         APSConfigAdminImpl configuration = new APSConfigAdminImpl(configModel, configValueStore, envStore);
         if (gotPrevConfig) {
             saveConfiguration(configuration);

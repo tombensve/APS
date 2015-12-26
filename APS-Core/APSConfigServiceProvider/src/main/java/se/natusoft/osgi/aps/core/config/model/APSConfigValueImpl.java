@@ -44,6 +44,8 @@ import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.core.config.model.admin.APSConfigValueEditModelImpl;
 import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
+import se.natusoft.osgi.aps.tools.APSLogger;
+
 import static se.natusoft.osgi.aps.core.config.model.StaticUtils.*;
 
 import java.text.ParseException;
@@ -70,6 +72,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
     /** The reference to the config value represented by this instance. */
     private APSConfigReference ref;
 
+    private APSLogger logger;
 
     //
     // Constructors
@@ -81,13 +84,16 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * @param configValueEditModel The configuration definition model representing this value.
      * @param configValuesProvider Provides configuration value store.
      * @param configEnvProvider Provides the currently active configuration environment.
+     * @param logger The logger to log to.
      */
     public APSConfigValueImpl(APSConfigValueEditModel configValueEditModel,
                               ConfigValueStoreProvider configValuesProvider,
-                              ConfigEnvironmentProvider configEnvProvider) {
+                              ConfigEnvironmentProvider configEnvProvider,
+                              APSLogger logger) {
         this.configValueEditModel = (APSConfigValueEditModelImpl)configValueEditModel;
         this.configValuesProvider = configValuesProvider;
         this.configEnvProvider = configEnvProvider;
+        this.logger = logger;
     }
 
     /**
@@ -97,12 +103,14 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      * @param configValuesProvider Provides configuration value store.
      * @param configEnvProvider Provides the currently active configuration environment.
      * @param ref The config reference to use for this instance.
+     * @param logger The logger to log to.
      */
     /*package*/ APSConfigValueImpl(APSConfigValueEditModel configValueEditModel,
                               ConfigValueStoreProvider configValuesProvider,
                               ConfigEnvironmentProvider configEnvProvider,
-                              APSConfigReference ref) {
-        this(configValueEditModel, configValuesProvider, configEnvProvider);
+                              APSConfigReference ref,
+                              APSLogger logger) {
+        this(configValueEditModel, configValuesProvider, configEnvProvider, logger);
         this.ref = ref;
     }
 
@@ -143,7 +151,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
         return this.configValuesProvider.
             getConfigValueStore().
             getConfigValue(
-                    getRef().index(ix)._(configEnvironment).toString()
+                    getRef().index(ix).__(configEnvironment).toString()
             );
     }
 
@@ -172,7 +180,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      */
     private String getNormalValue(APSConfigEnvironment configEnvironment) {
         return this.configValuesProvider.getConfigValueStore().
-                getConfigValue(getRef()._(configEnvironment).toString());
+                getConfigValue(getRef().__(configEnvironment).toString());
     }
 
     /**
@@ -386,7 +394,9 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
     @Override
     public Date getDate(String configEnvironment) {
         if (this.configValueEditModel.getDatePattern() == null) {
-            throw new APSRuntimeException("Trying to convert value to a Date object without any specification of date format!");
+            String errMsg = "Trying to convert value to a Date object without any specification of date format!";
+            this.logger.error(errMsg);
+            throw new APSRuntimeException(errMsg);
         }
         SimpleDateFormat sdf = new SimpleDateFormat(this.configValueEditModel.getDatePattern());
         try {
@@ -424,7 +434,7 @@ public class APSConfigValueImpl implements APSConfigValue, APSConfigRefConsumer 
      */
     @Override
     public void setConfigReference(APSConfigReference ref) {
-        this.ref = ref._(this.configValueEditModel);
+        this.ref = ref.__(this.configValueEditModel);
     }
 
     //

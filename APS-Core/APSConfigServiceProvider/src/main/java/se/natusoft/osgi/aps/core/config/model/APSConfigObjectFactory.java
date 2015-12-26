@@ -3,33 +3,33 @@
  * PROJECT
  *     Name
  *         APS Configuration Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         A more advanced configuration service that uses annotated interfaces to
  *         describe and provide access to configuration. It supports structured
  *         configuration models.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
@@ -45,7 +45,9 @@ import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEditModel;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueStore;
+import se.natusoft.osgi.aps.codedoc.Implements;
 import se.natusoft.osgi.aps.core.config.model.admin.APSConfigEditModelImpl;
+import se.natusoft.osgi.aps.tools.APSLogger;
 
 import java.util.List;
 
@@ -65,6 +67,8 @@ public class APSConfigObjectFactory implements ConfigEnvironmentProvider, Config
     /** The actual config values. Note that this might not have any values at time of usage here! */
     private APSConfigValueStore configValueStore = null;
 
+    private APSLogger logger;
+
     //
     // Constructors
     //
@@ -74,10 +78,12 @@ public class APSConfigObjectFactory implements ConfigEnvironmentProvider, Config
      *
      * @param configEnvironment The currently active config environment.
      * @param configValueStore The actual config values.
+     * @param logger The logger to log to.
      */
-    public APSConfigObjectFactory(ConfigEnvironmentProvider configEnvironment, APSConfigValueStore configValueStore) {
+    public APSConfigObjectFactory(ConfigEnvironmentProvider configEnvironment, APSConfigValueStore configValueStore, APSLogger logger) {
         this.configEnvironment = configEnvironment;
         this.configValueStore = configValueStore;
+        this.logger = logger;
     }
 
     //
@@ -88,6 +94,7 @@ public class APSConfigObjectFactory implements ConfigEnvironmentProvider, Config
      * Returns the active config environment.
      */
     @Override
+    @Implements(ConfigEnvironmentProvider.class)
     public APSConfigEnvironment getActiveConfigEnvironment() {
         return this.configEnvironment.getActiveConfigEnvironment();
     }
@@ -96,6 +103,7 @@ public class APSConfigObjectFactory implements ConfigEnvironmentProvider, Config
      * @return The available environments.
      */
     @Override
+    @Implements(ConfigEnvironmentProvider.class)
     public List<APSConfigEnvironment> getConfigEnvironments() {
         return this.configEnvironment.getConfigEnvironments();
     }
@@ -107,6 +115,7 @@ public class APSConfigObjectFactory implements ConfigEnvironmentProvider, Config
      * @return The named environment or null if it does not exist.
      */
     @Override
+    @Implements(ConfigEnvironmentProvider.class)
     public APSConfigEnvironment getConfigEnvironmentByName(String name) {
         return this.configEnvironment.getConfigEnvironmentByName(name);
     }
@@ -114,6 +123,8 @@ public class APSConfigObjectFactory implements ConfigEnvironmentProvider, Config
     /**
      * Returns the configuration value storage.
      */
+    @Override
+    @Implements(ConfigValueStoreProvider.class)
     public APSConfigValueStore getConfigValueStore() {
         return this.configValueStore;
     }
@@ -124,7 +135,7 @@ public class APSConfigObjectFactory implements ConfigEnvironmentProvider, Config
      * @param valueEditModel The value model representing this value key in the value store.
      */
     public APSConfigValue createAPSConfigValue(APSConfigValueEditModel valueEditModel) {
-        return new APSConfigValueImpl(valueEditModel, this, this);
+        return new APSConfigValueImpl(valueEditModel, this, this, this.logger);
     }
 
     /**
@@ -133,7 +144,7 @@ public class APSConfigObjectFactory implements ConfigEnvironmentProvider, Config
      * @param valueEditModel The value model representing this value keys in the value store.
      */
     public APSConfigValueList createAPSConfigValueList(APSConfigValueEditModel valueEditModel) {
-        return new APSConfigValueListImpl(valueEditModel, this, this);
+        return new APSConfigValueListImpl(valueEditModel, this, this, this.logger);
     }
 
     /**
@@ -142,7 +153,7 @@ public class APSConfigObjectFactory implements ConfigEnvironmentProvider, Config
      * @param configModel The config model representing this config list and its keys in teh value store.
      */
     public APSConfigList createAPSConfigList(APSConfigEditModel configModel) {
-        return new APSConfigListImpl((APSConfigEditModelImpl)configModel, this, this, this);
+        return new APSConfigListImpl((APSConfigEditModelImpl)configModel, this, this, this, this.logger);
     }
 
 }
