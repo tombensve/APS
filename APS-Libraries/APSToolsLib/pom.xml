@@ -103,11 +103,6 @@
         <osgi.embed.directory>lib</osgi.embed.directory>
 
         <!--
-            Trigger tiles.
-        -->
-        <tile.deploy>${project.groupId}:DeployBundleTile:${project.version}</tile.deploy>
-
-        <!--
             Misc properties
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -167,6 +162,23 @@
                     <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                     </archive>
+                </configuration>
+            </plugin>
+
+            <!--
+                Mixins
+            -->
+            <plugin>
+                <groupId>com.github.odavid.maven.plugins</groupId>
+                <artifactId>mixin-maven-plugin</artifactId>
+                <configuration>
+                    <mixins>
+                        <mixin>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>deploy-bundle-mixin</artifactId>
+                            <version>${project.version}</version>
+                        </mixin>
+                    </mixins>
                 </configuration>
             </plugin>
 
