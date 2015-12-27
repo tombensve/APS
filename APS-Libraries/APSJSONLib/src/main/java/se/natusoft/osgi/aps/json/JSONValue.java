@@ -1,42 +1,42 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS JSON Library
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides a JSON parser and creator. Please note that this bundle has no dependencies to any
  *         other APS bundle! It can be used as is without APS in any Java application and OSGi container.
  *         The reason for this is that I do use it elsewhere and don't want to keep 2 different copies of
  *         the code. OSGi wise this is a library. All packages are exported and no activator nor services
  *         are provided.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2011-01-30: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.json;
 
@@ -59,7 +59,7 @@ import java.io.*;
  *
  *
  * @see JSONObject
- * 
+ *
  * @author Tommy Svensson
  */
 public abstract class JSONValue {
@@ -81,18 +81,18 @@ public abstract class JSONValue {
      * Creates a new JSONValue.
      */
     protected JSONValue() {}
-    
+
     /**
      * Creates a new JSONValue
      */
     protected JSONValue(JSONErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
     }
-    
+
     //
     // Abstract Methods
     //
-    
+
     /**
      * This will read the vale from an input stream.
      *
@@ -190,7 +190,7 @@ public abstract class JSONValue {
 
     /**
      * Provide a warning.
-     * 
+     *
      * @param message The warning message.
      */
     protected void warn(String message) {
@@ -231,9 +231,7 @@ public abstract class JSONValue {
      * @throws IOException on IO failure.
      */
     public void readJSON(InputStream is) throws IOException {
-        // Even though JSON is supposedly UTF-8 as far as I can determine from the web I decided
-        // to use a Reader and read chars to support other.
-        JSONReader reader = new JSONReader(new PushbackReader(new InputStreamReader(is)), this.errorHandler);
+        JSONReader reader = new JSONReader(new PushbackReader(new InputStreamReader(is, "UTF-8")), this.errorHandler);
         readJSON(reader.getChar(), reader);
     }
 
@@ -248,6 +246,7 @@ public abstract class JSONValue {
         writeJSON(os, true);
 
     }
+    
     /**
      * This writes JSON to the specified OutputStream.
      *
@@ -257,7 +256,7 @@ public abstract class JSONValue {
      * @throws IOException on IO failure.
      */
     public void writeJSON(OutputStream os, boolean compact) throws IOException {
-        OutputStreamWriter osw = new OutputStreamWriter(os);
+        OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
         try {
             writeJSON(new JSONWriter(osw), compact);
         }
@@ -357,7 +356,7 @@ public abstract class JSONValue {
 
         /** The error handles for the JSON parsing */
         private JSONErrorHandler errorHandler = null;
-        
+
         //
         // Constructors
         //
@@ -385,7 +384,7 @@ public abstract class JSONValue {
         protected char getChar() throws IOException {
             return getChar(false);
         }
-        
+
         /**
          * Returns the next character on the specified input stream, setting EOF state checkable with isEOF().
          *
@@ -539,10 +538,10 @@ public abstract class JSONValue {
                     c = (char)ucode; // Not entirely sure this will yield the correct result!
                 }
             }
-            
+
             return c;
         }
-        
+
         /**
          * Reads until any of a specified set of characters occur.
          *
@@ -623,7 +622,7 @@ public abstract class JSONValue {
             }
         }
     }
-    
+
     /**
      * For subclasses to use in writeJSON(JSONWriter writer).
      */
@@ -631,10 +630,10 @@ public abstract class JSONValue {
         //
         // Private Members
         //
-        
+
         /** The writer to write to. */
         private Writer writer = null;
-        
+
         //
         // Constructors
         //
