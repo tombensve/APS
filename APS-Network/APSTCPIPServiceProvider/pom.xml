@@ -73,7 +73,9 @@
         <!-- The private packages. -->
         <osgi.private.package>
             se.natusoft.osgi.aps.tcpipsvc,
-            se.natusoft.osgi.aps.tcpipsvc.config
+            se.natusoft.osgi.aps.tcpipsvc.config,
+            se.natusoft.osgi.aps.tcpipsvc.meta,
+            se.natusoft.osgi.aps.tcpipsvc.security
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->
@@ -180,6 +182,9 @@
                 </configuration>
             </plugin>
 
+            <!--
+                Mixins
+            -->
             <plugin>
                 <groupId>com.github.odavid.maven.plugins</groupId>
                 <artifactId>mixin-maven-plugin</artifactId>
@@ -188,6 +193,11 @@
                         <mixin>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>groovy-mixin</artifactId>
+                            <version>${project.version}</version>
+                        </mixin>
+                        <mixin>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>deploy-bundle-mixin</artifactId>
                             <version>${project.version}</version>
                         </mixin>
                     </mixins>

@@ -5,9 +5,10 @@ import se.natusoft.osgi.aps.api.net.tcpip.APSUDPSecurityService
 import se.natusoft.osgi.aps.tools.APSServiceTracker
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
+import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException
 
 /**
- * Wraps APSUDPSecurityService calling it if service is available, otherwise just returning input as is.
+ * Wraps APSUDPSecurityService and throwing an IOException if none is available.
  */
 class UDPSecurityHandler {
 
@@ -15,8 +16,8 @@ class UDPSecurityHandler {
     // Private Members
     //
 
-    @OSGiService
-    private APSServiceTracker<APSUDPSecurityService> udpSecurityServiceTracker = null
+    @OSGiService(timeout = "10 seconds")
+    private APSUDPSecurityService udpSecurityService
 
     private Object securityContext = null
 
@@ -36,18 +37,24 @@ class UDPSecurityHandler {
     }
 
     public void secure(DatagramPacket data, boolean secure) throws IOException {
-        if (secure && securitySvcAvailable()) {
-            APSUDPSecurityService apsudpSecurityService = this.udpSecurityServiceTracker.allocateService()
-            apsudpSecurityService.secure(data, getSecurityContext(apsudpSecurityService))
-            this.udpSecurityServiceTracker.releaseService()
+        if (secure) {
+            try {
+                this.udpSecurityService.secure(data, getSecurityContext(this.udpSecurityService))
+            }
+            catch (APSNoServiceAvailableException nsae) {
+                throw new IOException("Failed to secure packet, no APSUDPSecurityService available!", nsae)
+            }
         }
     }
 
     public void unsecure(DatagramPacket data, boolean secure) throws IOException {
-        if (secure && securitySvcAvailable()) {
-            APSUDPSecurityService apsudpSecurityService = this.udpSecurityServiceTracker.allocateService()
-            result = apsudpSecurityService.unsecure(data, getSecurityContext(apsudpSecurityService))
-            this.udpSecurityServiceTracker.releaseService()
+        if (secure) {
+            try {
+                this.udpSecurityService.unsecure(data, getSecurityContext(this.udpSecurityService))
+            }
+            catch (APSNoServiceAvailableException nsae) {
+                throw new IOException("Failed to unsecure packet, no APSUDPSecurityService available!", nsae)
+            }
         }
     }
 }

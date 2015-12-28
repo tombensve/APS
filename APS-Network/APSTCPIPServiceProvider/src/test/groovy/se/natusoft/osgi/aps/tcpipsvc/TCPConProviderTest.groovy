@@ -7,6 +7,8 @@ import se.natusoft.osgi.aps.api.net.tcpip.TCPRequest
 import se.natusoft.osgi.aps.api.net.tcpip.TCPListener
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
+import se.natusoft.osgi.aps.tcpipsvc.config.ExpertConfig
+import se.natusoft.osgi.aps.tcpipsvc.config.NamedConfig
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -25,28 +27,28 @@ class TCPConProviderTest {
     }
 
     private static void configSetup1() {
-        TCPIPConfig.NamedConfig namedConfig1 = new TCPIPConfig.NamedConfig()
+        NamedConfig namedConfig1 = new NamedConfig()
         namedConfig1.name = new TestConfigValue(value: "testsvc")
         namedConfig1.type = new TestConfigValue(value: ConnectionProvider.Type.TCP.name())
         namedConfig1.address = new TestConfigValue(value: "localhost")
         namedConfig1.port = new TestConfigValue(value: "12345")
         namedConfig1.secure = new TestConfigValue(value: "false")
 
-        TCPIPConfig.NamedConfig namedConfig2 = new TCPIPConfig.NamedConfig()
+        NamedConfig namedConfig2 = new NamedConfig()
         namedConfig2.name = new TestConfigValue(value: "testclient")
         namedConfig2.type = new TestConfigValue(value: ConnectionProvider.Type.TCP.name())
         namedConfig2.address = new TestConfigValue(value: "localhost")
         namedConfig2.port = new TestConfigValue(value: "12345")
         namedConfig2.secure = new TestConfigValue(value: "false")
 
-        TestConfigList<TCPIPConfig.NamedConfig> configs = new TestConfigList<>()
+        TestConfigList<NamedConfig> configs = new TestConfigList<>()
         configs.configs.add(namedConfig1)
         configs.configs.add(namedConfig2)
 
         TCPIPConfig testTCPIPConfig = new TCPIPConfig()
         testTCPIPConfig.namedConfigs = configs
 
-        TCPIPConfig.ExpertConfig expertConfig = new TCPIPConfig.ExpertConfig()
+        ExpertConfig expertConfig = new ExpertConfig()
         expertConfig.exceptionGuardMaxExceptions = new TestConfigValue(value: "30")
         expertConfig.exceptionGuardReactLimit = new TestConfigValue(value: "300")
         expertConfig.tcpCallbackThreadPoolSize = new TestConfigValue(value: "30")

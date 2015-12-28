@@ -158,6 +158,7 @@ class UDPReceiver implements ConnectionProvider {
                 this.receiverThread = new UDPReceiverThread(listeners: this.listeners, logger: this.logger, config: this.config,
                         receiver: this)
                 this.receiverThread.start()
+                this.logger.info("UDP Receiver for ${this.config.host}:${this.config.port} was started!")
             }
         }
     }
@@ -179,6 +180,7 @@ class UDPReceiver implements ConnectionProvider {
             }
             this.socket.disconnect()
             this.socket = null
+            this.logger.info("UDP Receiver for ${this.config.host}:${this.config.port} was stopped!")
         }
     }
 

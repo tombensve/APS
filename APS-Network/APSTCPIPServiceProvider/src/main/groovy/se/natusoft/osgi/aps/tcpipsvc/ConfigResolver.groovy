@@ -41,6 +41,7 @@ import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener
 import se.natusoft.osgi.aps.exceptions.APSConfigException
+import se.natusoft.osgi.aps.exceptions.APSRuntimeException
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
 import se.natusoft.osgi.aps.tcpipsvc.security.UDPSecurityHandler
@@ -113,18 +114,28 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
         if (direction == null) throw new IllegalArgumentException("direction argument is required! It cannot be null!")
         if (expectedType == null) throw new IllegalArgumentException("expectedType argument is required! It cannot be null!")
 
-        if (connectionProviders.containsKey(name)) {
-            return this.connectionProviders.get(name)
+        String cacheKey = name + direction.name()
+        if (this.connectionProviders.containsKey(cacheKey)) {
+            return this.connectionProviders.get(cacheKey)
         }
 
         ConnectionProvider connectionProvider = null
         ConfigWrapper config = new ConfigWrapper(name: name) // Throws APSConfigException on bad name!
 
-        ConnectionProvider.Type configType = ConnectionProvider.Type.valueOf(config.type)
+        ConnectionProvider.Type configType = null;
+        try {
+            configType = ConnectionProvider.Type.valueOf(config.type)
+        }
+        catch (IllegalArgumentException iae) {
+            this.logger.error("Invalid config type: '${config.type}'!", iae)
+            throw new APSRuntimeException("Bad protocol type from config: '${config.type}'", iae);
+        }
 
+        // Allow UDP as expected type for multicast by converting expected type to multicast.
         if (configType == ConnectionProvider.Type.Multicast && expectedType == ConnectionProvider.Type.UDP) {
             expectedType = ConnectionProvider.Type.Multicast
         }
+
         if (expectedType != configType) {
             throw new APSConfigException("Expected config entry of type '" + expectedType.name() + "', but got type '" + config.type + "'!")
         }
@@ -138,7 +149,7 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
                     connectionProvider = new TCPReceiver(config: config, logger: logger, securityHandler: this.tcpSecurityHandler)
                 }
                 connectionProvider.start()
-                this.connectionProviders.put(name, connectionProvider)
+                this.connectionProviders.put(cacheKey, connectionProvider)
                 break
 
             case ConnectionProvider.Type.UDP:
@@ -149,7 +160,7 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
                     connectionProvider = new UDPReceiver(config: config, logger: logger, securityHandler: udpSecurityHandler)
                 }
                 connectionProvider.start()
-                this.connectionProviders.put(name, connectionProvider)
+                this.connectionProviders.put(cacheKey, connectionProvider)
                 break
 
             case ConnectionProvider.Type.Multicast:
@@ -160,7 +171,7 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
                     connectionProvider = new MulticastReceiver(config: config, logger: logger, securityHandler: udpSecurityHandler)
                 }
                 connectionProvider.start()
-                this.connectionProviders.put(name, connectionProvider)
+                this.connectionProviders.put(cacheKey, connectionProvider)
                 break
         }
 

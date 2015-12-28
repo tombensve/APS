@@ -183,6 +183,7 @@ class TCPReceiver implements ConnectionProvider {
                 logger: this.logger
         )
         this.receiverThread.start()
+        this.logger.info("TCP Receiver for ${this.config.host}:${this.config.port} was started!")
     }
 
     /**
@@ -201,6 +202,7 @@ class TCPReceiver implements ConnectionProvider {
             }
             this.socket.close()
             this.socket = null
+            this.logger.info("TCP Receiver for ${this.config.host}:${this.config.port} was stopped!")
         }
     }
 

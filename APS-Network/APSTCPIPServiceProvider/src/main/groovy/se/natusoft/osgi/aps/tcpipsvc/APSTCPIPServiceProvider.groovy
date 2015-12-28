@@ -44,6 +44,7 @@ import se.natusoft.osgi.aps.api.net.tcpip.TCPRequest
 import se.natusoft.osgi.aps.api.net.tcpip.UDPListener
 import se.natusoft.osgi.aps.tcpipsvc.ConnectionProvider.Direction
 import se.natusoft.osgi.aps.tcpipsvc.ConnectionProvider.Type
+import se.natusoft.osgi.aps.tcpipsvc.meta.APSTCPIPServiceMetaData
 import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
 import se.natusoft.osgi.aps.tcpipsvc.security.UDPSecurityHandler
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -73,8 +74,11 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
     @Managed
     private UDPSecurityHandler updSecurityHandler
 
+    @Managed(name = "META-DATA")
+    private APSTCPIPServiceMetaData metaData
+
     /** The real ConfigResolver instance. This is accessed via the getConfigResolver() method, which will delay its creation. */
-    private se.natusoft.osgi.aps.tcpipsvc.ConfigResolver _configResolver = null
+    private ConfigResolver _configResolver = null
 
     //
     // Methods
@@ -84,9 +88,9 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
      * Delay creating the config resolver until first client call. This way we don't have to thread
      * the service just so that we can access config without deadlocking startup.
      */
-    private se.natusoft.osgi.aps.tcpipsvc.ConfigResolver getConfigResolver() {
+    private ConfigResolver getConfigResolver() {
         if (this._configResolver == null) {
-            this._configResolver = new se.natusoft.osgi.aps.tcpipsvc.ConfigResolver(
+            this._configResolver = new ConfigResolver(
                     logger: this.logger,
                     tcpSecurityHandler: this.tcpSecurityHandler,
                     udpSecurityHandler: this.updSecurityHandler
@@ -105,9 +109,10 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
      * @throws IllegalArgumentException on bad name.
      */
     @Override
-    public void sendUDP(String name, byte[] data) throws IOException {
+    void sendUDP(String name, byte[] data) throws IOException {
+        this.logger.debug("sendUDP - name:${name}, data-size: ${data.length}")
         // Do note that MulticastSender extends UDPSender!
-        se.natusoft.osgi.aps.tcpipsvc.UDPSender sender = (se.natusoft.osgi.aps.tcpipsvc.UDPSender)this.configResolver.resolve(name, Direction.Write, Type.UDP)
+        UDPSender sender = (UDPSender)this.configResolver.resolve(name, Direction.Write, Type.UDP)
         sender.send(data)
     }
 
@@ -123,7 +128,8 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
      * @throws IllegalArgumentException on bad name.
      */
     @Override
-    public DatagramPacket readUDP(String name, byte[] data) throws IOException {
+    DatagramPacket readUDP(String name, byte[] data) throws IOException {
+        this.logger.debug("readUDP - name:${name}, data-size: ${data.length}")
         // Do note that MulticastReceiver extends UDPReceiver!
         UDPReceiver receiver =(UDPReceiver)this.configResolver.resolve(name, Direction.Read, Type.UDP)
         return receiver.read(data)
@@ -138,7 +144,8 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
      * @throws IllegalArgumentException on bad name.
      */
     @Override
-    public void addUDPListener(String name, UDPListener listener) {
+    void addUDPListener(String name, UDPListener listener) {
+        this.logger.debug("addUDPListener - name:${name}, listener:${listener}")
         // Do note that MulticastReceiver extends UDPReceiver!
         UDPReceiver receiver =(UDPReceiver)this.configResolver.resolve(name, Direction.Read, Type.UDP)
         receiver.addListener(listener)
@@ -153,7 +160,8 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
      * @throws IllegalArgumentException on bad name.
      */
     @Override
-    public void removeUDPListener(String name, UDPListener listener) {
+    void removeUDPListener(String name, UDPListener listener) {
+        this.logger.debug("removeUDPListener - name:${name}, listener:${listener}")
         // Do note that MulticastReceiver extends UDPReceiver!
         UDPReceiver receiver =(UDPReceiver)this.configResolver.resolve(name, Direction.Read, Type.UDP)
         receiver.removeListener(listener)
@@ -169,7 +177,8 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
      * @throws IllegalArgumentException on bad name.
      */
     @Override
-    public void sendTCPRequest(String name, TCPRequest request)  throws IOException {
+    void sendTCPRequest(String name, TCPRequest request)  throws IOException {
+        this.logger.debug("sendTCPRequest - name:${name}, request:${request}")
         TCPSender sender = (TCPSender)this.configResolver.resolve(name, Direction.Write, Type.TCP)
         sender.send(request)
     }
@@ -183,7 +192,8 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
      * @throws IllegalArgumentException on bad name.
      */
     @Override
-    public void setTCPRequestListener(String name, TCPListener listener) {
+    void setTCPRequestListener(String name, TCPListener listener) {
+        this.logger.debug("setTcpRequestListener - name:${name}, listener:${listener}")
         TCPReceiver receiver = (TCPReceiver)this.configResolver.resolve(name, Direction.Read, Type.TCP)
         receiver.setListener(listener)
     }
@@ -196,7 +206,8 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
      * @throws IllegalArgumentException on bad name.
      */
     @Override
-    public void removeTCPRequestListener(String name) {
+    void removeTCPRequestListener(String name) {
+        this.logger.debug("removeTcpRequestListener - name:${name}")
         TCPReceiver receiver = (TCPReceiver)this.configResolver.resolve(name, Direction.Read, Type.TCP)
         receiver.removeListener()
     }

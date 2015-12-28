@@ -39,6 +39,7 @@ package se.natusoft.osgi.aps.tcpipsvc
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.exceptions.APSConfigException
+import se.natusoft.osgi.aps.tcpipsvc.config.NamedConfig
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 
 /**
@@ -59,7 +60,7 @@ class ConfigWrapper {
     //
 
     /** A cached config instance. */
-    private TCPIPConfig.NamedConfig config
+    private NamedConfig config
 
     //
     // Methods
@@ -68,12 +69,12 @@ class ConfigWrapper {
     /**
      * Gets and validates the config for the named entry.
      */
-    private TCPIPConfig.NamedConfig getConfig() {
+    private NamedConfig getConfig() {
         if (this.config == null) {
             // Do note that each APSConfigValue have a pointer to the real configuration value in memory
             // and any update of the value will be immediately reflected since it is not holding a copy!
             this.config =
-                    (TCPIPConfig.NamedConfig) TCPIPConfig.managed.get().namedConfigs.find { TCPIPConfig.NamedConfig ce ->
+                    (NamedConfig) TCPIPConfig.managed.get().namedConfigs.find { NamedConfig ce ->
                         ce.name.string == this.name
                     }
             if (this.config == null) {
@@ -89,7 +90,7 @@ class ConfigWrapper {
      *
      * @throws APSConfigException on bad config.
      */
-    public String getHost() {
+    String getHost() {
         return getConfig().address.string
     }
 
@@ -98,7 +99,7 @@ class ConfigWrapper {
      *
      * @throws APSConfigException on bad config.
      */
-    public String getMulticastAddress() {
+    String getMulticastAddress() {
         String mcast = getConfig().address.string
         if (mcast.trim().isEmpty()) {
             mcast = "all-systems.mcast.net"
@@ -111,7 +112,7 @@ class ConfigWrapper {
      *
      * @throws APSConfigException on bad config.
      */
-    public int getPort() {
+    int getPort() {
         return getConfig().port.int
     }
 
@@ -120,21 +121,21 @@ class ConfigWrapper {
      *
      * @throws APSConfigException on bad config.
      */
-    public String getType() {
+    String getType() {
         return getConfig().type.string
     }
 
     /**
      * Returns true if this service should be secure when possible.
      */
-    public boolean isSecure() {
+    boolean isSecure() {
         return getConfig().secure.boolean
     }
 
     /**
      * Returns the size of the byte buffer to create.
      */
-    public int getByteBufferSize() {
+    static int getByteBufferSize() {
         return TCPIPConfig.managed.get().byteBufferSize.int
     }
 }
