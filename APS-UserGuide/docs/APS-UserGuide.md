@@ -3608,228 +3608,6 @@ _Parameters_
 
     
 
-# APSDiscoveryService
-
-This is actually a service directory that also multicasts on the network to find other instances of itself and makes the services in other instances available also.
-
-A _service_ here means anything that can be called either with an URL or a host and port. It does not specifically indicate what type of service it is. Each published service however has an id that can be used to better identify it. Basically clients of services have to know the id of the service they want and by that know what it is and how to talk to it.
-
-## APIs
-
-public _class_ __APSDiscoveryPublishException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.discovery.exception] {
-
-Thrown on service publish problems.
-
-__public APSDiscoveryPublishException(String message)__
-
-Creates a new _APSDiscoveryPublishException_ instance.
-
-_Parameters_
-
-> _message_ - The exception messaging. 
-
-__public APSDiscoveryPublishException(String message, Throwable cause)__
-
-Creates a new _APSDiscoveryPublishException_ instance.
-
-_Parameters_
-
-> _message_ - The exception messaging. 
-
-> _cause_ - The cause of this exception. 
-
-}
-
-----
-
-    
-
-public _interface_ __ServiceDescription__   [se.natusoft.osgi.aps.api.net.discovery.model] {
-
-Describes a service.
-
-__String getDescription()__
-
-A short description of the service.
-
-__String getServiceId()__
-
-An id/name of the service.
-
-__String getVersion()__
-
-The version of the service.
-
-__String getServiceHost()__
-
-The targetHost of the service.
-
-__int getServicePort()__
-
-The targetPort of the service.
-
-__String getServiceURL()__
-
-An optional URL to the service.
-
-}
-
-----
-
-    
-
-public _class_ __ServiceDescriptionProvider__ implements  ServiceDescription    [se.natusoft.osgi.aps.api.net.discovery.model] {
-
-Describes a service.
-
-
-
-
-
-
-
-
-
-
-
-
-
-__public ServiceDescriptionProvider()__
-
-Creates a new ServiceDescirption.
-
-__public String toString()__
-
-Returns a string representation of this object.
-
-__public String getDescription()__
-
-A short description of the service.
-
-__public void setDescription(String description)__
-
-Sets a short description of the service.
-
-_Parameters_
-
-> _description_ - The description to set. 
-
-
-
-__public void setServiceId(String serviceId)__
-
-Sets the id of the service.
-
-_Parameters_
-
-> _serviceId_ - The service id to set. 
-
-
-
-__public void setVersion(String version)__
-
-Sets the version of the service.
-
-_Parameters_
-
-> _version_ - The version to set. 
-
-
-
-__public void setServiceHost(String serviceHost)__
-
-Sets the targetHost of the service.
-
-_Parameters_
-
-> _serviceHost_ - The service targetHost to set. 
-
-
-
-__public void setServicePort(int servicePort)__
-
-Sets the targetPort of the service.
-
-_Parameters_
-
-> _servicePort_ - The service targetPort to set. 
-
-
-
-____
-
-Sets an url to the service.
-
-_Parameters_
-
-> _serviceURL_ - The service url to set. 
-
-
-
-
-
-}
-
-----
-
-    
-
-public _interface_ __APSSimpleDiscoveryService__   [se.natusoft.osgi.aps.api.net.discovery.service] {
-
-A network service discovery.
-
-__public List<ServiceDescription> getRemotelyDiscoveredServices()__
-
-Returns all remotely discovered services.
-
-__public List<ServiceDescription> getLocallyRegisteredServices()__
-
-Returns the locally registered services.
-
-__public List<ServiceDescription> getAllServices()__
-
-Returns all known services, both locally registered and remotely discovered.
-
-__public List<ServiceDescription> getService(String serviceId, String version)__
-
-Returns all discovered services with the specified id.
-
-_Parameters_
-
-> _serviceId_ - The id of the service to get. 
-
-> _version_ - The version of the service to get. 
-
-__public void publishService(ServiceDescription service) throws APSDiscoveryPublishException__
-
-Publishes a local service. This will announce it to other known APSSimpleDiscoveryService instances.
-
-_Parameters_
-
-> _service_ - The description of the servcie to publish. 
-
-_Throws_
-
-> _APSDiscoveryPublishException_ - on problems to publish (note: this is a runtime exception!). 
-
-__public void unpublishService(ServiceDescription service) throws APSDiscoveryPublishException__
-
-Recalls the locally published service, announcing to other known APSSimpleDiscoveryService instances that this service is no longer available.
-
-_Parameters_
-
-> _service_ - The service to unpublish. 
-
-_Throws_
-
-> _APSDiscoveryPublishException_ - on problems to publish (note: this is a runtime exception!). 
-
-}
-
-----
-
-    
-
 # APSExternalProtocolExtender
 
 This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles _MANIFEST.MF_ contains `APS-Externalizable: true` the service is made externally available. If the _MANIFEST.MF_ contains `APS-Externalizable: false` however making the service externally available is forbidden. A specific service can also be registered containing an _aps-externalizable_ property with value _true_ to be externalizable. This overrides any other specification.
@@ -4819,9 +4597,7 @@ The library wants an implementation of the APSGroupsConfig interface as its firs
 
 ## APIs
 
-public _interface_ __APSGroupsInfoService__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
-This service provides information about current groups and members.
 
 __List<String> getGroupNames()__
 
@@ -4845,9 +4621,7 @@ Returns a list of "groupName : groupMember" for all groups and members.
 
     
 
-public _interface_ __APSGroupsService__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
-A service that lets clients send data reliable to all members of a group on any host. There is no limit on the size of the data sent, but that said I wouldn't send MB:s of data!
 
 __GroupMember joinGroup(String name) throws IOException__
 
@@ -4901,9 +4675,7 @@ _Throws_
 
     
 
-public _interface_ __GroupMember__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
-This is the API for _APSGroupsService_ members received when they join a group. It is used to send and receive data messages to/from the group.
 
 __void addMessageListener(MessageListener listener)__
 
@@ -4995,9 +4767,7 @@ _Parameters_
 
     
 
-public _interface_ __Message__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
-This represents a complete messaging containing any data you want to send to the group. You provide the messaging with data using the _OutputStream_, and read messaging data using the _InputStream_.
 
 __OutputStream getOutputStream()__
 
@@ -5029,9 +4799,7 @@ _Returns_
 
     
 
-public _interface_ __MessageListener__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
-For listening on messages from the group.
 
 __public void messageReceived(Message message)__
 
@@ -5047,9 +4815,7 @@ _Parameters_
 
     
 
-public _interface_ __NetTime__ extends  Serializable    [se.natusoft.osgi.aps.api.net.groups.service] {
 
-This represents a common network time between members for handling date and time data. The net time is synchronized between all members. Each receiver of net time diffs it with local time and stores the diff so that they can convert to/from local/net time.
 
 __public long getNetTime()__
 
@@ -5086,6 +4852,14 @@ Converts the net time to local time and returns as a Calendar.
 _Parameters_
 
 > _locale_ - The locale to use. 
+
+}
+
+----
+
+    
+
+
 
 }
 
@@ -5197,7 +4971,7 @@ This service defines a synchronized cluster.
 
 
 
-__void clusterUpdated(String key, JSONValue value)__
+__void clusterUpdated(String key, APSBox value)__
 
 Receives an updated value.
 
@@ -5207,7 +4981,7 @@ _Parameters_
 
 > _value_ - The actual value. 
 
-__void update(String key, JSONValue value)__
+__void update(String key, APSBox value)__
 
 Updates a keyed value to the cluster.
 
@@ -5233,7 +5007,7 @@ _Parameters_
 
 > _updateListener_ - The listener to remove. 
 
-__JSONObject getNamedObject(String name)__
+__APSBox getNamedObject(String name)__
 
 Gets named cluster-wide object. If it does not exist it will be created.
 
@@ -5241,11 +5015,7 @@ _Parameters_
 
 > _name_ - The name of the cluster object to get. 
 
-_Throws_
-
-> _UnsupportedOperationException_ - if this feature is not supported. 
-
-__List<JSONValue> getNamedList(String name)__
+__List<APSBox> getNamedList(String name)__
 
 Gets a cluster-wide named list. If it does not exist it will be created.
 
@@ -5253,9 +5023,27 @@ _Parameters_
 
 > _name_ - The name of the list to get. 
 
-_Throws_
+__Map<String, APSBox> getNamedMap(String name)__
 
-> _UnsupportedOperationException_ - if this feature is not supported. 
+Gets a cluster-wide named Map. If it does not exist, it will be created.
+
+Do note that this is mostly a convenience. Implementations can (and most will) use the name as a prefix to the map key and then call getNamedObject(expandedKey).
+
+_Parameters_
+
+> _name_ - The name of the map to get. 
+
+__void withLock(String nameToLock, Future future)__
+
+Locks a specific entry in the cluster or all entries starting with the specified 'nameToLock'. When a lock is acquired the future is executed and when done the lock is released.
+
+Any other client who tries to update the locked name(s) during the lock period without acquiring their own lock will get an exception.
+
+_Parameters_
+
+> _nameToLock_ - The name of the value(s) to lock. 
+
+> _future_ - A Future to execute when the lock is acquired. 
 
 
 
@@ -5267,7 +5055,7 @@ __List<UpdateListener> listeners = Collections.synchronizedList(new LinkedList<U
 
 
 
-__protected void updateListeners(String key, JSONValue value)__
+__protected void updateListeners(String key, APSBox value)__
 
 Updates all listeners.
 
@@ -5287,11 +5075,29 @@ Returns the listeners.
 
     
 
+public _interface_ __APSMessageListener__   [se.natusoft.osgi.aps.api.net.messaging.service] {
+
+Listener for APSMessage.
+
+__void messageReceived(byte[] message)__
+
+This is called when a message is received.
+
+_Parameters_
+
+> _message_ - The received message. 
+
+}
+
+----
+
+    
+
 public _interface_ __APSMessageService__   [se.natusoft.osgi.aps.api.net.messaging.service] {
 
 This defines a simple message service. Can be implemented by using a message bus like RabbitMQ, Active MQ, etc or just a simple tcpip server or whatever.
 
-Since the actual members are outside of this service API, it doesn't really know who they are and doesn't care, all members are defined by configuration to make a cluster of members.
+Since the actual members are outside of this service API, it doesn't really know who they are and doesn't care, all members are defined by configuration.
 
 
 
@@ -5313,7 +5119,7 @@ _Parameters_
 
 > _listener_ - The listener to remove. 
 
-__void sendMessage(JSONObject message) throws APSMessagingException__
+__void sendMessage(byte[] message) throws APSMessagingException__
 
 Sends a message.
 
@@ -5323,17 +5129,7 @@ _Parameters_
 
 _Throws_
 
-> _se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException_ - on failure. 
-
-
-
-__void messageReceived(JSONObject message)__
-
-This is called when a message is received.
-
-_Parameters_
-
-> _message_ - The received message. 
+> _APSMessagingException_ - on failure. 
 
 public _static_ _abstract_ _class_ __AbstractMessageServiceProvider__ implements  APSMessageService    [se.natusoft.osgi.aps.api.net.messaging.service] {
 
@@ -5345,7 +5141,7 @@ Provides an abstract implementation of the APSMessageService interface.
 
 
 
-__protected void sendToListeners(JSONObject message)__
+__protected void sendToListeners(byte[] message)__
 
 Sends a message to the registered listeners.
 
@@ -5715,8 +5511,6 @@ The following third party products are using this license:
 * [vaadin-themes-7.1.14](http://vaadin.com)
 
 * [groovy-all-2.4.3](http://groovy.codehaus.org/)
-
-* [bigqueue-0.7.0](https://github.com/bulldog2011/bigqueue)
 
 * [openjpa-all-2.2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
 

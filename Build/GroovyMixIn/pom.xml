@@ -49,7 +49,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <groovy.version>2.4.3</groovy.version>
+        <groovy.version>2.4.5</groovy.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 

@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
  *         2014-08-13: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.api.core.config.model.admin;
 
@@ -44,7 +44,7 @@ public interface APSConfigReference {
     /**
      * Returns true if this reference is empty.
      */
-    public boolean isEmpty();
+    boolean isEmpty();
 
     /**
      * Creates a new reference with an APSConfig*EditModel representing a single value added to the
@@ -57,7 +57,7 @@ public interface APSConfigReference {
      * @return A reference to a specific configuration value. Thereby the last cvem should always
      * be an APSConfigValueEditModel.
      */
-    public APSConfigReference _(APSConfigValueEditModel cvem);
+    APSConfigReference __(APSConfigValueEditModel cvem);
 
     /**
      * Creates a new reference with an APSConfig*EditModel representing a single value added to the
@@ -73,7 +73,7 @@ public interface APSConfigReference {
      * @return A reference to a specific configuration value. Thereby the last cvem should always
      * be an APSConfigValueEditModel.
      */
-    public APSConfigReference _(APSConfigValueEditModel cvem, int index);
+    APSConfigReference __(APSConfigValueEditModel cvem, int index);
 
     /**
      * Returns a new reference with the specified index.
@@ -88,7 +88,7 @@ public interface APSConfigReference {
      *
      * @param index The index to get new reference for.
      */
-    public APSConfigReference _(int index);
+    APSConfigReference __(int index);
 
     /**
      * Returns a new reference also pointing out the specified configuration environment for the
@@ -103,7 +103,7 @@ public interface APSConfigReference {
      *
      * @param configEnvironment The configuration environment to provide.
      */
-    public APSConfigReference _(APSConfigEnvironment configEnvironment);
+    APSConfigReference __(APSConfigEnvironment configEnvironment);
 
     /**
      * Returns a new reference also pointing out the specified configuration environment for the
@@ -116,7 +116,7 @@ public interface APSConfigReference {
      *
      * @param configEnvironment The configuration environment to provide.
      */
-    public APSConfigReference configEnvironment(APSConfigEnvironment configEnvironment);
+    APSConfigReference configEnvironment(APSConfigEnvironment configEnvironment);
 
     /**
      * Creates a new reference with an APSConfig*EditModel representing a single value added to the
@@ -127,7 +127,7 @@ public interface APSConfigReference {
      * @return A reference to a specific configuration value. Thereby the last cvem should always
      * be an APSConfigValueEditModel.
      */
-    public APSConfigReference editModel(APSConfigValueEditModel cvem);
+    APSConfigReference editModel(APSConfigValueEditModel cvem);
 
     /**
      * Creates a new reference with an APSConfig*EditModel representing a single value added to the
@@ -141,7 +141,7 @@ public interface APSConfigReference {
      * @return A reference to a specific configuration value. Thereby the last cvem should always
      * be an APSConfigValueEditModel.
      */
-    public APSConfigReference editModel(APSConfigValueEditModel cvem, int index);
+    APSConfigReference editModel(APSConfigValueEditModel cvem, int index);
 
     /**
      * Returns a new reference with the specified index.
@@ -154,7 +154,7 @@ public interface APSConfigReference {
      *
      * @param index The index to get reference for.
      */
-    public APSConfigReference index(int index);
+    APSConfigReference index(int index);
 
     /**
      * Returns the last APSConfigValueEditModel in the chain, which should be the one that points to
@@ -172,23 +172,23 @@ public interface APSConfigReference {
      *     String ce1DefaultValue = myRef._(configEnv1).getDefaultValue();
      *     String ce2DefaultValue = myRef._(configEnv2).getDefaultValue();
      */
-    public String getDefaultValue();
+    String getDefaultValue();
 
     /**
      * Returns the previously provided configuration environment. If you have added new edit models
      * after providing a configuration model then this will return null! Configuration environments
      * should only be provided in the end when referencing values.
      */
-    public APSConfigEnvironment getConfigEnvironment();
+    APSConfigEnvironment getConfigEnvironment();
 
     /**
      * Returns the index of the tip of the reference.
      */
-    public int getIndex();
+    int getIndex();
 
     /**
      * Returns a copy of this instance.
      */
-    public APSConfigReference copy();
+    APSConfigReference copy();
 
 }

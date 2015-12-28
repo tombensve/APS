@@ -47,6 +47,7 @@ import se.natusoft.osgi.aps.tools.APSLogger;
 import static se.natusoft.osgi.aps.core.config.model.StaticUtils.*;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Iterator;
 
 /**
@@ -140,16 +141,16 @@ public class APSConfigListImpl<APSConfigSubclass extends APSConfig> implements A
         APSConfigSubclass inst = acem.getInstance();
 
         for (Field f : inst.getClass().getDeclaredFields()) {
-            f.setAccessible(true);
-            try {
-                Object fieldInst = f.get(inst);
-                if (fieldInst instanceof APSConfigRefConsumer) {
-                    APSConfigRefConsumer crc = (APSConfigRefConsumer)fieldInst;
-                    crc.setConfigReference(gref.copy());
+            if (Modifier.isPublic(f.getModifiers())) {
+                try {
+                    Object fieldInst = f.get(inst);
+                    if (fieldInst instanceof APSConfigRefConsumer) {
+                        APSConfigRefConsumer crc = (APSConfigRefConsumer) fieldInst;
+                        crc.setConfigReference(gref.copy());
+                    }
+                } catch (IllegalAccessException iae) {
+                    this.logger.error("Problem accessing field: " + iae.getMessage(), iae);
                 }
-            }
-            catch (IllegalAccessException iae) {
-                this.logger.error("Problem accessing field: " + iae.getMessage(), iae);
             }
         }
 

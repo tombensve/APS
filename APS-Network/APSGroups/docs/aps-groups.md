@@ -117,9 +117,7 @@ The library wants an implementation of the APSGroupsConfig interface as its firs
 
 ## APIs
 
-public _interface_ __APSGroupsInfoService__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
-This service provides information about current groups and members.
 
 __List<String> getGroupNames()__
 
@@ -143,9 +141,7 @@ Returns a list of "groupName : groupMember" for all groups and members.
 
     
 
-public _interface_ __APSGroupsService__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
-A service that lets clients send data reliable to all members of a group on any host. There is no limit on the size of the data sent, but that said I wouldn't send MB:s of data!
 
 __GroupMember joinGroup(String name) throws IOException__
 
@@ -199,9 +195,7 @@ _Throws_
 
     
 
-public _interface_ __GroupMember__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
-This is the API for _APSGroupsService_ members received when they join a group. It is used to send and receive data messages to/from the group.
 
 __void addMessageListener(MessageListener listener)__
 
@@ -293,9 +287,7 @@ _Parameters_
 
     
 
-public _interface_ __Message__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
-This represents a complete messaging containing any data you want to send to the group. You provide the messaging with data using the _OutputStream_, and read messaging data using the _InputStream_.
 
 __OutputStream getOutputStream()__
 
@@ -327,9 +319,7 @@ _Returns_
 
     
 
-public _interface_ __MessageListener__   [se.natusoft.osgi.aps.api.net.groups.service] {
 
-For listening on messages from the group.
 
 __public void messageReceived(Message message)__
 
@@ -345,9 +335,7 @@ _Parameters_
 
     
 
-public _interface_ __NetTime__ extends  Serializable    [se.natusoft.osgi.aps.api.net.groups.service] {
 
-This represents a common network time between members for handling date and time data. The net time is synchronized between all members. Each receiver of net time diffs it with local time and stores the diff so that they can convert to/from local/net time.
 
 __public long getNetTime()__
 
@@ -384,6 +372,14 @@ Converts the net time to local time and returns as a Calendar.
 _Parameters_
 
 > _locale_ - The locale to use. 
+
+}
+
+----
+
+    
+
+
 
 }
 

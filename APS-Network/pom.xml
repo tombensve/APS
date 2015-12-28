@@ -51,16 +51,22 @@
 
     <name>APS Network</name>
 
+    <properties>
+        <!--
+            Override of aps root dir. Note: this is for submodules!
+        -->
+        <aps.root.dir>${basedir}/../..</aps.root.dir>
+    </properties>
+
     <modules>
         <module>APSExternalProtocolExtender</module>
         <module>APSExtProtocolHTTPTransportProvider</module>
-        <module>APSDiscoveryServiceProvider</module>
         <module>APSStreamedJSONRPCProtocolProvider</module>
         <module>APSGroups</module>
         <module>APSNetTimeServiceProvider</module>
         <module>APSRabbitMQMessageServiceProvider</module>
-        <module>APSTCPClusterServiceProvider</module>
         <module>APSTCPIPServiceProvider</module>
+        <module>APSDefaultDiscoveryServiceProvider</module>
     </modules>
 
 </project>

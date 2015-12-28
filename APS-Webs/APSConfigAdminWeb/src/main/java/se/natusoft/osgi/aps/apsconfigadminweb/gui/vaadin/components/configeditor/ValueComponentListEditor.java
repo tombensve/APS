@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Configuration Admin Web
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Edits configurations registered with the APSConfigurationService.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy.svensson@biltmore.se)
  *         Changes:
  *         2012-04-23: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor;
 
@@ -43,7 +43,6 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.apsconfigadminweb.config.CAWConfig;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.event.ValueChangedEvent;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.event.ValueChangedListener;
@@ -244,7 +243,7 @@ public class ValueComponentListEditor extends VerticalLayout {
             this.values.removeAllItems();
             this.valueIndexMap.clear();
             for (int i = 0; i < size; i++) {
-                String value = this.dataSource.getValue(this.valueRef._(i));
+                String value = this.dataSource.getValue(this.valueRef.__(i));
                 this.valueIndexMap.put(value, i);
                 this.valueByIndex[i] = value;
                 this.values.addItem(value);
@@ -311,7 +310,7 @@ public class ValueComponentListEditor extends VerticalLayout {
     private void updateValue(String value) {
         if (this.selectedIndex != null) {
             if (value != null) {
-                this.dataSource.updateValue(this.valueRef._(this.selectedIndex), value);
+                this.dataSource.updateValue(this.valueRef.__(this.selectedIndex), value);
             }
         }
         else {
@@ -346,7 +345,7 @@ public class ValueComponentListEditor extends VerticalLayout {
         int size = this.dataSource.getSize(this.valueRef);
         int index = this.selectedIndex;
 
-        this.dataSource.removeValue(this.valueRef._(index));
+        this.dataSource.removeValue(this.valueRef.__(index));
 
         if (index == 0) {
             if (size == 1) {

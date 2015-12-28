@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Configuration Admin Web
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Edits configurations registered with the APSConfigurationService.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy.svensson@biltmore.se)
  *         Changes:
  *         2012-04-17: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor;
 
@@ -350,10 +350,10 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
             selectedID = null;
             int size = this.dataSource.getInstanceCount(currentRef);
             for (int i = 0; i < size; i++) {
-                NodeData instanceNodeData = new NodeData(currentRef._(i), true);
+                NodeData instanceNodeData = new NodeData(currentRef.__(i), true);
 
                 instanceId = hmodel.addItem(currNodeId, instanceNodeData, name + " : " + i);
-                selectedID = buildChildren(selectedID, hmodel, currentRef._(i), instanceId);
+                selectedID = buildChildren(selectedID, hmodel, currentRef.__(i), instanceId);
 
                 // If this is the selected node model and this is the selected index of that model then set the selectedID to this id
                 // so that the tree node can be selected using this id. If we don't select it again after reloading a new built model
@@ -391,7 +391,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
 
         for (APSConfigValueEditModel valueEditModel : currentNode.getValues()) {
             if (valueEditModel instanceof APSConfigEditModel) { // We are only interested in nodes, not values.
-                APSConfigReference childRef = currentRef._(valueEditModel);
+                APSConfigReference childRef = currentRef.__(valueEditModel);
                 selectedID = buildHierarchicalModel(hmodel, currNodeId, childRef, selectedID);
             }
         }
@@ -564,7 +564,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
          */
         public void setIndex(int index) {
             if (this.configRef != null && hasMany()) {
-                this.configRef = this.configRef._(index);
+                this.configRef = this.configRef.__(index);
             }
         }
 

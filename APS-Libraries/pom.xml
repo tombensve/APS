@@ -51,6 +51,13 @@
 
     <name>APS Libraries</name>
 
+    <properties>
+        <!--
+            Override of aps root dir. Note: this is for submodules!
+        -->
+        <aps.root.dir>${basedir}/../..</aps.root.dir>
+    </properties>
+
     <modules>
         <module>APSToolsLib</module>
         <module>APSJSONLib</module>

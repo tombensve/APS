@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Configuration Admin Web
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Edits configurations registered with the APSConfigurationService.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2012-03-07: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components;
 
@@ -135,7 +135,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
 
         setupGUI();
     }
-    
+
     //
     // Public Methods
     //
@@ -365,7 +365,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
         APSConfigEditModel selectedNode = this.currentConfigNode.getCurrentNode();
         if (selectedNode.isMany()) {
             this.editedConfigAdmin.addConfigList(
-                    this.currentConfigNode.getCurrentConfigReference()._(this.editForConfigEnvSelect.getSelectedConfigEnvironment())
+                    this.currentConfigNode.getCurrentConfigReference().__(this.editForConfigEnvSelect.getSelectedConfigEnvironment())
             );
             this.nodeSelector.refreshData();
         }
@@ -385,11 +385,11 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
         int removeIndex = selectedRef.getIndex();
 
         if (selectedNode.isMany() && removeIndex >= 0 && this.editedConfigAdmin.getListSize(selectedRef) > 0) {
-            this.editedConfigAdmin.removeConfigList(selectedRef._(confEnv));
+            this.editedConfigAdmin.removeConfigList(selectedRef.__(confEnv));
 
             // If we removed the last index, then set the new index to the new last index,
             // or no index if empty.
-            int size = this.editedConfigAdmin.getListSize(selectedRef._(confEnv));
+            int size = this.editedConfigAdmin.getListSize(selectedRef.__(confEnv));
             if (removeIndex >= size) {
                 // If removeIndex is 0 and size is 0 (which is the requirement for getting here) then (removeIndex - 1) will be -1,
                 // which is OK since an empty list have no indexes.
@@ -498,7 +498,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
          */
         @Override
         public int getSize(APSConfigReference valueRef) {
-            return ConfigEditor.this.editedConfigAdmin.getListSize(valueRef._(getCurrentConfigEnvironment()));
+            return ConfigEditor.this.editedConfigAdmin.getListSize(valueRef.__(getCurrentConfigEnvironment()));
         }
 
         /**
@@ -508,7 +508,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
          */
         @Override
         public String getValue(APSConfigReference valueRef) {
-            return ConfigEditor.this.editedConfigAdmin.getConfigValue(valueRef._(getCurrentConfigEnvironment()));
+            return ConfigEditor.this.editedConfigAdmin.getConfigValue(valueRef.__(getCurrentConfigEnvironment()));
         }
 
         /**
@@ -519,7 +519,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
          */
         @Override
         public void addValue(APSConfigReference valueRef, String value) {
-            ConfigEditor.this.editedConfigAdmin.addConfigValue(valueRef._(getCurrentConfigEnvironment()), value);
+            ConfigEditor.this.editedConfigAdmin.addConfigValue(valueRef.__(getCurrentConfigEnvironment()), value);
         }
 
         /**
@@ -529,7 +529,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
          */
         @Override
         public void removeValue(APSConfigReference valueRef) {
-            ConfigEditor.this.editedConfigAdmin.removeConfigValue(valueRef._(getCurrentConfigEnvironment()));
+            ConfigEditor.this.editedConfigAdmin.removeConfigValue(valueRef.__(getCurrentConfigEnvironment()));
         }
 
         /**
@@ -540,7 +540,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
          */
         @Override
         public void updateValue(APSConfigReference valueRef, String value) {
-            ConfigEditor.this.editedConfigAdmin.setConfigValue(valueRef._(getCurrentConfigEnvironment()), value);
+            ConfigEditor.this.editedConfigAdmin.setConfigValue(valueRef.__(getCurrentConfigEnvironment()), value);
         }
     };
 
@@ -561,7 +561,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
         @Override
         public int getInstanceCount(APSConfigReference configRef) {
             return ConfigEditor.this.editedConfigAdmin.getListSize(
-                    configRef._(ConfigEditor.this.editForConfigEnvSelect.getSelectedConfigEnvironment())
+                    configRef.__(ConfigEditor.this.editForConfigEnvSelect.getSelectedConfigEnvironment())
             );
         }
     };

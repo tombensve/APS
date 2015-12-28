@@ -50,6 +50,11 @@
 
     <properties>
         <doc.title>Application Platform Services</doc.title>
+
+        <!--
+            Override of aps root dir. Note: this is for submodules!
+        -->
+        <aps.root.dir>${basedir}/..</aps.root.dir>
     </properties>
 
     <build>

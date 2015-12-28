@@ -30,7 +30,7 @@
             
     </p>
     <p>
-      <strong>void clusterUpdated(String key, JSONValue value)</strong>      
+      <strong>void clusterUpdated(String key, APSBox value)</strong>      
     </p>
     <p>
       Receives an updated value.      
@@ -49,7 +49,7 @@
       </p>
     </blockquote>
     <p>
-      <strong>void update(String key, JSONValue value)</strong>      
+      <strong>void update(String key, APSBox value)</strong>      
     </p>
     <p>
       Updates a keyed value to the cluster.      
@@ -96,7 +96,7 @@
       </p>
     </blockquote>
     <p>
-      <strong>JSONObject getNamedObject(String name)</strong>      
+      <strong>APSBox getNamedObject(String name)</strong>      
     </p>
     <p>
       Gets named cluster-wide object. If it does not exist it will be created.      
@@ -110,15 +110,7 @@
       </p>
     </blockquote>
     <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>UnsupportedOperationException</em> - if this feature is not supported.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>List&lt;JSONValue&gt; getNamedList(String name)</strong>      
+      <strong>List&lt;APSBox&gt; getNamedList(String name)</strong>      
     </p>
     <p>
       Gets a cluster-wide named list. If it does not exist it will be created.      
@@ -132,11 +124,42 @@
       </p>
     </blockquote>
     <p>
-      <em>Throws</em>      
+      <strong>Map&lt;String, APSBox&gt; getNamedMap(String name)</strong>      
+    </p>
+    <p>
+      Gets a cluster-wide named Map. If it does not exist, it will be created.      
+    </p>
+    <p>
+      Do note that this is mostly a convenience. Implementations can (and most will) use the name as a prefix to the map key and then call getNamedObject(expandedKey).      
+    </p>
+    <p>
+      <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>UnsupportedOperationException</em> - if this feature is not supported.         
+        <em>name</em> - The name of the map to get.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void withLock(String nameToLock, Future future)</strong>      
+    </p>
+    <p>
+      Locks a specific entry in the cluster or all entries starting with the specified 'nameToLock'. When a lock is acquired the future is executed and when done the lock is released.      
+    </p>
+    <p>
+      Any other client who tries to update the locked name(s) during the lock period without acquiring their own lock will get an exception.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>nameToLock</em> - The name of the value(s) to lock.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>future</em> - A Future to execute when the lock is acquired.         
       </p>
     </blockquote>
     <p>
@@ -155,7 +178,7 @@
             
     </p>
     <p>
-      <strong>protected void updateListeners(String key, JSONValue value)</strong>      
+      <strong>protected void updateListeners(String key, APSBox value)</strong>      
     </p>
     <p>
       Updates all listeners.      
@@ -186,13 +209,39 @@
                 
     </p>
     <p>
+      public <em>interface</em> <strong>APSMessageListener </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
+    </p>
+    <p>
+      Listener for APSMessage.      
+    </p>
+    <p>
+      <strong>void messageReceived(byte[] message)</strong>      
+    </p>
+    <p>
+      This is called when a message is received.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>message</em> - The received message.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
       public <em>interface</em> <strong>APSMessageService </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
     </p>
     <p>
       This defines a simple message service. Can be implemented by using a message bus like RabbitMQ, Active MQ, etc or just a simple tcpip server or whatever.      
     </p>
     <p>
-      Since the actual members are outside of this service API, it doesn't really know who they are and doesn't care, all members are defined by configuration to make a cluster of members.      
+      Since the actual members are outside of this service API, it doesn't really know who they are and doesn't care, all members are defined by configuration.      
     </p>
     <p>
             
@@ -229,7 +278,7 @@
       </p>
     </blockquote>
     <p>
-      <strong>void sendMessage(JSONObject message) throws APSMessagingException</strong>      
+      <strong>void sendMessage(byte[] message) throws APSMessagingException</strong>      
     </p>
     <p>
       Sends a message.      
@@ -247,24 +296,7 @@
     </p>
     <blockquote>
       <p>
-        <em>se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException</em> - on failure.         
-      </p>
-    </blockquote>
-    <p>
-            
-    </p>
-    <p>
-      <strong>void messageReceived(JSONObject message)</strong>      
-    </p>
-    <p>
-      This is called when a message is received.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>message</em> - The received message.         
+        <em>APSMessagingException</em> - on failure.         
       </p>
     </blockquote>
     <p>
@@ -283,7 +315,7 @@
             
     </p>
     <p>
-      <strong>protected void sendToListeners(JSONObject message)</strong>      
+      <strong>protected void sendToListeners(byte[] message)</strong>      
     </p>
     <p>
       Sends a message to the registered listeners.      

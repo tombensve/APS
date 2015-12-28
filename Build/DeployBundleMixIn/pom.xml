@@ -65,7 +65,7 @@
                         <phase>install</phase>
                         <configuration>
                             <sourceFile>${project.build.directory}/${project.build.finalName}.jar</sourceFile>
-                            <destFile>${server.deploy.dir}/${project.build.finalName}.jar</destFile>
+                            <destFile>${aps.root.dir}/vagrant/deploy/${project.build.finalName}.jar</destFile>
                         </configuration>
                     </execution>
                 </executions>

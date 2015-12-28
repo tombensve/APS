@@ -157,10 +157,7 @@
     </p>
     <H2>APIs</H2>
     <p>
-      public <em>interface</em> <strong>APSGroupsInfoService </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
-    </p>
-    <p>
-      This service provides information about current groups and members.      
+            
     </p>
     <p>
       <strong>List&lt;String&gt; getGroupNames()</strong>      
@@ -195,10 +192,7 @@
                 
     </p>
     <p>
-      public <em>interface</em> <strong>APSGroupsService </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
-    </p>
-    <p>
-      A service that lets clients send data reliable to all members of a group on any host. There is no limit on the size of the data sent, but that said I wouldn't send MB:s of data!      
+            
     </p>
     <p>
       <strong>GroupMember joinGroup(String name) throws IOException</strong>      
@@ -294,10 +288,7 @@
                 
     </p>
     <p>
-      public <em>interface</em> <strong>GroupMember </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
-    </p>
-    <p>
-      This is the API for <em>APSGroupsService</em> members received when they join a group. It is used to send and receive data messages to/from the group.      
+            
     </p>
     <p>
       <strong>void addMessageListener(MessageListener listener)</strong>      
@@ -452,10 +443,7 @@
                 
     </p>
     <p>
-      public <em>interface</em> <strong>Message </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
-    </p>
-    <p>
-      This represents a complete messaging containing any data you want to send to the group. You provide the messaging with data using the <em>OutputStream</em>, and read messaging data using the <em>InputStream</em>.      
+            
     </p>
     <p>
       <strong>OutputStream getOutputStream()</strong>      
@@ -504,10 +492,7 @@
                 
     </p>
     <p>
-      public <em>interface</em> <strong>MessageListener </strong>   [se.natusoft.osgi.aps.api.net.groups.service] {      
-    </p>
-    <p>
-      For listening on messages from the group.      
+            
     </p>
     <p>
       <strong>public void messageReceived(Message message)</strong>      
@@ -530,10 +515,7 @@
                 
     </p>
     <p>
-      public <em>interface</em> <strong>NetTime </strong> extends  Serializable    [se.natusoft.osgi.aps.api.net.groups.service] {      
-    </p>
-    <p>
-      This represents a common network time between members for handling date and time data. The net time is synchronized between all members. Each receiver of net time diffs it with local time and stores the diff so that they can convert to/from local/net time.      
+            
     </p>
     <p>
       <strong>public long getNetTime()</strong>      
@@ -593,6 +575,15 @@
         <em>locale</em> - The locale to use.         
       </p>
     </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+            
+    </p>
     <p>
       }      
     </p>
