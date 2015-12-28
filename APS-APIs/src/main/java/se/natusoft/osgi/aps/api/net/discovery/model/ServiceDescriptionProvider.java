@@ -1,43 +1,45 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2011-10-16: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.api.net.discovery.model;
 
+import java.time.LocalDateTime;
+
 /**
- * Describes a service.
+ * A default implementation of ServiceProvider.
  */
 public class ServiceDescriptionProvider implements ServiceDescription {
     //
@@ -56,20 +58,41 @@ public class ServiceDescriptionProvider implements ServiceDescription {
     /** The targetHost of the service. */
     private String serviceHost = "";
 
-    /** The targetPort of the service.*/
+    /** The targetPort of the service. */
     private int servicePort = 0;
+
+    /** The protocol of the service. */
+    private Protocol protocol = Protocol.TCP;
 
     /** An optional URL to the service. */
     private String serviceURL = "";
+
+    /** Last updated. */
+    private LocalDateTime lastUpdated = LocalDateTime.now();
 
     //
     // Constructors
     //
 
     /**
-     * Creates a new ServiceDescirption.
+     * Creates a new ServiceDescription.
      */
     public ServiceDescriptionProvider() {}
+
+    /**
+     * This is copy constructor that copies from the API, not necessarily another instance of this class!
+     *
+     * @param serviceDescription The ServiceDescription to copy from.
+     */
+    public ServiceDescriptionProvider(ServiceDescription serviceDescription) {
+        this.description = serviceDescription.getDescription();
+        this.serviceId = serviceDescription.getServiceId();
+        this.version = serviceDescription.getVersion();
+        this.serviceHost = serviceDescription.getServiceHost();
+        this.protocol = serviceDescription.getServiceProtocol();
+        this.serviceURL = serviceDescription.getServiceURL();
+        this.lastUpdated = serviceDescription.getLastUpdated();
+    }
 
     //
     // Methods
@@ -79,17 +102,21 @@ public class ServiceDescriptionProvider implements ServiceDescription {
      * Returns a string representation of this object.
      */
     public String toString() {
-        return "    description:         '" + this.description + "'\n" +
-               "    serviceId:           '" + this.serviceId + "'\n" +
-               "    version:             '" + this.version + "'\n" +
-               "    serviceHost:         '" + this.serviceHost + "'\n" +
-               "    servicePort:         '" + this.servicePort + "'\n" +
-               "    serviceURL:          '" + this.serviceURL + "'\n";
+        return "{ " +
+               "description:         '" + this.description +
+               ", serviceId:           '" + this.serviceId +
+               ", version:             '" + this.version +
+               ", serviceHost:         '" + this.serviceHost +
+               ", servicePort:         '" + this.servicePort +
+               ", protocol:            '" + this.protocol +
+               ", serviceURL:          '" + this.serviceURL +
+               " }";
     }
 
     /**
      * A short description of the service.
      */
+    @Override
     public String getDescription() {
         return description;
     }
@@ -172,6 +199,23 @@ public class ServiceDescriptionProvider implements ServiceDescription {
     }
 
     /**
+     * The protocol of the service.
+     */
+    @Override
+    public Protocol getServiceProtocol() {
+        return this.protocol;
+    }
+
+    /**
+     * Sets the protocol used by the service.
+     *
+     * @param protocol The protocol to set.
+     */
+    public void setServiceProtocol(Protocol protocol) {
+        this.protocol = protocol;
+    }
+
+    /**
      * An optional URL to the service.
      */
     @Override
@@ -190,6 +234,23 @@ public class ServiceDescriptionProvider implements ServiceDescription {
     }
 
     /**
+     * Returns the date of last update.
+     */
+    @Override
+    public LocalDateTime getLastUpdated() {
+        return this.lastUpdated;
+    }
+
+    /**
+     * Sets a new last update time.
+     *
+     * @param lastUpdated The new time to set.
+     */
+    public void setLastUpdated(LocalDateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
+    /**
      * @return The hash code of this ServiceDescriptionProvider.
      */
     @Override
@@ -198,6 +259,7 @@ public class ServiceDescriptionProvider implements ServiceDescription {
         result = 31 * result + (this.version != null ? this.version.hashCode() : 0);
         result = 31 * result + (this.serviceHost != null ? this.serviceHost.hashCode() : 0);
         result = 31 * result + this.servicePort;
+        result = 31 * result + (this.protocol != null ? this.protocol.hashCode() : 0);
         result = 31 * result + (this.serviceURL != null ? this.serviceURL.hashCode() : 0);
         return result;
     }
@@ -218,9 +280,9 @@ public class ServiceDescriptionProvider implements ServiceDescription {
         if (this.serviceHost != null ? !this.serviceHost.equals(that.serviceHost) : that.serviceHost != null) return false;
         if (this.serviceId != null ? !this.serviceId.equals(that.serviceId) : that.serviceId != null) return false;
         if (this.version != null ? !this.version.equals(that.version) : that.version != null) return false;
+        if (this.protocol != null ? !this.protocol.equals(that.protocol) : that.protocol != null) return false;
         if (this.serviceURL != null ? !this.serviceURL.equals(that.serviceURL) : that.serviceURL != null) return false;
 
         return true;
     }
-
 }

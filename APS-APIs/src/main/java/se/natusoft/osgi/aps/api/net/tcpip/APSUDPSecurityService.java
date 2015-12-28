@@ -30,7 +30,7 @@ public interface APSUDPSecurityService {
      *
      * @return A secured version of the data.
      */
-    void secure(DatagramPacket data, Object securityContext);
+    DatagramPacket secure(DatagramPacket data, Object securityContext);
 
     /**
      * Unsecures the passed data and returns the unsecure version of it.
@@ -40,5 +40,5 @@ public interface APSUDPSecurityService {
      *
      * @return An unsecured version of the data.
      */
-    void unsecure(DatagramPacket data, Object securityContext);
+    DatagramPacket unsecure(DatagramPacket data, Object securityContext);
 }

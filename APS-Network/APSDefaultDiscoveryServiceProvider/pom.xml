@@ -1,39 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    
-    PROJECT
-        Name
-            APS Discovery Service Provider
-        
-        Code Version
-            1.0.0
-        
-        Description
-            This is a simple discovery service to discover other services on the network.
-        
-    COPYRIGHTS
-        Copyright (C) 2012 by Natusoft AB All rights reserved.
-        
-    LICENSE
-        Apache 2.0 (Open Source)
-        
-        Licensed under the Apache License, Version 2.0 (the "License");
-        you may not use this file except in compliance with the License.
-        You may obtain a copy of the License at
-        
-          http://www.apache.org/licenses/LICENSE-2.0
-        
-        Unless required by applicable law or agreed to in writing, software
-        distributed under the License is distributed on an "AS IS" BASIS,
-        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-        See the License for the specific language governing permissions and
-        limitations under the License.
-        
-    AUTHORS
-        Tommy Svensson (tommy@natusoft.se)
-            Changes:
-            2013-02-03: Created!
-            
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -42,34 +9,30 @@
         <artifactId>APS-Network</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
         <version>1.0.0</version>
-        <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>aps-discovery-service-provider</artifactId>
+    <artifactId>aps-default-discovery-service-provider</artifactId>
     <packaging>bundle</packaging>
 
-    <name>APS Discovery Service Provider</name>
+    <name>APS Default Discovery Service Provider</name>
 
     <description>
-        This is a simple discovery service to discover other services on the network.
     </description>
 
     <properties>
-        <!-- 
-            Bundle properties 
+        <!--
+            Bundle properties
         -->
 
-        <!-- The symbolic name of the bundle. Defaults to the artifact id, but can be overriden. -->
+        <!-- The symbolic name of the bundle. Defaults to the artifact id, but can be overridden. -->
         <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
 
         <!-- The bundle activator class -->
-        <osgi.bundle.activator>se.natusoft.osgi.aps.discovery.APSDiscoveryActivator</osgi.bundle.activator>
-
-        <aps.config.classes>se.natusoft.osgi.aps.discovery.config.APSDiscoveryServiceConfig</aps.config.classes>
+        <osgi.bundle.activator>se.natusoft.osgi.aps.tools.APSActivator</osgi.bundle.activator>
 
         <!-- The bundle packages to export. -->
         <osgi.export.package>
-            se.natusoft.osgi.aps.discovery.config
+            se.natusoft.osgi.aps.discoveryservice.config
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->
@@ -77,11 +40,7 @@
 
         <!-- The private packages. -->
         <osgi.private.package>
-            se.natusoft.osgi.aps.discovery,
-            se.natusoft.osgi.aps.discovery.model,
-            se.natusoft.osgi.aps.discovery.service,
-            se.natusoft.osgi.aps.discovery.service.protocol,
-            se.natusoft.osgi.aps.discovery.service.provider
+            se.natusoft.osgi.aps.discoveryservice
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->
@@ -93,18 +52,22 @@
         </osgi.include.resource>
 
         <!-- The default for embedding dependencies in bundle. -->
-        <osgi.embed.dependency>*;scope=compile</osgi.embed.dependency>
+        <osgi.embed.dependency>*;scope=system</osgi.embed.dependency>
 
-        <!-- The directory whose content should be embeded into the bundle jar. -->
+        <!-- The directory whose content should be embedded into the bundle jar. -->
         <osgi.embed.directory>lib</osgi.embed.directory>
 
         <!--
-             Trigger tiles.
-         -->
-        <tile.deploy>${project.groupId}:DeployBundleTile:${project.version}</tile.deploy>
+            APS properties.
+        -->
+
+        <!-- We register our configuration for auto registration and management. -->
+        <aps.config.classes>
+            se.natusoft.osgi.aps.discoveryservice.config.DiscoveryConfig
+        </aps.config.classes>
 
         <!--
-            Misc properties
+            Other properties
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -126,10 +89,44 @@
             <scope>provided</scope>
         </dependency>
 
+        <!--
+            APSDefaultDiscoveryServiceProvider dependencies
+        -->
+
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>${groovyVersion}</version>
+            <scope>provided</scope>
+            <classifier>indy</classifier>
+        </dependency>
+
     </dependencies>
 
     <build>
         <plugins>
+
+            <!--
+                Mixins
+            -->
+            <plugin>
+                <groupId>com.github.odavid.maven.plugins</groupId>
+                <artifactId>mixin-maven-plugin</artifactId>
+                <configuration>
+                    <mixins>
+                        <mixin>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>groovy-mixin</artifactId>
+                            <version>${project.version}</version>
+                        </mixin>
+                        <mixin>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>deploy-bundle-mixin</artifactId>
+                            <version>${project.version}</version>
+                        </mixin>
+                    </mixins>
+                </configuration>
+            </plugin>
 
             <!--
                 Force the jar plugin to use the maven-bundle-plugin generated manifest.
@@ -167,6 +164,7 @@
                     </supportedProjectTypes>
                     <archive>
                         <manifestEntries>
+                            <APS-Configs>${aps.config.classes}</APS-Configs>
                             <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
                         </manifestEntries>
                     </archive>
