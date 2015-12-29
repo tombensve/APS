@@ -37,10 +37,9 @@
 package se.natusoft.osgi.aps.api.net.messaging.service;
 
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException;
+import se.natusoft.osgi.aps.api.net.util.TypedData;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * This defines a simple message service. Can be implemented by using a message bus like RabbitMQ, Active MQ, etc
@@ -49,7 +48,7 @@ import java.util.List;
  * Since the actual members are outside of this service API, it doesn't really know who they are and doesn't
  * care, all members are defined by configuration.
  */
-public interface APSMessageService {
+public interface APSSimpleMessageService {
 
     /**
      * Multiple providers of this service can be deployed at the same time. Using this property
@@ -58,33 +57,44 @@ public interface APSMessageService {
     String APS_MESSAGE_SERVICE_PROVIDER = "aps-message-service-provider";
 
     /**
-     * Each configured instance of this service should have this property with a unique
-     * instance name so that client can lookup a specific instance of the service.
+     * Listener for message.
      */
-    String APS_MESSAGE_SERVICE_INSTANCE_NAME = "aps-message-service-instance-name";
+    interface MessageListener {
+
+        /**
+         * This is called when a message is received.
+         *
+         * @param topic The topic the message belongs to.
+         * @param message The received message.
+         */
+        void messageReceived(String topic, TypedData message);
+    }
 
     /**
      * Adds a listener for types.
      *
+     * @param topic The topic to listen to.
      * @param listener The listener to add.
      */
-    void addMessageListener(APSMessageListener listener);
+    void addMessageListener(String topic, MessageListener listener);
 
     /**
      * Removes a messaging listener.
      *
+     * @param topic The topic to stop listening to.
      * @param listener The listener to remove.
      */
-    void removeMessageListener(APSMessageListener listener);
+    void removeMessageListener(String topic, MessageListener listener);
 
     /**
      * Sends a message.
      *
+     * @param topic The topic of the message.
      * @param message The message to send.
      *
      * @throws APSMessagingException on failure.
      */
-    void sendMessage(byte[] message) throws APSMessagingException;
+    void sendMessage(String topic, TypedData message) throws APSMessagingException;
 
     //
     // Inner Classes
@@ -93,13 +103,13 @@ public interface APSMessageService {
     /**
      * Provides an abstract implementation of the APSMessageService interface.
      */
-    public static abstract class AbstractMessageServiceProvider implements APSMessageService {
+    abstract class AbstractMessageServiceProvider implements APSSimpleMessageService {
         //
         // Private Members
         //
 
         /** Registered listeners. */
-        private List<APSMessageListener> messageListeners = Collections.synchronizedList(new LinkedList<APSMessageListener>());
+        private Map<String, List<MessageListener>> messageListeners = Collections.synchronizedMap(new HashMap<>());
 
         //
         // Methods
@@ -108,21 +118,31 @@ public interface APSMessageService {
         /**
          * Adds a listener for types.
          *
+         * @param topic The topic to listen to.
          * @param listener The listener to add.
          */
         @Override
-        public void addMessageListener(APSMessageListener listener) {
-            this.messageListeners.add(listener);
+        public void addMessageListener(String topic, MessageListener listener) {
+            List<MessageListener> listeners = lookupMessageListeners(topic);
+            if (listeners == null) {
+                listeners = new LinkedList<>();
+                this.messageListeners.put(topic, listeners);
+            }
+            listeners.add(listener);
         }
 
         /**
          * Removes a messaging listener.
          *
+         * @param topic The topic to stop listening to.
          * @param listener The listener to remove.
          */
         @Override
-        public void removeMessageListener(APSMessageListener listener) {
-            this.messageListeners.remove(listener);
+        public void removeMessageListener(String topic, MessageListener listener) {
+            List<MessageListener> listeners = lookupMessageListeners(topic);
+            if (listeners != null) {
+                listeners.remove(listener);
+            }
         }
 
         /**
@@ -130,17 +150,20 @@ public interface APSMessageService {
          *
          * @param message The message to send.
          */
-        protected void sendToListeners(byte[] message) {
-            for (APSMessageListener messageListener : this.messageListeners) {
-                messageListener.messageReceived(message);
+        protected void sendToListeners(String topic, TypedData message) {
+            List<MessageListener> listeners = lookupMessageListeners(topic);
+            for (MessageListener messageListener : listeners) {
+                messageListener.messageReceived(topic, message);
             }
         }
 
         /**
-         * Returns the message listeners.
+         * Returns the message listeners for a topic.
+         *
+         * @param topic The topic to get listeners for.
          */
-        protected List<APSMessageListener> getMessageListeners() {
-            return this.messageListeners;
+        protected List<MessageListener> lookupMessageListeners(String topic) {
+            return this.messageListeners.get(topic);
         }
     }
 

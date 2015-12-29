@@ -6,7 +6,9 @@ import com.rabbitmq.client.QueueingConsumer
 import com.rabbitmq.client.ShutdownSignalException
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageListener
+
+import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
+import se.natusoft.osgi.aps.api.net.util.TypedData
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -32,8 +34,8 @@ public class ReceiveThread extends Thread {
     private String recvQueueName;
 
     /** The listeners to notify of received messages. */
-    private List<APSMessageListener> listeners =
-            Collections.synchronizedList(new LinkedList<APSMessageListener>())
+    private List<APSSimpleMessageService.MessageListener> listeners =
+            Collections.synchronizedList(new LinkedList<APSSimpleMessageService.MessageListener>())
 
     //
     // Properties
@@ -50,6 +52,9 @@ public class ReceiveThread extends Thread {
 
     /** The config for this receiver. */
     RabbitMQMessageServiceConfig.RMQInstance instanceConfig
+
+    /** The topic this receiver is working for. */
+    String topic;
 
     //
     // Methods
@@ -74,7 +79,7 @@ public class ReceiveThread extends Thread {
      *
      * @param listener The listener to add.
      */
-    public void addMessageListener(APSMessageListener listener) {
+    public void addMessageListener(APSSimpleMessageService.MessageListener listener) {
         this.listeners.add(listener)
     }
 
@@ -83,7 +88,7 @@ public class ReceiveThread extends Thread {
      *
      * @param listener The listener to remove.
      */
-    public void removeMessageListener(APSMessageListener listener) {
+    public void removeMessageListener(APSSimpleMessageService.MessageListener listener) {
         this.listeners.remove(listener)
     }
 
@@ -151,9 +156,10 @@ public class ReceiveThread extends Thread {
                             //logger.debug("======== Received message of length " + body.length + " ==========")
                             //logger.debug("  Current no listeners: " + this.listeners.size())
 
-                            for (APSMessageListener listener : this.listeners) {
+                            for (APSSimpleMessageService.MessageListener listener : this.listeners) {
                                 try {
-                                    listener.messageReceived(delivery.body)
+                                    TypedData td = new TypedData.Provider(delivery.body, TypedData.UNKNOWN_CONTENT_TYPE)
+                                    listener.messageReceived(this.topic, td)
                                 }
                                 catch (RuntimeException re) {
                                     this.logger.error("Failure during listener call: " + re.getMessage(), re)

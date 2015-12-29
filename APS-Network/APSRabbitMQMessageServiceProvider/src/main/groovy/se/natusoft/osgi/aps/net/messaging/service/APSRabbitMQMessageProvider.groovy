@@ -41,8 +41,8 @@ import com.rabbitmq.client.Channel
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
-import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageListener
-import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
+
+import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.ReceiveThread
@@ -60,7 +60,7 @@ import se.natusoft.osgi.aps.tools.APSLogger
  */
 @CompileStatic
 @TypeChecked
-public class APSRabbitMQMessageServiceProvider implements APSMessageService {
+public class APSRabbitMQMessageProvider {
 
     //
     // Private Members
@@ -101,7 +101,7 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
     /**
      * Creates a new APSRabbitMQClusterServiceProvider.
      */
-    public APSRabbitMQMessageServiceProvider() {
+    public APSRabbitMQMessageProvider() {
         AMQP.BasicProperties.Builder bob = new AMQP.BasicProperties.Builder()
         this.basicProperties = bob.contentType("application/octet-stream").build()
     }
@@ -156,7 +156,8 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
                     name: "cluster-receive-thread-" + getName(),
                     connectionProvider: this.connectionProvider,
                     instanceConfig: this.instanceConfig,
-                    logger: this.logger
+                    logger: this.logger,
+                    topic: getName()
             )
             this.instanceReceiveThread.start()
         }
@@ -189,7 +190,6 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
      *
      * @throws APSMessagingException on failure.
      */
-    @Override
     void sendMessage(byte[] message) throws APSMessagingException {
         String routingKey = this.instanceConfig.routingKey.string
         if (routingKey.isEmpty()) {
@@ -204,8 +204,7 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
      *
      * @param listener The listener to add.
      */
-    @Override
-    void addMessageListener(APSMessageListener listener) {
+    void addMessageListener(APSSimpleMessageService.MessageListener listener) {
         this.instanceReceiveThread.addMessageListener(listener)
     }
 
@@ -214,8 +213,7 @@ public class APSRabbitMQMessageServiceProvider implements APSMessageService {
      *
      * @param listener The listener to remove.
      */
-    @Override
-    void removeMessageListener(APSMessageListener listener) {
+    void removeMessageListener(APSSimpleMessageService.MessageListener listener) {
         this.instanceReceiveThread.removeMessageListener(listener)
     }
 }

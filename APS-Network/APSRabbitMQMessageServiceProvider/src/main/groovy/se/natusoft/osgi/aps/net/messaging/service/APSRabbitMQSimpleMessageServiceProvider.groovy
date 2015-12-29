@@ -1,38 +1,52 @@
-package se.natusoft.osgi.aps.net.messaging
+package se.natusoft.osgi.aps.net.messaging.service
 
 import com.rabbitmq.client.Connection
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.osgi.framework.BundleContext
-import org.osgi.framework.ServiceRegistration
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener
-import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService
-import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
+import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
+
+import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
+import se.natusoft.osgi.aps.api.net.util.TypedData
 import se.natusoft.osgi.aps.codedoc.Issue
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.PeskyWabbitConnectionManager
-import se.natusoft.osgi.aps.net.messaging.service.APSRabbitMQMessageServiceProvider
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStart
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
+import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
+import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
 
 /**
- * Manages starting and stopping of this bundle.
+ * Provides and manages this service.
+ *
+ * __NOTE:__ This implementation does not support "contentType"! It will ignore what is passed and always deliver "UNKNOWN".
  */
 @CompileStatic
 @TypeChecked
-class BundleManagement {
+@OSGiServiceProvider(
+        properties = @OSGiProperty(
+                // Since this class implements APSSimpleMessageService it would make sense for this constant
+                // to not require full qualification. The Groovy compiler (2.4.5) is however of a different
+                // opinion. Maybe its because this is referenced in an annotation outside of the class.
+                // IDEA however complains loudly about the full qualification here, incorrectly (well, the
+                // compiler wins this argument), saying it is "unnecessary".
+                name = APSSimpleMessageService.APS_MESSAGE_SERVICE_PROVIDER,
+                value = "aps-rabbitmq-simple-message-provider"
+        )
+)
+class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService {
 
     //
     // Private Members
     //
 
     /** Our logger. */
-    @Managed(loggingFor = "aps-rabbitmq-message-service-provider")
+    @Managed(loggingFor = "aps-rabbitmq-simple-message-service-provider")
     private APSLogger logger
 
     @Managed
@@ -45,11 +59,62 @@ class BundleManagement {
     private PeskyWabbitConnectionManager rabbitMQConnectionManager
 
     /** The defined instances. */
-    private Map<String, APSRabbitMQMessageServiceProvider> instances = new HashMap<>()
-    private Map<String, ServiceRegistration> serviceRegistrations = new HashMap<>()
+    private Map<String, APSRabbitMQMessageProvider> instances = new HashMap<>()
 
     //
-    // Methods
+    // Service Methods
+    //
+
+    /**
+     * Adds a listener for types.
+     *
+     * @param topic The topic to listen to.
+     * @param listener The listener to add.
+     */
+    @Override
+    void addMessageListener(String topic, APSSimpleMessageService.MessageListener listener) {
+        APSRabbitMQMessageProvider messageProvider = this.instances.get(topic)
+        if (messageProvider == null) {
+            throw new IllegalArgumentException("addMessageListener(): No such topic: '${topic}'!")
+        }
+        messageProvider.addMessageListener(listener)
+    }
+
+    /**
+     * Removes a messaging listener.
+     *
+     * @param topic The topic to stop listening to.
+     * @param listener The listener to remove.
+     */
+    @Override
+    void removeMessageListener(String topic, APSSimpleMessageService.MessageListener listener) {
+        APSRabbitMQMessageProvider messageProvider = this.instances.get(topic)
+        if (messageProvider == null) {
+            throw new IllegalArgumentException("removeMessageListener(): No such topic: '${topic}'!")
+        }
+        messageProvider.removeMessageListener(listener)
+    }
+
+    /**
+     * Sends a message.
+     *
+     * @param topic The topic of the message.
+     * @param message The message to send.
+     *
+     * @throws se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException on failure.
+     */
+    @Override
+    void sendMessage(String topic, TypedData message) throws APSMessagingException{
+        APSRabbitMQMessageProvider messageProvider = this.instances.get(topic)
+        if (messageProvider == null) {
+            throw new IllegalArgumentException("sendMessage(): No such topic: '${topic}'!")
+        }
+        messageProvider.sendMessage(message.content)
+    }
+
+
+    //
+    // Startup / Shutdown Methods
     //
 
     /**
@@ -74,11 +139,11 @@ class BundleManagement {
                 @Override
                 public synchronized void apsConfigChanged(APSConfigChangedEvent event) {
                     try {
-                        BundleManagement.this.rabbitMQConnectionManager.reconnect()
+                        APSRabbitMQSimpleMessageServiceProvider.this.rabbitMQConnectionManager.reconnect()
                         refreshInstances()
                     }
                     catch (IOException ioe) {
-                        BundleManagement.this.logger.error("Failed reconnecting to RabbitMQ!", ioe)
+                        APSRabbitMQSimpleMessageServiceProvider.this.logger.error("Failed reconnecting to RabbitMQ!", ioe)
                     }
                 }
             }
@@ -125,20 +190,20 @@ class BundleManagement {
     }
 
     private void stopAllInstances() {
-        this.instances.each { String name, APSRabbitMQMessageServiceProvider msp ->
+        this.instances.each { String name, APSRabbitMQMessageProvider msp ->
             stopInstance(msp)
         }
     }
 
     private void startInstance(RabbitMQMessageServiceConfig.RMQInstance instance) {
 
-        APSRabbitMQMessageServiceProvider messageService = new APSRabbitMQMessageServiceProvider(
+        APSRabbitMQMessageProvider messageService = new APSRabbitMQMessageProvider(
                 logger: this.logger,
                 name: instance.name.string,
                 connectionProvider: new ConnectionProvider() {
                     @Override
                     Connection getConnection() throws IOException {
-                        return BundleManagement.this.rabbitMQConnectionManager.connection
+                        return APSRabbitMQSimpleMessageServiceProvider.this.rabbitMQConnectionManager.connection
                     }
                 },
                 instanceConfig: instance
@@ -146,18 +211,10 @@ class BundleManagement {
         messageService.start()
 
         this.instances.put(instance.name.string, messageService);
-
-        Properties props = new Properties()
-        props.setProperty(APSMessageService.APS_MESSAGE_SERVICE_PROVIDER, "rabbitmq")
-        props.setProperty(APSMessageService.APS_MESSAGE_SERVICE_INSTANCE_NAME, instance.name.string)
-        ServiceRegistration reg = this.bundleContext.registerService(APSMessageService.class.name, messageService, props)
-        this.serviceRegistrations.put(instance.name.string, reg)
     }
 
-    private void stopInstance(APSRabbitMQMessageServiceProvider instance) {
+    private void stopInstance(APSRabbitMQMessageProvider instance) {
         try {
-            ServiceRegistration reg = this.serviceRegistrations.get(instance.name)
-            reg.unregister()
             instance.stop()
         }
         catch (IOException ioe) {
@@ -174,17 +231,18 @@ class BundleManagement {
     }
 
     private void closeRemovedInstances() {
-        this.instances.findAll { String name, APSRabbitMQMessageServiceProvider instance ->
+        this.instances.findAll { String name, APSRabbitMQMessageProvider instance ->
             !RabbitMQMessageServiceConfig.managed.get().instances.any {
                 RabbitMQMessageServiceConfig.RMQInstance instanceConfig -> instanceConfig.name.string.equals(name)
             }
-        }.each { String name, APSRabbitMQMessageServiceProvider instance -> stopInstance(instance) }
+        }.each { String name, APSRabbitMQMessageProvider instance -> stopInstance(instance) }
     }
 
     @Issue(
             target = "IntelliJ IDEA", targetVersion = "14.0.2",
             id ="IDEA-134831",
-            description = "'Object cluster ->' is incorrectly marked as an error!",
+            description =
+                    "'Object instance ->' is incorrectly marked as an error! If this is an error in IDEA or Groovy can be discussed :-)",
             url = "https://youtrack.jetbrains.com/issue/IDEA-134831"
     )
     private void startNewInstances() {
