@@ -301,6 +301,10 @@ public class APSConfigServiceActivator implements BundleActivator {
             this.configurationAdminTracker.stop(context);
 
             // Let these be garbage collected.
+            this.configAdminProvider = null;
+            this.envStore = null;
+            this.memoryStore = null;
+            this.configStore = null;
             this.configAdminService = null;
             this.configService = null;
             this.fsServiceTracker = null;
