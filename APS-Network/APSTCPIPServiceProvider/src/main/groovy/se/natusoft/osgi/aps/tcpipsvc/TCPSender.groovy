@@ -38,6 +38,7 @@ package se.natusoft.osgi.aps.tcpipsvc
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import se.natusoft.osgi.aps.api.net.tcpip.NetworkConfig
 import se.natusoft.osgi.aps.api.net.tcpip.TCPRequest
 import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -99,8 +100,8 @@ class TCPSender implements ConnectionProvider {
      * Returns the type of the connection.
      */
     @Override
-    public ConnectionProvider.Type getType() {
-        ConnectionProvider.Type.TCP
+    public NetworkConfig.Type getType() {
+        NetworkConfig.Type.TCP
     }
 
     /**

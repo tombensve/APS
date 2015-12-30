@@ -29,9 +29,6 @@ public class NamedConfig extends APSConfig {
             description = "Is this a TCP, UDP, or Multicast configuration ?",
             // https://jira.codehaus.org/browse/GROOVY-3278
             validValues = ["TCP", "UDP", "Multicast"],
-            defaultValue = @APSDefaultValue("TCP"), // Workaround for APSConfigAdminWeb showing the first of the valid values by
-                                                    // default, but not selecting it as value on save since nothing has been selected
-                                                    // by the user.
             environmentSpecific = true
     )
     public APSConfigValue type

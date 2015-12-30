@@ -39,11 +39,11 @@ package se.natusoft.osgi.aps.tcpipsvc
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.net.tcpip.APSTCPIPService
+import se.natusoft.osgi.aps.api.net.tcpip.NetworkConfig
 import se.natusoft.osgi.aps.api.net.tcpip.TCPListener
 import se.natusoft.osgi.aps.api.net.tcpip.TCPRequest
 import se.natusoft.osgi.aps.api.net.tcpip.UDPListener
 import se.natusoft.osgi.aps.tcpipsvc.ConnectionProvider.Direction
-import se.natusoft.osgi.aps.tcpipsvc.ConnectionProvider.Type
 import se.natusoft.osgi.aps.tcpipsvc.meta.APSTCPIPServiceMetaData
 import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
 import se.natusoft.osgi.aps.tcpipsvc.security.UDPSecurityHandler
@@ -112,7 +112,7 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
     void sendUDP(String name, byte[] data) throws IOException {
         this.logger.debug("sendUDP - name:${name}, data-size: ${data.length}")
         // Do note that MulticastSender extends UDPSender!
-        UDPSender sender = (UDPSender)this.configResolver.resolve(name, Direction.Write, Type.UDP)
+        UDPSender sender = (UDPSender)this.configResolver.resolve(name, Direction.Write, NetworkConfig.Type.UDP)
         sender.send(data)
     }
 
@@ -131,7 +131,7 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
     DatagramPacket readUDP(String name, byte[] data) throws IOException {
         this.logger.debug("readUDP - name:${name}, data-size: ${data.length}")
         // Do note that MulticastReceiver extends UDPReceiver!
-        UDPReceiver receiver =(UDPReceiver)this.configResolver.resolve(name, Direction.Read, Type.UDP)
+        UDPReceiver receiver =(UDPReceiver)this.configResolver.resolve(name, Direction.Read, NetworkConfig.Type.UDP)
         return receiver.read(data)
     }
 
@@ -147,7 +147,7 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
     void addUDPListener(String name, UDPListener listener) {
         this.logger.debug("addUDPListener - name:${name}, listener:${listener}")
         // Do note that MulticastReceiver extends UDPReceiver!
-        UDPReceiver receiver =(UDPReceiver)this.configResolver.resolve(name, Direction.Read, Type.UDP)
+        UDPReceiver receiver =(UDPReceiver)this.configResolver.resolve(name, Direction.Read, NetworkConfig.Type.UDP)
         receiver.addListener(listener)
     }
 
@@ -163,7 +163,7 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
     void removeUDPListener(String name, UDPListener listener) {
         this.logger.debug("removeUDPListener - name:${name}, listener:${listener}")
         // Do note that MulticastReceiver extends UDPReceiver!
-        UDPReceiver receiver =(UDPReceiver)this.configResolver.resolve(name, Direction.Read, Type.UDP)
+        UDPReceiver receiver =(UDPReceiver)this.configResolver.resolve(name, Direction.Read, NetworkConfig.Type.UDP)
         receiver.removeListener(listener)
     }
 
@@ -179,7 +179,7 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
     @Override
     void sendTCPRequest(String name, TCPRequest request)  throws IOException {
         this.logger.debug("sendTCPRequest - name:${name}, request:${request}")
-        TCPSender sender = (TCPSender)this.configResolver.resolve(name, Direction.Write, Type.TCP)
+        TCPSender sender = (TCPSender)this.configResolver.resolve(name, Direction.Write, NetworkConfig.Type.TCP)
         sender.send(request)
     }
 
@@ -194,7 +194,7 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
     @Override
     void setTCPRequestListener(String name, TCPListener listener) {
         this.logger.debug("setTcpRequestListener - name:${name}, listener:${listener}")
-        TCPReceiver receiver = (TCPReceiver)this.configResolver.resolve(name, Direction.Read, Type.TCP)
+        TCPReceiver receiver = (TCPReceiver)this.configResolver.resolve(name, Direction.Read, NetworkConfig.Type.TCP)
         receiver.setListener(listener)
     }
 
@@ -208,7 +208,7 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
     @Override
     void removeTCPRequestListener(String name) {
         this.logger.debug("removeTcpRequestListener - name:${name}")
-        TCPReceiver receiver = (TCPReceiver)this.configResolver.resolve(name, Direction.Read, Type.TCP)
+        TCPReceiver receiver = (TCPReceiver)this.configResolver.resolve(name, Direction.Read, NetworkConfig.Type.TCP)
         receiver.removeListener()
     }
 
@@ -222,5 +222,27 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
     @Override
     List<String> getNames(String regexp) {
         return this.configResolver.getNames(regexp)
+    }
+
+    /**
+     * Adds a network configuration in addition to those configured in standard APS configuration.
+     *
+     * Do note that the name in the config must be unique!
+     *
+     * @param networkConfig The network config to register.
+     */
+    @Override
+    void addServiceConfig(NetworkConfig networkConfig) {
+        this.configResolver.addServiceConfig(networkConfig)
+    }
+
+    /**
+     * Removes a previously added network config by its name.
+     *
+     * @param name The name in the registered config to delete.
+     */
+    @Override
+    void removeServiceConfig(String name) {
+        this.configResolver.removeServiceConfig(name)
     }
 }

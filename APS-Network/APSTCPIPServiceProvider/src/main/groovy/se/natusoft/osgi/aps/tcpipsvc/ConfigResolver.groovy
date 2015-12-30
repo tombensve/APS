@@ -40,6 +40,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener
+import se.natusoft.osgi.aps.api.net.tcpip.NetworkConfig
 import se.natusoft.osgi.aps.exceptions.APSConfigException
 import se.natusoft.osgi.aps.exceptions.APSRuntimeException
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
@@ -74,6 +75,9 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
     /** Cached connection providers. */
     private Map<String/*name*/, ConnectionProvider> connectionProviders = new HashMap<>()
 
+    /** externally provided network configs. */
+    private Map<String/*name*/, NetworkConfig> externalConfigs = new HashMap<>()
+
     //
     // Methods
     //
@@ -107,7 +111,7 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
      *
      * @throws APSConfigException on missing or miss-matching config.
      */
-    public synchronized ConnectionProvider resolve(String name, ConnectionProvider.Direction direction, ConnectionProvider.Type expectedType) {
+    public synchronized ConnectionProvider resolve(String name, ConnectionProvider.Direction direction, NetworkConfig.Type expectedType) {
         init()
 
         if (name == null) throw new IllegalArgumentException("name argument is required! It cannot be null!")
@@ -120,11 +124,14 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
         }
 
         ConnectionProvider connectionProvider = null
-        ConfigWrapper config = new ConfigWrapper(name: name) // Throws APSConfigException on bad name!
+        ConfigWrapper config = new ConfigWrapper(name: name)
+        if (this.externalConfigs.containsKey(name)) {
+            config.config = this.externalConfigs.get(name)
+        }
 
-        ConnectionProvider.Type configType = null;
+        NetworkConfig.Type configType = null;
         try {
-            configType = ConnectionProvider.Type.valueOf(config.type)
+            configType = NetworkConfig.Type.valueOf(config.type)
         }
         catch (IllegalArgumentException iae) {
             this.logger.error("Invalid config type: '${config.type}'!", iae)
@@ -132,8 +139,8 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
         }
 
         // Allow UDP as expected type for multicast by converting expected type to multicast.
-        if (configType == ConnectionProvider.Type.Multicast && expectedType == ConnectionProvider.Type.UDP) {
-            expectedType = ConnectionProvider.Type.Multicast
+        if (configType == NetworkConfig.Type.Multicast && expectedType == NetworkConfig.Type.UDP) {
+            expectedType = NetworkConfig.Type.Multicast
         }
 
         if (expectedType != configType) {
@@ -141,7 +148,7 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
         }
 
         switch (configType) {
-            case ConnectionProvider.Type.TCP:
+            case NetworkConfig.Type.TCP:
                 if (direction == ConnectionProvider.Direction.Write) {
                     connectionProvider = new TCPSender(config: config, logger: logger, securityHandler: this.tcpSecurityHandler)
                 }
@@ -152,7 +159,7 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
                 this.connectionProviders.put(cacheKey, connectionProvider)
                 break
 
-            case ConnectionProvider.Type.UDP:
+            case NetworkConfig.Type.UDP:
                 if (direction == ConnectionProvider.Direction.Write) {
                     connectionProvider = new UDPSender(config: config, logger: logger, securityHandler: udpSecurityHandler)
                 }
@@ -163,7 +170,7 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
                 this.connectionProviders.put(cacheKey, connectionProvider)
                 break
 
-            case ConnectionProvider.Type.Multicast:
+            case NetworkConfig.Type.Multicast:
                 if (direction == ConnectionProvider.Direction.Write) {
                     connectionProvider = new MulticastSender(config: config, logger: logger, securityHandler: udpSecurityHandler)
                 }
@@ -176,6 +183,36 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
         }
 
         return connectionProvider
+    }
+
+    /**
+     * Adds a network configuration in addition to those configured in standard APS configuration.
+     *
+     * Do note that the name in the config must be unique!
+     *
+     * @param networkConfig The network config to register.
+     */
+    public synchronized void addServiceConfig(NetworkConfig networkConfig) {
+        this.externalConfigs.put(networkConfig.name, networkConfig)
+    }
+
+    /**
+     * Removes a previously added network config by its name.
+     *
+     * @param name The name in the registered config to delete.
+     */
+    public synchronized void removeServiceConfig(String name) {
+        this.externalConfigs.remove(name)
+        ConnectionProvider cp = this.connectionProviders.get(name + ConnectionProvider.Direction.Read.name())
+        if (cp != null) {
+            cp.stop()
+        }
+        this.connectionProviders.remove(name + ConnectionProvider.Direction.Read.name())
+        cp = this.connectionProviders.get(name + ConnectionProvider.Direction.Write.name())
+        if (cp != null) {
+            cp.stop()
+        }
+        this.connectionProviders.remove(name + ConnectionProvider.Direction.Write.name())
     }
 
     @BundleStop

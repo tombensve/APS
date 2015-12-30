@@ -38,6 +38,7 @@ package se.natusoft.osgi.aps.tcpipsvc
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import se.natusoft.osgi.aps.api.net.tcpip.NetworkConfig
 
 /**
  * This represents a provider for an UDP, Multicast or TCP connection.
@@ -45,15 +46,6 @@ import groovy.transform.TypeChecked
 @CompileStatic
 @TypeChecked
 interface ConnectionProvider {
-
-    /**
-     * Defines the types of providers.
-     */
-    public static enum Type {
-        TCP,
-        UDP,
-        Multicast
-    }
 
     /**
      * Defines the direction of a provider.
@@ -85,8 +77,7 @@ interface ConnectionProvider {
     /**
      * Returns the type of the connection.
      */
-    ConnectionProvider.Type getType();
-    //      ^-- Make IDEA happy!
+    NetworkConfig.Type getType();
 
     /**
      * Returns the direction of the connection.

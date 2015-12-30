@@ -38,6 +38,7 @@ package se.natusoft.osgi.aps.tcpipsvc
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import se.natusoft.osgi.aps.api.net.tcpip.NetworkConfig
 import se.natusoft.osgi.aps.exceptions.APSConfigException
 import se.natusoft.osgi.aps.tcpipsvc.config.NamedConfig
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
@@ -55,12 +56,13 @@ class ConfigWrapper {
     /** The name of the config for this instance. */
     String name
 
+    /** A cached config instance. */
+    NetworkConfig config
+
     //
     // Private Members
     //
 
-    /** A cached config instance. */
-    private NamedConfig config
 
     //
     // Methods
@@ -69,19 +71,21 @@ class ConfigWrapper {
     /**
      * Gets and validates the config for the named entry.
      */
-    private NamedConfig getConfig() {
+    private NetworkConfig getConfig() {
+
         if (this.config == null) {
             // Do note that each APSConfigValue have a pointer to the real configuration value in memory
             // and any update of the value will be immediately reflected since it is not holding a copy!
-            this.config =
-                    (NamedConfig) TCPIPConfig.managed.get().namedConfigs.find { NamedConfig ce ->
-                        ce.name.string == this.name
-                    }
-            if (this.config == null) {
+            NamedConfig nconfig = (NamedConfig) TCPIPConfig.managed.get().namedConfigs.find { NamedConfig nc ->
+                nc.name.string == this.name
+            }
+            if (nconfig != null) {
+                this.config = new NamedConfigWrapper(nconfig)
+            }
+            else {
                 throw new APSConfigException("APSTCPIPService: There is no valid config named '" + name + "'!")
             }
         }
-
         return this.config
     }
 
@@ -91,7 +95,7 @@ class ConfigWrapper {
      * @throws APSConfigException on bad config.
      */
     String getHost() {
-        return getConfig().address.string
+        return getConfig().address
     }
 
     /**
@@ -100,7 +104,7 @@ class ConfigWrapper {
      * @throws APSConfigException on bad config.
      */
     String getMulticastAddress() {
-        String mcast = getConfig().address.string
+        String mcast = getConfig().address
         if (mcast.trim().isEmpty()) {
             mcast = "all-systems.mcast.net"
         }
@@ -113,7 +117,7 @@ class ConfigWrapper {
      * @throws APSConfigException on bad config.
      */
     int getPort() {
-        return getConfig().port.int
+        return getConfig().port
     }
 
     /**
@@ -122,14 +126,14 @@ class ConfigWrapper {
      * @throws APSConfigException on bad config.
      */
     String getType() {
-        return getConfig().type.string
+        return getConfig().type
     }
 
     /**
      * Returns true if this service should be secure when possible.
      */
     boolean isSecure() {
-        return getConfig().secure.boolean
+        return getConfig().secure
     }
 
     /**
@@ -137,5 +141,58 @@ class ConfigWrapper {
      */
     static int getByteBufferSize() {
         return TCPIPConfig.managed.get().byteBufferSize.int
+    }
+}
+
+/**
+ * Provides the NetworkConfig API by wrapping a NamedConfig entry.
+ */
+@CompileStatic
+@TypeChecked
+class NamedConfigWrapper implements NetworkConfig {
+    private NamedConfig config
+
+    public NamedConfigWrapper(NamedConfig config) {
+        this.config = config
+    }
+
+    /**
+     * Returns the name of the configuration.
+     */
+    @Override
+    String getName() {
+        return this.config.name
+    }
+
+    /**
+     * Returns the type of this configuration.
+     */
+    @Override
+    NetworkConfig.Type getType() {
+        return NetworkConfig.Type.valueOf(this.config.type.string)
+    }
+
+    /**
+     * Returns the IP address to listen or send to.
+     */
+    @Override
+    String getAddress() {
+        return this.config.address.string
+    }
+
+    /**
+     * Returns the port to listen or send to.
+     */
+    @Override
+    int getPort() {
+        return this.config.port.int
+    }
+
+    /**
+     * If true and security service is available it will be used.
+     */
+    @Override
+    boolean isSecure() {
+        return this.config.secure.boolean
     }
 }

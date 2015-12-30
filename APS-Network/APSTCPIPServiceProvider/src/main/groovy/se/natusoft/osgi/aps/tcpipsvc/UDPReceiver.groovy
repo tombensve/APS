@@ -38,6 +38,7 @@ package se.natusoft.osgi.aps.tcpipsvc
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import se.natusoft.osgi.aps.api.net.tcpip.NetworkConfig
 import se.natusoft.osgi.aps.api.net.tcpip.UDPListener
 import se.natusoft.osgi.aps.tcpipsvc.security.UDPSecurityHandler
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -122,8 +123,8 @@ class UDPReceiver implements ConnectionProvider {
      * Returns the type of the connection.
      */
     @Override
-    ConnectionProvider.Type getType() {
-        return ConnectionProvider.Type.UDP
+    NetworkConfig.Type getType() {
+        NetworkConfig.Type.UDP
     }
 
     /**
@@ -131,7 +132,7 @@ class UDPReceiver implements ConnectionProvider {
      */
     @Override
     ConnectionProvider.Direction getDirection() {
-        return ConnectionProvider.Direction.Read
+        ConnectionProvider.Direction.Read
     }
 
     /**

@@ -109,4 +109,20 @@ public interface APSTCPIPService extends APSServiceProperties {
      * @return A list of the matching names. If none were found the list will be empty.
      */
     List<String> getNames(String regexp);
+
+    /**
+     * Adds a network configuration in addition to those configured in standard APS configuration.
+     *
+     * Do note that the name in the config must be unique!
+     *
+     * @param networkConfig The network config to register.
+     */
+    void addServiceConfig(NetworkConfig networkConfig);
+
+    /**
+     * Removes a previously added network config by its name.
+     *
+     * @param name The name in the registered config to delete.
+     */
+    void removeServiceConfig(String name);
 }

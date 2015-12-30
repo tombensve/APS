@@ -3,6 +3,7 @@ package se.natusoft.osgi.aps.tcpipsvc
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
+import se.natusoft.osgi.aps.api.net.tcpip.NetworkConfig
 import se.natusoft.osgi.aps.api.net.tcpip.TCPRequest
 import se.natusoft.osgi.aps.api.net.tcpip.TCPListener
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
@@ -29,14 +30,14 @@ class TCPConProviderTest {
     private static void configSetup1() {
         NamedConfig namedConfig1 = new NamedConfig()
         namedConfig1.name = new TestConfigValue(value: "testsvc")
-        namedConfig1.type = new TestConfigValue(value: ConnectionProvider.Type.TCP.name())
+        namedConfig1.type = new TestConfigValue(value: NetworkConfig.Type.TCP.name())
         namedConfig1.address = new TestConfigValue(value: "localhost")
         namedConfig1.port = new TestConfigValue(value: "12345")
         namedConfig1.secure = new TestConfigValue(value: "false")
 
         NamedConfig namedConfig2 = new NamedConfig()
         namedConfig2.name = new TestConfigValue(value: "testclient")
-        namedConfig2.type = new TestConfigValue(value: ConnectionProvider.Type.TCP.name())
+        namedConfig2.type = new TestConfigValue(value: NetworkConfig.Type.TCP.name())
         namedConfig2.address = new TestConfigValue(value: "localhost")
         namedConfig2.port = new TestConfigValue(value: "12345")
         namedConfig2.secure = new TestConfigValue(value: "false")
