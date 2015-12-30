@@ -18,26 +18,26 @@
     </description>
 
     <properties>
-        <!-- 
-            Bundle properties 
+        <!--
+            Bundle properties
         -->
-        
+
         <!-- The synbolic name of the bundle. Defaults to the artifact id, but can be overriden. -->
         <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
-        
+
         <!-- The bundle activator class -->
         <osgi.bundle.activator>Activator</osgi.bundle.activator>
-        
+
         <!-- The context path of a war bundle (WAB). Setting this enables Web-ContextPath: in MANIFEST.MF. -->
         <osgi.web.context.path>myweb</osgi.web.context.path>
-        
+
         <!-- The osgi Bundle-ClassPath manifest entry. -->
         <osgi.bundle.classpath>WEB-INF/classes, WEB-INF/lib/vaadin-6.6.4.jar</osgi.bundle.classpath>
-        
+
         <!-- The bundle packages to export. -->
         <osgi.export.package>
         </osgi.export.package>
-        
+
         <!-- The packages to import for the bundle. -->
         <osgi.import.package>
             javax.servlet,
@@ -50,15 +50,15 @@
             se.natusoft.osgi.aps.tools;version="[1.0,2)",
             se.natusoft.osgi.aps.tools.tracker;version="[1.0,2)"
         </osgi.import.package>
-                
+
         <!-- The private packages. -->
         <osgi.private.package>
             se.natusoft.osgi.aps._web,
             se.natusoft.osgi.aps._web.vaadin._WebApp
         </osgi.private.package>
-        
+
         <!-- The packages to export from dependent & embeded jars -->
-        <osgi.export.dependency.package>            
+        <osgi.export.dependency.package>
         </osgi.export.dependency.package>
 
         <!-- The resources to include in bundle -->
@@ -67,7 +67,7 @@
 
         <!-- The default for embedding dependencies in bundle. -->
         <osgi.embed.dependency>*;scope=compile</osgi.embed.dependency>
-        
+
         <!-- The directory whose content should be embeded into the bundle. -->
         <osgi.embed.directory>WEB-INF/lib</osgi.embed.directory>
 
@@ -93,7 +93,7 @@
             <version>${version}</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <!--
             Third party
         -->
@@ -103,7 +103,7 @@
             <version>6.6.4</version>
             <type>jar</type>
         </dependency>
-        
+
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
@@ -114,7 +114,7 @@
 
     <build>
         <plugins>
-            
+
             <!--
                 Force the jar plugin to use the maven-bundle-plugin generated manifest.
             -->
@@ -123,9 +123,9 @@
                 <configuration>
                     <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive> 
+                    </archive>
                 </configuration>
-            </plugin>  
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -134,11 +134,35 @@
                 <configuration>
                     <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>                     
+                    </archive>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
             </plugin>
-            
+
+            <!--
+                Mixins
+            -->
+            <plugin>
+                <groupId>com.github.odavid.maven.plugins</groupId>
+                <artifactId>mixin-maven-plugin</artifactId>
+                <configuration>
+                    <mixins>
+                        <!-- Remove comment if you are writing groovy code, and create a src/main/groovy.
+                        <mixin>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>groovy-mixin</artifactId>
+                            <version>${project.version}</version>
+                        </mixin>
+                        -->
+                        <mixin>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>deploy-web-bundle-mixin</artifactId>
+                            <version>${project.version}</version>
+                        </mixin>
+                    </mixins>
+                </configuration>
+            </plugin>
+
             <!--
                 OSGi bundle handling.
             -->
@@ -166,7 +190,7 @@
                         <manifestEntries>
                             <Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath>
                             <Web-ContextPath>${osgi.web.context.path}</Web-ContextPath>
-                        </manifestEntries>                        
+                        </manifestEntries>
                     </archive>
                     <instructions>
                         <Export-Package>${osgi.export.package}</Export-Package>
@@ -181,8 +205,8 @@
                     </instructions>
                 </configuration>
             </plugin>
-            
+
         </plugins>
     </build>
-    
+
 </project>
