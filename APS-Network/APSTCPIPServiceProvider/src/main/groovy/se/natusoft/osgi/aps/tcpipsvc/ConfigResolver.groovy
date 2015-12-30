@@ -40,6 +40,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener
+import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescription
 import se.natusoft.osgi.aps.api.net.tcpip.NetworkConfig
 import se.natusoft.osgi.aps.exceptions.APSConfigException
 import se.natusoft.osgi.aps.exceptions.APSRuntimeException
@@ -67,6 +68,8 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
 
     /** UDP security handler tha is possibly secure if an APSUDPSecurityService is available. */
     UDPSecurityHandler udpSecurityHandler
+
+    DiscoveryServiceWrapper discoveryServiceWrapper
 
     //
     // Private Members
@@ -125,8 +128,33 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
 
         ConnectionProvider connectionProvider = null
         ConfigWrapper config = new ConfigWrapper(name: name)
+
         if (this.externalConfigs.containsKey(name)) {
-            config.config = this.externalConfigs.get(name)
+            config.netconf = this.externalConfigs.get(name)
+        }
+
+        // If the name has not been resolved from config nor from config entries added through service, then
+        // try to check the APSSimpleDiscoveryService for a matching entry, but only if the service is available.
+
+        if (config.netconf == null) {
+            try {
+                config.host // Possibly triggers APSConfigException
+            }
+            catch (APSConfigException ce) {
+                ServiceDescription sd = this.discoveryServiceWrapper.getServiceWithId(name)
+                if (sd != null) {
+                    NetworkConfig.Type type = NetworkConfig.Type.valueOf(sd.serviceProtocol.name())
+                    config.netconf = new NetworkConfig.NetworkConfigProvider()
+                            .setName(sd.serviceId)
+                            .setAddress(sd.serviceHost)
+                            .setPort(sd.servicePort)
+                            .setType(type)
+                            .setSecure(true)
+                }
+                else {
+                    throw ce
+                }
+            }
         }
 
         NetworkConfig.Type configType = null;

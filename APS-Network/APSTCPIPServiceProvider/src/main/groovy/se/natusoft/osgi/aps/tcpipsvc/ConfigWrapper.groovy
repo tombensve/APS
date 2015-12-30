@@ -57,7 +57,7 @@ class ConfigWrapper {
     String name
 
     /** A cached config instance. */
-    NetworkConfig config
+    NetworkConfig netconf
 
     //
     // Private Members
@@ -73,20 +73,20 @@ class ConfigWrapper {
      */
     private NetworkConfig getConfig() {
 
-        if (this.config == null) {
+        if (this.netconf == null) {
             // Do note that each APSConfigValue have a pointer to the real configuration value in memory
             // and any update of the value will be immediately reflected since it is not holding a copy!
             NamedConfig nconfig = (NamedConfig) TCPIPConfig.managed.get().namedConfigs.find { NamedConfig nc ->
                 nc.name.string == this.name
             }
             if (nconfig != null) {
-                this.config = new NamedConfigWrapper(nconfig)
+                this.netconf = new NamedConfigWrapper(nconfig)
             }
             else {
                 throw new APSConfigException("APSTCPIPService: There is no valid config named '" + name + "'!")
             }
         }
-        return this.config
+        return this.netconf
     }
 
     /**
