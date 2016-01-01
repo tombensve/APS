@@ -9,6 +9,7 @@ import se.natusoft.osgi.aps.api.net.tcpip.TCPListener
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
 import se.natusoft.osgi.aps.tcpipsvc.config.ExpertConfig
+import se.natusoft.osgi.aps.tcpipsvc.config.GroupConfig
 import se.natusoft.osgi.aps.tcpipsvc.config.NamedConfig
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
@@ -28,15 +29,16 @@ class TCPConProviderTest {
     }
 
     private static void configSetup1() {
+
         NamedConfig namedConfig1 = new NamedConfig()
-        namedConfig1.name = new TestConfigValue(value: "testsvc")
+        namedConfig1.configName = new TestConfigValue(value: "testsvc")
         namedConfig1.type = new TestConfigValue(value: NetworkConfig.Type.TCP.name())
         namedConfig1.address = new TestConfigValue(value: "localhost")
         namedConfig1.port = new TestConfigValue(value: "12345")
         namedConfig1.secure = new TestConfigValue(value: "false")
 
         NamedConfig namedConfig2 = new NamedConfig()
-        namedConfig2.name = new TestConfigValue(value: "testclient")
+        namedConfig2.configName = new TestConfigValue(value: "testclient")
         namedConfig2.type = new TestConfigValue(value: NetworkConfig.Type.TCP.name())
         namedConfig2.address = new TestConfigValue(value: "localhost")
         namedConfig2.port = new TestConfigValue(value: "12345")
@@ -46,8 +48,15 @@ class TCPConProviderTest {
         configs.configs.add(namedConfig1)
         configs.configs.add(namedConfig2)
 
+        GroupConfig groupConfig1 = new GroupConfig()
+        groupConfig1.groupName = new TestConfigValue(value: "test")
+        groupConfig1.namedConfigs = configs
+
+        TestConfigList<GroupConfig> groupConfigs = new TestConfigList<>()
+        groupConfigs.configs.add(groupConfig1)
+
         TCPIPConfig testTCPIPConfig = new TCPIPConfig()
-        testTCPIPConfig.namedConfigs = configs
+        testTCPIPConfig.groupConfigs = groupConfigs
 
         ExpertConfig expertConfig = new ExpertConfig()
         expertConfig.exceptionGuardMaxExceptions = new TestConfigValue(value: "30")
@@ -65,13 +74,13 @@ class TCPConProviderTest {
         if (testActive) {
             configSetup1()
 
-            assertTrue("Config failure!", TCPIPConfig.managed.get().namedConfigs.get(0).name.string == "testsvc")
-            assertTrue("Config failure!", TCPIPConfig.managed.get().namedConfigs.get(1).name.string == "testclient")
+            assertTrue("Config failure!", TCPIPConfig.managed.get().groupConfigs.get(0).namedConfigs.get(0).configName.string == "testsvc")
+            assertTrue("Config failure!", TCPIPConfig.managed.get().groupConfigs.get(0).namedConfigs.get(1).configName.string == "testclient")
 
             TCPSecurityHandler tcpSecurityHandler = new TCPSecurityHandler()
 
             TCPReceiver receiver = new TCPReceiver(
-                    config: new ConfigWrapper(name: "testsvc"),
+                    config: new ConfigWrapper(name: "test/testsvc"),
                     logger: new APSLogger(),
                     securityHandler: tcpSecurityHandler
             )
@@ -100,7 +109,7 @@ class TCPConProviderTest {
             receiver.start()
 
                 TCPSender sender = new TCPSender(
-                        config: new ConfigWrapper(name: "testclient"),
+                        config: new ConfigWrapper(name: "test/testclient"),
                         securityHandler: tcpSecurityHandler
                 )
                 sender.start()

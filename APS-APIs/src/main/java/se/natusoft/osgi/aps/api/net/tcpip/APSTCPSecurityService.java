@@ -11,11 +11,17 @@ public interface APSTCPSecurityService {
 
     /**
      * Returns a SocketFactory providing some security implementation like SSL for example.
+     *
+     * @param name This corresponds to a APSTCPIPService named configuration. Can be used to map to a configuration
+     *             for the SocketFactory.
      */
-    SocketFactory getSocketFactory();
+    SocketFactory getSocketFactory(String name);
 
     /**
      * Returns a ServerSocketFactory providing some security implementation like SSL for example.
+     *
+     * @param name This corresponds to a APSTCPIPService named configuration. Can be used to map to a configuration
+     *             for the ServerSocketFactory.
      */
-    ServerSocketFactory getServerSocketFactory();
+    ServerSocketFactory getServerSocketFactory(String name);
 }

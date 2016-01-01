@@ -2,32 +2,34 @@
  *
  * PROJECT
  *     Name
- *         APS TCPIP Service NonSecure Provider
- *
+ *         APS TCPIP Service Provider
+ *     
  *     Code Version
  *         1.0.0
- *
+ *     
  *     Description
- *         Provides a nonsecure implementation of APSTCPIPService.
- *
+ *         Provides an implementation of APSTCPIPService. This service does not provide any security of its own,
+ *         but makes use of APSTCPSecurityService, and APSUDPSecurityService when available and configured for
+ *         security.
+ *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *
+ *     
  * LICENSE
  *     Apache 2.0 (Open Source)
- *
+ *     
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *
+ *     
  *       http://www.apache.org/licenses/LICENSE-2.0
- *
+ *     
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *
+ *     
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -231,7 +233,7 @@ class UDPReceiver implements ConnectionProvider {
             connect()
             DatagramPacket dp = new DatagramPacket(data, data.length)
             this.socket.receive(dp)
-            this.securityHandler.unsecure(dp, this.config.secure)
+            this.securityHandler.unsecure(this.config.name, dp, this.config.secure)
             return dp
         }
 

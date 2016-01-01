@@ -9,6 +9,7 @@ import se.natusoft.osgi.aps.api.net.tcpip.UDPListener
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
 import se.natusoft.osgi.aps.tcpipsvc.config.ExpertConfig
+import se.natusoft.osgi.aps.tcpipsvc.config.GroupConfig
 import se.natusoft.osgi.aps.tcpipsvc.config.NamedConfig
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
@@ -31,25 +32,32 @@ class MulticastConProviderTest {
 
     private static void configSetup1() {
         NamedConfig namedConfig1 = new NamedConfig()
-        namedConfig1.name = new TestConfigValue(value: "testsvc")
+        namedConfig1.configName = new TestConfigValue(value: "testsvc")
         namedConfig1.type = new TestConfigValue(value: NetworkConfig.Type.Multicast.name())
         namedConfig1.address = new TestConfigValue(value: "all-systems.mcast.net") //
         namedConfig1.port = new TestConfigValue(value: "12345")
         namedConfig1.secure = new TestConfigValue(value: "false")
 
         NamedConfig namedConfig2 = new NamedConfig()
-        namedConfig2.name = new TestConfigValue(value: "testclient")
+        namedConfig2.configName = new TestConfigValue(value: "testclient")
         namedConfig2.type = new TestConfigValue(value: NetworkConfig.Type.Multicast.name())
         namedConfig2.address = new TestConfigValue(value: "all-systems.mcast.net")
         namedConfig2.port = new TestConfigValue(value: "12345")
         namedConfig2.secure = new TestConfigValue(value: "false")
 
-        TestConfigList<NamedConfig> configs = new TestConfigList<>()
-        configs.configs.add(namedConfig1)
-        configs.configs.add(namedConfig2)
+        TestConfigList<NamedConfig> namedConfigs = new TestConfigList<>()
+        namedConfigs.configs.add(namedConfig1)
+        namedConfigs.configs.add(namedConfig2)
+
+        GroupConfig groupConfig1 = new GroupConfig()
+        groupConfig1.groupName = new TestConfigValue(value: "test")
+        groupConfig1.namedConfigs = namedConfigs
+
+        TestConfigList<GroupConfig> groupConfigs = new TestConfigList<>()
+        groupConfigs.configs.add(groupConfig1)
 
         TCPIPConfig testTCPIPConfig = new TCPIPConfig()
-        testTCPIPConfig.namedConfigs = configs
+        testTCPIPConfig.groupConfigs = groupConfigs
         testTCPIPConfig.byteBufferSize = new TestConfigValue(value: "10000")
 
         ExpertConfig expertConfig = new ExpertConfig()
@@ -68,13 +76,16 @@ class MulticastConProviderTest {
         if (testActive) {
             configSetup1()
 
-            assertTrue("Config failure!", TCPIPConfig.managed.get().namedConfigs.get(0).name.string == "testsvc")
-            assertTrue("Config failure!", TCPIPConfig.managed.get().namedConfigs.get(1).name.string == "testclient")
+            assertTrue("Config failure!", TCPIPConfig.managed.get().groupConfigs.get(0).namedConfigs.get(0).configName.string == "testsvc")
+            assertTrue("Config failure!", TCPIPConfig.managed.get().groupConfigs.get(0).namedConfigs.get(1).configName.string == "testclient")
 
             OSGIServiceTestTools testTools = new OSGIServiceTestTools()
             TestBundle testBundle = testTools.createBundle("test-bundle")
             testBundle.addEntryPaths(
-                    "/se/natusoft/osgi/aps/tcpipsvc/APSTCPIPServiceProvider.class"
+                    "/se/natusoft/osgi/aps/tcpipsvc/APSTCPIPServiceProvider.class",
+                    "/se/natusoft/osgi/aps/tcpipsvc/ConfigResolver.class",
+                    "/se/natusoft/osgi/aps/tcpipsvc/security/TCPSecurityHandler.class",
+                    "/se/natusoft/osgi/aps/tcpipsvc/security/UDPSecurityHandler.class"
             );
 
             APSActivator activator = new APSActivator()
@@ -96,12 +107,7 @@ class MulticastConProviderTest {
 
                 String testString = "This is a multicasted string!"
 
-                // Do note: On my machine (and possibly all Macs) one sent multicast packet are received twice.
-                // I've tried binding the sender to just one interface to make sure it is not going out on both
-                // public and loopback. This however made no difference. A non multicast UDP packet is only received
-                // once, and that is exactly the same code with the exception of creation of the socket. I can
-                // also see that the multicast packet are actually received twice on the network.
-                tcpipService.addUDPListener("testsvc", new UDPListener() {
+                tcpipService.addUDPListener("test/testsvc", new UDPListener() {
                     @Override
                     void udpDataReceived(String name, DatagramPacket dataGramPacket) {
                         println("name: ${name}")
@@ -113,12 +119,12 @@ class MulticastConProviderTest {
                     }
                 })
 
-                tcpipService.sendUDP("testclient", testString.bytes)
+                tcpipService.sendUDP("test/testclient", testString.bytes)
                 println("Send: ${testString}")
 
                 Thread.sleep(500)
 
-                tcpipService.removeUDPListener("testsvc", APSTCPIPService.ALL_LISTENERS)
+                tcpipService.removeUDPListener("test/testsvc", APSTCPIPService.ALL_LISTENERS)
 
                 tcpipSvcTracker.releaseService()
 

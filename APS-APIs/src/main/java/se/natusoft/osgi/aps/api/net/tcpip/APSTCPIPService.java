@@ -40,19 +40,6 @@ public interface APSTCPIPService extends APSServiceProperties {
     void sendUDP(String name, byte[] data) throws IOException;
 
     /**
-     * Reads UDP data.
-     *
-     * @param name The name of a configuration specifying address and port or multicast and port.
-     * @param data The buffer to receive into.
-     *
-     * @return the data buffer.
-     *
-     * @throws IOException
-     * @throws IllegalArgumentException on unconfigured name.
-     */
-    DatagramPacket readUDP(String name, byte[] data) throws IOException;
-
-    /**
      * Adds a listener for received udp data.
      *
      * @param name The name of a configuration specifying address and port or multicast and port.
@@ -100,15 +87,6 @@ public interface APSTCPIPService extends APSServiceProperties {
      * @throws IllegalArgumentException on unconfigured name.
      */
     void removeTCPRequestListener(String name);
-
-    /**
-     * Returns a list of names matching the specified regexp.
-     *
-     * @param regexp The regexp to get names for.
-     *
-     * @return A list of the matching names. If none were found the list will be empty.
-     */
-    List<String> getNames(String regexp);
 
     /**
      * Adds a network configuration in addition to those configured in standard APS configuration.

@@ -2,13 +2,15 @@
  * 
  * PROJECT
  *     Name
- *         APS TCPIP Service NonSecure Provider
+ *         APS TCPIP Service Provider
  *     
  *     Code Version
  *         1.0.0
  *     
  *     Description
- *         Provides a nonsecure implementation of APSTCPIPService.
+ *         Provides an implementation of APSTCPIPService. This service does not provide any security of its own,
+ *         but makes use of APSTCPSecurityService, and APSUDPSecurityService when available and configured for
+ *         security.
  *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.

@@ -18,9 +18,11 @@ public interface APSUDPSecurityService {
      * Client should however not make any assumptions about the service implementation
      * and always call this method and pass its value back to the other service methods.
      *
-     * @param clientId Some unique client id.
+     * @param name This corresponds to the APSTCPIPService config name this security
+     *             context is to be used for. This can be used to map to specific
+     *             configuration just like APSTCPIPService does.
      */
-    Object createSecurityContext(String clientId);
+    Object createSecurityContext(String name);
 
     /**
      * Secures the passed data and returns the secured version of it.

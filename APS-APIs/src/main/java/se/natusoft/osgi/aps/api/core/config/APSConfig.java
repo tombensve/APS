@@ -176,6 +176,17 @@ public class APSConfig implements ManagedService {
     }
 
     /**
+     * Returns true if the specified listener is already added.
+     *
+     * @param listener The listener to test.
+     *
+     * @return true if the listener is already added, false otherwise.
+     */
+    public synchronized boolean hasConfigChangedListener(APSConfigChangedListener listener) {
+        return this.listeners.contains(listener);
+    }
+
+    /**
      * Returns the current listeners.
      */
     private synchronized List<APSConfigChangedListener> getListeners() {

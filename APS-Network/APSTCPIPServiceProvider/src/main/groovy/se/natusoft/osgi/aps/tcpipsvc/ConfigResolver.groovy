@@ -2,32 +2,34 @@
  *
  * PROJECT
  *     Name
- *         APS TCPIP Service NonSecure Provider
- *
+ *         APS TCPIP Service Provider
+ *     
  *     Code Version
  *         1.0.0
- *
+ *     
  *     Description
- *         Provides a nonsecure implementation of APSTCPIPService.
- *
+ *         Provides an implementation of APSTCPIPService. This service does not provide any security of its own,
+ *         but makes use of APSTCPSecurityService, and APSUDPSecurityService when available and configured for
+ *         security.
+ *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *
+ *     
  * LICENSE
  *     Apache 2.0 (Open Source)
- *
+ *     
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *
+ *     
  *       http://www.apache.org/licenses/LICENSE-2.0
- *
+ *     
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *
+ *     
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -49,31 +51,29 @@ import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
 import se.natusoft.osgi.aps.tcpipsvc.security.UDPSecurityHandler
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
-import se.natusoft.osgi.aps.util.APSObject
+import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 
 /**
  * Resolves named configuration and creates configured network providers.
  */
 @CompileStatic
 @TypeChecked
-class ConfigResolver extends APSObject implements APSConfigChangedListener {
-    //
-    // Properties
-    //
-
-    APSLogger logger
-
-    /** TCP security handler that is possibly secure if an APSTCPSecurityService is available. */
-    TCPSecurityHandler tcpSecurityHandler
-
-    /** UDP security handler tha is possibly secure if an APSUDPSecurityService is available. */
-    UDPSecurityHandler udpSecurityHandler
-
-    DiscoveryServiceWrapper discoveryServiceWrapper
-
+class ConfigResolver implements APSConfigChangedListener {
     //
     // Private Members
     //
+
+    @Managed(name = "APSTCPIPServiceLogger", loggingFor = "aps-tcpip-service-provider")
+    private APSLogger logger
+
+    @Managed
+    private TCPSecurityHandler tcpSecurityHandler
+
+    @Managed
+    private UDPSecurityHandler udpSecurityHandler
+
+    @Managed
+    private DiscoveryServiceWrapper discoveryServiceWrapper
 
     /** Cached connection providers. */
     private Map<String/*name*/, ConnectionProvider> connectionProviders = new HashMap<>()
@@ -85,26 +85,6 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
     // Methods
     //
 
-    @Override
-    protected void delayedInit() {
-        TCPIPConfig.managed.get().addConfigChangedListener(this)
-    }
-
-    /**
-     * Returns a list of names matching the specified regexp criteria.
-     *
-     * @param regexp The regexp to get names for.
-     */
-    public List<String> getNames(String regexp) {
-        List<String> result = new LinkedList<>()
-
-        this.connectionProviders.keySet().each { String key ->
-            if (key.matches(regexp)) result += key
-        }
-
-        return result
-    }
-
     /**
      * Resolves a configuration name returning a ConnectionProvider.
      *
@@ -115,7 +95,9 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
      * @throws APSConfigException on missing or miss-matching config.
      */
     public synchronized ConnectionProvider resolve(String name, ConnectionProvider.Direction direction, NetworkConfig.Type expectedType) {
-        init()
+        if (!TCPIPConfig.managed.get().hasConfigChangedListener(this)) {
+            TCPIPConfig.managed.get().addConfigChangedListener(this)
+        }
 
         if (name == null) throw new IllegalArgumentException("name argument is required! It cannot be null!")
         if (direction == null) throw new IllegalArgumentException("direction argument is required! It cannot be null!")
@@ -126,17 +108,16 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
             return this.connectionProviders.get(cacheKey)
         }
 
-        ConnectionProvider connectionProvider = null
         ConfigWrapper config = new ConfigWrapper(name: name)
 
         if (this.externalConfigs.containsKey(name)) {
-            config.netconf = this.externalConfigs.get(name)
+            config.networkConfig = this.externalConfigs.get(name)
         }
 
         // If the name has not been resolved from config nor from config entries added through service, then
         // try to check the APSSimpleDiscoveryService for a matching entry, but only if the service is available.
 
-        if (config.netconf == null) {
+        if (config.networkConfig == null) {
             try {
                 config.host // Possibly triggers APSConfigException
             }
@@ -144,7 +125,7 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
                 ServiceDescription sd = this.discoveryServiceWrapper.getServiceWithId(name)
                 if (sd != null) {
                     NetworkConfig.Type type = NetworkConfig.Type.valueOf(sd.serviceProtocol.name())
-                    config.netconf = new NetworkConfig.NetworkConfigProvider()
+                    config.networkConfig = new NetworkConfig.NetworkConfigProvider()
                             .setName(sd.serviceId)
                             .setAddress(sd.serviceHost)
                             .setPort(sd.servicePort)
@@ -157,6 +138,8 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
             }
         }
 
+        // IDEA bug: https://youtrack.jetbrains.com/issue/IDEA-149960
+        //noinspection GroovyUnusedAssignment
         NetworkConfig.Type configType = null;
         try {
             configType = NetworkConfig.Type.valueOf(config.type)
@@ -175,7 +158,11 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
             throw new APSConfigException("Expected config entry of type '" + expectedType.name() + "', but got type '" + config.type + "'!")
         }
 
-        switch (configType) {
+        // Same IDEA bug as above.
+        //noinspection GroovyUnusedAssignment
+        ConnectionProvider connectionProvider = null
+
+        switch (configType) { // <-- Usage of configType!
             case NetworkConfig.Type.TCP:
                 if (direction == ConnectionProvider.Direction.Write) {
                     connectionProvider = new TCPSender(config: config, logger: logger, securityHandler: this.tcpSecurityHandler)
@@ -210,7 +197,7 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
                 break
         }
 
-        return connectionProvider
+        return connectionProvider // <-- Usage of connectionProvider.
     }
 
     /**
@@ -243,6 +230,7 @@ class ConfigResolver extends APSObject implements APSConfigChangedListener {
         this.connectionProviders.remove(name + ConnectionProvider.Direction.Write.name())
     }
 
+    @SuppressWarnings("GroovyUnusedDeclaration")
     @BundleStop
     public void cleanup() {
         TCPIPConfig.managed.get().removeConfigChangedListener(this)

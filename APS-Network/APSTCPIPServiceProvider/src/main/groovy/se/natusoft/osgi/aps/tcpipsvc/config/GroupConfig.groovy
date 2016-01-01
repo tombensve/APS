@@ -41,55 +41,29 @@ package se.natusoft.osgi.aps.tcpipsvc.config
 import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigDescription
 import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigItemDescription
-import se.natusoft.osgi.aps.api.core.config.annotation.APSDefaultValue
+import se.natusoft.osgi.aps.api.core.config.model.APSConfigList
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue
 
+/**
+ * This provides a configuration group to make things clearer both for developers and those entering configuration.
+ */
 @APSConfigDescription(
-        configId = "named",
-        description = "This is a named config entry.",
+        configId = "group",
+        description = "This is a named group config entry.",
         version = "1.0.0"
 )
-public class NamedConfig extends APSConfig {
+class GroupConfig extends APSConfig {
 
     @APSConfigItemDescription(
-            description = "The name of this config. To use this specify: groupName/configName.",
+            description = "The name of this config group. This is referenced from code in the format: groupName/configName",
             environmentSpecific = true
     )
-    public APSConfigValue configName
-
-    @SuppressWarnings("GroovyUnusedDeclaration")
-    @APSConfigItemDescription(
-            description = "A comment / description of the entry.",
-            environmentSpecific = true
-    )
-    public APSConfigValue comment
+    public APSConfigValue groupName
 
     @APSConfigItemDescription(
-            description = "Is this a TCP, UDP, or Multicast configuration ?",
-            // https://jira.codehaus.org/browse/GROOVY-3278
-            validValues = ["TCP", "UDP", "Multicast"],
+            description = "This provides a set of named configurations for the group.",
             environmentSpecific = true
     )
-    public APSConfigValue type
+    public APSConfigList<NamedConfig> namedConfigs
 
-    @APSConfigItemDescription(
-            description =
-                    "An ip address or hostname. For receiving this address is bound to, for sending this address is connected to. For multicast you can leave this blank to default to 224.0.0.1.",
-            environmentSpecific = true
-    )
-    public APSConfigValue address
-
-    @APSConfigItemDescription(
-            description = "The port to listen or connect to.",
-            environmentSpecific = true
-    )
-    public APSConfigValue port
-
-    @APSConfigItemDescription(
-            description = "Make connection secure when security is available.",
-            isBoolean = true,
-            defaultValue = @APSDefaultValue(value = "false"),
-            environmentSpecific = true
-    )
-    public APSConfigValue secure
 }
