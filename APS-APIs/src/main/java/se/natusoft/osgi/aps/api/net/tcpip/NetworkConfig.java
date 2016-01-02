@@ -1,5 +1,7 @@
 package se.natusoft.osgi.aps.api.net.tcpip;
 
+import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescription;
+
 /**
  * This defines a network configuration.
  */
@@ -52,6 +54,27 @@ public interface NetworkConfig {
         private String address;
         private int port;
         private boolean secure = false;
+
+        //
+        // Constructors
+        //
+
+        /**
+         * Creates a new NetworkConfigProvider.
+         */
+        public NetworkConfigProvider() {}
+
+        /**
+         * Creates a new NetworkConfigProvider.
+         *
+         * @param sd Use data from this ServiceDescription.
+         */
+        public NetworkConfigProvider(ServiceDescription sd) {
+            this.name = sd.getServiceId();
+            this.type = Type.valueOf(sd.getServiceProtocol().name());
+            this.address = sd.getServiceHost();
+            this.port = sd.getServicePort();
+        }
 
         //
         // Methods
