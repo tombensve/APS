@@ -3,33 +3,33 @@
  * PROJECT
  *     Name
  *         APS TCPIP Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides an implementation of APSTCPIPService. This service does not provide any security of its own,
  *         but makes use of APSTCPSecurityService, and APSUDPSecurityService when available and configured for
  *         security.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -42,6 +42,9 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.net.tcpip.*
 import se.natusoft.osgi.aps.tcpipsvc.ConnectionProvider.Direction
+import se.natusoft.osgi.aps.tcpipsvc.config.GroupConfig
+import se.natusoft.osgi.aps.tcpipsvc.config.NamedConfig
+import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.tcpipsvc.meta.APSTCPIPServiceMetaData
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
@@ -166,6 +169,29 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
         this.logger.debug("removeTcpRequestListener - name:${name}")
         TCPReceiver receiver = (TCPReceiver)this.configResolver.resolve(name, Direction.Read, NetworkConfig.Type.TCP)
         receiver.removeListener()
+    }
+
+    /**
+     * Returns a list of configuration names matching the specified regular expression.
+     *
+     * @param regexp A regexp to limit the result.
+     *
+     * @return A list of matching names or null if none matches.
+     */
+    @Override
+    List<String> getMatchingConfigNames(String regexp) {
+        LinkedList<String> allNames = new  LinkedList<>()
+
+        TCPIPConfig.managed.get().groupConfigs.each { GroupConfig gc ->
+            gc.namedConfigs.each { NamedConfig nc ->
+                String entryFullName = "${gc.groupName}/${nc.configName}"
+                if (entryFullName.matches(regexp)) {
+                    allNames += entryFullName
+                }
+            }
+        }
+
+        return allNames
     }
 
     /**

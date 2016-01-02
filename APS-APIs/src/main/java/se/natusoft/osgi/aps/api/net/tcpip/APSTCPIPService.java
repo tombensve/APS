@@ -89,6 +89,15 @@ public interface APSTCPIPService extends APSServiceProperties {
     void removeTCPRequestListener(String name);
 
     /**
+     * Returns a list of configuration names matching the specified regular expression.
+     *
+     * @param regexp A regexp to limit the result.
+     *
+     * @return A list of matching names or null if none matches.
+     */
+    List<String> getMatchingConfigNames(String regexp);
+
+    /**
      * Adds a network configuration in addition to those configured in standard APS configuration.
      *
      * Do note that the name in the config must be unique!
