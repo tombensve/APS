@@ -3,33 +3,33 @@
  * PROJECT
  *     Name
  *         APS TCPIP Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides an implementation of APSTCPIPService. This service does not provide any security of its own,
  *         but makes use of APSTCPSecurityService, and APSUDPSecurityService when available and configured for
  *         security.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -40,8 +40,8 @@ package se.natusoft.osgi.aps.tcpipsvc
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.net.tcpip.NetworkConfig
-import se.natusoft.osgi.aps.api.net.tcpip.UDPListener
+import se.natusoft.osgi.aps.api.net.tcpip.DatagramPacketListener
+import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.tcpipsvc.security.UDPSecurityHandler
 import se.natusoft.osgi.aps.tools.APSLogger
 
@@ -61,8 +61,8 @@ class UDPReceiver implements ConnectionProvider {
     // Properties
     //
 
-    /** Our config */
-    ConfigWrapper config
+    /** The connection point for this receiver. */
+    URI connectionPoint
 
     /** A logger to log to. */
     APSLogger logger
@@ -78,7 +78,7 @@ class UDPReceiver implements ConnectionProvider {
     protected DatagramSocket socket = null
 
     /** The registered listeners. */
-    protected List<UDPListener> listeners = new LinkedList<>()
+    protected List<DatagramPacketListener> listeners = new LinkedList<>()
 
     /** This is started when a listener is added. */
     protected UDPReceiverThread receiverThread = null
@@ -113,23 +113,6 @@ class UDPReceiver implements ConnectionProvider {
     }
 
     /**
-     * This method is called when configuration have been updated.
-     */
-    @Override
-    void configChanged() {
-        disconnect()
-        connect()
-    }
-
-    /**
-     * Returns the type of the connection.
-     */
-    @Override
-    NetworkConfig.Type getType() {
-        NetworkConfig.Type.UDP
-    }
-
-    /**
      * Returns the direction of the connection.
      */
     @Override
@@ -141,7 +124,7 @@ class UDPReceiver implements ConnectionProvider {
      * Creates the socket.
      */
     protected void createSocket() {
-        this.socket = new DatagramSocket(new InetSocketAddress(config.host, config.port))
+        this.socket = new DatagramSocket(new InetSocketAddress(this.connectionPoint.host, this.connectionPoint.port))
         this.socket.soTimeout = RECEIVE_TIMEOUT
         this.socket.reuseAddress = true
         this.socket.broadcast = false
@@ -158,10 +141,10 @@ class UDPReceiver implements ConnectionProvider {
                 createSocket()
             }
             if (!this.listeners.empty && this.receiverThread == null) {
-                this.receiverThread = new UDPReceiverThread(listeners: this.listeners, logger: this.logger, config: this.config,
-                        receiver: this)
+                this.receiverThread = new UDPReceiverThread(listeners: this.listeners, logger: this.logger,
+                        connectionPoint: this.connectionPoint, receiver: this)
                 this.receiverThread.start()
-                this.logger.info("UDP Receiver for ${this.config.host}:${this.config.port} was started!")
+                this.logger.info("UDP Receiver for port ${this.connectionPoint.port} was started!")
             }
         }
     }
@@ -183,7 +166,7 @@ class UDPReceiver implements ConnectionProvider {
             }
             this.socket.disconnect()
             this.socket = null
-            this.logger.info("UDP Receiver for ${this.config.host}:${this.config.port} was stopped!")
+            this.logger.info("UDP Receiver for port ${this.connectionPoint.port} was stopped!")
         }
     }
 
@@ -192,7 +175,7 @@ class UDPReceiver implements ConnectionProvider {
      *
      * @param listener The listener to add.
      */
-    public synchronized void addListener(UDPListener listener) {
+    public synchronized void addListener(DatagramPacketListener listener) {
         this.listeners += listener
         if (this.listeners.size() == 1) {
             connect()
@@ -204,7 +187,7 @@ class UDPReceiver implements ConnectionProvider {
      *
      * @param listener The listener to remove.
      */
-    public synchronized void removeListener(UDPListener listener) {
+    public synchronized void removeListener(DatagramPacketListener listener) {
         if (listener == null) {
             this.listeners.clear()
         }
@@ -212,10 +195,7 @@ class UDPReceiver implements ConnectionProvider {
             this.listeners -= listener
         }
         if (this.listeners.size() == 0) {
-            if (this.receiverThread != null) {
-                this.receiverThread.stopThread()
-                this.receiverThread = null
-            }
+            disconnect()
         }
     }
 
@@ -233,7 +213,9 @@ class UDPReceiver implements ConnectionProvider {
             connect()
             DatagramPacket dp = new DatagramPacket(data, data.length)
             this.socket.receive(dp)
-            this.securityHandler.unsecure(this.config.name, dp, this.config.secure)
+            if (this.connectionPoint.getFragment() == "secure") {
+                this.securityHandler.unsecure(this.connectionPoint, dp)
+            }
             return dp
         }
 
@@ -261,11 +243,11 @@ public class UDPReceiverThread extends Thread {
     // Properties
     //
 
-    List<UDPListener> listeners
+    List<DatagramPacketListener> listeners
 
     APSLogger logger
 
-    ConfigWrapper config
+    URI connectionPoint
 
     UDPReceiver receiver
 
@@ -302,23 +284,23 @@ public class UDPReceiverThread extends Thread {
     }
 
     public void run() {
-        setName("APSTCPIPService: TCP ReceiverThread[" + this.config.name + "]")
+        setName("APSTCPIPService: TCP ReceiverThread[" + this.connectionPoint+ "]")
 
-        byte[] data = new byte[config.byteBufferSize]
+        byte[] data = new byte[TCPIPConfig.managed.get().byteBufferSize.int]
         startRunning()
 
-        safeLogger.info("UDPReceiverThread(" + config.name + "): Starting up!")
+        safeLogger.info("UDPReceiverThread(" + this.connectionPoint + "): Starting up!")
 
         while (isRunning()) {
             try {
                 DatagramPacket dp = receiver.read(data)
 
-                this.listeners.each { UDPListener listener ->
+                this.listeners.each { DatagramPacketListener listener ->
                     try {
-                        listener.udpDataReceived(config.name, dp)
+                        listener.dataBlockReceived(this.connectionPoint, dp)
                     }
                     catch (Exception e) {
-                        safeLogger.error("Listener call failed for '" + this.config.name + "'! (" + listener + ")", e)
+                        safeLogger.error("Listener call failed for '" + this.connectionPoint + "'! (" + listener + ")", e)
                     }
                 }
             }
@@ -327,7 +309,7 @@ public class UDPReceiverThread extends Thread {
             }
         }
 
-        safeLogger.info("UDPReceiverThread(" + this.config.name + "): Shutting down!")
+        safeLogger.info("UDPReceiverThread(" + this.connectionPoint + "): Shutting down!")
     }
 }
 

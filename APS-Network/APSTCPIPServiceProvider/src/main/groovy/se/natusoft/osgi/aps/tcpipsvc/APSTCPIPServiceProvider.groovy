@@ -40,13 +40,14 @@ package se.natusoft.osgi.aps.tcpipsvc
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.net.tcpip.*
+import se.natusoft.osgi.aps.api.net.tcpip.APSTCPIPService
+import se.natusoft.osgi.aps.api.net.tcpip.DatagramPacketListener
+import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequest
+import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequestListener
 import se.natusoft.osgi.aps.tcpipsvc.ConnectionProvider.Direction
-import se.natusoft.osgi.aps.tcpipsvc.config.GroupConfig
-import se.natusoft.osgi.aps.tcpipsvc.config.NamedConfig
-import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.tcpipsvc.meta.APSTCPIPServiceMetaData
 import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
 
@@ -68,151 +69,139 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
     private APSLogger logger
 
     @Managed
-    private ConfigResolver configResolver
+    private ConnectionResolver connectionResolver
 
     @Managed(name = "META-DATA")
     private APSTCPIPServiceMetaData metaData
+
+    private Map<URI, UDPReceiver> udpReceivers = Collections.synchronizedMap(new HashMap<URI, UDPReceiver>())
+
+    private Map<URI, TCPReceiver> tcpReceivers = Collections.synchronizedMap(new HashMap<URI, TCPReceiver>())
 
     //
     // Methods
     //
 
     /**
-     * Sends UDP data.
+     * Sends a block of data.
      *
-     * @param name The name of a configuration specifying address and port or multicast and port.
-     * @param data The data to send.
+     * @param connectionPoint Where to send it. Allows udp://... and multicast://...
+     * @param content The data to send.
      *
-     * @throws IOException The one and only!
-     * @throws IllegalArgumentException on bad name.
+     * @throws IOException on any communication problem.
+     * @throws IllegalArgumentException on bad URI.
      */
     @Override
-    void sendUDP(String name, byte[] data) throws IOException {
-        this.logger.debug("sendUDP - name:${name}, data-size: ${data.length}")
+    void sendDataPacket(URI connectionPoint, byte[] content) throws IOException {
         // Do note that MulticastSender extends UDPSender!
-        UDPSender sender = (UDPSender)this.configResolver.resolve(name, Direction.Write, NetworkConfig.Type.UDP)
-        sender.send(data)
+        UDPSender sender = this.connectionResolver.resolve(connectionPoint, Direction.Write) as UDPSender
+        sender.send(content)
     }
 
     /**
-     * Adds a listener for received udp data.
+     * Adds a listener on incoming data packets. UDP and Multicast protocols are allowed here.
      *
-     * @param name The name of a configuration specifying address and port or multicast and port.
-     * @param listener The listener to call back with messages.
+     * @param connectionPoint Receive point to listen to.
+     * @param dataPacketListener The listener to call when data arrives.
      *
-     * @throws IllegalArgumentException on bad name.
+     * @throws IllegalArgumentException on bad URI.
      */
     @Override
-    void addUDPListener(String name, UDPListener listener) {
-        this.logger.debug("addUDPListener - name:${name}, listener:${listener}")
-        // Do note that MulticastReceiver extends UDPReceiver!
-        UDPReceiver receiver =(UDPReceiver)this.configResolver.resolve(name, Direction.Read, NetworkConfig.Type.UDP)
-        receiver.addListener(listener)
+    void addDataPacketListener(URI connectionPoint, DatagramPacketListener dataPacketListener) throws IOException {
+        UDPReceiver receiver = this.udpReceivers.get(connectionPoint)
+        if (receiver == null) {
+            receiver = this.connectionResolver.resolve(connectionPoint, Direction.Read) as UDPReceiver
+            this.udpReceivers.put(connectionPoint, receiver)
+        }
+
+        receiver.addListener(dataPacketListener)
     }
 
     /**
-     * Removes a listener for received udp data.
+     * Removes a previously added listener. UDP and Multicast protocols are allowed here.
      *
-     * @param name The name of a configuration specifying address and port or multicast and port.
-     * @param listener The listener to remove.
+     * @param connectionPoint The receive point to remove listener for.
+     * @param dataPacketListener The listener to remove.
      *
-     * @throws IllegalArgumentException on bad name.
+     * @throws IllegalArgumentException on bad URI.
      */
     @Override
-    void removeUDPListener(String name, UDPListener listener) {
-        this.logger.debug("removeUDPListener - name:${name}, listener:${listener}")
-        // Do note that MulticastReceiver extends UDPReceiver!
-        UDPReceiver receiver =(UDPReceiver)this.configResolver.resolve(name, Direction.Read, NetworkConfig.Type.UDP)
-        receiver.removeListener(listener)
+    void removeDataPacketListener(URI connectionPoint, DatagramPacketListener dataPacketListener) throws IOException {
+        UDPReceiver receiver = this.udpReceivers.get(connectionPoint)
+        if (receiver != null) {
+            receiver.removeListener(dataPacketListener)
+        }
     }
 
     /**
-     * Sends a TCP request on a named TCP config.
+     * Sends a TCP request
      *
-     * @param name The named config to send to.
+     * @param connectionPoint Where to send the request.
+     * @param request An implementation of StreamedRequest for writing the request and reading the response.
      *
-     * @return An OutputStream to write request to. **Do close this!**
-     *
-     * @throws IllegalArgumentException on bad name.
+     * @throws IOException on any communication problems.
+     * @throws IllegalArgumentException on bad URI.
      */
     @Override
-    void sendTCPRequest(String name, TCPRequest request)  throws IOException {
-        this.logger.debug("sendTCPRequest - name:${name}, request:${request}")
-        TCPSender sender = (TCPSender)this.configResolver.resolve(name, Direction.Write, NetworkConfig.Type.TCP)
+    void sendStreamedRequest(URI connectionPoint, StreamedRequest request) throws IOException {
+        TCPSender sender = this.connectionResolver.resolve(connectionPoint, Direction.Write) as TCPSender
         sender.send(request)
     }
 
     /**
-     * Sets a listener for incoming TCP requests. There can only be one per name.
+     * Sets a streamed request listener for a specific receive point.
      *
-     * @param name The named config to add listener for.
-     * @param listener The listener to add.
+     * @param connectionPoint The receive point to set listener for.
+     * @param streamedRequestListener The listener to set.
      *
-     * @throws IllegalArgumentException on bad name.
+     * @throws IllegalArgumentException on bad URI or if there already is a listener set for the receive point.
      */
     @Override
-    void setTCPRequestListener(String name, TCPListener listener) {
-        this.logger.debug("setTcpRequestListener - name:${name}, listener:${listener}")
-        TCPReceiver receiver = (TCPReceiver)this.configResolver.resolve(name, Direction.Read, NetworkConfig.Type.TCP)
-        receiver.setListener(listener)
+    void setStreamedRequestListener(URI connectionPoint, StreamedRequestListener streamedRequestListener) throws IOException {
+        TCPReceiver receiver = this.tcpReceivers.get(connectionPoint)
+        if (receiver == null) {
+            receiver = this.connectionResolver.resolve(connectionPoint, Direction.Read) as TCPReceiver
+            this.tcpReceivers.put(connectionPoint, receiver)
+        }
+        receiver.setListener(streamedRequestListener)
     }
 
     /**
-     * Removes a listener for incoming TCP requests.
+     * Removes the streamed request listener for the specified receive point.
      *
-     * @param name The named config to remove a listener for.
+     * @param connectionPoint The receive point to remove listener for.
+     * @param streamedRequestListener The listener to remove.
      *
-     * @throws IllegalArgumentException on bad name.
+     * @throws IllegalArgumentException on bad URI.
      */
     @Override
-    void removeTCPRequestListener(String name) {
-        this.logger.debug("removeTcpRequestListener - name:${name}")
-        TCPReceiver receiver = (TCPReceiver)this.configResolver.resolve(name, Direction.Read, NetworkConfig.Type.TCP)
-        receiver.removeListener()
+    void removeStreamedRequestListener(URI connectionPoint, StreamedRequestListener streamedRequestListener) throws IOException {
+        TCPReceiver receiver = this.tcpReceivers.get(connectionPoint)
+        if (receiver != null) {
+            receiver.removeListener()
+        }
     }
 
-    /**
-     * Returns a list of configuration names matching the specified regular expression.
-     *
-     * @param regexp A regexp to limit the result.
-     *
-     * @return A list of matching names or null if none matches.
-     */
-    @Override
-    List<String> getMatchingConfigNames(String regexp) {
-        LinkedList<String> allNames = new  LinkedList<>()
-
-        TCPIPConfig.managed.get().groupConfigs.each { GroupConfig gc ->
-            gc.namedConfigs.each { NamedConfig nc ->
-                String entryFullName = "${gc.groupName}/${nc.configName}"
-                if (entryFullName.matches(regexp)) {
-                    allNames += entryFullName
-                }
+    @BundleStop
+    public void shutdown() {
+        this.udpReceivers.keySet().each { URI connectionPoint ->
+            UDPReceiver receiver = this.udpReceivers.get(connectionPoint)
+            try {
+                receiver.stop()
+            }
+            catch (Exception e) {
+                this.logger.error("Failed to shutdown UDPReceiver(${connectionPoint})!", e)
             }
         }
 
-        return allNames
-    }
-
-    /**
-     * Adds a network configuration in addition to those configured in standard APS configuration.
-     *
-     * Do note that the name in the config must be unique!
-     *
-     * @param networkConfig The network config to register.
-     */
-    @Override
-    void addServiceConfig(NetworkConfig networkConfig) {
-        this.configResolver.addServiceConfig(networkConfig)
-    }
-
-    /**
-     * Removes a previously added network config by its name.
-     *
-     * @param name The name in the registered config to delete.
-     */
-    @Override
-    void removeServiceConfig(String name) {
-        this.configResolver.removeServiceConfig(name)
+        this.tcpReceivers.keySet().each { URI connectionPoint ->
+            TCPReceiver receiver = this.tcpReceivers.get(connectionPoint)
+            try {
+                receiver.stop()
+            }
+            catch (Exception e) {
+                this.logger.error("Failed to shutdown TCPReceiver(${connectionPoint})!", e)
+            }
+        }
     }
 }

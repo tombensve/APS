@@ -3,113 +3,102 @@ package se.natusoft.osgi.aps.api.net.tcpip;
 import se.natusoft.osgi.aps.api.APSServiceProperties;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.util.List;
+import java.net.URI;
 
 /**
  * This service provides the following functions:
  *
  * * TCP, UDP & Multicast network traffic.
  *
- * * External configurations of network connections.
+ * * Makes use of APSTCPSecurityService and APSUDPSecurityService if security is selected in configuration
+ *   and above mentioned services are available.
  *
  * * Decoupling from java.net classes allowing for test implementations where network traffic can be
  *   simulated in unit-tests without causing problems when run concurrently in a CI server.
  *
- * The users of this service should also have a config that specifies which config of this service
- * to use.
+ * * Easy to use.
  *
- * If a service both sends TCP request and receives them there need to be 2 different config entries
- * for this.
+ * ## URIs
+ *
+ * Following are examples of connection point URIs:
+ *
+ *     tcp://localhost:8888
+ *     tcp://192.168.1.60:9876
+ *     tcp://some.server:10123
+ *     tcp://some.server:11111#secure
+ *     udp://bad.imagination.net:7519
+ *     udp://bad.imagination.net:8620#secure
+ *     multicast://all-systems.mcast.net:7654
+ *     multicast://all-systems.mcast.net:7654#secure
+ *
+ * When the #secure URI fragment is used the APSTCPSecurityService or the APSUDPSecurityService will be used.
+ * If those services are not available when the #secure fragment is specified then the call will fail.
  */
-@SuppressWarnings("unused")
 public interface APSTCPIPService extends APSServiceProperties {
 
-    /** This can be used for remove UDPListener. */
-    UDPListener ALL_LISTENERS = null;
+    /** This can be used for remove DataBlockListener. */
+    DatagramPacketListener ALL_LISTENERS = null;
 
     /**
-     * Sends UDP data.
+     * Sends a block of data. UDP and Multicast protocols are allowed here.
      *
-     * @param name The name of a configuration specifying address and port or multicast and port.
-     * @param data The data to send.
+     * @param connectionPoint Where to send it.
+     * @param content The data to send.
      *
-     * @throws IOException The one and only!
-     * @throws IllegalArgumentException on unconfigured name.
+     * @throws IOException on any communication problem, and when security is requested and no APSUDPSecurityService is available.
+     * @throws IllegalArgumentException on bad URI.
      */
-    void sendUDP(String name, byte[] data) throws IOException;
+    void sendDataPacket(URI connectionPoint, byte[] content) throws IOException;
 
     /**
-     * Adds a listener for received udp data.
+     * Adds a listener on incoming data packets. UDP and Multicast protocols are allowed here.
      *
-     * @param name The name of a configuration specifying address and port or multicast and port.
-     * @param listener The listener to call back with messages.
+     * @param connectionPoint Receive point to listen to.
+     * @param datagramPacketListener The listener to call when data arrives.
      *
-     * @throws IllegalArgumentException on unconfigured name.
+     * @throws IllegalArgumentException on bad URI.
      */
-    void addUDPListener(String name, UDPListener listener);
+    void addDataPacketListener(URI connectionPoint, DatagramPacketListener datagramPacketListener) throws IOException;
 
     /**
-     * Removes a listener for received udp data.
+     * Removes a previously added listener. UDP and Multicast protocols are allowed here.
      *
-     * @param name The name of a configuration specifying address and port or multicast and port.
-     * @param listener The listener to remove, or null for all.
+     * @param connectionPoint The receive point to remove listener for.
+     * @param datagramPacketListener The listener to remove.
      *
-     * @throws IllegalArgumentException on unconfigured name.
+     * @throws IllegalArgumentException on bad URI.
      */
-    void removeUDPListener(String name, UDPListener listener);
+    void removeDataPacketListener(URI connectionPoint, DatagramPacketListener datagramPacketListener) throws IOException;
 
     /**
-     * Sends a TCP request on a named TCP config.
+     * Sends a TCP request
      *
-     * @param name The named config to send to.
-     * @param request A callback that provides a request output stream and a response input stream.
+     * @param connectionPoint Where to send the request.
+     * @param request An implementation of StreamedRequest for writing the request and reading the response.
      *
-     * @throws IllegalArgumentException on unconfigured name.
+     * @throws IOException on any communication problems, and when security is requested and no APSTCPSecurityService is available.
+     * @throws IllegalArgumentException on bad URI.
      */
-    void sendTCPRequest(String name, TCPRequest request) throws IOException;
+    void sendStreamedRequest(URI connectionPoint, StreamedRequest request) throws IOException;
 
     /**
-     * Sets a listener for incoming TCP requests. There can only be one per name.
+     * Sets a streamed request listener for a specific receive point.
      *
-     * @param name The named config to add listener for.
-     * @param listener The listener to add.
+     * @param connectionPoint The receive point to set listener for.
+     * @param streamedRequestListener The listener to set.
      *
-     * @throws IllegalArgumentException on unconfigured name.
+     * @throws IllegalArgumentException on bad URI or if there already is a listener set for the receive point.
      */
-    void setTCPRequestListener(String name, TCPListener listener);
+    void setStreamedRequestListener(URI connectionPoint, StreamedRequestListener streamedRequestListener) throws IOException;
 
     /**
-     * Removes a listener for incoming TCP requests.
+     * Removes the streamed request listener for the specified receive point.
      *
-     * @param name The named config to remove a listener for.
+     * @param connectionPoint The receive point to remove listener for.
+     * @param streamedRequestListener The listener to remove.
      *
-     * @throws IllegalArgumentException on unconfigured name.
+     * @throws IllegalArgumentException on bad URI.
      */
-    void removeTCPRequestListener(String name);
+    void removeStreamedRequestListener(URI connectionPoint, StreamedRequestListener streamedRequestListener) throws IOException;
 
-    /**
-     * Returns a list of configuration names matching the specified regular expression.
-     *
-     * @param regexp A regexp to limit the result.
-     *
-     * @return A list of matching names or null if none matches.
-     */
-    List<String> getMatchingConfigNames(String regexp);
-
-    /**
-     * Adds a network configuration in addition to those configured in standard APS configuration.
-     *
-     * Do note that the name in the config must be unique!
-     *
-     * @param networkConfig The network config to register.
-     */
-    void addServiceConfig(NetworkConfig networkConfig);
-
-    /**
-     * Removes a previously added network config by its name.
-     *
-     * @param name The name in the registered config to delete.
-     */
-    void removeServiceConfig(String name);
 }

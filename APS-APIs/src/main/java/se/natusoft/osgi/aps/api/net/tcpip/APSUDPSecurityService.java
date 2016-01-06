@@ -1,6 +1,7 @@
 package se.natusoft.osgi.aps.api.net.tcpip;
 
 import java.net.DatagramPacket;
+import java.net.URI;
 import java.util.Map;
 
 /**
@@ -18,11 +19,9 @@ public interface APSUDPSecurityService {
      * Client should however not make any assumptions about the service implementation
      * and always call this method and pass its value back to the other service methods.
      *
-     * @param name This corresponds to the APSTCPIPService config name this security
-     *             context is to be used for. This can be used to map to specific
-     *             configuration just like APSTCPIPService does.
+     * @param connectionPoint This can be used to map to specific configuration.
      */
-    Object createSecurityContext(String name);
+    Object createSecurityContext(URI connectionPoint);
 
     /**
      * Secures the passed data and returns the secured version of it.

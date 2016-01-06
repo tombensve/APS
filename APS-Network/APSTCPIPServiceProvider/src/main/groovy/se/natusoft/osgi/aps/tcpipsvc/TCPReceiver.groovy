@@ -3,33 +3,33 @@
  * PROJECT
  *     Name
  *         APS TCPIP Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides an implementation of APSTCPIPService. This service does not provide any security of its own,
  *         but makes use of APSTCPSecurityService, and APSUDPSecurityService when available and configured for
  *         security.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -40,11 +40,11 @@ package se.natusoft.osgi.aps.tcpipsvc
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.net.tcpip.NetworkConfig
-import se.natusoft.osgi.aps.api.net.tcpip.TCPListener
+import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequestListener
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
 import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException
 import se.natusoft.osgi.aps.tools.util.IntensiveExceptionsGuard
 
 import java.util.concurrent.ExecutorService
@@ -66,8 +66,8 @@ class TCPReceiver implements ConnectionProvider {
     // Properties
     //
 
-    /** Our config */
-    ConfigWrapper config
+    /** The listen connection point. */
+    URI connectionPoint
 
     /** A logger to log to. */
     APSLogger logger
@@ -80,7 +80,7 @@ class TCPReceiver implements ConnectionProvider {
     //
 
     /** There can be only one!. */
-    private TCPListener listener
+    private StreamedRequestListener listener
 
     /** The state of this receiver. */
     private boolean active = false
@@ -121,25 +121,6 @@ class TCPReceiver implements ConnectionProvider {
     }
 
     /**
-     * This method is called when configuration have been updated.
-     */
-    @Override
-    public void configChanged() throws IOException {
-        if (this.active && this.listener != null) {
-            stopReceiverThread()
-            startReceiverThread()
-        }
-    }
-
-    /**
-     * Returns the type of the connection.
-     */
-    @Override
-    public NetworkConfig.Type getType() {
-        return NetworkConfig.Type.TCP
-    }
-
-    /**
      * Returns the direction of the connection.
      */
     @Override
@@ -152,10 +133,10 @@ class TCPReceiver implements ConnectionProvider {
      *
      * @param listener The listener to set.
      */
-    public synchronized void setListener(TCPListener listener) {
-        boolean hasOldListener = this.listener != null
+    public synchronized void setListener(StreamedRequestListener listener) throws IOException {
+        if (this.listener != null) throw new IllegalArgumentException("This receiver (${this.connectionPoint}) already has a listener!")
         this.listener = listener
-        if (!hasOldListener && this.active) {
+        if (active) {
             startReceiverThread()
         }
     }
@@ -164,29 +145,41 @@ class TCPReceiver implements ConnectionProvider {
      * Removes a TCP listener.
      */
     public synchronized void removeListener() {
-        this.listener = null
         if (this.active) {
-            stopReceiverThread()
+            try {
+                stopReceiverThread()
+            }
+            catch (Exception e) {
+                this.logger.error("Failed to stop receiver thread for (${this.connectionPoint}) on removeListener()!", e)
+            }
         }
+        this.listener = null
     }
 
     /**
      * Internal util method to start receiver thread. This is not started until there are listeners.
      */
-    private void startReceiverThread() {
-        this.socket = this.securityHandler.createServerSocket(config.name, config.secure)
+    private void startReceiverThread() throws IOException {
+        if (this.connectionPoint.fragment?.contains("secure")) {
+            if (!this.securityHandler.hasSecurityService()) {
+                throw new IOException("Security has been requested, but APSTCPSecurityService is not available!")
+            }
+            this.socket = this.securityHandler.createServerSocket(this.connectionPoint)
+        }
+        else {
+            this.socket = new ServerSocket(this.connectionPoint.port)
+        }
         // We have to set a timeout here so that socket.accept() does not wait forever. See comment in TCPReceiverThread below also.
         // Also note that the timeout should always be less than the join(n) value in stopReceiverThread.
         this.socket.soTimeout = SOCKET_TIMEOUT
-        this.socket.bind(new InetSocketAddress(this.config.host, this.config.port))
         this.receiverThread = new TCPReceiverThread(
-                config: this.config,
+                connectionPoint:  this.connectionPoint,
                 socket: this.socket,
                 listener: this.listener,
                 logger: this.logger
         )
         this.receiverThread.start()
-        this.logger.info("TCP Receiver for ${this.config.host}:${this.config.port} was started!")
+        this.logger.info("TCP Receiver for port ${this.connectionPoint.port} was started!")
     }
 
     /**
@@ -205,7 +198,7 @@ class TCPReceiver implements ConnectionProvider {
             }
             this.socket.close()
             this.socket = null
-            this.logger.info("TCP Receiver for ${this.config.host}:${this.config.port} was stopped!")
+            this.logger.info("TCP Receiver for port ${this.connectionPoint.port} was stopped!")
         }
     }
 
@@ -233,14 +226,14 @@ public class TCPReceiverThread extends Thread {
     /** To log to. */
     APSLogger logger
 
-    /** The instance config. */
-    ConfigWrapper config
+    /** The connection point for the receiver socket. */
+    URI connectionPoint
 
     /** The ServerSocket to listen to. */
     ServerSocket socket
 
     /** A listener to call on received request. */
-    TCPListener listener
+    StreamedRequestListener listener
 
     //
     // Private Members
@@ -279,7 +272,7 @@ public class TCPReceiverThread extends Thread {
     }
 
     public void run() {
-        setName("APSTCPIPService: TCP ReceiverThread[" + this.config.name + "]")
+        setName("APSTCPIPService: TCP ReceiverThread[" + this.connectionPoint + "]")
 
         long intensity
         int maxExceptions
@@ -301,7 +294,7 @@ public class TCPReceiverThread extends Thread {
 
         startRunning()
 
-        safeLogger.info("TCPReceiverThread(" + this.config.name + "): Starting up!")
+        safeLogger.info("TCPReceiverThread(" + this.connectionPoint + "): Starting up!")
 
         try {
             while (keepRunning()) {
@@ -310,7 +303,7 @@ public class TCPReceiverThread extends Thread {
 
                     this.callbackPool.execute(
                             new SocketCallbackTask(
-                                    config: this.config,
+                                    connectionPoint: this.connectionPoint,
                                     clientSocket: clientSocket,
                                     exceptionGuard: exceptionGuardCallback,
                                     listener: this.listener,
@@ -344,7 +337,7 @@ public class TCPReceiverThread extends Thread {
             this.callbackPool.shutdown()
         }
 
-        safeLogger.info("TCPReceiverThread(" + this.config.name + "): Shutting down!")
+        safeLogger.info("TCPReceiverThread(" + this.connectionPoint + "): Shutting down!")
     }
 }
 
@@ -361,8 +354,8 @@ public class SocketCallbackTask implements Runnable {
     /** A logger to log to. */
     APSLogger logger
 
-    /** Instance config */
-    ConfigWrapper config
+    /** The connection point for the socket triggering the callback. */
+    URI connectionPoint
 
     /** The socket to read request data from and write response to. */
     Socket clientSocket
@@ -371,7 +364,7 @@ public class SocketCallbackTask implements Runnable {
     IntensiveExceptionsGuard<Exception> exceptionGuard
 
     /** The listener to call. */
-    TCPListener listener
+    StreamedRequestListener listener
 
     //
     // Methods
@@ -382,7 +375,11 @@ public class SocketCallbackTask implements Runnable {
             InputStream requestStream = new TCPInputStreamWrapper(wrapee: clientSocket.inputStream, logger: this.logger)
             OutputStream responseStream = new TCPOutputStreamWrapper(wrapee: clientSocket.outputStream, logger: this.logger)
 
-            listener.tcpRequestReceived(config.name, clientSocket.inetAddress, requestStream, responseStream)
+            if (this.connectionPoint.fragment?.contains("async")) {
+                responseStream.allowWrite = false
+            }
+
+            listener.requestReceived(this.connectionPoint, requestStream, responseStream)
             this.exceptionGuard.clearCount()
         }
         catch (Exception e) {

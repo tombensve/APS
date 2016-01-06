@@ -3,33 +3,33 @@
  * PROJECT
  *     Name
  *         APS TCPIP Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides an implementation of APSTCPIPService. This service does not provide any security of its own,
  *         but makes use of APSTCPSecurityService, and APSUDPSecurityService when available and configured for
  *         security.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -54,8 +54,8 @@ class UDPSender implements ConnectionProvider {
     // Properties
     //
 
-    /** Our config */
-    ConfigWrapper config
+    /** The connection point to send to. */
+    URI connectionPoint
 
     /** A logger to log to. */
     APSLogger logger
@@ -87,7 +87,6 @@ class UDPSender implements ConnectionProvider {
      */
     @Override
     void start() throws IOException {
-        if (config == null) throw new IOException("A ConfigWrapper has not been supplied to this instance!")
         this.stopped = false
     }
 
@@ -101,23 +100,6 @@ class UDPSender implements ConnectionProvider {
         this.stopped = true
         disconnect()
         this.targetSocketAddress = null
-    }
-
-    /**
-     * This method is called when configuration have been updated.
-     */
-    @Override
-    void configChanged() {
-        disconnect()
-        connect()
-    }
-
-    /**
-     * Returns the type of the connection.
-     */
-    @Override
-    NetworkConfig.Type getType() {
-        NetworkConfig.Type.UDP
     }
 
     /**
@@ -165,7 +147,7 @@ class UDPSender implements ConnectionProvider {
      */
     protected InetSocketAddress getTargetAddress() {
         if (this.targetSocketAddress == null) {
-            this.targetSocketAddress = new InetSocketAddress(config.host, config.port)
+            this.targetSocketAddress = new InetSocketAddress(this.connectionPoint.host, this.connectionPoint.port)
         }
         this.targetSocketAddress
     }
@@ -181,7 +163,9 @@ class UDPSender implements ConnectionProvider {
         if (!this.stopped) {
             connect()
             DatagramPacket dp = new DatagramPacket(data, data.length, targetAddress)
-            this.securityHandler.secure(this.config.name, dp, this.config.secure)
+            if (this.connectionPoint.getFragment() == "secure") {
+                this.securityHandler.secure(this.connectionPoint, dp)
+            }
             this.socket.send(dp)
         }
     }

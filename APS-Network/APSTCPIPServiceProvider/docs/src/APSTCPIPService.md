@@ -5,25 +5,31 @@ The following are the points of this service:
 
 * Simple TCP/IP usage.
 
-* Remove all host, port, and partly protocol from the client code by only referencing a named configuration provided by the service. 
+* Makes use of an URI to provide what I call a "connection point". tcp:, udp:, and multicast: are supported protocols.
 
-   * It is however possible to register a temporary config from code and then use it for some flexibility in supporting targets received elsewhere.
-
-* Being able to transparently provide different implementations, like a plain non secure implementation as this is, or an SSL:ed version for TCP. A Test implementation that opens no real sockets nor sends any real packets that can be used by tests are also a possibility.
+Do note that you do need to have a basic understanding of TCP/IP to use this service!
 
 ## Security
+Makes use of 2 separate services if available for security: _APSTCPSecurityService_ and _APSUDPSecurityService_. Neither these nor APSTCPIPService makes any assumptions nor demands on the what and how of the security services implementations. The APSTCPSecurityService must provide secure versions of Socket and ServerSocket, while APSUDPSecureService have 2 methods, one to encrypt the data and one to decrypt the data in a DatagramPacket.
 
-This implementation is non secure! It sets the following property on the registered service:
+APS currently does not provide any implementation of the APS(TCP/UDP)SecurityService.
 
-    aps.props.security=nonsecure
+## Connection Point URIs
+The service makes use of URIs to specify where to connect for sending or receiving.
 
-## How it works
+The URI format is this:
 
-The service registers an APSConfigService configuration with that service where configurations for TCP, UDP or Multicast connections can be defined. Each configuration entry basically specifies host, port and protocol in addition to a unique name for the entry. Do note that in most cases there needs to be separate entries for clients and services.
+&nbsp;&nbsp;&nbsp;&nbsp;__protocol://host:port#fragment,fragment__
 
-The client code should have a configuration of itself that specifies the named entry to use. This name is then passed to the service which then uses the named config. The client just reads/writes without having to care where from or to. 
+Protocols:
 
-There is a special feature, when a client tries to use a named configuration that has not been configured nor added by the service code nor other service, then as a last resort the APSSimpleDiscoveryService is called if available to see if it has an entry matching the specified name. If so that is used, otherwise an APSConfigException is thrown. 
+&nbsp;&nbsp;&nbsp;&nbsp;__tcp, udp, multicast__
+
+Fragments:
+
+&nbsp;&nbsp;&nbsp;&nbsp;__secure__ - If specified then one of the APS(TCP/UDP)SecurityService services will be used.
+ 
+&nbsp;&nbsp;&nbsp;&nbsp;__async__ (only valid on _tcp_ protocol)
 
 ## Examples
 
@@ -32,8 +38,8 @@ There is a special feature, when a client tries to use a named configuration tha
 
     APSTCPIPService tcpipSvc;
     ...
-    tcpipSvc.sendTCPRequest("somesvc", new TCPRequest() {
-        void tcpRequest(OutputStream requestStream, InputStream responseStream) throws IOException {
+    tcpipSvc.sendStreamedRequest(new URI("tcp://localhost:9999"), new StreamedRequest() {
+        void sendRequest(URI connectionPoint, OutputStream requestStream, InputStream responseStream) throws IOException {
             // write to requestStream ...
     
             // read from response stream ...
@@ -45,30 +51,40 @@ There is a special feature, when a client tries to use a named configuration tha
 
     APSTCPIPService tcpipSvc;
     ...
-    tcpipSvc.setTCPRequestListener("remotesvc", this);
+    tcpipSvc.setStreamedRequestListener(new URI("tcp:localhost:9999"), this);
     ...
-    void tcpRequestReceived(String name, InetAddress address, InputStream reqStreamn, OutputStream respStream) throws IOException {
+    void requestReceived(URI receivePoint, InputStream requestStream, OutputStream responseStream) {
         // Read request from reqStream ...
     
         // Write response to respStream ...
     }
 
+Note that there can only be one listener per URI.
 
 ### UDP / Multicast
 
-Since Multicast uses UDP packets there is no difference between host and port connected UDP or Multicast. The only difference is in the configuration where "UDP" is specified for point to point UDP packets and "Multicast" is specified for multicast packets.
+Since Multicast uses UDP packets there is no difference between host and port connected UDP or Multicast. The only difference is in the URI where "udp://" is specified for UDP packets and "multicast://" is specified for multicast packets.
 
 #### Write
 
     APSTCPIPService tcpipSvc;
     ...
     bytes[] bytes = "Some data".getBytes();
-    tcpipSvc.sendUDP("myudptarget",  bytes);
+    tcpipSvc.sendDataPacket(new URI("udp://localhost:9999"),  bytes);
+
+or  
+
+    tcpipSvc.sendDataPacket(new URI("multicast://all-systems.mcast.net:9999"), bytes);
 
 #### READ
 
     APSTCPIPService tcpipSvc;
     ...
-    byte[] packetBuff = new byte[4000];
-    DatagramPacket packet = tcpipSvc.readUDP("myudpsomething", packetBuff);
-    byte[] data = packet.getData(); // This is actually packetBuff being returned!
+    tcpipSvc.addDataPacketListener(new URI("udp://localhost:9999"), this);
+    ...
+    void dataBlockReceived(URI receivePoint, DatagramPacket packet) {
+        byte[] bytes = packet.getData();
+        ...
+    }
+    
+
