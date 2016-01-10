@@ -26,7 +26,7 @@ class MCastSendTask implements Runnable {
     APSTCPIPService tcpipService
 
     /** A named config in the APSTCPIPService to use. */
-    String mcastConfig
+    URI mcastConnectionPoint
 
     /** For logging failures. */
     APSLogger logger
@@ -40,10 +40,10 @@ class MCastSendTask implements Runnable {
      */
     public void run() {
         try {
-            this.tcpipService.sendUDP(this.mcastConfig, ReadWriteTools.toBytes(headerByte, serviceDescription))
+            this.tcpipService.sendDataPacket(this.mcastConnectionPoint, ReadWriteTools.toBytes(headerByte, serviceDescription))
         }
         catch (Exception e) {
-            this.logger.error("Failed multicast send task for '${mcastConfig}'!", e)
+            this.logger.error("Failed multicast send task for '${mcastConnectionPoint}'!", e)
         }
     }
 }

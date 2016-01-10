@@ -85,7 +85,7 @@
         <mixin.plugin.version>0.1-alpha-34</mixin.plugin.version>
         <clm.version>2.1.6</clm.version>
         <ftpPlugin.version>1.0.1</ftpPlugin.version>
-        <markdownDoc.version>1.4</markdownDoc.version>
+        <markdownDoc.version>1.4.2</markdownDoc.version>
         <groovyVersion>2.4.4</groovyVersion>
     </properties>
 

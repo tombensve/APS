@@ -4,7 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescription
 import se.natusoft.osgi.aps.api.net.tcpip.APSTCPIPService
-import se.natusoft.osgi.aps.api.net.tcpip.TCPRequest
+import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequest
 import se.natusoft.osgi.aps.tools.APSLogger
 
 /**
@@ -26,8 +26,8 @@ class TCPSendTask implements Runnable {
     /** The service to send with. */
     APSTCPIPService tcpipService
 
-    /** The APSTCPIPService named config to use for sending. */
-    String tcpSendConfig
+    /** The TCP connection point to send to. */
+    URI tcpSendConnectionPoint
 
     /** Failures are logged on this. */
     APSLogger logger
@@ -41,17 +41,17 @@ class TCPSendTask implements Runnable {
      */
     public void run() {
         try {
-            this.tcpipService.sendTCPRequest(tcpSendConfig, new TCPRequest() {
-                void tcpRequest(OutputStream requestStream, InputStream responseStream) throws IOException {
+            this.tcpipService.sendStreamedRequest(tcpSendConnectionPoint, new StreamedRequest() {
+                @Override
+                void sendRequest(URI sendPoint, OutputStream requestStream, InputStream responseStream) throws IOException {
                     ObjectOutputStream ooStream = new ObjectOutputStream(requestStream)
                     ReadWriteTools.writeServiceDescription(headerByte, serviceDescription, ooStream)
-                    ooStream.close()
-                    requestStream.close()
+                    ooStream.flush()
                 }
             })
         }
         catch (Exception e) {
-            this.logger.error("Failed TCP send task for '${tcpSendConfig}'!", e)
+            this.logger.error("Failed TCP send task for '${tcpSendConnectionPoint}'!", e)
         }
     }
 }

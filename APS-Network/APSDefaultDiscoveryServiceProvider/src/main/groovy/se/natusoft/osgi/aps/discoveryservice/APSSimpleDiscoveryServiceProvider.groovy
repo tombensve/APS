@@ -3,20 +3,15 @@ package se.natusoft.osgi.aps.discoveryservice
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.docutations.Implements
-import se.natusoft.osgi.aps.api.net.discovery.exception.APSDiscoveryPublishException
+import se.natusoft.osgi.aps.api.net.discovery.exception.APSDiscoveryException
 import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescription
 import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescriptionProvider
 import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService
 import se.natusoft.osgi.aps.discoveryservice.config.DiscoveryConfig
 import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
-import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+import se.natusoft.osgi.aps.tools.annotation.activator.*
 import se.natusoft.osgi.aps.tools.util.LoggingRunnable
 
-import javax.xml.ws.Service
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
@@ -92,6 +87,8 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
 
         this.refreshThreadPool.scheduleAtFixedRate(this.clearExpiredTask, 120, 120, TimeUnit.SECONDS)
 
+        // Needed due to IDEA bug. The 'this.logger' reference is perfectly OK.
+        //noinspection GroovyAccessibility
         this.executorService.submit(new LoggingRunnable(this.logger) {
             @Override
             void doRun() {
@@ -191,11 +188,11 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
      *
      * @param service The description of the servcie to publish.
      *
-     * @throws APSDiscoveryPublishException on problems to publish (note: this is a runtime exception!).
+     * @throws APSDiscoveryException on problems to publish (note: this is a runtime exception!).
      */
     @Override
     @Implements(APSSimpleDiscoveryService.class)
-    void publishService(ServiceDescription service) throws APSDiscoveryPublishException {
+    void publishService(ServiceDescription service) throws APSDiscoveryException {
         this.localServices.add(service)
         this.discoverer.sendUpdate(service, HB_ADD)
     }
@@ -206,11 +203,11 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
      *
      * @param service The service to unpublish.
      *
-     * @throws APSDiscoveryPublishException on problems to publish (note: this is a runtime exception!).
+     * @throws APSDiscoveryException on problems to publish (note: this is a runtime exception!).
      */
     @Override
     @Implements(APSSimpleDiscoveryService.class)
-    void unpublishService(ServiceDescription service) throws APSDiscoveryPublishException {
+    void unpublishService(ServiceDescription service) throws APSDiscoveryException {
         this.localServices.remove(service)
         this.discoverer.sendUpdate(service, HB_REMOVE)
     }

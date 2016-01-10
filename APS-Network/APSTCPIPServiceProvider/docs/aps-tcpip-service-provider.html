@@ -21,30 +21,44 @@
       </li>
       <li>
         <p>
-          Remove all host, port, and partly protocol from the client code by only referencing a named configuration provided by the service.          
-        </p>
-      </li>
-      <li>
-        <p>
-          Being able to transparently provide different implementations, like a plain non secure implementation as this is, or an SSL:ed version for TCP. A Test implementation that opens no real sockets nor sends any real packets that can be used by tests are also a possibility.          
+          Makes use of an URI to provide what I call a "connection point". tcp:, udp:, and multicast: are supported protocols.          
         </p>
       </li>
     </ul>
+    <p>
+      Do note that you do need to have a basic understanding of TCP/IP to use this service!      
+    </p>
     <H2>Security</H2>
     <p>
-      This implementation is non secure! It sets the following property on the registered service:      
-    </p>
-    <pre>
-      <code>
-    aps.props.security=nonsecure
-      </code>
-    </pre>
-    <H2>How it works</H2>
-    <p>
-      The service registers an APSConfigService configuration with that service where configurations for TCP, UDP or Multicast connections can be defined. Each configuration entry basically specifies host, port and protocol in addition to a unique name for the entry. Do note that in most cases there needs to be separate entries for clients and services.      
+      Makes use of 2 separate services if available for security: <em>APSTCPSecurityService</em> and <em>APSUDPSecurityService</em>. Neither these nor APSTCPIPService makes any assumptions nor demands on the what and how of the security services implementations. The APSTCPSecurityService must provide secure versions of Socket and ServerSocket, while APSUDPSecureService have 2 methods, one to encrypt the data and one to decrypt the data in a DatagramPacket.      
     </p>
     <p>
-      The client code should have a configuration of itself that specifies the named entry to use. This name is then passed to the service which then only reads or writes data without having to care where from or to.      
+      APS currently does not provide any implementation of the APS(TCP/UDP)SecurityService.      
+    </p>
+    <H2>Connection Point URIs</H2>
+    <p>
+      The service makes use of URIs to specify where to connect for sending or receiving.      
+    </p>
+    <p>
+      The URI format is this:      
+    </p>
+    <p>
+      &nbsp; &nbsp; &nbsp; &nbsp;<strong>protocol://host:port#fragment,fragment</strong>      
+    </p>
+    <p>
+      Protocols:      
+    </p>
+    <p>
+      &nbsp; &nbsp; &nbsp; &nbsp;<strong>tcp</strong>,<strong> udp</strong>,<strong> multicast</strong>      
+    </p>
+    <p>
+      Fragments:      
+    </p>
+    <p>
+      &nbsp; &nbsp; &nbsp; &nbsp;<strong>secure</strong> - If specified then one of the APS(TCP/UDP)SecurityService services will be used.      
+    </p>
+    <p>
+      &nbsp; &nbsp; &nbsp; &nbsp;<strong>async</strong> (only valid on <em>tcp</em> protocol)      
     </p>
     <H2>Examples</H2>
     <H3>TCP</H3>
@@ -53,8 +67,8 @@
       <code>
     APSTCPIPService tcpipSvc;
     ...
-    tcpipSvc.sendTCPRequest("somesvc", new TCPRequest() {
-        void tcpRequest(OutputStream requestStream, InputStream responseStream) throws IOException {
+    tcpipSvc.sendStreamedRequest(new URI("tcp://localhost:9999"), new StreamedRequest() {
+        void sendRequest(URI connectionPoint, OutputStream requestStream, InputStream responseStream) throws IOException {
             // write to requestStream ...
     
             // read from response stream ...
@@ -68,18 +82,21 @@
       <code>
     APSTCPIPService tcpipSvc;
     ...
-    tcpipSvc.setTCPRequestListener("remotesvc", this);
+    tcpipSvc.setStreamedRequestListener(new URI("tcp:localhost:9999"), this);
     ...
-    void tcpRequestReceived(String name, InetAddress address, InputStream reqStreamn, OutputStream respStream) throws IOException {
+    void requestReceived(URI receivePoint, InputStream requestStream, OutputStream responseStream) {
         // Read request from reqStream ...
     
         // Write response to respStream ...
     }
       </code>
     </pre>
+    <p>
+      Note that there can only be one listener per URI.      
+    </p>
     <H3>UDP / Multicast</H3>
     <p>
-      Since Multicast uses UDP packets there is no difference between host and port connected UDP or Multicast. The only difference is in the configuration where "UDP" is specified for point to point UDP packets and "Multicast" is specified for multicast packets.      
+      Since Multicast uses UDP packets there is no difference between host and port connected UDP or Multicast. The only difference is in the URI where "udp://" is specified for UDP packets and "multicast://" is specified for multicast packets.      
     </p>
     <H4>Write</H4>
     <pre>
@@ -87,7 +104,15 @@
     APSTCPIPService tcpipSvc;
     ...
     bytes[] bytes = "Some data".getBytes();
-    tcpipSvc.sendUDP("myudptarget",  bytes);
+    tcpipSvc.sendDataPacket(new URI("udp://localhost:9999"),  bytes);
+      </code>
+    </pre>
+    <p>
+      or      
+    </p>
+    <pre>
+      <code>
+    tcpipSvc.sendDataPacket(new URI("multicast://all-systems.mcast.net:9999"), bytes);
       </code>
     </pre>
     <H4>READ</H4>
@@ -95,9 +120,13 @@
       <code>
     APSTCPIPService tcpipSvc;
     ...
-    byte[] packetBuff = new byte[4000];
-    DatagramPacket packet = tcpiipSvc.readUDP("myudpsomething", packetBuff);
-    byte[] data = packet.getData(); // This is actually packetBuff being returned!
+    tcpipSvc.addDataPacketListener(new URI("udp://localhost:9999"), this);
+    ...
+    void dataBlockReceived(URI receivePoint, DatagramPacket packet) {
+        byte[] bytes = packet.getData();
+        ...
+    }
+    
       </code>
     </pre>
   </body>

@@ -5,11 +5,12 @@ import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue
+import se.natusoft.osgi.aps.api.net.discovery.exception.APSDiscoveryException
 import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescription
 import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescriptionProvider
 import se.natusoft.osgi.aps.api.net.tcpip.APSTCPIPService
-import se.natusoft.osgi.aps.api.net.tcpip.TCPListener
-import se.natusoft.osgi.aps.api.net.tcpip.UDPListener
+import se.natusoft.osgi.aps.api.net.tcpip.DatagramPacketListener
+import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequestListener
 import se.natusoft.osgi.aps.discoveryservice.config.DiscoveryConfig
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
@@ -27,7 +28,8 @@ import static ReadWriteTools.HB_ADD
  */
 @CompileStatic
 @TypeChecked
-class DiscoveryHandler implements UDPListener, TCPListener, APSConfigChangedListener {
+class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListener, APSConfigChangedListener {
+
     //
     // Properties
     //
@@ -39,8 +41,9 @@ class DiscoveryHandler implements UDPListener, TCPListener, APSConfigChangedList
     // Members
     //
 
-    private String _mcastConfig
-    private String _tcpReceiverConfig
+    private URI mcastConnectionPointURI
+    private URI tcpReceiverConnectionPointURI
+    private List<URI> senderURIs
 
     @Managed(name = "executor-service")
     private DiscoveryExecutorService executorService
@@ -97,35 +100,57 @@ class DiscoveryHandler implements UDPListener, TCPListener, APSConfigChangedList
         cleanup()
         this.logger.info("Old setup cleaned ...")
 
-        this._mcastConfig = DiscoveryConfig.managed.get().mcastDiscoveryConfigName.string
-        if (this._mcastConfig != null && this._mcastConfig.empty) {
-            this._mcastConfig = null
+        try {
+            String mcastConnectionPoint = DiscoveryConfig.managed.get().multicastConnectionPoint.string
+            if (mcastConnectionPoint != null && mcastConnectionPoint.empty) {
+                this.mcastConnectionPointURI = null
+            } else {
+                this.mcastConnectionPointURI = new URI(mcastConnectionPoint)
+                this.tcpipService.addDataPacketListener(this.mcastConnectionPointURI, this)
+                this.logger.info("Added multicast listener for named config: " + this.mcastConnectionPointURI)
+            }
         }
-        else {
-            this.tcpipService.addUDPListener(mcastConfig, this)
-            this.logger.info("Added multicast listener for named config: " + this._mcastConfig)
+        catch (URISyntaxException use) {
+            throw new APSDiscoveryException("Bad configuration! 'multicastConnectionPoint' must follow URI syntax!", use)
         }
 
-        this._tcpReceiverConfig = DiscoveryConfig.managed.get().tcpReceiverConfigName.string
-        if (this._tcpReceiverConfig != null && this._tcpReceiverConfig.empty) {
-            this._tcpReceiverConfig = null
+        try {
+            String tcpReceiverConnectionPoint = DiscoveryConfig.managed.get().tcpReceiverConnectionPoint.string
+            if (tcpReceiverConnectionPoint != null && tcpReceiverConnectionPoint.empty) {
+                this.tcpReceiverConnectionPointURI = null
+            } else {
+                this.tcpReceiverConnectionPointURI = new URI(tcpReceiverConnectionPoint)
+                this.tcpipService.setStreamedRequestListener(this.tcpReceiverConnectionPointURI, this)
+                this.logger.info("Set request listener for named config: " + this.tcpReceiverConnectionPointURI)
+            }
         }
-        else {
-            this.tcpipService.setTCPRequestListener(tcpReceiverConfig, this)
-            this.logger.info("Set request listener for named config: " + this._tcpReceiverConfig)
+        catch (URISyntaxException use) {
+            throw new APSDiscoveryException("Bad configuration! 'tcpReceiverConnectionPoint' must follow URI syntax!", use)
+        }
+
+        if (!DiscoveryConfig.managed.get().tcpPublishToConnectionPoints.empty) {
+            try {
+                this.senderURIs = new LinkedList<>()
+                DiscoveryConfig.managed.get().tcpPublishToConnectionPoints.each { APSConfigValue tcpSvcConfig ->
+                    this.senderURIs.add(new URI(tcpSvcConfig.string))
+                }
+            }
+            catch (URISyntaxException use) {
+                throw new APSDiscoveryException("Bad configuration! 'tcpPublishToConnectionPoints' must follow URI syntax!", use)
+            }
         }
 
         this.logger.info("Setup according to new config!")
     }
 
-    void cleanup() {
-        if (this._mcastConfig != null) {
-            this.tcpipService.removeUDPListener(this._mcastConfig, this)
-            this.logger.info("Removed UDP listener for named config: " + this._mcastConfig)
+    synchronized void cleanup() {
+        if (this.mcastConnectionPointURI != null) {
+            this.tcpipService.removeDataPacketListener(this.mcastConnectionPointURI, this)
+            this.logger.info("Removed UDP listener for named config: " + this.mcastConnectionPointURI)
         }
-        if (this._tcpReceiverConfig != null) {
-            this.tcpipService.removeTCPRequestListener(this._tcpReceiverConfig)
-            this.logger.info("Removed TCP listener for named config: " + this._tcpReceiverConfig)
+        if (this.tcpReceiverConnectionPointURI != null) {
+            this.tcpipService.removeStreamedRequestListener(this.tcpReceiverConnectionPointURI, this)
+            this.logger.info("Removed TCP listener for named config: " + this.tcpReceiverConnectionPointURI)
         }
     }
 
@@ -140,14 +165,6 @@ class DiscoveryHandler implements UDPListener, TCPListener, APSConfigChangedList
         this.logger.info("Shutdown complete!")
     }
 
-    synchronized String getMcastConfig() {
-        return this._mcastConfig
-    }
-
-    synchronized String getTcpReceiverConfig() {
-        return this._tcpReceiverConfig
-    }
-
     /**
      * Sends off an update to other nodes.
      *
@@ -157,9 +174,9 @@ class DiscoveryHandler implements UDPListener, TCPListener, APSConfigChangedList
      * @throws IOException The unavoidable ...
      */
     void sendUpdate(ServiceDescription serviceDescription, byte headerByte) throws IOException {
-        if (this.mcastConfig != null) {
+        if (this.mcastConnectionPointURI != null) {
             this.executorService.submit(new MCastSendTask(
-                    mcastConfig: this.mcastConfig,
+                    mcastConnectionPoint: this.mcastConnectionPointURI,
                     headerByte: headerByte,
                     serviceDescription: serviceDescription,
                     tcpipService: this.tcpipService,
@@ -167,10 +184,10 @@ class DiscoveryHandler implements UDPListener, TCPListener, APSConfigChangedList
             ))
         }
 
-        if (!DiscoveryConfig.managed.get().tcpPublishToConfigNames.empty) {
-            DiscoveryConfig.managed.get().tcpPublishToConfigNames.each { APSConfigValue tcpSvcConfig ->
+        if (this.senderURIs != null && !this.senderURIs.empty) {
+            this.senderURIs.each { URI sendURI ->
                 this.executorService.submit(new TCPSendTask(
-                        tcpSendConfig: tcpSvcConfig.string,
+                        tcpSendConnectionPoint: sendURI,
                         headerByte: headerByte,
                         serviceDescription: serviceDescription,
                         tcpipService: this.tcpipService,
@@ -181,15 +198,15 @@ class DiscoveryHandler implements UDPListener, TCPListener, APSConfigChangedList
     }
 
     /**
-     * Received multicast data.
+     * This is called whenever a new data block is received.
      *
-     * @param name The name of a configuration specifying address and port or multicast and port.
-     * @param dataGramPacket The received datagram.
+     * @param receivePoint The receive-point this data came from.
+     * @param packet The actual data received.
      */
     @Override
-    void udpDataReceived(String name, DatagramPacket dataGramPacket) {
+    void dataBlockReceived(URI receivePoint, DatagramPacket packet) {
         ServiceDescriptionProvider serviceDescription = new ServiceDescriptionProvider()
-        byte headerByte = ReadWriteTools.fromBytes(serviceDescription, dataGramPacket.data)
+        byte headerByte = ReadWriteTools.fromBytes(serviceDescription, packet.data)
 
         if (headerByte == HB_ADD) {
             serviceDescription.setLastUpdated(LocalDateTime.now())
@@ -197,34 +214,30 @@ class DiscoveryHandler implements UDPListener, TCPListener, APSConfigChangedList
             // for a new entry to be added.
             this.remoteServices.remove(serviceDescription)
             this.remoteServices.add(serviceDescription)
-        }
-        else {
+        } else {
             this.remoteServices.remove(serviceDescription)
         }
     }
 
     /**
-     * Receives a TCP request stream.
+     * Listeners of requests should implement this.
      *
-     * @param name The name of a configuration specifying address and port that the request comes from.
-     * @param address The address of the request.
-     * @param tcpReqStream The request stream.
-     * @param tcpRespStream The response stream.
-     *
-     * @throws IOException
+     * @param receivePoint The receive-point the listener was registered with.
+     * @param requestStream This contains the request data. DO NOT CLOSE THIS STREAM!
+     * @param responseStream If receive-point is marked as async then this will be null, otherwise a
+     *                       response should be written to this. DO NOT CLOSE THIS STREAM.
      */
     @Override
-    void tcpRequestReceived(String name, InetAddress address, InputStream tcpReqStream, OutputStream tcpRespStream) throws IOException {
+    void requestReceived(URI receivePoint, InputStream requestStream, OutputStream responseStream) throws IOException {
         ServiceDescriptionProvider serviceDescription = new ServiceDescriptionProvider()
-        ObjectInputStream ooStream = new ObjectInputStream(tcpReqStream)
+        ObjectInputStream ooStream = new ObjectInputStream(requestStream)
         byte headerByte = ReadWriteTools.readServiceDescription(serviceDescription, ooStream)
         if (headerByte == HB_ADD) {
             // Since this is a HashSet which only contains one copy of each entry, any previous entry have to be removed
             // for a new entry to be added.
             this.remoteServices.remove(serviceDescription)
             this.remoteServices.add(serviceDescription)
-        }
-        else {
+        } else {
             this.remoteServices.remove(serviceDescription)
         }
     }
@@ -247,5 +260,6 @@ class DiscoveryHandler implements UDPListener, TCPListener, APSConfigChangedList
             this.remoteServices.remove(sd)
         }
     }
+
 }
 

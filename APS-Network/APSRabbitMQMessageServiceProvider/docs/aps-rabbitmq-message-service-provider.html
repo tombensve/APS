@@ -10,12 +10,18 @@
     <p>
       This service provides an implementation of APSMessageService using <a href='http://www.rabbitmq.com/' title=''>RabbitMQ</a>.      
     </p>
+    <p>
+      <strong>Note:</strong> This implementation does not support <em>contentType</em> in the API. When sending messages the <em>contentType</em> will be ignored, and when messages are received the <em>contentType</em> will always be "UNKNOWN".      
+    </p>
+    <p>
+      A good suggestion is to always use JSON or XML as content.      
+    </p>
     <H2>APSMessageService API</H2>
     <p>
       <a href='http://apidoc.natusoft.se/APS/se/natusoft/osgi/aps/api/net/messaging/service/APSMessageService.html' title=''>Javadoc</a>      
     </p>
     <p>
-      public <em>interface</em> <strong>APSClusterService </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
+      public <em>interface</em> <strong>APSSimpleClusterService </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
     </p>
     <p>
       This service defines a synchronized cluster.      
@@ -27,10 +33,7 @@
             
     </p>
     <p>
-            
-    </p>
-    <p>
-      <strong>void clusterUpdated(String key, APSBox value)</strong>      
+      <strong>void clusterUpdated(String clusterName, String name, TypedData data)</strong>      
     </p>
     <p>
       Receives an updated value.      
@@ -40,35 +43,72 @@
     </p>
     <blockquote>
       <p>
-        <em>key</em> - The key of the updated value.         
+        <em>clusterName</em> - The name of the cluster the updated data belongs to.         
       </p>
     </blockquote>
     <blockquote>
       <p>
-        <em>value</em> - The actual value.         
+        <em>name</em> - The name of the updated data.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>data</em> - The updated data.         
       </p>
     </blockquote>
     <p>
-      <strong>void update(String key, APSBox value)</strong>      
+      <strong>void provideData(String clusterName, String name, TypedData typedData)</strong>      
     </p>
     <p>
-      Updates a keyed value to the cluster.      
+      Creates/updates a value in a cluster.      
     </p>
     <p>
       <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>key</em> - This uniquely specifies what value this is. How it is used is upp tp the actual cluster using it.         
+        <em>clusterName</em> - The name of a cluster to store in.         
       </p>
     </blockquote>
     <blockquote>
       <p>
-        <em>value</em> - The modified value to update.         
+        <em>name</em> - The name of the value to store.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>typedData</em> - The value to store.         
       </p>
     </blockquote>
     <p>
-      <strong>void addUpdateListener(UpdateListener updateListener)</strong>      
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IllegalArgumentException</em> - on any problem with clusterName.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>TypedData retrieveData(String clusterName, String name)</strong>      
+    </p>
+    <p>
+      Gets a value stored in a named cluster. Returns null if it does not exists.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>clusterName</em> - The name of the cluster to get data from.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the cluster data to get.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void addUpdateListener(String clusterName, UpdateListener updateListener)</strong>      
     </p>
     <p>
       Adds an update listener.      
@@ -78,11 +118,16 @@
     </p>
     <blockquote>
       <p>
+        <em>clusterName</em> - The name of the cluster to listen for changes in.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
         <em>updateListener</em> - The update listener to add.         
       </p>
     </blockquote>
     <p>
-      <strong>void removeUpdateListener(UpdateListener updateListener)</strong>      
+      <strong>void removeUpdateListener(String clusterName, UpdateListener updateListener)</strong>      
     </p>
     <p>
       Removes an update listener.      
@@ -92,81 +137,19 @@
     </p>
     <blockquote>
       <p>
+        <em>clusterName</em> - The name of the cluster to remove update listener from.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
         <em>updateListener</em> - The listener to remove.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>APSBox getNamedObject(String name)</strong>      
-    </p>
-    <p>
-      Gets named cluster-wide object. If it does not exist it will be created.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>name</em> - The name of the cluster object to get.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>List&lt;APSBox&gt; getNamedList(String name)</strong>      
-    </p>
-    <p>
-      Gets a cluster-wide named list. If it does not exist it will be created.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>name</em> - The name of the list to get.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>Map&lt;String, APSBox&gt; getNamedMap(String name)</strong>      
-    </p>
-    <p>
-      Gets a cluster-wide named Map. If it does not exist, it will be created.      
-    </p>
-    <p>
-      Do note that this is mostly a convenience. Implementations can (and most will) use the name as a prefix to the map key and then call getNamedObject(expandedKey).      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>name</em> - The name of the map to get.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>void withLock(String nameToLock, Future future)</strong>      
-    </p>
-    <p>
-      Locks a specific entry in the cluster or all entries starting with the specified 'nameToLock'. When a lock is acquired the future is executed and when done the lock is released.      
-    </p>
-    <p>
-      Any other client who tries to update the locked name(s) during the lock period without acquiring their own lock will get an exception.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>nameToLock</em> - The name of the value(s) to lock.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>future</em> - A Future to execute when the lock is acquired.         
       </p>
     </blockquote>
     <p>
             
     </p>
     <p>
-      <strong>List&lt;UpdateListener&gt; listeners = Collections.synchronizedList(new LinkedList&lt;UpdateListener&gt;())</strong>      
+      <strong>Map&lt;String, List&lt;UpdateListener&gt;&gt; listeners = Collections.synchronizedMap(new HashMap&lt;&gt;())</strong>      
     </p>
     <p>
        The listeners.      
@@ -178,7 +161,7 @@
             
     </p>
     <p>
-      <strong>protected void updateListeners(String key, APSBox value)</strong>      
+      <strong>protected void updateListeners(String clusterName, String name, TypedData data)</strong>      
     </p>
     <p>
       Updates all listeners.      
@@ -188,44 +171,31 @@
     </p>
     <blockquote>
       <p>
-        <em>key</em> - The key of the update.         
+        <em>clusterName</em> - The name of the cluster the updated data belongs to.         
       </p>
     </blockquote>
     <blockquote>
       <p>
-        <em>value</em> - The value of the update.         
+        <em>name</em> - The name of the updated data.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>data</em> - The actual data.         
       </p>
     </blockquote>
     <p>
-      <strong>protected List&lt;UpdateListener&gt; getListeners()</strong>      
+      <strong>protected List&lt;UpdateListener&gt; getListeners(String clusterName)</strong>      
     </p>
     <p>
       Returns the listeners.      
-    </p>
-    <p>
-      }      
-    </p>
-    <hr/>    <p>
-                
-    </p>
-    <p>
-      public <em>interface</em> <strong>APSMessageListener </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
-    </p>
-    <p>
-      Listener for APSMessage.      
-    </p>
-    <p>
-      <strong>void messageReceived(byte[] message)</strong>      
-    </p>
-    <p>
-      This is called when a message is received.      
     </p>
     <p>
       <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The received message.         
+        <em>clusterName</em> - The name of the cluster to get listeners for.         
       </p>
     </blockquote>
     <p>
@@ -235,7 +205,7 @@
                 
     </p>
     <p>
-      public <em>interface</em> <strong>APSMessageService </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
+      public <em>interface</em> <strong>APSSimpleMessageService </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
     </p>
     <p>
       This defines a simple message service. Can be implemented by using a message bus like RabbitMQ, Active MQ, etc or just a simple tcpip server or whatever.      
@@ -250,7 +220,26 @@
             
     </p>
     <p>
-      <strong>void addMessageListener(APSMessageListener listener)</strong>      
+      <strong>void messageReceived(String topic, TypedData message)</strong>      
+    </p>
+    <p>
+      This is called when a message is received.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>topic</em> - The topic the message belongs to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>message</em> - The received message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void addMessageListener(String topic, MessageListener listener)</strong>      
     </p>
     <p>
       Adds a listener for types.      
@@ -260,11 +249,16 @@
     </p>
     <blockquote>
       <p>
+        <em>topic</em> - The topic to listen to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
         <em>listener</em> - The listener to add.         
       </p>
     </blockquote>
     <p>
-      <strong>void removeMessageListener(APSMessageListener listener)</strong>      
+      <strong>void removeMessageListener(String topic, MessageListener listener)</strong>      
     </p>
     <p>
       Removes a messaging listener.      
@@ -274,11 +268,16 @@
     </p>
     <blockquote>
       <p>
+        <em>topic</em> - The topic to stop listening to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
         <em>listener</em> - The listener to remove.         
       </p>
     </blockquote>
     <p>
-      <strong>void sendMessage(byte[] message) throws APSMessagingException</strong>      
+      <strong>void sendMessage(String topic, TypedData message) throws APSMessagingException</strong>      
     </p>
     <p>
       Sends a message.      
@@ -286,6 +285,11 @@
     <p>
       <em>Parameters</em>      
     </p>
+    <blockquote>
+      <p>
+        <em>topic</em> - The topic of the message.         
+      </p>
+    </blockquote>
     <blockquote>
       <p>
         <em>message</em> - The message to send.         
@@ -300,12 +304,6 @@
       </p>
     </blockquote>
     <p>
-      public <em>static</em> <em>abstract</em> <em>class</em> <strong>AbstractMessageServiceProvider </strong> implements  APSMessageService    [se.natusoft.osgi.aps.api.net.messaging.service] {      
-    </p>
-    <p>
-      Provides an abstract implementation of the APSMessageService interface.      
-    </p>
-    <p>
             
     </p>
     <p>
@@ -315,7 +313,10 @@
             
     </p>
     <p>
-      <strong>protected void sendToListeners(byte[] message)</strong>      
+            
+    </p>
+    <p>
+      <strong>protected void sendToListeners(String topic, TypedData message)</strong>      
     </p>
     <p>
       Sends a message to the registered listeners.      
@@ -329,11 +330,19 @@
       </p>
     </blockquote>
     <p>
-      <strong>protected List&lt;APSMessageListener&gt; getMessageListeners()</strong>      
+      <strong>protected List&lt;MessageListener&gt; lookupMessageListeners(String topic)</strong>      
     </p>
     <p>
-      Returns the message listeners.      
+      Returns the message listeners for a topic.      
     </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>topic</em> - The topic to get listeners for.         
+      </p>
+    </blockquote>
     <p>
       }      
     </p>

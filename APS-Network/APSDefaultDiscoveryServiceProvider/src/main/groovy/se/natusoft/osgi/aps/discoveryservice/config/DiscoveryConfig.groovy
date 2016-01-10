@@ -28,22 +28,22 @@ class DiscoveryConfig extends APSConfig {
 
 
     @APSConfigItemDescription(
-            description = "The name of the APSTCPIPService configuration to use for multicast discovery. This has to be a multicast configuration!",
+            description = "A 'multicast://host:port' URI or blank for no multicast.",
             environmentSpecific = true
     )
-    public APSConfigValue mcastDiscoveryConfigName
+    public APSConfigValue multicastConnectionPoint
 
     @APSConfigItemDescription(
-            description = "The name of the APSTCPIPService configuration to use for receiving other published services.",
+            description = "A 'tcp://host:port' URI or blank for no TCP.",
             environmentSpecific = true
     )
-    public APSConfigValue tcpReceiverConfigName
+    public APSConfigValue tcpReceiverConnectionPoint
 
     @APSConfigItemDescription(
-            description = "Named APSTCPIPService TCP configurations for publishing services.",
+            description = "A list of 'tcp://host:port' URIs, one for each other discovery service to inform. Empty list for none.",
             environmentSpecific = true
     )
-    public APSConfigValueList tcpPublishToConfigNames
+    public APSConfigValueList tcpPublishToConnectionPoints
 
     @APSConfigItemDescription(
             description = "Manually entered service entries.",

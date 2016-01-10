@@ -7795,12 +7795,18 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       This service provides an implementation of APSMessageService using <a href='http://www.rabbitmq.com/' title=''>RabbitMQ</a>.      
     </p>
+    <p>
+      <strong>Note:</strong> This implementation does not support <em>contentType</em> in the API. When sending messages the <em>contentType</em> will be ignored, and when messages are received the <em>contentType</em> will always be "UNKNOWN".      
+    </p>
+    <p>
+      A good suggestion is to always use JSON or XML as content.      
+    </p>
     <H2>APSMessageService API</H2>
     <p>
       <a href='http://apidoc.natusoft.se/APS/se/natusoft/osgi/aps/api/net/messaging/service/APSMessageService.html' title=''>Javadoc</a>      
     </p>
     <p>
-      public <em>interface</em> <strong>APSClusterService </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
+      public <em>interface</em> <strong>APSSimpleClusterService </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
     </p>
     <p>
       This service defines a synchronized cluster.      
@@ -7812,10 +7818,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
             
     </p>
     <p>
-            
-    </p>
-    <p>
-      <strong>void clusterUpdated(String key, APSBox value)</strong>      
+      <strong>void clusterUpdated(String clusterName, String name, TypedData data)</strong>      
     </p>
     <p>
       Receives an updated value.      
@@ -7825,35 +7828,72 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
-        <em>key</em> - The key of the updated value.         
+        <em>clusterName</em> - The name of the cluster the updated data belongs to.         
       </p>
     </blockquote>
     <blockquote>
       <p>
-        <em>value</em> - The actual value.         
+        <em>name</em> - The name of the updated data.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>data</em> - The updated data.         
       </p>
     </blockquote>
     <p>
-      <strong>void update(String key, APSBox value)</strong>      
+      <strong>void provideData(String clusterName, String name, TypedData typedData)</strong>      
     </p>
     <p>
-      Updates a keyed value to the cluster.      
+      Creates/updates a value in a cluster.      
     </p>
     <p>
       <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>key</em> - This uniquely specifies what value this is. How it is used is upp tp the actual cluster using it.         
+        <em>clusterName</em> - The name of a cluster to store in.         
       </p>
     </blockquote>
     <blockquote>
       <p>
-        <em>value</em> - The modified value to update.         
+        <em>name</em> - The name of the value to store.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>typedData</em> - The value to store.         
       </p>
     </blockquote>
     <p>
-      <strong>void addUpdateListener(UpdateListener updateListener)</strong>      
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IllegalArgumentException</em> - on any problem with clusterName.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>TypedData retrieveData(String clusterName, String name)</strong>      
+    </p>
+    <p>
+      Gets a value stored in a named cluster. Returns null if it does not exists.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>clusterName</em> - The name of the cluster to get data from.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the cluster data to get.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void addUpdateListener(String clusterName, UpdateListener updateListener)</strong>      
     </p>
     <p>
       Adds an update listener.      
@@ -7863,11 +7903,16 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
+        <em>clusterName</em> - The name of the cluster to listen for changes in.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
         <em>updateListener</em> - The update listener to add.         
       </p>
     </blockquote>
     <p>
-      <strong>void removeUpdateListener(UpdateListener updateListener)</strong>      
+      <strong>void removeUpdateListener(String clusterName, UpdateListener updateListener)</strong>      
     </p>
     <p>
       Removes an update listener.      
@@ -7877,81 +7922,19 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
+        <em>clusterName</em> - The name of the cluster to remove update listener from.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
         <em>updateListener</em> - The listener to remove.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>APSBox getNamedObject(String name)</strong>      
-    </p>
-    <p>
-      Gets named cluster-wide object. If it does not exist it will be created.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>name</em> - The name of the cluster object to get.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>List&lt;APSBox&gt; getNamedList(String name)</strong>      
-    </p>
-    <p>
-      Gets a cluster-wide named list. If it does not exist it will be created.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>name</em> - The name of the list to get.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>Map&lt;String, APSBox&gt; getNamedMap(String name)</strong>      
-    </p>
-    <p>
-      Gets a cluster-wide named Map. If it does not exist, it will be created.      
-    </p>
-    <p>
-      Do note that this is mostly a convenience. Implementations can (and most will) use the name as a prefix to the map key and then call getNamedObject(expandedKey).      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>name</em> - The name of the map to get.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>void withLock(String nameToLock, Future future)</strong>      
-    </p>
-    <p>
-      Locks a specific entry in the cluster or all entries starting with the specified 'nameToLock'. When a lock is acquired the future is executed and when done the lock is released.      
-    </p>
-    <p>
-      Any other client who tries to update the locked name(s) during the lock period without acquiring their own lock will get an exception.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>nameToLock</em> - The name of the value(s) to lock.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>future</em> - A Future to execute when the lock is acquired.         
       </p>
     </blockquote>
     <p>
             
     </p>
     <p>
-      <strong>List&lt;UpdateListener&gt; listeners = Collections.synchronizedList(new LinkedList&lt;UpdateListener&gt;())</strong>      
+      <strong>Map&lt;String, List&lt;UpdateListener&gt;&gt; listeners = Collections.synchronizedMap(new HashMap&lt;&gt;())</strong>      
     </p>
     <p>
        The listeners.      
@@ -7963,7 +7946,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
             
     </p>
     <p>
-      <strong>protected void updateListeners(String key, APSBox value)</strong>      
+      <strong>protected void updateListeners(String clusterName, String name, TypedData data)</strong>      
     </p>
     <p>
       Updates all listeners.      
@@ -7973,44 +7956,31 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
-        <em>key</em> - The key of the update.         
+        <em>clusterName</em> - The name of the cluster the updated data belongs to.         
       </p>
     </blockquote>
     <blockquote>
       <p>
-        <em>value</em> - The value of the update.         
+        <em>name</em> - The name of the updated data.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>data</em> - The actual data.         
       </p>
     </blockquote>
     <p>
-      <strong>protected List&lt;UpdateListener&gt; getListeners()</strong>      
+      <strong>protected List&lt;UpdateListener&gt; getListeners(String clusterName)</strong>      
     </p>
     <p>
       Returns the listeners.      
-    </p>
-    <p>
-      }      
-    </p>
-    <hr/>    <p>
-                
-    </p>
-    <p>
-      public <em>interface</em> <strong>APSMessageListener </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
-    </p>
-    <p>
-      Listener for APSMessage.      
-    </p>
-    <p>
-      <strong>void messageReceived(byte[] message)</strong>      
-    </p>
-    <p>
-      This is called when a message is received.      
     </p>
     <p>
       <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The received message.         
+        <em>clusterName</em> - The name of the cluster to get listeners for.         
       </p>
     </blockquote>
     <p>
@@ -8020,7 +7990,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
                 
     </p>
     <p>
-      public <em>interface</em> <strong>APSMessageService </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
+      public <em>interface</em> <strong>APSSimpleMessageService </strong>   [se.natusoft.osgi.aps.api.net.messaging.service] {      
     </p>
     <p>
       This defines a simple message service. Can be implemented by using a message bus like RabbitMQ, Active MQ, etc or just a simple tcpip server or whatever.      
@@ -8035,7 +8005,26 @@ The above empty lines are required due to a bug in iText used to render the PDF.
             
     </p>
     <p>
-      <strong>void addMessageListener(APSMessageListener listener)</strong>      
+      <strong>void messageReceived(String topic, TypedData message)</strong>      
+    </p>
+    <p>
+      This is called when a message is received.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>topic</em> - The topic the message belongs to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>message</em> - The received message.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void addMessageListener(String topic, MessageListener listener)</strong>      
     </p>
     <p>
       Adds a listener for types.      
@@ -8045,11 +8034,16 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
+        <em>topic</em> - The topic to listen to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
         <em>listener</em> - The listener to add.         
       </p>
     </blockquote>
     <p>
-      <strong>void removeMessageListener(APSMessageListener listener)</strong>      
+      <strong>void removeMessageListener(String topic, MessageListener listener)</strong>      
     </p>
     <p>
       Removes a messaging listener.      
@@ -8059,11 +8053,16 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <blockquote>
       <p>
+        <em>topic</em> - The topic to stop listening to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
         <em>listener</em> - The listener to remove.         
       </p>
     </blockquote>
     <p>
-      <strong>void sendMessage(byte[] message) throws APSMessagingException</strong>      
+      <strong>void sendMessage(String topic, TypedData message) throws APSMessagingException</strong>      
     </p>
     <p>
       Sends a message.      
@@ -8071,6 +8070,11 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       <em>Parameters</em>      
     </p>
+    <blockquote>
+      <p>
+        <em>topic</em> - The topic of the message.         
+      </p>
+    </blockquote>
     <blockquote>
       <p>
         <em>message</em> - The message to send.         
@@ -8085,12 +8089,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       </p>
     </blockquote>
     <p>
-      public <em>static</em> <em>abstract</em> <em>class</em> <strong>AbstractMessageServiceProvider </strong> implements  APSMessageService    [se.natusoft.osgi.aps.api.net.messaging.service] {      
-    </p>
-    <p>
-      Provides an abstract implementation of the APSMessageService interface.      
-    </p>
-    <p>
             
     </p>
     <p>
@@ -8100,7 +8098,10 @@ The above empty lines are required due to a bug in iText used to render the PDF.
             
     </p>
     <p>
-      <strong>protected void sendToListeners(byte[] message)</strong>      
+            
+    </p>
+    <p>
+      <strong>protected void sendToListeners(String topic, TypedData message)</strong>      
     </p>
     <p>
       Sends a message to the registered listeners.      
@@ -8114,11 +8115,19 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       </p>
     </blockquote>
     <p>
-      <strong>protected List&lt;APSMessageListener&gt; getMessageListeners()</strong>      
+      <strong>protected List&lt;MessageListener&gt; lookupMessageListeners(String topic)</strong>      
     </p>
     <p>
-      Returns the message listeners.      
+      Returns the message listeners for a topic.      
     </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>topic</em> - The topic to get listeners for.         
+      </p>
+    </blockquote>
     <p>
       }      
     </p>
@@ -8226,30 +8235,44 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       </li>
       <li>
         <p>
-          Remove all host, port, and partly protocol from the client code by only referencing a named configuration provided by the service.          
-        </p>
-      </li>
-      <li>
-        <p>
-          Being able to transparently provide different implementations, like a plain non secure implementation as this is, or an SSL:ed version for TCP. A Test implementation that opens no real sockets nor sends any real packets that can be used by tests are also a possibility.          
+          Makes use of an URI to provide what I call a "connection point". tcp:, udp:, and multicast: are supported protocols.          
         </p>
       </li>
     </ul>
+    <p>
+      Do note that you do need to have a basic understanding of TCP/IP to use this service!      
+    </p>
     <H2>Security</H2>
     <p>
-      This implementation is non secure! It sets the following property on the registered service:      
-    </p>
-    <pre>
-      <code>
-    aps.props.security=nonsecure
-      </code>
-    </pre>
-    <H2>How it works</H2>
-    <p>
-      The service registers an APSConfigService configuration with that service where configurations for TCP, UDP or Multicast connections can be defined. Each configuration entry basically specifies host, port and protocol in addition to a unique name for the entry. Do note that in most cases there needs to be separate entries for clients and services.      
+      Makes use of 2 separate services if available for security: <em>APSTCPSecurityService</em> and <em>APSUDPSecurityService</em>. Neither these nor APSTCPIPService makes any assumptions nor demands on the what and how of the security services implementations. The APSTCPSecurityService must provide secure versions of Socket and ServerSocket, while APSUDPSecureService have 2 methods, one to encrypt the data and one to decrypt the data in a DatagramPacket.      
     </p>
     <p>
-      The client code should have a configuration of itself that specifies the named entry to use. This name is then passed to the service which then only reads or writes data without having to care where from or to.      
+      APS currently does not provide any implementation of the APS(TCP/UDP)SecurityService.      
+    </p>
+    <H2>Connection Point URIs</H2>
+    <p>
+      The service makes use of URIs to specify where to connect for sending or receiving.      
+    </p>
+    <p>
+      The URI format is this:      
+    </p>
+    <p>
+      &nbsp; &nbsp; &nbsp; &nbsp;<strong>protocol://host:port#fragment,fragment</strong>      
+    </p>
+    <p>
+      Protocols:      
+    </p>
+    <p>
+      &nbsp; &nbsp; &nbsp; &nbsp;<strong>tcp</strong>,<strong> udp</strong>,<strong> multicast</strong>      
+    </p>
+    <p>
+      Fragments:      
+    </p>
+    <p>
+      &nbsp; &nbsp; &nbsp; &nbsp;<strong>secure</strong> - If specified then one of the APS(TCP/UDP)SecurityService services will be used.      
+    </p>
+    <p>
+      &nbsp; &nbsp; &nbsp; &nbsp;<strong>async</strong> (only valid on <em>tcp</em> protocol)      
     </p>
     <H2>Examples</H2>
     <H3>TCP</H3>
@@ -8258,8 +8281,8 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       <code>
     APSTCPIPService tcpipSvc;
     ...
-    tcpipSvc.sendTCPRequest("somesvc", new TCPRequest() {
-        void tcpRequest(OutputStream requestStream, InputStream responseStream) throws IOException {
+    tcpipSvc.sendStreamedRequest(new URI("tcp://localhost:9999"), new StreamedRequest() {
+        void sendRequest(URI connectionPoint, OutputStream requestStream, InputStream responseStream) throws IOException {
             // write to requestStream ...
     
             // read from response stream ...
@@ -8273,18 +8296,21 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       <code>
     APSTCPIPService tcpipSvc;
     ...
-    tcpipSvc.setTCPRequestListener("remotesvc", this);
+    tcpipSvc.setStreamedRequestListener(new URI("tcp:localhost:9999"), this);
     ...
-    void tcpRequestReceived(String name, InetAddress address, InputStream reqStreamn, OutputStream respStream) throws IOException {
+    void requestReceived(URI receivePoint, InputStream requestStream, OutputStream responseStream) {
         // Read request from reqStream ...
     
         // Write response to respStream ...
     }
       </code>
     </pre>
+    <p>
+      Note that there can only be one listener per URI.      
+    </p>
     <H3>UDP / Multicast</H3>
     <p>
-      Since Multicast uses UDP packets there is no difference between host and port connected UDP or Multicast. The only difference is in the configuration where "UDP" is specified for point to point UDP packets and "Multicast" is specified for multicast packets.      
+      Since Multicast uses UDP packets there is no difference between host and port connected UDP or Multicast. The only difference is in the URI where "udp://" is specified for UDP packets and "multicast://" is specified for multicast packets.      
     </p>
     <H4>Write</H4>
     <pre>
@@ -8292,7 +8318,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     APSTCPIPService tcpipSvc;
     ...
     bytes[] bytes = "Some data".getBytes();
-    tcpipSvc.sendUDP("myudptarget",  bytes);
+    tcpipSvc.sendDataPacket(new URI("udp://localhost:9999"),  bytes);
+      </code>
+    </pre>
+    <p>
+      or      
+    </p>
+    <pre>
+      <code>
+    tcpipSvc.sendDataPacket(new URI("multicast://all-systems.mcast.net:9999"), bytes);
       </code>
     </pre>
     <H4>READ</H4>
@@ -8300,9 +8334,13 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       <code>
     APSTCPIPService tcpipSvc;
     ...
-    byte[] packetBuff = new byte[4000];
-    DatagramPacket packet = tcpiipSvc.readUDP("myudpsomething", packetBuff);
-    byte[] data = packet.getData(); // This is actually packetBuff being returned!
+    tcpipSvc.addDataPacketListener(new URI("udp://localhost:9999"), this);
+    ...
+    void dataBlockReceived(URI receivePoint, DatagramPacket packet) {
+        byte[] bytes = packet.getData();
+        ...
+    }
+    
       </code>
     </pre>
     <H1>APSAdminWeb</H1>
@@ -8628,85 +8666,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       <li>
         <p>
           <a href='http://code.google.com/p/markdown-doclet/' title=''>MarkdownDoclet-3.0-null</a>          
-        </p>
-      </li>
-    </ul>
-    <p>
-      <strong></strong><a href='http://www.apache.org/licenses/LICENSE-2.0.txt' title=''>Apache Software License version 2.0</a><strong></strong>      
-    </p>
-    <p>
-      The following third party products are using this license:      
-    </p>
-    <ul>
-      <li>
-        <p>
-          <a href='http://vaadin.com' title=''>vaadin-server-7.1.14</a>          
-        </p>
-      </li>
-      <li>
-        <p>
-          <a href='http://vaadin.com' title=''>vaadin-client-compiled-7.1.14</a>          
-        </p>
-      </li>
-      <li>
-        <p>
-          <a href='http://vaadin.com' title=''>vaadin-client-7.1.14</a>          
-        </p>
-      </li>
-      <li>
-        <p>
-          <a href='http://vaadin.com' title=''>vaadin-push-7.1.14</a>          
-        </p>
-      </li>
-      <li>
-        <p>
-          <a href='http://vaadin.com' title=''>vaadin-themes-7.1.14</a>          
-        </p>
-      </li>
-      <li>
-        <p>
-          <a href='http://groovy.codehaus.org/' title=''>groovy-all-2.4.3</a>          
-        </p>
-      </li>
-      <li>
-        <p>
-          <a href='http://www.apache.org/licenses/LICENSE-2.0.txt' title=''>openjpa-all-2.2.0</a>          
-        </p>
-      </li>
-      <li>
-        <p>
-          <a href='http://db.apache.org/derby/' title=''>derbyclient-10.9.1.0</a>          
-        </p>
-      </li>
-    </ul>
-    <p>
-      <strong></strong><a href='http://www.eclipse.org/legal/epl-v10.html' title=''>Eclipse Public License - v version 1.0</a><strong></strong>      
-    </p>
-    <p>
-      The following third party products are using this license:      
-    </p>
-    <ul>
-      <li>
-        <p>
-          <a href='http://www.eclipse.org/eclipselink' title=''>javax.persistence-2.0.0</a>          
-        </p>
-      </li>
-    </ul>
-    <p>
-      <strong></strong><a href='https://glassfish.dev.java.net/nonav/public/CDDL+GPL.html' title=''>CDDL + GPLv2 with classpath version exception</a><strong></strong>      
-    </p>
-    <p>
-      The following third party products are using this license:      
-    </p>
-    <ul>
-      <li>
-        <p>
-          <a href='http://servlet-spec.java.net' title=''>javax.servlet-api-3.0.1</a>          
-        </p>
-      </li>
-      <li>
-        <p>
-          <a href='http://java.sun.com/javaee/6/docs/api/index.html' title=''>javaee-web-api-6.0</a>          
         </p>
       </li>
     </ul>

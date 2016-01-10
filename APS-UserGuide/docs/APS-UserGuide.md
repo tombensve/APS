@@ -4957,11 +4957,15 @@ _Parameters_
 
 This service provides an implementation of APSMessageService using [RabbitMQ](http://www.rabbitmq.com/).
 
+__Note:__ This implementation does not support _contentType_ in the API. When sending messages the _contentType_ will be ignored, and when messages are received the _contentType_ will always be "UNKNOWN".
+
+A good suggestion is to always use JSON or XML as content.
+
 ## APSMessageService API
 
 [Javadoc](http://apidoc.natusoft.se/APS/se/natusoft/osgi/aps/api/net/messaging/service/APSMessageService.html)
 
-public _interface_ __APSClusterService__   [se.natusoft.osgi.aps.api.net.messaging.service] {
+public _interface_ __APSSimpleClusterService__   [se.natusoft.osgi.aps.api.net.messaging.service] {
 
 This service defines a synchronized cluster.
 
@@ -4969,85 +4973,67 @@ This service defines a synchronized cluster.
 
 
 
-
-
-__void clusterUpdated(String key, APSBox value)__
+__void clusterUpdated(String clusterName, String name, TypedData data)__
 
 Receives an updated value.
 
 _Parameters_
 
-> _key_ - The key of the updated value. 
+> _clusterName_ - The name of the cluster the updated data belongs to. 
 
-> _value_ - The actual value. 
+> _name_ - The name of the updated data. 
 
-__void update(String key, APSBox value)__
+> _data_ - The updated data. 
 
-Updates a keyed value to the cluster.
+__void provideData(String clusterName, String name, TypedData typedData)__
+
+Creates/updates a value in a cluster.
 
 _Parameters_
 
-> _key_ - This uniquely specifies what value this is. How it is used is upp tp the actual cluster using it. 
+> _clusterName_ - The name of a cluster to store in. 
 
-> _value_ - The modified value to update. 
+> _name_ - The name of the value to store. 
 
-__void addUpdateListener(UpdateListener updateListener)__
+> _typedData_ - The value to store. 
+
+_Throws_
+
+> _IllegalArgumentException_ - on any problem with clusterName. 
+
+__TypedData retrieveData(String clusterName, String name)__
+
+Gets a value stored in a named cluster. Returns null if it does not exists.
+
+_Parameters_
+
+> _clusterName_ - The name of the cluster to get data from. 
+
+> _name_ - The name of the cluster data to get. 
+
+__void addUpdateListener(String clusterName, UpdateListener updateListener)__
 
 Adds an update listener.
 
 _Parameters_
 
+> _clusterName_ - The name of the cluster to listen for changes in. 
+
 > _updateListener_ - The update listener to add. 
 
-__void removeUpdateListener(UpdateListener updateListener)__
+__void removeUpdateListener(String clusterName, UpdateListener updateListener)__
 
 Removes an update listener.
 
 _Parameters_
 
+> _clusterName_ - The name of the cluster to remove update listener from. 
+
 > _updateListener_ - The listener to remove. 
 
-__APSBox getNamedObject(String name)__
-
-Gets named cluster-wide object. If it does not exist it will be created.
-
-_Parameters_
-
-> _name_ - The name of the cluster object to get. 
-
-__List<APSBox> getNamedList(String name)__
-
-Gets a cluster-wide named list. If it does not exist it will be created.
-
-_Parameters_
-
-> _name_ - The name of the list to get. 
-
-__Map<String, APSBox> getNamedMap(String name)__
-
-Gets a cluster-wide named Map. If it does not exist, it will be created.
-
-Do note that this is mostly a convenience. Implementations can (and most will) use the name as a prefix to the map key and then call getNamedObject(expandedKey).
-
-_Parameters_
-
-> _name_ - The name of the map to get. 
-
-__void withLock(String nameToLock, Future future)__
-
-Locks a specific entry in the cluster or all entries starting with the specified 'nameToLock'. When a lock is acquired the future is executed and when done the lock is released.
-
-Any other client who tries to update the locked name(s) during the lock period without acquiring their own lock will get an exception.
-
-_Parameters_
-
-> _nameToLock_ - The name of the value(s) to lock. 
-
-> _future_ - A Future to execute when the lock is acquired. 
 
 
-
-__List<UpdateListener> listeners = Collections.synchronizedList(new LinkedList<UpdateListener>())__
+__Map<String, List<UpdateListener>> listeners = Collections.synchronizedMap(new HashMap<>())__
 
  The listeners.
 
@@ -5055,37 +5041,25 @@ __List<UpdateListener> listeners = Collections.synchronizedList(new LinkedList<U
 
 
 
-__protected void updateListeners(String key, APSBox value)__
+__protected void updateListeners(String clusterName, String name, TypedData data)__
 
 Updates all listeners.
 
 _Parameters_
 
-> _key_ - The key of the update. 
+> _clusterName_ - The name of the cluster the updated data belongs to. 
 
-> _value_ - The value of the update. 
+> _name_ - The name of the updated data. 
 
-__protected List<UpdateListener> getListeners()__
+> _data_ - The actual data. 
+
+__protected List<UpdateListener> getListeners(String clusterName)__
 
 Returns the listeners.
 
-}
-
-----
-
-    
-
-public _interface_ __APSMessageListener__   [se.natusoft.osgi.aps.api.net.messaging.service] {
-
-Listener for APSMessage.
-
-__void messageReceived(byte[] message)__
-
-This is called when a message is received.
-
 _Parameters_
 
-> _message_ - The received message. 
+> _clusterName_ - The name of the cluster to get listeners for. 
 
 }
 
@@ -5093,7 +5067,7 @@ _Parameters_
 
     
 
-public _interface_ __APSMessageService__   [se.natusoft.osgi.aps.api.net.messaging.service] {
+public _interface_ __APSSimpleMessageService__   [se.natusoft.osgi.aps.api.net.messaging.service] {
 
 This defines a simple message service. Can be implemented by using a message bus like RabbitMQ, Active MQ, etc or just a simple tcpip server or whatever.
 
@@ -5103,27 +5077,43 @@ Since the actual members are outside of this service API, it doesn't really know
 
 
 
-__void addMessageListener(APSMessageListener listener)__
+__void messageReceived(String topic, TypedData message)__
+
+This is called when a message is received.
+
+_Parameters_
+
+> _topic_ - The topic the message belongs to. 
+
+> _message_ - The received message. 
+
+__void addMessageListener(String topic, MessageListener listener)__
 
 Adds a listener for types.
 
 _Parameters_
 
+> _topic_ - The topic to listen to. 
+
 > _listener_ - The listener to add. 
 
-__void removeMessageListener(APSMessageListener listener)__
+__void removeMessageListener(String topic, MessageListener listener)__
 
 Removes a messaging listener.
 
 _Parameters_
 
+> _topic_ - The topic to stop listening to. 
+
 > _listener_ - The listener to remove. 
 
-__void sendMessage(byte[] message) throws APSMessagingException__
+__void sendMessage(String topic, TypedData message) throws APSMessagingException__
 
 Sends a message.
 
 _Parameters_
+
+> _topic_ - The topic of the message. 
 
 > _message_ - The message to send. 
 
@@ -5131,9 +5121,6 @@ _Throws_
 
 > _APSMessagingException_ - on failure. 
 
-public _static_ _abstract_ _class_ __AbstractMessageServiceProvider__ implements  APSMessageService    [se.natusoft.osgi.aps.api.net.messaging.service] {
-
-Provides an abstract implementation of the APSMessageService interface.
 
 
 
@@ -5141,7 +5128,8 @@ Provides an abstract implementation of the APSMessageService interface.
 
 
 
-__protected void sendToListeners(byte[] message)__
+
+__protected void sendToListeners(String topic, TypedData message)__
 
 Sends a message to the registered listeners.
 
@@ -5149,9 +5137,13 @@ _Parameters_
 
 > _message_ - The message to send. 
 
-__protected List<APSMessageListener> getMessageListeners()__
+__protected List<MessageListener> lookupMessageListeners(String topic)__
 
-Returns the message listeners.
+Returns the message listeners for a topic.
+
+_Parameters_
+
+> _topic_ - The topic to get listeners for. 
 
 }
 
@@ -5222,21 +5214,33 @@ The following are the points of this service:
 
 * Simple TCP/IP usage.
 
-* Remove all host, port, and partly protocol from the client code by only referencing a named configuration provided by the service.
+* Makes use of an URI to provide what I call a "connection point". tcp:, udp:, and multicast: are supported protocols.
 
-* Being able to transparently provide different implementations, like a plain non secure implementation as this is, or an SSL:ed version for TCP. A Test implementation that opens no real sockets nor sends any real packets that can be used by tests are also a possibility.
+Do note that you do need to have a basic understanding of TCP/IP to use this service!
 
 ## Security
 
-This implementation is non secure! It sets the following property on the registered service:
+Makes use of 2 separate services if available for security: _APSTCPSecurityService_ and _APSUDPSecurityService_. Neither these nor APSTCPIPService makes any assumptions nor demands on the what and how of the security services implementations. The APSTCPSecurityService must provide secure versions of Socket and ServerSocket, while APSUDPSecureService have 2 methods, one to encrypt the data and one to decrypt the data in a DatagramPacket.
 
-        aps.props.security=nonsecure
+APS currently does not provide any implementation of the APS(TCP/UDP)SecurityService.
 
-## How it works
+## Connection Point URIs
 
-The service registers an APSConfigService configuration with that service where configurations for TCP, UDP or Multicast connections can be defined. Each configuration entry basically specifies host, port and protocol in addition to a unique name for the entry. Do note that in most cases there needs to be separate entries for clients and services.
+The service makes use of URIs to specify where to connect for sending or receiving.
 
-The client code should have a configuration of itself that specifies the named entry to use. This name is then passed to the service which then only reads or writes data without having to care where from or to.
+The URI format is this:
+
+&nbsp; &nbsp; &nbsp; &nbsp;__protocol://host:port#fragment,fragment__
+
+Protocols:
+
+&nbsp; &nbsp; &nbsp; &nbsp;__tcp__,__udp__,__multicast__
+
+Fragments:
+
+&nbsp; &nbsp; &nbsp; &nbsp;__secure__ - If specified then one of the APS(TCP/UDP)SecurityService services will be used.
+
+&nbsp; &nbsp; &nbsp; &nbsp;__async__ (only valid on _tcp_ protocol)
 
 ## Examples
 
@@ -5246,8 +5250,8 @@ The client code should have a configuration of itself that specifies the named e
 
         APSTCPIPService tcpipSvc;
         ...
-        tcpipSvc.sendTCPRequest("somesvc", new TCPRequest() {
-            void tcpRequest(OutputStream requestStream, InputStream responseStream) throws IOException {
+        tcpipSvc.sendStreamedRequest(new URI("tcp://localhost:9999"), new StreamedRequest() {
+            void sendRequest(URI connectionPoint, OutputStream requestStream, InputStream responseStream) throws IOException {
                 // write to requestStream ...
         
                 // read from response stream ...
@@ -5259,32 +5263,42 @@ The client code should have a configuration of itself that specifies the named e
 
         APSTCPIPService tcpipSvc;
         ...
-        tcpipSvc.setTCPRequestListener("remotesvc", this);
+        tcpipSvc.setStreamedRequestListener(new URI("tcp:localhost:9999"), this);
         ...
-        void tcpRequestReceived(String name, InetAddress address, InputStream reqStreamn, OutputStream respStream) throws IOException {
+        void requestReceived(URI receivePoint, InputStream requestStream, OutputStream responseStream) {
             // Read request from reqStream ...
         
             // Write response to respStream ...
         }
 
+Note that there can only be one listener per URI.
+
 ### UDP / Multicast
 
-Since Multicast uses UDP packets there is no difference between host and port connected UDP or Multicast. The only difference is in the configuration where "UDP" is specified for point to point UDP packets and "Multicast" is specified for multicast packets.
+Since Multicast uses UDP packets there is no difference between host and port connected UDP or Multicast. The only difference is in the URI where "udp://" is specified for UDP packets and "multicast://" is specified for multicast packets.
 
 #### Write
 
         APSTCPIPService tcpipSvc;
         ...
         bytes[] bytes = "Some data".getBytes();
-        tcpipSvc.sendUDP("myudptarget",  bytes);
+        tcpipSvc.sendDataPacket(new URI("udp://localhost:9999"),  bytes);
+
+or
+
+        tcpipSvc.sendDataPacket(new URI("multicast://all-systems.mcast.net:9999"), bytes);
 
 #### READ
 
         APSTCPIPService tcpipSvc;
         ...
-        byte[] packetBuff = new byte[4000];
-        DatagramPacket packet = tcpiipSvc.readUDP("myudpsomething", packetBuff);
-        byte[] data = packet.getData(); // This is actually packetBuff being returned!
+        tcpipSvc.addDataPacketListener(new URI("udp://localhost:9999"), this);
+        ...
+        void dataBlockReceived(URI receivePoint, DatagramPacket packet) {
+            byte[] bytes = packet.getData();
+            ...
+        }
+        
 
 # APSAdminWeb
 
@@ -5478,11 +5492,11 @@ There is not anything more to say about this. It should be selfexplanatory!
 -->
 ## Project License
 
-____[Apache Software License version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)____
+[Apache Software License version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 ## Third Party Licenses
 
-____[OSGi Specification License version 2.0](http://www.osgi.org/Specifications/Licensing)____
+[OSGi Specification License version 2.0](http://www.osgi.org/Specifications/Licensing)
 
 The following third party products are using this license:
 
@@ -5490,45 +5504,11 @@ The following third party products are using this license:
 
 * [org.osgi.core-4.2.0-null](http://www.osgi.org/)
 
-____[GNU Public License version v2](http://www.gnu.org/licenses/gpl-2.0.html)____
+[GNU Public License version v2](http://www.gnu.org/licenses/gpl-2.0.html)
 
 The following third party products are using this license:
 
 * [MarkdownDoclet-3.0-null](http://code.google.com/p/markdown-doclet/)
-
-____[Apache Software License version 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)____
-
-The following third party products are using this license:
-
-* [vaadin-server-7.1.14](http://vaadin.com)
-
-* [vaadin-client-compiled-7.1.14](http://vaadin.com)
-
-* [vaadin-client-7.1.14](http://vaadin.com)
-
-* [vaadin-push-7.1.14](http://vaadin.com)
-
-* [vaadin-themes-7.1.14](http://vaadin.com)
-
-* [groovy-all-2.4.3](http://groovy.codehaus.org/)
-
-* [openjpa-all-2.2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
-
-* [derbyclient-10.9.1.0](http://db.apache.org/derby/)
-
-____[Eclipse Public License - v version 1.0](http://www.eclipse.org/legal/epl-v10.html)____
-
-The following third party products are using this license:
-
-* [javax.persistence-2.0.0](http://www.eclipse.org/eclipselink)
-
-____[CDDL + GPLv2 with classpath version exception](https://glassfish.dev.java.net/nonav/public/CDDL+GPL.html)____
-
-The following third party products are using this license:
-
-* [javax.servlet-api-3.0.1](http://servlet-spec.java.net)
-
-* [javaee-web-api-6.0](http://java.sun.com/javaee/6/docs/api/index.html)
 
 <!--
   CLM
