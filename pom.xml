@@ -86,7 +86,7 @@
         <clm.version>2.1.6</clm.version>
         <ftpPlugin.version>1.0.1</ftpPlugin.version>
         <markdownDoc.version>1.4.2</markdownDoc.version>
-        <groovyVersion>2.4.4</groovyVersion>
+        <groovy.version>2.4.5</groovy.version>
     </properties>
 
     <!--
@@ -121,6 +121,19 @@
         <system>github</system>
         <url>https://github.com/tombensve/APS/issues</url>
     </issueManagement>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy-all</artifactId>
+                <version>${groovy.version}</version>
+                <scope>compile</scope>
+                <classifier>indy</classifier>
+            </dependency>
+        </dependencies>
+
+    </dependencyManagement>
 
     <dependencies>
 
@@ -320,20 +333,6 @@
                                         <product>
                                             <name>org.osgi.core-4.2.0</name>
                                             <web>http://www.osgi.org/</web>
-                                        </product>
-                                    </licenseProducts>
-                                </license>
-                                <!--
-                                    This one is not available in a maven repository so it is included
-                                    under /lib. It is only used when building.
-                                -->
-                                <license>
-                                    <type>GPL</type>
-                                    <version>v2</version>
-                                    <licenseProducts>
-                                        <product>
-                                            <name>MarkdownDoclet-3.0</name>
-                                            <web>http://code.google.com/p/markdown-doclet/</web>
                                         </product>
                                     </licenseProducts>
                                 </license>
