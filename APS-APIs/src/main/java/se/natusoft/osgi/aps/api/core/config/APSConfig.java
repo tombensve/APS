@@ -63,35 +63,35 @@ import java.util.List;
  * Please note that all newer version definitions must be backwards compatible for the version handling
  * to work. Also note that you can have different published values for different versions of the definition.
  *
- * Here is an example of a configuration class (The ` chars are there to inhibit javadoc to interpret these
+ * Here is an example of a configuration class (The ´ chars are there to inhibit javadoc to interpret these
  * lines as javadoc annotations!):
  *
- *      \@APSConfigDescription(description="My configuration")
+ *     ´@APSConfigDescription(description="My configuration")
  *      public class MyConfig extends APSConfig {
  *
- *         \@APSConfigItemDescription(description="The url to the service to call",
+ *         ´@APSConfigItemDescription(description="The url to the service to call",
  *             defaultValue={ @APSDefaultValue(value="http://userservice.local:1234/login", configEnv="...") })
- *          public <b>APSConfigValue</b> serviceURL;
+ *          public APSConfigValue serviceURL;
  *
- *         \@APSConfigItemDescription(description="...")
- *          public <b>APSConfigValueList</b> somethingThatNeedsMany;
+ *         ´@APSConfigItemDescription(description="...")
+ *          public APSConfigValueList somethingThatNeedsMany;
  *
- *         \@APSConfigItemDescription(description="...", environmentSpecific=true)
- *          public <b>EndpointConfig</b> endpoint;
+ *         ´@APSConfigItemDescription(description="...", environmentSpecific=true)
+ *          public EndpointConfig endpoint;
  *
- *         \@APSConfigItemDescription(description="...")
- *          public <b>APSConfigList&lt;EndpointConfig&gt;</b> endpoints;
+ *         ´@APSConfigItemDescription(description="...")
+ *          public APSConfigList&lt;EndpointConfig&gt; endpoints;
  *
- *         \@APSConfigDescription(description="my other config")
+ *         ´@APSConfigDescription(description="my other config")
  *          public static class EndpointConfig extends APSConfig {
  *
- *             \@APSConfigItemDescription(description="...")
+ *             ´@APSConfigItemDescription(description="...")
  *              public APSConfigValue name;
  *
- *             \@APSConfigItemDescription(description="...")
+ *             ´@APSConfigItemDescription(description="...")
  *              public APSConfigValue host;
  *
- *             \@APSConfigItemDescription(description="...")
+ *             ´@APSConfigItemDescription(description="...")
  *              public APSConfigValue port;
  *          }
  *     }
