@@ -1,5 +1,5 @@
 # APSTCPIPService
-This service provides, in ways of communication, plain simple TCP/IP communication. Users of this service will however have very little contact with the java.net classes. 
+This service provides, in ways of communication, plain simple TCP/IP communication. Users of this service will however have very little contact with the java.net classes.
 
 The following are the points of this service:
 
@@ -28,7 +28,7 @@ Protocols:
 Fragments:
 
 &nbsp;&nbsp;&nbsp;&nbsp;__secure__ - If specified then one of the APS(TCP/UDP)SecurityService services will be used.
- 
+
 &nbsp;&nbsp;&nbsp;&nbsp;__async__ (only valid on _tcp_ protocol)
 
 ## Examples
@@ -41,21 +41,21 @@ Fragments:
     tcpipSvc.sendStreamedRequest(new URI("tcp://localhost:9999"), new StreamedRequest() {
         void sendRequest(URI connectionPoint, OutputStream requestStream, InputStream responseStream) throws IOException {
             // write to requestStream ...
-    
+
             // read from response stream ...
         }
     })
-    
+
 
 #### Read
 
     APSTCPIPService tcpipSvc;
     ...
-    tcpipSvc.setStreamedRequestListener(new URI("tcp:localhost:9999"), this);
+    tcpipSvc.setStreamedRequestListener(new URI("tcp://localhost:9999"), this);
     ...
     void requestReceived(URI receivePoint, InputStream requestStream, OutputStream responseStream) {
         // Read request from reqStream ...
-    
+
         // Write response to respStream ...
     }
 
@@ -72,7 +72,7 @@ Since Multicast uses UDP packets there is no difference between host and port co
     bytes[] bytes = "Some data".getBytes();
     tcpipSvc.sendDataPacket(new URI("udp://localhost:9999"),  bytes);
 
-or  
+or
 
     tcpipSvc.sendDataPacket(new URI("multicast://all-systems.mcast.net:9999"), bytes);
 
@@ -86,5 +86,5 @@ or
         byte[] bytes = packet.getData();
         ...
     }
-    
+
 
