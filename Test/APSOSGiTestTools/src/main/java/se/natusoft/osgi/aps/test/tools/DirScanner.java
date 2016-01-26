@@ -52,9 +52,6 @@ public class DirScanner {
         for (File file : dir.listFiles()) {
             if (file.isFile()) {
                 String path = file.getAbsolutePath().substring(this.rootDirLength);
-                if (path.startsWith(File.separator)) {
-                    path = path.substring(1);
-                }
                 this.entries.add(path);
             }
             else if (file.isDirectory()) {
