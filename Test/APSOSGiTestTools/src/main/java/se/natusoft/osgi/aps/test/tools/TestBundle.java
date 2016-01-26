@@ -39,11 +39,15 @@ package se.natusoft.osgi.aps.test.tools;
 import org.osgi.framework.*;
 import se.natusoft.osgi.aps.test.tools.internal.ServiceRegistry;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * This is the starting point. Create one of this first. It provides an implementation of Bundle.
@@ -142,6 +146,60 @@ public class TestBundle implements Bundle {
     }
 
     /**
+     * This provides simulated content by reading the content list of a real jar in the local maven repository.
+     *
+     * To be **very clear** this does not load nor use the actual files in the specified jar! It just provides
+     * the paths that the real jar has. When running the real jar must be available on the classpath. The specified
+     * jar is again **not added** to the classpath! So any jar provided here must either be the jar of the project
+     * being tested or be added as a test dependency.
+     *
+     * @param group The group id of the jar artifact.
+     * @param artifact The artifact name.
+     * @param version The version of the artifact.
+     */
+    public void loadEntryPathsFromMaven(String group, String artifact, String version) throws IOException {
+        loadEntryPathsFromMaven(group, artifact, version, "");
+    }
+
+    /**
+     * This provides simulated content by reading the content list of a real jar in the local maven repository.
+     *
+     * To be **very clear** this does not load nor use the actual files in the specified jar! It just provides
+     * the paths that the real jar has. When running the real jar must be available on the classpath. The specified
+     * jar is again **not added** to the classpath! So any jar provided here must either be the jar of the project
+     * being tested or be added as a test dependency.
+     *
+     * @param group The group id of the jar artifact.
+     * @param artifact The artifact name.
+     * @param version The version of the artifact.
+     * @param classifier The classifier of the  jar. Can be null or blank.
+     */
+    public void loadEntryPathsFromMaven(String group, String artifact, String version, String classifier) throws IOException {
+        if (classifier == null || classifier.trim().isEmpty()) {
+            classifier = "";
+        }
+        else {
+            classifier = "-" + classifier.trim();
+        }
+
+        File jarFile = new File(System.getProperty("user.home"));
+        jarFile = new File(jarFile, ".m2/repository");
+        jarFile = new File(jarFile, group.replace('.','/'));
+        jarFile = new File(jarFile, artifact);
+        jarFile = new File(jarFile, version);
+        jarFile = new File(jarFile, artifact + "-" + version + classifier + ".jar");
+
+        if (!jarFile.exists()) throw new IllegalArgumentException("GAV '" + group + ":" + artifact + ":" + version + classifier +
+                " does not exist!");
+
+        try (JarFile jar = new JarFile(jarFile)) {
+            jar.stream().forEach(jarEntry -> {
+                TestBundle.this.entryPaths.add(jarEntry.getName());
+            });
+        }
+    }
+
+    /**
      * Currently not supported. Returns 0.
      */
     @Override
@@ -153,57 +211,43 @@ public class TestBundle implements Bundle {
      * Does nothing.
      */
     @Override
-    public void start(int options) throws BundleException {
-
-    }
+    public void start(int options) throws BundleException {}
 
     /**
      * Does nothing.
      */
     @Override
-    public void start() throws BundleException {
-
-    }
+    public void start() throws BundleException {}
 
     /**
      * Does nothing.
      */
     @Override
-    public void stop(int options) throws BundleException {
-
-    }
+    public void stop(int options) throws BundleException {}
 
     /**
      * Does nothing.
      */
     @Override
-    public void stop() throws BundleException {
-
-    }
+    public void stop() throws BundleException {}
 
     /**
      * Does nothing.
      */
     @Override
-    public void update(InputStream input) throws BundleException {
-
-    }
+    public void update(InputStream input) throws BundleException {}
 
     /**
      * Does nothing.
      */
     @Override
-    public void update() throws BundleException {
-
-    }
+    public void update() throws BundleException {}
 
     /**
      * Does nothing.
      */
     @Override
-    public void uninstall() throws BundleException {
-
-    }
+    public void uninstall() throws BundleException {}
 
     /**
      * Returns the added headers.
