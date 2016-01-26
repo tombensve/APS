@@ -66,6 +66,7 @@ public class DirScanner {
     /**
      * Returns the result of the scan. All file paths are relative to the root!
      */
+    @SuppressWarnings("unused")
     public List<String> getEntries() {
         return this.entries;
     }

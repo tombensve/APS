@@ -45,8 +45,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
@@ -97,6 +95,7 @@ public class TestBundle implements Bundle {
      *
      * @param service The service to provide.
      */
+    @SuppressWarnings("unused")
     public void addServiceInstance(Object service) {
         Properties properties = new Properties();
         properties.setProperty(Constants.OBJECTCLASS, service.getClass().getInterfaces()[0].getName());
@@ -108,6 +107,7 @@ public class TestBundle implements Bundle {
      *
      * @param headers The headers to set.
      */
+    @SuppressWarnings("unused")
     public void setHeaders(Dictionary headers) {
         this.headers = headers;
     }
@@ -129,6 +129,7 @@ public class TestBundle implements Bundle {
      *
      * @param entryPaths A List of paths to add.
      */
+    @SuppressWarnings("unused")
     public void setEntryPaths(List<String> entryPaths) {
         this.entryPaths = entryPaths;
     }
@@ -193,9 +194,7 @@ public class TestBundle implements Bundle {
                 " does not exist!");
 
         try (JarFile jar = new JarFile(jarFile)) {
-            jar.stream().forEach(jarEntry -> {
-                TestBundle.this.entryPaths.add(jarEntry.getName());
-            });
+            jar.stream().forEach(jarEntry -> TestBundle.this.entryPaths.add(jarEntry.getName()));
         }
     }
 
@@ -214,9 +213,7 @@ public class TestBundle implements Bundle {
      * @param root The root of the file scan.
      */
     public void loadEntryPathsFromDirScan(File root) {
-        new DirScanner(root).stream().forEach(path -> {
-            TestBundle.this.entryPaths.add(path);
-        });
+        new DirScanner(root).stream().forEach(path -> TestBundle.this.entryPaths.add(path));
     }
 
     /**
