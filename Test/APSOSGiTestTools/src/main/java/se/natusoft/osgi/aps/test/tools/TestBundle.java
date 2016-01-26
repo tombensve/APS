@@ -200,6 +200,26 @@ public class TestBundle implements Bundle {
     }
 
     /**
+     * Loads entry paths by doing a file scan at the specified root.
+     *
+     * @param relPath A path that is relative to the top maven parent project.
+     */
+    public void loadEntryPathsFromDirScan(String relPath) {
+        loadEntryPathsFromDirScan(new File(new MavenRootFile().getRoot(), relPath));
+    }
+
+    /**
+     * Loads entry paths by doing a file scan at the specified root.
+     *
+     * @param root The root of the file scan.
+     */
+    public void loadEntryPathsFromDirScan(File root) {
+        new DirScanner(root).stream().forEach(path -> {
+            TestBundle.this.entryPaths.add(path);
+        });
+    }
+
+    /**
      * Currently not supported. Returns 0.
      */
     @Override
