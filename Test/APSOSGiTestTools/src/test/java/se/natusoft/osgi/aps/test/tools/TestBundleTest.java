@@ -19,7 +19,7 @@ public class TestBundleTest {
 
         testBundle.loadEntryPathsFromMaven("se.natusoft.osgi.aps", "aps-apis", "1.0.0");
 
-        assertNotNull(testBundle.getEntry("se/natusoft/osgi/aps/annotations/APSServiceAPI.class"));
+        assertNotNull(testBundle.getEntry("/se/natusoft/osgi/aps/annotations/APSServiceAPI.class"));
     }
 
     @Test
@@ -29,7 +29,7 @@ public class TestBundleTest {
 
         testBundle.loadEntryPathsFromDirScan("Test/APSOSGiTestTools/target/classes");
 
-        assertNotNull(testBundle.getEntry("se/natusoft/osgi/aps/test/tools/OSGIServiceTestTools.class"));
+        assertNotNull(testBundle.getEntry("/se/natusoft/osgi/aps/test/tools/OSGIServiceTestTools.class"));
 
     }
 }

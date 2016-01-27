@@ -72,6 +72,7 @@ public class DirScanner {
      * Returns the entries as a stream of strings containing root relative paths.
      */
     public Stream<String> stream() {
+        // Yes, I've mostly copied this from java.util.zip.JarFile.stream()!
         return StreamSupport.stream(Spliterators.spliterator(
                 this.entries.iterator(), this.entries.size(),
                 Spliterator.ORDERED | Spliterator.DISTINCT |

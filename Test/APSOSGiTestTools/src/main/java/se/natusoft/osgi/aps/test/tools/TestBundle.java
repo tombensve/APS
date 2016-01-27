@@ -194,7 +194,11 @@ public class TestBundle implements Bundle {
                 " does not exist!");
 
         try (JarFile jar = new JarFile(jarFile)) {
-            jar.stream().forEach(jarEntry -> TestBundle.this.entryPaths.add(jarEntry.getName()));
+            System.out.println("Loading the following paths:");
+            jar.stream().forEach(jarEntry -> {
+                TestBundle.this.entryPaths.add(File.separator + jarEntry.getName());
+                System.out.println("    " + File.separator + jarEntry.getName());
+            });
         }
     }
 
@@ -213,7 +217,11 @@ public class TestBundle implements Bundle {
      * @param root The root of the file scan.
      */
     public void loadEntryPathsFromDirScan(File root) {
-        new DirScanner(root).stream().forEach(path -> TestBundle.this.entryPaths.add(path));
+        System.out.println("Loading the following paths:");
+        new DirScanner(root).stream().forEach(path -> {
+            TestBundle.this.entryPaths.add(path);
+            System.out.println("    " + path);
+        });
     }
 
     /**
