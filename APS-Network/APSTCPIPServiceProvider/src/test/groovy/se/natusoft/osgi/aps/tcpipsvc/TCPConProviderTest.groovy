@@ -20,7 +20,7 @@ import se.natusoft.osgi.aps.tools.APSServiceTracker
 import static org.junit.Assert.assertTrue
 
 /**
- * Test UDPReceiver and UDPSender.
+ * Test sending and receiving TCP data.
  */
 @CompileStatic
 @TypeChecked

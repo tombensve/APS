@@ -16,7 +16,7 @@ import se.natusoft.osgi.aps.tools.APSServiceTracker
 import static org.junit.Assert.assertTrue
 
 /**
- * Test MulticastReceiver and MulticastSender.
+ * Test sending and receiving multicast data.
  */
 @CompileStatic
 @TypeChecked
