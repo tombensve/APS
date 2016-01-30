@@ -49,13 +49,12 @@ Fragments:
                 // read from response stream ...
             }
         })
-        
 
 #### Read
 
         APSTCPIPService tcpipSvc;
         ...
-        tcpipSvc.setStreamedRequestListener(new URI("tcp:localhost:9999"), this);
+        tcpipSvc.setStreamedRequestListener(new URI("tcp://localhost:9999"), this);
         ...
         void requestReceived(URI receivePoint, InputStream requestStream, OutputStream responseStream) {
             // Read request from reqStream ...
@@ -90,5 +89,4 @@ or
             byte[] bytes = packet.getData();
             ...
         }
-        
 
