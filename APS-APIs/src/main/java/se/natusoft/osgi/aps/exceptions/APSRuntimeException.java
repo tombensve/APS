@@ -36,10 +36,32 @@
  */
 package se.natusoft.osgi.aps.exceptions;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Base exception for platform services.
  */
 public class APSRuntimeException extends RuntimeException {
+
+    //
+    // Private Members
+    //
+
+    /** The exception message. */
+    private StringBuilder messageBuilder = new StringBuilder();
+
+    /** Support for multiple causes for this exception. */
+    private List<Throwable> causes = new LinkedList<>();
+
+    //
+    // Constructors
+    //
+
+    /**
+     * Creates a new _APSRuntimeException_ instance.
+     */
+    public APSRuntimeException() {}
 
     /**
      * Creates a new _APSRuntimeException_ instance.
@@ -48,6 +70,7 @@ public class APSRuntimeException extends RuntimeException {
      */
     public APSRuntimeException(String message) {
         super(message);
+        this.messageBuilder.append(message);
     }
 
     /**
@@ -58,5 +81,51 @@ public class APSRuntimeException extends RuntimeException {
      */
     public APSRuntimeException(String message, Throwable cause) {
         super(message, cause);
+        this.messageBuilder.append(message);
+        this.causes.add(cause);
+    }
+
+    //
+    // Methods
+    //
+
+    /**
+     * Adds text the the exception message.
+     *
+     * @param text The text to add.
+     */
+    public void addToMessage(String text) {
+        this.messageBuilder.append(text);
+    }
+
+    /**
+     * Returns the exception message.
+     */
+    @Override
+    public String getMessage() {
+        return this.messageBuilder.toString();
+    }
+
+    /**
+     * Adds a cause to this exception.
+     *
+     * @param cause The cause to add.
+     */
+    public void addCause(Throwable cause) {
+        this.causes.add(cause);
+    }
+
+    /**
+     * Returns a list of causes for this exception.
+     */
+    public List<Throwable> getCauses() {
+        return this.causes;
+    }
+
+    /**
+     * Returns true if there is at least one cause exception added to this exception.
+     */
+    public boolean hasCauses() {
+        return !this.causes.isEmpty();
     }
 }

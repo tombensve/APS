@@ -196,8 +196,10 @@ public class TestBundle implements Bundle {
         try (JarFile jar = new JarFile(jarFile)) {
             System.out.println("Loading the following paths:");
             jar.stream().forEach(jarEntry -> {
-                TestBundle.this.entryPaths.add(File.separator + jarEntry.getName());
-                System.out.println("    " + File.separator + jarEntry.getName());
+                if (!jarEntry.getName().endsWith("/")) {
+                    TestBundle.this.entryPaths.add(File.separator + jarEntry.getName());
+                    System.out.println("    " + File.separator + jarEntry.getName());
+                }
             });
         }
     }
