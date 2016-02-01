@@ -213,7 +213,7 @@ class ReceiverSvc implements MessageReceivedService, APSSimpleMessageService.Mes
  */
 class SenderSvc {
 
-    public static final CONTENT_TYPE = "fish"
+    public static final CONTENT_TYPE = "saltwater/fish"
     // I was listening to Scooters "How much is the fish" when I got the idea for test data :-)
     public static final CONTENT = "><> ><> <>< ><>"
 
