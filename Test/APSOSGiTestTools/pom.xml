@@ -60,6 +60,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-apis</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
 </project>

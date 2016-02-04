@@ -3,7 +3,7 @@ package se.natusoft.osgi.aps.net.messaging
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
-import org.osgi.framework.Bundle
+import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
 import se.natusoft.osgi.aps.api.net.util.TypedData
 import se.natusoft.osgi.aps.net.messaging.config.ServiceConfig
@@ -12,7 +12,6 @@ import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValueList
 import se.natusoft.osgi.aps.tcpipsvc.config.ExpertConfig
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
-import se.natusoft.osgi.aps.test.tools.TestBundle
 import se.natusoft.osgi.aps.tools.APSActivator
 import se.natusoft.osgi.aps.tools.APSServiceTracker
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStart
@@ -20,50 +19,15 @@ import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals
+import static org.junit.Assert.assertNotNull
 
 @CompileStatic
 @TypeChecked
-class TCPSimpleMessageServiceTest {
+class TCPSimpleMessageServiceTest extends OSGIServiceTestTools {
 
     private static boolean isTestActive() {
         return !(System.getProperty("aps.test.disabled") == "true")
-    }
-
-    /**
-     * Sets up configuration for APSTCPSimpleMessageServiceProvider.
-     */
-    private static void messageConfigSetup1() {
-
-        ServiceConfig testServiceConfig = new ServiceConfig()
-        testServiceConfig.registerWithDiscoveryService = new TestConfigValue(value: "false")
-        testServiceConfig.listenConnectionPointUrl = new TestConfigValue(value: "tcp://localhost:11320")
-        testServiceConfig.lookInDiscoveryService = new TestConfigValue(value: "false")
-
-        testServiceConfig.sendConnectionPointUrls = new TestConfigValueList()
-        ((TestConfigValueList)testServiceConfig.sendConnectionPointUrls).getConfigs().
-                add(new TestConfigValue(value: "tcp://localhost:11320"))
-
-        ServiceConfig.managed.serviceProviderAPI.configInstance = testServiceConfig
-        ServiceConfig.managed.serviceProviderAPI.setManaged() // VERY IMPORTANT!
-    }
-
-    /**
-     * Sets up configuration for APSTCPIPServiceProvider used by APSTCPSimpleMessageServiceProvider.
-     */
-    private static void tcpipConfigSetup1() {
-
-        TCPIPConfig testTCPIPConfig = new TCPIPConfig()
-
-        ExpertConfig expertConfig = new ExpertConfig()
-        expertConfig.exceptionGuardMaxExceptions = new TestConfigValue(value: "30")
-        expertConfig.exceptionGuardReactLimit = new TestConfigValue(value: "300")
-        expertConfig.tcpCallbackThreadPoolSize = new TestConfigValue(value: "30")
-
-        testTCPIPConfig.expert = expertConfig
-
-        TCPIPConfig.managed.serviceProviderAPI.configInstance = testTCPIPConfig
-        TCPIPConfig.managed.serviceProviderAPI.setManaged() // VERY IMPORTANT!
     }
 
     @Test
@@ -79,59 +43,63 @@ class TCPSimpleMessageServiceTest {
         System.out.println("Test done!")
     }
 
-    private static void runTest() throws Exception {
-        messageConfigSetup1()
-        tcpipConfigSetup1()
+    private void runTest() throws Exception {
 
-        // ---- Start OSGi test run support ---- //
-        OSGIServiceTestTools testTools = new OSGIServiceTestTools();
-
-        // ---- Deploy APSTCPIPServiceProvider ---- //
-        TestBundle tcpipServiceBundle = testTools.createBundle("aps-tcpip-service-provider")
+        // ---- Deploy some bundles (Using Groovy DSL:ish goodness :-)) ---- //
         // Since there is a test dependency on this artifact that artifact should have been built before this one!
-        tcpipServiceBundle.loadEntryPathsFromMaven("se.natusoft.osgi.aps", "aps-tcpip-service-provider" ,"1.0.0")
-        APSActivator tcpipSvcActivator = new APSActivator()
-        tcpipSvcActivator.start(tcpipServiceBundle.bundleContext)
+        deploy 'aps-tcpip-service-provider' withActivator new APSActivator() withAPSConfig {
+            TCPIPConfig testTCPIPConfig = new TCPIPConfig()
 
-        // ---- Deploy APSTCPSimpleMessageServiceProvider ---- //
-        TestBundle simpleMessageServiceBundle = testTools.createBundle("aps-tcp-simple-message-service-provider")
-        // Our code is at least built at this time, so load from target/classes.
-        simpleMessageServiceBundle.loadEntryPathsFromDirScan("APS-Network/APSTCPSimpleMessageServiceProvider/target/classes")
-        APSActivator msgActivator = new APSActivator()
-        msgActivator.start(simpleMessageServiceBundle.bundleContext)
+            ExpertConfig expertConfig = new ExpertConfig()
+            expertConfig.exceptionGuardMaxExceptions = new TestConfigValue(value: "30")
+            expertConfig.exceptionGuardReactLimit = new TestConfigValue(value: "300")
+            expertConfig.tcpCallbackThreadPoolSize = new TestConfigValue(value: "30")
 
-        // ---- Deploy ReceiverSvc ---- //
-        TestBundle receiverBundle = testTools.createBundle("receiver-bundle")
-        receiverBundle.addEntryPaths("/se/natusoft/osgi/aps/net/messaging/ReceiverSvc.class")
-        APSActivator receiverActivator = new APSActivator()
-        receiverActivator.start(receiverBundle.bundleContext)
+            testTCPIPConfig.expert = expertConfig
 
-        // ---- Deploy SenderSvc ---- //
-        TestBundle senderBundle = testTools.createBundle("sender-bundle")
-        senderBundle.addEntryPaths("/se/natusoft/osgi/aps/net/messaging/SenderSvc.class")
-        APSActivator senderActivator = new APSActivator()
-        senderActivator.start(senderBundle.bundleContext)
+            return testTCPIPConfig
+        } from 'se.natusoft.osgi.aps', 'aps-tcpip-service-provider' ,'1.0.0'
+
+        deploy 'aps-tcp-simple-message-service-provider' withActivator new APSActivator() withAPSConfig {
+            ServiceConfig testServiceConfig = new ServiceConfig()
+            testServiceConfig.registerWithDiscoveryService = new TestConfigValue(value: "false")
+            testServiceConfig.listenConnectionPointUrl = new TestConfigValue(value: "tcp://localhost:11320")
+            testServiceConfig.lookInDiscoveryService = new TestConfigValue(value: "false")
+
+            testServiceConfig.sendConnectionPointUrls = new TestConfigValueList()
+            ((TestConfigValueList)testServiceConfig.sendConnectionPointUrls).getConfigs().
+                    add(new TestConfigValue(value: "tcp://localhost:11320"))
+
+            return testServiceConfig
+        } from 'APS-Network/APSTCPSimpleMessageServiceProvider/target/classes'
+
+        deploy 'receiver-bundle' withActivator new APSActivator() using '/se/natusoft/osgi/aps/net/messaging/ReceiverSvc.class'
+
+        deploy 'sender-bundle' withActivator new APSActivator() using '/se/natusoft/osgi/aps/net/messaging/SenderSvc.class'
 
         // ---- Wait for things to happen ---- //
-        Thread.sleep(500)
+        Thread.sleep(1000)
 
         // ---- Get received message ---- //
         // We create a new Bundle in which we use APSServiceTracker to get the MessageReceivedService
         // (implemented by ReceiverSvc) which we use to fetch the received message that SenderSvc sent.
-        Bundle testValidateBundle = testTools.createBundle("test-validate-bundle")
 
+        String messageType = ""
+        String messageText = ""
+
+        withNewBundle "test-result-lookup-bundle", { BundleContext context ->
             APSServiceTracker<MessageReceivedService> msgRecvSvcTracker =
-                    new APSServiceTracker<>(testValidateBundle.bundleContext, MessageReceivedService.class, "2 seconds")
+                    new APSServiceTracker<>(context, MessageReceivedService.class, "2 seconds")
             msgRecvSvcTracker.start()
             MessageReceivedService messageReceivedService = msgRecvSvcTracker.allocateService()
 
-                String messageType = messageReceivedService.receivedMessage.contentType
-                String messageText = new String(messageReceivedService.receivedMessage.content)
+                messageType = messageReceivedService?.receivedMessage?.contentType
+                byte[] msgBytes = messageReceivedService?.receivedMessage?.content
+                messageText = new String(msgBytes != null ? msgBytes : new byte[0])
 
             msgRecvSvcTracker.releaseService()
-            msgRecvSvcTracker.stop(testValidateBundle.bundleContext)
-
-        testTools.removeBundle(testValidateBundle)
+            msgRecvSvcTracker.stop(context)
+        }
 
         // ---- Validate Result ---- //
         try {
@@ -147,17 +115,7 @@ class TCPSimpleMessageServiceTest {
         // ---- Cleanup ---- //
         finally {
 
-            senderActivator.stop(senderBundle.bundleContext)
-            testTools.removeBundle(senderBundle)
-
-            receiverActivator.stop(receiverBundle.bundleContext)
-            testTools.removeBundle(receiverBundle)
-
-            msgActivator.stop(simpleMessageServiceBundle.bundleContext)
-            testTools.removeBundle(simpleMessageServiceBundle)
-
-            tcpipSvcActivator.stop(tcpipServiceBundle.bundleContext)
-            testTools.removeBundle(tcpipServiceBundle)
+            shutdown()
         }
     }
 }
