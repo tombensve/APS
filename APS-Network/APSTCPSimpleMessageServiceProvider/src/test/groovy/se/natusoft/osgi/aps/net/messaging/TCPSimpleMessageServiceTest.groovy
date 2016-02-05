@@ -36,11 +36,11 @@ class TCPSimpleMessageServiceTest extends OSGIServiceTestTools {
             runTest()
         }
         else {
-            println("This test is currently disabled!")
-            println("Run with -Daps.test.disabled=false to run it.")
+            println "This test is currently disabled!"
+            println "Run with -Daps.test.disabled=false to run it."
         }
 
-        System.out.println("Test done!")
+        println "Test done!"
     }
 
     private void runTest() throws Throwable {
@@ -102,12 +102,12 @@ class TCPSimpleMessageServiceTest extends OSGIServiceTestTools {
 
                 // ---- Validate Result ---- //
 
-                assertNotNull("Expected a received message type, but it was null!", messageType)
-                assertNotNull("Expected a received message, but it was null!", messageText)
+                assertNotNull "Expected a received message type, but it was null!", messageType
+                assertNotNull "Expected a received message, but it was null!", messageText
 
-                assertEquals("Got '${messageType}' rather than expected '${SenderSvc.CONTENT_TYPE}' type!", SenderSvc.CONTENT_TYPE, messageType)
+                assertEquals "Got '${messageType}' rather than expected '${SenderSvc.CONTENT_TYPE}' type!", SenderSvc.CONTENT_TYPE, messageType
 
-                assertEquals("Got '${messageText}' rather than expected '${SenderSvc.CONTENT}'!", SenderSvc.CONTENT, messageText)
+                assertEquals "Got '${messageText}' rather than expected '${SenderSvc.CONTENT}'!", SenderSvc.CONTENT, messageText
             }
         }
         // ---- Cleanup ---- //
@@ -134,9 +134,6 @@ interface MessageReceivedService {
 @OSGiServiceProvider
 class ReceiverSvc implements MessageReceivedService, APSSimpleMessageService.MessageListener {
 
-    public static final String TYPE = "tcp.msg.svc.msg.type"
-    public static final String MSG = "tcp.msg.svc.msg"
-
     private TypedData message = null
 
     @OSGiService(timeout = "2 seconds")
@@ -144,12 +141,12 @@ class ReceiverSvc implements MessageReceivedService, APSSimpleMessageService.Mes
 
     @BundleStart
     public void start() throws Exception {
-        this.msgService.addMessageListener("test", this)
+        this.msgService.addMessageListener "test", this
     }
 
     @BundleStop
     public void stop() throws Exception {
-        this.msgService.removeMessageListener("test", this)
+        this.msgService.removeMessageListener "test", this
     }
 
     @Override
@@ -177,11 +174,6 @@ class SenderSvc {
 
     @BundleStart
     public void start() throws Exception {
-        TypedData message = new TypedData.Provider(
-                contentType: CONTENT_TYPE,
-                content: CONTENT.getBytes()
-        )
-
-        this.msgService.sendMessage("test", message)
+        this.msgService.sendMessage "test", new TypedData.Provider(contentType: CONTENT_TYPE, content: CONTENT.getBytes())
     }
 }
