@@ -68,7 +68,7 @@ public class OSGIServiceTestTools {
 
     private Map<Long, TestBundle> bundleById = new HashMap<>();
 
-    private List<BundleManager> bundleManagers = new LinkedList<>();
+    private List<BundleBuilder> bundleBuilders = new LinkedList<>();
 
     //
     // Methods
@@ -136,11 +136,9 @@ public class OSGIServiceTestTools {
      * Shuts down all bundles started with deployBundle(...).
      */
     public void shutdown() {
-        Collections.reverse(this.bundleManagers);
-        for (BundleManager bm : this.bundleManagers) {
-            bm.shutdown();
-        }
-        this.bundleManagers = new LinkedList<>();
+        Collections.reverse(this.bundleBuilders);
+        this.bundleBuilders.forEach(BundleBuilder::shutdown);
+        this.bundleBuilders = new LinkedList<>();
     }
 
     /**
@@ -159,14 +157,17 @@ public class OSGIServiceTestTools {
      *
      * @throws IOException
      */
-    public BundleManager deploy(String name) throws IOException {
-        BundleManager bm = new BundleManager(name);
-        this.bundleManagers.add(bm);
+    public BundleBuilder deploy(String name) throws IOException {
+        BundleBuilder bm = new BundleBuilder(name);
+        this.bundleBuilders.add(bm);
         return bm;
     }
 
-    public static interface WithBundle {
-        public void run(BundleContext bundleContext);
+    /**
+     * API to implement for passing to withNewBundle.
+     */
+    public interface WithBundle {
+        void run(BundleContext bundleContext) throws Throwable;
     }
 
     /**
@@ -177,7 +178,7 @@ public class OSGIServiceTestTools {
      *
      * @throws Exception
      */
-    public void withNewBundle(String name, WithBundle withBundle) throws Exception {
+    public void with_new_bundle(String name, WithBundle withBundle) throws Throwable {
         TestBundle bundle = createBundle(name);
 
         withBundle.run(bundle.getBundleContext());
@@ -186,9 +187,38 @@ public class OSGIServiceTestTools {
     }
 
     /**
+     * Provides a delay so that concurrent things can finish before checking results.
+     *
+     * @param milliseconds The number of milliseconds to wait.
+     *
+     * @throws InterruptedException
+     */
+    public void delay(int milliseconds) throws InterruptedException {
+        Thread.sleep(milliseconds);
+    }
+
+    /**
+     * Provides a delay so that concurrent things can finish before checking results.
+     *
+     * @param delay A string. 'long' ==> 10000ms, 'very small' ==> 500ms, anything else ==> 1000ms.
+     *
+     * @throws InterruptedException
+     */
+    public void delay(String delay) throws InterruptedException {
+        int ms = 1000;
+        if (delay.startsWith("long")) {
+            ms = 10000;
+        }
+        else if (delay.startsWith("very small")) {
+            ms = 500;
+        }
+        delay(ms);
+    }
+
+    /**
      * Inner class to support primitive DSL. Looks better when called from Groovy where you can skip chars like '.' and '()' :-).
      */
-    public class BundleManager {
+    public class BundleBuilder {
 
         private TestBundle bundle = null;
         private BundleActivator activator = null;
@@ -199,7 +229,7 @@ public class OSGIServiceTestTools {
          *
          * @param name The name of the bundle managed.
          */
-        public BundleManager(String name) {
+        public BundleBuilder(String name) {
             this.bundle = createBundle(name);
         }
 
@@ -209,7 +239,7 @@ public class OSGIServiceTestTools {
          * @return itself.
          * @throws Exception
          */
-        private BundleManager start() throws Exception {
+        private BundleBuilder start() throws Exception {
             if (this.activator == null) {
                 throw new Exception("Activator has not been provided! Add an 'with new MyActivator()'");
             }
@@ -225,7 +255,7 @@ public class OSGIServiceTestTools {
          * @param bundleActivator The BundleActivator to provide.
          * @return itself
          */
-        public BundleManager withActivator(BundleActivator bundleActivator) {
+        public BundleBuilder with_activator(BundleActivator bundleActivator) {
             this.activator = bundleActivator;
             return this;
         }
@@ -238,7 +268,7 @@ public class OSGIServiceTestTools {
          * @return itself
          * @throws Exception
          */
-        public BundleManager withAPSConfig(Callable<APSConfig> config) throws Exception {
+        public BundleBuilder with_APSConfig(Callable<APSConfig> config) throws Exception {
             if (this.started) throw new Exception("Config must be provided earlier in command line!");
             APSConfig apsConfig = config.call();
             for (Field field : apsConfig.getClass().getDeclaredFields()) {
@@ -266,7 +296,7 @@ public class OSGIServiceTestTools {
          * @return itself
          * @throws Exception
          */
-        public BundleManager from(String group, String artifact, String version) throws Exception {
+        public BundleBuilder from(String group, String artifact, String version) throws Exception {
             this.bundle.loadEntryPathsFromMaven(group, artifact, version);
             return start();
         }
@@ -278,7 +308,7 @@ public class OSGIServiceTestTools {
          * @return itself
          * @throws Exception
          */
-        public BundleManager from(String dirScan) throws Exception {
+        public BundleBuilder from(String dirScan) throws Exception {
             this.bundle.loadEntryPathsFromDirScan(dirScan);
             return start();
         }
@@ -290,7 +320,7 @@ public class OSGIServiceTestTools {
          * @return itself
          * @throws Exception
          */
-        public BundleManager from(File dirScan) throws Exception {
+        public BundleBuilder from(File dirScan) throws Exception {
             this.bundle.loadEntryPathsFromDirScan(dirScan);
             return start();
         }
@@ -302,7 +332,7 @@ public class OSGIServiceTestTools {
          * @return itself
          * @throws Exception
          */
-        public BundleManager using(String[] paths) throws Exception {
+        public BundleBuilder using(String[] paths) throws Exception {
             this.bundle.addEntryPaths(paths);
             return start();
         }
@@ -310,14 +340,14 @@ public class OSGIServiceTestTools {
         /**
          * Terminates this builder and returns a BundleContext representing the result.
          */
-        public BundleContext asContext() {
+        public BundleContext as_context() {
             return this.bundle.getBundleContext();
         }
 
         /**
          * Terminates this builder and returns a Bundle representing the result.
          */
-        public Bundle asBundle() {
+        public Bundle as_bundle() {
             return this.bundle;
         }
 

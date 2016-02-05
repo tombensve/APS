@@ -43,11 +43,11 @@ class TCPSimpleMessageServiceTest extends OSGIServiceTestTools {
         System.out.println("Test done!")
     }
 
-    private void runTest() throws Exception {
+    private void runTest() throws Throwable {
 
         // ---- Deploy some bundles (Using Groovy DSL:ish goodness :-)) ---- //
         // Since there is a test dependency on this artifact that artifact should have been built before this one!
-        deploy 'aps-tcpip-service-provider' withActivator new APSActivator() withAPSConfig {
+        deploy 'aps-tcpip-service-provider' with_activator new APSActivator() with_APSConfig {
             TCPIPConfig testTCPIPConfig = new TCPIPConfig()
 
             ExpertConfig expertConfig = new ExpertConfig()
@@ -57,10 +57,10 @@ class TCPSimpleMessageServiceTest extends OSGIServiceTestTools {
 
             testTCPIPConfig.expert = expertConfig
 
-            return testTCPIPConfig
+            testTCPIPConfig // <--
         } from 'se.natusoft.osgi.aps', 'aps-tcpip-service-provider' ,'1.0.0'
 
-        deploy 'aps-tcp-simple-message-service-provider' withActivator new APSActivator() withAPSConfig {
+        deploy 'aps-tcp-simple-message-service-provider' with_activator new APSActivator() with_APSConfig {
             ServiceConfig testServiceConfig = new ServiceConfig()
             testServiceConfig.registerWithDiscoveryService = new TestConfigValue(value: "false")
             testServiceConfig.listenConnectionPointUrl = new TestConfigValue(value: "tcp://localhost:11320")
@@ -70,51 +70,48 @@ class TCPSimpleMessageServiceTest extends OSGIServiceTestTools {
             ((TestConfigValueList)testServiceConfig.sendConnectionPointUrls).getConfigs().
                     add(new TestConfigValue(value: "tcp://localhost:11320"))
 
-            return testServiceConfig
+            testServiceConfig // <--
         } from 'APS-Network/APSTCPSimpleMessageServiceProvider/target/classes'
 
-        deploy 'receiver-bundle' withActivator new APSActivator() using '/se/natusoft/osgi/aps/net/messaging/ReceiverSvc.class'
+        // ReceiverSvc is implemented below.
+        deploy 'receiver-bundle' with_activator new APSActivator() using '/se/natusoft/osgi/aps/net/messaging/ReceiverSvc.class'
 
-        deploy 'sender-bundle' withActivator new APSActivator() using '/se/natusoft/osgi/aps/net/messaging/SenderSvc.class'
+        // SenderSvc is implemented below.
+        deploy 'sender-bundle' with_activator new APSActivator() using '/se/natusoft/osgi/aps/net/messaging/SenderSvc.class'
 
         // ---- Wait for things to happen ---- //
-        Thread.sleep(1000)
+        delay 1000
 
         // ---- Get received message ---- //
-        // We create a new Bundle in which we use APSServiceTracker to get the MessageReceivedService
-        // (implemented by ReceiverSvc) which we use to fetch the received message that SenderSvc sent.
-
-        String messageType = ""
-        String messageText = ""
-
-        withNewBundle "test-result-lookup-bundle", { BundleContext context ->
-            APSServiceTracker<MessageReceivedService> msgRecvSvcTracker =
-                    new APSServiceTracker<>(context, MessageReceivedService.class, "2 seconds")
-            msgRecvSvcTracker.start()
-            MessageReceivedService messageReceivedService = msgRecvSvcTracker.allocateService()
-
-                messageType = messageReceivedService?.receivedMessage?.contentType
-                byte[] msgBytes = messageReceivedService?.receivedMessage?.content
-                messageText = new String(msgBytes != null ? msgBytes : new byte[0])
-
-            msgRecvSvcTracker.releaseService()
-            msgRecvSvcTracker.stop(context)
-        }
-
-        // ---- Validate Result ---- //
         try {
+            // We create a new Bundle in which we use APSServiceTracker to get the MessageReceivedService
+            // (implemented by ReceiverSvc) which we use to fetch the received message that SenderSvc sent.
 
-            assertNotNull("Expected a received message type, but it was null!", messageType)
-            assertNotNull("Expected a received message, but it was null!", messageText)
+            with_new_bundle "test-result-lookup-bundle", { BundleContext context ->
+                APSServiceTracker<MessageReceivedService> msgRecvSvcTracker =
+                        new APSServiceTracker<>(context, MessageReceivedService.class, "2 seconds")
+                msgRecvSvcTracker.start()
+                MessageReceivedService messageReceivedService = msgRecvSvcTracker.allocateService()
 
-            assertEquals("Got '${messageType}' rather than expected '${SenderSvc.CONTENT_TYPE}' type!", SenderSvc.CONTENT_TYPE, messageType)
+                    String messageType = messageReceivedService?.receivedMessage?.contentType
+                    byte[] msgBytes = messageReceivedService?.receivedMessage?.content
+                    String messageText = new String(msgBytes != null ? msgBytes : new byte[0])
 
-            assertEquals("Got '${messageText}' rather than expected '${SenderSvc.CONTENT}'!", SenderSvc.CONTENT, messageText)
+                msgRecvSvcTracker.releaseService()
+                msgRecvSvcTracker.stop(context)
+
+                // ---- Validate Result ---- //
+
+                assertNotNull("Expected a received message type, but it was null!", messageType)
+                assertNotNull("Expected a received message, but it was null!", messageText)
+
+                assertEquals("Got '${messageType}' rather than expected '${SenderSvc.CONTENT_TYPE}' type!", SenderSvc.CONTENT_TYPE, messageType)
+
+                assertEquals("Got '${messageText}' rather than expected '${SenderSvc.CONTENT}'!", SenderSvc.CONTENT, messageText)
+            }
         }
-
         // ---- Cleanup ---- //
         finally {
-
             shutdown()
         }
     }
