@@ -37,7 +37,7 @@ class TCPSimpleMessageServiceTest extends OSGIServiceTestTools {
         }
         else {
             println "This test is currently disabled!"
-            println "Run with -Daps.test.disabled=false to run it."
+            println "Remove the -Daps.test.disabled=true to run it."
         }
 
         println "Test done!"
