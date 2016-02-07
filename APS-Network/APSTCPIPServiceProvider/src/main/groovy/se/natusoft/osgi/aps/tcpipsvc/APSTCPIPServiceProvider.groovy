@@ -71,9 +71,6 @@ class APSTCPIPServiceProvider implements APSTCPIPService {
     @Managed
     private ConnectionResolver connectionResolver
 
-    @Managed(name = "META-DATA")
-    private APSTCPIPServiceMetaData metaData
-
     private Map<URI, UDPReceiver> udpReceivers = Collections.synchronizedMap(new HashMap<URI, UDPReceiver>())
 
     private Map<URI, TCPReceiver> tcpReceivers = Collections.synchronizedMap(new HashMap<URI, TCPReceiver>())
