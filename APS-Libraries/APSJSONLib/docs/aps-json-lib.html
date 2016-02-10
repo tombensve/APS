@@ -635,7 +635,7 @@
     </p>
     <blockquote>
       <p>
-        <em>errorHandler</em>        
+        <em>errorHandler</em> - The error handler to use.         
       </p>
     </blockquote>
     <p>
@@ -1722,6 +1722,129 @@
         <em>cause</em> - The cause of this exception.         
       </p>
     </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>JSONMapConv </strong>   [se.natusoft.osgi.aps.json.tools] {      
+    </p>
+    <p>
+      This converts between a Java Map and JSON. Do note that this of course uses this library to read and write JSON, but this specific public API only deals with Java and JSON as String or on/in a stream. <a href='p/' title=''>p/</a> This class becomes more useful when used from Groovy since the latter provides much nicer usage of data in Maps. Yes, I know about JSONSlurper and JSONBuilder in Groovy. Those however does not work with @CompileStatic. Maps does.      
+    </p>
+    <p>
+      <strong>public static Map&lt;String, Object&gt; jsonObjectToMap(String json) throws IOException</strong>      
+    </p>
+    <p>
+      This takes a String containing a JSON object and returns it as a Map.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>json</em> - The JSON content to convert to a Map.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static Map&lt;String, Object&gt; jsonObjectToMap(InputStream is) throws IOException</strong>      
+    </p>
+    <p>
+      This takes an InputStream containing a JSON object and returns it as a Map.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>is</em> - The InputStream to read.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public static String mapToJSONObject(Map&lt;String, Object&gt; map) throws IOException</strong>      
+    </p>
+    <p>
+      This takes a Map (as created by jsonObjectToMap(...)) and returns a JSON object.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>map</em> - The Map to convert to JSON.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static void mapToJSONObject(Map&lt;String, Object&gt; map, OutputStream os) throws IOException</strong>      
+    </p>
+    <p>
+      This takes a Map (as created by jsonObjectToMap(...)) and writes it as JSON to the specified OutputStream.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>map</em> - The Map to write as JSON.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>os</em> - The OutputStream to write to.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
     <p>
       }      
     </p>

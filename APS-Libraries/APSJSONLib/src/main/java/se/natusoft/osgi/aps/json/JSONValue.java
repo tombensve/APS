@@ -145,7 +145,7 @@ public abstract class JSONValue {
             value = createObject(errorHandler);
             value.readJSON(c, reader);
         }
-        else if (JSONString.isStringStart(c)) { // String
+        else if (JSONString.isStringStart(c)) {
             value = createString(errorHandler);
             value.readJSON(c, reader);
         }
@@ -246,7 +246,7 @@ public abstract class JSONValue {
         writeJSON(os, true);
 
     }
-    
+
     /**
      * This writes JSON to the specified OutputStream.
      *
