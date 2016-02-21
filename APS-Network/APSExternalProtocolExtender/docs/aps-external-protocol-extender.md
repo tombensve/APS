@@ -70,17 +70,13 @@ __public Set<String> getAvailableServices()__
 
 Returns all currently available services.
 
-__public List<APSExternallyCallable> getCallables(String serviceName) throws RuntimeException__
+__public List<APSExternallyCallable> getCallables(String serviceName)__
 
 Returns all APSExternallyCallable for the named service object.
 
 _Parameters_
 
 > _serviceName_ - The name of the service to get callables for. 
-
-_Throws_
-
-> _RuntimeException_ - If the service is not available. 
 
 __public Set<String> getAvailableServiceFunctionNames(String serviceName)__
 
@@ -329,10 +325,6 @@ This defines the valid choices for selectMethod(...).
     
 
 
-
-__APSRESTCallable.HttpMethod httpMethod() default APSRESTCallable.HttpMethod.NONE__
-
-This needs to be provided if you are providing a REST API using JSONREST protocol of the APSStreamedJSONRPCProtocolProvider bundle.
 
 }
 
@@ -586,6 +578,8 @@ _Parameters_
 
 > _parameter_ - The parameter to add. 
 
+
+
 }
 
 ----
@@ -595,6 +589,24 @@ _Parameters_
 public _enum_ __RequestIntention__   [se.natusoft.osgi.aps.api.net.rpc.model] {
 
 The intention of a request.
+
+}
+
+----
+
+    
+
+public _interface_ __RPCExceptionConverter__   [se.natusoft.osgi.aps.api.net.rpc.model] {
+
+An instance of this can be passed to RPCRequest to convert the cauth exception to an RPCError.
+
+__RPCError convertException(Exception e)__
+
+This should be called on any service exception to convert the exception to an RPCError.
+
+_Parameters_
+
+> _e_ - The exception to convert. 
 
 }
 
@@ -613,6 +625,12 @@ Returns true if this request is valid. If this returns false all information exc
 __RPCError getError()__
 
 Returns an _RPCError_ object if `isValid() == false`, _null_ otherwise.
+
+__RPCExceptionConverter getExceptionConverter()__
+
+If an exception occurred during the request call, and this returns non null, then the returned converter should be called with the occurred exception to provide an RPCError.
+
+This allows for a specific protocol implementation to handle its own exceptions and provide an appropriate RPCError.
 
 __String getServiceQName()__
 

@@ -20,7 +20,7 @@
       JSONHTTP version 1.0 which is not any standard protocol at all. It requires both service name and method name on the url, and in case of HTTP GET or DELETE also arguments as ?params=arg:...:arg where values are strings or primitives. For POST, and PUT a JSON array of values need to be written on the stream.      
     </p>
     <p>
-      JSONREST version 1.0 extending JSONHTTP will make the http transport always map methods annotated with @RESTGET, @RESTPUT, @RESTPOST, and @RESTDELETE to the corresponding http methods. This also does not require a method to be specified on the URL, and will ignore any specified method.      
+      JSONREST version 1.0 extending JSONHTTP requeres callable methods to be annotated with @APSWebService. The optional <em>httpMethod</em> value can also be set and will be validated agains the HTTP method of the call if set.      
     </p>
     <p>
       Personally I think that JSONRPC 2.0 is far more flexible than REST.      
@@ -76,12 +76,19 @@
     <pre>
       <code>
     {"id": "6d25d646-11fc-44c3-b74d-29b3d5c94920", "valid": true}
-    
       </code>
     </pre>
     <p>
       In this case we didn't just use <em>createSession</em> as method name, but <em>createSession(Integer)</em> though with parentheses escaped to not confuse the shell. This is because there is 2 variants of createSession: createSession(String, Integer) and createSession(Integer). If we don't specify clearly we might get the wrong one and in this case that happens and will fail due to missing second parameter. Also note the <em>params=5</em>. On get we cannot pass any data on the stream to the service, we can only pass parameters on the URL which is done by specifying url parameter <em>params</em> with a colon (:) separated list of parameters as value. In this case only String and primitives are supported for parameters.      
     </p>
+    <p>
+      Assume that APSSessionService.createSession where annotated with <strong>@APSWebService(path="session/create")</strong> to give a service method a nicer path, then the call would look like this:      
+    </p>
+    <pre>
+      <code>
+    curl --get http://loclahost:8080/apsrpc/JSONREST/1.0/session/create=params=5
+      </code>
+    </pre>
     <p>
       These examples only works if you have disabled the <em>requireAuthentication</em> configuration (network/rpc-http-transport).      
     </p>

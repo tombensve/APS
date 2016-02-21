@@ -50,6 +50,9 @@ installKaraf() {
 
     ln -s /vagrant/vagrant/filesystems/${node}/.apsHome
 
+    # Make sure we have debug even if we restart and forget the "debug" param.
+    sudo -u vagrant -i echo "export KARAF_DEBUG=true" >> /home/vagrant/.profile
+
     # Now we can start the server again, and we start it as user "vagrant".
     sudo -u vagrant -i /home/vagrant/server/apache-karaf/bin/start debug
 }
@@ -69,3 +72,4 @@ export http_proxy="http://192.168.1.17:9999/"
 updateSystem
 installJava
 installKaraf
+setupBin

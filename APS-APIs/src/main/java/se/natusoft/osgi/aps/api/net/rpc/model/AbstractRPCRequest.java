@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2012-01-08: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.api.net.rpc.model;
 
@@ -53,7 +53,7 @@ public abstract class AbstractRPCRequest implements RPCRequest {
 
     /** The method to call. */
     private String method = null;
-    
+
     /** The fully qualified name of the service to call if available. */
     private String serviceQName = null;
 
@@ -101,7 +101,7 @@ public abstract class AbstractRPCRequest implements RPCRequest {
         this.method = method;
         this.callId = callId;
     }
-    
+
     //
     // Methods
     //
@@ -119,7 +119,7 @@ public abstract class AbstractRPCRequest implements RPCRequest {
     protected List<Object> getParameters() {
         return this.parameters;
     }
-    
+
     /**
      * Returns true if this request is valid. If this returns false all information except getError() is invalid, and
      * getError() should return a valid RPCError object.
@@ -136,14 +136,14 @@ public abstract class AbstractRPCRequest implements RPCRequest {
     public RPCError getError() {
         return this.error;
     }
-    
+
     /**
      * Returns a fully qualified name of service to call. This will be null for protocols where service name is
      * not provided this way. So this cannot be taken for given!
      */
     @Override
     public String getServiceQName() {
-        return this.serviceQName;   
+        return this.serviceQName;
     }
 
     /**
@@ -173,7 +173,7 @@ public abstract class AbstractRPCRequest implements RPCRequest {
     public boolean hasCallId() {
         return this.callId != null;
     }
-    
+
     /**
      * Returns the method call call Id.
      * <p/>
@@ -200,6 +200,18 @@ public abstract class AbstractRPCRequest implements RPCRequest {
      */
     public void addParameter(Object parameter) {
         this.parameters.add(parameter);
+    }
+
+    /**
+     * If an exception occurred during the request call, and this returns non null, then the returned
+     * converter should be called with the occurred exception to provide an RPCError.
+     *
+     * This allows for a specific protocol implementation to handle its own exceptions and provide an
+     * appropriate RPCError.
+     */
+    @Override
+    public RPCExceptionConverter getExceptionConverter() {
+        return null;
     }
 
 }

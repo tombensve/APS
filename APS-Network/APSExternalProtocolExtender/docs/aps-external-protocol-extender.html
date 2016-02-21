@@ -113,7 +113,7 @@
       Returns all currently available services.      
     </p>
     <p>
-      <strong>public List&lt;APSExternallyCallable&gt; getCallables(String serviceName) throws RuntimeException</strong>      
+      <strong>public List&lt;APSExternallyCallable&gt; getCallables(String serviceName)</strong>      
     </p>
     <p>
       Returns all APSExternallyCallable for the named service object.      
@@ -124,14 +124,6 @@
     <blockquote>
       <p>
         <em>serviceName</em> - The name of the service to get callables for.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>RuntimeException</em> - If the service is not available.         
       </p>
     </blockquote>
     <p>
@@ -565,12 +557,6 @@
             
     </p>
     <p>
-      <strong>APSRESTCallable.HttpMethod httpMethod() default APSRESTCallable.HttpMethod.NONE</strong>      
-    </p>
-    <p>
-      This needs to be provided if you are providing a REST API using JSONREST protocol of the APSStreamedJSONRPCProtocolProvider bundle.      
-    </p>
-    <p>
       }      
     </p>
     <hr/>    <p>
@@ -969,6 +955,9 @@
       </p>
     </blockquote>
     <p>
+            
+    </p>
+    <p>
       }      
     </p>
     <hr/>    <p>
@@ -980,6 +969,32 @@
     <p>
       The intention of a request.      
     </p>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>RPCExceptionConverter </strong>   [se.natusoft.osgi.aps.api.net.rpc.model] {      
+    </p>
+    <p>
+      An instance of this can be passed to RPCRequest to convert the cauth exception to an RPCError.      
+    </p>
+    <p>
+      <strong>RPCError convertException(Exception e)</strong>      
+    </p>
+    <p>
+      This should be called on any service exception to convert the exception to an RPCError.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>e</em> - The exception to convert.         
+      </p>
+    </blockquote>
     <p>
       }      
     </p>
@@ -1003,6 +1018,15 @@
     </p>
     <p>
       Returns an <em>RPCError</em> object if <code>isValid() == false</code>, <em>null</em> otherwise.      
+    </p>
+    <p>
+      <strong>RPCExceptionConverter getExceptionConverter()</strong>      
+    </p>
+    <p>
+      If an exception occurred during the request call, and this returns non null, then the returned converter should be called with the occurred exception to provide an RPCError.      
+    </p>
+    <p>
+      This allows for a specific protocol implementation to handle its own exceptions and provide an appropriate RPCError.      
     </p>
     <p>
       <strong>String getServiceQName()</strong>      

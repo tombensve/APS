@@ -1,53 +1,53 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS External Protocol Extender
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         This does two things:
- *         
+ *
  *         1) Looks for "APS-Externalizable: true" MANIFEST.MF entry in deployed bundles and if found and bundle status is
  *         ACTIVE, analyzes the service API and creates an APSExternallyCallable wrapper for each service method and
  *         keeps them in memory until bundle state is no longer ACTIVE. In addition to the MANIFEST.MF entry it has
  *         a configuration of fully qualified service names that are matched against the bundles registered services
  *         for which an APSExternallyCallable wrapper will be created.
- *         
+ *
  *         2) Registers an APSExternalProtocolExtenderService making the APSExternallyCallable objects handled available
  *         to be called. Note that APSExternallyCallable is an interface extending java.util.concurrent.Callable.
  *         This service is used by other bundles making the service available remotely trough some protocol like
  *         JSON for example.
- *         
+ *
  *         This extender is a middleman making access to services very easy to expose using whatever protocol you want.
  *         Multiple protocol bundles using the APSExternalProtocolExtenderService can be deployed at the same time making
  *         services available through more than one protocol.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2012-01-01: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.externalprotocolextender.service;
 
@@ -82,7 +82,7 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
 
     /** Holds all currently known services. */
     private Map<String /*service*/, ServiceRepresentation> services = new HashMap<>();
-    
+
     /** Double stored by service reference. */
     private Map<ServiceReference, ServiceRepresentation> servicesByRef = new HashMap<>();
 
@@ -98,7 +98,7 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
 
     /**
      * Creates a new APSExternalProtocolServiceProvider.
-     * 
+     *
      * @param logger The logger to log to.
      */
     public APSExternalProtocolServiceProvider(APSLogger logger) {
@@ -118,6 +118,23 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
     }
 
     /**
+     * Returns all APSExternallyCallable for the specified ServiceRepresentation.
+     *
+     * @param serviceRep The ServiceRepresentation to get the APSExternallyCallable instances for.
+     */
+    private List<APSExternallyCallable> getCallables(ServiceRepresentation serviceRep) {
+        List<APSExternallyCallable> serviceMethods = new LinkedList<>();
+
+        if (serviceRep != null) {
+            for (String methodName : serviceRep.getMethodNames()) {
+                serviceMethods.add(new ServiceMethodCallable(serviceRep.getMethodCallable(methodName)));
+            }
+        }
+
+        return serviceMethods;
+    }
+
+    /**
      * Returns all APSExternallyCallable for the named service object.
      *
      * @param serviceName The name of the service to get callables for.
@@ -127,16 +144,16 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
      */
     @Override
     public List<APSExternallyCallable> getCallables(String serviceName) throws APSNoServiceAvailableException {
-        List<APSExternallyCallable> serviceMethods = new LinkedList<>();
-        
         ServiceRepresentation serviceRep = this.services.get(serviceName);
-        if (serviceRep != null) {
-            for (String methodName : serviceRep.getMethodNames()) {
-                serviceMethods.add(new ServiceMethodCallable(serviceRep.getMethodCallable(methodName)));
+        if (serviceRep == null) {
+            for (Map.Entry<String, ServiceRepresentation> entry : this.services.entrySet()) {
+                if (entry.getKey().endsWith(serviceName) || entry.getKey().toLowerCase().endsWith(serviceName.toLowerCase())) {
+                    serviceRep = entry.getValue();
+                    break;
+                }
             }
         }
-
-        return serviceMethods;
+        return getCallables(serviceRep);
     }
 
     /**
@@ -165,6 +182,15 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
     @Override
     public APSExternallyCallable getCallable(String serviceName, String serviceFunctionName) {
         ServiceRepresentation serviceRep = this.services.get(serviceName);
+        if (serviceRep == null) {
+            for (Map.Entry<String, ServiceRepresentation> entry : this.services.entrySet()) {
+                if (entry.getKey().endsWith(serviceName) || entry.getKey().toLowerCase().endsWith(serviceName.toLowerCase())) {
+                    serviceRep = entry.getValue();
+                    break;
+                }
+            }
+        }
+
         APSExternallyCallable callable = null;
 
         if (serviceFunctionName == null) {
@@ -173,12 +199,11 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
 
         if (serviceRep != null) {
             callable = serviceRep.getMethodCallable(serviceFunctionName);
-            callable = new ServiceMethodCallable((ServiceMethodCallable)callable);
+            callable = ServiceMethodCallable.copy((ServiceMethodCallable)callable);
         }
 
         return callable;
     }
-
 
     /**
      * @return All currently deployed providers of RPCProtocolService.
@@ -312,17 +337,17 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
      * @param serviceRepresentation The ServiceRepresentation received.
      */
     private void handleServiceAvailable(ServiceRepresentation serviceRepresentation) {
-        APSExternalProtocolServiceProvider.this.services.put(serviceRepresentation.getName(), serviceRepresentation);
-        APSExternalProtocolServiceProvider.this.servicesByRef.put(serviceRepresentation.getServiceReference(), serviceRepresentation);
+        this.services.put(serviceRepresentation.getName(), serviceRepresentation);
+        this.servicesByRef.put(serviceRepresentation.getServiceReference(), serviceRepresentation);
 
-        for (APSExternalProtocolListener listener : APSExternalProtocolServiceProvider.this.externalServiceListeners) {
+        for (APSExternalProtocolListener listener : this.externalServiceListeners) {
             listener.externalServiceAvailable(serviceRepresentation.getName(), serviceRepresentation.getServiceReference().getBundle().getVersion().toString());
         }
 
-        APSExternalProtocolServiceProvider.this.logger.debug("Received service '" + serviceRepresentation.getName() +
+        this.logger.debug("Received service '" + serviceRepresentation.getName() +
                 "' part of bundle '" + serviceRepresentation.getServiceReference().getBundle().getSymbolicName() + "'.");
         for (String methodName : serviceRepresentation.getMethodNames()) {
-            APSExternalProtocolServiceProvider.this.logger.debug("    method: " + methodName);
+            this.logger.debug("    method: " + methodName);
         }
     }
 
@@ -332,16 +357,16 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
      * @param serviceReference The ServiceReference received.
      */
     private void handleServiceLeaving(ServiceReference serviceReference) {
-        ServiceRepresentation serviceRep = APSExternalProtocolServiceProvider.this.servicesByRef.get(serviceReference);
+        ServiceRepresentation serviceRep = this.servicesByRef.get(serviceReference);
         if (serviceRep != null) {
-            for (APSExternalProtocolListener listener : APSExternalProtocolServiceProvider.this.externalServiceListeners) {
+            for (APSExternalProtocolListener listener : this.externalServiceListeners) {
                 listener.externalServiceLeaving(serviceRep.getName(), serviceReference.getBundle().getVersion().toString());
             }
 
-            APSExternalProtocolServiceProvider.this.servicesByRef.remove(serviceReference);
-            APSExternalProtocolServiceProvider.this.services.remove(serviceRep.getName());
+            this.servicesByRef.remove(serviceReference);
+            this.services.remove(serviceRep.getName());
 
-            APSExternalProtocolServiceProvider.this.logger.debug("Removed service '" + serviceReference.toString() +
+            this.logger.debug("Removed service '" + serviceReference.toString() +
                     "' part of bundle '" + serviceReference.getBundle().getSymbolicName() + "'.");
         }
     }

@@ -1,40 +1,40 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS External Protocol HTTP Transport Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         This uses aps-external-protocol-extender to provide remote calls over HTTP. It makes
  *         any published service implementing se.natusoft.osgi.aps.net.rpc.streamed.service.StreamedRPCProtocolService
  *         available for calling services over HTTP.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2012-01-06: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.rpchttpextender.servlet;
 
@@ -54,6 +54,7 @@ import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService;
 import se.natusoft.osgi.aps.api.net.rpc.errors.ErrorType;
 import se.natusoft.osgi.aps.api.net.rpc.errors.HTTPError;
 import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
+import se.natusoft.osgi.aps.api.net.rpc.model.RPCExceptionConverter;
 import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;
 import se.natusoft.osgi.aps.api.net.rpc.model.RequestIntention;
 import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
@@ -299,9 +300,6 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                     resp.sendRedirect(pathInfo + "/");
                 }
                 else {
-                    if (!RPCServletConfig.mc.isManaged()) {
-                        RPCServletConfig.mc.waitUntilManaged();
-                    }
                     if (this.loginHandler.hasValidLogin()) {
                         doHelp(req, resp);
                     }
@@ -413,7 +411,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
         String protocolName = null;
         int part = 0;
 
-        if (RPCServletConfig.mc.get().requireAuthentication.toBoolean()) {
+        if (RPCServletConfig.mc.get().requireAuthentication.getBoolean()) {
             part = checkAuth(pathParts, part, req, resp);
             if (part == AUTH_FAILED) {
                 resp.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -423,15 +421,30 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
 
         protocolName = pathParts[part++];
         version = pathParts[part++];
+
+        StringBuilder svcPath = new StringBuilder();
+
         if (pathParts.length > part) {
             service = pathParts[part++];
+            svcPath.append(service);
         }
         if (pathParts.length > part) {
-            method = pathParts[part];
+            method = pathParts[part++];
+            svcPath.append('/');
+            svcPath.append(method);
+        }
+        while (pathParts.length > part) {
+            svcPath.append('/');
+            svcPath.append(pathParts[part++]);
         }
 
-        // A service with no methods
-        Class serviceClass = this.externalProtocolService.getCallables(service).get(0).getServiceClass();
+        List<APSExternallyCallable> serviceCallables = this.externalProtocolService.getCallables(service);
+        if (serviceCallables == null || serviceCallables.isEmpty()) {
+            resp.sendError(404, "Service '" + service + "' ('" + svcPath.toString() + "') was not found!!!");
+            return;
+        }
+
+        Class serviceClass = serviceCallables.get(0).getServiceClass();
 
         StreamedRPCProtocol protocol = this.externalProtocolService.getStreamedProtocolByNameAndVersion(protocolName, version);
         if (protocol != null) {
@@ -553,12 +566,19 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                         protocol.writeErrorResponse(ree.getError(), rpcRequest, resp.getOutputStream());
                     }
                 } catch (Exception e) {
-                    RPCError error = protocol.createRPCError(
-                            ErrorType.SERVER_ERROR,
-                            e.getMessage(),
-                            null,
-                            e
-                    );
+                    RPCError error;
+                    RPCExceptionConverter exceptionConverter = rpcRequest.getExceptionConverter();
+                    if (exceptionConverter != null) {
+                        error = exceptionConverter.convertException(e);
+                    }
+                    else {
+                        error = protocol.createRPCError(
+                                ErrorType.SERVER_ERROR,
+                                e.getMessage(),
+                                null,
+                                e
+                        );
+                    }
                     if (error instanceof HTTPError) {
                         resp.sendError(((HTTPError) error).getHttpStatusCode(), error.getMessage());
                     } else {

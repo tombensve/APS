@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Streamed JSONRPC Protocol Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides JSONRPC implementations for version 1.0 and 2.0.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2013-03-24: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.jsonrpc.protocols;
 
@@ -40,22 +40,20 @@ import se.natusoft.osgi.aps.api.misc.json.JSONEOFException;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONArray;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
-import se.natusoft.osgi.aps.api.net.rpc.annotations.APSRemoteService;
 import se.natusoft.osgi.aps.api.net.rpc.errors.ErrorType;
 import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;
 import se.natusoft.osgi.aps.api.net.rpc.model.RequestIntention;
+import se.natusoft.osgi.aps.jsonrpc.errors.JSONRPCError;
 import se.natusoft.osgi.aps.tools.APSLogger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 
 
 /**
@@ -108,45 +106,112 @@ public class JSONREST  extends JSONHTTP {
                 "URL parameters are required on GET while a JSON array on the stream is required on POST or PUT. " +
                 "Whatever the method call returns are converted to JSON and written on the response OutputStream. " +
                 "For this REST protocol the called service must have methods annotated with se.natusoft.osgi.aps.api." +
-                "net.rpc.annotations.APSRemoteService(httpMethod=GET/PUT/POST/DELETE). If an appropriate method is not found a 404 " +
-                "will be returned!";
+                "net.rpc.annotations.APSWebService(httpMethod=GET/PUT/POST/DELETE). If the call does not match the " +
+                "appropriate action for the method then an error in in the 400 range is returned.";
     }
 
     /**
-     * Resolves which method to call for different REST operations.
+     * Validates the call.
      *
-     * @param serviceClass The service class whose methods to scan.
-     *
-     * @return A Map of found methods.
+     * @param serviceClass The class of the service to validate.
+     * @param method The method of the service to call.
+     * @param requestIntention The type of operation for the call.
      */
-    private Map<RequestIntention, String> resolveMethods(Class serviceClass) {
-        Map<RequestIntention, String> methods = new HashMap<>();
+    private void validateCall(Class serviceClass, String method, RequestIntention requestIntention) {
 
-        for (Method method : serviceClass.getMethods()) {
-            APSRemoteService apsRemoteService = method.getAnnotation(APSRemoteService.class);
+        // If called method starts with get/put/post/delete then the HTTP method must match.
+        // If not, we allow anything.
+        for (Method m : serviceClass.getMethods()) {
+            if (m.getName().equals(method)) {
 
-            if (apsRemoteService != null) {
-                switch(apsRemoteService.httpMethod()) {
-                    case GET:
-                        methods.put(RequestIntention.READ, method.getName());
-                        break;
+                String compare = method.toLowerCase();
 
-                    case PUT:
-                        methods.put(RequestIntention.UPDATE, method.getName());
-                        break;
+                if (compare.startsWith("get") && requestIntention != RequestIntention.READ) {
+                    throw new JSONHTTPError(ErrorType.INVALID_REQUEST, SC_BAD_REQUEST,
+                            "Bad request! HTTP GET method must be used for this call!", null, null);
+                }
 
-                    case POST:
-                        methods.put(RequestIntention.CREATE, method.getName());
-                        break;
+                if ((compare.startsWith("post") || compare.startsWith("put")) && requestIntention != RequestIntention.UPDATE &&
+                        requestIntention != RequestIntention.CREATE) {
+                    throw new JSONHTTPError(ErrorType.INVALID_REQUEST, SC_BAD_REQUEST,
+                            "Bad request! HTTP method POST or PUT must be used for this call!", null, null);
+                }
 
-                    case DELETE:
-                        methods.put(RequestIntention.DELETE, method.getName());
+                if (compare.startsWith("delete") && requestIntention != RequestIntention.DELETE) {
+                    throw new JSONHTTPError(ErrorType.INVALID_REQUEST, SC_BAD_REQUEST,
+                            "Bad request! HTTP DELETE method must be used for this call!", null, null);
+                }
+            }
+        }
+    }
 
+    /**
+     * Finds a method that starts with one of the specified methods. If found the full method name is returned,
+     * otherwise null is returned.
+     *
+     * @param serviceClass The service class to check.
+     * @param methods The methods to look for.
+     *
+     * @return The found method or null if not found.
+     */
+    private String findMethod(Class serviceClass, String... methods) {
+        for (Method m : serviceClass.getMethods()) {
+            for (String method : methods) {
+                if (m.getName().startsWith(method)) {
+                    return m.getName();
                 }
             }
         }
 
-        return methods;
+        return null;
+    }
+
+    /**
+     * Checks and possibly modifies the method. A blank, or '-', or '@' method will result in a 'create', 'read', 'update', or
+     * 'delete' method based on the request intention.
+     *
+     * @param serviceClass The service class to inspect.
+     * @param method The method to check.
+     * @param requestIntention The intention of the request.
+     *
+     * @return A possibly updated method.
+     *
+     * @throws IOException on any failure.
+     */
+    private String checkMethod(Class serviceClass, String method, RequestIntention requestIntention) throws IOException {
+        if (method == null || method.equals("-") || method.equals("@") || method.trim().length() == 0) {
+            String findMethod = null;
+            switch (requestIntention) {
+                case CREATE:
+                    findMethod = findMethod(serviceClass, "create", "post", "new");
+                    if (findMethod != null) {
+                        method = findMethod;
+                    }
+                    break;
+                case READ:
+                    findMethod = findMethod(serviceClass, "read", "get");
+                    if (findMethod != null) {
+                        method = findMethod;
+                    }
+                    break;
+                case UPDATE:
+                    findMethod = findMethod(serviceClass, "update", "put", "set", "write");
+                    if (findMethod != null) {
+                        method = findMethod;
+                    }
+                    break;
+                case DELETE:
+                    findMethod = findMethod(serviceClass, "delete", "remove");
+                    if (findMethod != null) {
+                        method = findMethod;
+                    }
+                case UNKNOWN:
+                    throw new JSONHTTPError(ErrorType.METHOD_NOT_FOUND, SC_BAD_REQUEST, "Failed to map HTTP method to a service method!",
+                            null, null);
+            }
+        }
+
+        return method;
     }
 
     /**
@@ -161,10 +226,14 @@ public class JSONREST  extends JSONHTTP {
      * @return The parsed requests.
      * @throws java.io.IOException on IO failure.
      */
+    @SuppressWarnings("Duplicates")
     @Override
     public List<RPCRequest> parseRequests(String serviceQName, Class serviceClass, String method, InputStream requestStream,
                                           RequestIntention requestIntention) throws IOException {
-        Map<RequestIntention, String> methods = resolveMethods(serviceClass);
+
+        validateCall(serviceClass, method, requestIntention);
+
+        method = checkMethod(serviceClass, method, requestIntention);
 
         List<RPCRequest> requests = new LinkedList<>();
 
@@ -172,38 +241,32 @@ public class JSONREST  extends JSONHTTP {
             try {
                 // Read the JSON request
                 ReqJSONRESTErrorHandler errorHandler = new ReqJSONRESTErrorHandler();
-                JSONArray jsonReq = null;
-                JSONValue jsonReqValue = null;
+                JSONArray jsonReq;
+                JSONValue jsonReqValue;
                 try {
                     jsonReqValue = super.jsonService.readJSON(requestStream, errorHandler);
                     jsonReq = (JSONArray)jsonReqValue;
                 }
                 catch (JSONEOFException eofe) {
-                    break;
+                    break; // <-- Breaks out of loop!
                 }
                 catch (JSONParseException jpe) {
-                    throw new JSONRESTError(ErrorType.PARSE_ERROR, SC_BAD_REQUEST, "Bad JSON passed!", null, jpe);
+                    throw new JSONHTTPError(ErrorType.PARSE_ERROR, SC_BAD_REQUEST, "Bad JSON passed!", null, jpe);
                 }
                 catch (ClassCastException cce) {
-                    throw new JSONRESTError(ErrorType.INVALID_PARAMS, SC_BAD_REQUEST, "An array of JSON values/objects are required!",
+                    throw new JSONHTTPError(ErrorType.INVALID_PARAMS, SC_BAD_REQUEST, "An array of JSON values/objects are required!",
                             null, cce);
                 }
 
-                method = methods.get(requestIntention);
-                if (method == null) {
-                    throw new JSONRESTError(ErrorType.METHOD_NOT_FOUND, SC_NOT_FOUND,
-                            "No REST method found matching request verb!", null, null);
-                }
-
-                JSONRESTRequest req = new JSONRESTRequest(serviceQName, method, jsonReq.getAsList(), null);
+                JSONRPCRequest req = new JSONRPCRequest(serviceQName, method, jsonReq.getAsList(), null);
                 requests.add(req);
             }
-            catch (JSONRESTError error) {
+            catch (JSONHTTPError error) {
                 // This is a way to provide invalid requests so that a transport can choose to execute at least the valid ones
                 // and then report the invalid ones.
-                JSONRESTRequest req = new JSONRESTRequest(serviceQName, method, error);
+                JSONRPCRequest req = new JSONRPCRequest(serviceQName, method, error);
                 requests.add(req);
-                break;
+                break; // <-- Breaks out of loop!
             }
         }
 
@@ -222,12 +285,16 @@ public class JSONREST  extends JSONHTTP {
      * @return The parsed requests.
      * @throws java.io.IOException on IO failure.
      */
+    @SuppressWarnings("Duplicates")
     @Override
     public RPCRequest parseRequest(String serviceQName, Class serviceClass, String method, Map<String, String> parameters,
                                    RequestIntention requestIntention) throws IOException {
-        Map<RequestIntention, String> methods = resolveMethods(serviceClass);
 
-        RPCRequest request = null;
+        validateCall(serviceClass, method, requestIntention);
+
+        method = checkMethod(serviceClass, method, requestIntention);
+
+        RPCRequest request;
 
         try {
             List<String> params = new LinkedList<>();
@@ -245,21 +312,15 @@ public class JSONREST  extends JSONHTTP {
                         sb.append(providedParam);
                         comma = ", ";
                     }
-                    throw new JSONRESTError(ErrorType.INVALID_PARAMS, 400, "parameter 'params' where not provided but the " +
+                    throw new JSONHTTPError(ErrorType.INVALID_PARAMS, SC_BAD_REQUEST, "parameter 'params' where not provided but the " +
                             "following were: " + sb.toString() + "!", null, null);
                 }
             }
 
-            method = methods.get(requestIntention);
-            if (method == null) {
-                throw new JSONRESTError(ErrorType.METHOD_NOT_FOUND, SC_NOT_FOUND,
-                        "No REST method found matching request verb!", null, null);
-            }
-
-            request = new JSONRESTRequest(serviceQName, method, null, params);
+            request = new JSONRPCRequest(serviceQName, method, null, params);
         }
-        catch (JSONRESTError error) {
-            request = new JSONRESTRequest(serviceQName, method, error);
+        catch (JSONHTTPError error) {
+            request = new JSONRPCRequest(serviceQName, method, error);
         }
 
         return request;

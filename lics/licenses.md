@@ -12,4 +12,10 @@ The following third party products are using this license:
 * [org.osgi.compendium-4.2.0-null](http://www.osgi.org/)
 * [org.osgi.core-4.2.0-null](http://www.osgi.org/)
 
+__[CDDL + GPLv2 with classpath version exception](https://glassfish.dev.java.net/nonav/public/CDDL+GPL.html)__
+
+The following third party products are using this license:
+
+* [javaee-web-api-6.0](http://java.sun.com/javaee/6/docs/api/index.html)
+
 <!-- CLM -->
