@@ -36,6 +36,8 @@
  */
 package se.natusoft.osgi.aps.jsonrpc.protocols;
 
+import se.natusoft.docutations.NotNull;
+import se.natusoft.docutations.Nullable;
 import se.natusoft.osgi.aps.api.misc.json.JSONEOFException;
 import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONArray;
@@ -113,36 +115,31 @@ public class JSONHTTP implements StreamedRPCProtocol {
     @Override
     public List<RPCRequest> parseRequests(String serviceQName, Class serviceClass, String method, InputStream requestStream,
                                           RequestIntention requestIntention) throws IOException {
+
         List<RPCRequest> requests = new LinkedList<>();
 
-        while (true) {
+        while (true) try {
+            // Read the JSON request
+            ReqJSONRESTErrorHandler errorHandler = new ReqJSONRESTErrorHandler();
+            JSONArray jsonReq;
+            JSONValue jsonReqValue;
             try {
-                // Read the JSON request
-                ReqJSONRESTErrorHandler errorHandler = new ReqJSONRESTErrorHandler();
-                JSONArray jsonReq;
-                JSONValue jsonReqValue;
-                try {
-                    jsonReqValue = this.jsonService.readJSON(requestStream, errorHandler);
-                    jsonReq = (JSONArray)jsonReqValue;
-                }
-                catch (JSONEOFException eofe) {
-                    break;
-                }
-                catch (JSONParseException jpe) {
-                    throw new JSONHTTPError(ErrorType.PARSE_ERROR, SC_BAD_REQUEST, "Bad JSON passed!", null, jpe);
-                }
-                catch (ClassCastException cce) {
-                    throw new JSONHTTPError(ErrorType.INVALID_PARAMS, SC_BAD_REQUEST, "An array of JSON values/objects are required!",
-                            null, cce);
-                }
+                jsonReqValue = this.jsonService.readJSON(requestStream, errorHandler);
+                jsonReq = (JSONArray) jsonReqValue;
+            } catch (JSONEOFException eofe) {
+                break; // <--- This is where we leave the loop!
+            } catch (JSONParseException jpe) {
+                throw new JSONHTTPError(ErrorType.PARSE_ERROR, SC_BAD_REQUEST, "Bad JSON passed!", null, jpe);
+            } catch (ClassCastException cce) {
+                throw new JSONHTTPError(ErrorType.INVALID_PARAMS, SC_BAD_REQUEST, "An array of JSON values/objects are required!",
+                        null, cce);
+            }
 
-                JSONRPCRequest req = new JSONRPCRequest(serviceQName, method, jsonReq.getAsList(), null);
-                requests.add(req);
-            }
-            catch (JSONHTTPError error) {
-                JSONRPCRequest req = new JSONRPCRequest(serviceQName, method, error);
-                requests.add(req);
-            }
+            JSONRPCRequest req = new JSONRPCRequest(serviceQName, method, jsonReq.getAsList(), null, requestIntention);
+            requests.add(req);
+        } catch (JSONHTTPError error) {
+            JSONRPCRequest req = new JSONRPCRequest(serviceQName, method, error);
+            requests.add(req);
         }
 
         return requests;
@@ -164,6 +161,7 @@ public class JSONHTTP implements StreamedRPCProtocol {
     @Override
     public RPCRequest parseRequest(String serviceQName, Class serviceClass, String method, Map<String, String> parameters,
                                    RequestIntention requestIntention) throws IOException {
+
         RPCRequest request;
 
         try {
@@ -187,7 +185,7 @@ public class JSONHTTP implements StreamedRPCProtocol {
                 }
             }
 
-            request = new JSONRPCRequest(serviceQName, method, null, params);
+            request = new JSONRPCRequest(serviceQName, method, null, params, requestIntention);
         }
         catch (JSONHTTPError error) {
             request = new JSONRPCRequest(serviceQName, method, error);
@@ -410,6 +408,9 @@ public class JSONHTTP implements StreamedRPCProtocol {
         /** An error object when request parsing fails. */
         private HTTPError error;
 
+        /** The intention with the call. */
+        private  RequestIntention requestIntention;
+
         //
         // Constructors
         //
@@ -421,12 +422,15 @@ public class JSONHTTP implements StreamedRPCProtocol {
          * @param method The method to call.
          * @param jsonParams Any JSON parameters.
          * @param stringParams Any String parameters.
+         * @param requestIntention The intention of the request.
          */
-        public JSONRPCRequest(String serviceQName, String method, List<JSONValue> jsonParams, List<String> stringParams) {
+        public JSONRPCRequest(@NotNull String serviceQName, @Nullable String method, @Nullable List<JSONValue> jsonParams,
+                              @Nullable List<String> stringParams, @NotNull RequestIntention requestIntention) {
             this.setServiceQName = serviceQName;
             this.method = method;
             this.jsonParams = jsonParams;
             this.stringParams = stringParams;
+            this.requestIntention = requestIntention;
         }
 
         /**
@@ -436,7 +440,7 @@ public class JSONHTTP implements StreamedRPCProtocol {
          * @param method The method to call.
          * @param error The error describing the failure.
          */
-        public JSONRPCRequest(String setServiceQName, String method, HTTPError error) {
+        public JSONRPCRequest(@NotNull String setServiceQName, @NotNull  String method, @NotNull  HTTPError error) {
             this.setServiceQName = setServiceQName;
             this.method = method;
             this.error = error;
@@ -523,6 +527,13 @@ public class JSONHTTP implements StreamedRPCProtocol {
             return this.jsonParams != null ? this.jsonParams.size() : this.stringParams.size();
         }
 
+        /**
+         * Returns the intention of the request.
+         */
+        @Override
+        public RequestIntention getRequestIntention() {
+            return this.requestIntention;
+        }
 
         /**
          * Returns the parameter at the specified index.

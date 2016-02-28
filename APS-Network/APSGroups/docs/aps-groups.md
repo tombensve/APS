@@ -379,7 +379,9 @@ _Parameters_
 
     
 
+__/* * * PROJECT *     Name *         APS APIs * *     Code Version *         1.0.0 * *     Description *         Provides the APIs for the application platform services. * * COPYRIGHTS *     Copyright (C) 2012 by Natusoft AB All rights reserved. * * LICENSE *     Apache 2.0 (Open Source) * *     Licensed under the Apache License, Version 2.0 (the "License")__
 
+Use services under messaging instead!
 
 }
 

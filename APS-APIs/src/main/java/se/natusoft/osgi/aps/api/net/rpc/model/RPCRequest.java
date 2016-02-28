@@ -93,6 +93,11 @@ public interface RPCRequest {
     Object getCallId();
 
     /**
+     * Returns the intention of the request.
+     */
+    RequestIntention getRequestIntention();
+
+    /**
      * Return the number of parameters available.
      */
     int getNumberOfParameters();

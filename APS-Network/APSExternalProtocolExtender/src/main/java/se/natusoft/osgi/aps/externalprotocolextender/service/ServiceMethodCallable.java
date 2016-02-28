@@ -54,6 +54,7 @@ package se.natusoft.osgi.aps.externalprotocolextender.service;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import se.natusoft.docutations.NotNull;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternallyCallable;
 import se.natusoft.osgi.aps.api.external.model.type.DataTypeDescription;
 import se.natusoft.osgi.aps.api.external.model.type.ParameterDataTypeDescription;
@@ -106,7 +107,8 @@ public class ServiceMethodCallable implements APSExternallyCallable {
      * @param bundleContext The bundle context to lookup service instance with.
      * @param serviceBundle The bundle the service of this callable method belongs to.
      */
-    public ServiceMethodCallable(String serviceName, Method method, ServiceReference serviceReference, BundleContext bundleContext, Bundle serviceBundle) {
+    public ServiceMethodCallable(@NotNull String serviceName, @NotNull Method method, @NotNull ServiceReference serviceReference,
+                                 @NotNull BundleContext bundleContext, @NotNull Bundle serviceBundle) {
         this.serviceName = serviceName;
         this.method = method;
         this.serviceReference = serviceReference;
@@ -119,7 +121,8 @@ public class ServiceMethodCallable implements APSExternallyCallable {
      *
      * @param callable The APSExternallyCallable to copy.
      */
-    public ServiceMethodCallable(ServiceMethodCallable callable) {
+    public ServiceMethodCallable(@NotNull ServiceMethodCallable callable) {
+        if (callable == null) throw new NullPointerException("Can't copy a null callable!");
         this.serviceName = callable.serviceName;
         this.method = callable.method;
         this.serviceReference = callable.serviceReference;
@@ -138,7 +141,7 @@ public class ServiceMethodCallable implements APSExternallyCallable {
      *
      * @param smc The ServiceMethodCallable to copy.
      */
-    public static ServiceMethodCallable copy(ServiceMethodCallable smc) {
+    public static ServiceMethodCallable copy(@NotNull ServiceMethodCallable smc) {
         return new ServiceMethodCallable(smc);
     }
 
@@ -146,6 +149,7 @@ public class ServiceMethodCallable implements APSExternallyCallable {
      * @return The name of the service this callable is part of.
      */
     @Override
+    @NotNull
     public String getServiceName() {
         return this.serviceName;
     }
@@ -154,6 +158,7 @@ public class ServiceMethodCallable implements APSExternallyCallable {
      * @return The name of the service function this callable represents.
      */
     @Override
+    @NotNull
     public String getServiceFunctionName() {
         return this.method != null ? this.method.getName() : null;
     }
@@ -195,6 +200,7 @@ public class ServiceMethodCallable implements APSExternallyCallable {
      * @return The bundle the service of this callable method belongs to.
      */
     @Override
+    @NotNull
     public Bundle getServiceBundle() {
         return this.serviceBundle;
     }
@@ -203,6 +209,7 @@ public class ServiceMethodCallable implements APSExternallyCallable {
      * Returns the class of the service implementation.
      */
     @Override
+    @NotNull
     public Class getServiceClass() {
         Object service = this.bundleContext.getService(this.serviceReference);
         Class svcClass = service.getClass();

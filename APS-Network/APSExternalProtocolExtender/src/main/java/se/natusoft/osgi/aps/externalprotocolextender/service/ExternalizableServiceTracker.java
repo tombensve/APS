@@ -203,6 +203,21 @@ public class ExternalizableServiceTracker implements ServiceListener, TrivialBus
             else if (externalizable.trim().toLowerCase().equals("false")) {
                 return false;
             }
+            else {
+                // Allow any service whose fully qualified name occurs in the 'externalizable' string.
+                // Accept any implemented interface as valid service API.
+                Object service = this.context.getService(serviceReference);
+                Class[] ifaces = service.getClass().getInterfaces();
+                this.context.ungetService(serviceReference);
+
+                for (Class iface : ifaces) {
+                    if (externalizable.contains(iface.getName())) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         boolean permitted = false;

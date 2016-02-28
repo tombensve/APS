@@ -175,6 +175,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
      * @param servletConfig The configuration for the servlet.
      * @throws ServletException on failure.
      */
+    @Override
     public void init(javax.servlet.ServletConfig servletConfig) throws javax.servlet.ServletException {
         servletConfig.getServletContext().getServerInfo();
         if (this.bundleContext == null) {
@@ -359,6 +360,11 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
         doReq(req, resp);
     }
 
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doReq(req, resp);
+    }
+
     /**
      * Copies the request parameters providing only the first value of multivalues since we currently only support one value per name.
      *
@@ -479,7 +485,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
 
                 try {
                     if (rpcRequest.isValid()) {
-                        if (method == null) {
+                        if (method == null || method.equals("@") || method.equals("-")) {
                             method = rpcRequest.getMethod();
                         }
 

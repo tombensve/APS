@@ -16,21 +16,21 @@ _{service}_ is the name of the service to call. Safest is to use a fully qualifi
 
 _{method}_ is the method of the service to call. In the case of JSONREST the method can be skipped and a method will be found based on the HTTP method used to make the call.
 
-**JSONRPC version 1.0**
+## JSONRPC version 1.0
 
 This protocol is described at <http://json-rpc.org/wiki/specification>.
 
-**JSONRPC version 2.0**
+## JSONRPC version 2.0
 
 This protocol is describved at <http://jsonrpc.org/spec.html>.
 
-**JSONHTTP version 1.0**
+## JSONHTTP version 1.0
 
 This is not any standard protocol at all. It requires both service name and method name on the url, and in case of HTTP GET or DELETE also arguments as ?params=arg:...:arg where values are strings or primitives. For POST, and PUT a JSON array of values need to be written on the stream.
 
-**JSONREST version 1.0**
+## JSONREST version 1.0
 
- This provides a loose API of REST type. It will return HTTP error code on any failure. It has several options for calling. It is possible to specify both service and method to call, but if the method is omitted then a method will be deduced by the HTTP method used.
+This provides a loose API of REST type. It will return HTTP error code on any failure. It has several options for calling. It is possible to specify both service and method to call, but if the method is omitted then a method will be deduced by the HTTP method used.
 
 For HTTP method POST methods starting with one of the following will be matched: _create_, _post_, _new_.
 
@@ -39,6 +39,10 @@ For HTTP method GET methods starting with one of the following will be matched: 
 For HTTP method PUT methods starting with one of the following will be matched: _update_, _put_, _set_, _write_.
 
 For HTTP method DELETE methods starting with one of the following will be matched: _delete_, _remove_.
+
+JSONREST actually extends JSONHTTP and inherits some of its features, like the _params=arg:...:arg_ parameter. It however adds an own parameter feature: If a service method takes one Map<String, String> as parameter, all specified HTTP GET parameters will be provided in this Map.
+
+**Also note** that for GET and DELETE '...?params=...' must be used to provide parameters to the call, with the above mentioned exception, while for POST and PUT JSON must be provided on the request stream.
 
 ## Examples
 

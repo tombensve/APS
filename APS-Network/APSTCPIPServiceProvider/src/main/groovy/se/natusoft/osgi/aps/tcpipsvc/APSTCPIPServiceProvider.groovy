@@ -45,7 +45,6 @@ import se.natusoft.osgi.aps.api.net.tcpip.DatagramPacketListener
 import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequest
 import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequestListener
 import se.natusoft.osgi.aps.tcpipsvc.ConnectionProvider.Direction
-import se.natusoft.osgi.aps.tcpipsvc.meta.APSTCPIPServiceMetaData
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed

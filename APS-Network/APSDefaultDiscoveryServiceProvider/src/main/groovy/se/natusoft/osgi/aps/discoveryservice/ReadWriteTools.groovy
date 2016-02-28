@@ -44,7 +44,7 @@ class ReadWriteTools {
         ooStream.writeUTF(serviceDescription.serviceHost)
         ooStream.writeUTF(serviceDescription.serviceId)
         ooStream.writeInt(serviceDescription.servicePort)
-        ooStream.writeObject(serviceDescription.serviceProtocol)
+        ooStream.writeUTF(serviceDescription.serviceProtocol)
         ooStream.writeUTF(serviceDescription.serviceURL)
         ooStream.writeUTF(serviceDescription.version)
     }
@@ -85,7 +85,7 @@ class ReadWriteTools {
             serviceDescription.serviceHost = ooStream.readUTF()
             serviceDescription.serviceId = ooStream.readUTF()
             serviceDescription.servicePort = ooStream.readInt()
-            serviceDescription.serviceProtocol = ooStream.readObject() as ServiceDescription.Protocol
+            serviceDescription.serviceProtocol = ooStream.readUTF()
             serviceDescription.serviceURL = ooStream.readUTF()
             serviceDescription.version = ooStream.readUTF()
 

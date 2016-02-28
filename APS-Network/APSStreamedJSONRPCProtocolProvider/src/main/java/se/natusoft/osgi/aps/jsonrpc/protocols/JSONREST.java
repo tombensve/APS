@@ -36,14 +36,16 @@
  */
 package se.natusoft.osgi.aps.jsonrpc.protocols;
 
+import se.natusoft.docutations.NotNull;
+import se.natusoft.docutations.Nullable;
 import se.natusoft.osgi.aps.api.misc.json.JSONEOFException;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONArray;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
 import se.natusoft.osgi.aps.api.net.rpc.errors.ErrorType;
+import se.natusoft.osgi.aps.api.net.rpc.exceptions.RequestedParamNotAvailableException;
 import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;
 import se.natusoft.osgi.aps.api.net.rpc.model.RequestIntention;
-import se.natusoft.osgi.aps.jsonrpc.errors.JSONRPCError;
 import se.natusoft.osgi.aps.tools.APSLogger;
 
 import java.io.IOException;
@@ -84,6 +86,7 @@ public class JSONREST  extends JSONHTTP {
      * @return The name of the provided protocol.
      */
     @Override
+    @NotNull
     public String getServiceProtocolName() {
         return "JSONREST";
     }
@@ -92,6 +95,7 @@ public class JSONREST  extends JSONHTTP {
      * @return The version of the implemented protocol.
      */
     @Override
+    @NotNull
     public String getServiceProtocolVersion() {
         return "1.0";
     }
@@ -100,6 +104,7 @@ public class JSONREST  extends JSONHTTP {
      * @return A short description of the provided service. This should be in plain text.
      */
     @Override
+    @NotNull
     public String getRPCProtocolDescription() {
         return "This provides an HTTP REST protocol that talks JSON. Requests should specify service to call in " +
                 "URL path and method parameters as either HTTP URL parameters or within a JSON array on the stream. " +
@@ -154,11 +159,14 @@ public class JSONREST  extends JSONHTTP {
      *
      * @return The found method or null if not found.
      */
+    @Nullable
     private String findMethod(Class serviceClass, String... methods) {
         for (Method m : serviceClass.getMethods()) {
-            for (String method : methods) {
-                if (m.getName().startsWith(method)) {
-                    return m.getName();
+            if (!m.getClass().equals(Object.class)) {
+                for (String method : methods) {
+                    if (m.getName().startsWith(method)) {
+                        return m.getName();
+                    }
                 }
             }
         }
@@ -178,40 +186,44 @@ public class JSONREST  extends JSONHTTP {
      *
      * @throws IOException on any failure.
      */
+    @Nullable
     private String checkMethod(Class serviceClass, String method, RequestIntention requestIntention) throws IOException {
+        String returnMethod = method;
+
         if (method == null || method.equals("-") || method.equals("@") || method.trim().length() == 0) {
-            String findMethod = null;
+            String findMethod;
             switch (requestIntention) {
                 case CREATE:
                     findMethod = findMethod(serviceClass, "create", "post", "new");
                     if (findMethod != null) {
-                        method = findMethod;
+                        returnMethod = findMethod;
                     }
                     break;
                 case READ:
                     findMethod = findMethod(serviceClass, "read", "get");
                     if (findMethod != null) {
-                        method = findMethod;
+                        returnMethod = findMethod;
                     }
                     break;
                 case UPDATE:
                     findMethod = findMethod(serviceClass, "update", "put", "set", "write");
                     if (findMethod != null) {
-                        method = findMethod;
+                        returnMethod = findMethod;
                     }
                     break;
                 case DELETE:
                     findMethod = findMethod(serviceClass, "delete", "remove");
                     if (findMethod != null) {
-                        method = findMethod;
+                        returnMethod = findMethod;
                     }
+                    break;
                 case UNKNOWN:
                     throw new JSONHTTPError(ErrorType.METHOD_NOT_FOUND, SC_BAD_REQUEST, "Failed to map HTTP method to a service method!",
                             null, null);
             }
         }
 
-        return method;
+        return returnMethod;
     }
 
     /**
@@ -228,6 +240,7 @@ public class JSONREST  extends JSONHTTP {
      */
     @SuppressWarnings("Duplicates")
     @Override
+    @NotNull("May not even be empty!")
     public List<RPCRequest> parseRequests(String serviceQName, Class serviceClass, String method, InputStream requestStream,
                                           RequestIntention requestIntention) throws IOException {
 
@@ -258,7 +271,7 @@ public class JSONREST  extends JSONHTTP {
                             null, cce);
                 }
 
-                JSONRPCRequest req = new JSONRPCRequest(serviceQName, method, jsonReq.getAsList(), null);
+                JSONRPCRequest req = new JSONRPCRequest(serviceQName, method, jsonReq.getAsList(), null, requestIntention);
                 requests.add(req);
             }
             catch (JSONHTTPError error) {
@@ -287,12 +300,26 @@ public class JSONREST  extends JSONHTTP {
      */
     @SuppressWarnings("Duplicates")
     @Override
+    @NotNull
     public RPCRequest parseRequest(String serviceQName, Class serviceClass, String method, Map<String, String> parameters,
                                    RequestIntention requestIntention) throws IOException {
 
         validateCall(serviceClass, method, requestIntention);
 
         method = checkMethod(serviceClass, method, requestIntention);
+
+        Method specialParamServiceMethod = null;
+
+        // Handle the case of a service method taking one parameter of type Map<String, String>.
+        // This will only work if the call is 1) a protocol that can supply named parameters, like
+        // HTTP, and 2) it is the GET method in the HTTP case. For other protocols it depends on the
+        // protocol.
+        if (method != null) {
+            try {
+                //noinspection unchecked
+                specialParamServiceMethod = serviceClass.getMethod(method.split("\\(")[0], Map.class);
+            } catch (NoSuchMethodException ignore) {}
+        }
 
         RPCRequest request;
 
@@ -303,21 +330,25 @@ public class JSONREST  extends JSONHTTP {
                     params.add(param.trim());
                 }
             }
-            else {
-                if (parameters.size() > 0) {
-                    StringBuilder sb = new StringBuilder();
-                    String comma = "";
-                    for (String providedParam : parameters.keySet()) {
-                        sb.append(comma);
-                        sb.append(providedParam);
-                        comma = ", ";
-                    }
-                    throw new JSONHTTPError(ErrorType.INVALID_PARAMS, SC_BAD_REQUEST, "parameter 'params' where not provided but the " +
-                            "following were: " + sb.toString() + "!", null, null);
+            else if (specialParamServiceMethod == null && parameters.size() > 0) {
+                StringBuilder sb = new StringBuilder();
+                String comma = "";
+                for (String providedParam : parameters.keySet()) {
+                    sb.append(comma);
+                    sb.append(providedParam);
+                    comma = ", ";
                 }
+                throw new JSONHTTPError(ErrorType.INVALID_PARAMS, SC_BAD_REQUEST, "parameter 'params' where not provided but the " +
+                        "following were: " + sb.toString() + "!", null, null);
             }
 
-            request = new JSONRPCRequest(serviceQName, method, null, params);
+            if (specialParamServiceMethod != null) {
+                // Service method takes one argument of type Map, so pass it the HTTP parameters Map.
+                request = new JSONRPCRESTRequest(serviceQName, method, parameters, requestIntention);
+            }
+            else {
+                request = new JSONRPCRequest(serviceQName, method, null, params, requestIntention);
+            }
         }
         catch (JSONHTTPError error) {
             request = new JSONRPCRequest(serviceQName, method, error);
@@ -326,4 +357,51 @@ public class JSONREST  extends JSONHTTP {
         return request;
     }
 
+    /**
+     * This is an RPCRequest for a service method taking only one Map<String, String>.
+     */
+    protected class JSONRPCRESTRequest extends JSONRPCRequest {
+
+        //
+        // Private Members
+        //
+
+        private Map<String, String> reqParams = null;
+
+        //
+        // Constructors
+        //
+
+        /**
+         * Creates a new JSONRestRequest.
+         *
+         * @param serviceQName The fully qualified name of the service.
+         * @param method The method to call.
+         * @param reqParams The HTTP request parameters as a Map.
+         * @param requestIntention The intention of the request.
+         */
+        public JSONRPCRESTRequest(String serviceQName, String method, Map<String, String> reqParams, RequestIntention requestIntention) {
+            super(serviceQName, method, null, null, requestIntention);
+            this.reqParams = reqParams;
+        }
+
+        //
+        // Methods
+        //
+
+        /**
+         * Returns the parameter at the specified index.
+         *
+         * @param index      The index of the parameter to get.
+         * @param paramClass The expected class of the parameter.
+         * @return The parameter object or null if indexed parameters cannot be delivered.
+         * @throws RequestedParamNotAvailableException if requested parameter is not available.
+         */
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> T getIndexedParameter(int index, Class<T> paramClass) throws RequestedParamNotAvailableException {
+            return (T) this.reqParams; // This class is only used in this specific case!
+        }
+
+    }
 }
