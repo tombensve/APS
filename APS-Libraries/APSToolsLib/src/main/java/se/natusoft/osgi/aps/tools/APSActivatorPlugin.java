@@ -20,9 +20,8 @@ public interface APSActivatorPlugin {
          *
          * @param instance The instance to add.
          * @param forClass The class of the instance to receive this 'instance'.
-         * @param forField The field in that class to receive this 'instance'.
          */
-        void addManagedInstance(Object instance, Class forClass, Field forField);
+        void addManagedInstance(Object instance, Class forClass);
     }
 
     /**
