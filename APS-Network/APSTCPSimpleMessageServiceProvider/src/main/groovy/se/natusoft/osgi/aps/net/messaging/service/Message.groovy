@@ -1,10 +1,14 @@
 package se.natusoft.osgi.aps.net.messaging.service
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.net.util.TypedData
 
 /**
  * This represents a message to be send and received.
  */
+@CompileStatic
+@TypeChecked
 class Message {
 
     //

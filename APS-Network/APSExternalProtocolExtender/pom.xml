@@ -142,14 +142,12 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-apis</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tools-lib</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -179,7 +177,6 @@
             -->
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
                 <configuration>
                     <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
@@ -193,7 +190,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.5</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>

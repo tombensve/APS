@@ -40,7 +40,9 @@ For HTTP method PUT methods starting with one of the following will be matched: 
 
 For HTTP method DELETE methods starting with one of the following will be matched: _delete_, _remove_.
 
-JSONREST actually extends JSONHTTP and inherits some of its features, like the _params=arg:...:arg_ parameter. It however adds an own parameter feature: If a service method takes one Map[String, String](String, String) as parameter, all specified HTTP GET parameters will be provided by this Map.
+JSONREST actually extends JSONHTTP and inherits some of its features, like the _params=arg:...:arg_ parameter. It however adds an own parameter feature: If a service method takes one Map[String, String](String, String) as parameter, all specified HTTP GET parameters will be provided in this Map.
+
+__Also note__ that for GET and DELETE '...?params=...' must be used to provide parameters to the call, with the above mentioned exception, while for POST and PUT JSON must be provided on the request stream.
 
 ## Examples
 

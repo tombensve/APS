@@ -101,6 +101,18 @@
 
         <!-- The packages to import for the bundle. -->
         <osgi.import.package>
+            <!--
+                We are manually specifying our import package list here. The reason for this is that we have most of our
+                dependencies embedded locally in the WAR/VAB. The reason for that is that even though the Vaadin jar is
+                an OSGi bundle we cannot deploy it separately as its own bundle since we are a web application managed by
+                a web.xml, where the web container creates the Vaadin servlet and passes the init urlParams to it, which
+                includes the fully qualified class name of APSConfigAdminWebApp. Now the Vaadin servlet tries to load and
+                instantiate this class and for that to succeed the class has to be available in the classpath of the vaadin
+                servlet. If the Vaadin servlet was deployed as an OSGi bundle then it has its own class loader which import
+                nothing from this bundle since it doesn't know anything about this bundle, thereby making it impossible for
+                the Vaadin servlet to se our Vaadin application class. When we however embed Vaadin locally in our bundle
+                both Vaadin and our Vaadin application are loaded with the same class loader.
+            -->
             javax.servlet,
             javax.servlet.http,
             javax.xml.namespace,
@@ -129,25 +141,15 @@
 
         <!-- The private packages. -->
         <osgi.private.package>
-        <!--
-            By default, any package not exported are private. This is a convenience specification. Among the export, import and
-            private package specifications the only you most likely don't want to specify is the import packages since those are
-            usually quite a lot of work to resolve. Therefore you can specify export and private packages and then specify "*"
-            for import packages and have the plugin resolve all import packages automatically by excluding export and private.
-
-            In this specific case however we are actually manually specifying our import package list, which in this case is
-            quite simple and thereby we don't need to specify any private packages. The reason for having a quite small import
-            package list here is due to that we have most of our dependencies embedded locally in the WAR/VAB. The reason for
-            that is that even though the Vaadin jar is an OSGi bundle we cannot deploy it separately as its own bundle since
-            we are a web application managed by a web.xml, where the web container creates the Vaadin servlet and passes the
-            init urlParams to it, which includes the fully qualified class name of APSConfigAdminWebApp. Now the Vaadin servlet
-            tries to load and instantiate this class and for that to succeed the class has to be available in the classpath
-            of the vaadin servlet. If the Vaadin servlet was deployed as an OSGi bundle then it has its own class loader
-            which import nothing from this bundle since it doesn't know anything about this bundle, thereby making it
-            impossible for the Vaadin servlet to se our Vaadin application class. When we however embed Vaadin locally
-            in our bundle both Vaadin and our Vaadin application are loaded with the same class loader.
-
-        -->
+            se.natusoft.osgi.aps.apsconfigadminweb,
+            se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin,
+            se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components,
+            se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor,
+            se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.event,
+            se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.css,
+            se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.editor,
+            se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.menu,
+            html
         </osgi.private.package>
 
         <!-- Resources to include in bundle. -->
@@ -189,7 +191,6 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-apis</artifactId>
-            <version>${project.version}</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
@@ -197,7 +198,6 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tools-lib</artifactId>
-            <version>${project.version}</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
@@ -205,7 +205,6 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-web-tools</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
@@ -316,7 +315,6 @@
 
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>2.4.1</version>
                 <configuration>
                     <filesets>
                         <fileset>
@@ -358,7 +356,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.2</version>
                 <configuration>
                     <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
@@ -373,7 +370,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${maven.bundle.plugin.version}</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>

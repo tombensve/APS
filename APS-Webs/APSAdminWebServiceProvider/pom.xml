@@ -113,14 +113,12 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-apis</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tools-lib</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -128,6 +126,23 @@
 
     <build>
         <plugins>
+
+            <!--
+                Mixins
+            -->
+            <plugin>
+                <groupId>com.github.odavid.maven.plugins</groupId>
+                <artifactId>mixin-maven-plugin</artifactId>
+                <configuration>
+                    <mixins>
+                        <mixin>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>deploy-bundle-mixin</artifactId>
+                            <version>${project.version}</version>
+                        </mixin>
+                    </mixins>
+                </configuration>
+            </plugin>
 
             <!--
                 Force the jar plugin to use the maven-bundle-plugin generated manifest.
@@ -147,7 +162,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.5</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>

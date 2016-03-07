@@ -1,10 +1,11 @@
 package se.natusoft.osgi.aps.net.messaging.config
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.config.ManagedConfig
 import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigDescription
 import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigItemDescription
-import se.natusoft.osgi.aps.api.core.config.model.APSConfigList
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValueList
 
@@ -14,6 +15,8 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigValueList
         version =  "1.0.0",
         group = "network"
 )
+@CompileStatic
+@TypeChecked
 class ServiceConfig extends APSConfig {
 
     /**

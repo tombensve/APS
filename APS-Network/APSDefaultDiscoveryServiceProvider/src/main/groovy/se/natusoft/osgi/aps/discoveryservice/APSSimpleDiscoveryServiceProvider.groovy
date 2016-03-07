@@ -119,7 +119,7 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
             sd.serviceHost = manualServiceEntry.host.string
             sd.serviceId = manualServiceEntry.serviceId.string
             sd.servicePort = manualServiceEntry.port.int
-            sd.serviceProtocol = ServiceDescription.Protocol.valueOf(manualServiceEntry.protocol.string)
+            sd.serviceProtocol = manualServiceEntry.protocol.string
             sd.serviceURL = manualServiceEntry.url.string
             sd.version = manualServiceEntry.version.string
             publishService(sd)

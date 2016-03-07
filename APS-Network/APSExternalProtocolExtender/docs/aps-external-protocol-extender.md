@@ -1,6 +1,6 @@
 # APSExternalProtocolExtender
 
-This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles _MANIFEST.MF_ contains `APS-Externalizable: true` the service is made externally available. If the _MANIFEST.MF_ contains `APS-Externalizable: false` however making the service externally available is forbidden. A specific service can also be registered containing an _aps-externalizable_ property with value _true_ to be externalizable. This overrides any other specification.
+This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles _MANIFEST.MF_ contains `APS-Externalizable: true` the service is made externally available. If the _MANIFEST.MF_ contains `APS-Externalizable: false` however making the service externally available is forbidden. A specific service can also be registered containing an _aps-externalizable_ property with value _true_ to be externalizable. It is also possible as an alternative to true/false specify a list of fully qualified service names to make only those services externally available. This overrides any other specification.
 
 The exernal protocol extender also provides a configuration where services can be specified with their fully qualified name to be made externally available. If a bundle however have specifically specified false for the above manifest entry then the config entry will be ignored.
 
@@ -651,6 +651,10 @@ __Object getCallId()__
 Returns the method call call Id.
 
 A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont.
+
+__RequestIntention getRequestIntention()__
+
+Returns the intention of the request.
 
 __int getNumberOfParameters()__
 

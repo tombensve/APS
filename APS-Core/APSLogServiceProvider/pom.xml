@@ -16,8 +16,8 @@
     <description>Provides an implementation of the standard OSGi LogService.</description>
 
     <properties>
-        <!-- 
-            Bundle properties 
+        <!--
+            Bundle properties
         -->
         <osgi.export.package>
             se.natusoft.osgi.aps.core.filesystem.service
@@ -28,7 +28,7 @@
         <osgi.bundle.activator>se.natusoft.osgi.aps.logservice.Activator</osgi.bundle.activator>
         <osgi.export.service>se.natusoft.osgi.aps.core.filesystem.service.APSFilesystemServiceProvider</osgi.export.service>
         <osgi.embed.dependency></osgi.embed.dependency>
-        
+
         <!--
             Other properties.
         -->
@@ -42,17 +42,15 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-apis</artifactId>
-            <version>1.0.0</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>1.4.0</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
@@ -62,7 +60,7 @@
 
     <build>
         <plugins>
-            
+
             <!--
                 Force the jar plugin to use the maven-bundle-plugin generated manifest.
             -->
@@ -71,17 +69,16 @@
                 <configuration>
                     <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive> 
+                    </archive>
                 </configuration>
-            </plugin>  
-            
+            </plugin>
+
             <!--
                 OSGi bundle handling.
             -->
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.5</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>
@@ -99,7 +96,7 @@
                     </supportedProjectTypes>
                     <archive>
                         <manifestEntries>
-                        </manifestEntries>                        
+                        </manifestEntries>
                     </archive>
                     <instructions>
                         <Export-Package>${osgi.export.package}</Export-Package>
@@ -114,7 +111,7 @@
                     </instructions>
                 </configuration>
             </plugin>
-            
+
         </plugins>
 
     </build>

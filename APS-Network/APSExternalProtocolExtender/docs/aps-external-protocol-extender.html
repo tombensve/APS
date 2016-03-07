@@ -8,7 +8,7 @@
   <body>
     <H1>APSExternalProtocolExtender</H1>
     <p>
-      This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles <em>MANIFEST.MF</em> contains <code>APS-Externalizable: true</code> the service is made externally available. If the <em>MANIFEST.MF</em> contains <code>APS-Externalizable: false</code> however making the service externally available is forbidden. A specific service can also be registered containing an <em>aps-externalizable</em> property with value <em>true</em> to be externalizable. This overrides any other specification.      
+      This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles <em>MANIFEST.MF</em> contains <code>APS-Externalizable: true</code> the service is made externally available. If the <em>MANIFEST.MF</em> contains <code>APS-Externalizable: false</code> however making the service externally available is forbidden. A specific service can also be registered containing an <em>aps-externalizable</em> property with value <em>true</em> to be externalizable. It is also possible as an alternative to true/false specify a list of fully qualified service names to make only those services externally available. This overrides any other specification.      
     </p>
     <p>
       The exernal protocol extender also provides a configuration where services can be specified with their fully qualified name to be made externally available. If a bundle however have specifically specified false for the above manifest entry then the config entry will be ignored.      
@@ -1057,6 +1057,12 @@
     </p>
     <p>
       A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont.      
+    </p>
+    <p>
+      <strong>RequestIntention getRequestIntention()</strong>      
+    </p>
+    <p>
+      Returns the intention of the request.      
     </p>
     <p>
       <strong>int getNumberOfParameters()</strong>      

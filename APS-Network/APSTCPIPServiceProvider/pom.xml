@@ -69,6 +69,7 @@
 
         <!-- The bundle packages to export. -->
         <osgi.export.package>
+            se.natusoft.osgi.aps.tcpipsvc.config
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->
@@ -77,7 +78,6 @@
         <!-- The private packages. -->
         <osgi.private.package>
             se.natusoft.osgi.aps.tcpipsvc,
-            se.natusoft.osgi.aps.tcpipsvc.config,
             se.natusoft.osgi.aps.tcpipsvc.meta,
             se.natusoft.osgi.aps.tcpipsvc.security
         </osgi.private.package>
@@ -121,13 +121,11 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-apis</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tools-lib</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -142,20 +140,21 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-service-test-support</artifactId>
-            <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-osgi-test-tools</artifactId>
-            <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
 
         <!--
             This is actually needed for running tests! When building the dependency is provided
-            by the mixin, but apparently not when running tests.
+            by the mixin, but apparently not when running tests. IDEA also requires this to be
+            here in this pom to run a unit test withing IDEA.
+
+            See issue: https://youtrack.jetbrains.com/issue/IDEA-152648
         -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
@@ -213,7 +212,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.5</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>

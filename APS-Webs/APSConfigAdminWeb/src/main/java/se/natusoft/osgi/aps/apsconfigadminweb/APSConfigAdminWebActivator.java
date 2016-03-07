@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Configuration Admin Web
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Edits configurations registered with the APSConfigurationService.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
  *         2011-08-28: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.apsconfigadminweb;
 
@@ -50,17 +50,17 @@ public class APSConfigAdminWebActivator implements BundleActivator {
     //
     // Private Members
     //
-    
+
     // Required Services
-    
+
     /** The APSAdminWeb registry service. */
     private APSServiceTracker<APSAdminWebService> adminWebServiceTracker = null;
 
     // Provided Services
-    
+
 
     // Other Members
-    
+
     /** Our logger. */
     private APSLogger logger = null;
 
@@ -71,8 +71,9 @@ public class APSConfigAdminWebActivator implements BundleActivator {
     //
     // Bundle Start.
     //
-    
+
     @Override
+    @SuppressWarnings("Duplicates")
     public void start(BundleContext context) throws Exception {
         this.logger = new APSLogger();
         this.logger.start(context);
@@ -90,8 +91,9 @@ public class APSConfigAdminWebActivator implements BundleActivator {
     //
     // Bundle Stop.
     //
-    
+
     @Override
+    @SuppressWarnings("Duplicates")
     public void stop(BundleContext context) throws Exception {
         this.adminWebServiceTracker.withAllAvailableServices(new WithService<APSAdminWebService>() {
             public void withService(APSAdminWebService service) {
@@ -100,7 +102,7 @@ public class APSConfigAdminWebActivator implements BundleActivator {
         });
         this.adminWebServiceTracker.stop(context);
         this.logger.stop(context);
-        
+
         this.logger = null;
         this.adminWebServiceTracker = null;
     }

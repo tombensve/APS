@@ -39,7 +39,6 @@ package se.natusoft.osgi.aps.platform.service.provider;
 
 import se.natusoft.osgi.aps.api.core.platform.model.PlatformDescription;
 import se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService;
-import se.natusoft.osgi.aps.api.net.rpc.annotations.APSWebService;
 import se.natusoft.osgi.aps.platform.config.APSPlatformConfig;
 
 /**

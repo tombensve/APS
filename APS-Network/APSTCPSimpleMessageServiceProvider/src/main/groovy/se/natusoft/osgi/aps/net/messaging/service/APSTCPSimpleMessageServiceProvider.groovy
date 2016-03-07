@@ -59,6 +59,9 @@ class APSTCPSimpleMessageServiceProvider implements APSSimpleMessageService, APS
     /** Resolved send to connection points. */
     private List<URI> senders = null
 
+    /** A little flag marking all senders as setup. Client calls will be paused until this happens. */
+    private boolean sendersAvailable = false
+
     /** The connection point to listen to. */
     private URI recvConnectionPoint = null
 
@@ -95,7 +98,7 @@ class APSTCPSimpleMessageServiceProvider implements APSSimpleMessageService, APS
             this.sd = new ServiceDescriptionProvider(
                     serviceHost: InetAddress.getLocalHost().hostName,
                     servicePort: this.recvConnectionPoint.port,
-                    serviceProtocol: ServiceDescription.Protocol.TCP,
+                    serviceProtocol: "TCP",
                     serviceId: DISCOVERY_ENTRY_ID,
                     version: DISCOVERY_ENTRY_VERSION
             )
@@ -148,6 +151,12 @@ class APSTCPSimpleMessageServiceProvider implements APSSimpleMessageService, APS
                 logger.error("Failed discovery service call!", e)
             }
         }
+
+        // Notify possible client sender in other thread that was faster than this startup.
+        this.sendersAvailable = true
+        synchronized (this) {
+            notifyAll()
+        }
     }
 
     /**
@@ -198,6 +207,14 @@ class APSTCPSimpleMessageServiceProvider implements APSSimpleMessageService, APS
         Message msg = new Message(topic: topic, typedData: message)
 
         def futures = [] as List<Future>
+
+        // Make sure the service is initialized before continuing. A client can possible be faster than the service
+        // startup!
+        if (!this.sendersAvailable) {
+            synchronized (this) {
+                wait(5000) // We will be notified as soon as they are available! This number is just a timeout if things go due south.
+            }
+        }
 
         this.senders.each { URI senderCP ->
 

@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    
+
     PROJECT
         Name
             APS User Admin Web
-        
+
         Code Version
             1.0.0
-        
+
         Description
             This is an administration web for aps-simple-user-service that allows editing of roles and users.
-        
+
     COPYRIGHTS
         Copyright (C) 2012 by Natusoft AB All rights reserved.
-        
+
     LICENSE
         Apache 2.0 (Open Source)
-        
+
         Licensed under the Apache License, Version 2.0 (the "License");
         you may not use this file except in compliance with the License.
         You may obtain a copy of the License at
-        
+
           http://www.apache.org/licenses/LICENSE-2.0
-        
+
         Unless required by applicable law or agreed to in writing, software
         distributed under the License is distributed on an "AS IS" BASIS,
         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
         See the License for the specific language governing permissions and
         limitations under the License.
-        
+
     AUTHORS
         Tommy Svensson (tommy@natusoft.se)
             Changes:
             2013-02-03: Created!
-            
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -55,8 +55,8 @@
 
     <properties>
 
-        <!-- 
-            Bundle properties 
+        <!--
+            Bundle properties
         -->
 
         <!-- The synbolic name of the bundle. Defaults to the artifact id, but can be overriden. -->
@@ -70,28 +70,28 @@
 
         <!-- The osgi Bundle-ClassPath manifest entry. -->
         <osgi.bundle.classpath>
-.,
-WEB-INF/classes,
-WEB-INF/lib/atmosphere-compat-jbossweb-1.0.18.vaadin3.jar,
-WEB-INF/lib/atmosphere-compat-tomcat-1.0.18.vaadin3.jar,
-WEB-INF/lib/atmosphere-compat-tomcat7-1.0.18.vaadin3.jar,
-WEB-INF/lib/atmosphere-runtime-1.0.18.vaadin3.jar,
-WEB-INF/lib/commons-cli-1.2.jar,
-WEB-INF/lib/commons-jexl-2.1.1.jar,
-WEB-INF/lib/commons-logging-1.1.1.jar,
-WEB-INF/lib/cssparser-0.9.5.jar,
-WEB-INF/lib/jsoup-1.6.3.jar,
-WEB-INF/lib/sac-1.3.jar,
-WEB-INF/lib/vaadin-client-compiled-${vaadin.version}.jar,
-WEB-INF/lib/vaadin-push-${vaadin.version}.jar,
-WEB-INF/lib/vaadin-server-${vaadin.version}.jar,
-WEB-INF/lib/vaadin-shared-${vaadin.version}.jar,
-WEB-INF/lib/vaadin-shared-deps-1.0.2.jar,
-WEB-INF/lib/vaadin-slf4j-jdk14-1.6.1.jar,
-WEB-INF/lib/vaadin-theme-compiler-${vaadin.version}.jar,
-WEB-INF/lib/vaadin-themes-${vaadin.version}.jar,
-WEB-INF/lib/aps-web-tools-${project.version}.jar,
-WEB-INF/lib/aps-vaadin-web-tools-${project.version}.jar
+            .,
+            WEB-INF/classes,
+            WEB-INF/lib/atmosphere-compat-jbossweb-1.0.18.vaadin3.jar,
+            WEB-INF/lib/atmosphere-compat-tomcat-1.0.18.vaadin3.jar,
+            WEB-INF/lib/atmosphere-compat-tomcat7-1.0.18.vaadin3.jar,
+            WEB-INF/lib/atmosphere-runtime-1.0.18.vaadin3.jar,
+            WEB-INF/lib/commons-cli-1.2.jar,
+            WEB-INF/lib/commons-jexl-2.1.1.jar,
+            WEB-INF/lib/commons-logging-1.1.1.jar,
+            WEB-INF/lib/cssparser-0.9.5.jar,
+            WEB-INF/lib/jsoup-1.6.3.jar,
+            WEB-INF/lib/sac-1.3.jar,
+            WEB-INF/lib/vaadin-client-compiled-${vaadin.version}.jar,
+            WEB-INF/lib/vaadin-push-${vaadin.version}.jar,
+            WEB-INF/lib/vaadin-server-${vaadin.version}.jar,
+            WEB-INF/lib/vaadin-shared-${vaadin.version}.jar,
+            WEB-INF/lib/vaadin-shared-deps-1.0.2.jar,
+            WEB-INF/lib/vaadin-slf4j-jdk14-1.6.1.jar,
+            WEB-INF/lib/vaadin-theme-compiler-${vaadin.version}.jar,
+            WEB-INF/lib/vaadin-themes-${vaadin.version}.jar,
+            WEB-INF/lib/aps-web-tools-${project.version}.jar,
+            WEB-INF/lib/aps-vaadin-web-tools-${project.version}.jar
         </osgi.bundle.classpath>
 
         <!-- The bundle packages to export. -->
@@ -121,6 +121,14 @@ WEB-INF/lib/aps-vaadin-web-tools-${project.version}.jar
 
         <!-- The private packages. -->
         <osgi.private.package>
+            se.natusoft.osgi.aps.apsuseradminweb,
+            se.natusoft.osgi.aps.apsuseradminweb.vaadin,
+            se.natusoft.osgi.aps.apsuseradminweb.vaadin.componenthandlers,
+            se.natusoft.osgi.aps.apsuseradminweb.vaadin.components,
+            se.natusoft.osgi.aps.apsuseradminweb.vaadin.components.editors,
+            se.natusoft.osgi.aps.apsuseradminweb.vaadin.css,
+            se.natusoft.osgi.aps.apsuseradminweb.vaadin.menubuilders,
+            html
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->
@@ -149,10 +157,6 @@ WEB-INF/lib/aps-vaadin-web-tools-${project.version}.jar
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <!--
-             Trigger tiles.
-         -->
-        <tile.deploy>${project.groupId}:DeployWABBundleTile:${project.version}</tile.deploy>
     </properties>
 
     <dependencies>
@@ -162,14 +166,12 @@ WEB-INF/lib/aps-vaadin-web-tools-${project.version}.jar
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-apis</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tools-lib</artifactId>
-            <version>${project.version}</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
@@ -177,7 +179,6 @@ WEB-INF/lib/aps-vaadin-web-tools-${project.version}.jar
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-web-tools</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
@@ -285,9 +286,25 @@ WEB-INF/lib/aps-vaadin-web-tools-${project.version}.jar
     <build>
         <plugins>
 
+            <!--
+                Mixins
+            -->
+            <plugin>
+                <groupId>com.github.odavid.maven.plugins</groupId>
+                <artifactId>mixin-maven-plugin</artifactId>
+                <configuration>
+                    <mixins>
+                        <mixin>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>deploy-web-bundle-mixin</artifactId>
+                            <version>${project.version}</version>
+                        </mixin>
+                    </mixins>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>2.4.1</version>
                 <configuration>
                     <filesets>
                         <fileset>
@@ -312,7 +329,6 @@ WEB-INF/lib/aps-vaadin-web-tools-${project.version}.jar
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.1.1</version>
                 <configuration>
                     <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
@@ -327,7 +343,6 @@ WEB-INF/lib/aps-vaadin-web-tools-${project.version}.jar
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.5</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>

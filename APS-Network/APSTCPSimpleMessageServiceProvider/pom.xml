@@ -84,13 +84,11 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-apis</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tools-lib</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -105,27 +103,28 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-service-test-support</artifactId>
-            <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-osgi-test-tools</artifactId>
-            <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tcpip-service-provider</artifactId>
-            <version>1.0.0</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 
         <!--
-            This is actually needed for running tests! When building the dependency is provided
-            by the mixin, but apparently not when running tests.
+            This is here due to a IntelliJ IDEA 15.0.4 no longer even lets you mark a project as a Groovy
+            project in the project settings which means that you cannot work with Groovy in IDEA without
+            adding this maven-wise unnecessary dependency. This is quite annoying.
+
+            JB Issue: https://youtrack.jetbrains.com/issue/IDEA-152648
         -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
@@ -179,7 +178,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.5</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>

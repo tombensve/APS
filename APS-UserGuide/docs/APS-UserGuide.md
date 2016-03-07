@@ -1255,7 +1255,7 @@ Creates a new JSONObject instance for reading JSON input or writing JSON output.
 
 _Parameters_
 
-> _errorHandler_
+> _errorHandler_ - The error handler to use. 
 
 
 
@@ -1882,6 +1882,78 @@ _Parameters_
 > _message_ - The exception message 
 
 > _cause_ - The cause of this exception. 
+
+}
+
+----
+
+    
+
+public _class_ __JSONMapConv__   [se.natusoft.osgi.aps.json.tools] {
+
+This converts between a Java Map and JSON. Do note that this of course uses this library to read and write JSON, but this specific public API only deals with Java and JSON as String or on/in a stream. [p/](p/) This class becomes more useful when used from Groovy since the latter provides much nicer usage of data in Maps. Yes, I know about JSONSlurper and JSONBuilder in Groovy. Those however does not work with @CompileStatic. Maps does.
+
+__public static Map<String, Object> jsonObjectToMap(String json) throws IOException__
+
+This takes a String containing a JSON object and returns it as a Map.
+
+_Parameters_
+
+> _json_ - The JSON content to convert to a Map. 
+
+_Throws_
+
+> _IOException_
+
+__public static Map<String, Object> jsonObjectToMap(InputStream is) throws IOException__
+
+This takes an InputStream containing a JSON object and returns it as a Map.
+
+_Parameters_
+
+> _is_ - The InputStream to read. 
+
+_Throws_
+
+> _IOException_
+
+
+
+
+
+
+
+__public static String mapToJSONObject(Map<String, Object> map) throws IOException__
+
+This takes a Map (as created by jsonObjectToMap(...)) and returns a JSON object.
+
+_Parameters_
+
+> _map_ - The Map to convert to JSON. 
+
+_Throws_
+
+> _IOException_
+
+__public static void mapToJSONObject(Map<String, Object> map, OutputStream os) throws IOException__
+
+This takes a Map (as created by jsonObjectToMap(...)) and writes it as JSON to the specified OutputStream.
+
+_Parameters_
+
+> _map_ - The Map to write as JSON. 
+
+> _os_ - The OutputStream to write to. 
+
+_Throws_
+
+> _IOException_
+
+
+
+
+
+
 
 }
 
@@ -3610,7 +3682,7 @@ _Parameters_
 
 # APSExternalProtocolExtender
 
-This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles _MANIFEST.MF_ contains `APS-Externalizable: true` the service is made externally available. If the _MANIFEST.MF_ contains `APS-Externalizable: false` however making the service externally available is forbidden. A specific service can also be registered containing an _aps-externalizable_ property with value _true_ to be externalizable. This overrides any other specification.
+This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles _MANIFEST.MF_ contains `APS-Externalizable: true` the service is made externally available. If the _MANIFEST.MF_ contains `APS-Externalizable: false` however making the service externally available is forbidden. A specific service can also be registered containing an _aps-externalizable_ property with value _true_ to be externalizable. It is also possible as an alternative to true/false specify a list of fully qualified service names to make only those services externally available. This overrides any other specification.
 
 The exernal protocol extender also provides a configuration where services can be specified with their fully qualified name to be made externally available. If a bundle however have specifically specified false for the above manifest entry then the config entry will be ignored.
 
@@ -3680,17 +3752,13 @@ __public Set<String> getAvailableServices()__
 
 Returns all currently available services.
 
-__public List<APSExternallyCallable> getCallables(String serviceName) throws RuntimeException__
+__public List<APSExternallyCallable> getCallables(String serviceName)__
 
 Returns all APSExternallyCallable for the named service object.
 
 _Parameters_
 
 > _serviceName_ - The name of the service to get callables for. 
-
-_Throws_
-
-> _RuntimeException_ - If the service is not available. 
 
 __public Set<String> getAvailableServiceFunctionNames(String serviceName)__
 
@@ -3939,10 +4007,6 @@ This defines the valid choices for selectMethod(...).
     
 
 
-
-__APSRESTCallable.HttpMethod httpMethod() default APSRESTCallable.HttpMethod.NONE__
-
-This needs to be provided if you are providing a REST API using JSONREST protocol of the APSStreamedJSONRPCProtocolProvider bundle.
 
 }
 
@@ -4196,6 +4260,8 @@ _Parameters_
 
 > _parameter_ - The parameter to add. 
 
+
+
 }
 
 ----
@@ -4205,6 +4271,24 @@ _Parameters_
 public _enum_ __RequestIntention__   [se.natusoft.osgi.aps.api.net.rpc.model] {
 
 The intention of a request.
+
+}
+
+----
+
+    
+
+public _interface_ __RPCExceptionConverter__   [se.natusoft.osgi.aps.api.net.rpc.model] {
+
+An instance of this can be passed to RPCRequest to convert the cauth exception to an RPCError.
+
+__RPCError convertException(Exception e)__
+
+This should be called on any service exception to convert the exception to an RPCError.
+
+_Parameters_
+
+> _e_ - The exception to convert. 
 
 }
 
@@ -4223,6 +4307,12 @@ Returns true if this request is valid. If this returns false all information exc
 __RPCError getError()__
 
 Returns an _RPCError_ object if `isValid() == false`, _null_ otherwise.
+
+__RPCExceptionConverter getExceptionConverter()__
+
+If an exception occurred during the request call, and this returns non null, then the returned converter should be called with the occurred exception to provide an RPCError.
+
+This allows for a specific protocol implementation to handle its own exceptions and provide an appropriate RPCError.
 
 __String getServiceQName()__
 
@@ -4243,6 +4333,10 @@ __Object getCallId()__
 Returns the method call call Id.
 
 A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont.
+
+__RequestIntention getRequestIntention()__
+
+Returns the intention of the request.
 
 __int getNumberOfParameters()__
 
@@ -4859,7 +4953,9 @@ _Parameters_
 
     
 
+__/* * * PROJECT *     Name *         APS APIs * *     Code Version *         1.0.0 * *     Description *         Provides the APIs for the application platform services. * * COPYRIGHTS *     Copyright (C) 2012 by Natusoft AB All rights reserved. * * LICENSE *     Apache 2.0 (Open Source) * *     Licensed under the Apache License, Version 2.0 (the "License")__
 
+Use services under messaging instead!
 
 }
 
@@ -5155,50 +5251,83 @@ _Parameters_
 
 This provides JSONRPC protocol. It provides both version 1.0 and 2.0 of the protocol. It requires a transport that uses it and services provided by aps-external-protocol-extender to be useful.
 
-JSONRPC version 1.0 protocol as described at [http://json-rpc.org/wiki/specification](http://json-rpc.org/wiki/specification).
+The URL format for all of these looks like this:
 
-JSONRPC version 2.0 protocol as describved at [http://jsonrpc.org/spec.html](http://jsonrpc.org/spec.html).
+        http(s)://host:port/apsrpc/{protocol}/{protocol version}/{service}[/{method}][?params=...]
 
-JSONHTTP version 1.0 which is not any standard protocol at all. It requires both service name and method name on the url, and in case of HTTP GET or DELETE also arguments as ?params=arg:...:arg where values are strings or primitives. For POST, and PUT a JSON array of values need to be written on the stream.
+Where:
 
-JSONREST version 1.0 extending JSONHTTP will make the http transport always map methods annotated with @RESTGET, @RESTPUT, @RESTPOST, and @RESTDELETE to the corresponding http methods. This also does not require a method to be specified on the URL, and will ignore any specified method.
+_{protocol}_ is one of the below described protocols.
 
-Personally I think that JSONRPC 2.0 is far more flexible than REST.
+_{protocol version}_ is the version of the specified protocol.
+
+_{service}_ is the name of the service to call. Safest is to use a fully qualified name, that is inlcuding package since that will make the service specification unique. It is however possible to only specify the name of the service in which case the first matching will be used.
+
+_{method}_ is the method of the service to call. In the case of JSONREST the method can be skipped and a method will be found based on the HTTP method used to make the call.
+
+## JSONRPC version 1.0
+
+This protocol is described at [http://json-rpc.org/wiki/specification](http://json-rpc.org/wiki/specification).
+
+## JSONRPC version 2.0
+
+This protocol is describved at [http://jsonrpc.org/spec.html](http://jsonrpc.org/spec.html).
+
+## JSONHTTP version 1.0
+
+This is not any standard protocol at all. It requires both service name and method name on the url, and in case of HTTP GET or DELETE also arguments as ?params=arg:...:arg where values are strings or primitives. For POST, and PUT a JSON array of values need to be written on the stream.
+
+## JSONREST version 1.0
+
+This provides a loose API of REST type. It will return HTTP error code on any failure. It has several options for calling. It is possible to specify both service and method to call, but if the method is omitted then a method will be deduced by the HTTP method used.
+
+For HTTP method POST methods starting with one of the following will be matched: _create_, _post_, _new_.
+
+For HTTP method GET methods starting with one of the following will be matched: _read_, _get_.
+
+For HTTP method PUT methods starting with one of the following will be matched: _update_, _put_, _set_, _write_.
+
+For HTTP method DELETE methods starting with one of the following will be matched: _delete_, _remove_.
+
+JSONREST actually extends JSONHTTP and inherits some of its features, like the _params=arg:...:arg_ parameter. It however adds an own parameter feature: If a service method takes one Map[String, String](String, String) as parameter, all specified HTTP GET parameters will be provided in this Map.
+
+__Also note__ that for GET and DELETE '...?params=...' must be used to provide parameters to the call, with the above mentioned exception, while for POST and PUT JSON must be provided on the request stream.
 
 ## Examples
 
 Here is some examples calling services over http with diffent protocols using curl (_requires aps-ext-protocol-http-transport-provider.jar and the called services to be deployed_,_and specified as externalizable via configuration_ (Network/service/external-protocol-extender)):
 
-        curl --data '{"jsonrpc": "2.0", "method": "getPlatformDescription", "params": [], "id": 1}' http://localhost:8080/apsrpc/JSONRPC/2.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService 
+        curl --data '{"jsonrpc": "2.0", "method": "getPlatformDescription", "params": [], "id": 1}' http://localhost:8080/apsrpc/JSONRPC/2.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService
 
-yields:
+yields
 
         {"id": 1, "result": {"description": "My personal development environment.", "type": "Development", "identifier": "MyDev"}, "jsonrpc": "2.0"}
-            
 
 while
 
         curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService/getPlatformDescription
-        
 
 yields
 
         {"description": "My personal development environment.", "type": "Development", "identifier": "MyDev"}
-           
 
 and
 
-         curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/se.natusoft.osgi.aps.api.misc.session.APSSessionService/createSession\(Integer\)?params=5
-         
+        curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/se.natusoft.osgi.aps.api.misc.session.APSSessionService/createSession\(Integer\)?params=5
 
 yields
 
         {"id": "6d25d646-11fc-44c3-b74d-29b3d5c94920", "valid": true}
-        
 
 In this case we didn't just use _createSession_ as method name, but _createSession(Integer)_ though with parentheses escaped to not confuse the shell. This is because there is 2 variants of createSession: createSession(String, Integer) and createSession(Integer). If we don't specify clearly we might get the wrong one and in this case that happens and will fail due to missing second parameter. Also note the _params=5_. On get we cannot pass any data on the stream to the service, we can only pass parameters on the URL which is done by specifying url parameter _params_ with a colon (:) separated list of parameters as value. In this case only String and primitives are supported for parameters.
 
-These examples only works if you have disabled the _requireAuthentication_ configuration (network/rpc-http-transport).
+The following is also valid:
+
+        curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/APSPlatformService/getPlatformDescription
+
+Note that this is much shorter. It does not provide a fully qualified name for the APSPlatformService. This is OK. As long as the service name is unique even without package it will be found correctly. The odds of having 2 services with the same name in different packages are quite small so this is rather safe to do.
+
+__Note:__ These examples only works if you have disabled the _requireAuthentication_ configuration (network/rpc-http-transport).
 
 ## See also
 
@@ -5257,13 +5386,12 @@ Fragments:
                 // read from response stream ...
             }
         })
-        
 
 #### Read
 
         APSTCPIPService tcpipSvc;
         ...
-        tcpipSvc.setStreamedRequestListener(new URI("tcp:localhost:9999"), this);
+        tcpipSvc.setStreamedRequestListener(new URI("tcp://localhost:9999"), this);
         ...
         void requestReceived(URI receivePoint, InputStream requestStream, OutputStream responseStream) {
             // Read request from reqStream ...
@@ -5298,7 +5426,6 @@ or
             byte[] bytes = packet.getData();
             ...
         }
-        
 
 # APSAdminWeb
 
@@ -5504,11 +5631,41 @@ The following third party products are using this license:
 
 * [org.osgi.core-4.2.0-null](http://www.osgi.org/)
 
-[GNU Public License version v2](http://www.gnu.org/licenses/gpl-2.0.html)
+[Apache Software License version 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 The following third party products are using this license:
 
-* [MarkdownDoclet-3.0-null](http://code.google.com/p/markdown-doclet/)
+* [vaadin-server-7.1.14](http://vaadin.com)
+
+* [vaadin-client-compiled-7.1.14](http://vaadin.com)
+
+* [vaadin-client-7.1.14](http://vaadin.com)
+
+* [vaadin-push-7.1.14](http://vaadin.com)
+
+* [vaadin-themes-7.1.14](http://vaadin.com)
+
+* [groovy-all-2.4.5](http://groovy-lang.org)
+
+* [gpars-1.2.0](http://gpars.codehaus.org)
+
+* [openjpa-all-2.2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+* [derbyclient-10.9.1.0](http://db.apache.org/derby/)
+
+[Eclipse Public License - v version 1.0](http://www.eclipse.org/legal/epl-v10.html)
+
+The following third party products are using this license:
+
+* [javax.persistence-2.0.0](http://www.eclipse.org/eclipselink)
+
+[CDDL + GPLv2 with classpath version exception](https://glassfish.dev.java.net/nonav/public/CDDL+GPL.html)
+
+The following third party products are using this license:
+
+* [javax.servlet-api-3.0.1](http://servlet-spec.java.net)
+
+* [javaee-web-api-6.0](http://java.sun.com/javaee/6/docs/api/index.html)
 
 <!--
   CLM
