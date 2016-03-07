@@ -63,6 +63,7 @@
         <module>APSJSONServiceProvider</module>
         <module>APSSessionServiceProvider</module>
         <module>APSResolvingBundleDeployer</module>
+        <module>APSPersistentNamedQueueProvider</module>
     </modules>
 
 </project>
