@@ -47,7 +47,6 @@ import se.natusoft.osgi.aps.tools.apis.ServiceSetup;
 import se.natusoft.osgi.aps.tools.exceptions.APSActivatorException;
 import se.natusoft.osgi.aps.tools.tracker.OnServiceAvailable;
 import se.natusoft.osgi.aps.tools.tracker.OnTimeout;
-import se.natusoft.osgi.aps.tools.tracker.WithService;
 import se.natusoft.osgi.aps.tools.tuples.Tuple2;
 import se.natusoft.osgi.aps.tools.tuples.Tuple4;
 import se.natusoft.osgi.aps.tools.util.Failures;
@@ -289,27 +288,22 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         final InitMethods waitedForInitMethods = new InitMethods();
         InitMethods initMethods;
 
-        APSServiceTracker<APSActivatorPlugin> pluginTracker = new APSServiceTracker<>(context, APSActivatorPlugin.class, "10 seconds");
-        pluginTracker.start(); {
+        for (Class entryClass : classEntries) {
+            executorService = waitedForExecutorService;
+            initMethods = waitedForInitMethods;
 
-            for (Class entryClass : classEntries) {
-                executorService = waitedForExecutorService;
-                initMethods = waitedForInitMethods;
-
-                OSGiServiceProvider serviceProvider = (OSGiServiceProvider) entryClass.getAnnotation(OSGiServiceProvider.class);
-                if (serviceProvider != null && (serviceProvider.threadStart() ||
-                        serviceProvider.serviceSetupProvider() != APSActivatorServiceSetupProvider.class ||
-                        hasConfiguredInstance(entryClass))) {
-                    executorService = parallelExecutorService;
-                    initMethods = parallelInitMethods;
-                }
-
-                executorService.submit(new PerClassWorkRunnable(entryClass, context, initMethods, pluginTracker));
+            OSGiServiceProvider serviceProvider = (OSGiServiceProvider) entryClass.getAnnotation(OSGiServiceProvider.class);
+            if (serviceProvider != null && (serviceProvider.threadStart() ||
+                    serviceProvider.serviceSetupProvider() != APSActivatorServiceSetupProvider.class ||
+                    hasConfiguredInstance(entryClass))) {
+                executorService = parallelExecutorService;
+                initMethods = parallelInitMethods;
             }
-        }
-        pluginTracker.stop(context);
 
-        parallelExecutorService.submit((Runnable) () -> {
+            executorService.submit(new PerClassWorkRunnable(entryClass, context, initMethods));
+        }
+
+        parallelExecutorService.submit(() -> {
             try {
                 callInitMethods(parallelInitMethods);
                 parallelInitMethods.clean();
@@ -318,7 +312,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             }
         });
 
-        waitedForExecutorService.submit((Runnable) () -> {
+        waitedForExecutorService.submit(() -> {
             try {
                 callInitMethods(waitedForInitMethods);
                 waitedForInitMethods.clean();
@@ -1337,26 +1331,26 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         private Class entryClass;
         private BundleContext context;
         private InitMethods initMethods;
-        private APSServiceTracker<APSActivatorPlugin> pluginTracker;
 
-        public PerClassWorkRunnable(Class entryClass, BundleContext context, InitMethods initMethods,
-                                    APSServiceTracker<APSActivatorPlugin> pluginTracker) {
+        public PerClassWorkRunnable(Class entryClass, BundleContext context, InitMethods initMethods) {
             this.entryClass = entryClass;
             this.context = context;
             this.initMethods = initMethods;
-            this.pluginTracker = pluginTracker;
         }
 
         @Override
         public void run() {
             try {
                 collectInjecteeAndServiceInstancesToManage(entryClass);
-                this.pluginTracker.withAllAvailableServices(new WithService<APSActivatorPlugin>() {
-                    @Override
-                    public void withService(APSActivatorPlugin plugin) throws Exception {
-                        plugin.analyseBundleClass(APSActivator.this, entryClass);
+                ServiceLoader<APSActivatorPlugin> pluginLoader = ServiceLoader.load(APSActivatorPlugin.class);
+                try {
+                    for (APSActivatorPlugin apsActivatorPlugin : pluginLoader) {
+                        apsActivatorPlugin.analyseBundleClass(APSActivator.this, entryClass);
                     }
-                });
+                }
+                catch (Exception e) {
+                    APSActivator.this.activatorLogger.error("Failed executing a plugin!", e);
+                }
                 doFieldInjectionsIntoManagedInstances(entryClass, context);
                 doServiceRegistrationsOfManagedServiceInstances(entryClass, context);
                 handleMethodInvocationsOnManagedInstances(entryClass, context, initMethods);
