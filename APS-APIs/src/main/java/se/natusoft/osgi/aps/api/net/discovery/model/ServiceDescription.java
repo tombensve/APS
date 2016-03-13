@@ -69,9 +69,14 @@ public interface ServiceDescription {
     int getServicePort();
 
     /**
+     * The protocol used over the network. Valid values are "TCP", "UDP", and "MULTICAST"
+     */
+    String getNetworkProtocol();
+
+    /**
      * The protocol of the service.
      */
-    Protocol getServiceProtocol();
+    String getServiceProtocol();
 
     /**
      * An optional URL to the service.
@@ -79,13 +84,18 @@ public interface ServiceDescription {
     String getServiceURL();
 
     /**
+     * This can be anything that classifies the entry as something more specific. Like a group or queue or whatever.
+     */
+    String getClassifier();
+
+    /**
+     * Describes the content type expected/delivered by the service. For example "XML", "JSON", "Binary:Java:Serialized"
+     */
+    String getContentType();
+
+    /**
      * Returns the time of last update as a Date. This basically tells the age of the entry.
      */
     LocalDateTime getLastUpdated();
 
-    public static enum Protocol {
-        TCP,
-        UDP,
-        MULTICAST
-    }
 }

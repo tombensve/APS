@@ -119,8 +119,11 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
             sd.serviceHost = manualServiceEntry.host.string
             sd.serviceId = manualServiceEntry.serviceId.string
             sd.servicePort = manualServiceEntry.port.int
-            sd.serviceProtocol = manualServiceEntry.protocol.string
+            sd.networkProtocol = manualServiceEntry.networkProtocol.string
+            sd.serviceProtocol = manualServiceEntry.serviceProtocol.string
             sd.serviceURL = manualServiceEntry.url.string
+            sd.classifier = manualServiceEntry.classifier.string
+            sd.contentType = manualServiceEntry.contentType.string
             sd.version = manualServiceEntry.version.string
             publishService(sd)
             this.logger.info("  Added service: " + sd.toString())

@@ -90,16 +90,36 @@ class DiscoveryConfig extends APSConfig {
         public APSConfigValue port
 
         @APSConfigItemDescription(
-                description = "The protocol type of the service. This is for non web based services.",
+                description = "The network protocol used by the service.",
                 environmentSpecific = true,
                 validValues = ["TCP", "UDP", "MULTICAST"]
         )
-        public APSConfigValue protocol
+        public APSConfigValue networkProtocol
+
+        @APSConfigItemDescription(
+                description = "The protocol used by the service. This is for non web based services.",
+                environmentSpecific = true
+        )
+        public APSConfigValue serviceProtocol
 
         @APSConfigItemDescription(
                 description = "An URL pointing to the service. This should be specified if it is a web service only accessible via an URL.",
                 environmentSpecific = true
         )
         public APSConfigValue url
+
+
+        @APSConfigItemDescription(
+                description = "This can be anything that classifies the entry as something more specific. Like a group or queue or whatever.",
+                environmentSpecific = true
+        )
+        public APSConfigValue classifier
+
+        @APSConfigItemDescription(
+                description = "Describes the content type expected/delivered by the service. For example \"XML\", \"JSON\", \"Binary:Java:Serialized",
+                environmentSpecific = true
+        )
+        public APSConfigValue contentType
+
     }
 }
