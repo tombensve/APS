@@ -338,6 +338,23 @@ There are 2 support classes:
 
 Both of these creates and manages an APSActivator internally and catches shutdown to take it down. They also provide other utilities like providing the BundleContext. See _APSWebTools_ for more information.
 
+### APSActivatorPlugin
+
+Any implementing classes of this interface can be specified in META-INF/services/se.natusoft.osgi.aps.tools.APSActivatorPlugin file, one per line. These are loaded by java.util.ServiceLoader. The implementation can be provided by another bundle which should then export the relevant packages which can then be imported in the using bundle.
+
+The APSActivatorPlugin API looks like this:
+
+    public interface APSActivatorPlugin {
+    
+        interface ActivatorInteraction {
+            void addManagedInstance(Object instance, Class forClass);
+        }
+    
+        void analyseBundleClass(ActivatorInteraction activatorInteraction, Class bundleClass);
+    }
+
+**Be warned** that this is currently very untested! No APS code uses this yet.
+
 ## APSContextWrapper
 
 This provides a static wrap(...) method:
