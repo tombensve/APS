@@ -41,13 +41,12 @@ class TCPSendTask implements Runnable {
      */
     public void run() {
         try {
-            this.tcpipService.sendStreamedRequest(tcpSendConnectionPoint, new StreamedRequest() {
-                @Override
-                void sendRequest(URI sendPoint, OutputStream requestStream, InputStream responseStream) throws IOException {
-                    ObjectOutputStream ooStream = new ObjectOutputStream(requestStream)
-                    ReadWriteTools.writeServiceDescription(headerByte, serviceDescription, ooStream)
-                    ooStream.flush()
-                }
+            this.tcpipService.sendStreamedRequest(tcpSendConnectionPoint, {
+                URI sendPoint, OutputStream requestStream, InputStream responseStream ->
+
+                ObjectOutputStream ooStream = new ObjectOutputStream(requestStream)
+                ReadWriteTools.writeServiceDescription(headerByte, serviceDescription, ooStream)
+                ooStream.flush()
             })
         }
         catch (Exception e) {

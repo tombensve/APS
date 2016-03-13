@@ -2,6 +2,8 @@ package se.natusoft.osgi.aps.discoveryservice
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import org.osgi.framework.Filter
+import org.osgi.framework.FrameworkUtil
 import se.natusoft.docutations.Implements
 import se.natusoft.osgi.aps.api.net.discovery.exception.APSDiscoveryException
 import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescription
@@ -10,6 +12,7 @@ import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService
 import se.natusoft.osgi.aps.discoveryservice.config.DiscoveryConfig
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
+import se.natusoft.osgi.aps.tools.util.DictionaryView
 import se.natusoft.osgi.aps.tools.util.LoggingRunnable
 
 import java.util.concurrent.ScheduledThreadPoolExecutor
@@ -87,7 +90,7 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
 
         this.refreshThreadPool.scheduleAtFixedRate(this.clearExpiredTask, 120, 120, TimeUnit.SECONDS)
 
-        // Needed due to IDEA bug. The 'this.logger' reference is perfectly OK.
+        // IDEA bug!
         //noinspection GroovyAccessibility
         this.executorService.submit(new LoggingRunnable(this.logger) {
             @Override
@@ -111,7 +114,7 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
     /**
      * Adds services provided through configuration.
      */
-    void addConfiguredServices() {
+    private void addConfiguredServices() {
         this.logger.info("Adding configured services ...")
         for (DiscoveryConfig.ManualServiceEntry manualServiceEntry : DiscoveryConfig.managed.get().manualServiceEntries) {
             ServiceDescription sd = new ServiceDescriptionProvider();
@@ -164,6 +167,20 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
     }
 
     /**
+     * Finds services by doing an LDAP-format query on the java bean fields of the ServiceDescription bean.
+     * This is exactly the same query syntax as used by OSGi to find services based on published properties.
+     *
+     * @param ldapServiceDescriptionJavaBeanPropertyQuery The LDAP-format query of the ServiceDescription bean properties.
+     */
+    @Override
+    Set<ServiceDescription> getDiscoveredServices(String ldapServiceDescriptionJavaBeanPropertyQuery) {
+        Filter sdPropsFilter = FrameworkUtil.createFilter(ldapServiceDescriptionJavaBeanPropertyQuery);
+        return this.discoverer.remoteServices.findAll { ServiceDescription serviceDescription ->
+            DictionaryView dictView = new DictionaryView(ServiceDescription.class, serviceDescription, this.logger)
+            sdPropsFilter.match(dictView)
+        }
+    }
+/**
      * Returns all discovered services, both locally registered and remotely discovered.
      */
     @Override
@@ -183,6 +200,21 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
     Set<ServiceDescription> getLocalService(String serviceId, String version) {
         return this.localServices.findAll { ServiceDescription serviceDescription ->
             serviceDescription.version == version && serviceDescription.serviceId == serviceId
+        }
+    }
+
+    /**
+     * Finds services by doing an LDAP-format query on the java bean fields of the ServiceDescription bean.
+     * This is exactly the same query syntax as used by OSGi to find services based on published properties.
+     *
+     * @param ldapServiceDescriptionJavaBeanPropertyQuery The LDAP-format query of the ServiceDescription bean properties.
+     */
+    @Override
+    Set<ServiceDescription> getLocalService(String ldapServiceDescriptionJavaBeanPropertyQuery) {
+        Filter sdPropsFilter = FrameworkUtil.createFilter(ldapServiceDescriptionJavaBeanPropertyQuery);
+        return this.localServices.findAll { ServiceDescription serviceDescription ->
+            DictionaryView dictView = new DictionaryView(ServiceDescription.class, serviceDescription, this.logger)
+            sdPropsFilter.match(dictView)
         }
     }
 
