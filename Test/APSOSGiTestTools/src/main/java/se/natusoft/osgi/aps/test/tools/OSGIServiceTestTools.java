@@ -248,6 +248,14 @@ public class OSGIServiceTestTools {
             return this;
         }
 
+        public BundleBuilder with(BundleActivator bundleActivator) {
+            return with_activator(bundleActivator);
+        }
+
+        public BundleBuilder with(Callable<APSConfig> config) throws Exception {
+            return with_APSConfig(config);
+        }
+
         /**
          * Provides a BundleActivator to use for starting the bundle. This call only saves the activator, it does
          * not call it yet.

@@ -5,8 +5,8 @@ import groovy.transform.TypeChecked
 import org.junit.Test
 import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
-import se.natusoft.osgi.aps.api.net.util.TypedData
 import se.natusoft.osgi.aps.net.messaging.config.ServiceConfig
+import se.natusoft.osgi.aps.api.net.util.TypedData
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValueList
 import se.natusoft.osgi.aps.tcpipsvc.config.ExpertConfig
@@ -47,7 +47,7 @@ class TCPSimpleMessageServiceTest extends OSGIServiceTestTools {
 
         // ---- Deploy some bundles (Using Groovy DSL:ish goodness :-)) ---- //
         // Since there is a test dependency on this artifact that artifact should have been built before this one!
-        deploy 'aps-tcpip-service-provider' with_activator new APSActivator() with_APSConfig {
+        deploy 'aps-tcpip-service-provider' with new APSActivator() with {
             TCPIPConfig testTCPIPConfig = new TCPIPConfig()
 
             ExpertConfig expertConfig = new ExpertConfig()
@@ -60,7 +60,7 @@ class TCPSimpleMessageServiceTest extends OSGIServiceTestTools {
             testTCPIPConfig // <--
         } from 'se.natusoft.osgi.aps', 'aps-tcpip-service-provider' ,'1.0.0'
 
-        deploy 'aps-tcp-simple-message-service-provider' with_activator new APSActivator() with_APSConfig {
+        deploy 'aps-tcp-simple-message-service-provider' with new APSActivator() with {
             ServiceConfig testServiceConfig = new ServiceConfig()
             testServiceConfig.registerWithDiscoveryService = new TestConfigValue(value: "false")
             testServiceConfig.listenConnectionPointUrl = new TestConfigValue(value: "tcp://localhost:11320")
@@ -74,10 +74,10 @@ class TCPSimpleMessageServiceTest extends OSGIServiceTestTools {
         } from 'APS-Network/APSTCPSimpleMessageServiceProvider/target/classes'
 
         // ReceiverSvc is implemented below.
-        deploy 'receiver-bundle' with_activator new APSActivator() using '/se/natusoft/osgi/aps/net/messaging/ReceiverSvc.class'
+        deploy 'receiver-bundle' with new APSActivator() using '/se/natusoft/osgi/aps/net/messaging/ReceiverSvc.class'
 
         // SenderSvc is implemented below.
-        deploy 'sender-bundle' with_activator new APSActivator() using '/se/natusoft/osgi/aps/net/messaging/SenderSvc.class'
+        deploy 'sender-bundle' with new APSActivator() using '/se/natusoft/osgi/aps/net/messaging/SenderSvc.class'
 
         // ---- Wait for things to happen ---- //
         delay 1000
