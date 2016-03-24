@@ -1,6 +1,8 @@
 # APSExternalProtocolExtender
 
-This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles _MANIFEST.MF_ contains `APS-Externalizable: true` the service is made externally available. If the _MANIFEST.MF_ contains `APS-Externalizable: false` however making the service externally available is forbidden. A specific service can also be registered containing an _aps-externalizable_ property with value _true_ to be externalizable. It is also possible as an alternative to true/false specify a list of fully qualified service names to make only those services externally available. This overrides any other specification.
+This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles _MANIFEST.MF_ contains `APS-Externalizable: true` all services published by the bundle is made externally available. If the _MANIFEST.MF_ contains `APS-Externalizable: false` however making services externally available is forbidden. It is also possible as an alternative to true/false specify a list of fully qualified service names to make only those services externally available. This overrides any other specification.
+
+A specific service can also be registered containing an _aps-externalizable_ property with value _true_ to be externalizable. If your bundle uses APSActivator (APSToolsLib) as bundle activator then any of @APSExternalizable and @APSRemoteService on the class will make APSActivator set the _aps-externalizable_ property to true when registering the service.
 
 The exernal protocol extender also provides a configuration where services can be specified with their fully qualified name to be made externally available. If a bundle however have specifically specified false for the above manifest entry then the config entry will be ignored. 
 
