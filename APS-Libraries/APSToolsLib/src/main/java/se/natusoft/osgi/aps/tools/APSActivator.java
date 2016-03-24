@@ -106,6 +106,7 @@ import java.util.concurrent.TimeUnit;
  *
  * Most methods are protected making it easy to subclass this class and expand on its functionality.
  */
+@SuppressWarnings("WeakerAccess")
 public class APSActivator implements BundleActivator, OnServiceAvailable, OnTimeout, APSActivatorPlugin.ActivatorInteraction {
 
     //
@@ -773,11 +774,19 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         OSGiServiceProvider serviceProvider = (OSGiServiceProvider)managedClass.getAnnotation(OSGiServiceProvider.class);
         if (serviceProvider != null) {
 
+            boolean externalizable = false;
+            if (managedClass.getAnnotation(APSExternalizable.class) != null || managedClass.getAnnotation(APSRemoteService.class) != null) {
+                externalizable = true;
+            }
+
             List<InstanceRepresentative> instanceReps = getManagedInstanceReps(managedClass);
 
             for (InstanceRepresentative instRep : instanceReps) {
                 if (instRep.service) {
                     instRep.props.put(Constants.SERVICE_PID, managedClass.getName());
+                    if (externalizable) {
+                        instRep.props.put("aps-externalizable", "true");
+                    }
                     if (!instRep.serviceAPIs.isEmpty()) {
                         injectInstanceProps(instRep.instance, instRep.props);
                         for (String svcAPI : instRep.serviceAPIs) {
@@ -905,7 +914,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
             if (service.required()) {
                 Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService =
-                        new Tuple4<>(tracker, managedClass, false, (List<ServiceRegistration>)new LinkedList<ServiceRegistration>());
+                        new Tuple4<>(tracker, managedClass, false, new LinkedList<>());
                 this.requiredServices.add(requiredService);
             }
 
