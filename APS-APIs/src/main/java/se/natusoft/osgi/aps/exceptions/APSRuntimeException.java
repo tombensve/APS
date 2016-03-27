@@ -37,7 +37,7 @@
 package se.natusoft.osgi.aps.exceptions;
 
 /**
- * Base exception for platform services.
+ * Base exception for basically all other exceptions thrown by the APIs and services.
  */
 public class APSRuntimeException extends RuntimeException {
 

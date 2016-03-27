@@ -62,7 +62,7 @@ public class ServiceDescriptionProvider implements ServiceDescription {
     private int servicePort = 0;
 
     /** The protocol of the service. */
-    private Protocol protocol = Protocol.TCP;
+    private String protocol = "TCP";
 
     /** An optional URL to the service. */
     private String serviceURL = "";
@@ -190,6 +190,14 @@ public class ServiceDescriptionProvider implements ServiceDescription {
     }
 
     /**
+     * The protocol used over the network. Valid values are "TCP", "UDP", and "MULTICAST"
+     */
+    @Override
+    public String getNetworkProtocol() {
+        return null;
+    }
+
+    /**
      * Sets the targetPort of the service.
      *
      * @param servicePort The service targetPort to set.
@@ -202,7 +210,7 @@ public class ServiceDescriptionProvider implements ServiceDescription {
      * The protocol of the service.
      */
     @Override
-    public Protocol getServiceProtocol() {
+    public String getServiceProtocol() {
         return this.protocol;
     }
 
@@ -211,7 +219,7 @@ public class ServiceDescriptionProvider implements ServiceDescription {
      *
      * @param protocol The protocol to set.
      */
-    public void setServiceProtocol(Protocol protocol) {
+    public void setServiceProtocol(String protocol) {
         this.protocol = protocol;
     }
 
@@ -221,6 +229,22 @@ public class ServiceDescriptionProvider implements ServiceDescription {
     @Override
     public String getServiceURL() {
         return serviceURL;
+    }
+
+    /**
+     * This can be anything that classifies the entry as something more specific. Like a group or queue or whatever.
+     */
+    @Override
+    public String getClassifier() {
+        return null;
+    }
+
+    /**
+     * Describes the content type expected/delivered by the service. For example "XML", "JSON", "Binary:Java:Serialized"
+     */
+    @Override
+    public String getContentType() {
+        return null;
     }
 
     /**

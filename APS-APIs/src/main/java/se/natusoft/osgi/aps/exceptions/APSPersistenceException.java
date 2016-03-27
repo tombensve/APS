@@ -39,7 +39,7 @@ package se.natusoft.osgi.aps.exceptions;
 /**
  * Indicates a problem with persistence.
  */
-public class APSPersistenceException extends APSRuntimeException {
+public class APSPersistenceException extends APSIOException {
 
     /**
      * Creates a new _APSPersistenceException_ instance.

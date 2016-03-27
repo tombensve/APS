@@ -39,7 +39,7 @@ package se.natusoft.osgi.aps.exceptions;
 /**
  * This exception is thrown if any resource is not found.
  */
-public class APSResourceNotFoundException extends APSRuntimeException {
+public class APSResourceNotFoundException extends APSIOException {
 
     /**
      * Creates a new _APSResourceNotFoundException_.

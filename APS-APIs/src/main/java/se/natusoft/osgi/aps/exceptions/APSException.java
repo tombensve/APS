@@ -37,7 +37,15 @@
 package se.natusoft.osgi.aps.exceptions;
 
 /**
- * Base exception for platform services.
+ * A very lonely exception.
+ *
+ * I have finally come to an agreement with many others who I at first thought crazy that checked exceptions
+ * are kind of evil. :-). It took me some time, but I finally got there. Just like JEE which I used to strongly
+ * defend, but not so much anymore.
+ *
+ * Anyhow, this exception is here just for the heck of it! All other APS exceptions inherits from APSRuntimeException,
+ * which makes them far more flexible, can be handled at the correct place, and no tons of catch-wrap-throw. I do
+ * however document them in JavaDoc even if they are runtime exceptions.
  */
 public class APSException extends Exception {
 

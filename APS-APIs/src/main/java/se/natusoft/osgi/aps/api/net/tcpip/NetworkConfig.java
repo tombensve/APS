@@ -71,7 +71,7 @@ public interface NetworkConfig {
          */
         public NetworkConfigProvider(ServiceDescription sd) {
             this.name = sd.getServiceId();
-            this.type = Type.valueOf(sd.getServiceProtocol().name());
+            this.type = Type.valueOf(sd.getServiceProtocol());
             this.address = sd.getServiceHost();
             this.port = sd.getServicePort();
         }

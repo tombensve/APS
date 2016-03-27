@@ -1,23 +1,24 @@
 package se.natusoft.osgi.aps.persistentqueue
 
-import se.natusoft.osgi.aps.api.core.filesystem.model.APSDirectory
-import se.natusoft.osgi.aps.api.core.filesystem.model.APSFile
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.misc.queue.APSQueue
-import se.natusoft.osgi.aps.api.misc.queue.APSQueueException
+import se.natusoft.osgi.aps.codedoc.Implements
+import se.natusoft.osgi.aps.exceptions.APSIOException
 import se.natusoft.osgi.aps.tools.APSLogger
 
 /**
- *
+ * This represents a specific named queue.
  */
-class PersistentQueue implements APSQueue<Serializable> {
+@CompileStatic
+@TypeChecked
+class PersistentQueue implements APSQueue {
 
     //
     // Private Members
     //
 
-    private Queue<UUID> queueRefs = new LinkedList<>()
-
-    private Queue<Serializable> itemCache = new LinkedList<>()
+    private LinkedList<UUID> queueRefs = new LinkedList<>()
 
     private boolean indexLoaded = false
 
@@ -28,93 +29,148 @@ class PersistentQueue implements APSQueue<Serializable> {
     /** Logger to log to. */
     APSLogger logger
 
-    /** Provides the filesystem. */
-    FSProvider fsProvider
-
-    /** The name of this queue. */
+    /** The name of the queue. */
     String queueName
+
+    /** Provides the filesystem. */
+    QueueStore queueStore
 
     //
     // Methods
     //
 
     /**
-     * Returns the directory where queue data is stored.
+     * Loads the index from disk.
      */
-    private APSDirectory getQueueStore() {
-        this.fsProvider.fs.getDirectory(queueName)
-    }
-
-    private synchronized final void loadIndex() {
+    private final void loadIndex() {
         if (!this.indexLoaded) {
+            ObjectInputStream ois = null;
             try {
-                ObjectInputStream ois = new ObjectInputStream(this.queueStore.getFile("index").createInputStream())
+                ois = new ObjectInputStream(this.queueStore.getIndexInputStream(this.queueName))
                 int size = ois.readInt()
 
                 int read = 0
                 while (read < size) {
-                    this.queueRefs.add(ueois.readObject() as UUID)
+                    this.queueRefs.add(ois.readObject() as UUID)
                     ++read
                 }
-
-                ois.close()
             }
             catch (IOException ioe) {
                 this.logger.error("Failed to load queue index!", ioe)
-                throw new APSQueueException("Failed to load queue index!", ioe)
+                throw new APSIOException("Failed to load queue index!", ioe)
+            }
+            finally {
+                if (ois != null) ois.close()
             }
 
             this.indexLoaded = true
         }
     }
 
-    private synchronized final void saveIndex() {
+    /**
+     * Saves the index to disk.
+     *
+     * @param undo This is executed on failure.
+     */
+    private final void saveIndexWithUndo(Closure undo) {
+        ObjectOutputStream oos = null
         try {
-            this.queueStore.getFile("index").renameTo(this.queueStore.getFile("index.old"))
-            ObjectOutputStream oos = new ObjectOutputStream(this.queueStore.getFile("index").createOutputStream())
+            this.queueStore.backupIndex(this.queueName)
+            oos = new ObjectOutputStream(this.queueStore.getIndexOutputStream(this.queueName))
             oos.writeInt(this.queueRefs.size())
             this.queueRefs.each { UUID queueRef ->
                 oos.writeObject(queueRef)
             }
-
-            oos.close()
         }
         catch (IOException ioe) {
+            undo.call()
+            this.queueStore.restoreBackupIndex(this.queueName)
+            this.indexLoaded = false
             this.logger.error("Failed to save queue index!", ioe)
-            throw new APSQueueException("Failed to save queue index!", ioe)
+            throw new APSIOException("Failed to save queue index!", ioe)
         }
         finally {
-            APSFile oldIndex = this.queueStore.getFile("index.old")
-            if (oldIndex.exists()) {
-                oldIndex.delete()
-            }
+            if (oos != null) oos.close()
+        }
+
+        this.queueStore.removeBackupIndex(this.queueName)
+    }
+
+    /**
+     * Writes an item to the queue.
+     *
+     * @param itemRef The item reference.
+     * @param item The item to write.
+     */
+    private void writeItem(UUID itemRef, byte[] item) {
+        ObjectOutputStream itemStream = null
+        try {
+            itemStream = new ObjectOutputStream(this.queueStore.getItemOutputStream(this.queueName, itemRef))
+            itemStream.writeInt(item.length)
+            itemStream.write(item)
+        }
+        catch (IOException ioe) {
+            this.logger.error("Failed to write item!", ioe)
+            throw new APSIOException("Failed to write item!", ioe)
+        }
+        finally {
+            if (itemStream != null) itemStream.close()
         }
     }
 
-    private synchronized void writeItem(UUID itemRef, Serializable item) {
+    /**
+     * Reads an item from the queue.
+     *
+     * @param itemRef The item reference to read.
+     */
+    private byte[] readItem(UUID itemRef) {
+        ObjectInputStream itemStream = null
         try {
-            ObjectOutputStream oos = new ObjectOutputStream(this.queueStore.getFile(itemRef.toString()).createOutputStream())
-            oos.writeObject(item)
-            oos.close()
+            itemStream = new ObjectInputStream(this.queueStore.getItemInputStream(this.queueName, itemRef))
+            int length = itemStream.readInt();
+            byte[] bytes = new byte[length]
+            itemStream.read(bytes)
+
+            return bytes
         }
         catch (IOException ioe) {
-            this.logger.error("Failed to write item '${itemRef}'!", ioe)
-            throw new APSQueueException("Failed to write item '${itemRef}'!", ioe)
+            this.logger.error("Failed to load item!", ioe)
+            throw new APSIOException("Failed to load item!", ioe)
+        }
+        finally {
+            if (itemStream != null) itemStream.close()
         }
     }
 
-    private Serializable readItem(UUID itemRef) {
-        try {
-            ObjectInputStream ois = new ObjectInputStream(this.queueStore.getFile(itemRef.toString()).createInputStream())
-            Serializable item = ois.readObject() as Serializable
-            ois.close()
+    /**
+     * Deletes an item.
+     *
+     * @param itemRef The reference of the item to delete.
+     */
+    private void deleteItem(UUID itemRef) {
+        this.queueStore.deleteItem(this.queueName, itemRef)
+    }
 
-            return item
+    /**
+     * Executes the closure hiding all exceptions.
+     *
+     * @param quiteOp The closure to execute.
+     */
+    private static void silently(Closure quiteOp) {
+        try {
+            quiteOp.call()
         }
-        catch (IOException ioe) {
-            this.logger.error("Failed to load item '${itemRef}'!", ioe)
-            throw new APSQueueException("Failed to load item '${itemRef}'!", ioe)
-        }
+        catch (Exception ignore) {}
+    }
+
+    /**
+     * Peeks the next entry in the queue and throws exception if the queue is empty.
+     */
+    private UUID peekNotEmpty() {
+        UUID polledItemRef = this.queueRefs.peek()
+        if (polledItemRef == null) throw new APSIOException("The queue is empty!")
+
+        polledItemRef
     }
 
     /**
@@ -122,11 +178,25 @@ class PersistentQueue implements APSQueue<Serializable> {
      *
      * @param item The item to add to the list.
      *
-     * @throws APSQueueException on any failure to do this operation.
+     * @throws APSIOException on any failure to do this operation.
      */
     @Override
-    void push(Serializable item) throws APSQueueException {
+    @Implements(APSQueue.class)
+    synchronized void push(byte[] item) throws APSIOException {
         loadIndex()
+
+        UUID newItemRef = UUID.randomUUID()
+        this.queueRefs.offer(newItemRef)
+
+        try {
+            writeItem(newItemRef, item)
+        }
+        catch (APSIOException aioe) {
+            silently { deleteItem(newItemRef) }
+            throw aioe
+        }
+
+        saveIndexWithUndo { this.queueRefs.removeLast() }
     }
 
     /**
@@ -134,31 +204,45 @@ class PersistentQueue implements APSQueue<Serializable> {
      *
      * @return The pulled item.
      *
-     * @throws APSQueueException on any failure to do this operation.
+     * @throws APSIOException on any failure to do this operation.
      */
     @Override
-    Serializable pull() throws APSQueueException {
+    @Implements(APSQueue.class)
+    synchronized byte[] pull() throws APSIOException {
         loadIndex()
-        return null
+
+        UUID itemRef = peekNotEmpty()
+
+        byte[] itemBytes = readItem(itemRef)
+        this.queueRefs.poll() // Now we can remove it.
+
+        saveIndexWithUndo { this.queueRefs.addFirst(itemRef) }
+
+        itemBytes
     }
 
     /**
      * Looks at, but does not remove the first item in the queue.
      *
      * @return The first item in the queue.
-     * @throws APSQueueException
+     * @throws APSIOException
      */
     @Override
-    Serializable peek() throws APSQueueException {
+    @Implements(APSQueue.class)
+    synchronized byte[] peek() throws APSIOException {
         loadIndex()
-        return null
+
+        UUID itemRef = peekNotEmpty()
+
+        readItem(itemRef)
     }
 
     /**
      * Returns the number of items in the queue.
      */
     @Override
-    int size() {
+    @Implements(APSQueue.class)
+    synchronized int size() {
         loadIndex()
         return this.queueRefs.size()
     }
@@ -167,7 +251,8 @@ class PersistentQueue implements APSQueue<Serializable> {
      * Returns true if this queue is empty.
      */
     @Override
-    boolean isEmpty() {
+    @Implements(APSQueue.class)
+    synchronized boolean isEmpty() {
         return size() == 0
     }
 }
