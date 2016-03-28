@@ -400,7 +400,7 @@ Creates a new JSONObject instance for reading JSON input or writing JSON output.
 
 _Parameters_
 
-> _errorHandler_
+> _errorHandler_ - The error handler to use. 
 
 
 
@@ -1027,6 +1027,78 @@ _Parameters_
 > _message_ - The exception message 
 
 > _cause_ - The cause of this exception. 
+
+}
+
+----
+
+    
+
+public _class_ __JSONMapConv__   [se.natusoft.osgi.aps.json.tools] {
+
+This converts between a Java Map and JSON. Do note that this of course uses this library to read and write JSON, but this specific public API only deals with Java and JSON as String or on/in a stream. [p/](p/) This class becomes more useful when used from Groovy since the latter provides much nicer usage of data in Maps. Yes, I know about JSONSlurper and JSONBuilder in Groovy. Those however does not work with @CompileStatic. Maps does.
+
+__public static Map<String, Object> jsonObjectToMap(String json) throws IOException__
+
+This takes a String containing a JSON object and returns it as a Map.
+
+_Parameters_
+
+> _json_ - The JSON content to convert to a Map. 
+
+_Throws_
+
+> _IOException_
+
+__public static Map<String, Object> jsonObjectToMap(InputStream is) throws IOException__
+
+This takes an InputStream containing a JSON object and returns it as a Map.
+
+_Parameters_
+
+> _is_ - The InputStream to read. 
+
+_Throws_
+
+> _IOException_
+
+
+
+
+
+
+
+__public static String mapToJSONObject(Map<String, Object> map) throws IOException__
+
+This takes a Map (as created by jsonObjectToMap(...)) and returns a JSON object.
+
+_Parameters_
+
+> _map_ - The Map to convert to JSON. 
+
+_Throws_
+
+> _IOException_
+
+__public static void mapToJSONObject(Map<String, Object> map, OutputStream os) throws IOException__
+
+This takes a Map (as created by jsonObjectToMap(...)) and writes it as JSON to the specified OutputStream.
+
+_Parameters_
+
+> _map_ - The Map to write as JSON. 
+
+> _os_ - The OutputStream to write to. 
+
+_Throws_
+
+> _IOException_
+
+
+
+
+
+
 
 }
 

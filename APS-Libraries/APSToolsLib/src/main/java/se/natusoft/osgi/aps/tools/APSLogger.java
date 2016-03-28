@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS Tools Library
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides a library of utilities, among them APSServiceTracker used by all other APS bundles.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -40,11 +40,13 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
+import se.natusoft.osgi.aps.tools.tuples.Tuple3;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.*;
 
 /**
  * This wraps a LogService instance and simply logs to stdout when no logservice is available.
@@ -52,6 +54,18 @@ import java.io.StringWriter;
  * Note that this also implements the LogService API!
  */
 public class APSLogger implements LogService {
+    //
+    // Constants
+    //
+
+    /** For property constructor. The value is an OutputStream to log to. */
+    public static final String PROP_OUTPUT_STREAM = "out-stream";
+
+    /**
+     * For property constructor. Any value will do. Will save any log entries done before the start(bc) call and send them to
+     * the log service when started if such is available.
+     */
+    public static final String PROP_CACHE_AND_DELAY = "cache-and-delay";
 
     //
     // Private Members
@@ -71,6 +85,9 @@ public class APSLogger implements LogService {
 
     /** The stream to write to when log service is not available. */
     private PrintStream outStream = System.out;
+
+    /** List of delayed log entries. */
+    private List<Tuple3<Integer, String, Exception>> delayedLogEntries = null;
 
     //
     // Constructors
@@ -93,6 +110,29 @@ public class APSLogger implements LogService {
     }
 
     /**
+     * A new more flexible constructor where named properties can be passed.
+     *
+     * @param props Configuration properties.
+     */
+    public APSLogger(Map<String, Object> props) {
+        if (props.containsKey(PROP_OUTPUT_STREAM)) {
+            this.outStream = new PrintStream((OutputStream)props.get("out-stream"));
+        }
+        else if (props.containsKey(PROP_CACHE_AND_DELAY)) {
+            this.delayedLogEntries = Collections.synchronizedList(new LinkedList<>());
+        }
+    }
+
+    /**
+     * A version of the properties Map constructor taking the properties as an array.
+     *
+     * @param propsArray An array of properties pairs of 2: property, value.
+     */
+    public APSLogger(Object... propsArray) {
+        this(arrayToProps(propsArray));
+    }
+
+    /**
      * Creates the logger in its simplest form. This wont log anywhere until start(context) has been called
      * and at least one LogService is available.
      */
@@ -101,6 +141,24 @@ public class APSLogger implements LogService {
     //
     // Methods
     //
+
+    /**
+     * Converts and array of properties to a Map.
+     *
+     * @param propsArray The array to convert.
+     */
+    private static Map<String, Object> arrayToProps(Object... propsArray) {
+        Map<String, Object> props = new HashMap<>();
+        int propIx = 0;
+        while (propIx < propsArray.length) {
+            if (!((propIx + 1) < propsArray.length)) {
+                throw new IllegalArgumentException("Bad properties array! Last property is missing a value!");
+            }
+            props.put(propsArray[propIx].toString(), propsArray[propIx + 1]);
+            propIx += 2;
+        }
+        return props;
+    }
 
     /**
      * This will start tracking a LogService to use for logging. When available logs will be sent to
@@ -112,6 +170,15 @@ public class APSLogger implements LogService {
         this.logServiceTracker = new APSServiceTracker<>(context, LogService.class);
         this.logServiceTracker.start();
         this.logService = this.logServiceTracker.getWrappedService();
+        if (this.delayedLogEntries != null) {
+            this.delayedLogEntries.forEach(entry -> {
+                try {
+                    logToService(this.logService, entry.t1, entry.t2, entry.t3);
+                }
+                catch (Exception ignore) {}
+            });
+            this.delayedLogEntries = null;
+        }
     }
 
     /**
@@ -169,7 +236,9 @@ public class APSLogger implements LogService {
             }
         }
         else {
-            logToOutStream(level, message, cause);
+            if (this.delayedLogEntries == null) {
+                logToOutStream(level, message, cause);
+            }
         }
     }
 
@@ -211,7 +280,7 @@ public class APSLogger implements LogService {
      * The <code>Throwable</code> field of the <code>LogEntry</code> will be set to
      * <code>null</code>.
      *
-     * @param sr      THIS IS IGNORED!
+     * @param sr      THIS IS CURRENTLY IGNORED!
      * @param level   The severity of the message. This should be one of the
      *                defined log levels but may be any integer that is interpreted in a
      *                user defined way.
@@ -235,7 +304,7 @@ public class APSLogger implements LogService {
      * Logs a message with an exception associated and a
      * <code>ServiceReference</code> object.
      *
-     * @param sr        THIS IS IGNORED!
+     * @param sr        THIS IS CURRENTLY IGNORED!
      * @param level     The severity of the message. This should be one of the
      *                  defined log levels but may be any integer that is interpreted in a
      *                  user defined way.

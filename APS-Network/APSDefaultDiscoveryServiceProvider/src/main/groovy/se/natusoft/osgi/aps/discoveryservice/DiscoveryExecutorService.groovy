@@ -9,11 +9,12 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
 /**
- * This wraps a java.util.concurrent.ExecutorService.
+ * This wraps a java.util.concurrent.ExecutorService. This so that one instance of this can be injected into both
+ * APSSimpleDiscoveryServiceProvider and DiscoveryHandler. The actual instance is setup and configured here.
  */
 class DiscoveryExecutorService implements ExecutorService {
 
-    private ExecutorService executorService = Executors.newFixedThreadPool(5)
+    private ExecutorService executorService = Executors.newFixedThreadPool(10)
 
     @Override
     void shutdown() {

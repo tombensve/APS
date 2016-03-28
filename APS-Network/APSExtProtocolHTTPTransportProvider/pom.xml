@@ -122,11 +122,6 @@
         <server.deploy.artifact.type>war</server.deploy.artifact.type>
 
         <!--
-             Trigger tiles.
-         -->
-        <tile.deploy>${project.groupId}:DeployWABBundleTile:${project.version}</tile.deploy>
-
-        <!--
             Misc properties
         -->
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
@@ -140,25 +135,22 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-apis</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tools-lib</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-web-tools</artifactId>
-            <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
 
-        <dependency>
+        <dependency><!-- TODO: This is a strange dependency! -->
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-admin-web-service-provider</artifactId>
             <version>${project.version}</version>
@@ -226,7 +218,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.1.1</version>
                 <configuration>
                     <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
@@ -241,7 +232,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.5</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>

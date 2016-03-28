@@ -1,5 +1,5 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS APIs
@@ -32,7 +32,7 @@
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2013-03-29: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.api.external.extprotocolsvc.model;
 

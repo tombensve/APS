@@ -67,6 +67,7 @@
         <module>APSRabbitMQMessageServiceProvider</module>
         <module>APSTCPIPServiceProvider</module>
         <module>APSDefaultDiscoveryServiceProvider</module>
+        <module>APSTCPSimpleMessageServiceProvider</module>
     </modules>
 
 </project>

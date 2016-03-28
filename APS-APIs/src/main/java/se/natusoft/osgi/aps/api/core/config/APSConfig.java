@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS APIs
- *
+ *     
  *     Code Version
  *         1.0.0
- *
+ *     
  *     Description
  *         Provides the APIs for the application platform services.
- *
+ *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *
+ *     
  * LICENSE
  *     Apache 2.0 (Open Source)
- *
+ *     
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *
+ *     
  *       http://www.apache.org/licenses/LICENSE-2.0
- *
+ *     
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *
+ *     
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
@@ -63,35 +63,35 @@ import java.util.List;
  * Please note that all newer version definitions must be backwards compatible for the version handling
  * to work. Also note that you can have different published values for different versions of the definition.
  *
- * Here is an example of a configuration class (The ` chars are there to inhibit javadoc to interpret these
+ * Here is an example of a configuration class (The ´ chars are there to inhibit javadoc to interpret these
  * lines as javadoc annotations!):
  *
- *      \@APSConfigDescription(description="My configuration")
+ *     ´@APSConfigDescription(description="My configuration")
  *      public class MyConfig extends APSConfig {
  *
- *         \@APSConfigItemDescription(description="The url to the service to call",
+ *         ´@APSConfigItemDescription(description="The url to the service to call",
  *             defaultValue={ @APSDefaultValue(value="http://userservice.local:1234/login", configEnv="...") })
- *          public <b>APSConfigValue</b> serviceURL;
+ *          public APSConfigValue serviceURL;
  *
- *         \@APSConfigItemDescription(description="...")
- *          public <b>APSConfigValueList</b> somethingThatNeedsMany;
+ *         ´@APSConfigItemDescription(description="...")
+ *          public APSConfigValueList somethingThatNeedsMany;
  *
- *         \@APSConfigItemDescription(description="...", environmentSpecific=true)
- *          public <b>EndpointConfig</b> endpoint;
+ *         ´@APSConfigItemDescription(description="...", environmentSpecific=true)
+ *          public EndpointConfig endpoint;
  *
- *         \@APSConfigItemDescription(description="...")
- *          public <b>APSConfigList&lt;EndpointConfig&gt;</b> endpoints;
+ *         ´@APSConfigItemDescription(description="...")
+ *          public APSConfigList&lt;EndpointConfig&gt; endpoints;
  *
- *         \@APSConfigDescription(description="my other config")
+ *         ´@APSConfigDescription(description="my other config")
  *          public static class EndpointConfig extends APSConfig {
  *
- *             \@APSConfigItemDescription(description="...")
+ *             ´@APSConfigItemDescription(description="...")
  *              public APSConfigValue name;
  *
- *             \@APSConfigItemDescription(description="...")
+ *             ´@APSConfigItemDescription(description="...")
  *              public APSConfigValue host;
  *
- *             \@APSConfigItemDescription(description="...")
+ *             ´@APSConfigItemDescription(description="...")
  *              public APSConfigValue port;
  *          }
  *     }

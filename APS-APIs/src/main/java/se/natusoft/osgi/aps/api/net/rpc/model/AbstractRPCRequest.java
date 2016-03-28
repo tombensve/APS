@@ -1,5 +1,5 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS APIs
@@ -32,7 +32,7 @@
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2012-01-08: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.api.net.rpc.model;
 
@@ -53,7 +53,7 @@ public abstract class AbstractRPCRequest implements RPCRequest {
 
     /** The method to call. */
     private String method = null;
-    
+
     /** The fully qualified name of the service to call if available. */
     private String serviceQName = null;
 
@@ -101,7 +101,7 @@ public abstract class AbstractRPCRequest implements RPCRequest {
         this.method = method;
         this.callId = callId;
     }
-    
+
     //
     // Methods
     //
@@ -119,7 +119,7 @@ public abstract class AbstractRPCRequest implements RPCRequest {
     protected List<Object> getParameters() {
         return this.parameters;
     }
-    
+
     /**
      * Returns true if this request is valid. If this returns false all information except getError() is invalid, and
      * getError() should return a valid RPCError object.
@@ -136,14 +136,14 @@ public abstract class AbstractRPCRequest implements RPCRequest {
     public RPCError getError() {
         return this.error;
     }
-    
+
     /**
      * Returns a fully qualified name of service to call. This will be null for protocols where service name is
      * not provided this way. So this cannot be taken for given!
      */
     @Override
     public String getServiceQName() {
-        return this.serviceQName;   
+        return this.serviceQName;
     }
 
     /**
@@ -173,7 +173,7 @@ public abstract class AbstractRPCRequest implements RPCRequest {
     public boolean hasCallId() {
         return this.callId != null;
     }
-    
+
     /**
      * Returns the method call call Id.
      * <p/>
@@ -200,6 +200,18 @@ public abstract class AbstractRPCRequest implements RPCRequest {
      */
     public void addParameter(Object parameter) {
         this.parameters.add(parameter);
+    }
+
+    /**
+     * If an exception occurred during the request call, and this returns non null, then the returned
+     * converter should be called with the occurred exception to provide an RPCError.
+     *
+     * This allows for a specific protocol implementation to handle its own exceptions and provide an
+     * appropriate RPCError.
+     */
+    @Override
+    public RPCExceptionConverter getExceptionConverter() {
+        return null;
     }
 
 }

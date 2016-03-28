@@ -66,14 +66,12 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-apis</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tools-lib</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -89,12 +87,6 @@
         <plugins>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9</version>
-                <configuration>
-                    <docletPath>${project.basedir}/../../lib/MarkdownDoclet-3-1.0.jar</docletPath>
-                    <doclet>com.visural.doclets.markdown.standard.Standard</doclet>
-                    <stylesheetfile>${project.basedir}/../../css/apidocs.css</stylesheetfile>
-                </configuration>
                 <executions>
                     <execution>
                         <id>gendocs</id>

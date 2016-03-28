@@ -3,33 +3,33 @@
     PROJECT
         Name
             APS TCPIP Service Provider
-        
+
         Code Version
             1.0.0
-        
+
         Description
             Provides an implementation of APSTCPIPService. This service does not provide any security of its own,
             but makes use of APSTCPSecurityService, and APSUDPSecurityService when available and configured for
             security.
-        
+
     COPYRIGHTS
         Copyright (C) 2012 by Natusoft AB All rights reserved.
-        
+
     LICENSE
         Apache 2.0 (Open Source)
-        
+
         Licensed under the Apache License, Version 2.0 (the "License");
         you may not use this file except in compliance with the License.
         You may obtain a copy of the License at
-        
+
           http://www.apache.org/licenses/LICENSE-2.0
-        
+
         Unless required by applicable law or agreed to in writing, software
         distributed under the License is distributed on an "AS IS" BASIS,
         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
         See the License for the specific language governing permissions and
         limitations under the License.
-        
+
     AUTHORS
         tommy ()
             Changes:
@@ -69,6 +69,7 @@
 
         <!-- The bundle packages to export. -->
         <osgi.export.package>
+            se.natusoft.osgi.aps.tcpipsvc.config
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->
@@ -77,7 +78,6 @@
         <!-- The private packages. -->
         <osgi.private.package>
             se.natusoft.osgi.aps.tcpipsvc,
-            se.natusoft.osgi.aps.tcpipsvc.config,
             se.natusoft.osgi.aps.tcpipsvc.meta,
             se.natusoft.osgi.aps.tcpipsvc.security
         </osgi.private.package>
@@ -121,13 +121,11 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-apis</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tools-lib</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -142,25 +140,25 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-service-test-support</artifactId>
-            <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-osgi-test-tools</artifactId>
-            <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
 
         <!--
-            aps-tcpip-service-provider dependencies
-        -->
+            This is actually needed for running tests! When building the dependency is provided
+            by the mixin, but apparently not when running tests. IDEA also requires this to be
+            here in this pom to run a unit test withing IDEA.
 
+            See issue: https://youtrack.jetbrains.com/issue/IDEA-152648
+        -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
-            <version>2.4.3</version>
             <scope>provided</scope>
             <classifier>indy</classifier>
         </dependency>
@@ -214,7 +212,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.5</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>

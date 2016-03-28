@@ -16,7 +16,7 @@ import se.natusoft.osgi.aps.tools.APSServiceTracker
 import static org.junit.Assert.assertTrue
 
 /**
- * Test MulticastReceiver and MulticastSender.
+ * Test sending and receiving multicast data.
  */
 @CompileStatic
 @TypeChecked
@@ -49,12 +49,7 @@ class MulticastConProviderTest {
 
             OSGIServiceTestTools testTools = new OSGIServiceTestTools()
             TestBundle testBundle = testTools.createBundle("test-bundle")
-            testBundle.addEntryPaths(
-                    "/se/natusoft/osgi/aps/tcpipsvc/APSTCPIPServiceProvider.class",
-                    "/se/natusoft/osgi/aps/tcpipsvc/ConnectionResolver.class",
-                    "/se/natusoft/osgi/aps/tcpipsvc/security/TCPSecurityHandler.class",
-                    "/se/natusoft/osgi/aps/tcpipsvc/security/UDPSecurityHandler.class"
-            );
+            testBundle.loadEntryPathsFromDirScan("APS-Network/APSTCPIPServiceProvider/target/classes")
 
             APSActivator activator = new APSActivator()
             activator.start(testBundle.bundleContext)

@@ -1,6 +1,6 @@
 # APSExternalProtocolExtender
 
-This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles _MANIFEST.MF_ contains `APS-Externalizable: true` the service is made externally available. If the _MANIFEST.MF_ contains `APS-Externalizable: false` however making the service externally available is forbidden. A specific service can also be registered containing an _aps-externalizable_ property with value _true_ to be externalizable. This overrides any other specification.
+This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles _MANIFEST.MF_ contains `APS-Externalizable: true` the service is made externally available. If the _MANIFEST.MF_ contains `APS-Externalizable: false` however making the service externally available is forbidden. A specific service can also be registered containing an _aps-externalizable_ property with value _true_ to be externalizable. It is also possible as an alternative to true/false specify a list of fully qualified service names to make only those services externally available. This overrides any other specification.
 
 The exernal protocol extender also provides a configuration where services can be specified with their fully qualified name to be made externally available. If a bundle however have specifically specified false for the above manifest entry then the config entry will be ignored.
 
@@ -70,17 +70,13 @@ __public Set<String> getAvailableServices()__
 
 Returns all currently available services.
 
-__public List<APSExternallyCallable> getCallables(String serviceName) throws RuntimeException__
+__public List<APSExternallyCallable> getCallables(String serviceName)__
 
 Returns all APSExternallyCallable for the named service object.
 
 _Parameters_
 
 > _serviceName_ - The name of the service to get callables for. 
-
-_Throws_
-
-> _RuntimeException_ - If the service is not available. 
 
 __public Set<String> getAvailableServiceFunctionNames(String serviceName)__
 
@@ -329,10 +325,6 @@ This defines the valid choices for selectMethod(...).
     
 
 
-
-__APSRESTCallable.HttpMethod httpMethod() default APSRESTCallable.HttpMethod.NONE__
-
-This needs to be provided if you are providing a REST API using JSONREST protocol of the APSStreamedJSONRPCProtocolProvider bundle.
 
 }
 
@@ -586,6 +578,8 @@ _Parameters_
 
 > _parameter_ - The parameter to add. 
 
+
+
 }
 
 ----
@@ -595,6 +589,24 @@ _Parameters_
 public _enum_ __RequestIntention__   [se.natusoft.osgi.aps.api.net.rpc.model] {
 
 The intention of a request.
+
+}
+
+----
+
+    
+
+public _interface_ __RPCExceptionConverter__   [se.natusoft.osgi.aps.api.net.rpc.model] {
+
+An instance of this can be passed to RPCRequest to convert the cauth exception to an RPCError.
+
+__RPCError convertException(Exception e)__
+
+This should be called on any service exception to convert the exception to an RPCError.
+
+_Parameters_
+
+> _e_ - The exception to convert. 
 
 }
 
@@ -613,6 +625,12 @@ Returns true if this request is valid. If this returns false all information exc
 __RPCError getError()__
 
 Returns an _RPCError_ object if `isValid() == false`, _null_ otherwise.
+
+__RPCExceptionConverter getExceptionConverter()__
+
+If an exception occurred during the request call, and this returns non null, then the returned converter should be called with the occurred exception to provide an RPCError.
+
+This allows for a specific protocol implementation to handle its own exceptions and provide an appropriate RPCError.
 
 __String getServiceQName()__
 
@@ -633,6 +651,10 @@ __Object getCallId()__
 Returns the method call call Id.
 
 A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont.
+
+__RequestIntention getRequestIntention()__
+
+Returns the intention of the request.
 
 __int getNumberOfParameters()__
 

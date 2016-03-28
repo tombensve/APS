@@ -115,21 +115,18 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-osgi-test-tools</artifactId>
-            <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-service-test-support</artifactId>
-            <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-apis</artifactId>
-            <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -188,7 +185,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.5</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>
@@ -228,12 +224,6 @@
             -->
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9</version>
-                <configuration>
-                    <docletPath>${project.basedir}/../../lib/MarkdownDoclet-3-1.0.jar</docletPath>
-                    <doclet>com.visural.doclets.markdown.standard.Standard</doclet>
-                    <stylesheetfile>${project.basedir}/../../css/apidocs.css</stylesheetfile>
-                </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -264,7 +254,6 @@
             <plugin>
                 <groupId>se.natusoft.maven.plugin</groupId>
                 <artifactId>ftp-maven-plugin</artifactId>
-                <version>${ftpPlugin.version}</version>
                 <executions>
                     <execution>
                         <id>upload</id>

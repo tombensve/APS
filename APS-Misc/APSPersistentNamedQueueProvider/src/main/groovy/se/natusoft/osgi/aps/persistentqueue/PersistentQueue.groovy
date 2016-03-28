@@ -35,14 +35,45 @@ class PersistentQueue implements APSQueue {
     /** Provides the filesystem. */
     QueueStore queueStore
 
+    private boolean modified = false
+
+    private Timer timer = new Timer()
+
+    //
+    // Constructors
+    //
+
+    public PersistentQueue() {
+        this.timer.scheduleAtFixedRate(new SaveTask(), 5000, 5000)
+    }
+
+    //
+    // Inner Classes
+    //
+
+    private class SaveTask extends TimerTask {
+        public void run() {
+            if (PersistentQueue.this.modified) {
+                saveIndex()
+            }
+        }
+    }
+
     //
     // Methods
     //
 
     /**
+     * Cleans up in this instance.
+     */
+    void release() {
+        this.timer.cancel()
+    }
+
+    /**
      * Loads the index from disk.
      */
-    private final void loadIndex() {
+    private synchronized final void loadIndex() {
         if (!this.indexLoaded) {
             ObjectInputStream ois = null;
             try {
@@ -54,6 +85,9 @@ class PersistentQueue implements APSQueue {
                     this.queueRefs.add(ois.readObject() as UUID)
                     ++read
                 }
+            }
+            catch (EOFException eofe) {
+                // This happens when the index have been newly created and does not yet even contain a size.
             }
             catch (IOException ioe) {
                 this.logger.error("Failed to load queue index!", ioe)
@@ -72,7 +106,7 @@ class PersistentQueue implements APSQueue {
      *
      * @param undo This is executed on failure.
      */
-    private final void saveIndexWithUndo(Closure undo) {
+    private synchronized final void saveIndex() {
         ObjectOutputStream oos = null
         try {
             this.queueStore.backupIndex(this.queueName)
@@ -83,7 +117,6 @@ class PersistentQueue implements APSQueue {
             }
         }
         catch (IOException ioe) {
-            undo.call()
             this.queueStore.restoreBackupIndex(this.queueName)
             this.indexLoaded = false
             this.logger.error("Failed to save queue index!", ioe)
@@ -195,8 +228,6 @@ class PersistentQueue implements APSQueue {
             silently { deleteItem(newItemRef) }
             throw aioe
         }
-
-        saveIndexWithUndo { this.queueRefs.removeLast() }
     }
 
     /**
@@ -215,8 +246,6 @@ class PersistentQueue implements APSQueue {
 
         byte[] itemBytes = readItem(itemRef)
         this.queueRefs.poll() // Now we can remove it.
-
-        saveIndexWithUndo { this.queueRefs.addFirst(itemRef) }
 
         itemBytes
     }

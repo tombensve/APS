@@ -1,47 +1,48 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS JSON Library
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides a JSON parser and creator. Please note that this bundle has no dependencies to any
  *         other APS bundle! It can be used as is without APS in any Java application and OSGi container.
  *         The reason for this is that I do use it elsewhere and don't want to keep 2 different copies of
  *         the code. OSGi wise this is a library. All packages are exported and no activator nor services
  *         are provided.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2011-10-07: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps;
 
 import org.junit.*;
 import se.natusoft.osgi.aps.json.*;
+import se.natusoft.osgi.aps.json.tools.JSONMapConv;
 import se.natusoft.osgi.aps.json.tools.JSONToJava;
 import se.natusoft.osgi.aps.json.tools.JavaToJSON;
 import se.natusoft.osgi.aps.json.tools.SystemOutErrorHandler;
@@ -49,13 +50,14 @@ import se.natusoft.osgi.aps.json.tools.SystemOutErrorHandler;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class Tests {
-    
+
     public Tests() {
     }
 
@@ -66,11 +68,11 @@ public class Tests {
     @AfterClass
     public static void tearDownClass() throws Exception {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
@@ -146,8 +148,8 @@ public class Tests {
         assertTrue(result.contains("\"null\": null"));
         assertTrue(result.contains("\"array\": [1, 2, 3, 4]"));
     }
-    
-    @Test 
+
+    @Test
     public void conversions() throws Exception {
         JSONObject obj = new JSONObject(new SystemOutErrorHandler());
         obj.addProperty("string", new JSONString("bla"));
@@ -163,7 +165,7 @@ public class Tests {
         name.addProperty("firstName", new JSONString("Tommy"));
         name.addProperty("lastName", new JSONString("Svensson"));
         obj.addProperty("name", name);
-        
+
         obj.writeJSON(System.out, true);
         System.out.println();
 
@@ -181,7 +183,7 @@ public class Tests {
         assertEquals("Svensson", testBean.getName().getLastName());
 
         System.out.println("Success in converting to Java!");
-        
+
         JSONObject convertedObj = JavaToJSON.convertObject(testBean);
         convertedObj.writeJSON(System.out, true);
         System.out.println();
@@ -199,70 +201,111 @@ public class Tests {
         assertNotNull(convertedName);
         assertEquals("Tommy", convertedName.getProperty("firstName").toString());
         assertEquals("Svensson", convertedName.getProperty("lastName").toString());
-        
+
         System.out.println("Success in converting back to JSON!");
     }
-    
+
+    @Test
+    public void mapTests() throws Exception {
+        String json =
+                "{" +
+                        "\"Developer\": \"tommy\", " +
+                        "\"Likes Groovy\": true, " +
+                        "\"Full name\": [\"Tommy\", \"Bengt\", \"Svensson\"], " +
+                        "\"subObject\": {\"content\": 12345}" +
+                        "}";
+
+        Map<String, Object> values = JSONMapConv.jsonObjectToMap(json);
+
+        assertEquals("Bad value for 'Developer'!", "tommy", values.get("Developer"));
+        assertEquals("Bad value for 'Likes Groovy'!", true, values.get("Likes Groovy"));
+        Object[] fullName = (Object[])values.get("Full name");
+        assertEquals("Bad number of entries in 'Full name'!", 3, fullName.length);
+        assertEquals("", "Tommy", fullName[0]);
+        assertEquals("", "Bengt", fullName[1]);
+        assertEquals("", "Svensson", fullName[2]);
+        //noinspection unchecked
+        Map<String, Object> subMap = (Map<String, Object>)values.get("subObject");
+        assertEquals("Bad data in subObject.content!", (short)12345, subMap.get("content"));
+
+        System.out.println("Success in converting JSON to a Map!");
+
+        String json2 = JSONMapConv.mapToJSONObject(values);
+
+        assertTrue(json2.contains("\"Developer\": \"tommy\""));
+        assertTrue(json2.contains("Tommy"));
+        assertTrue(json2.contains("Bengt"));
+        assertTrue(json2.contains("Svensson"));
+        assertTrue(json2.contains("Full name"));
+        assertTrue(json2.contains("Likes Groovy"));
+        assertTrue(json2.contains("true"));
+        assertTrue(json2.contains("content"));
+        assertTrue(json2.contains("12345"));
+
+        System.out.println("Orig:            " + json);
+        System.out.println("To Map and back: " + json2);
+    }
+
     //
     // Inner Classes
     //
-    
+
     public static class NameBean {
         private String firstName;
         private String lastName;
-        
+
         public void setFirstName(String firstName) {
             this.firstName = firstName;
         }
-        
+
         public String getFirstName() {
             return this.firstName;
         }
-        
+
         public void setLastName(String lastName) {
             this.lastName = lastName;
         }
-        
+
         public String getLastName() {
             return this.lastName;
         }
     }
-    
+
     public static class TestBean {
         private String string;
         private int number;
         private boolean bool;
         private int[] ints;
         private NameBean name;
-        
+
         public void setString(String string) {
-            this.string = string;            
+            this.string = string;
         }
-        
+
         public String getString() {
             return this.string;
         }
-        
+
         public void setNumber(int number) {
             this.number = number;
         }
-        
+
         public int  getNumber() {
             return this.number;
         }
-        
+
         public void setBoolean(boolean bool) {
             this.bool = bool;
         }
-        
+
         public boolean getBoolean() {
             return this.bool;
         }
-        
+
         public void setArray(int[] ints) {
             this.ints = ints;
         }
-        
+
         public int[] getArray() {
             return this.ints;
         }

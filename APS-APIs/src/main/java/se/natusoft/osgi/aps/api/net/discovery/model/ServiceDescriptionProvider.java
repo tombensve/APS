@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS APIs
- *
+ *     
  *     Code Version
  *         1.0.0
- *
+ *     
  *     Description
  *         Provides the APIs for the application platform services.
- *
+ *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *
+ *     
  * LICENSE
  *     Apache 2.0 (Open Source)
- *
+ *     
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *
+ *     
  *       http://www.apache.org/licenses/LICENSE-2.0
- *
+ *     
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *
+ *     
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
@@ -62,7 +62,16 @@ public class ServiceDescriptionProvider implements ServiceDescription {
     private int servicePort = 0;
 
     /** The protocol of the service. */
-    private String protocol = "TCP";
+    private String serviceProtocol = "";
+
+    /** The network protocol used. */
+    private String networkProtocol = "TCP";
+
+    /** Any classification of the service. */
+    private String classifier = "";
+
+    /** The type of the content the service deals with. */
+    private String contentType = "";
 
     /** An optional URL to the service. */
     private String serviceURL = "";
@@ -89,7 +98,7 @@ public class ServiceDescriptionProvider implements ServiceDescription {
         this.serviceId = serviceDescription.getServiceId();
         this.version = serviceDescription.getVersion();
         this.serviceHost = serviceDescription.getServiceHost();
-        this.protocol = serviceDescription.getServiceProtocol();
+        this.serviceProtocol = serviceDescription.getServiceProtocol();
         this.serviceURL = serviceDescription.getServiceURL();
         this.lastUpdated = serviceDescription.getLastUpdated();
     }
@@ -103,13 +112,16 @@ public class ServiceDescriptionProvider implements ServiceDescription {
      */
     public String toString() {
         return "{ " +
-               "description:         '" + this.description +
-               ", serviceId:           '" + this.serviceId +
-               ", version:             '" + this.version +
-               ", serviceHost:         '" + this.serviceHost +
-               ", servicePort:         '" + this.servicePort +
-               ", protocol:            '" + this.protocol +
-               ", serviceURL:          '" + this.serviceURL +
+               "description:         '" + this.description + "'" +
+               ", serviceId:           '" + this.serviceId + "'" +
+               ", version:             '" + this.version + "'" +
+               ", serviceHost:         '" + this.serviceHost + "'" +
+               ", servicePort:         '" + this.servicePort + "'" +
+               ", service protocol:    '" + this.serviceProtocol + "'" +
+               ", network protocol:    '" + this.networkProtocol + "'" +
+               ", classifier:          '" + this.classifier + "'" +
+               ", contentType:         '" + this.contentType + "'" +
+               ", serviceURL:          '" + this.serviceURL + "'" +
                " }";
     }
 
@@ -190,14 +202,6 @@ public class ServiceDescriptionProvider implements ServiceDescription {
     }
 
     /**
-     * The protocol used over the network. Valid values are "TCP", "UDP", and "MULTICAST"
-     */
-    @Override
-    public String getNetworkProtocol() {
-        return null;
-    }
-
-    /**
      * Sets the targetPort of the service.
      *
      * @param servicePort The service targetPort to set.
@@ -207,11 +211,28 @@ public class ServiceDescriptionProvider implements ServiceDescription {
     }
 
     /**
+     * The protocol used over the network. Valid values are "TCP", "UDP", and "MULTICAST"
+     */
+    @Override
+    public String getNetworkProtocol() {
+        return this.networkProtocol;
+    }
+
+    /**
+     * Sets the protocol used over the network.
+     *
+     * @param networkProtocol The protocol to set.
+     */
+    public void setNetworkProtocol(String networkProtocol) {
+        this.networkProtocol = networkProtocol;
+    }
+
+    /**
      * The protocol of the service.
      */
     @Override
     public String getServiceProtocol() {
-        return this.protocol;
+        return this.serviceProtocol;
     }
 
     /**
@@ -220,7 +241,7 @@ public class ServiceDescriptionProvider implements ServiceDescription {
      * @param protocol The protocol to set.
      */
     public void setServiceProtocol(String protocol) {
-        this.protocol = protocol;
+        this.serviceProtocol = protocol;
     }
 
     /**
@@ -236,7 +257,16 @@ public class ServiceDescriptionProvider implements ServiceDescription {
      */
     @Override
     public String getClassifier() {
-        return null;
+        return this.classifier;
+    }
+
+    /**
+     * Provides a classifier.
+     *
+     * @param classifier The classifier to provide.
+     */
+    public void setClassifier(String classifier) {
+        this.classifier = classifier;
     }
 
     /**
@@ -244,7 +274,16 @@ public class ServiceDescriptionProvider implements ServiceDescription {
      */
     @Override
     public String getContentType() {
-        return null;
+        return this.contentType;
+    }
+
+    /**
+     * Specified the type of content used by the service.
+     *
+     * @param contentType The content type to set.
+     */
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
     /**
@@ -283,8 +322,11 @@ public class ServiceDescriptionProvider implements ServiceDescription {
         result = 31 * result + (this.version != null ? this.version.hashCode() : 0);
         result = 31 * result + (this.serviceHost != null ? this.serviceHost.hashCode() : 0);
         result = 31 * result + this.servicePort;
-        result = 31 * result + (this.protocol != null ? this.protocol.hashCode() : 0);
+        result = 31 * result + (this.serviceProtocol != null ? this.serviceProtocol.hashCode() : 0);
         result = 31 * result + (this.serviceURL != null ? this.serviceURL.hashCode() : 0);
+        result = 31 * result + (this.networkProtocol != null ? this.networkProtocol.hashCode() : 0);
+        result = 31 * result + (this.contentType != null ? this.contentType.hashCode() : 0);
+        result = 31 * result + (this.classifier != null ? this.classifier.hashCode() : 0);
         return result;
     }
 
@@ -304,9 +346,11 @@ public class ServiceDescriptionProvider implements ServiceDescription {
         if (this.serviceHost != null ? !this.serviceHost.equals(that.serviceHost) : that.serviceHost != null) return false;
         if (this.serviceId != null ? !this.serviceId.equals(that.serviceId) : that.serviceId != null) return false;
         if (this.version != null ? !this.version.equals(that.version) : that.version != null) return false;
-        if (this.protocol != null ? !this.protocol.equals(that.protocol) : that.protocol != null) return false;
+        if (this.serviceProtocol != null ? !this.serviceProtocol.equals(that.serviceProtocol) : that.serviceProtocol != null) return false;
         if (this.serviceURL != null ? !this.serviceURL.equals(that.serviceURL) : that.serviceURL != null) return false;
-
+        if (this.networkProtocol != null ? !this.networkProtocol.equals(that.networkProtocol) : that.networkProtocol != null) return false;
+        if (this.contentType != null ? !this.contentType.equals(that.contentType) : that.contentType != null) return false;
+        if (this.classifier != null ? !this.classifier.equals(that.classifier) : that.classifier != null) return false;
         return true;
     }
 }

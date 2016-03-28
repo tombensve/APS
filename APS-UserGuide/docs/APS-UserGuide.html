@@ -1980,7 +1980,7 @@
     </p>
     <blockquote>
       <p>
-        <em>errorHandler</em>        
+        <em>errorHandler</em> - The error handler to use.         
       </p>
     </blockquote>
     <p>
@@ -3067,6 +3067,129 @@
         <em>cause</em> - The cause of this exception.         
       </p>
     </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>JSONMapConv </strong>   [se.natusoft.osgi.aps.json.tools] {      
+    </p>
+    <p>
+      This converts between a Java Map and JSON. Do note that this of course uses this library to read and write JSON, but this specific public API only deals with Java and JSON as String or on/in a stream. <a href='p/' title=''>p/</a> This class becomes more useful when used from Groovy since the latter provides much nicer usage of data in Maps. Yes, I know about JSONSlurper and JSONBuilder in Groovy. Those however does not work with @CompileStatic. Maps does.      
+    </p>
+    <p>
+      <strong>public static Map&lt;String, Object&gt; jsonObjectToMap(String json) throws IOException</strong>      
+    </p>
+    <p>
+      This takes a String containing a JSON object and returns it as a Map.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>json</em> - The JSON content to convert to a Map.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static Map&lt;String, Object&gt; jsonObjectToMap(InputStream is) throws IOException</strong>      
+    </p>
+    <p>
+      This takes an InputStream containing a JSON object and returns it as a Map.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>is</em> - The InputStream to read.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public static String mapToJSONObject(Map&lt;String, Object&gt; map) throws IOException</strong>      
+    </p>
+    <p>
+      This takes a Map (as created by jsonObjectToMap(...)) and returns a JSON object.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>map</em> - The Map to convert to JSON.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static void mapToJSONObject(Map&lt;String, Object&gt; map, OutputStream os) throws IOException</strong>      
+    </p>
+    <p>
+      This takes a Map (as created by jsonObjectToMap(...)) and writes it as JSON to the specified OutputStream.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>map</em> - The Map to write as JSON.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>os</em> - The OutputStream to write to.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em>        
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
     <p>
       }      
     </p>
@@ -5629,7 +5752,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <H1>APSExternalProtocolExtender</H1>
     <p>
-      This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles <em>MANIFEST.MF</em> contains <code>APS-Externalizable: true</code> the service is made externally available. If the <em>MANIFEST.MF</em> contains <code>APS-Externalizable: false</code> however making the service externally available is forbidden. A specific service can also be registered containing an <em>aps-externalizable</em> property with value <em>true</em> to be externalizable. This overrides any other specification.      
+      This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles <em>MANIFEST.MF</em> contains <code>APS-Externalizable: true</code> the service is made externally available. If the <em>MANIFEST.MF</em> contains <code>APS-Externalizable: false</code> however making the service externally available is forbidden. A specific service can also be registered containing an <em>aps-externalizable</em> property with value <em>true</em> to be externalizable. It is also possible as an alternative to true/false specify a list of fully qualified service names to make only those services externally available. This overrides any other specification.      
     </p>
     <p>
       The exernal protocol extender also provides a configuration where services can be specified with their fully qualified name to be made externally available. If a bundle however have specifically specified false for the above manifest entry then the config entry will be ignored.      
@@ -5734,7 +5857,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       Returns all currently available services.      
     </p>
     <p>
-      <strong>public List&lt;APSExternallyCallable&gt; getCallables(String serviceName) throws RuntimeException</strong>      
+      <strong>public List&lt;APSExternallyCallable&gt; getCallables(String serviceName)</strong>      
     </p>
     <p>
       Returns all APSExternallyCallable for the named service object.      
@@ -5745,14 +5868,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <blockquote>
       <p>
         <em>serviceName</em> - The name of the service to get callables for.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>RuntimeException</em> - If the service is not available.         
       </p>
     </blockquote>
     <p>
@@ -6186,12 +6301,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
             
     </p>
     <p>
-      <strong>APSRESTCallable.HttpMethod httpMethod() default APSRESTCallable.HttpMethod.NONE</strong>      
-    </p>
-    <p>
-      This needs to be provided if you are providing a REST API using JSONREST protocol of the APSStreamedJSONRPCProtocolProvider bundle.      
-    </p>
-    <p>
       }      
     </p>
     <hr/>    <p>
@@ -6590,6 +6699,9 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       </p>
     </blockquote>
     <p>
+            
+    </p>
+    <p>
       }      
     </p>
     <hr/>    <p>
@@ -6601,6 +6713,32 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <p>
       The intention of a request.      
     </p>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>RPCExceptionConverter </strong>   [se.natusoft.osgi.aps.api.net.rpc.model] {      
+    </p>
+    <p>
+      An instance of this can be passed to RPCRequest to convert the cauth exception to an RPCError.      
+    </p>
+    <p>
+      <strong>RPCError convertException(Exception e)</strong>      
+    </p>
+    <p>
+      This should be called on any service exception to convert the exception to an RPCError.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>e</em> - The exception to convert.         
+      </p>
+    </blockquote>
     <p>
       }      
     </p>
@@ -6624,6 +6762,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <p>
       Returns an <em>RPCError</em> object if <code>isValid() == false</code>, <em>null</em> otherwise.      
+    </p>
+    <p>
+      <strong>RPCExceptionConverter getExceptionConverter()</strong>      
+    </p>
+    <p>
+      If an exception occurred during the request call, and this returns non null, then the returned converter should be called with the occurred exception to provide an RPCError.      
+    </p>
+    <p>
+      This allows for a specific protocol implementation to handle its own exceptions and provide an appropriate RPCError.      
     </p>
     <p>
       <strong>String getServiceQName()</strong>      
@@ -6654,6 +6801,12 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <p>
       A call id is something that is received with a request and passed back with the response to the request. Some RPC implementations will require this and some wont.      
+    </p>
+    <p>
+      <strong>RequestIntention getRequestIntention()</strong>      
+    </p>
+    <p>
+      Returns the intention of the request.      
     </p>
     <p>
       <strong>int getNumberOfParameters()</strong>      
@@ -7649,7 +7802,10 @@ The above empty lines are required due to a bug in iText used to render the PDF.
                 
     </p>
     <p>
-            
+      <strong>/* * * PROJECT *     Name *         APS APIs * *     Code Version *         1.0.0 * *     Description *         Provides the APIs for the application platform services. * * COPYRIGHTS *     Copyright (C) 2012 by Natusoft AB All rights reserved. * * LICENSE *     Apache 2.0 (Open Source) * *     Licensed under the Apache License, Version 2.0 (the "License")</strong>      
+    </p>
+    <p>
+      Use services under messaging instead!      
     </p>
     <p>
       }      
@@ -8139,19 +8295,61 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       This provides JSONRPC protocol. It provides both version 1.0 and 2.0 of the protocol. It requires a transport that uses it and services provided by aps-external-protocol-extender to be useful.      
     </p>
     <p>
-      JSONRPC version 1.0 protocol as described at <a href='http://json-rpc.org/wiki/specification' title=''>http://json-rpc.org/wiki/specification</a>.      
+      The URL format for all of these looks like this:      
+    </p>
+    <pre>
+      <code>
+    http(s)://host:port/apsrpc/{protocol}/{protocol version}/{service}[/{method}][?params=...]
+      </code>
+    </pre>
+    <p>
+      Where:      
     </p>
     <p>
-      JSONRPC version 2.0 protocol as describved at <a href='http://jsonrpc.org/spec.html' title=''>http://jsonrpc.org/spec.html</a>.      
+      <em>{protocol}</em> is one of the below described protocols.      
     </p>
     <p>
-      JSONHTTP version 1.0 which is not any standard protocol at all. It requires both service name and method name on the url, and in case of HTTP GET or DELETE also arguments as ?params=arg:...:arg where values are strings or primitives. For POST, and PUT a JSON array of values need to be written on the stream.      
+      <em>{protocol version}</em> is the version of the specified protocol.      
     </p>
     <p>
-      JSONREST version 1.0 extending JSONHTTP will make the http transport always map methods annotated with @RESTGET, @RESTPUT, @RESTPOST, and @RESTDELETE to the corresponding http methods. This also does not require a method to be specified on the URL, and will ignore any specified method.      
+      <em>{service}</em> is the name of the service to call. Safest is to use a fully qualified name, that is inlcuding package since that will make the service specification unique. It is however possible to only specify the name of the service in which case the first matching will be used.      
     </p>
     <p>
-      Personally I think that JSONRPC 2.0 is far more flexible than REST.      
+      <em>{method}</em> is the method of the service to call. In the case of JSONREST the method can be skipped and a method will be found based on the HTTP method used to make the call.      
+    </p>
+    <H2>JSONRPC version 1.0</H2>
+    <p>
+      This protocol is described at <a href='http://json-rpc.org/wiki/specification' title=''>http://json-rpc.org/wiki/specification</a>.      
+    </p>
+    <H2>JSONRPC version 2.0</H2>
+    <p>
+      This protocol is describved at <a href='http://jsonrpc.org/spec.html' title=''>http://jsonrpc.org/spec.html</a>.      
+    </p>
+    <H2>JSONHTTP version 1.0</H2>
+    <p>
+      This is not any standard protocol at all. It requires both service name and method name on the url, and in case of HTTP GET or DELETE also arguments as ?params=arg:...:arg where values are strings or primitives. For POST, and PUT a JSON array of values need to be written on the stream.      
+    </p>
+    <H2>JSONREST version 1.0</H2>
+    <p>
+      This provides a loose API of REST type. It will return HTTP error code on any failure. It has several options for calling. It is possible to specify both service and method to call, but if the method is omitted then a method will be deduced by the HTTP method used.      
+    </p>
+    <p>
+      For HTTP method POST methods starting with one of the following will be matched: <em>create</em>, <em>post</em>, <em>new</em>.      
+    </p>
+    <p>
+      For HTTP method GET methods starting with one of the following will be matched: <em>read</em>, <em>get</em>.      
+    </p>
+    <p>
+      For HTTP method PUT methods starting with one of the following will be matched: <em>update</em>, <em>put</em>, <em>set</em>, <em>write</em>.      
+    </p>
+    <p>
+      For HTTP method DELETE methods starting with one of the following will be matched: <em>delete</em>, <em>remove</em>.      
+    </p>
+    <p>
+      JSONREST actually extends JSONHTTP and inherits some of its features, like the <em>params=arg:...:arg</em> parameter. It however adds an own parameter feature: If a service method takes one Map<a href='String, String' title=''>String, String</a> as parameter, all specified HTTP GET parameters will be provided in this Map.      
+    </p>
+    <p>
+      <strong>Also note</strong> that for GET and DELETE '...?params=...' must be used to provide parameters to the call, with the above mentioned exception, while for POST and PUT JSON must be provided on the request stream.      
     </p>
     <H2>Examples</H2>
     <p>
@@ -8159,16 +8357,15 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <pre>
       <code>
-    curl --data '{"jsonrpc": "2.0", "method": "getPlatformDescription", "params": [], "id": 1}' http://localhost:8080/apsrpc/JSONRPC/2.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService 
+    curl --data '{"jsonrpc": "2.0", "method": "getPlatformDescription", "params": [], "id": 1}' http://localhost:8080/apsrpc/JSONRPC/2.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService
       </code>
     </pre>
     <p>
-      yields:      
+      yields      
     </p>
     <pre>
       <code>
     {"id": 1, "result": {"description": "My personal development environment.", "type": "Development", "identifier": "MyDev"}, "jsonrpc": "2.0"}
-        
       </code>
     </pre>
     <p>
@@ -8177,7 +8374,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <pre>
       <code>
     curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService/getPlatformDescription
-    
       </code>
     </pre>
     <p>
@@ -8186,7 +8382,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <pre>
       <code>
     {"description": "My personal development environment.", "type": "Development", "identifier": "MyDev"}
-       
       </code>
     </pre>
     <p>
@@ -8194,8 +8389,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     </p>
     <pre>
       <code>
-     curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/se.natusoft.osgi.aps.api.misc.session.APSSessionService/createSession\(Integer\)?params=5
-     
+    curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/se.natusoft.osgi.aps.api.misc.session.APSSessionService/createSession\(Integer\)?params=5
       </code>
     </pre>
     <p>
@@ -8204,14 +8398,24 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <pre>
       <code>
     {"id": "6d25d646-11fc-44c3-b74d-29b3d5c94920", "valid": true}
-    
       </code>
     </pre>
     <p>
       In this case we didn't just use <em>createSession</em> as method name, but <em>createSession(Integer)</em> though with parentheses escaped to not confuse the shell. This is because there is 2 variants of createSession: createSession(String, Integer) and createSession(Integer). If we don't specify clearly we might get the wrong one and in this case that happens and will fail due to missing second parameter. Also note the <em>params=5</em>. On get we cannot pass any data on the stream to the service, we can only pass parameters on the URL which is done by specifying url parameter <em>params</em> with a colon (:) separated list of parameters as value. In this case only String and primitives are supported for parameters.      
     </p>
     <p>
-      These examples only works if you have disabled the <em>requireAuthentication</em> configuration (network/rpc-http-transport).      
+      The following is also valid:      
+    </p>
+    <pre>
+      <code>
+    curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/APSPlatformService/getPlatformDescription
+      </code>
+    </pre>
+    <p>
+      Note that this is much shorter. It does not provide a fully qualified name for the APSPlatformService. This is OK. As long as the service name is unique even without package it will be found correctly. The odds of having 2 services with the same name in different packages are quite small so this is rather safe to do.      
+    </p>
+    <p>
+      <strong>Note:</strong> These examples only works if you have disabled the <em>requireAuthentication</em> configuration (network/rpc-http-transport).      
     </p>
     <H2>See also</H2>
     <p>
@@ -8288,7 +8492,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
             // read from response stream ...
         }
     })
-    
       </code>
     </pre>
     <H4>Read</H4>
@@ -8296,7 +8499,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       <code>
     APSTCPIPService tcpipSvc;
     ...
-    tcpipSvc.setStreamedRequestListener(new URI("tcp:localhost:9999"), this);
+    tcpipSvc.setStreamedRequestListener(new URI("tcp://localhost:9999"), this);
     ...
     void requestReceived(URI receivePoint, InputStream requestStream, OutputStream responseStream) {
         // Read request from reqStream ...
@@ -8340,7 +8543,6 @@ The above empty lines are required due to a bug in iText used to render the PDF.
         byte[] bytes = packet.getData();
         ...
     }
-    
       </code>
     </pre>
     <H1>APSAdminWeb</H1>
@@ -8657,7 +8859,7 @@ The above empty lines are required due to a bug in iText used to render the PDF.
       </li>
     </ul>
     <p>
-      <strong></strong><a href='http://www.gnu.org/licenses/gpl-2.0.html' title=''>GNU Public License version v2</a><strong></strong>      
+      <strong></strong><a href='http://www.apache.org/licenses/LICENSE-2.0.txt' title=''>Apache Software License version 2.0</a><strong></strong>      
     </p>
     <p>
       The following third party products are using this license:      
@@ -8665,7 +8867,78 @@ The above empty lines are required due to a bug in iText used to render the PDF.
     <ul>
       <li>
         <p>
-          <a href='http://code.google.com/p/markdown-doclet/' title=''>MarkdownDoclet-3.0-null</a>          
+          <a href='http://vaadin.com' title=''>vaadin-server-7.1.14</a>          
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href='http://vaadin.com' title=''>vaadin-client-compiled-7.1.14</a>          
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href='http://vaadin.com' title=''>vaadin-client-7.1.14</a>          
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href='http://vaadin.com' title=''>vaadin-push-7.1.14</a>          
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href='http://vaadin.com' title=''>vaadin-themes-7.1.14</a>          
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href='http://groovy-lang.org' title=''>groovy-all-2.4.5</a>          
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href='http://gpars.codehaus.org' title=''>gpars-1.2.0</a>          
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href='http://www.apache.org/licenses/LICENSE-2.0.txt' title=''>openjpa-all-2.2.0</a>          
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href='http://db.apache.org/derby/' title=''>derbyclient-10.9.1.0</a>          
+        </p>
+      </li>
+    </ul>
+    <p>
+      <strong></strong><a href='http://www.eclipse.org/legal/epl-v10.html' title=''>Eclipse Public License - v version 1.0</a><strong></strong>      
+    </p>
+    <p>
+      The following third party products are using this license:      
+    </p>
+    <ul>
+      <li>
+        <p>
+          <a href='http://www.eclipse.org/eclipselink' title=''>javax.persistence-2.0.0</a>          
+        </p>
+      </li>
+    </ul>
+    <p>
+      <strong></strong><a href='https://glassfish.dev.java.net/nonav/public/CDDL+GPL.html' title=''>CDDL + GPLv2 with classpath version exception</a><strong></strong>      
+    </p>
+    <p>
+      The following third party products are using this license:      
+    </p>
+    <ul>
+      <li>
+        <p>
+          <a href='http://servlet-spec.java.net' title=''>javax.servlet-api-3.0.1</a>          
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href='http://java.sun.com/javaee/6/docs/api/index.html' title=''>javaee-web-api-6.0</a>          
         </p>
       </li>
     </ul>

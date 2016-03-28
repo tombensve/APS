@@ -79,14 +79,14 @@
         <!--
             Dependency versions
         -->
-        <maven.bundle.plugin.version>2.3.6</maven.bundle.plugin.version>
+        <maven.bundle.plugin.version>3.0.1</maven.bundle.plugin.version>
         <vaadin.version>7.1.14</vaadin.version>
         <osgi.version>4.2.0</osgi.version>
         <mixin.plugin.version>0.1-alpha-34</mixin.plugin.version>
         <clm.version>2.1.6</clm.version>
         <ftpPlugin.version>1.0.1</ftpPlugin.version>
         <markdownDoc.version>1.4.2</markdownDoc.version>
-        <groovyVersion>2.4.4</groovyVersion>
+        <groovy.version>2.4.5</groovy.version>
     </properties>
 
     <!--
@@ -121,6 +121,67 @@
         <system>github</system>
         <url>https://github.com/tombensve/APS/issues</url>
     </issueManagement>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>se.natusoft.osgi.aps</groupId>
+                <artifactId>aps-apis</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>se.natusoft.osgi.aps</groupId>
+                <artifactId>aps-tools-lib</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>se.natusoft.osgi.aps</groupId>
+                <artifactId>aps-json-lib</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>se.natusoft.osgi.aps</groupId>
+                <artifactId>aps-web-tools</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>se.natusoft.osgi.aps</groupId>
+                <artifactId>aps-vaadin-web-tools</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy-all</artifactId>
+                <version>${groovy.version}</version>
+                <scope>compile</scope>
+                <classifier>indy</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>javax.persistence</artifactId>
+                <version>2.0.0</version>
+                <scope>compile</scope>
+            </dependency>
+
+            <!--
+                Test Dependencies.
+            -->
+            <dependency>
+                <groupId>se.natusoft.osgi.aps</groupId>
+                <artifactId>aps-osgi-test-tools</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>se.natusoft.osgi.aps</groupId>
+                <artifactId>aps-service-test-support</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+        </dependencies>
+
+    </dependencyManagement>
 
     <dependencies>
 
@@ -228,6 +289,69 @@
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>2.6</version>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>2.6</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>se.natusoft.tools.codelicmgr</groupId>
+                    <artifactId>CodeLicenseManager-maven-plugin</artifactId>
+                    <version>${clm.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>se.natusoft.tools.codelicmgr</groupId>
+                            <artifactId>CodeLicenseManager-licenses-common-opensource</artifactId>
+                            <version>${clm.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>se.natusoft.tools.codelicmgr</groupId>
+                            <artifactId>CodeLicenseManager-source-updater-slashstar-comment</artifactId>
+                            <version>${clm.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>se.natusoft.tools.codelicmgr</groupId>
+                            <artifactId>CodeLicenseManager-source-updater-html-xml</artifactId>
+                            <version>${clm.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+
+                <plugin>
+                    <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
+                    <artifactId>markdowndoc-maven-plugin</artifactId>
+                    <version>${markdownDoc.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>se.natusoft.maven.plugin</groupId>
+                    <artifactId>ftp-maven-plugin</artifactId>
+                    <version>${ftpPlugin.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.10.3</version>
+                    <configuration>
+                        <doclet>ch.raffael.doclets.pegdown.PegdownDoclet</doclet>
+                        <docletArtifact>
+                            <groupId>ch.raffael.pegdown-doclet</groupId>
+                            <artifactId>pegdown-doclet</artifactId>
+                            <version>1.2</version>
+                        </docletArtifact>
+                        <useStandardDocletOptions>true</useStandardDocletOptions>
+                    </configuration>
+                </plugin>
+
             </plugins>
 
         </pluginManagement>
@@ -280,15 +404,6 @@
             <plugin>
                 <groupId>se.natusoft.tools.codelicmgr</groupId>
                 <artifactId>CodeLicenseManager-maven-plugin</artifactId>
-                <version>${clm.version}</version>
-
-                <dependencies>
-                    <dependency>
-                        <groupId>se.natusoft.tools.codelicmgr</groupId>
-                        <artifactId>CodeLicenseManager-licenses-common-opensource</artifactId>
-                        <version>${clm.version}</version>
-                    </dependency>
-                </dependencies>
 
                 <executions>
                     <execution>
@@ -323,20 +438,6 @@
                                         </product>
                                     </licenseProducts>
                                 </license>
-                                <!--
-                                    This one is not available in a maven repository so it is included
-                                    under /lib. It is only used when building.
-                                -->
-                                <license>
-                                    <type>GPL</type>
-                                    <version>v2</version>
-                                    <licenseProducts>
-                                        <product>
-                                            <name>MarkdownDoclet-3.0</name>
-                                            <web>http://code.google.com/p/markdown-doclet/</web>
-                                        </product>
-                                    </licenseProducts>
-                                </license>
                             </thirdpartyLicenses>
 
                             <createLicensesMarkdown>true</createLicensesMarkdown>
@@ -357,6 +458,53 @@
     -->
     <profiles>
 
+        <profile>
+            <id>java-doc</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <doclet>ch.raffael.doclets.pegdown.PegdownDoclet</doclet>
+                            <docletArtifact>
+                                <groupId>ch.raffael.pegdown-doclet</groupId>
+                                <artifactId>pegdown-doclet</artifactId>
+                                <version>1.2</version>
+                            </docletArtifact>
+                            <useStandardDocletOptions>true</useStandardDocletOptions>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <phase>deploy</phase>
+                            </execution>
+                            <execution>
+                                <id>gendocs</id>
+                                <goals>
+                                    <goal>javadoc</goal>
+                                </goals>
+                                <phase>deploy</phase>
+                            </execution>
+                            <execution>
+                                <id>jar-javadoc</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <phase>deploy</phase>
+                                <configuration>
+                                    <attach>true</attach>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+
         <!--
             This generates documentation.
         -->
@@ -373,7 +521,6 @@
                     <plugin>
                         <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
                         <artifactId>markdowndoc-maven-plugin</artifactId>
-                        <version>${markdownDoc.version}</version>
 
                         <executions>
                             <execution>
@@ -486,23 +633,19 @@
 
                         <groupId>se.natusoft.tools.codelicmgr</groupId>
                         <artifactId>CodeLicenseManager-maven-plugin</artifactId>
-                        <version>${clm.version}</version>
 
                         <dependencies>
                             <dependency>
                                 <groupId>se.natusoft.tools.codelicmgr</groupId>
                                 <artifactId>CodeLicenseManager-licenses-common-opensource</artifactId>
-                                <version>${clm.version}</version>
                             </dependency>
                             <dependency>
                                 <groupId>se.natusoft.tools.codelicmgr</groupId>
                                 <artifactId>CodeLicenseManager-source-updater-slashstar-comment</artifactId>
-                                <version>${clm.version}</version>
                             </dependency>
                             <dependency>
                                 <groupId>se.natusoft.tools.codelicmgr</groupId>
                                 <artifactId>CodeLicenseManager-source-updater-html-xml</artifactId>
-                                <version>${clm.version}</version>
                             </dependency>
                         </dependencies>
 

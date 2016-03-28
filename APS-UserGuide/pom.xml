@@ -65,7 +65,6 @@
             <plugin>
                 <groupId>se.natusoft.tools.doc.markdowndoc</groupId>
                 <artifactId>markdowndoc-maven-plugin</artifactId>
-                <version>${markdownDoc.version}</version>
 
                 <executions>
                     <execution>
@@ -145,7 +144,6 @@
             <plugin>
                 <groupId>se.natusoft.maven.plugin</groupId>
                 <artifactId>ftp-maven-plugin</artifactId>
-                <version>${ftpPlugin.version}</version>
                 <executions>
                     <execution>
                         <id>upload</id>

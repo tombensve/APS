@@ -1,42 +1,42 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS JSON Library
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides a JSON parser and creator. Please note that this bundle has no dependencies to any
  *         other APS bundle! It can be used as is without APS in any Java application and OSGi container.
  *         The reason for this is that I do use it elsewhere and don't want to keep 2 different copies of
  *         the code. OSGi wise this is a library. All packages are exported and no activator nor services
  *         are provided.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2011-01-30: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.json;
 
@@ -55,7 +55,7 @@ import java.util.Set;
  *     |___ ({) __/_____ (string) ____ (:) ____ (value) _____\___ (}) ____|
  *     |           /                                        \             |
  *                 \__________________ (,) _________________/
- * 
+ *
  *
  * This is also the starting point.
  *
@@ -75,21 +75,21 @@ public class JSONObject extends JSONValue {
     //
 
     /** The object values. */
-    private Map<JSONString, JSONValue> properties = new HashMap<JSONString, JSONValue>();
+    private Map<JSONString, JSONValue> properties = new HashMap<>();
 
     //
     // Constructors
     //
 
     /**
-     * Creates a JSONObject instance for writing JSON output. 
+     * Creates a JSONObject instance for writing JSON output.
      */
     public JSONObject() {}
 
     /**
      * Creates a new JSONObject instance for reading JSON input or writing JSON output.
      *
-     * @param errorHandler
+     * @param errorHandler The error handler to use.
      */
     public JSONObject(JSONErrorHandler errorHandler) {
         super(errorHandler);
@@ -176,7 +176,7 @@ public class JSONObject extends JSONValue {
         c = reader.skipWhitespace(c);
         reader.assertChar(c, '{', "A JSON object must start with '{'!");
         c = reader.getChar();
-        
+
         boolean done = false;
         while (!done) {
             c = reader.skipWhitespace(c);
@@ -207,7 +207,7 @@ public class JSONObject extends JSONValue {
                 reader.assertChar(c, ",", "There must be a comma ',' after each name, value pair, or an '}' to end the object!");
                 c = reader.getChar();
             }
-        }       
+        }
     }
 
     /**
@@ -215,7 +215,7 @@ public class JSONObject extends JSONValue {
      *
      * @param writer The JSONWriter to write to.
      * @param compact Write json in compact format.
-     * 
+     *
      * @throws IOException
      */
     @Override

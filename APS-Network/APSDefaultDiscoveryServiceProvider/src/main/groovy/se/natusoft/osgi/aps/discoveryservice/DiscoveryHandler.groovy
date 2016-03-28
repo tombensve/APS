@@ -71,7 +71,7 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
         // then the whole startup process will hang forever, since the config service will never be started due
         // to this code never returning.
 
-        // The following noinspection is required due to a bug in IDEA!
+        // IDEA bug.
         //noinspection GroovyAccessibility
         this.executorService.submit(new LoggingRunnable(this.logger) {
             @Override
@@ -208,14 +208,13 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
         ServiceDescriptionProvider serviceDescription = new ServiceDescriptionProvider()
         byte headerByte = ReadWriteTools.fromBytes(serviceDescription, packet.data)
 
+        // Since this is a HashSet which only contains one copy of each entry, any previous entry have to be removed
+        // for a new entry to be added. So no matter if this is only a remove or an add we have to start with remove.
+        this.remoteServices.remove(serviceDescription)
+
         if (headerByte == HB_ADD) {
             serviceDescription.setLastUpdated(LocalDateTime.now())
-            // Since this is a HashSet which only contains one copy of each entry, any previous entry have to be removed
-            // for a new entry to be added.
-            this.remoteServices.remove(serviceDescription)
             this.remoteServices.add(serviceDescription)
-        } else {
-            this.remoteServices.remove(serviceDescription)
         }
     }
 
@@ -232,13 +231,14 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
         ServiceDescriptionProvider serviceDescription = new ServiceDescriptionProvider()
         ObjectInputStream ooStream = new ObjectInputStream(requestStream)
         byte headerByte = ReadWriteTools.readServiceDescription(serviceDescription, ooStream)
+
+        // Since this is a HashSet which only contains one copy of each entry, any previous entry have to be removed
+        // for a new entry to be added. So no matter if this is only a remove or an add we have to start with remove.
+        this.remoteServices.remove(serviceDescription)
+
         if (headerByte == HB_ADD) {
-            // Since this is a HashSet which only contains one copy of each entry, any previous entry have to be removed
-            // for a new entry to be added.
-            this.remoteServices.remove(serviceDescription)
+            serviceDescription.setLastUpdated(LocalDateTime.now())
             this.remoteServices.add(serviceDescription)
-        } else {
-            this.remoteServices.remove(serviceDescription)
         }
     }
 

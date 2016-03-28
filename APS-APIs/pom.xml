@@ -103,12 +103,13 @@
             se.natusoft.osgi.aps.api.misc.json;version="${project.version}",
             se.natusoft.osgi.aps.api.misc.json.service;version="${project.version}",
             se.natusoft.osgi.aps.api.misc.json.model;version="${project.version}",
+            se.natusoft.osgi.aps.api.misc.queue;version="${project.version}",
             se.natusoft.osgi.aps.api.misc.session;version="${project.version}",
             se.natusoft.osgi.aps.api.model.json;version="${project.version}",
             se.natusoft.osgi.aps.api.net.discovery.exception;version="${project.version}",
             se.natusoft.osgi.aps.api.net.discovery.model;version="${project.version}",
             se.natusoft.osgi.aps.api.net.discovery.service;version="${project.version}",
-            se.natusoft.osgi.aps.api.net.rpc.annotations;version="${project.version}",
+            <!-- se.natusoft.osgi.aps.api.net.rpc.annotations;version="${project.version}", -->
             se.natusoft.osgi.aps.api.net.rpc.errors;version="${project.version}",
             se.natusoft.osgi.aps.api.net.rpc.model;version="${project.version}",
             se.natusoft.osgi.aps.api.net.rpc.service;version="${project.version}",
@@ -175,7 +176,6 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>javax.persistence</artifactId>
-            <version>2.0.0</version>
             <scope>compile</scope>
         </dependency>
 
@@ -194,7 +194,6 @@
             -->
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
                 <configuration>
                     <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
@@ -225,7 +224,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.5</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>
@@ -261,17 +259,8 @@
                 </configuration>
             </plugin>
 
-            <!--
-                Deploy plugins
-            -->
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9</version>
-                <configuration>
-                    <docletPath>${project.basedir}/../lib/MarkdownDoclet-3-1.0.jar</docletPath>
-                    <doclet>com.visural.doclets.markdown.standard.Standard</doclet>
-                    <stylesheetfile>${project.basedir}/../css/apidocs.css</stylesheetfile>
-                </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -299,10 +288,13 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!--
+                Deploy plugins
+            -->
             <plugin>
                 <groupId>se.natusoft.maven.plugin</groupId>
                 <artifactId>ftp-maven-plugin</artifactId>
-                <version>${ftpPlugin.version}</version>
                 <executions>
                     <execution>
                         <id>upload</id>

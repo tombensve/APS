@@ -1,53 +1,53 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS External Protocol Extender
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         This does two things:
- *         
+ *
  *         1) Looks for "APS-Externalizable: true" MANIFEST.MF entry in deployed bundles and if found and bundle status is
  *         ACTIVE, analyzes the service API and creates an APSExternallyCallable wrapper for each service method and
  *         keeps them in memory until bundle state is no longer ACTIVE. In addition to the MANIFEST.MF entry it has
  *         a configuration of fully qualified service names that are matched against the bundles registered services
  *         for which an APSExternallyCallable wrapper will be created.
- *         
+ *
  *         2) Registers an APSExternalProtocolExtenderService making the APSExternallyCallable objects handled available
  *         to be called. Note that APSExternallyCallable is an interface extending java.util.concurrent.Callable.
  *         This service is used by other bundles making the service available remotely trough some protocol like
  *         JSON for example.
- *         
+ *
  *         This extender is a middleman making access to services very easy to expose using whatever protocol you want.
  *         Multiple protocol bundles using the APSExternalProtocolExtenderService can be deployed at the same time making
  *         services available through more than one protocol.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2012-01-02: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.externalprotocolextender.service;
 
@@ -81,12 +81,12 @@ public class ServiceReferenceToServiceRepresentationConverter implements Trivial
 
     /** The bundle context used to lookup services with. */
     private BundleContext bundleContext = null;
-    
+
     /** The trivial data bus we are a member of. */
     private TrivialDataBus bus = null;
 
     /** Saved copies of already parsed and created descriptions. */
-    private Map<Class, DataTypeDescription> classDescriptions = new HashMap<Class, DataTypeDescription>();
+    private Map<Class, DataTypeDescription> classDescriptions = new HashMap<>();
 
     //
     // Constructors
@@ -100,14 +100,14 @@ public class ServiceReferenceToServiceRepresentationConverter implements Trivial
     public ServiceReferenceToServiceRepresentationConverter(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
     }
-    
+
     //
     // Methods
     //
 
     /**
      * Updates an empty description with information form the specified class.
-     * 
+     *
      * @param dataDescription The description to update.
      * @param clazz The class to get information from.
      *
@@ -231,47 +231,50 @@ public class ServiceReferenceToServiceRepresentationConverter implements Trivial
 
         ServiceRepresentation serviceRep = null;
 
-        if (service.getClass().getInterfaces() != null && service.getClass().getInterfaces().length >= 1) {
-            String serviceAPIName = null;
-            Class serviceAPIClass = null;
+        try {
+            if (service.getClass().getInterfaces() != null && service.getClass().getInterfaces().length >= 1) {
+                String serviceAPIName = null;
+                Class serviceAPIClass = null;
 
-            for (Class svcAPI : service.getClass().getInterfaces()) {
-                if (svcAPI.getAnnotation(APSServiceAPI.class) != null) {
-                    serviceAPIName = svcAPI.getName();
-                    serviceAPIClass = svcAPI;
-                    break;
-                }
-            }
-
-            if (serviceAPIName == null) {
-                serviceAPIName = service.getClass().getInterfaces()[0].getName();
-                serviceAPIClass = service.getClass().getInterfaces()[0];
-            }
-
-            serviceRep = new ServiceRepresentation(serviceAPIName, serviceRef);
-            for (Method method : serviceAPIClass.getDeclaredMethods()) {
-                if (Modifier.isPublic(method.getModifiers())) {
-                    ServiceMethodCallable serviceMethodCallable =
-                            new ServiceMethodCallable(serviceRep.getName(), method, serviceRef, this.bundleContext, serviceRef.getBundle());
-
-                    serviceMethodCallable.setReturnDataDescription(createClassDescription(null, method.getReturnType()));
-
-                    int paramPos = 0;
-                    for (Class parameterType : method.getParameterTypes()) {
-                        ParameterDataTypeDescription parameterDataDescription = new ParameterDataTypeDescription();
-                        parameterDataDescription.setPosition(paramPos++);
-                        createClassDescription(parameterDataDescription, parameterType);
-                        parameterDataDescription.setDataTypeClass(parameterType);
-
-                        serviceMethodCallable.addParamterDataDescription(parameterDataDescription);
+                for (Class svcAPI : service.getClass().getInterfaces()) {
+                    if (svcAPI.getAnnotation(APSServiceAPI.class) != null) {
+                        serviceAPIName = svcAPI.getName();
+                        serviceAPIClass = svcAPI;
+                        break;
                     }
+                }
 
-                    serviceRep.addMethodCallable(method.getName(), serviceMethodCallable);
+                if (serviceAPIName == null) {
+                    serviceAPIName = service.getClass().getInterfaces()[0].getName();
+                    serviceAPIClass = service.getClass().getInterfaces()[0];
+                }
+
+                serviceRep = new ServiceRepresentation(serviceAPIName, serviceRef);
+                for (Method method : serviceAPIClass.getDeclaredMethods()) {
+                    if (Modifier.isPublic(method.getModifiers())) {
+                        ServiceMethodCallable serviceMethodCallable =
+                                new ServiceMethodCallable(serviceRep.getName(), method, serviceRef, this.bundleContext, serviceRef.getBundle());
+
+                        serviceMethodCallable.setReturnDataDescription(createClassDescription(null, method.getReturnType()));
+
+                        int paramPos = 0;
+                        for (Class parameterType : method.getParameterTypes()) {
+                            ParameterDataTypeDescription parameterDataDescription = new ParameterDataTypeDescription();
+                            parameterDataDescription.setPosition(paramPos++);
+                            createClassDescription(parameterDataDescription, parameterType);
+                            parameterDataDescription.setDataTypeClass(parameterType);
+
+                            serviceMethodCallable.addParamterDataDescription(parameterDataDescription);
+                        }
+
+                        serviceRep.addMethodCallable(method.getName(), serviceMethodCallable);
+                    }
                 }
             }
         }
-
-        this.bundleContext.ungetService(serviceRef);
+        finally {
+            this.bundleContext.ungetService(serviceRef);
+        }
 
         return serviceRep;
     }
@@ -282,6 +285,7 @@ public class ServiceReferenceToServiceRepresentationConverter implements Trivial
      * @param serviceEventType The type of the event.
      * @param data The data of the event.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void dataReceived(ServiceDataReason serviceEventType, Object data) {
         if (data instanceof ServiceReference) {

@@ -1,5 +1,5 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS APIs
@@ -32,7 +32,7 @@
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2012-01-01: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.api.external.extprotocolsvc;
 
@@ -62,15 +62,13 @@ public interface APSExternalProtocolService {
      * Returns all currently available services.
      */
     public Set<String> getAvailableServices();
-    
+
     /**
      * Returns all APSExternallyCallable for the named service object.
      *
      * @param serviceName The name of the service to get callables for.
-     *
-     * @throws RuntimeException If the service is not available.
      */
-    public List<APSExternallyCallable> getCallables(String serviceName) throws RuntimeException;
+    public List<APSExternallyCallable> getCallables(String serviceName);
 
     /**
      * Returns the names of all available functions of the specified service.
@@ -78,7 +76,7 @@ public interface APSExternalProtocolService {
      * @param serviceName The service to get functions for.
      */
     public Set<String> getAvailableServiceFunctionNames(String serviceName);
-    
+
     /**
      * Gets an APSExternallyCallable for a specified service name and service function name.
      *
@@ -118,7 +116,7 @@ public interface APSExternalProtocolService {
      * @return Any matching protocol or null if nothing matches.
      */
     public StreamedRPCProtocol getStreamedProtocolByNameAndVersion(String name, String version);
-    
+
     /**
      * Add a listener for externally available services.
      *

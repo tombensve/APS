@@ -1,59 +1,60 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS External Protocol Extender
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         This does two things:
- *         
+ *
  *         1) Looks for "APS-Externalizable: true" MANIFEST.MF entry in deployed bundles and if found and bundle status is
  *         ACTIVE, analyzes the service API and creates an APSExternallyCallable wrapper for each service method and
  *         keeps them in memory until bundle state is no longer ACTIVE. In addition to the MANIFEST.MF entry it has
  *         a configuration of fully qualified service names that are matched against the bundles registered services
  *         for which an APSExternallyCallable wrapper will be created.
- *         
+ *
  *         2) Registers an APSExternalProtocolExtenderService making the APSExternallyCallable objects handled available
  *         to be called. Note that APSExternallyCallable is an interface extending java.util.concurrent.Callable.
  *         This service is used by other bundles making the service available remotely trough some protocol like
  *         JSON for example.
- *         
+ *
  *         This extender is a middleman making access to services very easy to expose using whatever protocol you want.
  *         Multiple protocol bundles using the APSExternalProtocolExtenderService can be deployed at the same time making
  *         services available through more than one protocol.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2012-01-02: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.externalprotocolextender.service;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import se.natusoft.docutations.NotNull;
 import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSExternallyCallable;
 import se.natusoft.osgi.aps.api.external.model.type.DataTypeDescription;
 import se.natusoft.osgi.aps.api.external.model.type.ParameterDataTypeDescription;
@@ -71,19 +72,19 @@ public class ServiceMethodCallable implements APSExternallyCallable {
     //
     // Private Members
     //
-    
+
     /** The name of the service this method belongs to. */
     private String serviceName = null;
-    
+
     /** The method to call. */
     private Method method = null;
-    
+
     /** The reference to the service to call. */
     private ServiceReference serviceReference = null;
-    
+
     /** A bundle context to lookup service instance with. */
     private BundleContext bundleContext = null;
-    
+
     /** Description of return data. */
     private DataTypeDescription returnDataDescription = null;
 
@@ -92,7 +93,7 @@ public class ServiceMethodCallable implements APSExternallyCallable {
 
     /** The bundle the service this callable method belongs to. */
     private Bundle serviceBundle;
-    
+
     //
     // Constructors
     //
@@ -106,7 +107,8 @@ public class ServiceMethodCallable implements APSExternallyCallable {
      * @param bundleContext The bundle context to lookup service instance with.
      * @param serviceBundle The bundle the service of this callable method belongs to.
      */
-    public ServiceMethodCallable(String serviceName, Method method, ServiceReference serviceReference, BundleContext bundleContext, Bundle serviceBundle) {
+    public ServiceMethodCallable(@NotNull String serviceName, @NotNull Method method, @NotNull ServiceReference serviceReference,
+                                 @NotNull BundleContext bundleContext, @NotNull Bundle serviceBundle) {
         this.serviceName = serviceName;
         this.method = method;
         this.serviceReference = serviceReference;
@@ -119,7 +121,8 @@ public class ServiceMethodCallable implements APSExternallyCallable {
      *
      * @param callable The APSExternallyCallable to copy.
      */
-    public ServiceMethodCallable(ServiceMethodCallable callable) {
+    public ServiceMethodCallable(@NotNull ServiceMethodCallable callable) {
+        if (callable == null) throw new NullPointerException("Can't copy a null callable!");
         this.serviceName = callable.serviceName;
         this.method = callable.method;
         this.serviceReference = callable.serviceReference;
@@ -132,11 +135,21 @@ public class ServiceMethodCallable implements APSExternallyCallable {
     //
     // Methods
     //
-    
+
+    /**
+     * Provides another way of copying a ServiceMethodCallable.
+     *
+     * @param smc The ServiceMethodCallable to copy.
+     */
+    public static ServiceMethodCallable copy(@NotNull ServiceMethodCallable smc) {
+        return new ServiceMethodCallable(smc);
+    }
+
     /**
      * @return The name of the service this callable is part of.
      */
     @Override
+    @NotNull
     public String getServiceName() {
         return this.serviceName;
     }
@@ -145,13 +158,14 @@ public class ServiceMethodCallable implements APSExternallyCallable {
      * @return The name of the service function this callable represents.
      */
     @Override
+    @NotNull
     public String getServiceFunctionName() {
         return this.method != null ? this.method.getName() : null;
     }
 
     /**
      * Sets a description of the return data.
-     * 
+     *
      * @param returnDataDescription The return data description to set.
      */
     public void setReturnDataDescription(DataTypeDescription returnDataDescription) {
@@ -173,7 +187,7 @@ public class ServiceMethodCallable implements APSExternallyCallable {
     public void addParamterDataDescription(ParameterDataTypeDescription parameterDataDescription) {
         this.parameterDataDescriptions.add(parameterDataDescription);
     }
-    
+
     /**
      * @return A description of each parameter type.
      */
@@ -186,6 +200,7 @@ public class ServiceMethodCallable implements APSExternallyCallable {
      * @return The bundle the service of this callable method belongs to.
      */
     @Override
+    @NotNull
     public Bundle getServiceBundle() {
         return this.serviceBundle;
     }
@@ -194,6 +209,7 @@ public class ServiceMethodCallable implements APSExternallyCallable {
      * Returns the class of the service implementation.
      */
     @Override
+    @NotNull
     public Class getServiceClass() {
         Object service = this.bundleContext.getService(this.serviceReference);
         Class svcClass = service.getClass();

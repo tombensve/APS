@@ -1,5 +1,5 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS APIs
@@ -32,7 +32,7 @@
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2014-03-08: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.api.net.rpc.annotations;
 
@@ -44,16 +44,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This is specified on methods that can be called remotely. It can be used purely for documentation,
- * but in case of a REST API using the JSONREST protocol part of the APSStreamedJSONRPCProtocolProvider
- * bundle this is needed and the REST method that applies must be specified.
+ * This marks a method as a web service of REST type. This is purely documentative!!
+ *
+ * **Do note** that web "serviceability" is provided through cooperation of:
+ *
+ * - _aps-external-protocol-extender_: This picks up and manages published services that is specified as
+ *   "APS-Externalizable". Any method annotated with this annotation is automatically made "externalizable".
+ *   This bundle makes use of the OSGi extender pattern.
+ *
+ * - _aps-streamed-json-rpc-protocol-provider_: Provides _StreamedRPCProtocol_ implementations for Simple JSON, JSON REST,
+ *   JSON RPC 1.0 (not completely correct!), JSON RPC 2.0.
+ *
+ * - _aps-ext-protocol-http-transport-provider_: Provides http transport and makes use of the above 2 bundles to do calls.
+ *
  */
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @Target(ElementType.METHOD)
-public @interface APSRemoteService {
-    /**
-     * This needs to be provided if you are providing a REST API using JSONREST protocol of the
-     * APSStreamedJSONRPCProtocolProvider bundle.
-     */
-    APSRESTCallable.HttpMethod httpMethod() default APSRESTCallable.HttpMethod.NONE;
-}
+public @interface APSWebService {}

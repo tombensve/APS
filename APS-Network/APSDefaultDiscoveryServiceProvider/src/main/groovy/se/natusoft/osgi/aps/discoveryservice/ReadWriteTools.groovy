@@ -44,8 +44,11 @@ class ReadWriteTools {
         ooStream.writeUTF(serviceDescription.serviceHost)
         ooStream.writeUTF(serviceDescription.serviceId)
         ooStream.writeInt(serviceDescription.servicePort)
-        ooStream.writeObject(serviceDescription.serviceProtocol)
+        ooStream.writeUTF(serviceDescription.networkProtocol)
+        ooStream.writeUTF(serviceDescription.serviceProtocol)
         ooStream.writeUTF(serviceDescription.serviceURL)
+        ooStream.writeUTF(serviceDescription.classifier)
+        ooStream.writeUTF(serviceDescription.contentType)
         ooStream.writeUTF(serviceDescription.version)
     }
 
@@ -85,12 +88,15 @@ class ReadWriteTools {
             serviceDescription.serviceHost = ooStream.readUTF()
             serviceDescription.serviceId = ooStream.readUTF()
             serviceDescription.servicePort = ooStream.readInt()
-            serviceDescription.serviceProtocol = ooStream.readObject() as ServiceDescription.Protocol
+            serviceDescription.networkProtocol == ooStream.readUTF()
+            serviceDescription.serviceProtocol = ooStream.readUTF()
             serviceDescription.serviceURL = ooStream.readUTF()
+            serviceDescription.classifier = ooStream.readUTF()
+            serviceDescription.contentType = ooStream.readUTF()
             serviceDescription.version = ooStream.readUTF()
 
             return headerByte
         }
-        throw new IOException("Unsupported version (${version}) received!");
+        throw new IOException("Unsupported version (${version}) received!")
     }
 }

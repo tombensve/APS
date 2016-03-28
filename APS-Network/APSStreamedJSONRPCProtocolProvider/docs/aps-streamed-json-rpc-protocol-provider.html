@@ -11,19 +11,61 @@
       This provides JSONRPC protocol. It provides both version 1.0 and 2.0 of the protocol. It requires a transport that uses it and services provided by aps-external-protocol-extender to be useful.      
     </p>
     <p>
-      JSONRPC version 1.0 protocol as described at <a href='http://json-rpc.org/wiki/specification' title=''>http://json-rpc.org/wiki/specification</a>.      
+      The URL format for all of these looks like this:      
+    </p>
+    <pre>
+      <code>
+    http(s)://host:port/apsrpc/{protocol}/{protocol version}/{service}[/{method}][?params=...]
+      </code>
+    </pre>
+    <p>
+      Where:      
     </p>
     <p>
-      JSONRPC version 2.0 protocol as describved at <a href='http://jsonrpc.org/spec.html' title=''>http://jsonrpc.org/spec.html</a>.      
+      <em>{protocol}</em> is one of the below described protocols.      
     </p>
     <p>
-      JSONHTTP version 1.0 which is not any standard protocol at all. It requires both service name and method name on the url, and in case of HTTP GET or DELETE also arguments as ?params=arg:...:arg where values are strings or primitives. For POST, and PUT a JSON array of values need to be written on the stream.      
+      <em>{protocol version}</em> is the version of the specified protocol.      
     </p>
     <p>
-      JSONREST version 1.0 extending JSONHTTP will make the http transport always map methods annotated with @RESTGET, @RESTPUT, @RESTPOST, and @RESTDELETE to the corresponding http methods. This also does not require a method to be specified on the URL, and will ignore any specified method.      
+      <em>{service}</em> is the name of the service to call. Safest is to use a fully qualified name, that is inlcuding package since that will make the service specification unique. It is however possible to only specify the name of the service in which case the first matching will be used.      
     </p>
     <p>
-      Personally I think that JSONRPC 2.0 is far more flexible than REST.      
+      <em>{method}</em> is the method of the service to call. In the case of JSONREST the method can be skipped and a method will be found based on the HTTP method used to make the call.      
+    </p>
+    <H2>JSONRPC version 1.0</H2>
+    <p>
+      This protocol is described at <a href='http://json-rpc.org/wiki/specification' title=''>http://json-rpc.org/wiki/specification</a>.      
+    </p>
+    <H2>JSONRPC version 2.0</H2>
+    <p>
+      This protocol is describved at <a href='http://jsonrpc.org/spec.html' title=''>http://jsonrpc.org/spec.html</a>.      
+    </p>
+    <H2>JSONHTTP version 1.0</H2>
+    <p>
+      This is not any standard protocol at all. It requires both service name and method name on the url, and in case of HTTP GET or DELETE also arguments as ?params=arg:...:arg where values are strings or primitives. For POST, and PUT a JSON array of values need to be written on the stream.      
+    </p>
+    <H2>JSONREST version 1.0</H2>
+    <p>
+      This provides a loose API of REST type. It will return HTTP error code on any failure. It has several options for calling. It is possible to specify both service and method to call, but if the method is omitted then a method will be deduced by the HTTP method used.      
+    </p>
+    <p>
+      For HTTP method POST methods starting with one of the following will be matched: <em>create</em>, <em>post</em>, <em>new</em>.      
+    </p>
+    <p>
+      For HTTP method GET methods starting with one of the following will be matched: <em>read</em>, <em>get</em>.      
+    </p>
+    <p>
+      For HTTP method PUT methods starting with one of the following will be matched: <em>update</em>, <em>put</em>, <em>set</em>, <em>write</em>.      
+    </p>
+    <p>
+      For HTTP method DELETE methods starting with one of the following will be matched: <em>delete</em>, <em>remove</em>.      
+    </p>
+    <p>
+      JSONREST actually extends JSONHTTP and inherits some of its features, like the <em>params=arg:...:arg</em> parameter. It however adds an own parameter feature: If a service method takes one Map<a href='String, String' title=''>String, String</a> as parameter, all specified HTTP GET parameters will be provided in this Map.      
+    </p>
+    <p>
+      <strong>Also note</strong> that for GET and DELETE '...?params=...' must be used to provide parameters to the call, with the above mentioned exception, while for POST and PUT JSON must be provided on the request stream.      
     </p>
     <H2>Examples</H2>
     <p>
@@ -31,16 +73,15 @@
     </p>
     <pre>
       <code>
-    curl --data '{"jsonrpc": "2.0", "method": "getPlatformDescription", "params": [], "id": 1}' http://localhost:8080/apsrpc/JSONRPC/2.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService 
+    curl --data '{"jsonrpc": "2.0", "method": "getPlatformDescription", "params": [], "id": 1}' http://localhost:8080/apsrpc/JSONRPC/2.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService
       </code>
     </pre>
     <p>
-      yields:      
+      yields      
     </p>
     <pre>
       <code>
     {"id": 1, "result": {"description": "My personal development environment.", "type": "Development", "identifier": "MyDev"}, "jsonrpc": "2.0"}
-        
       </code>
     </pre>
     <p>
@@ -49,7 +90,6 @@
     <pre>
       <code>
     curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/se.natusoft.osgi.aps.api.core.platform.service.APSPlatformService/getPlatformDescription
-    
       </code>
     </pre>
     <p>
@@ -58,7 +98,6 @@
     <pre>
       <code>
     {"description": "My personal development environment.", "type": "Development", "identifier": "MyDev"}
-       
       </code>
     </pre>
     <p>
@@ -66,8 +105,7 @@
     </p>
     <pre>
       <code>
-     curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/se.natusoft.osgi.aps.api.misc.session.APSSessionService/createSession\(Integer\)?params=5
-     
+    curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/se.natusoft.osgi.aps.api.misc.session.APSSessionService/createSession\(Integer\)?params=5
       </code>
     </pre>
     <p>
@@ -76,14 +114,24 @@
     <pre>
       <code>
     {"id": "6d25d646-11fc-44c3-b74d-29b3d5c94920", "valid": true}
-    
       </code>
     </pre>
     <p>
       In this case we didn't just use <em>createSession</em> as method name, but <em>createSession(Integer)</em> though with parentheses escaped to not confuse the shell. This is because there is 2 variants of createSession: createSession(String, Integer) and createSession(Integer). If we don't specify clearly we might get the wrong one and in this case that happens and will fail due to missing second parameter. Also note the <em>params=5</em>. On get we cannot pass any data on the stream to the service, we can only pass parameters on the URL which is done by specifying url parameter <em>params</em> with a colon (:) separated list of parameters as value. In this case only String and primitives are supported for parameters.      
     </p>
     <p>
-      These examples only works if you have disabled the <em>requireAuthentication</em> configuration (network/rpc-http-transport).      
+      The following is also valid:      
+    </p>
+    <pre>
+      <code>
+    curl --get http://localhost:8080/apsrpc/JSONHTTP/1.0/APSPlatformService/getPlatformDescription
+      </code>
+    </pre>
+    <p>
+      Note that this is much shorter. It does not provide a fully qualified name for the APSPlatformService. This is OK. As long as the service name is unique even without package it will be found correctly. The odds of having 2 services with the same name in different packages are quite small so this is rather safe to do.      
+    </p>
+    <p>
+      <strong>Note:</strong> These examples only works if you have disabled the <em>requireAuthentication</em> configuration (network/rpc-http-transport).      
     </p>
     <H2>See also</H2>
     <p>

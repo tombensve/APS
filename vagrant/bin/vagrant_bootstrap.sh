@@ -12,9 +12,7 @@ installJava() {
     add-apt-repository ppa:webupd8team/java
     apt-get -y -q update
     echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
-    echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
     apt-get -y -q install oracle-java8-installer
-    apt-get -y -q install oracle-java7-installer
     update-java-alternatives -s java-8-oracle
 }
 
@@ -50,6 +48,9 @@ installKaraf() {
 
     ln -s /vagrant/vagrant/filesystems/${node}/.apsHome
 
+    # Make sure we have debug even if we restart and forget the "debug" param.
+    sudo -u vagrant -i echo "export KARAF_DEBUG=true" >> /home/vagrant/.profile
+
     # Now we can start the server again, and we start it as user "vagrant".
     sudo -u vagrant -i /home/vagrant/server/apache-karaf/bin/start debug
 }
@@ -69,3 +70,4 @@ export http_proxy="http://192.168.1.17:9999/"
 updateSystem
 installJava
 installKaraf
+setupBin

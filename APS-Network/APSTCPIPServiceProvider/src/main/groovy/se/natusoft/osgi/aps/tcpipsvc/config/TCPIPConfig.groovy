@@ -67,10 +67,6 @@ class TCPIPConfig extends APSConfig {
             defaultValue = [@APSDefaultValue(value = "10000")])
     public APSConfigValue byteBufferSize
 
-    @APSConfigItemDescription(description = "When selected reconnects will be done on config updates.", environmentSpecific = true,
-    isBoolean = true, defaultValue = @APSDefaultValue(value = "true")) // Not entirely sure which of true or false is best default!
-    public APSConfigValue respondToConfigUpdates
-
     @APSConfigItemDescription(description = "Expert configuration. This means, hands off if you do not know what you are doing!")
     public ExpertConfig expert
 

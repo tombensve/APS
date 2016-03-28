@@ -1,41 +1,43 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Streamed JSONRPC Protocol Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides JSONRPC implementations for version 1.0 and 2.0.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2012-01-08: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.jsonrpc.protocols;
 
+import se.natusoft.docutations.NotNull;
+import se.natusoft.docutations.Nullable;
 import se.natusoft.osgi.aps.api.misc.json.JSONEOFException;
 import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONArray;
@@ -45,17 +47,19 @@ import se.natusoft.osgi.aps.api.net.rpc.errors.ErrorType;
 import se.natusoft.osgi.aps.api.net.rpc.errors.HTTPError;
 import se.natusoft.osgi.aps.api.net.rpc.errors.RPCError;
 import se.natusoft.osgi.aps.api.net.rpc.exceptions.RequestedParamNotAvailableException;
+import se.natusoft.osgi.aps.api.net.rpc.model.RPCExceptionConverter;
 import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;
 import se.natusoft.osgi.aps.api.net.rpc.model.RequestIntention;
 import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
 import se.natusoft.osgi.aps.tools.APSLogger;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import static javax.servlet.http.HttpServletResponse.*;
 
 /**
  * Implements a plain REST protocol.
@@ -107,38 +111,35 @@ public class JSONHTTP implements StreamedRPCProtocol {
      * @return The parsed requests.
      * @throws java.io.IOException on IO failure.
      */
+    @SuppressWarnings("Duplicates")
     @Override
     public List<RPCRequest> parseRequests(String serviceQName, Class serviceClass, String method, InputStream requestStream,
                                           RequestIntention requestIntention) throws IOException {
+
         List<RPCRequest> requests = new LinkedList<>();
 
-        while (true) {
+        while (true) try {
+            // Read the JSON request
+            ReqJSONRESTErrorHandler errorHandler = new ReqJSONRESTErrorHandler();
+            JSONArray jsonReq;
+            JSONValue jsonReqValue;
             try {
-                // Read the JSON request
-                ReqJSONRESTErrorHandler errorHandler = new ReqJSONRESTErrorHandler();
-                JSONArray jsonReq = null;
-                JSONValue jsonReqValue = null;
-                try {
-                    jsonReqValue = this.jsonService.readJSON(requestStream, errorHandler);
-                    jsonReq = (JSONArray)jsonReqValue;
-                }
-                catch (JSONEOFException eofe) {
-                    break;
-                }
-                catch (JSONParseException jpe) {
-                    throw new JSONRESTError(ErrorType.PARSE_ERROR, 400, "Bad JSON passed!", null, jpe);
-                }
-                catch (ClassCastException cce) {
-                    throw new JSONRESTError(ErrorType.INVALID_PARAMS, 400, "An array of JSON values/objects are required!", null, cce);
-                }
+                jsonReqValue = this.jsonService.readJSON(requestStream, errorHandler);
+                jsonReq = (JSONArray) jsonReqValue;
+            } catch (JSONEOFException eofe) {
+                break; // <--- This is where we leave the loop!
+            } catch (JSONParseException jpe) {
+                throw new JSONHTTPError(ErrorType.PARSE_ERROR, SC_BAD_REQUEST, "Bad JSON passed!", null, jpe);
+            } catch (ClassCastException cce) {
+                throw new JSONHTTPError(ErrorType.INVALID_PARAMS, SC_BAD_REQUEST, "An array of JSON values/objects are required!",
+                        null, cce);
+            }
 
-                JSONRESTRequest req = new JSONRESTRequest(serviceQName, method, jsonReq.getAsList(), null);
-                requests.add(req);
-            }
-            catch (JSONRESTError error) {
-                JSONRESTRequest req = new JSONRESTRequest(serviceQName, method, error);
-                requests.add(req);
-            }
+            JSONRPCRequest req = new JSONRPCRequest(serviceQName, method, jsonReq.getAsList(), null, requestIntention);
+            requests.add(req);
+        } catch (JSONHTTPError error) {
+            JSONRPCRequest req = new JSONRPCRequest(serviceQName, method, error);
+            requests.add(req);
         }
 
         return requests;
@@ -156,10 +157,12 @@ public class JSONHTTP implements StreamedRPCProtocol {
      * @return The parsed requests.
      * @throws java.io.IOException on IO failure.
      */
+    @SuppressWarnings("Duplicates")
     @Override
     public RPCRequest parseRequest(String serviceQName, Class serviceClass, String method, Map<String, String> parameters,
                                    RequestIntention requestIntention) throws IOException {
-        RPCRequest request = null;
+
+        RPCRequest request;
 
         try {
             List<String> params = new LinkedList<>();
@@ -177,15 +180,15 @@ public class JSONHTTP implements StreamedRPCProtocol {
                         sb.append(providedParam);
                         comma = ", ";
                     }
-                    throw new JSONRESTError(ErrorType.INVALID_PARAMS, 400, "parameter 'params' where not provided but the " +
+                    throw new JSONHTTPError(ErrorType.INVALID_PARAMS, SC_BAD_REQUEST, "parameter 'params' where not provided but the " +
                             "following were: " + sb.toString() + "!", null, null);
                 }
             }
 
-            request = new JSONRESTRequest(serviceQName, method, null, params);
+            request = new JSONRPCRequest(serviceQName, method, null, params, requestIntention);
         }
-        catch (JSONRESTError error) {
-            request = new JSONRESTRequest(serviceQName, method, error);
+        catch (JSONHTTPError error) {
+            request = new JSONRPCRequest(serviceQName, method, error);
         }
 
         return request;
@@ -198,6 +201,7 @@ public class JSONHTTP implements StreamedRPCProtocol {
      * @param request        The request this is a response to.
      * @param responseStream The OutputStream to write the response to.
      */
+    @SuppressWarnings("PointlessBooleanExpression") // No, its is actually not pointless!
     @Override
     public void writeResponse(Object result, RPCRequest request, OutputStream responseStream) throws IOException {
         this.jsonService.writeJSON(responseStream, this.jsonService.javaToJSON(result), !debug);
@@ -275,49 +279,49 @@ public class JSONHTTP implements StreamedRPCProtocol {
 
         switch (errorType) {
             case INTERNAL_ERROR:
-                httpStatusCode = HttpServletResponse.SC_BAD_REQUEST;
+                httpStatusCode = SC_BAD_REQUEST;
                 message = "[Protocol error!] " + message;
                 break;
 
             case INVALID_PARAMS:
-                httpStatusCode = HttpServletResponse.SC_BAD_REQUEST;
+                httpStatusCode = SC_BAD_REQUEST;
                 message = "[Invalid parameters!] " + message;
                 break;
 
             case INVALID_REQUEST:
-                httpStatusCode = HttpServletResponse.SC_BAD_REQUEST;
+                httpStatusCode = SC_BAD_REQUEST;
                 break;
 
             case METHOD_NOT_FOUND:
-                httpStatusCode = HttpServletResponse.SC_NOT_FOUND;
+                httpStatusCode = SC_NOT_FOUND;
                 break;
 
             case PARSE_ERROR:
-                httpStatusCode = HttpServletResponse.SC_BAD_REQUEST;
+                httpStatusCode = SC_BAD_REQUEST;
                 break;
 
             case SERVICE_NOT_FOUND:
-                httpStatusCode = HttpServletResponse.SC_SERVICE_UNAVAILABLE;
+                httpStatusCode = SC_SERVICE_UNAVAILABLE;
                 break;
 
             case SERVER_ERROR:
-                httpStatusCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                httpStatusCode = SC_INTERNAL_SERVER_ERROR;
                 break;
 
             case AUTHORIZATION_REQUIRED:
-                httpStatusCode = HttpServletResponse.SC_UNAUTHORIZED;
+                httpStatusCode = SC_UNAUTHORIZED;
                 message = "[Authorization is required!] " + message;
                 break;
 
             case BAD_AUTHORIZATION:
-                httpStatusCode = HttpServletResponse.SC_UNAUTHORIZED;
+                httpStatusCode = SC_UNAUTHORIZED;
                 break;
 
             default:
-                httpStatusCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                httpStatusCode = SC_INTERNAL_SERVER_ERROR;
         }
 
-        return new JSONRESTError(errorType, httpStatusCode, message, optionalData, cause);
+        return new JSONHTTPError(errorType, httpStatusCode, message, optionalData, cause);
     }
 
     //
@@ -383,7 +387,7 @@ public class JSONHTTP implements StreamedRPCProtocol {
     /**
      * The RPCRequest implementation to return from parseRequests.
      */
-    protected class JSONRESTRequest implements RPCRequest {
+    protected class JSONRPCRequest implements RPCRequest {
         //
         // Private Members
         //
@@ -404,6 +408,9 @@ public class JSONHTTP implements StreamedRPCProtocol {
         /** An error object when request parsing fails. */
         private HTTPError error;
 
+        /** The intention with the call. */
+        private  RequestIntention requestIntention;
+
         //
         // Constructors
         //
@@ -415,12 +422,15 @@ public class JSONHTTP implements StreamedRPCProtocol {
          * @param method The method to call.
          * @param jsonParams Any JSON parameters.
          * @param stringParams Any String parameters.
+         * @param requestIntention The intention of the request.
          */
-        public JSONRESTRequest(String serviceQName, String method, List<JSONValue> jsonParams, List<String> stringParams) {
+        public JSONRPCRequest(@NotNull String serviceQName, @Nullable String method, @Nullable List<JSONValue> jsonParams,
+                              @Nullable List<String> stringParams, @NotNull RequestIntention requestIntention) {
             this.setServiceQName = serviceQName;
             this.method = method;
             this.jsonParams = jsonParams;
             this.stringParams = stringParams;
+            this.requestIntention = requestIntention;
         }
 
         /**
@@ -430,7 +440,7 @@ public class JSONHTTP implements StreamedRPCProtocol {
          * @param method The method to call.
          * @param error The error describing the failure.
          */
-        public JSONRESTRequest(String setServiceQName, String method, HTTPError error) {
+        public JSONRPCRequest(@NotNull String setServiceQName, @NotNull  String method, @NotNull  HTTPError error) {
             this.setServiceQName = setServiceQName;
             this.method = method;
             this.error = error;
@@ -455,6 +465,18 @@ public class JSONHTTP implements StreamedRPCProtocol {
         @Override
         public RPCError getError() {
             return this.error;
+        }
+
+        /**
+         * If an exception occurred during the request call, and this returns non null, then the returned
+         * converter should be called with the occurred exception to provide an RPCError.
+         * <p>
+         * This allows for a specific protocol implementation to handle its own exceptions and provide an
+         * appropriate RPCError.
+         */
+        @Override
+        public RPCExceptionConverter getExceptionConverter() {
+            return null;
         }
 
         /**
@@ -505,6 +527,13 @@ public class JSONHTTP implements StreamedRPCProtocol {
             return this.jsonParams != null ? this.jsonParams.size() : this.stringParams.size();
         }
 
+        /**
+         * Returns the intention of the request.
+         */
+        @Override
+        public RequestIntention getRequestIntention() {
+            return this.requestIntention;
+        }
 
         /**
          * Returns the parameter at the specified index.
@@ -600,9 +629,9 @@ public class JSONHTTP implements StreamedRPCProtocol {
     }
 
     /**
-     * A REST error object supporting http status code.
+     * A HTTP error object supporting http status code.
      */
-    protected static class JSONRESTError extends APSRuntimeException implements HTTPError {
+    protected static class JSONHTTPError extends APSRuntimeException implements HTTPError {
         //
         // Private Members
         //
@@ -626,7 +655,7 @@ public class JSONHTTP implements StreamedRPCProtocol {
          * @param optionalData      Any optional data.
          * @param cause             The cause of the error.
          */
-        public JSONRESTError(ErrorType errorType, int httpStatusCode, String message, String optionalData, Throwable cause) {
+        public JSONHTTPError(ErrorType errorType, int httpStatusCode, String message, String optionalData, Throwable cause) {
             super(message, cause);
             this.errorType = errorType;
             this.httpStatusCode = httpStatusCode;

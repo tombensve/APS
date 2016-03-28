@@ -74,7 +74,6 @@
             // read from response stream ...
         }
     })
-    
       </code>
     </pre>
     <H4>Read</H4>
@@ -82,7 +81,7 @@
       <code>
     APSTCPIPService tcpipSvc;
     ...
-    tcpipSvc.setStreamedRequestListener(new URI("tcp:localhost:9999"), this);
+    tcpipSvc.setStreamedRequestListener(new URI("tcp://localhost:9999"), this);
     ...
     void requestReceived(URI receivePoint, InputStream requestStream, OutputStream responseStream) {
         // Read request from reqStream ...
@@ -126,7 +125,6 @@
         byte[] bytes = packet.getData();
         ...
     }
-    
       </code>
     </pre>
   </body>

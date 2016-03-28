@@ -67,6 +67,14 @@ public interface APSSimpleDiscoveryService {
     Set<ServiceDescription> getDiscoveredService(String serviceId, String version);
 
     /**
+     * Finds services by doing an LDAP-format query on the java bean fields of the ServiceDescription bean.
+     * This is exactly the same query syntax as used by OSGi to find services based on published properties.
+     *
+     * @param ldapServiceDescriptionJavaBeanPropertyQuery The LDAP-format query of the ServiceDescription bean properties.
+     */
+    Set<ServiceDescription> getDiscoveredServices(String ldapServiceDescriptionJavaBeanPropertyQuery);
+
+    /**
      * Returns all discovered services, both locally registered and remotely discovered.
      */
     Set<ServiceDescription> getAllLocalServices();
@@ -78,6 +86,14 @@ public interface APSSimpleDiscoveryService {
      * @param version The version of the service to get.
      */
     Set<ServiceDescription> getLocalService(String serviceId, String version);
+
+    /**
+     * Finds services by doing an LDAP-format query on the java bean fields of the ServiceDescription bean.
+     * This is exactly the same query syntax as used by OSGi to find services based on published properties.
+     *
+     * @param ldapServiceDescriptionJavaBeanPropertyQuery The LDAP-format query of the ServiceDescription bean properties.
+     */
+    Set<ServiceDescription> getLocalService(String ldapServiceDescriptionJavaBeanPropertyQuery);
 
     /**
      * Publishes a local service. This will announce it to other known APSSimpleDiscoveryService instances.
