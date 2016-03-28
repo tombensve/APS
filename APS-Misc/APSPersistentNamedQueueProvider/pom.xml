@@ -89,25 +89,46 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <!--
+            aps-persistent-named-queue-service-provider dependencies
+        -->
+
+        <!--
+            This is actually needed for running tests! When building the dependency is provided
+            by the mixin, but apparently not when running tests. IDEA also requires this to be
+            here in this pom to run a unit test withing IDEA.
+
+            See issue: https://youtrack.jetbrains.com/issue/IDEA-152648
+        -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
             <scope>provided</scope>
             <classifier>indy</classifier>
         </dependency>
-        <dependency>
-            <groupId>org.codehaus.gpars</groupId>
-            <artifactId>gpars</artifactId>
-            <version>1.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jsr166-mirror</groupId>
-            <artifactId>jsr166y</artifactId>
-            <version>1.7.0</version>
-        </dependency>
+
         <!--
-            aps-persistent-named-queue-service-provider dependencies
+            Test
         -->
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-service-test-support</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-osgi-test-tools</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-filesystem-service-provider</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 

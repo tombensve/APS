@@ -36,6 +36,7 @@
  */
 package se.natusoft.osgi.aps.api.misc.queue;
 
+import se.natusoft.osgi.aps.exceptions.APSIOException;
 import se.natusoft.osgi.aps.exceptions.APSResourceNotFoundException;
 
 import java.io.IOException;
@@ -44,6 +45,9 @@ import java.util.Queue;
 
 /**
  * A named queue as a service. How long lived it is depends on the implementation.
+ *
+ * **Note** that there can be only one receiver per queue. Once an item is delivered
+ * it is gone from the queue!
  */
 public interface APSNamedQueueService {
 
@@ -53,18 +57,9 @@ public interface APSNamedQueueService {
      * @param name The name of the queue to create. If the named queue already exists, it is just returned,
      *             that is, this will work just like getQueue(name) then.
      *
-     * @throws APSResourceNotFoundException on failure to create or get existing queue.
+     * @throws APSIOException on failure to create queue.
      */
-    APSQueue createQueue(String name) throws APSResourceNotFoundException;
-
-    /**
-     * Returns the named queue. If it does not exist, it is created.
-     *
-     * @param name The name of the queue to get.
-     *
-     * @throws APSResourceNotFoundException on failure to get queue.
-     */
-    APSQueue getQueue(String name) throws APSResourceNotFoundException;
+    APSQueue createQueue(String name) throws APSIOException;
 
     /**
      * Removes the named queue.
@@ -74,4 +69,13 @@ public interface APSNamedQueueService {
      * @throws APSResourceNotFoundException on failure to remove the queue.
      */
     void removeQueue(String name) throws APSResourceNotFoundException;
+
+    /**
+     * Returns the named queue. If it does not exist, it is created.
+     *
+     * @param name The name of the queue to get.
+     *
+     * @throws APSResourceNotFoundException on failure to get queue.
+     */
+    APSQueue getQueue(String name) throws APSResourceNotFoundException;
 }

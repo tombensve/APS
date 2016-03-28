@@ -8,7 +8,10 @@
   <body>
     <H1>APSExternalProtocolExtender</H1>
     <p>
-      This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles <em>MANIFEST.MF</em> contains <code>APS-Externalizable: true</code> the service is made externally available. If the <em>MANIFEST.MF</em> contains <code>APS-Externalizable: false</code> however making the service externally available is forbidden. A specific service can also be registered containing an <em>aps-externalizable</em> property with value <em>true</em> to be externalizable. It is also possible as an alternative to true/false specify a list of fully qualified service names to make only those services externally available. This overrides any other specification.      
+      This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles <em>MANIFEST.MF</em> contains <code>APS-Externalizable: true</code> all services published by the bundle is made externally available. If the <em>MANIFEST.MF</em> contains <code>APS-Externalizable: false</code> however making services externally available is forbidden. It is also possible as an alternative to true/false specify a list of fully qualified service names to make only those services externally available. This overrides any other specification.      
+    </p>
+    <p>
+      A specific service can also be registered containing an <em>aps-externalizable</em> property with value <em>true</em> to be externalizable. If your bundle uses APSActivator (APSToolsLib) as bundle activator then any of @APSExternalizable and @APSRemoteService on the class will make APSActivator set the <em>aps-externalizable</em> property to true when registering the service.      
     </p>
     <p>
       The exernal protocol extender also provides a configuration where services can be specified with their fully qualified name to be made externally available. If a bundle however have specifically specified false for the above manifest entry then the config entry will be ignored.      
@@ -768,7 +771,7 @@
                 
     </p>
     <p>
-      public <em>class</em> <strong>RequestedParamNotAvailableException </strong> extends  APSException    [se.natusoft.osgi.aps.api.net.rpc.exceptions] {      
+      public <em>class</em> <strong>RequestedParamNotAvailableException </strong> extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.rpc.exceptions] {      
     </p>
     <p>
       This exception is thrown when a parameter request cannot be fulfilled.      

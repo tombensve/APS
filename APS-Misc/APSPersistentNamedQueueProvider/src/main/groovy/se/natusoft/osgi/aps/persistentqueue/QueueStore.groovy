@@ -79,4 +79,12 @@ interface QueueStore {
      * @throws APSIOException on failure.
      */
     void deleteItem(String queueName, UUID item) throws APSIOException
+
+    /**
+     * Closes the calling instance making it invalid. After this a new call to getQueue() is needed to get
+     * a new instance.
+     *
+     * @param name The name of the queue to release.
+     */
+    void releaseQueue(String name)
 }

@@ -40,6 +40,10 @@ class APSPersistentNamedQueueProvider implements APSNamedQueueService, QueueStor
     @OSGiService
     private APSFilesystemService fsService
 
+    private APSFilesystem filesystem = null
+
+    private Map<String, APSQueue> activeQueues = new HashMap<>()
+
     //
     // Methods
     //
@@ -48,15 +52,14 @@ class APSPersistentNamedQueueProvider implements APSNamedQueueService, QueueStor
      * Provides a getter for the root filesystem of the service.
      */
     private APSFilesystem getFs() {
-        APSFilesystem _fs
-        if (this.fsService.hasFilesystem(FS_OWNER)) {
-            _fs = this.fsService.getFilesystem(FS_OWNER)
+        if (this.filesystem == null) {
+            if (this.fsService.hasFilesystem(FS_OWNER)) {
+                this.filesystem = this.fsService.getFilesystem(FS_OWNER)
+            } else {
+                this.filesystem = this.fsService.createFilesystem(FS_OWNER)
+            }
         }
-        else {
-            _fs = this.fsService.createFilesystem(FS_OWNER)
-        }
-
-        return _fs
+        return this.filesystem
     }
 
     /**
@@ -81,17 +84,34 @@ class APSPersistentNamedQueueProvider implements APSNamedQueueService, QueueStor
     }
 
     /**
+     * Returns true if a queue exists, false otherwise.
+     *
+     * @param name The name of the queue to test.
+     */
+    private boolean queueExists(String name) {
+        try {
+            this.fs.getDirectory(name)
+            return true
+        }
+        catch (IOException ignore) {}
+        return false
+    }
+
+    /**
      * Creates a new queue.
      *
      * @param name The name of the queue to create. If the named queue already exists, it is just returned,
      *             that is, this will work just like getQueue(name) then.
      *
-     * @throws APSResourceNotFoundException on failure to create or get existing queue.
+     * @throws APSIOException on failure to create new queue.
      */
     @Override
-    APSQueue createQueue(String name) throws APSResourceNotFoundException {
-        if (!this.fs.getDirectory(name).exists()) {
+    APSQueue createQueue(String name) throws APSIOException {
+        if (!queueExists(name)) {
             this.fs.rootDirectory.createDir(name)
+            if (!this.fs.rootDirectory.getDir(name).createFile("index").createNewFile()) {
+                throw new APSIOException("Failed to create index file for queue '${name}'!")
+            }
         }
         return getQueue(name)
     }
@@ -101,14 +121,32 @@ class APSPersistentNamedQueueProvider implements APSNamedQueueService, QueueStor
      *
      * @param name The name of the queue to get.
      */
-
     @Override
     APSQueue getQueue(String name) {
-        return new PersistentQueue(
+        if (!queueExists(name)) throw new APSResourceNotFoundException("No queue with name '$name' exists!")
+
+        APSQueue queue = this.activeQueues.get(name);
+
+        if (queue == null) {
+            queue = new PersistentQueue(
                 logger: this.logger,
                 queueName: name,
                 queueStore: this
-        )
+            )
+            this.activeQueues.put(name, queue)
+        }
+
+        return queue
+    }
+
+    /**
+     * Releases the named queue from active useage. This should be called when the client is done
+     * with the queue so that service cache memory can be released.
+     *
+     * @param name The name of the queue to release.
+     */
+    void releaseQueue(String name) {
+        this.activeQueues.remove(name)
     }
 
     /**

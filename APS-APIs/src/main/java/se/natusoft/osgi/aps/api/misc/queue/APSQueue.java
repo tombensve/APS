@@ -92,4 +92,10 @@ public interface APSQueue {
      * @throws APSIOException on any failure to do this operation.
      */
     boolean isEmpty() throws APSIOException;
+
+    /**
+     * Releases this APSQueue instance to free up resources. After this call this specific instance will be
+     * invalid and a new one have to be gotten from APSNamedQueueService.
+     */
+    void release();
 }

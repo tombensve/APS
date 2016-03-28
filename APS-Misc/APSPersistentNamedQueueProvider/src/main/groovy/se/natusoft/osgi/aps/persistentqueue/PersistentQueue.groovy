@@ -35,6 +35,8 @@ class PersistentQueue implements APSQueue {
     /** Provides the filesystem. */
     QueueStore queueStore
 
+    private boolean valid = true
+
     private boolean modified = false
 
     private Timer timer = new Timer()
@@ -44,7 +46,7 @@ class PersistentQueue implements APSQueue {
     //
 
     public PersistentQueue() {
-        this.timer.scheduleAtFixedRate(new SaveTask(), 5000, 5000)
+        this.timer.scheduleAtFixedRate(new SaveTask(), 3000, 3000)
     }
 
     //
@@ -67,7 +69,15 @@ class PersistentQueue implements APSQueue {
      * Cleans up in this instance.
      */
     void release() {
+        this.valid = false
         this.timer.cancel()
+        saveIndex()
+        this.queueStore.releaseQueue(this.queueName)
+    }
+
+    private void validate() {
+        if (!this.valid) throw new APSIOException("This APSQueue instance have been invalidated! You must call getQueue(name) again " +
+                "on APSNamedQueueService.")
     }
 
     /**
@@ -216,6 +226,7 @@ class PersistentQueue implements APSQueue {
     @Override
     @Implements(APSQueue.class)
     synchronized void push(byte[] item) throws APSIOException {
+        validate()
         loadIndex()
 
         UUID newItemRef = UUID.randomUUID()
@@ -228,6 +239,8 @@ class PersistentQueue implements APSQueue {
             silently { deleteItem(newItemRef) }
             throw aioe
         }
+
+        modified = true
     }
 
     /**
@@ -240,12 +253,16 @@ class PersistentQueue implements APSQueue {
     @Override
     @Implements(APSQueue.class)
     synchronized byte[] pull() throws APSIOException {
+        validate()
         loadIndex()
 
         UUID itemRef = peekNotEmpty()
 
         byte[] itemBytes = readItem(itemRef)
         this.queueRefs.poll() // Now we can remove it.
+
+
+        this.modified = true
 
         itemBytes
     }
@@ -259,6 +276,7 @@ class PersistentQueue implements APSQueue {
     @Override
     @Implements(APSQueue.class)
     synchronized byte[] peek() throws APSIOException {
+        validate()
         loadIndex()
 
         UUID itemRef = peekNotEmpty()
@@ -272,6 +290,7 @@ class PersistentQueue implements APSQueue {
     @Override
     @Implements(APSQueue.class)
     synchronized int size() {
+        validate()
         loadIndex()
         return this.queueRefs.size()
     }
@@ -282,6 +301,7 @@ class PersistentQueue implements APSQueue {
     @Override
     @Implements(APSQueue.class)
     synchronized boolean isEmpty() {
+        validate()
         return size() == 0
     }
 }
