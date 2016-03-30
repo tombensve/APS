@@ -5,7 +5,16 @@ import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.misc.queue.APSQueue
 import se.natusoft.osgi.aps.codedoc.Implements
 import se.natusoft.osgi.aps.exceptions.APSIOException
+import se.natusoft.osgi.aps.exceptions.APSIOTimeoutException
 import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
+
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.locks.Condition
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
+
+//TODO: Have to lock and wait for data on empty read, but with a timeout.
 
 /**
  * This represents a specific named queue.
@@ -15,14 +24,6 @@ import se.natusoft.osgi.aps.tools.APSLogger
 class PersistentQueue implements APSQueue {
 
     //
-    // Private Members
-    //
-
-    private LinkedList<UUID> queueRefs = new LinkedList<>()
-
-    private boolean indexLoaded = false
-
-    //
     // Properties
     //
 
@@ -30,35 +31,48 @@ class PersistentQueue implements APSQueue {
     APSLogger logger
 
     /** The name of the queue. */
-    String queueName
+    String queueName = null
 
     /** Provides the filesystem. */
-    QueueStore queueStore
+    QueueStore queueStore = null
 
-    private boolean valid = true
+    //
+    // Private Members
+    //
 
-    private boolean modified = false
+    /** The actual modified value. This is wrapped by a synchronized 'modified' property and should not be accessed directly. */
+    private boolean modif = false
 
+    /** The reference to use for the next read from the queue. */
+    private long readRef = Long.MIN_VALUE
+
+    /** The reference to use for the next write to the queue. */
+    private long writeRef = Long.MIN_VALUE
+
+    /** For sporadic saves of indexes. This is for performance. */
     private Timer timer = new Timer()
-
-    //
-    // Constructors
-    //
-
-    public PersistentQueue() {
-        this.timer.scheduleAtFixedRate(new SaveTask(), 3000, 3000)
-    }
 
     //
     // Inner Classes
     //
 
+    /**
+     * This is run every 5 seconds and saves the indexes if the queue has been modified since the last run.
+     */
     private class SaveTask extends TimerTask {
-        public void run() {
-            if (PersistentQueue.this.modified) {
-                saveIndex()
-            }
-        }
+        void run() { saveIndexes() }
+    }
+
+    //
+    // Constructors
+    //
+
+    /**
+     * Creates a new PersistentQueue and starts the save indexes recurrent job.
+     */
+    public PersistentQueue() {
+
+        this.timer.schedule(new SaveTask(), 5000, 5000)
     }
 
     //
@@ -66,77 +80,148 @@ class PersistentQueue implements APSQueue {
     //
 
     /**
-     * Cleans up in this instance.
+     * This is called by APSActivator on bundle shutdown.
      */
-    void release() {
-        this.valid = false
-        this.timer.cancel()
-        saveIndex()
-        this.queueStore.releaseQueue(this.queueName)
-    }
-
-    private void validate() {
-        if (!this.valid) throw new APSIOException("This APSQueue instance have been invalidated! You must call getQueue(name) again " +
-                "on APSNamedQueueService.")
-    }
-
-    /**
-     * Loads the index from disk.
-     */
-    private synchronized final void loadIndex() {
-        if (!this.indexLoaded) {
-            ObjectInputStream ois = null;
-            try {
-                ois = new ObjectInputStream(this.queueStore.getIndexInputStream(this.queueName))
-                int size = ois.readInt()
-
-                int read = 0
-                while (read < size) {
-                    this.queueRefs.add(ois.readObject() as UUID)
-                    ++read
-                }
-            }
-            catch (EOFException eofe) {
-                // This happens when the index have been newly created and does not yet even contain a size.
-            }
-            catch (IOException ioe) {
-                this.logger.error("Failed to load queue index!", ioe)
-                throw new APSIOException("Failed to load queue index!", ioe)
-            }
-            finally {
-                if (ois != null) ois.close()
-            }
-
-            this.indexLoaded = true
-        }
-    }
-
-    /**
-     * Saves the index to disk.
-     *
-     * @param undo This is executed on failure.
-     */
-    private synchronized final void saveIndex() {
-        ObjectOutputStream oos = null
+    @BundleStop
+    public void cleanup() {
         try {
-            this.queueStore.backupIndex(this.queueName)
-            oos = new ObjectOutputStream(this.queueStore.getIndexOutputStream(this.queueName))
-            oos.writeInt(this.queueRefs.size())
-            this.queueRefs.each { UUID queueRef ->
-                oos.writeObject(queueRef)
-            }
-        }
-        catch (IOException ioe) {
-            this.queueStore.restoreBackupIndex(this.queueName)
-            this.indexLoaded = false
-            this.logger.error("Failed to save queue index!", ioe)
-            throw new APSIOException("Failed to save queue index!", ioe)
+            this.timer.cancel()
         }
         finally {
-            if (oos != null) oos.close()
+            saveIndexes()
         }
+    }
 
-        this.queueStore.removeBackupIndex(this.queueName)
+    /**
+     * Provides a synchronized getter for the 'modif' value.
+     */
+    private synchronized boolean getModified() {
+        return this.modif
+    }
+
+    /**
+     * Provides a synchronized setter for the 'modif' value.
+     *
+     * @param modif The new modified state to set.
+     */
+    private synchronized void setModified(boolean modif) {
+        this.modif = modif
+    }
+
+    /**
+     * Setter for the 'queueName' JavaBean property. This is implemented rather than using the autogenerated one
+     * because we need to load the indexes as soon as we have both queueName and queueStore.
+     *
+     * @param queueName The name of the queue represented by this instance.
+     *
+     * @throws APSIOException on failure to load indexes.
+     */
+    public void setQueueName(String queueName) throws APSIOException {
+        this.queueName = queueName
+        loadIndexes()
+    }
+
+    /**
+     * Setter for the 'queueStore' JavaBean property. This is implemented rather than using the autogenerated one
+     * because we need to load the indexes as soon as we have both queueName and queueStore.
+     *
+     * @param queueStore The instance we used to read and write queue data.
+     *
+     * @throws APSIOException on failure to load indexes.
+     */
+    public void setQueueStore(QueueStore queueStore) throws APSIOException {
+        this.queueStore = queueStore
+        loadIndexes()
+    }
+
+    /**
+     * Loads both the read and the write index/references.
+     *
+     * @throws APSIOException On failure to load the indexes.
+     */
+    private void loadIndexes() throws APSIOException {
+        if (this.queueName != null && this.queueStore != null) {
+            this.readRef = this.queueStore.getReadIndex(this.queueName)
+            this.writeRef = this.queueStore.getWriteIndex(this.queueName)
+        }
+    }
+
+    /**
+     * Saves both the read and the write index.
+     */
+    private void saveIndexes() {
+        if (this.modified) {
+            try {
+                this.queueStore.setWriteIndex(this.queueName, this.writeRef)
+            } catch (Exception e) {
+                this.logger.error("Failed to save write index for queue '${this.queueName}'! This means that this queue is corrupt!", e)
+            }
+            try {
+                this.queueStore.setReadIndex(this.queueName, this.readRef)
+            } catch (Exception e) {
+                this.logger.error("Failed to save read index for queue '${this.queueName}'! This means that this queue is corrupt!", e)
+            }
+
+            this.modified = false
+        }
+    }
+
+    /**
+     * Increments the write index, handling a wraparound if we reach max.
+     *
+     * The idea here is that if the read index is still at the minimum index and the write index
+     * at the maximum index, then the queue is full since we cannot represent another value.
+     *
+     * If however that is not the case then there should be free space at the bottom again to
+     * reuse, so we set the index to the lowest value again, going upward until we catch up.
+     *
+     * @throws APSIOException If the queue is full.
+     */
+    private void incrementWriteRef() throws APSIOException {
+        if (this.writeRef == Long.MAX_VALUE) {
+            if (this.readRef == Long.MIN_VALUE) throw new APSIOException("Queue '${this.queueName}' is full!")
+            this.queueStore.waitForCurrentDeletesToFinnish()
+            this.writeRef = Long.MIN_VALUE
+        }
+        else if ((this.writeRef + 1L) == this.readRef) {
+            throw new APSIOException("Queue '${this.queueName}' is full!")
+        }
+        else {
+            ++this.writeRef
+        }
+    }
+
+    /**
+     * Increments the read index, handling a wraparound if we reach max.
+     */
+    private void incrementReadRef() {
+        if (this.readRef == Long.MAX_VALUE) {
+            this.readRef = Long.MIN_VALUE
+        }
+        else if (this.readRef == this.writeRef) {
+            zeroReadWriteRefs()
+            throw new APSIOException("Queue '${this.queueName}' is empty!")
+        }
+        else {
+            ++this.readRef
+        }
+    }
+
+    /**
+     * This resets both the read and write indexes to the minimum value. This is done every time
+     * the queue becomes empty.
+     */
+    private void zeroReadWriteRefs() {
+        this.readRef = Long.MIN_VALUE
+        this.writeRef = Long.MIN_VALUE
+        this.queueStore.waitForCurrentDeletesToFinnish()
+    }
+
+    /**
+     * Cleans up in this instance.
+     */
+    synchronized void release() {
+        this.queueStore.releaseQueue(this.queueName)
     }
 
     /**
@@ -145,7 +230,7 @@ class PersistentQueue implements APSQueue {
      * @param itemRef The item reference.
      * @param item The item to write.
      */
-    private void writeItem(UUID itemRef, byte[] item) {
+    private void writeItem(long itemRef, byte[] item) {
         ObjectOutputStream itemStream = null
         try {
             itemStream = new ObjectOutputStream(this.queueStore.getItemOutputStream(this.queueName, itemRef))
@@ -166,7 +251,7 @@ class PersistentQueue implements APSQueue {
      *
      * @param itemRef The item reference to read.
      */
-    private byte[] readItem(UUID itemRef) {
+    private byte[] readItem(long itemRef) {
         ObjectInputStream itemStream = null
         try {
             itemStream = new ObjectInputStream(this.queueStore.getItemInputStream(this.queueName, itemRef))
@@ -190,30 +275,20 @@ class PersistentQueue implements APSQueue {
      *
      * @param itemRef The reference of the item to delete.
      */
-    private void deleteItem(UUID itemRef) {
+    private void deleteItem(long itemRef) {
         this.queueStore.deleteItem(this.queueName, itemRef)
     }
 
     /**
      * Executes the closure hiding all exceptions.
      *
-     * @param quiteOp The closure to execute.
+     * @param quietOp The closure to execute.
      */
-    private static void silently(Closure quiteOp) {
+    private static void silently(Closure quietOp) {
         try {
-            quiteOp.call()
+            quietOp.call()
         }
         catch (Exception ignore) {}
-    }
-
-    /**
-     * Peeks the next entry in the queue and throws exception if the queue is empty.
-     */
-    private UUID peekNotEmpty() {
-        UUID polledItemRef = this.queueRefs.peek()
-        if (polledItemRef == null) throw new APSIOException("The queue is empty!")
-
-        polledItemRef
     }
 
     /**
@@ -226,25 +301,28 @@ class PersistentQueue implements APSQueue {
     @Override
     @Implements(APSQueue.class)
     synchronized void push(byte[] item) throws APSIOException {
-        validate()
-        loadIndex()
-
-        UUID newItemRef = UUID.randomUUID()
-        this.queueRefs.offer(newItemRef)
+        this.modified = true
 
         try {
-            writeItem(newItemRef, item)
+            writeItem(this.writeRef, item)
         }
         catch (APSIOException aioe) {
-            silently { deleteItem(newItemRef) }
+            silently { deleteItem(this.writeRef) }
             throw aioe
         }
 
-        modified = true
+        incrementWriteRef()
+
+        notifyAll()
     }
 
     /**
      * Pulls the first item in the queue, removing it from the queue.
+     *
+     * @param timeout A value of 0 will cause an immediate APSIOException if the queue is empty. Any
+     *                other positive value will wait for that many milliseconds for something to
+     *                arrive. If something does arrive during the wait then it will be returned.
+     *                Otherwise an APSIOException will be thrown, with "TIMEOUT" as message.
      *
      * @return The pulled item.
      *
@@ -252,17 +330,26 @@ class PersistentQueue implements APSQueue {
      */
     @Override
     @Implements(APSQueue.class)
-    synchronized byte[] pull() throws APSIOException {
-        validate()
-        loadIndex()
-
-        UUID itemRef = peekNotEmpty()
-
-        byte[] itemBytes = readItem(itemRef)
-        this.queueRefs.poll() // Now we can remove it.
-
-
+    synchronized byte[] pull(long timeout) throws APSIOTimeoutException {
         this.modified = true
+
+        if (empty) {
+            if (timeout == 0L) throw new APSIOException("Queue ${this.queueName} is empty!")
+            //this.logger.debug("Queue '${this.queueName}' is empty, waiting for data ...")
+            wait(timeout)
+            if (empty) throw new APSIOTimeoutException()
+        }
+
+        byte[] itemBytes = readItem(this.readRef)
+
+        deleteItem(this.readRef)
+
+        incrementReadRef()
+
+        if (empty) {
+            //this.logger.debug("Zeroing refs for queue '${this.queueName}'!")
+            zeroReadWriteRefs()
+        }
 
         itemBytes
     }
@@ -276,12 +363,9 @@ class PersistentQueue implements APSQueue {
     @Override
     @Implements(APSQueue.class)
     synchronized byte[] peek() throws APSIOException {
-        validate()
-        loadIndex()
+        if (empty) throw new APSIOException("Queue ${this.queueName} is empty!")
 
-        UUID itemRef = peekNotEmpty()
-
-        readItem(itemRef)
+        readItem(this.readRef)
     }
 
     /**
@@ -290,9 +374,10 @@ class PersistentQueue implements APSQueue {
     @Override
     @Implements(APSQueue.class)
     synchronized int size() {
-        validate()
-        loadIndex()
-        return this.queueRefs.size()
+        if (this.writeRef < this.readRef) {
+            return (this.readRef - this.writeRef) as int
+        }
+        return (this.writeRef - this.readRef) as int
     }
 
     /**
@@ -301,7 +386,6 @@ class PersistentQueue implements APSQueue {
     @Override
     @Implements(APSQueue.class)
     synchronized boolean isEmpty() {
-        validate()
         return size() == 0
     }
 }

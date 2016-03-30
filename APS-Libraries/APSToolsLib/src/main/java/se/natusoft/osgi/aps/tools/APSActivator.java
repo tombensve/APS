@@ -324,7 +324,14 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
         parallelExecutorService.shutdown();
         waitedForExecutorService.shutdown();
-        waitedForExecutorService.awaitTermination(30, TimeUnit.SECONDS);
+
+        // Wait for one minute by default, but allow override of this via a system property.
+        int waitInMinutes = 1;
+        String waitProp = System.getProperty("aps.activator.start.timeout");
+        if (waitProp != null) {
+            waitInMinutes = Integer.valueOf(waitProp);
+        }
+        waitedForExecutorService.awaitTermination(waitInMinutes, TimeUnit.MINUTES);
     }
 
     /**

@@ -39,10 +39,6 @@ package se.natusoft.osgi.aps.api.misc.queue;
 import se.natusoft.osgi.aps.exceptions.APSIOException;
 import se.natusoft.osgi.aps.exceptions.APSResourceNotFoundException;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Queue;
-
 /**
  * A named queue as a service. How long lived it is depends on the implementation.
  *

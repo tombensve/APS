@@ -38,9 +38,7 @@ package se.natusoft.osgi.aps.api.misc.queue;
 
 import se.natusoft.osgi.aps.codedoc.Optional;
 import se.natusoft.osgi.aps.exceptions.APSIOException;
-
-import java.io.InputStream;
-import java.io.OutputStream;
+import se.natusoft.osgi.aps.exceptions.APSIOTimeoutException;
 
 /**
  * This defines a simple queue api.
@@ -60,11 +58,16 @@ public interface APSQueue {
     /**
      * Pulls the first item in the queue, removing it from the queue.
      *
+     * @param timeout A value of 0 will cause an immediate APSIOException if the queue is empty. Any
+     *                other positive value will wait for that many milliseconds for something to
+     *                arrive. If something does arrive during the wait then it will be returned.
+     *                Otherwise an APSIOException will be thrown, with "TIMEOUT" as message.
+     *
      * @return The pulled item.
      *
      * @throws APSIOException on any failure to do this operation.
      */
-    byte[] pull() throws APSIOException;
+    byte[] pull(long timeout) throws APSIOTimeoutException;
 
     /**
      * Looks at, but does not remove the first item in the queue.

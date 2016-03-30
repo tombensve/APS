@@ -7,13 +7,15 @@ import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
 import se.natusoft.osgi.aps.api.misc.queue.APSNamedQueueService
 import se.natusoft.osgi.aps.api.misc.queue.APSQueue
+import se.natusoft.osgi.aps.codedoc.Implements
 import se.natusoft.osgi.aps.exceptions.APSIOException
 import se.natusoft.osgi.aps.exceptions.APSResourceNotFoundException
 import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+import se.natusoft.osgi.aps.tools.annotation.activator.*
+
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 /**
  * Implementation of APSNamedQueueService that is also persistent.
@@ -40,13 +42,47 @@ class APSPersistentNamedQueueProvider implements APSNamedQueueService, QueueStor
     @OSGiService
     private APSFilesystemService fsService
 
+    /** A cached version of APSFilesystemService root filesystem for this "owner". */
     private APSFilesystem filesystem = null
 
+    /** We cache APSQueue instances here using the queue name as key. */
     private Map<String, APSQueue> activeQueues = new HashMap<>()
+
+    /**
+     * This runs delete jobs in background so that pull() calls does not have to wait for that.
+     * We however only allow one job at a time so that it does not interfere too much. Increasing this
+     * number actually makes the whole read/delete of files take longer!
+     */
+    private ExecutorService deleteService = Executors.newFixedThreadPool(1)
 
     //
     // Methods
     //
+
+    /**
+     * Called by APSActivator when the bundle is stopped.
+     */
+    @BundleStop
+    void shutdown() {
+        this.deleteService.shutdown()
+        this.deleteService.awaitTermination(5, TimeUnit.MINUTES)
+    }
+
+    /**
+     * This is for when wrapping indexes around to the low limit again. The odds that there are still entries
+     * in the delete queue that might get overwritten by a new entry before the old identical entry has had a
+     * chance to be  deleted, and which delete then will delete the new entry is very tiny unless you are close
+     * to the limit what the queue can hold.
+     *
+     * But to be safe we create a new ExecutorService for forthcoming deletes and then stop and wait for
+     * the old to finnish before returning.
+     */
+    public void waitForCurrentDeletesToFinnish() {
+        ExecutorService currDeletes = this.deleteService
+        this.deleteService = Executors.newFixedThreadPool(1)
+        currDeletes.shutdown()
+        currDeletes.awaitTermination(5, TimeUnit.MINUTES)
+    }
 
     /**
      * Provides a getter for the root filesystem of the service.
@@ -106,12 +142,10 @@ class APSPersistentNamedQueueProvider implements APSNamedQueueService, QueueStor
      * @throws APSIOException on failure to create new queue.
      */
     @Override
+    @Implements(APSNamedQueueService.class)
     APSQueue createQueue(String name) throws APSIOException {
         if (!queueExists(name)) {
             this.fs.rootDirectory.createDir(name)
-            if (!this.fs.rootDirectory.getDir(name).createFile("index").createNewFile()) {
-                throw new APSIOException("Failed to create index file for queue '${name}'!")
-            }
         }
         return getQueue(name)
     }
@@ -122,6 +156,7 @@ class APSPersistentNamedQueueProvider implements APSNamedQueueService, QueueStor
      * @param name The name of the queue to get.
      */
     @Override
+    @Implements(APSNamedQueueService.class)
     APSQueue getQueue(String name) {
         if (!queueExists(name)) throw new APSResourceNotFoundException("No queue with name '$name' exists!")
 
@@ -135,18 +170,7 @@ class APSPersistentNamedQueueProvider implements APSNamedQueueService, QueueStor
             )
             this.activeQueues.put(name, queue)
         }
-
         return queue
-    }
-
-    /**
-     * Releases the named queue from active useage. This should be called when the client is done
-     * with the queue so that service cache memory can be released.
-     *
-     * @param name The name of the queue to release.
-     */
-    void releaseQueue(String name) {
-        this.activeQueues.remove(name)
     }
 
     /**
@@ -157,6 +181,7 @@ class APSPersistentNamedQueueProvider implements APSNamedQueueService, QueueStor
      * @throws APSIOException on failure.
      */
     @Override
+    @Implements(APSNamedQueueService.class)
     void removeQueue(String name) throws APSIOException {
         apsio Void.class, {
             if (this.fs.getDirectory(name).exists()) {
@@ -166,72 +191,119 @@ class APSPersistentNamedQueueProvider implements APSNamedQueueService, QueueStor
     }
 
     /**
-     * Returns an InputStream for reading the index.
+     * Releases the named queue from active useage. This should be called when the client is done
+     * with the queue so that service cache memory can be released.
      *
-     * @throws IOException on failure.
+     * @param name The name of the queue to release.
      */
     @Override
-    InputStream getIndexInputStream(String queueName) throws APSIOException {
-        apsio InputStream.class, { this.fs.getDirectory(queueName).getFile("index").createInputStream() }
+    @Implements(APSNamedQueueService.class)
+    void releaseQueue(String name) {
+        // Currently there is nothing to do here. This is kept for possible future use.
     }
 
     /**
-     * Returns an OutputStream for writing the index.
+     * Reads an index value from the queue.
      *
-     * @throws IOException on failure.
+     * @param queueName The name of the queue to read from.
+     * @param index The name of the index to read.
+     *
+     * @return The read index.
+     *
+     * @throws APSIOException on failure to read the index.
      */
-    @Override
-    OutputStream getIndexOutputStream(String queueName) throws APSIOException {
-        apsio OutputStream.class, { this.fs.getDirectory(queueName).getFile("index").createOutputStream() }
-    }
+    private long readIndex(String queueName, String index) throws APSIOException {
+        apsio Long.class, {
+            long readIx
 
-    /**
-     * Backups the current index. Should be done before writing a new.
-     *
-     * @param queueName The queue to backup index for.
-     *
-     * @throws APSIOException on any failure.
-     */
-    @Override
-    void backupIndex(String queueName) throws APSIOException {
-        apsio Void.class, {
-            this.fs.getDirectory(queueName).getFile("index").renameTo(this.fs.getDirectory(queueName).getFile("index.bup"))
-        }
-    }
-
-    /**
-     * Restores a backed up index.
-     *
-     * @param queueName The queue to restore the backed up index for.
-     *
-     * @throws APSIOException on any failure.
-     */
-    @Override
-    void restoreBackupIndex(String queueName) throws APSIOException {
-        apsio Void.class, {
-            APSFile currentIx = this.fs.getDirectory(queueName).getFile("index")
-            if (currentIx.exists()) {
-                currentIx.delete()
+            if (!this.fs.getDirectory(queueName).exists(index)) {
+                APSFile indexFile = this.fs.getDirectory(queueName).createFile(index)
+                ObjectOutputStream oos = new ObjectOutputStream(indexFile.createOutputStream())
+                try { oos.writeLong(Long.MIN_VALUE) }
+                finally {oos.close() }
+                readIx = Long.MIN_VALUE
             }
-            this.fs.getDirectory(queueName).getFile("index.bup").renameTo(this.fs.getDirectory(queueName).getFile("index"))
+            else {
+                APSFile indexFile = this.fs.getDirectory(queueName).getFile(index)
+                ObjectInputStream ois = new ObjectInputStream(indexFile.createInputStream())
+                readIx = ois.readLong()
+                ois.close()
+            }
+
+            readIx
         }
     }
 
     /**
-     * Removes a backup index. This should be called after successful rewrite of the index.
+     * Writes and index value to the queue.
      *
-     * @param queueName The queue to remove the backup index for.
+     * @param queueName The name of the queue to write index to.
+     * @param index The name of the index to write.
+     * @param value The new index value to write.
      *
-     * @throws APSIOException on any failure.
+     * @throws APSIOException on failure to write the index.
+     */
+    private void writeIndex(String queueName, String index, long value) throws APSIOException {
+        apsio Void.class, {
+            APSFile indexFile
+
+            if (!this.fs.getDirectory(queueName).exists(index)) {
+                indexFile = this.fs.getDirectory(queueName).createFile(index)
+            }
+            else {
+                indexFile = this.fs.getDirectory(queueName).getFile(index)
+            }
+
+            ObjectOutputStream oos = new ObjectOutputStream(indexFile.createOutputStream())
+            try { oos.writeLong(value) }
+            finally { oos.close() }
+        }
+    }
+
+    /**
+     * Returns the current read index.
+     *
+     * @param queueName The queue to get the read index for.
      */
     @Override
-    void removeBackupIndex(String queueName) throws APSIOException {
-        apsio Void.class, {
-            APSFile bupIX = this.fs.getDirectory(queueName).getFile("index.bup")
-            if (bupIX.exists()) {
-                bupIX.delete()
-            }
-        }
+    @Implements(QueueStore.class)
+    long getReadIndex(String queueName) {
+        return readIndex(queueName, "read")
+    }
+
+    /**
+     * Sets the current read index.
+     *
+     * @param queueName The queue to set the read index for.
+     * @param index The new index to set.
+     */
+    @Override
+    @Implements(QueueStore.class)
+    void setReadIndex(String queueName, long index) {
+        writeIndex(queueName, "read", index)
+    }
+
+    /**
+     * Gets the last written index.
+     *
+     * @param queueName The queue to get the last written index for.
+     */
+    @Override
+    @Implements(QueueStore.class)
+    long getWriteIndex(String queueName) {
+        return readIndex(queueName, "write")
+    }
+
+    /**
+     * Sets the last written index.
+     *
+     * @param queueName The queue to set the last written index for.
+     * @param index The index to set.
+     */
+    @Override
+    @Implements(QueueStore.class)
+    void setWriteIndex(String queueName, long index) {
+        writeIndex(queueName, "write", index)
     }
 
    /**
@@ -242,8 +314,9 @@ class APSPersistentNamedQueueProvider implements APSNamedQueueService, QueueStor
      * @throws APSIOException on failure.
      */
     @Override
-    InputStream getItemInputStream(String queueName, UUID item) throws APSIOException {
-        apsio InputStream.class, { return this.fs.getDirectory(queueName).getFile(item.toString()).createInputStream() }
+    @Implements(QueueStore.class)
+    InputStream getItemInputStream(String queueName, long item) throws APSIOException {
+        apsio InputStream.class, { return this.fs.getDirectory(queueName).getFile("${item}").createInputStream() }
     }
 
     /**
@@ -254,8 +327,9 @@ class APSPersistentNamedQueueProvider implements APSNamedQueueService, QueueStor
      * @throws APSIOException on failure.
      */
     @Override
-    OutputStream getItemOutputStream(String queueName, UUID item) throws APSIOException {
-        apsio OutputStream.class, { return this.fs.getDirectory(queueName).getFile(item.toString()).createOutputStream() }
+    @Implements(QueueStore.class)
+    OutputStream getItemOutputStream(String queueName, long item) throws APSIOException {
+        apsio OutputStream.class, { return this.fs.getDirectory(queueName).getFile("${item}").createOutputStream() }
     }
 
     /**
@@ -267,7 +341,10 @@ class APSPersistentNamedQueueProvider implements APSNamedQueueService, QueueStor
      * @throws APSIOException on failure.
      */
     @Override
-    void deleteItem(String queueName, UUID item) throws APSIOException {
-        apsio Void.class, { this.fs.getDirectory(queueName).getFile(item.toString()).delete() }
+    @Implements(QueueStore.class)
+    void deleteItem(String queueName, long item) throws APSIOException {
+        this.deleteService.submit({
+            this.fs.getDirectory(queueName).getFile("${item}").delete()
+        })
     }
 }

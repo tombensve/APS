@@ -12,54 +12,13 @@ import se.natusoft.osgi.aps.exceptions.APSIOException
 interface QueueStore {
 
     /**
-     * Returns an InputStream for reading the index.
-     *
-     * @throws APSIOException on failure.
-     */
-    InputStream getIndexInputStream(String queueName) throws APSIOException
-
-    /**
-     * Returns an OutputStream for writing the index.
-     *
-     * @throws APSIOException on failure.
-     */
-    OutputStream getIndexOutputStream(String queueName) throws APSIOException
-
-    /**
-     * Backups the current index. Should be done before writing a new.
-     *
-     * @param queueName The queue to backup index for.
-     *
-     * @throws APSIOException on any failure.
-     */
-    void backupIndex(String queueName) throws APSIOException
-
-    /**
-     * Restores a backed up index.
-     *
-     * @param queueName The queue to restore the backed up index for.
-     *
-     * @throws APSIOException on any failure.
-     */
-    void restoreBackupIndex(String queueName) throws APSIOException
-
-    /**
-     * Removes a backup index. This should be called after successful rewrite of the index.
-     *
-     * @param queueName The queue to remove the backup index for.
-     *
-     * @throws APSIOException on any failure.
-     */
-    void removeBackupIndex(String queueName) throws APSIOException
-
-    /**
      * Returns an InputStream for reading the specified item.
      *
      * @param item The item to read.
      *
      * @throws APSIOException on failure.
      */
-    InputStream getItemInputStream(String queueName, UUID item) throws APSIOException
+    InputStream getItemInputStream(String queueName, long item) throws APSIOException
 
     /**
      * Returns an OutputStream for writing the specified item.
@@ -68,7 +27,7 @@ interface QueueStore {
      *
      * @throws APSIOException on failure.
      */
-    OutputStream getItemOutputStream(String queueName, UUID item) throws APSIOException
+    OutputStream getItemOutputStream(String queueName, long item) throws APSIOException
 
     /**
      * Deletes the specified item.
@@ -78,7 +37,7 @@ interface QueueStore {
      *
      * @throws APSIOException on failure.
      */
-    void deleteItem(String queueName, UUID item) throws APSIOException
+    void deleteItem(String queueName, long item) throws APSIOException
 
     /**
      * Closes the calling instance making it invalid. After this a new call to getQueue() is needed to get
@@ -87,4 +46,40 @@ interface QueueStore {
      * @param name The name of the queue to release.
      */
     void releaseQueue(String name)
+
+    /**
+     * Returns the current read index.
+     *
+     * @param queueName The queue to get the read index for.
+     */
+    long getReadIndex(String queueName)
+
+    /**
+     * Sets the current read index.
+     *
+     * @param queueName The queue to set the read index for.
+     * @param index The new index to set.
+     */
+    void setReadIndex(String queueName, long index)
+
+    /**
+     * Gets the last written index.
+     *
+     * @param queueName The queue to get the last written index for.
+     */
+    long getWriteIndex(String queueName)
+
+    /**
+     * Sets the last written index.
+     *
+     * @param queueName The queue to set the last written index for.
+     * @param index The index to set.
+     */
+    void setWriteIndex(String queueName, long index)
+
+    /**
+     * Does just what the method says :-). This *MUST* be called from a synchronized method!
+     */
+    void waitForCurrentDeletesToFinnish();
+
 }
