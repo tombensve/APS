@@ -8,14 +8,12 @@ import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.api.misc.queue.APSNamedQueueService
 import se.natusoft.osgi.aps.api.misc.queue.APSQueue
 import se.natusoft.osgi.aps.core.filesystem.APSFilesystemActivator
-import se.natusoft.osgi.aps.exceptions.APSIOException
 import se.natusoft.osgi.aps.exceptions.APSIOTimeoutException
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator
 import se.natusoft.osgi.aps.tools.APSServiceTracker
 
 import static org.junit.Assert.assertEquals
-import static org.junit.Assert.fail
 
 @CompileStatic
 @TypeChecked
@@ -44,6 +42,7 @@ class QueueTest extends OSGIServiceTestTools {
 
     @Test
     void queueWriteReadSequential() throws Exception {
+        Thread.sleep(2000)
 
         System.properties."aps.filesystem.root" = this.fsRoot.absolutePath
 
@@ -138,7 +137,9 @@ class QueueTest extends OSGIServiceTestTools {
                 int read = 0
                 while (true) {
                     try {
-                        queue.pull(1000)
+                        // Make this timeout here longer if the test fails. That would also mean that you have
+                        // a really slow machine!
+                        queue.pull(3000)
                         ++read
                     }
                     catch (APSIOTimeoutException aiote) {
