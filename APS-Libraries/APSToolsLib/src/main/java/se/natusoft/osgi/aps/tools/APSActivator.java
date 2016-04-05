@@ -57,6 +57,7 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -79,6 +80,10 @@ import java.util.concurrent.TimeUnit;
  *   default name of "default" being used if none is specified. There are 2 field types handled specially:
  *   BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger
  *   instance the 'loggingFor' annotation property can be specified.
+ *
+ * * **@ExecutorSvc**
+ *   This is used in conjunction with @Managed for field types of ExecutorService or ScheduledExecutorService
+ *   to configure the injected ExecutorService.
  *
  * * **@BundleStart** -
  *   This should be used on a method and will be called on bundle start. The method should take no arguments.
@@ -434,12 +439,22 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
         for (String namedInstanceKey : this.namedInstances.keySet()) {
             Object namedInstance = this.namedInstances.get(namedInstanceKey);
-            if (namedInstance instanceof APSLogger) {
+            if (APSLogger.class.isAssignableFrom(namedInstance.getClass())) {
                 try {
                     ((APSLogger)namedInstance).stop(context);
                 }
                 catch (Exception e) {
                     this.activatorLogger.error("Bundle stop problem!", e);
+                    failures.addException(e);
+                }
+            }
+            else if (ExecutorService.class.isAssignableFrom(namedInstance.getClass())) {
+                try {
+                    ((ExecutorService)namedInstance).shutdownNow();
+                    ((ExecutorService)namedInstance).awaitTermination(15, TimeUnit.SECONDS);
+                }
+                catch (Exception e) {
+                    this.activatorLogger.error("Failed to shutdown executor service withing reasonable time!", e);
                     failures.addException(e);
                 }
             }
@@ -944,6 +959,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         if (managed != null) {
             String namedInstanceKey = managed.name() + field.getType().getName();
             Object namedInstance = this.namedInstances.get(namedInstanceKey);
+
             if (namedInstance == null) {
                 if (field.getType().equals(APSLogger.class)) {
                     namedInstance = new APSLogger(System.out);
@@ -954,6 +970,70 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 }
                 else if (field.getType().equals(BundleContext.class)) {
                     namedInstance = context;
+                }
+                else if (field.getType().equals(ScheduledExecutorService.class)) {
+                    int parallelism = 10;
+                    ExecutorSvc.ExecutorType type = ExecutorSvc.ExecutorType.Scheduled;
+                    boolean unConfigurable = false;
+
+                    ExecutorSvc executorSvc = field.getAnnotation(ExecutorSvc.class);
+                    if (executorSvc != null) {
+                        parallelism = executorSvc.parallelism();
+                        type = executorSvc.type();
+                        unConfigurable = executorSvc.unConfigurable();
+                    }
+
+                    ScheduledExecutorService ses = null;
+                    switch (type) {
+                        case Scheduled:
+                            ses = Executors.newScheduledThreadPool(parallelism);
+                            break;
+                        case SingleScheduled:
+                            ses = Executors.newSingleThreadScheduledExecutor();
+                            break;
+                        default:
+                            throw new APSActivatorException("Selected type '" + type.name() +
+                                    "' does not work with ScheduledExecutorService!");
+                    }
+                    if (unConfigurable) {
+                        ses = Executors.unconfigurableScheduledExecutorService(ses);
+                    }
+                    namedInstance = ses;
+                }
+                else if (field.getType().equals(ExecutorService.class)) {
+                    int parallelism = 10;
+                    ExecutorSvc.ExecutorType type = ExecutorSvc.ExecutorType.FixedSize;
+                    boolean unConfigurable = false;
+
+                    ExecutorSvc executorSvc = field.getAnnotation(ExecutorSvc.class);
+                    if (executorSvc != null) {
+                        parallelism = executorSvc.parallelism();
+                        type = executorSvc.type();
+                        unConfigurable = executorSvc.unConfigurable();
+                    }
+
+                    ExecutorService es = null;
+                    switch (type) {
+                        case Cached:
+                            es = Executors.newCachedThreadPool();
+                            break;
+                        case FixedSize:
+                            es = Executors.newFixedThreadPool(parallelism);
+                            break;
+                        case Single:
+                            es = Executors.newSingleThreadExecutor();
+                            break;
+                        case WorkStealing:
+                            es = Executors.newWorkStealingPool(parallelism);
+                            break;
+                        default:
+                            throw new APSActivatorException("Selected type '" + type.name() +
+                                    "' requires a field type of ScheduledExecutorService!");
+                    }
+                    if (unConfigurable) {
+                        es = Executors.unconfigurableExecutorService(es);
+                    }
+                    namedInstance = es;
                 }
                 else {
                     namedInstance = getManagedInstanceRep(field.getType()).instance;
@@ -1358,6 +1438,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         public void run() {
             try {
                 collectInjecteeAndServiceInstancesToManage(entryClass);
+
+                // Remember: The problem with the original thought about having OSGi services as plugins does
+                // not work due to that a wanted plugin service might not have been deployed before this bundle!
                 ServiceLoader<APSActivatorPlugin> pluginLoader = ServiceLoader.load(APSActivatorPlugin.class);
                 try {
                     for (APSActivatorPlugin apsActivatorPlugin : pluginLoader) {
@@ -1367,6 +1450,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 catch (Exception e) {
                     APSActivator.this.activatorLogger.error("Failed executing a plugin!", e);
                 }
+
                 doFieldInjectionsIntoManagedInstances(entryClass, context);
                 doServiceRegistrationsOfManagedServiceInstances(entryClass, context);
                 handleMethodInvocationsOnManagedInstances(entryClass, context, initMethods);

@@ -8,7 +8,7 @@
   <body>
     <H1>APSToolsLib</H1>
     <p>
-      This is a library of utilities including a service tracker that beats the &lt;BEEEP&gt; out of the default one, including exception rather than null response on timeout, timeout specification, getting a proxied service implementation that automatically uses the tracker, allocating a service, calling it, and deallocating it again. This makes it trivially easy to handle a service being restarted or redeployed. It also includes a logger utility that will lookup the standard log service and log to that if found, otherwise just log to stdout.      
+      This is a library of utilities including a service tracker that is far better than the default one, including exception rather than null response on timeout, timeout specification, getting a proxied service implementation that automatically uses the tracker, allocating a service, calling it, and deallocating it again. This makes it trivially easy to handle a service being restarted or redeployed. It also includes a logger utility that will lookup the standard log service and log to that if found, otherwise just log to stdout.      
     </p>
     <p>
       This bundle provides no services. It just makes all its packages public. Every bundle included in APS makes use of APSToolsLib so it must be deployed for things to work.      
@@ -18,7 +18,7 @@
     </p>
     <H2>APSServiceTracker</H2>
     <p>
-      This does the same thing as the standard service tracker included with OSGi, but does it better with more options and flexibility. One of the differences between this tracker and the OSGi one is that this throws an <em>APSNoServiceAvailableException</em> if the service is not available. Personally I think this is easier to work with than having to check for a null result. I also think that trying to keep bundles and services up are better than pulling them down as soon as one depencency goes away for a short while, for example due to redeploy of newer version.      
+      This does the same thing as the standard service tracker included with OSGi, but does it better with more options and flexibility. One of the differences between this tracker and the OSGi one is that this throws an <em>APSNoServiceAvailableException</em> if the service is not available. Personally I think this is easier to work with than having to check for a null result. I also think that trying to keep bundles and services up are better than pulling them down as soon as one depencency goes away for a short while, for example due to redeploy of newer version. This is why APSServiceTracker takes a timeout and waits for a service to come back before failing.      
     </p>
     <p>
       There are several variants of constructors, but here is an example of one of the most used ones within the APS services:      
@@ -382,6 +382,35 @@
          * relevant if the injected type is APSLogger.
          */
         String loggingFor() default "";
+    }
+      </code>
+    </pre>
+    <p>
+      <strong>@ExecutorSvc</strong> - This should always be used in conjunction with @Managed! This also assumes that the annotated field is of type ExecutorService or ScheduledExecutorService. This annotation provides some configuration for the ExecutorService that will be injected.      
+    </p>
+    <pre>
+      <code>
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface ExecutorSvc {
+    
+        enum ExecutorType {
+            FixedSize,
+            WorkStealing,
+            Single,
+            Cached,
+            Scheduled,
+            SingleScheduled
+        }
+    
+        /** This is loosely the number of concurrent threads. */
+        int parallelism() default 10;
+    
+        /** The type of ExecutorService wanted. */
+        ExecutorType type() default ExecutorType.FixedSize;
+    
+        /** If true the created ExecutorService will be wrapped with a delegate that disallows configuration. */
+        boolean unConfigurable() default false;
     }
       </code>
     </pre>
