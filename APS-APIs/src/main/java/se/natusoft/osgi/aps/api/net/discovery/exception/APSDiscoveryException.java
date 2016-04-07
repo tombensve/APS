@@ -36,12 +36,12 @@
  */
 package se.natusoft.osgi.aps.api.net.discovery.exception;
 
-import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
+import se.natusoft.osgi.aps.exceptions.APSIOException;
 
 /**
  * Thrown on service publish problems or bad configuration.
  */
-public class APSDiscoveryException extends APSRuntimeException {
+public class APSDiscoveryException extends APSIOException {
 
     /**
      * Creates a new _APSDiscoveryPublishException_ instance.

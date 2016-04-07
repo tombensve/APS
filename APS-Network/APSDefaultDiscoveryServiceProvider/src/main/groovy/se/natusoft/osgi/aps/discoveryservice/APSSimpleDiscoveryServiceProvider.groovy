@@ -15,6 +15,8 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 import se.natusoft.osgi.aps.tools.util.DictionaryView
 import se.natusoft.osgi.aps.tools.util.LoggingRunnable
 
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
@@ -44,12 +46,15 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
     private APSLogger logger
 
     @Managed(name = "executor-service")
-    private DiscoveryExecutorService executorService
+    @ExecutorSvc(parallelism = 10, type = ExecutorSvc.ExecutorType.FixedSize)
+    private ExecutorService executorService
 
     /** The known local services. */
-    private Set<ServiceDescription> localServices = Collections.synchronizedSet(new HashSet<ServiceDescription>())
+    private Set<Properties> localServices = Collections.synchronizedSet(new HashSet<Properties>())
 
-    private ScheduledThreadPoolExecutor refreshThreadPool = null
+    @Managed(name = "refresh-thread-pool")
+    @ExecutorSvc(parallelism = 2, type = ExecutorSvc.ExecutorType.Scheduled)
+    private ScheduledExecutorService refreshThreadPool = null
 
     private Runnable reAnnounceTask = new Runnable() {
         @Override
@@ -84,8 +89,6 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
      */
     @Initializer
     void init() {
-        this.refreshThreadPool = new ScheduledThreadPoolExecutor(2)
-
         this.refreshThreadPool.scheduleAtFixedRate(this.reAnnounceTask, 180, 180, TimeUnit.SECONDS)
 
         this.refreshThreadPool.scheduleAtFixedRate(this.clearExpiredTask, 120, 120, TimeUnit.SECONDS)
@@ -221,14 +224,14 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
     /**
      * Publishes a local service. This will announce it to other known APSSimpleDiscoveryService instances.
      *
-     * @param service The description of the servcie to publish.
+     * @param service The description of the service to publish.
      *
      * @throws APSDiscoveryException on problems to publish (note: this is a runtime exception!).
      */
     @Override
     @Implements(APSSimpleDiscoveryService.class)
-    void publishService(ServiceDescription service) throws APSDiscoveryException {
-        this.localServices.add(service)
+    void publishService(Properties serviceProps) throws APSDiscoveryException {
+        this.localServices.add(serviceProps)
         this.discoverer.sendUpdate(service, HB_ADD)
     }
 

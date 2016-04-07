@@ -18,7 +18,7 @@ class TCPSendTask implements Runnable {
     //
 
     /** The service description to send. */
-    ServiceDescription serviceDescription
+    Properties serviceDescription
 
     /** Add or remove. */
     byte headerByte

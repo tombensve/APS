@@ -306,23 +306,6 @@
                     <groupId>se.natusoft.tools.codelicmgr</groupId>
                     <artifactId>CodeLicenseManager-maven-plugin</artifactId>
                     <version>${clm.version}</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>se.natusoft.tools.codelicmgr</groupId>
-                            <artifactId>CodeLicenseManager-licenses-common-opensource</artifactId>
-                            <version>${clm.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>se.natusoft.tools.codelicmgr</groupId>
-                            <artifactId>CodeLicenseManager-source-updater-slashstar-comment</artifactId>
-                            <version>${clm.version}</version>
-                        </dependency>
-                        <dependency>
-                            <groupId>se.natusoft.tools.codelicmgr</groupId>
-                            <artifactId>CodeLicenseManager-source-updater-html-xml</artifactId>
-                            <version>${clm.version}</version>
-                        </dependency>
-                    </dependencies>
                 </plugin>
 
                 <plugin>
@@ -638,14 +621,17 @@
                             <dependency>
                                 <groupId>se.natusoft.tools.codelicmgr</groupId>
                                 <artifactId>CodeLicenseManager-licenses-common-opensource</artifactId>
+                                <version>${clm.version}</version>
                             </dependency>
                             <dependency>
                                 <groupId>se.natusoft.tools.codelicmgr</groupId>
                                 <artifactId>CodeLicenseManager-source-updater-slashstar-comment</artifactId>
+                                <version>${clm.version}</version>
                             </dependency>
                             <dependency>
                                 <groupId>se.natusoft.tools.codelicmgr</groupId>
                                 <artifactId>CodeLicenseManager-source-updater-html-xml</artifactId>
+                                <version>${clm.version}</version>
                             </dependency>
                         </dependencies>
 

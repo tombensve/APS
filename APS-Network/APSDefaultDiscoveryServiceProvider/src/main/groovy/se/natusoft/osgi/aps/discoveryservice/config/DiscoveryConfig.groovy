@@ -51,7 +51,6 @@ class DiscoveryConfig extends APSConfig {
     )
     public APSConfigList<ManualServiceEntry> manualServiceEntries
 
-
     @APSConfigDescription(
             configId = "svc-entry",
             description = "A manually configured service entry.",
@@ -60,66 +59,10 @@ class DiscoveryConfig extends APSConfig {
     public static class ManualServiceEntry extends APSConfig {
 
         @APSConfigItemDescription(
-                description = "A description of the service.",
+                description = "Enter 'name=value' on each line.",
                 environmentSpecific = true
         )
-        public APSConfigValue description
-
-        @APSConfigItemDescription(
-                description = "Service name / identifier.",
-                environmentSpecific = true
-        )
-        public APSConfigValue serviceId
-
-        @APSConfigItemDescription(
-                description = "The version of the service.",
-                environmentSpecific = true
-        )
-        public APSConfigValue version
-
-        @APSConfigItemDescription(
-                description = "The host the service resides on. This is for non web based services.",
-                environmentSpecific = true
-        )
-        public APSConfigValue host
-
-        @APSConfigItemDescription(
-                description = "The port the service listens to. This is for non web based services.",
-                environmentSpecific = true
-        )
-        public APSConfigValue port
-
-        @APSConfigItemDescription(
-                description = "The network protocol used by the service.",
-                environmentSpecific = true,
-                validValues = ["TCP", "UDP", "MULTICAST"]
-        )
-        public APSConfigValue networkProtocol
-
-        @APSConfigItemDescription(
-                description = "The protocol used by the service. This is for non web based services.",
-                environmentSpecific = true
-        )
-        public APSConfigValue serviceProtocol
-
-        @APSConfigItemDescription(
-                description = "An URL pointing to the service. This should be specified if it is a web service only accessible via an URL.",
-                environmentSpecific = true
-        )
-        public APSConfigValue url
-
-
-        @APSConfigItemDescription(
-                description = "This can be anything that classifies the entry as something more specific. Like a group or queue or whatever.",
-                environmentSpecific = true
-        )
-        public APSConfigValue classifier
-
-        @APSConfigItemDescription(
-                description = "Describes the content type expected/delivered by the service. For example \"XML\", \"JSON\", \"Binary:Java:Serialized",
-                environmentSpecific = true
-        )
-        public APSConfigValue contentType
+        public APSConfigValueList properties
 
     }
 }

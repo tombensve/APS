@@ -1,5 +1,8 @@
 package se.natusoft.osgi.aps.discoveryservice
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.ExecutorService
@@ -12,6 +15,8 @@ import java.util.concurrent.TimeoutException
  * This wraps a java.util.concurrent.ExecutorService. This so that one instance of this can be injected into both
  * APSSimpleDiscoveryServiceProvider and DiscoveryHandler. The actual instance is setup and configured here.
  */
+@CompileStatic
+@TypeChecked
 class DiscoveryExecutorService implements ExecutorService {
 
     private ExecutorService executorService = Executors.newFixedThreadPool(10)
