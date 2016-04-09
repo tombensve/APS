@@ -60,7 +60,7 @@ public @interface Schedule {
     long delay();
 
     /** If specified how long to wait between runs. */
-    long repeat();
+    long repeat() default 0;
 
     /** The time unit used for the above values. Defaults to seconds. */
     TimeUnit timeUnit() default TimeUnit.SECONDS;
