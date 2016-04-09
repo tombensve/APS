@@ -55,10 +55,7 @@ import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * This class can be specified as bundle activator in which case you use the following annotations:
@@ -84,6 +81,9 @@ import java.util.concurrent.TimeUnit;
  * * **@ExecutorSvc**
  *   This is used in conjunction with @Managed for field types of ExecutorService or ScheduledExecutorService
  *   to configure the injected ExecutorService.
+ *
+ * * **@Schedule**
+ *   This can be used on any field of type Runnable to schedule it to run once or at intervals.
  *
  * * **@BundleStart** -
  *   This should be used on a method and will be called on bundle start. The method should take no arguments.
@@ -186,6 +186,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     /** The mode of this activator instance.  */
     private boolean activatorMode = ACTIVATOR_MODE;
 
+    /** This holds scheduled execution services managed internally by the activator. */
+    private Map<Integer, ScheduledExecutorService> internallyManagedScheduledExecutionServices;
+
     //
     // Constructors
     //
@@ -242,7 +245,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     );
 
             this.listeners = Collections.synchronizedList(new LinkedList<>());
-
+            this.internallyManagedScheduledExecutionServices = new HashMap<>();
             this.activatorLogger.setLoggingFor("APSActivator");
             this.activatorLogger.start(context);
         }
@@ -393,12 +396,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         this.activatorLogger.info("Stopping APSActivator for bundle '" + context.getBundle().getSymbolicName() +
                 "' with activatorMode: " + this.activatorMode);
 
-        for (ListenerWrapper listenerWrapper : this.listeners) {
-            listenerWrapper.stop(context);
-        }
+        this.listeners.forEach(listenerWrapper -> listenerWrapper.stop(context));
         this.listeners = null;
 
-        for (Tuple2<Method, Object> shutdownMethod : this.shutdownMethods) {
+        this.shutdownMethods.forEach(shutdownMethod -> {
             try {
                 //noinspection RedundantArrayCreation
                 shutdownMethod.t1.invoke(shutdownMethod.t2, new Object[0]);
@@ -411,10 +412,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 this.activatorLogger.error("Bundle stop problem!", e);
                 failures.addException(e);
             }
-        }
+        });
         this.shutdownMethods = null;
 
-        for (ServiceRegistration serviceRegistration : this.services) {
+        this.services.forEach(serviceRegistration -> {
             try {
                 serviceRegistration.unregister();
             }
@@ -422,11 +423,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 this.activatorLogger.error("Bundle stop problem!", e);
                 failures.addException(e);
             }
-        }
+        });
         this.services = null;
 
-        for (String trackerKey : this.trackers.keySet()) {
-            APSServiceTracker tracker = this.trackers.get(trackerKey);
+        this.trackers.forEach((name, tracker) -> {
             try {
                 tracker.stop(context);
             }
@@ -434,11 +434,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 this.activatorLogger.error("Bundle stop problem!", e);
                 failures.addException(e);
             }
-        }
+        });
         this.trackers = null;
 
-        for (String namedInstanceKey : this.namedInstances.keySet()) {
-            Object namedInstance = this.namedInstances.get(namedInstanceKey);
+        this.namedInstances.forEach((name, namedInstance)-> {
             if (APSLogger.class.isAssignableFrom(namedInstance.getClass())) {
                 try {
                     ((APSLogger)namedInstance).stop(context);
@@ -458,8 +457,11 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     failures.addException(e);
                 }
             }
-        }
+        });
         this.namedInstances = null;
+
+        this.internallyManagedScheduledExecutionServices.forEach((size, service) -> service.shutdownNow());
+        this.internallyManagedScheduledExecutionServices = null;
 
         this.activatorLogger.stop(context);
         this.activatorLogger = null;
@@ -671,7 +673,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             se.natusoft.osgi.aps.tools.annotation.activator.BundleStop.class,
             se.natusoft.osgi.aps.tools.annotation.activator.FrameworkListener.class,
             se.natusoft.osgi.aps.tools.annotation.activator.Initializer.class,
-            se.natusoft.osgi.aps.tools.annotation.activator.ServiceListener.class
+            se.natusoft.osgi.aps.tools.annotation.activator.ServiceListener.class,
+            se.natusoft.osgi.aps.tools.annotation.activator.Schedule.class
     };
 
     /**
@@ -866,6 +869,18 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     }
 
     /**
+     * This needs to run after all field injections and looks for any @Schedule annotations on fields of
+     * type Runnable.
+     *
+     * @param mangedClass The managed class whose fields to inspect.
+     */
+    protected void scheduleTasks(Class mangedClass) {
+        for (Field field : mangedClass.getDeclaredFields()) {
+            scheduleTask(field, mangedClass);
+        }
+    }
+
+    /**
      * Tracks and injects APSServiceTracker directly or as wrapped service instance using the tracker to
      * call the service depending on the field type.
      *
@@ -1038,7 +1053,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 else {
                     namedInstance = getManagedInstanceRep(field.getType()).instance;
                 }
-                this.namedInstances.put(namedInstanceKey, namedInstance);
+                // For a scheduled Runnable there wont be an instance!
+                if (namedInstance != null) {
+                    this.namedInstances.put(namedInstanceKey, namedInstance);
+                }
             }
             else {
                 this.activatorLogger.info("Got named instance for key '" + namedInstanceKey + "': " +
@@ -1050,17 +1068,103 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 addManagedInstanceRep(managedClass, ir);
             }
 
-            List<InstanceRepresentative> managedInstanceReps = getManagedInstanceReps(managedClass);
+            if (namedInstance != null) {
+                List<InstanceRepresentative> managedInstanceReps = getManagedInstanceReps(managedClass);
 
-            for (InstanceRepresentative managedInstanceRep : managedInstanceReps) {
-                injectObject(managedInstanceRep.instance, namedInstance, field);
+                for (InstanceRepresentative managedInstanceRep : managedInstanceReps) {
+                    injectObject(managedInstanceRep.instance, namedInstance, field);
+                }
+
+                this.activatorLogger.info("Injected '" + namedInstance.getClass().getName() +
+                        "' instance for name '" + managed.name() + "' " +
+                        "into '" + managedClass.getName() + "." + field.getName() + "' for bundle: " +
+                        context.getBundle().getSymbolicName() + "!");
             }
-
-            this.activatorLogger.info("Injected '" + namedInstance.getClass().getName() +
-                    "' instance for name '" + managed.name() + "' " +
-                    "into '" + managedClass.getName() + "." + field.getName() + "' for bundle: " +
-                    context.getBundle().getSymbolicName() + "!");
         }
+    }
+
+    /**
+     * Schedules Runnable field instances using an ScheduledExecutorService.
+     *
+     * @param field The field to possibly schedule in an ScheduledExecutionService.
+     * @param inspectedClass The class the field belongs to.
+     */
+    protected void scheduleTask(Field field, Class inspectedClass) {
+
+        if (Runnable.class.isAssignableFrom(field.getType())) {
+            Schedule schedule = field.getAnnotation(Schedule.class);
+            if (schedule != null) {
+                ScheduledExecutorService executorInst = null;
+                String onName = schedule.on();
+                if (!onName.isEmpty()) {
+                    String nik = onName + ScheduledExecutorService.class.getName();
+                    Object managedExecutorService = this.namedInstances.get(nik);
+                    if (ScheduledExecutorService.class.isAssignableFrom(managedExecutorService.getClass())) {
+                        executorInst = (ScheduledExecutorService)managedExecutorService;
+                        this.activatorLogger.info("Using class defined ScheduledExecutorService("+ onName +"): " + executorInst);
+                    }
+                }
+                if (executorInst == null) {
+                    executorInst = this.internallyManagedScheduledExecutionServices.get(schedule.poolSize());
+                    if (executorInst == null) {
+                        executorInst = Executors.newScheduledThreadPool(schedule.poolSize());
+                        this.internallyManagedScheduledExecutionServices.put(schedule.poolSize(), executorInst);
+                    }
+                    this.activatorLogger.info("Using internal ScheduledExecutorService of max pool size " + schedule.poolSize() +
+                            " : " + executorInst);
+                }
+
+                if (schedule.repeat() != 0) {
+                    if (!ScheduledExecutorService.class.isAssignableFrom(executorInst.getClass())) {
+                        this.activatorLogger.error("@Schedule(on=\"...\") must be of type ScheduledExecutorService!");
+                    }
+                    else {
+                        try {
+                            List<InstanceRepresentative> managedInstanceReps = getManagedInstanceReps(inspectedClass);
+                            field.setAccessible(true);
+                            for (InstanceRepresentative managedInstanceRep : managedInstanceReps) {
+                                ((ScheduledExecutorService) executorInst).scheduleAtFixedRate(
+                                        (Runnable) field.get(managedInstanceRep.instance),
+                                        schedule.delay(),
+                                        schedule.repeat(),
+                                        schedule.timeUnit()
+                                );
+                                this.activatorLogger.info("Scheduled '" + field.get(managedInstanceRep.instance) + "' " +
+                                        "with delay=" + schedule.delay() + " and repeat=" + schedule.repeat() + " using " +
+                                        schedule.timeUnit() + " as time unit.");
+                            }
+                        }
+                        catch (IllegalAccessException iae) {
+                            this.activatorLogger.error("Failed the schedule instance!");
+                        }
+                    }
+                } else {
+                    if (!ScheduledExecutorService.class.isAssignableFrom(executorInst.getClass())) {
+                        this.activatorLogger.error("@Schedule(on=\"...\") must be of type ScheduledExecutorService!");
+                    }
+                    else {
+                        try {
+                            List<InstanceRepresentative> managedInstanceReps = getManagedInstanceReps(inspectedClass);
+                            field.setAccessible(true);
+                            for (InstanceRepresentative managedInstanceRep : managedInstanceReps) {
+                                ((ScheduledExecutorService) executorInst).schedule(
+                                        (Runnable) field.get(managedInstanceRep.instance),
+                                        schedule.delay(),
+                                        schedule.timeUnit()
+                                );
+                                this.activatorLogger.info("Scheduled '" + field.get(managedInstanceRep.instance) + "' " +
+                                        "with delay=" + schedule.delay() + " using " +
+                                        schedule.timeUnit() + " as time unit.");
+                            }
+                        }
+                        catch (IllegalAccessException iae) {
+                            this.activatorLogger.error("Failed to schedule instance!");
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     // ---- Methods ---- //
@@ -1452,6 +1556,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 }
 
                 doFieldInjectionsIntoManagedInstances(entryClass, context);
+                scheduleTasks(entryClass);
                 doServiceRegistrationsOfManagedServiceInstances(entryClass, context);
                 handleMethodInvocationsOnManagedInstances(entryClass, context, initMethods);
             }

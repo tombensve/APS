@@ -46,7 +46,7 @@ public class SearchCriteriaProviderTestService implements TestService {
     private TestService service;
 
     @Override
-    public String getServiceInstanceInfo() {
+    public String getServiceInstanceInfo() throws Exception {
         return service.getServiceInstanceInfo();
     }
 
