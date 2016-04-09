@@ -329,6 +329,31 @@ __@ExecutorSvc__ - This should always be used in conjunction with @Managed! This
             boolean unConfigurable() default false;
         }
 
+__@Schedule__ - Schedules a Runnable using a ScheduledExecutionService. Indifferent from @ExecutorSvc this does not require an @Managed also, but do work with @Managed if that is used to inject an instance of Runnable to be scheduled. @Schedule is handled after all injections have been done.
+
+        @Retention(RetentionPolicy.RUNTIME)
+        @Target(ElementType.FIELD)
+        public @interface Schedule {
+        
+            /** 
+             * The defined executor service to schedule this on. This should be the name of it. If left blank an internal  
+             * ScheduledExecutorService will be used. 
+             */
+            String on() default "";
+        
+            /** The amount of time to wait for the (first) execution. */
+            long delay();
+        
+            /** If specified how long to wait between runs. */
+            long repeat();
+        
+            /** The time unit used for the above values. Defaults to seconds. */
+            TimeUnit timeUnit() default TimeUnit.SECONDS;
+        
+            /** Possibility to affect the size of the thread pool when such is created internally for this (on="..." not provided!). */
+            int poolSize() default 2;
+        }
+
 __@BundleStart__ - This should be used on a method and will be called on bundle start. The method should take no arguments. If you need a BundleContext just inject it with _@Managed_. The use of this annotation is only needed for things not supported by this activator. Please note that a method annotated with this annotation can be static (in which case the class it belongs to will not be instantiaded). You can provide this annotation on as many methods in as many classes as you want. They will all be called (in the order classes are discovered in the bundle).
 
         public @interface BundleStart {
