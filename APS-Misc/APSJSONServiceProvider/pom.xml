@@ -125,6 +125,28 @@
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-json-lib</artifactId>
         </dependency>
+
+        <!--
+            Test
+        -->
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-service-test-support</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-osgi-test-tools</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>junit</groupId>-->
+            <!--<artifactId>junit</artifactId>-->
+            <!--<version>4.12</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
     </dependencies>
 
     <build>
