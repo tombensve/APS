@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2012-01-17: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.api.misc.json.service;
 
@@ -51,7 +51,7 @@ import java.io.OutputStream;
  * should never ever ask for both since the extended service do extend the base service!
  */
 public interface APSJSONExtendedService extends APSJSONService {
-    
+
     /**
      * Reads JSON from an InputStream and produce a populated JavaBean. T
      *
@@ -64,7 +64,7 @@ public interface APSJSONExtendedService extends APSJSONService {
      *
      * @throws IOException on IO failure.
      */
-    public <T> T readJSONToBean(InputStream in, JSONErrorHandler errorHandler, Class<T> beanType) throws IOException;
+    <T> T readJSONToBean(InputStream in, JSONErrorHandler errorHandler, Class<T> beanType) throws IOException;
 
     /**
      * Writes JSON from a JavaBean instance.
@@ -74,7 +74,7 @@ public interface APSJSONExtendedService extends APSJSONService {
      *
      * @throws IOException on IO failure.
      */
-    public void writeJSONFromBean(OutputStream out, Object bean) throws IOException;
+    void writeJSONFromBean(OutputStream out, Object bean) throws IOException;
 
     /**
      * Takes a _JSONValue_ and converts it to a Java value. You will get one of _String_, _Number_, _Boolean_,
@@ -85,7 +85,7 @@ public interface APSJSONExtendedService extends APSJSONService {
      *
      * @return A populated JavaBean instance.
      */
-    public <T> T jsonToJava(JSONValue jsonValue, Class<T> javaType);
+    <T> T jsonToJava(JSONValue jsonValue, Class<T> javaType);
 
     /**
      * Takes a Java object and converts it to a _JSONValue_ subclass.
@@ -94,5 +94,5 @@ public interface APSJSONExtendedService extends APSJSONService {
      *
      * @return A JSONValue subclass.
      */
-    public JSONValue javaToJSON(Object java);
+    JSONValue javaToJSON(Object java);
 }
