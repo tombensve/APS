@@ -2,7 +2,7 @@
 
 This is a simple service where you can publish and unpublish service information. This information will be distributed to all other nodes that are configured to be part of the disovery.
 
-Service data can be configured to be shared by any of the 3 TCP/IP protocols: Multicast, UDP, and TCP. The _APSTCPIPService_ is used to send and receive data.
+Service data can be configured to be shared by Multicast, or TCP. The _APSTCPIPService_ is used to send and receive data.
 
 ## Discovery information
 
