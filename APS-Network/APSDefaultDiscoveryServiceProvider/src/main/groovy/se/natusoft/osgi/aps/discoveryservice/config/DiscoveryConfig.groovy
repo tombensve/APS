@@ -62,7 +62,7 @@ class DiscoveryConfig extends APSConfig {
                 description = "Enter 'name=value' on each line.",
                 environmentSpecific = true
         )
-        public APSConfigValueList properties
+        public APSConfigValueList propertyList
 
     }
 }

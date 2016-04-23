@@ -2,7 +2,6 @@ package se.natusoft.osgi.aps.discoveryservice
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescription
 import se.natusoft.osgi.aps.api.net.tcpip.APSTCPIPService
 import se.natusoft.osgi.aps.tools.APSLogger
 
@@ -16,11 +15,8 @@ class MCastSendTask implements Runnable {
     // Properties
     //
 
-    /** The service to share. */
-    ServiceDescription serviceDescription
-
-    /** Add or remove. */
-    byte headerByte
+    /** The data to send. */
+    byte[] serviceInfo
 
     /** The service to use for sending. */
     APSTCPIPService tcpipService
@@ -40,7 +36,7 @@ class MCastSendTask implements Runnable {
      */
     public void run() {
         try {
-            this.tcpipService.sendDataPacket(this.mcastConnectionPoint, ReadWriteTools.toBytes(headerByte, serviceDescription))
+            this.tcpipService.sendDataPacket(this.mcastConnectionPoint, serviceInfo)
         }
         catch (Exception e) {
             this.logger.error("Failed multicast send task for '${mcastConnectionPoint}'!", e)

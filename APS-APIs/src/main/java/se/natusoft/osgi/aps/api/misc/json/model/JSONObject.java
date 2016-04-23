@@ -36,6 +36,7 @@
  */
 package se.natusoft.osgi.aps.api.misc.json.model;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
@@ -120,7 +121,7 @@ public interface JSONObject extends JSONValue {
      *
      * @param map The Map to import.
      */
-    void fromMap(Map<String, Object> map);
+    void fromMap(Map<String, Serializable> map);
 
     /**
      * Returns the JSONObject as a Map.

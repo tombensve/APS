@@ -5,23 +5,27 @@ import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue
+import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler
+import se.natusoft.osgi.aps.api.misc.json.model.JSONObject
+import se.natusoft.osgi.aps.api.misc.json.model.JSONValue
+import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService
 import se.natusoft.osgi.aps.api.net.discovery.exception.APSDiscoveryException
-import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescription
-import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescriptionProvider
 import se.natusoft.osgi.aps.api.net.tcpip.APSTCPIPService
 import se.natusoft.osgi.aps.api.net.tcpip.DatagramPacketListener
 import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequestListener
+import se.natusoft.osgi.aps.codedoc.Implements
 import se.natusoft.osgi.aps.discoveryservice.config.DiscoveryConfig
+import se.natusoft.osgi.aps.exceptions.APSRuntimeException
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
 import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
-import se.natusoft.osgi.aps.tools.util.LoggingRunnable
 
 import java.time.LocalDateTime
+import java.util.concurrent.ExecutorService
 
-import static ReadWriteTools.HB_ADD
+import static se.natusoft.osgi.aps.api.net.discovery.DiscoveryKeys.*
 
 /**
  * Keeps track of the services and handles all communication.
@@ -34,19 +38,25 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
     // Properties
     //
 
+    /** The known local services. */
+    Set<Properties> localServices = Collections.synchronizedSet(new HashSet<Properties>())
+
+
     /** The known remote services. */
-    Set<ServiceDescription> remoteServices = Collections.synchronizedSet(new HashSet<ServiceDescription>())
+    Set<Properties> remoteServices = Collections.synchronizedSet(new HashSet<Properties>())
 
     //
     // Members
     //
+
+    private final ReadErrorHandler readErrorHandler = new ReadErrorHandler()
 
     private URI mcastConnectionPointURI
     private URI tcpReceiverConnectionPointURI
     private List<URI> senderURIs
 
     @Managed(name = "executor-service")
-    private DiscoveryExecutorService executorService
+    private ExecutorService executorService
 
     //
     // Services
@@ -54,6 +64,9 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
 
     @OSGiService
     private APSTCPIPService tcpipService
+
+    @OSGiService
+    private APSJSONService jsonService
 
     @Managed(name = "default-logger", loggingFor = "aps-default-discovery-service-provider")
     private APSLogger logger
@@ -71,17 +84,43 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
         // then the whole startup process will hang forever, since the config service will never be started due
         // to this code never returning.
 
-        // IDEA bug.
-        //noinspection GroovyAccessibility
-        this.executorService.submit(new LoggingRunnable(this.logger) {
-            @Override
-            void doRun() {
-                DiscoveryConfig.managed.get().addConfigChangedListener(DiscoveryHandler.this)
+        this.executorService.submit {
+            DiscoveryConfig.managed.get().addConfigChangedListener(this)
 
-                // Do initial setup from config.
-                apsConfigChanged(null)
-            }
-        })
+            // Do initial setup from config.
+            apsConfigChanged(null)
+        }
+    }
+
+    /**
+     * Returns a now timestamp as a string.
+     */
+    private static String getNow() {
+        return LocalDateTime.now().toString()
+    }
+
+    /**
+     * Converts a JSONObject to a byte array.
+     * @param jsonObject
+     * @return
+     */
+    private byte[] jsonToBytes(JSONObject jsonObject) {
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream()
+
+        this.jsonService.writeJSON(byteStream, jsonObject, true)
+
+        return byteStream.toByteArray()
+    }
+
+
+    private JSONObject bytesToJSON(byte[] bytes) {
+        ByteArrayInputStream byteStream = new ByteArrayInputStream(bytes)
+        try {
+            return this.jsonService.readJSON(byteStream, this.readErrorHandler) as JSONObject
+        }
+        finally {
+            byteStream.close()
+        }
     }
 
     /**
@@ -90,10 +129,11 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
      * @param event information about the event.
      */
     @Override
+    @Implements(APSConfigChangedListener.class)
     synchronized void apsConfigChanged(APSConfigChangedEvent event) {
         // Do note that we ignore "event" since we don't care what has changed, we only remove and add listeners
         // based on previous and new config. The APSConfigChangedEvent currently has an obvious flaw that prevents
-        // its usefulness: only one singe configId can be provided!
+        // its usefulness: only one singe configId can be provided! A task for this have been created: #aps-67.
 
         this.logger.info("Config changed - reconfiguring ...")
 
@@ -159,9 +199,6 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
     synchronized void shutdown() {
         this.logger.info("Shutting down ...")
         cleanup()
-        if (this.executorService != null) {
-            this.executorService.shutdown()
-        }
         this.logger.info("Shutdown complete!")
     }
 
@@ -173,14 +210,21 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
      *
      * @throws IOException The unavoidable ...
      */
-    void sendUpdate(ServiceDescription serviceDescription, byte headerByte) throws IOException {
+    void sendUpdate(DiscoveryAction action, Properties serviceDescription) throws IOException {
+        JSONObject serviceUpdate = this.jsonService.createJSONObject()
+        serviceUpdate.fromMap([
+                action: action.name(),
+                serviceDescription: serviceDescription
+        ])
+
+        byte[] update = jsonToBytes(serviceUpdate)
+
         if (this.mcastConnectionPointURI != null) {
             this.executorService.submit(new MCastSendTask(
                     mcastConnectionPoint: this.mcastConnectionPointURI,
-                    headerByte: headerByte,
-                    serviceDescription: serviceDescription,
                     tcpipService: this.tcpipService,
-                    logger: this.logger
+                    logger: this.logger,
+                    serviceInfo: update
             ))
         }
 
@@ -188,10 +232,9 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
             this.senderURIs.each { URI sendURI ->
                 this.executorService.submit(new TCPSendTask(
                         tcpSendConnectionPoint: sendURI,
-                        headerByte: headerByte,
-                        serviceDescription: serviceDescription,
                         tcpipService: this.tcpipService,
-                        logger: this.logger
+                        logger: this.logger,
+                        serviceInfo: update
                 ))
             }
         }
@@ -204,17 +247,26 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
      * @param packet The actual data received.
      */
     @Override
+    @Implements(DatagramPacketListener.class)
     void dataBlockReceived(URI receivePoint, DatagramPacket packet) {
-        ServiceDescriptionProvider serviceDescription = new ServiceDescriptionProvider()
-        byte headerByte = ReadWriteTools.fromBytes(serviceDescription, packet.data)
 
-        // Since this is a HashSet which only contains one copy of each entry, any previous entry have to be removed
-        // for a new entry to be added. So no matter if this is only a remove or an add we have to start with remove.
-        this.remoteServices.remove(serviceDescription)
+        Map<String, Object> jsonReq = bytesToJSON(packet.data).toMap()
+        Properties serviceDescription = new Properties()
+        serviceDescription.putAll(jsonReq.serviceDescription as Map<String, String>)
 
-        if (headerByte == HB_ADD) {
-            serviceDescription.setLastUpdated(LocalDateTime.now())
-            this.remoteServices.add(serviceDescription)
+        // Since multicast are received by everyone including the sender we check that the
+        // received service is not available among the local services.
+        if (!this.localServices.contains(serviceDescription)) {
+
+            // Since this is a HashSet which only contains one copy of each entry, any previous entry have to be removed
+            // for a new entry to be added. So no matter if this is only a remove or an add we have to start with remove.
+            this.remoteServices.remove(serviceDescription)
+
+            DiscoveryAction action = DiscoveryAction.from(jsonReq.action)
+            if (action == DiscoveryAction.ADD) {
+                serviceDescription.setProperty(LAST_UPDATED, now)
+                this.remoteServices.add(serviceDescription)
+            }
         }
     }
 
@@ -227,39 +279,81 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
      *                       response should be written to this. DO NOT CLOSE THIS STREAM.
      */
     @Override
+    @Implements(StreamedRequestListener.class)
     void requestReceived(URI receivePoint, InputStream requestStream, OutputStream responseStream) throws IOException {
-        ServiceDescriptionProvider serviceDescription = new ServiceDescriptionProvider()
-        ObjectInputStream ooStream = new ObjectInputStream(requestStream)
-        byte headerByte = ReadWriteTools.readServiceDescription(serviceDescription, ooStream)
+
+        JSONValue json = this.jsonService.readJSON(requestStream, this.readErrorHandler)
+        if (JSONObject.class.isAssignableFrom(json.getClass())) {
+            throw new IOException("Received unexpected JSON! [${json}]")
+        }
+
+        Map<String, Object> jsonReq = (json as JSONObject).toMap()
+        Properties serviceDescription = new Properties()
+        serviceDescription.putAll(jsonReq.serviceDescription as Map<String, String>)
+
 
         // Since this is a HashSet which only contains one copy of each entry, any previous entry have to be removed
         // for a new entry to be added. So no matter if this is only a remove or an add we have to start with remove.
         this.remoteServices.remove(serviceDescription)
 
-        if (headerByte == HB_ADD) {
-            serviceDescription.setLastUpdated(LocalDateTime.now())
+        DiscoveryAction action = DiscoveryAction.from(jsonReq.action)
+        if (action == DiscoveryAction.ADD) {
+            serviceDescription.setProperty(LAST_UPDATED, now)
             this.remoteServices.add(serviceDescription)
         }
     }
 
     /**
-     * Removed external services that are over 3.2 minutes old.
+     * Removed external services that are over 3 minutes old.
      */
     synchronized void cleanExpired() {
         LocalDateTime validTime = LocalDateTime.now().minusMinutes(3)
 
-        List<ServiceDescription> toRemove = new LinkedList<>()
-        this.remoteServices.each { ServiceDescription sd ->
-            if (sd.lastUpdated.isBefore(validTime)) {
+        List<Properties> toRemove = new LinkedList<>()
+        this.remoteServices.each { Properties sd ->
+            LocalDateTime lastUpdated = LocalDateTime.parse(sd.getProperty(LAST_UPDATED))
+            if (lastUpdated?.isBefore(validTime)) {
                 toRemove.add(sd)
                 this.logger.info("Cleanup - Removing: " + sd)
             }
         }
 
-        toRemove.each { ServiceDescription sd ->
+        toRemove.each { Properties sd ->
             this.remoteServices.remove(sd)
         }
     }
 
+    //
+    // Inner Classes
+    //
+
+    public class ReadErrorHandler implements JSONErrorHandler {
+
+        /**
+         * Warns about something.
+         *
+         * @param message The warning message.
+         */
+        @Override
+        @Implements(JSONErrorHandler.class)
+        void warning(String message) {
+            logger.warn(message)
+        }
+
+        /**
+         * Indicate failure.
+         *
+         * @param message The failure message.
+         * @param cause The cause of the failure. Can be null!
+         *
+         * @throws RuntimeException This method must throw a RuntimeException.
+         */
+        @Override
+        @Implements(JSONErrorHandler.class)
+        void fail(String message, Throwable cause) throws RuntimeException {
+            logger.error("Failed to parse received JSON! (${message})", cause)
+            throw new APSRuntimeException(message, cause)
+        }
+    }
 }
 

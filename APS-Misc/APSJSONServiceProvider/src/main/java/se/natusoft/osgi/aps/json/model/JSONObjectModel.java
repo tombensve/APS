@@ -40,6 +40,7 @@ package se.natusoft.osgi.aps.json.model;
 
 import se.natusoft.osgi.aps.api.misc.json.model.*;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -183,8 +184,8 @@ public class JSONObjectModel extends JSONModel<se.natusoft.osgi.aps.json.JSONObj
      * @param map The Map to import.
      */
     @Override
-    public void fromMap(Map<String, Object> map) {
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
+    public void fromMap(Map<String, Serializable> map) {
+        for (Map.Entry<String, Serializable> entry : map.entrySet()) {
             Class entryClass = entry.getValue().getClass();
 
             if (String.class.isAssignableFrom(entryClass)) {

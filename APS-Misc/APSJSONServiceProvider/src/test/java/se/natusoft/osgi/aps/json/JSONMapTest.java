@@ -6,6 +6,7 @@ import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools;
 import se.natusoft.osgi.aps.tools.APSServiceTracker;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -34,7 +35,7 @@ public class JSONMapTest extends OSGIServiceTestTools {
                 props.setProperty("desc", "For testing Map and properties to JSONObject.");
                 props.setProperty("qaz", "wsx");
 
-                Map<String, Object> inMap = new HashMap<>();
+                Map<String, Serializable> inMap = new HashMap<>();
                 inMap.put("action", "Test");
                 inMap.put("data", props);
 

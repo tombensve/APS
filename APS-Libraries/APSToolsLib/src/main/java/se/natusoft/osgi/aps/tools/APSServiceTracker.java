@@ -372,6 +372,13 @@ public class APSServiceTracker<Service>  implements ServiceListener{
 
     /**
      * Stops tracking services and clears all tracked services.
+     */
+    public void stop() {
+        stop(null);
+    }
+
+    /**
+     * Stops tracking services and clears all tracked services.
      *
      * @param context The stop context.
      */

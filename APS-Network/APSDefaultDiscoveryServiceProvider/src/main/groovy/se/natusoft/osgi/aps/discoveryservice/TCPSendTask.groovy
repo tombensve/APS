@@ -2,9 +2,7 @@ package se.natusoft.osgi.aps.discoveryservice
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescription
 import se.natusoft.osgi.aps.api.net.tcpip.APSTCPIPService
-import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequest
 import se.natusoft.osgi.aps.tools.APSLogger
 
 /**
@@ -17,11 +15,8 @@ class TCPSendTask implements Runnable {
     // Properties
     //
 
-    /** The service description to send. */
-    Properties serviceDescription
-
-    /** Add or remove. */
-    byte headerByte
+    /** The service data to send. */
+    byte[] serviceInfo
 
     /** The service to send with. */
     APSTCPIPService tcpipService
@@ -44,9 +39,8 @@ class TCPSendTask implements Runnable {
             this.tcpipService.sendStreamedRequest(tcpSendConnectionPoint, {
                 URI sendPoint, OutputStream requestStream, InputStream responseStream ->
 
-                ObjectOutputStream ooStream = new ObjectOutputStream(requestStream)
-                ReadWriteTools.writeServiceDescription(headerByte, serviceDescription, ooStream)
-                ooStream.flush()
+                requestStream.write(serviceInfo)
+                requestStream.flush()
             })
         }
         catch (Exception e) {
