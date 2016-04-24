@@ -117,7 +117,7 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
      */
     @Override
     Set<Properties> getServices(String propertyQuery) {
-        Filter sdPropsFilter = FrameworkUtil.createFilter(propertyQuery);
+        Filter sdPropsFilter = FrameworkUtil.createFilter(propertyQuery)
         Set<Properties> remoteSvcs = this.discoverer.remoteServices.findAll { Properties serviceDescription ->
             sdPropsFilter.match(serviceDescription)
         }
@@ -139,8 +139,9 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
     @Override
     @Implements(APSSimpleDiscoveryService.class)
     void publishService(Properties serviceDescription) throws APSDiscoveryException {
-        this.discoverer.localServices.add(serviceDescription)
-        this.discoverer.sendUpdate(DiscoveryAction.ADD, serviceDescription)
+        if (this.discoverer.localServices.add(serviceDescription)) {
+            this.discoverer.sendUpdate(DiscoveryAction.ADD, serviceDescription)
+        }
     }
 
     /**
@@ -155,7 +156,7 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
     @Implements(APSSimpleDiscoveryService.class)
     void unpublishService(String unpublishFilter) throws APSDiscoveryException {
 
-        Filter sdPropsFilter = FrameworkUtil.createFilter(unpublishFilter);
+        Filter sdPropsFilter = FrameworkUtil.createFilter(unpublishFilter)
         Set<Properties> localSvcs = this.discoverer.localServices.findAll { Properties serviceDescription ->
             sdPropsFilter.match(serviceDescription)
         }

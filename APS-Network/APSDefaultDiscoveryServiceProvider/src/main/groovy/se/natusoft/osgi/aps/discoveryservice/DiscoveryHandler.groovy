@@ -264,6 +264,10 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
 
             DiscoveryAction action = DiscoveryAction.from(jsonReq.action)
             if (action == DiscoveryAction.ADD) {
+                // If we didn't do the remove above this would be much more difficult since we would be forced
+                // to loop through all existing entries looking for the one matching the received one, and then
+                // set LAST_UPDATED on that one. This of course only when there already is an identical entry,
+                // so consideration for that would also be needed.
                 serviceDescription.setProperty(LAST_UPDATED, now)
                 this.remoteServices.add(serviceDescription)
             }

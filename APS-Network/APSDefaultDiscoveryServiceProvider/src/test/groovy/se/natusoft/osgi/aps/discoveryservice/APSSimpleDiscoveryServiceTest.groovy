@@ -23,7 +23,7 @@ import se.natusoft.osgi.aps.tools.tracker.WithService
 class APSSimpleDiscoveryServiceTest extends OSGIServiceTestTools {
 
     // If this test fails, raise this number! I have a very fast machine ...
-    private static final int DELAY = 1000;
+    private static final int DELAY = 1000
 
     private static boolean isTestActive() {
         return !(System.getProperty("aps.test.disabled") == "true")
