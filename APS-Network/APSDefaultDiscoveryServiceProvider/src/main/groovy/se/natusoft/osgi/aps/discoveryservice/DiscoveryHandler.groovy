@@ -250,9 +250,9 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
     @Implements(DatagramPacketListener.class)
     void dataBlockReceived(URI receivePoint, DatagramPacket packet) {
 
-        Map<String, Object> jsonReq = bytesToJSON(packet.data).toMap()
+        Map<String, Object> jsonUpdate = bytesToJSON(packet.data).toMap()
         Properties serviceDescription = new Properties()
-        serviceDescription.putAll(jsonReq.serviceDescription as Map<String, String>)
+        serviceDescription.putAll(jsonUpdate.serviceDescription as Map<String, String>)
 
         // Since multicast are received by everyone including the sender we check that the
         // received service is not available among the local services.
@@ -262,7 +262,7 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
             // for a new entry to be added. So no matter if this is only a remove or an add we have to start with remove.
             this.remoteServices.remove(serviceDescription)
 
-            DiscoveryAction action = DiscoveryAction.from(jsonReq.action)
+            DiscoveryAction action = DiscoveryAction.from(jsonUpdate.action)
             if (action == DiscoveryAction.ADD) {
                 // If we didn't do the remove above this would be much more difficult since we would be forced
                 // to loop through all existing entries looking for the one matching the received one, and then

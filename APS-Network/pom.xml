@@ -62,8 +62,6 @@
         <module>APSExternalProtocolExtender</module>
         <module>APSExtProtocolHTTPTransportProvider</module>
         <module>APSStreamedJSONRPCProtocolProvider</module>
-        <module>APSGroups</module>
-        <module>APSNetTimeServiceProvider</module>
         <module>APSRabbitMQMessageServiceProvider</module>
         <module>APSTCPIPServiceProvider</module>
         <module>APSDefaultDiscoveryServiceProvider</module>
