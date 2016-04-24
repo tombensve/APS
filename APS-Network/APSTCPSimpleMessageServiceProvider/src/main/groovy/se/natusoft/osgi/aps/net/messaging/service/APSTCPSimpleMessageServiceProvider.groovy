@@ -6,8 +6,6 @@ import se.natusoft.docutations.Implements
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue
-import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescription
-import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescriptionProvider
 import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
 import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
@@ -66,7 +64,7 @@ class APSTCPSimpleMessageServiceProvider implements APSSimpleMessageService, APS
     private URI recvConnectionPoint = null
 
     /** For registering with the discovery service. */
-    private ServiceDescription sd = null
+    private Properties sd = null
 
     /** For sending more efficiently. */
     private ExecutorService threadPool = null
@@ -95,20 +93,20 @@ class APSTCPSimpleMessageServiceProvider implements APSSimpleMessageService, APS
 
     private void registerWithDiscoveryService() {
         if (ServiceConfig.managed.get().registerWithDiscoveryService.boolean) {
-            this.sd = new ServiceDescriptionProvider(
-                    serviceHost: InetAddress.getLocalHost().hostName,
-                    servicePort: this.recvConnectionPoint.port,
-                    serviceProtocol: "TCP",
-                    serviceId: DISCOVERY_ENTRY_ID,
-                    version: DISCOVERY_ENTRY_VERSION
-            )
+            this.sd = new Properties()
+            this.sd.host = InetAddress.getLocalHost().hostName
+            this.sd.port = this.recvConnectionPoint.port
+            this.sd.protocol = "TCP"
+            this.sd.name = DISCOVERY_ENTRY_ID
+            this.sd.version = DISCOVERY_ENTRY_VERSION
+            this.sd.apsURI = "tcp://${sd.host}:${sd.port}"
 
             this.discoveryService.publishService(this.sd)
         }
     }
 
     private void unregisterWithDiscoveryService() {
-        if (this.sd != null) {
+        if (this.sd != null && ServiceConfig.managed.get().registerWithDiscoveryService.boolean) {
             this.discoveryService.unpublishService(this.sd)
             this.sd = null
         }
@@ -136,10 +134,11 @@ class APSTCPSimpleMessageServiceProvider implements APSSimpleMessageService, APS
         if (ServiceConfig.managed.get().lookInDiscoveryService.boolean) {
             try {
                 def unique = [:] as Map<String, String>
-                this.discoveryService.getDiscoveredService(DISCOVERY_ENTRY_ID, DISCOVERY_ENTRY_VERSION).each { ServiceDescription sd ->
+                this.discoveryService.getServices("&((name=${DISCOVERY_ENTRY_ID})(version=${DISCOVERY_ENTRY_VERSION}))").each
+                { Properties sd ->
 
-                    def hostPort = "${sd.serviceHost}:${sd.servicePort}" as String
-                    def discoveredAddress = InetAddress.getByName(sd.serviceHost)
+                    def hostPort = "${sd.host}:${sd.port}" as String
+                    def discoveredAddress = InetAddress.getByName("${sd.host}")
 
                     if (!unique.containsKey(hostPort) && discoveredAddress != InetAddress.localHost) {
                         this.senders.add(new URI("tcp://${hostPort}#async"))
