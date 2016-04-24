@@ -239,11 +239,14 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService
     }
 
     @Issue(
-            target = "IntelliJ IDEA", targetVersion = "14.0.2",
+            target = "IntelliJ IDEA", targetVersion = "14.0.2-2016.1",
             id ="IDEA-134831",
-            description =
-                    "'Object instance ->' is incorrectly marked as an error! If this is an error in IDEA or Groovy can be discussed :-)",
-            url = "https://youtrack.jetbrains.com/issue/IDEA-134831"
+            description = [
+                    "'Object instance ->' is incorrectly marked as an error!",
+                    "This has priority 'Major' and nothing has been done yet!"
+                    ],
+            url = "https://youtrack.jetbrains.com/issue/IDEA-134831",
+            dateReported = "28 Dec 2014"
     )
     private void startNewInstances() {
         RabbitMQMessageServiceConfig.managed.get().instances.findAll { RabbitMQMessageServiceConfig.RMQInstance instance ->
