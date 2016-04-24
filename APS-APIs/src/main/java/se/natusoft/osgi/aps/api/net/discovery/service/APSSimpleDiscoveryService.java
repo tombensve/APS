@@ -78,6 +78,16 @@ public interface APSSimpleDiscoveryService {
      * Recalls the locally published service, announcing to other known APSSimpleDiscoveryService instances that this
      * service is no longer available.
      *
+     * @param serviceProps The same service properties used to publish service.
+     *
+     * @throws APSDiscoveryException on problems to publish (note: this is a runtime exception!).
+     */
+    void unpublishService(Properties serviceProps) throws APSDiscoveryException;
+
+    /**
+     * Recalls the locally published service, announcing to other known APSSimpleDiscoveryService instances that this
+     * service is no longer available.
+     *
      * @param unpublishFilter An LDAP type filter that matches an entry or entries to unpublish. Any non locally published
      *                        services cauth in the filter will be ignored.
      *

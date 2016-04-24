@@ -148,6 +148,19 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
      * Recalls the locally published service, announcing to other known APSSimpleDiscoveryService instances that this
      * service is no longer available.
      *
+     * @param serviceProps The same service properties used to publish service.
+     *
+     * @throws APSDiscoveryException on problems to publish (note: this is a runtime exception!).
+     */
+    void unpublishService(Properties serviceDescription) throws APSDiscoveryException {
+        this.discoverer.localServices.remove(serviceDescription)
+        this.discoverer.sendUpdate(DiscoveryAction.REMOVE, serviceDescription)
+    }
+
+    /**
+     * Recalls the locally published service, announcing to other known APSSimpleDiscoveryService instances that this
+     * service is no longer available.
+     *
      * @param service The service to unpublish.
      *
      * @throws APSDiscoveryException on problems to publish (note: this is a runtime exception!).
@@ -162,8 +175,7 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
         }
 
         localSvcs.each { Properties serviceDescription ->
-            this.discoverer.localServices.remove(serviceDescription)
-            this.discoverer.sendUpdate(DiscoveryAction.REMOVE, serviceDescription)
+            unpublishService(serviceDescription)
         }
     }
 
