@@ -8,6 +8,7 @@ import se.natusoft.docutations.Implements
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue
 import se.natusoft.osgi.aps.api.net.discovery.exception.APSDiscoveryException
 import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService
+import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.discoveryservice.config.DiscoveryConfig
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
@@ -19,7 +20,11 @@ import java.util.concurrent.TimeUnit
  * to receive and announce services. What is in the end supported depends on how it is configured.
  */
 @OSGiServiceProvider(properties = [
-        @OSGiProperty(name = "service-provider", value = "aps-default-discovery-service-provider")
+        @OSGiProperty(name = APS.SERVICE_PROVIDER, value = "aps-default-discovery-service-provider"),
+        @OSGiProperty(name = APS.SERVICE_CATEGORY, value = "network"),
+        @OSGiProperty(name = APS.SERVICE_FUNCTION, value = "discovery"),
+        @OSGiProperty(name = "network", value = APS.TRUE),
+        @OSGiProperty(name = "discovery", value = APS.TRUE),
 ])
 @CompileStatic
 @TypeChecked

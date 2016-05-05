@@ -124,6 +124,7 @@
             se.natusoft.osgi.aps.api.net.tcpip;version="${project.version}",
             se.natusoft.osgi.aps.api.net.util;version="${project.version}",
             se.natusoft.osgi.aps.api.web.config;version="${project.version}",
+            se.natusoft.osgi.aps.constants;version="${project.version}",
             se.natusoft.osgi.aps.util;version="${project.version}"
         </osgi.export.package>
 

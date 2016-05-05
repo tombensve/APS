@@ -9,6 +9,7 @@ import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
 import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
 import se.natusoft.osgi.aps.api.net.util.TypedData
 import se.natusoft.osgi.aps.codedoc.Issue
+import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.PeskyWabbitConnectionManager
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -22,15 +23,15 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 @CompileStatic
 @TypeChecked
 @OSGiServiceProvider(
-        properties = @OSGiProperty(
-                // Since this class implements APSSimpleMessageService it would make sense for this constant
-                // to not require full qualification. The Groovy compiler (2.4.5) is however of a different
-                // opinion. Maybe its because this is referenced in an annotation outside of the class.
-                // IDEA however complains loudly about the full qualification here, incorrectly (well, the
-                // compiler wins this argument), saying it is "unnecessary".
-                name = APSSimpleMessageService.APS_MESSAGE_SERVICE_PROVIDER,
-                value = "aps-rabbitmq-simple-message-provider"
-        )
+        properties = [
+                @OSGiProperty(name = APS.SERVICE_PROVIDER, value = "aps-rabbitmq-simple-message-provider"),
+                @OSGiProperty(name = APS.SERVICE_CATEGORY, value = APS.Messaging.SERVICE_CATEGORY),
+                @OSGiProperty(name = APS.SERVICE_FUNCTION, value = APS.Messaging.SERVICE_FUNCTION),
+                @OSGiProperty(name = APS.Messaging.PERSISTENT, value = "true"),
+                @OSGiProperty(name = APS.Messaging.MULTIPLE_RECEIVERS, value = "true"),
+                @OSGiProperty(name = APS.Messaging.SERVICE_CATEGORY, value = APS.TRUE),
+                @OSGiProperty(name = APS.Messaging.SERVICE_FUNCTION, value = APS.TRUE)
+        ]
 )
 class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService {
 

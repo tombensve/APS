@@ -13,6 +13,7 @@ import se.natusoft.osgi.aps.api.net.tcpip.APSTCPIPService
 import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequest
 import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequestListener
 import se.natusoft.osgi.aps.api.net.util.TypedData
+import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.messaging.config.ServiceConfig
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
@@ -26,7 +27,13 @@ import java.util.concurrent.Future
  */
 @SuppressWarnings("GroovyUnusedDeclaration")
 @OSGiServiceProvider(properties = [
-        @OSGiProperty(name = "service-provider", value = "aps-tcp-simple-message-service-provider")
+        @OSGiProperty(name = APS.SERVICE_PROVIDER, value = "aps-tcp-simple-message-service-provider"),
+        @OSGiProperty(name = APS.SERVICE_CATEGORY, value = APS.Messaging.SERVICE_CATEGORY),
+        @OSGiProperty(name = APS.SERVICE_FUNCTION, value = APS.Messaging.SERVICE_FUNCTION),
+        @OSGiProperty(name = APS.Messaging.SERVICE_CATEGORY, value = APS.TRUE),
+        @OSGiProperty(name = APS.Messaging.SERVICE_FUNCTION, value = APS.TRUE),
+        @OSGiProperty(name = APS.Messaging.PERSISTENT, value = "false"),
+        @OSGiProperty(name = APS.Messaging.MULTIPLE_RECEIVERS, value = "true")
 ])
 @CompileStatic
 @TypeChecked
