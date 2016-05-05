@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
  *         2016-02-27: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.api.net.util;
 
@@ -42,7 +42,7 @@ import java.io.*;
  * This represents a generic container for putting data in. This can be extended for specific types of boxes.
  * See APSJSONBox for an example.
  */
-public interface APSBox {
+public interface APSBox extends TypedData {
 
     /**
      * Set the content bytes of the box.
@@ -59,12 +59,12 @@ public interface APSBox {
     /**
      * Returns an OutputStream on which to write to the box.
      */
-    OutputStream getContentOutputStream();
+    ObjectOutputStream getContentOutputStream() throws IOException;
 
     /**
      * Returns an InputStream from which to read from the box.
      */
-    InputStream getContentInputStream();
+    ObjectInputStream getContentInputStream() throws IOException;
 
     /**
      * Returns this size of the box.
@@ -135,6 +135,8 @@ public interface APSBox {
 
         private byte[] content = new byte[0];
 
+        private String contentType = "";
+
         //
         // Constructors
         //
@@ -167,24 +169,42 @@ public interface APSBox {
         }
 
         /**
+         * Sets the type of the content.
+         *
+         * @param contentType The type to set. Preferably use mime types like "application/json", etc.
+         */
+        @Override
+        public void setContentType(String contentType) {
+            this.contentType = contentType;
+        }
+
+        /**
+         * Returns the type of the content.
+         */
+        @Override
+        public String getContentType() {
+            return this.contentType;
+        }
+
+        /**
          * Returns an OutputStream on which to write to the box.
          */
         @Override
-        public OutputStream getContentOutputStream() {
-            return new ByteArrayOutputStream() {
+        public ObjectOutputStream getContentOutputStream() throws IOException {
+            return new ObjectOutputStream(new ByteArrayOutputStream() {
                 @Override
                 public void close() throws IOException {
                     APSBoxDefaultProvider.this.content = getContent();
                 }
-            };
+            });
         }
 
         /**
          * Returns an InputStream from which to read from the box.
          */
         @Override
-        public InputStream getContentInputStream() {
-            return new ByteArrayInputStream(this.content);
+        public ObjectInputStream getContentInputStream() throws IOException {
+            return new ObjectInputStream(new ByteArrayInputStream(this.content));
         }
 
         /**

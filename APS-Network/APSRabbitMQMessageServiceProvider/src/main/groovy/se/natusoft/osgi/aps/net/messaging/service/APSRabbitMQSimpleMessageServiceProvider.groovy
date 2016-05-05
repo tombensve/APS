@@ -1,25 +1,18 @@
 package se.natusoft.osgi.aps.net.messaging.service
 
-import com.rabbitmq.client.Connection
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
-
 import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
 import se.natusoft.osgi.aps.api.net.util.TypedData
 import se.natusoft.osgi.aps.codedoc.Issue
-import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.PeskyWabbitConnectionManager
 import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.BundleStart
-import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+import se.natusoft.osgi.aps.tools.annotation.activator.*
 
 /**
  * Provides and manages this service.
@@ -200,12 +193,7 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService
         APSRabbitMQMessageProvider messageService = new APSRabbitMQMessageProvider(
                 logger: this.logger,
                 name: instance.name.string,
-                connectionProvider: new ConnectionProvider() {
-                    @Override
-                    Connection getConnection() throws IOException {
-                        return APSRabbitMQSimpleMessageServiceProvider.this.rabbitMQConnectionManager.connection
-                    }
-                },
+                connectionProvider: { return rabbitMQConnectionManager.connection },
                 instanceConfig: instance
         )
         messageService.start()
