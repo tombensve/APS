@@ -2,12 +2,12 @@ package se.natusoft.osgi.aps.persistentqueue
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import se.natusoft.docutations.Implements
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFile
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
 import se.natusoft.osgi.aps.api.misc.queue.APSNamedQueueService
 import se.natusoft.osgi.aps.api.misc.queue.APSQueue
-import se.natusoft.osgi.aps.codedoc.Implements
 import se.natusoft.osgi.aps.exceptions.APSIOException
 import se.natusoft.osgi.aps.exceptions.APSResourceNotFoundException
 import se.natusoft.osgi.aps.tools.APSLogger

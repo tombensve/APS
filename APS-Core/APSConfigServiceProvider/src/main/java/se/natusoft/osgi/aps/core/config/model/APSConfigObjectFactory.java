@@ -38,6 +38,7 @@
  */
 package se.natusoft.osgi.aps.core.config.model;
 
+import se.natusoft.docutations.Implements;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigList;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValueList;
@@ -45,7 +46,6 @@ import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEditModel;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueStore;
-import se.natusoft.osgi.aps.codedoc.Implements;
 import se.natusoft.osgi.aps.core.config.model.admin.APSConfigEditModelImpl;
 import se.natusoft.osgi.aps.tools.APSLogger;
 

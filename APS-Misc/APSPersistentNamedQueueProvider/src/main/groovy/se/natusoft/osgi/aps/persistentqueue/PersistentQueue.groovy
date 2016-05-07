@@ -2,17 +2,12 @@ package se.natusoft.osgi.aps.persistentqueue
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import se.natusoft.docutations.Implements
 import se.natusoft.osgi.aps.api.misc.queue.APSQueue
-import se.natusoft.osgi.aps.codedoc.Implements
 import se.natusoft.osgi.aps.exceptions.APSIOException
 import se.natusoft.osgi.aps.exceptions.APSIOTimeoutException
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
-
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.locks.Condition
-import java.util.concurrent.locks.Lock
-import java.util.concurrent.locks.ReentrantLock
 
 //TODO: Have to lock and wait for data on empty read, but with a timeout.
 

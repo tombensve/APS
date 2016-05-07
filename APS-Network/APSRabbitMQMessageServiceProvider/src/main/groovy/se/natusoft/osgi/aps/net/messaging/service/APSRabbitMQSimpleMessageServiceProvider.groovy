@@ -3,12 +3,12 @@ package se.natusoft.osgi.aps.net.messaging.service
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.osgi.framework.BundleContext
+import se.natusoft.docutations.Issue
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
 import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
 import se.natusoft.osgi.aps.api.net.util.TypedData
-import se.natusoft.osgi.aps.codedoc.Issue
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.PeskyWabbitConnectionManager
@@ -228,14 +228,13 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService
     }
 
     @Issue(
-            target = "IntelliJ IDEA", targetVersion = "14.0.2-2016.1",
             id ="IDEA-134831",
             description = [
+                    "reported version:14.0.2-2016.1, date reported:28 Dec 2014",
                     "'Object instance ->' is incorrectly marked as an error!",
                     "This has priority 'Major' and nothing has been done yet!"
                     ],
-            url = "https://youtrack.jetbrains.com/issue/IDEA-134831",
-            dateReported = "28 Dec 2014"
+            url = "https://youtrack.jetbrains.com/issue/IDEA-134831"
     )
     private void startNewInstances() {
         RabbitMQMessageServiceConfig.managed.get().instances.findAll { RabbitMQMessageServiceConfig.RMQInstance instance ->

@@ -2,6 +2,7 @@ package se.natusoft.osgi.aps.discoveryservice
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import se.natusoft.docutations.Implements
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue
@@ -13,7 +14,6 @@ import se.natusoft.osgi.aps.api.net.discovery.exception.APSDiscoveryException
 import se.natusoft.osgi.aps.api.net.tcpip.APSTCPIPService
 import se.natusoft.osgi.aps.api.net.tcpip.DatagramPacketListener
 import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequestListener
-import se.natusoft.osgi.aps.codedoc.Implements
 import se.natusoft.osgi.aps.discoveryservice.config.DiscoveryConfig
 import se.natusoft.osgi.aps.exceptions.APSRuntimeException
 import se.natusoft.osgi.aps.tools.APSLogger

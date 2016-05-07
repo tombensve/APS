@@ -36,10 +36,9 @@
  */
 package se.natusoft.osgi.aps.api.misc.queue;
 
-import se.natusoft.osgi.aps.codedoc.Optional;
 import se.natusoft.osgi.aps.exceptions.APSIOException;
 import se.natusoft.osgi.aps.exceptions.APSIOTimeoutException;
-
+import se.natusoft.docutations.Optional;
 /**
  * This defines a simple queue api.
  */

@@ -128,26 +128,31 @@
                 <groupId>se.natusoft.osgi.aps</groupId>
                 <artifactId>aps-apis</artifactId>
                 <version>${project.version}</version>
+                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>se.natusoft.osgi.aps</groupId>
                 <artifactId>aps-tools-lib</artifactId>
                 <version>${project.version}</version>
+                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>se.natusoft.osgi.aps</groupId>
                 <artifactId>aps-json-lib</artifactId>
                 <version>${project.version}</version>
+                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>se.natusoft.osgi.aps</groupId>
                 <artifactId>aps-web-tools</artifactId>
                 <version>${project.version}</version>
+                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>se.natusoft.osgi.aps</groupId>
                 <artifactId>aps-vaadin-web-tools</artifactId>
                 <version>${project.version}</version>
+                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.groovy</groupId>
@@ -207,7 +212,7 @@
             -->
             <groupId>se.natusoft.annotation</groupId>
             <artifactId>docutations</artifactId>
-            <version>1.1</version>
+            <version>1.2</version>
             <scope>provided</scope>
         </dependency>
 
