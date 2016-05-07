@@ -49,7 +49,7 @@ import se.natusoft.osgi.aps.api.external.model.type.DataTypeDescription;
 import se.natusoft.osgi.aps.api.external.model.type.ParameterDataTypeDescription;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
-import se.natusoft.osgi.aps.api.net.discovery.model.ServiceDescriptionProvider;
+import se.natusoft.osgi.aps.api.net.discovery.ServiceDescription;
 import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService;
 import se.natusoft.osgi.aps.api.net.rpc.errors.ErrorType;
 import se.natusoft.osgi.aps.api.net.rpc.errors.HTTPError;
@@ -87,6 +87,7 @@ import java.util.*;
  * <p/>
  * If you bring up "http://host:port/apsrpc/" in a browser you will get information about available protocols and services.
  */
+@SuppressWarnings("WeakerAccess")
 public class RPCServlet extends HttpServlet implements APSExternalProtocolListener, OnServiceAvailable<APSSimpleDiscoveryService> {
     //
     // Cosntants
@@ -294,7 +295,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
             pathInfo = pathInfo.substring(1);
         }
         if (pathInfo.startsWith("_help")) {
-            if (RPCServletConfig.mc.get().enableHelpWeb.toBoolean()) {
+            if (RPCServletConfig.mc.get().enableHelpWeb.getBoolean()) {
                 // If the first page help does not end in '/' then we want to redirect so that it does. Otherwise the
                 // relative links generated for services will be incorrect.
                 if (pathInfo.equals("_help")) {
@@ -455,150 +456,193 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
         StreamedRPCProtocol protocol = this.externalProtocolService.getStreamedProtocolByNameAndVersion(protocolName, version);
         if (protocol != null) {
 
-            List<RPCRequest> requests = null;
-
             String reqMethod = req.getMethod().toUpperCase();
-            switch (reqMethod) {
-                case "GET":
-                    requests = new LinkedList<>();
-                    requests.add(protocol.parseRequest(service, serviceClass, method, getParameters(req), RequestIntention.READ));
-                    break;
-                case "PUT":
-                    requests = protocol.parseRequests(service, serviceClass, method, req.getInputStream(), RequestIntention.UPDATE);
-                    break;
-                case "POST":
-                    requests = protocol.parseRequests(service, serviceClass, method, req.getInputStream(), RequestIntention.CREATE);
-                    break;
-                case "DELETE":
-                    requests = new LinkedList<>();
-                    requests.add(protocol.parseRequest(service, serviceClass, method, getParameters(req), RequestIntention.DELETE));
-                    break;
-                default:
-                    // We fallback on READ if we get something unexpected here!
-                    requests = new LinkedList<>();
-                    requests.add(protocol.parseRequest(service, serviceClass, method, getParameters(req), RequestIntention.READ));
-                    break;
-            }
+            GetReqParams getReqParams = new GetReqParams();
+            getReqParams.method = method;
+            getReqParams.protocol = protocol;
+            getReqParams.req = req;
+            getReqParams.reqMethod = reqMethod;
+            getReqParams.service = service;
+            getReqParams.serviceClass = serviceClass;
+            List<RPCRequest> requests = getRequests(getReqParams);
 
-            // It is possible to send multiple requests on the stream!
-            for (RPCRequest rpcRequest : requests) {
+            HandleRequestsParams handleRequestsParams = new HandleRequestsParams();
+            handleRequestsParams.method = method;
+            handleRequestsParams.protocol = protocol;
+            handleRequestsParams.requests = requests;
+            handleRequestsParams.service = service;
+            handleRequestsParams.resp = resp;
+            handleRequests(handleRequestsParams);
 
-                try {
-                    if (rpcRequest.isValid()) {
-                        if (method == null || method.equals("@") || method.equals("-")) {
-                            method = rpcRequest.getMethod();
+        }
+        else {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No RPC protocol provider found for protocol '" + protocolName +
+                    "' with version '" + version + "'!");
+        }
+    }
+
+    private static class GetReqParams {
+        public String reqMethod;
+        public StreamedRPCProtocol protocol;
+        public String service;
+        public Class serviceClass;
+        public String method;
+        public HttpServletRequest req;
+    }
+
+    private List<RPCRequest> getRequests(GetReqParams params) throws IOException {
+        List<RPCRequest> requests;
+
+        switch (params.reqMethod) {
+            case "GET":
+                requests = new LinkedList<>();
+                requests.add(params.protocol.parseRequest(params.service, params.serviceClass, params.method, getParameters(params.req), RequestIntention.READ));
+                break;
+            case "PUT":
+                requests = params.protocol.parseRequests(params.service, params.serviceClass, params.method, params.req.getInputStream(), RequestIntention.UPDATE);
+                break;
+            case "POST":
+                requests = params.protocol.parseRequests(params.service, params.serviceClass, params.method, params.req.getInputStream(), RequestIntention.CREATE);
+                break;
+            case "DELETE":
+                requests = new LinkedList<>();
+                requests.add(params.protocol.parseRequest(params.service, params.serviceClass, params.method, getParameters(params.req), RequestIntention.DELETE));
+                break;
+            default:
+                // We fallback on READ if we get something unexpected here!
+                requests = new LinkedList<>();
+                requests.add(params.protocol.parseRequest(params.service, params.serviceClass, params.method, getParameters(params.req), RequestIntention.READ));
+                break;
+        }
+
+        return requests;
+    }
+
+    private static class HandleRequestsParams {
+        public String method;
+        public StreamedRPCProtocol protocol;
+        public String service;
+        public List<RPCRequest> requests;
+        public HttpServletResponse resp;
+    }
+
+    private void handleRequests(HandleRequestsParams hrparams) throws IOException {
+        // It is possible to send multiple requests on the stream!
+        for (RPCRequest rpcRequest : hrparams.requests) {
+
+            try {
+                if (rpcRequest.isValid()) {
+                    if (hrparams.method == null || hrparams.method.equals("@") || hrparams.method.equals("-")) {
+                        hrparams.method = rpcRequest.getMethod();
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    APSExternallyCallable<Object> callable = this.externalProtocolService.getCallable(hrparams.service, hrparams.method);
+
+                    if (callable != null) {
+                        // Handle parrameters
+                        List<Object> params = new LinkedList<>();
+                        int param = 0;
+                        for (ParameterDataTypeDescription paramDesc : callable.getParameterDataDescriptions()) {
+                            Class paramClass = Void.class;
+                            try {
+                                // Since we don't have a dependency to any of the services we will be calling, our bundle
+                                // will not have the correct classpath required for creating arguments to the service.
+                                // Therefore we need to let the bundle of the service we are about to call load argument
+                                // classes for us.
+                                if (paramDesc.getObjectQName() != null) {
+                                    paramClass = callable.getServiceBundle().loadClass(paramDesc.getObjectQName());
+                                }
+                            } catch (ClassNotFoundException cnfe) {
+                                throw new RPCErrorException(
+                                        hrparams.protocol.createRPCError(
+                                                ErrorType.SERVICE_NOT_FOUND,
+                                                cnfe.getMessage(),
+                                                null,
+                                                cnfe
+                                        )
+                                );
+                            }
+
+                            params.add(rpcRequest.getIndexedParameter(param++, paramClass));
                         }
 
-                        APSExternallyCallable<Object> callable = this.externalProtocolService.getCallable(service, method);
+                        Object[] paramsArray = new Object[params.size()];
+                        paramsArray = params.toArray(paramsArray);
 
-                        if (callable != null) {
-                            // Handle parameters
-                            List<Object> params = new LinkedList<>();
-                            int param = 0;
-                            for (ParameterDataTypeDescription paramDesc : callable.getParameterDataDescriptions()) {
-                                Class paramClass = Void.class;
-                                try {
-                                    // Since we don't have a dependency to any of the services we will be calling, our bundle
-                                    // will not have the correct classpath required for creating arguments to the service.
-                                    // Therefore we need to let the bundle of the service we are about to call load argument
-                                    // classes for us.
-                                    if (paramDesc.getObjectQName() != null) {
-                                        paramClass = callable.getServiceBundle().loadClass(paramDesc.getObjectQName());
-                                    }
-                                } catch (ClassNotFoundException cnfe) {
-                                    throw new RPCErrorException(
-                                            protocol.createRPCError(
-                                                    ErrorType.SERVICE_NOT_FOUND,
-                                                    cnfe.getMessage(),
-                                                    null,
-                                                    cnfe
-                                            )
-                                    );
-                                }
-
-                                params.add(rpcRequest.getIndexedParameter(param++, paramClass));
-                            }
-
-                            Object[] paramsArray = new Object[params.size()];
-                            paramsArray = params.toArray(paramsArray);
-
-                            // Call service
-                            Object result = null;
-                            try {
-                                result = callable.call(paramsArray);
-                            } catch (APSNoServiceAvailableException nsae) {
-                                throw new RPCErrorException(
-                                        protocol.createRPCError(
-                                                ErrorType.SERVICE_NOT_FOUND,
-                                                "Service '" + service + "' is not available!",
-                                                null,
-                                                nsae
-                                        )
-                                );
-                            } catch (Exception e) {
-                                throw new RPCErrorException(
-                                        protocol.createRPCError(
-                                                ErrorType.SERVER_ERROR,
-                                                e.getMessage(),
-                                                null,
-                                                e
-                                        )
-                                );
-                            }
-
-                            // Write the normal OK response.
-                            protocol.writeResponse(result, rpcRequest, resp.getOutputStream());
-
-                        } else {
+                        // Call service
+                        Object result;
+                        try {
+                            result = callable.call(paramsArray);
+                        } catch (APSNoServiceAvailableException nsae) {
                             throw new RPCErrorException(
-                                    protocol.createRPCError(
-                                            ErrorType.METHOD_NOT_FOUND,
-                                            "Method '" + method + "' is not available!",
+                                    hrparams.protocol.createRPCError(
+                                            ErrorType.SERVICE_NOT_FOUND,
+                                            "Service '" + hrparams.service + "' is not available!",
                                             null,
-                                            null
+                                            nsae
+                                    )
+                            );
+                        } catch (Exception e) {
+                            throw new RPCErrorException(
+                                    hrparams.protocol.createRPCError(
+                                            ErrorType.SERVER_ERROR,
+                                            e.getMessage(),
+                                            null,
+                                            e
                                     )
                             );
                         }
+
+                        // Write the normal OK response.
+                        hrparams.protocol.writeResponse(result, rpcRequest, hrparams.resp.getOutputStream());
+
                     } else {
-                        this.logger.error(rpcRequest.getServiceQName() + ":" + rpcRequest.getMethod() + " - " +
-                                rpcRequest.getError().getErrorType().name() + ":" + rpcRequest.getError().getMessage());
-                    }
-                }
-                // Write error responses.
-                catch (RPCErrorException ree) {
-                    if (ree.getError() instanceof HTTPError ) {
-                        resp.sendError(((HTTPError) ree.getError()).getHttpStatusCode(), ree.getError().getMessage());
-                    } else {
-                        protocol.writeErrorResponse(ree.getError(), rpcRequest, resp.getOutputStream());
-                    }
-                } catch (Exception e) {
-                    RPCError error;
-                    RPCExceptionConverter exceptionConverter = rpcRequest.getExceptionConverter();
-                    if (exceptionConverter != null) {
-                        error = exceptionConverter.convertException(e);
-                    }
-                    else {
-                        error = protocol.createRPCError(
-                                ErrorType.SERVER_ERROR,
-                                e.getMessage(),
-                                null,
-                                e
+                        throw new RPCErrorException(
+                                hrparams.protocol.createRPCError(
+                                        ErrorType.METHOD_NOT_FOUND,
+                                        "Method '" + hrparams.method + "' is not available!",
+                                        null,
+                                        null
+                                )
                         );
                     }
-                    if (error instanceof HTTPError) {
-                        resp.sendError(((HTTPError) error).getHttpStatusCode(), error.getMessage());
-                    } else {
-                        protocol.writeErrorResponse(
-                                error,
-                                rpcRequest,
-                                resp.getOutputStream()
-                        );
-                    }
+                } else {
+                    this.logger.error(rpcRequest.getServiceQName() + ":" + rpcRequest.getMethod() + " - " +
+                            rpcRequest.getError().getErrorType().name() + ":" + rpcRequest.getError().getMessage());
                 }
             }
-        } else {
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No RPC protocol provider found for protocol '" + protocol +
-                    "' with version '" + version + "'!");
+            // Write error responses.
+            catch (RPCErrorException ree) {
+                if (ree.getError() instanceof HTTPError ) {
+                    hrparams.resp.sendError(((HTTPError) ree.getError()).getHttpStatusCode(), ree.getError().getMessage());
+                } else {
+                    hrparams.protocol.writeErrorResponse(ree.getError(), rpcRequest, hrparams.resp.getOutputStream());
+                }
+            } catch (Exception e) {
+                RPCError error;
+                RPCExceptionConverter exceptionConverter = rpcRequest.getExceptionConverter();
+                if (exceptionConverter != null) {
+                    error = exceptionConverter.convertException(e);
+                }
+                else {
+                    error = hrparams.protocol.createRPCError(
+                            ErrorType.SERVER_ERROR,
+                            e.getMessage(),
+                            null,
+                            e
+                    );
+                }
+                if (error instanceof HTTPError) {
+                    hrparams.resp.sendError(((HTTPError) error).getHttpStatusCode(), error.getMessage());
+                } else {
+                    hrparams.protocol.writeErrorResponse(
+                            error,
+                            rpcRequest,
+                            hrparams.resp.getOutputStream()
+                    );
+                }
+            }
         }
     }
 
@@ -656,7 +700,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                 return AUTH_FAILED;
             }
         } else {
-            if (RPCServletConfig.mc.get().requireAuthentication.toBoolean()) {
+            if (RPCServletConfig.mc.get().requireAuthentication.getBoolean()) {
                 resp.setHeader("WWW-Authenticate", "Basic realm=\"aps\"");
                 resp.sendError(401, "Authorisation required!");
                 return AUTH_FAILED;
@@ -741,6 +785,26 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     }
 
     /**
+     * Creates a new Properties instance with properties describing the service to publish or unpublish.
+     *
+     * @param protocol The protocol of the service.
+     * @param service The name of the service.
+     * @param version The version of the service.
+     */
+    private Properties createExternalServiceDescription(StreamedRPCProtocol protocol, String service, String version) {
+        ServiceDescription serviceDescription = new ServiceDescription();
+        serviceDescription.setDescription("Published by aps-rpc-http-transport-provider.");
+        serviceDescription.setHost(this.serverHost);
+        serviceDescription.setPort("" + this.serverPort);
+        serviceDescription.setUrl(this.rpcBaseUrl + protocol.getServiceProtocolName() + "/" +
+                protocol.getServiceProtocolVersion() + "/" + service);
+        serviceDescription.setVersion(version);
+        serviceDescription.setName(service);
+
+        return serviceDescription;
+    }
+
+    /**
      * This gets called when a new externally available service becomes available.
      *
      * @param service The fully qualified name of the newly available service.
@@ -749,23 +813,14 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     public void externalServiceAvailable(String service, String version) {
         if (this.rpcBaseUrl != null) {
             for (StreamedRPCProtocol protocol : this.externalProtocolService.getAllStreamedProtocols()) {
-                ServiceDescriptionProvider serviceDescription = new ServiceDescriptionProvider();
-                serviceDescription.setDescription("Published by aps-rpc-http-transport-provider.");
-                serviceDescription.setServiceHost(this.serverHost);
-                serviceDescription.setServicePort(this.serverPort);
-                serviceDescription.setServiceURL(this.rpcBaseUrl + protocol.getServiceProtocolName() + "/" +
-                        protocol.getServiceProtocolVersion() + "/" + service);
-                serviceDescription.setVersion(version);
-                serviceDescription.setServiceId(service);
-
                 this.discoveryServiceTracker.withAllAvailableServices(new WithService<APSSimpleDiscoveryService>() {
 
-                    @SuppressWarnings("notused")
-                    public void withService(APSSimpleDiscoveryService discoverySvc, ServiceDescriptionProvider serviceDescription) throws Exception {
-                        discoverySvc.publishService(serviceDescription);//                                            ^
-                    }                   //                                                                            |
-                                        //                                                                            |
-                }, serviceDescription); //----------------------------------------------------------------------------+
+                    @SuppressWarnings({"notused", "unused"})
+                    public void withService(APSSimpleDiscoveryService discoverySvc, Properties serviceDescription) throws Exception {
+                        discoverySvc.publishService(serviceDescription);//                              ^
+                    }                   //                                                              |
+                                        //                                                              |
+                }, createExternalServiceDescription(protocol, service, version)); //--------------------+
             }
         }
     }
@@ -779,24 +834,35 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     public void externalServiceLeaving(String service, String version) {
         if (this.rpcBaseUrl != null) {
             for (StreamedRPCProtocol protocol : this.externalProtocolService.getAllStreamedProtocols()) {
-                ServiceDescriptionProvider serviceDescription = new ServiceDescriptionProvider();
-                serviceDescription.setDescription("Published by aps-rpc-http-transport-provider.");
-                serviceDescription.setServiceHost(this.serverHost);
-                serviceDescription.setServicePort(this.serverPort);
-                serviceDescription.setServiceURL(this.rpcBaseUrl + protocol.getServiceProtocolName() + "/" + protocol.getServiceProtocolVersion() +
-                        "/" + service);
-                serviceDescription.setVersion(version);
-                serviceDescription.setServiceId(service);
-
                 this.discoveryServiceTracker.withAllAvailableServices(new WithService<APSSimpleDiscoveryService>() {
-                    @SuppressWarnings("notused")
-                    public void withService(APSSimpleDiscoveryService discoverySvc, ServiceDescriptionProvider serviceDescription) throws Exception {
+                    @SuppressWarnings({"notused", "unused"})
+                    public void withService(APSSimpleDiscoveryService discoverySvc, Properties serviceDescription) throws Exception {
                         discoverySvc.unpublishService(serviceDescription);
                     }
 
-                }, serviceDescription);
+                }, createExternalServiceDescription(protocol, service, version));
             }
         }
+    }
+
+    /**
+     * Creates a service description properties instance for each protocol and service.
+     *
+     * @param protocolName Then name of the protocol.
+     * @param protocolVersion The version of the protocol.
+     * @param service The service callable via the protocol.
+     */
+    private Properties createServiceDescriptionForProtocol(String protocolName, String protocolVersion, String service) {
+        ServiceDescription serviceDescription = new ServiceDescription();
+        serviceDescription.setDescription("Published by aps-rpc-http-extender.");
+        serviceDescription.setHost(this.serverHost);
+        serviceDescription.setPort("" + this.serverPort);
+        serviceDescription.setUrl(this.rpcBaseUrl + protocolName + "/" + protocolVersion +
+                "/" + service);
+        serviceDescription.setVersion(this.externalProtocolService.getCallables(service).get(0).getServiceBundle().getVersion().toString());
+        serviceDescription.setName(service);
+
+        return serviceDescription;
     }
 
     /**
@@ -808,15 +874,6 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     @Override
     public void protocolAvailable(String protocolName, String protocolVersion) {
         for (String service : this.externalProtocolService.getAvailableServices()) {
-            ServiceDescriptionProvider serviceDescription = new ServiceDescriptionProvider();
-            serviceDescription.setDescription("Published by aps-rpc-http-extender.");
-            serviceDescription.setServiceHost(this.serverHost);
-            serviceDescription.setServicePort(this.serverPort);
-            serviceDescription.setServiceURL(this.rpcBaseUrl + protocolName + "/" + protocolVersion +
-                    "/" + service);
-            serviceDescription.setVersion(this.externalProtocolService.getCallables(service).get(0).getServiceBundle().getVersion().toString());
-            serviceDescription.setServiceId(service);
-
             this.discoveryServiceTracker.withAllAvailableServices(new WithService<APSSimpleDiscoveryService>() {
                 /**
                  * Receives a service to do something with.
@@ -826,11 +883,12 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                  * @throws Exception Implementation can throw any exception. How it is handled depends on the APSServiceTracker method this
                  *                   gets passed to.
                  */
-                public void withService(APSSimpleDiscoveryService discoverySvc, ServiceDescriptionProvider serviceDescription) throws Exception {
+                @SuppressWarnings("unused")
+                public void withService(APSSimpleDiscoveryService discoverySvc, Properties serviceDescription) throws Exception {
                     discoverySvc.publishService(serviceDescription);
                 }
 
-            }, serviceDescription);
+            }, createServiceDescriptionForProtocol(protocolName, protocolVersion, service));
         }
     }
 
@@ -843,22 +901,13 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
     @Override
     public void protocolLeaving(String protocolName, String protocolVersion) {
         for (String service : this.externalProtocolService.getAvailableServices()) {
-            ServiceDescriptionProvider serviceDescription = new ServiceDescriptionProvider();
-            serviceDescription.setDescription("Published by aps-rpc-http-extender.");
-            serviceDescription.setServiceHost(this.serverHost);
-            serviceDescription.setServicePort(this.serverPort);
-            serviceDescription.setServiceURL(this.rpcBaseUrl + protocolName + "/" + protocolVersion +
-                    "/" + service);
-            serviceDescription.setVersion(this.externalProtocolService.getCallables(service).get(0).getServiceBundle().getVersion().toString());
-            serviceDescription.setServiceId(service);
-
             this.discoveryServiceTracker.withAllAvailableServices(new WithService<APSSimpleDiscoveryService>() {
-                @SuppressWarnings("notused")
-                public void withService(APSSimpleDiscoveryService discoverySvc, ServiceDescriptionProvider serviceDescription) throws Exception {
+                @SuppressWarnings({"notused", "unused"})
+                public void withService(APSSimpleDiscoveryService discoverySvc, Properties serviceDescription) throws Exception {
                     discoverySvc.unpublishService(serviceDescription);
                 }
 
-            }, serviceDescription);
+            }, createServiceDescriptionForProtocol(protocolName, protocolVersion, service));
         }
     }
 
@@ -876,15 +925,13 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
         if (this.rpcBaseUrl != null) {
             for (StreamedRPCProtocol protocol : this.externalProtocolService.getAllStreamedProtocols()) {
                 for (String service : this.externalProtocolService.getAvailableServices()) {
-                    ServiceDescriptionProvider serviceDescription = new ServiceDescriptionProvider();
-                    serviceDescription.setDescription("Published by aps-rpc-http-extender.");
-                    serviceDescription.setServiceHost(this.serverHost);
-                    serviceDescription.setServicePort(this.serverPort);
-                    serviceDescription.setServiceURL(this.rpcBaseUrl + protocol.getServiceProtocolName() + "/" + protocol.getServiceProtocolVersion() +
-                            "/" + service);
-                    serviceDescription.setVersion(this.externalProtocolService.getCallables(service).get(0).getServiceBundle().getVersion().toString());
-                    serviceDescription.setServiceId(service);
-                    discoverySvc.publishService(serviceDescription);
+                    discoverySvc.publishService(
+                            createServiceDescriptionForProtocol(
+                                protocol.getServiceProtocolName(),
+                                protocol.getServiceProtocolVersion(),
+                                service
+                            )
+                    );
                 }
             }
         }

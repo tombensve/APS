@@ -59,6 +59,9 @@ public class DiscoveryKeys {
     /** The host of the service. */
     public static final String HOST = "host";
 
+    /** Some description of the type of the content provided by the service. */
+    public static final String CONTENT_TYPE = "contentType";
+
     /** An informative description of the service. */
     public static final String DESCRIPTION = "description";
 
@@ -67,9 +70,6 @@ public class DiscoveryKeys {
 
     /** The protocol of the service, like TCP, UDP, Multicast */
     public static final String PROTOCOL = "protocol";
-
-    /** Some description of the type of the content provided by the service. */
-    public static final String CONTENT_TYPE = "contentType";
 
     /** A timestamp of when the entry was last updated. */
     public static final String LAST_UPDATED = "lastUpdated";

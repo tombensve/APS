@@ -2059,7 +2059,7 @@ A simple implementation of _JSONErrorHandler_ that simply displays messages on S
 
 # APSToolsLib
 
-This is a library of utilities including a service tracker that beats the <BEEEP> out of the default one, including exception rather than null response on timeout, timeout specification, getting a proxied service implementation that automatically uses the tracker, allocating a service, calling it, and deallocating it again. This makes it trivially easy to handle a service being restarted or redeployed. It also includes a logger utility that will lookup the standard log service and log to that if found, otherwise just log to stdout.
+This is a library of utilities including a service tracker that is far better than the default one, including exception rather than null response on timeout, timeout specification, getting a proxied service implementation that automatically uses the tracker, allocating a service, calling it, and deallocating it again. This makes it trivially easy to handle a service being restarted or redeployed. It also includes a logger utility that will lookup the standard log service and log to that if found, otherwise just log to stdout.
 
 This bundle provides no services. It just makes all its packages public. Every bundle included in APS makes use of APSToolsLib so it must be deployed for things to work.
 
@@ -2067,7 +2067,7 @@ Please note that this bundle has no dependencies! That is, it can be used as is 
 
 ## APSServiceTracker
 
-This does the same thing as the standard service tracker included with OSGi, but does it better with more options and flexibility. One of the differences between this tracker and the OSGi one is that this throws an _APSNoServiceAvailableException_ if the service is not available. Personally I think this is easier to work with than having to check for a null result. I also think that trying to keep bundles and services up are better than pulling them down as soon as one depencency goes away for a short while, for example due to redeploy of newer version.
+This does the same thing as the standard service tracker included with OSGi, but does it better with more options and flexibility. One of the differences between this tracker and the OSGi one is that this throws an _APSNoServiceAvailableException_ if the service is not available. Personally I think this is easier to work with than having to check for a null result. I also think that trying to keep bundles and services up are better than pulling them down as soon as one depencency goes away for a short while, for example due to redeploy of newer version. This is why APSServiceTracker takes a timeout and waits for a service to come back before failing.
 
 There are several variants of constructors, but here is an example of one of the most used ones within the APS services:
 
@@ -2305,6 +2305,8 @@ __@OSGiServiceProvider__ - This should be specified on a class that implements a
 
 Do note that for the _serviceSetupProvider()_ another solution is to use the _@BundleStart_ (see below) and just create instances of your service and register them with the BundleContext. But if you use _@OSGiServiceProvider_ to instantiate and register other "one instance" services, then using _serviceSetupProvider()_ would look a bit more consistent.
 
+__@APSExternalizabe__, __@APSRemoteService__ - These 2 annotations are synonyms and have no properties. They should be used on a service implementation class. When either of these are specified the "aps-externalizable=true" property will be set when the service is registered with the OSGi container. The APSExternalProtocolExtender will react on this property and make the service externally accessible.
+
 __@OSGiService__ - This should be specified on a field having a type of a service interface to have a service of that type injected, and continuously tracked. Any call to the service will throw an APSNoServiceAvailableException (runtime) if no service has become available before the specified timeout. It is also possible to have APSServiceTracker as field type in which case the underlying configured tracker will be injected instead.
 
 If _required=true_ is specified and this field is in a class annotated with _@OSGiServiceProvider_ then the class will not be registered as a service until the service dependency is actually available, and will also be unregistered if the tracker for the service does a timeout waiting for a service to become available. It will then be reregistered again when the dependent service becomes available again. Please note that unlike iPOJO the bundle is never stopped on dependent service unavailability, only the actual service is unregistered as an OSGi service. A bundle might have more than one service registered and when a dependency that is only required by one service goes away the other service is still available.
@@ -2361,6 +2363,56 @@ __@Managed__ - This will have an instance managed and injected. There will be a 
             String loggingFor() default "";
         }
 
+__@ExecutorSvc__ - This should always be used in conjunction with @Managed! This also assumes that the annotated field is of type ExecutorService or ScheduledExecutorService. This annotation provides some configuration for the ExecutorService that will be injected.
+
+        @Retention(RetentionPolicy.RUNTIME)
+        @Target(ElementType.FIELD)
+        public @interface ExecutorSvc {
+        
+            enum ExecutorType {
+                FixedSize,
+                WorkStealing,
+                Single,
+                Cached,
+                Scheduled,
+                SingleScheduled
+            }
+        
+            /** This is loosely the number of concurrent threads. */
+            int parallelism() default 10;
+        
+            /** The type of ExecutorService wanted. */
+            ExecutorType type() default ExecutorType.FixedSize;
+        
+            /** If true the created ExecutorService will be wrapped with a delegate that disallows configuration. */
+            boolean unConfigurable() default false;
+        }
+
+__@Schedule__ - Schedules a Runnable using a ScheduledExecutionService. Indifferent from @ExecutorSvc this does not require an @Managed also, but do work with @Managed if that is used to inject an instance of Runnable to be scheduled. @Schedule is handled after all injections have been done.
+
+        @Retention(RetentionPolicy.RUNTIME)
+        @Target(ElementType.FIELD)
+        public @interface Schedule {
+        
+            /** 
+             * The defined executor service to schedule this on. This should be the name of it. If left blank an internal  
+             * ScheduledExecutorService will be used. 
+             */
+            String on() default "";
+        
+            /** The amount of time to wait for the (first) execution. */
+            long delay();
+        
+            /** If specified how long to wait between runs. */
+            long repeat();
+        
+            /** The time unit used for the above values. Defaults to seconds. */
+            TimeUnit timeUnit() default TimeUnit.SECONDS;
+        
+            /** Possibility to affect the size of the thread pool when such is created internally for this (on="..." not provided!). */
+            int poolSize() default 2;
+        }
+
 __@BundleStart__ - This should be used on a method and will be called on bundle start. The method should take no arguments. If you need a BundleContext just inject it with _@Managed_. The use of this annotation is only needed for things not supported by this activator. Please note that a method annotated with this annotation can be static (in which case the class it belongs to will not be instantiaded). You can provide this annotation on as many methods in as many classes as you want. They will all be called (in the order classes are discovered in the bundle).
 
         public @interface BundleStart {
@@ -2396,6 +2448,23 @@ There are 2 support classes:
 * [APSWebTools]: APSOSGiSupport - You create an instance of this in a servlet and let your servlet implement the _APSOSGiSupportCallbacks_ interface which is then passed to the constructor of APSOSGiSupport.
 
 Both of these creates and manages an APSActivator internally and catches shutdown to take it down. They also provide other utilities like providing the BundleContext. See _APSWebTools_ for more information.
+
+### APSActivatorPlugin
+
+Any implementing classes of this interface can be specified in META-INF/services/se.natusoft.osgi.aps.tools.APSActivatorPlugin file, one per line. These are loaded by java.util.ServiceLoader. The implementation can be provided by another bundle which should then export the relevant packages which can then be imported in the using bundle.
+
+The APSActivatorPlugin API looks like this:
+
+        public interface APSActivatorPlugin {
+        
+            interface ActivatorInteraction {
+                void addManagedInstance(Object instance, Class forClass);
+            }
+        
+            void analyseBundleClass(ActivatorInteraction activatorInteraction, Class bundleClass);
+        }
+
+__Be warned__ that this is currently very untested! No APS code uses this yet.
 
 ## APSContextWrapper
 
@@ -3552,6 +3621,132 @@ This provides exactly the same functionallity as APSJSONLib. It actually wraps t
 
 This service and the library existrs for internal use. It is here and can be used by anyone, but in most cases like serializing java beans back and forth to JSON (which this can do) Jacksson would still be a better choice and offers more flexibility. In the long run I’m going to see if I can replace the internal use of this with Jacksson as well.
 
+# aps-persistent-named-queue-provider
+
+This provides an implementation of __APSNamedQueueService__ that makes use of __APSFilesystemService__ for storage. Clients just create or get a queue by a unique name. It is then possible to push bytes to the queue or to pull bytes from the queue. It is rather simple.
+
+## APIS
+
+public _interface_ __APSNamedQueueService__   [se.natusoft.osgi.aps.api.misc.queue] {
+
+A named queue as a service. How long lived it is depends on the implementation.
+
+__Note__ that there can be only one receiver per queue. Once an item is delivered it is gone from the queue!
+
+__APSQueue createQueue(String name) throws APSIOException__
+
+Creates a new queue.
+
+_Parameters_
+
+> _name_ - The name of the queue to create. If the named queue already exists, it is just returned, 
+
+_Throws_
+
+> _APSIOException_ - on failure to create queue. 
+
+__void removeQueue(String name) throws APSResourceNotFoundException__
+
+Removes the named queue.
+
+_Parameters_
+
+> _name_ - The name of the queue to remove. 
+
+_Throws_
+
+> _APSResourceNotFoundException_ - on failure to remove the queue. 
+
+__APSQueue getQueue(String name) throws APSResourceNotFoundException__
+
+Returns the named queue. If it does not exist, it is created.
+
+_Parameters_
+
+> _name_ - The name of the queue to get. 
+
+_Throws_
+
+> _APSResourceNotFoundException_ - on failure to get queue. 
+
+}
+
+----
+
+    
+
+
+
+__void push(byte[] item) throws APSIOException__
+
+Pushes a new item to the end of the list.
+
+_Parameters_
+
+> _item_ - The item to add to the list. 
+
+_Throws_
+
+> _APSIOException_ - on any failure to do this operation. 
+
+__byte[] pull(long timeout) throws APSIOTimeoutException__
+
+Pulls the first item in the queue, removing it from the queue.
+
+_Returns_
+
+> The pulled item.
+
+_Parameters_
+
+> _timeout_ - A value of 0 will cause an immediate APSIOException if the queue is empty. Any 
+
+_Throws_
+
+> _APSIOException_ - on any failure to do this operation. 
+
+__byte[] peek() throws APSIOException, UnsupportedOperationException__
+
+Looks at, but does not remove the first item in the queue.
+
+_Returns_
+
+> The first item in the queue.
+
+_Throws_
+
+> _APSIOException_ - on any failure to do this operation. 
+
+> _UnsupportedOperationException_ - If this operation is not supported by the implementation. 
+
+__int size() throws APSIOException, UnsupportedOperationException__
+
+Returns the number of items in the queue.
+
+_Throws_
+
+> _APSIOException_ - on any failure to do this operation. 
+
+> _UnsupportedOperationException_ - If this operation is not supported by the implementation. 
+
+__boolean isEmpty() throws APSIOException__
+
+Returns true if this queue is empty.
+
+_Throws_
+
+> _APSIOException_ - on any failure to do this operation. 
+
+__void release()__
+
+Releases this APSQueue instance to free up resources. After this call this specific instance will be invalid and a new one have to be gotten from APSNamedQueueService.
+
+}
+
+----
+
+    
+
 # APSResolvingBundleDeployer
 
 This is a bundle deployer that is intended as an alternative to the server provided deployer.
@@ -3680,9 +3875,125 @@ _Parameters_
 
     
 
+# APSDefaultDiscoveryServiceProvider
+
+This is a simple service where you can publish and unpublish service information. This information will be distributed to all other nodes that are configured to be part of the disovery.
+
+Service data can be configured to be shared by Multicast, or TCP. The _APSTCPIPService_ is used to send and receive data.
+
+## Discovery information
+
+The discovery information is just a Properties object. Anything you want can be put into it, but the following keys are suggested for interoperability:
+
+        public class DiscoveryKeys {
+        
+            /** A name of the service. */
+            public static final String NAME = "name";
+        
+            /** The version of the service. */
+            public static final String VERSION = "version";
+        
+            /** An URI as used by APSTcpipService. */
+            public static final String APS_URI = "apsURI";
+        
+            /** A URL for accessing the service. */
+            public static final String URL = "url";
+        
+            /** The port of the service. */
+            public static final String PORT = "port";
+        
+            /** The host of the service. */
+            public static final String HOST = "host";
+        
+            /** An informative description of the service. */
+            public static final String DESCRIPTION = "description";
+        
+            /** This is used by APSClusterService to announce cluster members. */
+            public static final String APS_CLUSTER_NAME = "apsClusterName";
+        
+            /** The protocol of the service, like TCP, UDP, Multicast */
+            public static final String PROTOCOL = "protocol";
+        
+            /** Some description of the type of the content provided by the service. */
+            public static final String CONTENT_TYPE = "contentType";
+        
+            /** A timestamp of when the entry was last updated. */
+            public static final String LAST_UPDATED = "lastUpdated";
+        }
+
+## Transport data format
+
+The data is transported over the network in JSON format:
+
+        {
+            action: "ADD" / "REMOVE",
+            serviceDescription: {
+                name: "myservice",
+                version: "1.5.4",
+                apsURI: "tcp://myhost:5564"
+                ...
+            }
+        }
+
+## API
+
+        /**
+         * A network service discovery.
+         *
+         * There a many such services available in general, a bit less from a java
+         * perspective, but the intention with this is not to compete with any of
+         * the others, but to provide an extremely simple way to discover remote
+         * services in an as simple an primitive way as possible. Basically a way
+         * to have multiple hosts running APS based code find each other easily,
+         * may it be by simple configuration or by multicast or TCP, or wrapping
+         * some other service.
+         */
+        public interface APSSimpleDiscoveryService {
+        
+            //
+            // Methods
+            //
+        
+            /**
+             * On a null filter all services are returned. The filter is otherwise
+             * of LDAP type: (&(this=that)(something=pizza)).
+             *
+             * @param filter The filter to narrow the results.
+             */
+            Set<Properties> getServices(String filter);
+        
+            /**
+             * Publishes a local service. This will announce it to other known
+             * APSSimpleDiscoveryService instances.
+             *
+             * @param serviceProps This is a set of properties describing the
+             *                     service. There are some suggested keys in
+             *                     DiscoveryKeys for general compatibility.
+             *
+             * @throws APSDiscoveryException on problems to publish (note:
+             *                               this is a runtime exception!).
+             */
+            void publishService(Properties serviceProps) throws APSDiscoveryException;
+        
+            /**
+             * Recalls the locally published service, announcing to other known
+             * APSSimpleDiscoveryService instances that this service is no longer available.
+             *
+             * @param unpublishFilter An LDAP type filter that matches an entry or entries
+             *                        to unpublish. Any non locally published services cauth
+             *                        in the filter will be ignored.
+             *
+             * @throws APSDiscoveryException on problems to publish (note: this is a
+             *                               runtime exception!).
+             */
+            void unpublishService(String unpublishFilter) throws APSDiscoveryException;
+        }
+
 # APSExternalProtocolExtender
 
-This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles _MANIFEST.MF_ contains `APS-Externalizable: true` the service is made externally available. If the _MANIFEST.MF_ contains `APS-Externalizable: false` however making the service externally available is forbidden. A specific service can also be registered containing an _aps-externalizable_ property with value _true_ to be externalizable. It is also possible as an alternative to true/false specify a list of fully qualified service names to make only those services externally available. This overrides any other specification.
+This is an OSGi bundle that makes use of the OSGi extender pattern. It listens to services being registered and unregistered and if the services bundles _MANIFEST.MF_ contains `APS-Externalizable: true` all services published by the bundle is made externally available. If the _MANIFEST.MF_ contains `APS-Externalizable: false` however making services externally available is forbidden. It is also possible as an alternative to true/false specify a list of fully qualified service names to make only those services externally available. This overrides any other specification.
+
+A specific service can also be registered containing an _aps-externalizable_ property with value _true_ to be externalizable. If your bundle uses APSActivator (APSToolsLib) as bundle activator then any of @APSExternalizable and @APSRemoteService on the class will make APSActivator set the _aps-externalizable_ property to true when registering the service.
 
 The exernal protocol extender also provides a configuration where services can be specified with their fully qualified name to be made externally available. If a bundle however have specifically specified false for the above manifest entry then the config entry will be ignored.
 
@@ -4148,7 +4459,7 @@ The optional data.
 
     
 
-public _class_ __RequestedParamNotAvailableException__ extends  APSException    [se.natusoft.osgi.aps.api.net.rpc.exceptions] {
+public _class_ __RequestedParamNotAvailableException__ extends  APSRuntimeException    [se.natusoft.osgi.aps.api.net.rpc.exceptions] {
 
 This exception is thrown when a parameter request cannot be fulfilled.
 
@@ -4572,483 +4883,6 @@ In addition to much of the same information as in this documentation it also lis
 
 Also look at the documentation for APSExternalProtocolExtender.
 
-# APSGroups
-
-Provides network groups where named groups can be joined as members and then send and receive data messages to the group. This is based on multicast and provides a verified multicast delivery with acknowledgements of receive to the sender and resends if needed. The sender will get an exception if not all members receive all data. Member actuality is handled by members announcing themselves relatively often and will be removed when an announcement does not come in expected time. So if a member dies unexpectedly (network goes down, etc) its membership will resolve rather quickly. Members also tries to inform the group when they are doing a controlled exit.
-
-Please note that this does not support streaming! That would require a far more complex protocol. APSGroups waits in all packets of a message before delivering the message.
-
-## OSGi service usage
-
-The APSGroupsService can be used as an OSGi service and as a standalone library. This section describes the service.
-
-### Getting the service
-
-        APSServiceTracker<APSGroupService> apsGroupsServiceTracker = 
-            new APSServiceTracker<APSGroupsService>(bundleContext, APSConfigService.class,
-            APSServiceTracker.LARGE_TIMEOUT);
-        APSGroupsService apsGroupsService = apsGroupsServiceTracker.getWrappedService();
-        
-
-### Joining a group
-
-        GroupMember groupMember = apsGroupsService.joinGroup("mygroup");
-        
-
-### Sending a message
-
-To send a message you create a message, get its output stream and write whatever you want to send on that output stream, close it and then send it. _Note_ that since the content of the message is any data you want, all members of the groups must know how the data sent looks like. In other words, you have to define your own message protocol for your messages. Note that you can wrap the OutputStream in an ObjectOutputStream and serialize any java object you want.
-
-        Message message = groupMember.createNewMessage();
-        OutputStream msgDataStream = message.getOutputStream();
-        try {
-            ...
-            msgDataStream.close();
-            groupMember.sendMessage(message);
-        }
-        catch (IOException ioe) {
-            ...
-        }
-        
-
-Note that the `groupMember.sendMessage(message)` does throw an IOException on failure to deliver the message to all members.
-
-### Receiving a message
-
-To receive a message you have to register a message listener with the GroupMember object.
-
-        MessageListener msgListener = new MyMsgListener();
-        groupMember.addMessageListener(myMsgListener); 
-
-and then handle received messages:
-
-        public class MyMsgListener implements MessageListener {
-            public void messageReceived(Message message) {
-                InputStream msgDataStream = message.getInputStream();
-                ...
-            }
-        }
-
-### Leaving a group
-
-        apsGroupsService.leaveGroup(groupMember);
-        
-
-## Library usage
-
-The bundle jar file can also be used as a library outside of an OSGi server, with an API that has no other dependencies than what is in the jar. The API is then slightly different, and resides under the se.natusoft.apsgroups package.
-
-### Setting up
-
-        APSGroups apsGroups = new APSGroups(config, logger);
-        apsGroups.connect();
-        
-
-The config passed as argument to APSGroups will be explained further down under "Configuration".
-
-The _logger_ is an instance of an implementation of the APSGroupsLogger interface. Either you provide your own implementation of that or your use the APSGroupsSystemOutLogger implementation.
-
-### Joining a group
-
-        GroupMember groupMember = apsGroups.joinGroup("mygroup");
-
-### Sending and receiving messages
-
-Sending and receiving works exactly like the OSGi examples above.
-
-### Leaving a group
-
-        apsGroups.leaveGroup(groupMember);
-
-### Shutting down
-
-        apsGroups.disconnect();
-        
-
-## Net time
-
-All APSGroups instances connected will try to sync their time. I call this synced time "net time".
-
-It works like this: When an APSGroups instance comes up it waits a while for NET_TIME packets. If it gets such a packet then it enters receive mode and takes the time in the received NET_TIME packet and stores a diff to that time and local time. This diff can then be used to translate back and forth between local and net time. If no such packet arrives in expected time it enters send mode and starts sending NET_TIME packets itself using its current net time. If a NET_TIME packet is received when in send mode it directly goes over to listen mode. If in listen mode and no NET_TIME packet comes in reasonable time it goes over to send mode. So among all instances on the network only one is responsible for sending NET_TIME. If that instance leaves then there might be a short fight for succession, but it will resolve itself rather quickly.
-
-The GroupMember contains a few _create*_ methods to produce a _NetTime_ object instance. See the API further down for more information on these.
-
-## Configuration
-
-### OSGi service 
-
-The OSGi service provides a configuration model that gets managed by the APSConfigService. It can be configured in the APS adminweb (http://host:port/apsadminweb/). Here are some screenshots of the config admin:
-
-![/apsconfigadmin web gui for configuring APSGroups 1](http://download.natusoft.se/Images/APS/APS-Network/APSGroups/docs/images/groups-config-1.png) ![/apsconfigadmin web gui for configuring APSGroups 2](http://download.natusoft.se/Images/APS/APS-Network/APSGroups/docs/images/groups-config-2.png) ![/apsconfigadmin web gui for configuring APSGroups 3](http://download.natusoft.se/Images/APS/APS-Network/APSGroups/docs/images/groups-config-3.png) ![/apsconfigadmin web gui for configuring APSGroups 4](http://download.natusoft.se/Images/APS/APS-Network/APSGroups/docs/images/groups-config-4.png)
-
-As can bee seen in the above screenshots transports need to be configured for communication to work. If you only need to talk to members on the same subnet the multicast transport is enough! The multicast transport makes sure that all transmitted data is received by all known group members. It will do resends if required, and throw an exception on failure of any member to acknowledge all sent packets.
-
-If you need to talk to members on a different subnet then you need to use the TCP transports. Note that there are 2 of these: _TCP_SENDER_, and _TCP_RECEIVER_. One receiver must be configured and can receive messages from anyone. A sender is needed for each APSGroups installation you want to talk to, and should point to the receiver of that installation. Note that for a receiver you only need to specify a port. The host part is ignored by the receiver.
-
-### Library 
-
-The library wants an implementation of the APSGroupsConfig interface as its first argument to APSGroups(config, logger) constructor. Either you implement your own or use the APSGroupsConfigProvider implementation. This is a plain java bean with both setters and getters for the config values. It comes with quite reasonable default values. It contains exactly the same properties as shown in the screenshots above.
-
-## APIs
-
-
-
-__List<String> getGroupNames()__
-
-Returns the names of all available groups.
-
-__List<String> getGroupMembers(String groupName)__
-
-Returns a list of member ids for the specified group.
-
-_Parameters_
-
-> _groupName_ - The name of the group to get member ids for. 
-
-__List<String> getGroupsAndMembers()__
-
-Returns a list of "groupName : groupMember" for all groups and members.
-
-}
-
-----
-
-    
-
-
-
-__GroupMember joinGroup(String name) throws IOException__
-
-Joins a group.
-
-_Returns_
-
-> A GroupMember that provides the API for sending and receiving data in the group.
-
-_Parameters_
-
-> _name_ - The name of the group to join. 
-
-_Throws_
-
-> _java.io.IOException_ - The unavoidable one! 
-
-__GroupMember joinGroup(String name, Properties memberUserData) throws IOException__
-
-Joins a group.
-
-_Returns_
-
-> A GroupMember that provides the API for sending and receiving data in the group.
-
-_Parameters_
-
-> _name_ - The name of the group to join. 
-
-> _memberUserData_ - Data provided by users of the service. 
-
-_Throws_
-
-> _java.io.IOException_ - The unavoidable one! 
-
-__void leaveGroup(GroupMember groupMember) throws IOException__
-
-Leaves as member of group.
-
-_Parameters_
-
-> _groupMember_ - The GroupMember returned when joined. 
-
-_Throws_
-
-> _java.io.IOException_ - The unavoidable one! 
-
-}
-
-----
-
-    
-
-
-
-__void addMessageListener(MessageListener listener)__
-
-Adds a listener for incoming messages.
-
-_Parameters_
-
-> _listener_ - The listener to add. 
-
-__void removeMessageListener(MessageListener listener)__
-
-Removes a listener for incoming messages.
-
-_Parameters_
-
-> _listener_ - The listener to remove. 
-
-__Message createNewMessage()__
-
-Creates a new Message to send. Use the sendMessage() method when ready to send it.
-
-__void sendMessage(Message message) throws IOException__
-
-Sends a previously created messaging to all current members of the group. If this returns without an exception then all members have received the messaging.
-
-_Parameters_
-
-> _message_ - The messaging to send. 
-
-_Throws_
-
-> _java.io.IOException_ - On failure to reach all members. 
-
-__UUID getMemberId()__
-
-_Returns_
-
-> The ID of the member.
-
-__List<String> getMemberInfo()__
-
-Returns information about members.
-
-__List<Properties> getMembersUserProperties()__
-
-Returns the user properties for the members.
-
-__NetTime getNow()__
-
-_Returns_
-
-> The current time as net time.
-
-__NetTime createFromNetTime(long netTimeMillis)__
-
-Creates from milliseconds in net time.
-
-_Parameters_
-
-> _netTimeMillis_ - The net time milliseconds to create a NetTime for. 
-
-__NetTime createFromNetTime(Date netTimeDate)__
-
-Creates from a Date in net time.
-
-_Parameters_
-
-> _netTimeDate_ - The Date in net time to create a NetTime for. 
-
-__NetTime createFromLocalTime(long localTimeMillis)__
-
-Creates from milliseconds in local time.
-
-_Parameters_
-
-> _localTimeMillis_ - The local time milliseconds to create a NetTime for. 
-
-__NetTime createFromLocalTime(Date localTimeDate)__
-
-Creates from a Date in local time.
-
-_Parameters_
-
-> _localTimeDate_ - The Date in local time to create a NetTime for. 
-
-}
-
-----
-
-    
-
-
-
-__OutputStream getOutputStream()__
-
-Returns an _OutputStream_ to write messaging on. Multiple calls to this will return the same _OutputStream_!
-
-__InputStream getInputStream()__
-
-Returns an _InputStream_ for reading the messaging. Multiple calls to this will return new _InputStream_:s starting from the beginning!
-
-__UUID getId()__
-
-Returns the id of this messaging.
-
-__String getMemberId()__
-
-_Returns_
-
-> id of member as a string.
-
-__String getGroupName()__
-
-_Returns_
-
-> The name of the group this messaging belongs to.
-
-}
-
-----
-
-    
-
-
-
-__public void messageReceived(Message message)__
-
-Notification of received messaging.
-
-_Parameters_
-
-> _message_ - The received messaging. 
-
-}
-
-----
-
-    
-
-
-
-__public long getNetTime()__
-
-Returns the number of milliseconds since January 1, 1970 in net time.
-
-__public Date getNetTimeDate()__
-
-Returns the net time as a Date.
-
-__public Calendar getNetTimeCalendar()__
-
-Returns the net time as a Calendar.
-
-__public Calendar getNetTimeCalendar(Locale locale)__
-
-Returns the net time as a Calendar.
-
-_Parameters_
-
-> _locale_ - The locale to use. 
-
-__public Date getLocalTimeDate()__
-
-Converts the net time to local time and returns as a Date.
-
-__public Calendar getLocalTimeCalendar()__
-
-Converts the net time to local time and returns as a Calendar.
-
-__public Calendar getLocalTimeCalendar(Locale locale)__
-
-Converts the net time to local time and returns as a Calendar.
-
-_Parameters_
-
-> _locale_ - The locale to use. 
-
-}
-
-----
-
-    
-
-__/* * * PROJECT *     Name *         APS APIs * *     Code Version *         1.0.0 * *     Description *         Provides the APIs for the application platform services. * * COPYRIGHTS *     Copyright (C) 2012 by Natusoft AB All rights reserved. * * LICENSE *     Apache 2.0 (Open Source) * *     Licensed under the Apache License, Version 2.0 (the "License")__
-
-Use services under messaging instead!
-
-}
-
-----
-
-    
-
-# APS Message Service Sync Service Provider
-
-As this long name suggests this service provides an implementation of APSSyncService using APSMessageService to do the synchronization.
-
-## APSSyncService API
-
-# APS Net Time Servcie Provider
-
-This provides a service for converting time between a common network time and local time. The actual net time is provided by APSGroupsService which must be running for this service provider to work. This also means that it will only work between hosts on the same subnet and multicast must be supported on that subnet.
-
-The idea with this service is that no matter what the local host time is, time critical data passed on the network can be reasonably compared between hosts, by agreeing on a common _now_ time and the diff between local time and this common time.
-
-As said above, this implementation have limitations!
-
-## APSNetTimeService
-
-[Javadoc](http://apidoc.natusoft.se/APS/se/natusoft/osgi/aps/api/net/time/service/APSNetTimeService.html)
-
-public _interface_ __APSNetTimeService__   [se.natusoft.osgi.aps.api.net.time.service] {
-
-This service provides network neutral time. Even with NTP it is difficult to keep the same time on different servers. This service creates a network timezone and broadcasts the network time. It supports converting local time to network time and converting network time to local time.
-
-Please note that the network time will not be accurate down to milliseconds, but will be reasonable correct for most usages.
-
-__public long getNetTime()__
-
-Returns current net time.
-
-__public Date getNetTimeAsDate()__
-
-Returns current net time as a Date object.
-
-__public long netToLocalTime(long netTime)__
-
-Converts from net time to local time.
-
-_Returns_
-
-> local time.
-
-_Parameters_
-
-> _netTime_ - The net time to convert. 
-
-__public Date netToLocalTime(Date netTime)__
-
-Converts from net time to local time.
-
-_Returns_
-
-> local time.
-
-_Parameters_
-
-> _netTime_ - The net time to convert. 
-
-__public long localToNetTime(long localTime)__
-
-Converts from local time to net time.
-
-_Returns_
-
-> net time.
-
-_Parameters_
-
-> _localTime_ - The local time to convert. 
-
-__public Date localToNetTime(Date localTime)__
-
-Converts from local time to net time.
-
-_Returns_
-
-> net time.
-
-_Parameters_
-
-> _localTime_ - The local time to convert. 
-
-}
-
-----
-
-    
-
 # APS RabbitMQ Message Service Provider
 
 This service provides an implementation of APSMessageService using [RabbitMQ](http://www.rabbitmq.com/).
@@ -5060,108 +4894,6 @@ A good suggestion is to always use JSON or XML as content.
 ## APSMessageService API
 
 [Javadoc](http://apidoc.natusoft.se/APS/se/natusoft/osgi/aps/api/net/messaging/service/APSMessageService.html)
-
-public _interface_ __APSSimpleClusterService__   [se.natusoft.osgi.aps.api.net.messaging.service] {
-
-This service defines a synchronized cluster.
-
-
-
-
-
-__void clusterUpdated(String clusterName, String name, TypedData data)__
-
-Receives an updated value.
-
-_Parameters_
-
-> _clusterName_ - The name of the cluster the updated data belongs to. 
-
-> _name_ - The name of the updated data. 
-
-> _data_ - The updated data. 
-
-__void provideData(String clusterName, String name, TypedData typedData)__
-
-Creates/updates a value in a cluster.
-
-_Parameters_
-
-> _clusterName_ - The name of a cluster to store in. 
-
-> _name_ - The name of the value to store. 
-
-> _typedData_ - The value to store. 
-
-_Throws_
-
-> _IllegalArgumentException_ - on any problem with clusterName. 
-
-__TypedData retrieveData(String clusterName, String name)__
-
-Gets a value stored in a named cluster. Returns null if it does not exists.
-
-_Parameters_
-
-> _clusterName_ - The name of the cluster to get data from. 
-
-> _name_ - The name of the cluster data to get. 
-
-__void addUpdateListener(String clusterName, UpdateListener updateListener)__
-
-Adds an update listener.
-
-_Parameters_
-
-> _clusterName_ - The name of the cluster to listen for changes in. 
-
-> _updateListener_ - The update listener to add. 
-
-__void removeUpdateListener(String clusterName, UpdateListener updateListener)__
-
-Removes an update listener.
-
-_Parameters_
-
-> _clusterName_ - The name of the cluster to remove update listener from. 
-
-> _updateListener_ - The listener to remove. 
-
-
-
-__Map<String, List<UpdateListener>> listeners = Collections.synchronizedMap(new HashMap<>())__
-
- The listeners.
-
-
-
-
-
-__protected void updateListeners(String clusterName, String name, TypedData data)__
-
-Updates all listeners.
-
-_Parameters_
-
-> _clusterName_ - The name of the cluster the updated data belongs to. 
-
-> _name_ - The name of the updated data. 
-
-> _data_ - The actual data. 
-
-__protected List<UpdateListener> getListeners(String clusterName)__
-
-Returns the listeners.
-
-_Parameters_
-
-> _clusterName_ - The name of the cluster to get listeners for. 
-
-}
-
-----
-
-    
 
 public _interface_ __APSSimpleMessageService__   [se.natusoft.osgi.aps.api.net.messaging.service] {
 
@@ -5619,11 +5351,11 @@ There is not anything more to say about this. It should be selfexplanatory!
 -->
 ## Project License
 
-[Apache Software License version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
+[Apache version 2.0](https://github.com/tombensve/APS/blob/master/lics/Apache-2.0.md)
 
 ## Third Party Licenses
 
-[OSGi Specification License version 2.0](http://www.osgi.org/Specifications/Licensing)
+[OSGi version 2.0](https://github.com/tombensve/APS/blob/master/lics/OSGi-2.0.md)
 
 The following third party products are using this license:
 
@@ -5635,23 +5367,9 @@ The following third party products are using this license:
 
 The following third party products are using this license:
 
-* [vaadin-server-7.1.14](http://vaadin.com)
-
-* [vaadin-client-compiled-7.1.14](http://vaadin.com)
-
-* [vaadin-client-7.1.14](http://vaadin.com)
-
-* [vaadin-push-7.1.14](http://vaadin.com)
-
-* [vaadin-themes-7.1.14](http://vaadin.com)
-
 * [groovy-all-2.4.5](http://groovy-lang.org)
 
-* [gpars-1.2.0](http://gpars.codehaus.org)
-
 * [openjpa-all-2.2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
-
-* [derbyclient-10.9.1.0](http://db.apache.org/derby/)
 
 [Eclipse Public License - v version 1.0](http://www.eclipse.org/legal/epl-v10.html)
 
@@ -5667,82 +5385,868 @@ The following third party products are using this license:
 
 * [javaee-web-api-6.0](http://java.sun.com/javaee/6/docs/api/index.html)
 
+[Apache License version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+The following third party products are using this license:
+
+* [vaadin-server-7.1.14](http://vaadin.com)
+
+* [vaadin-client-compiled-7.1.14](http://vaadin.com)
+
+* [vaadin-client-7.1.14](http://vaadin.com)
+
+* [vaadin-push-7.1.14](http://vaadin.com)
+
+* [vaadin-themes-7.1.14](http://vaadin.com)
+
+[Apache version 2](http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+The following third party products are using this license:
+
+* [derbyclient-10.9.1.0](http://db.apache.org/derby/)
+
 <!--
   CLM
 -->
-## Apache License version 2.0, January 2004
+<!--
+  
+  This was created by CodeLicenseManager
+-->
+## Apache License version 2.0
 
-[http://www.apache.org/licenses/](http://www.apache.org/licenses/)
-
-__TERMS AND CONDITIONS FOR USE__,__REPRODUCTION__,__AND DISTRIBUTION__
-
-1. Definitions.
-
- "License" shall mean the terms and conditions for use, reproduction,  and distribution as defined by Sections 1 through 9 of this document.
-
- "Licensor" shall mean the copyright owner or entity authorized by  the copyright owner that is granting the License.
-
- "Legal Entity" shall mean the union of the acting entity and all  other entities that control, are controlled by, or are under common  control with that entity. For the purposes of this definition,  "control" means (i) the power, direct or indirect, to cause the  direction or management of such entity, whether by contract or  otherwise, or (ii) ownership of fifty percent (50%) or more of the  outstanding shares, or (iii) beneficial ownership of such entity.
-
- "You" (or "Your") shall mean an individual or Legal Entity  exercising permissions granted by this License.
-
- "Source" form shall mean the preferred form for making modifications,  including but not limited to software source code, documentation  source, and configuration files.
-
- "Object" form shall mean any form resulting from mechanical  transformation or translation of a Source form, including but  not limited to compiled object code, generated documentation,  and conversions to other media types.
-
- "Work" shall mean the work of authorship, whether in Source or  Object form, made available under the License, as indicated by a  copyright notice that is included in or attached to the work  (an example is provided in the Appendix below).
-
- "Derivative Works" shall mean any work, whether in Source or Object  form, that is based on (or derived from) the Work and for which the  editorial revisions, annotations, elaborations, or other modifications  represent, as a whole, an original work of authorship. For the purposes  of this License, Derivative Works shall not include works that remain  separable from, or merely link (or bind by name) to the interfaces of,  the Work and Derivative Works thereof.
-
- "Contribution" shall mean any work of authorship, including  the original version of the Work and any modifications or additions  to that Work or Derivative Works thereof, that is intentionally  submitted to Licensor for inclusion in the Work by the copyright owner  or by an individual or Legal Entity authorized to submit on behalf of  the copyright owner. For the purposes of this definition, "submitted"  means any form of electronic, verbal, or written communication sent  to the Licensor or its representatives, including but not limited to  communication on electronic mailing lists, source code control systems,  and issue tracking systems that are managed by, or on behalf of, the  Licensor for the purpose of discussing and improving the Work, but  excluding communication that is conspicuously marked or otherwise  designated in writing by the copyright owner as "Not a Contribution."
-
- "Contributor" shall mean Licensor and any individual or Legal Entity  on behalf of whom a Contribution has been received by Licensor and  subsequently incorporated within the Work.
-
-1. Grant of Copyright License. Subject to the terms and conditions of  this License, each Contributor hereby grants to You a perpetual,  worldwide, non-exclusive, no-charge, royalty-free, irrevocable  copyright license to reproduce, prepare Derivative Works of,  publicly display, publicly perform, sublicense, and distribute the  Work and such Derivative Works in Source or Object form.
-
-2. Grant of Patent License. Subject to the terms and conditions of  this License, each Contributor hereby grants to You a perpetual,  worldwide, non-exclusive, no-charge, royalty-free, irrevocable  (except as stated in this section) patent license to make, have made,  use, offer to sell, sell, import, and otherwise transfer the Work,  where such license applies only to those patent claims licensable  by such Contributor that are necessarily infringed by their  Contribution(s) alone or by combination of their Contribution(s)  with the Work to which such Contribution(s) was submitted. If You  institute patent litigation against any entity (including a  cross-claim or counterclaim in a lawsuit) alleging that the Work  or a Contribution incorporated within the Work constitutes direct  or contributory patent infringement, then any patent licenses  granted to You under this License for that Work shall terminate  as of the date such litigation is filed.
-
-3. Redistribution. You may reproduce and distribute copies of the  Work or Derivative Works thereof in any medium, with or without  modifications, and in Source or Object form, provided that You  meet the following conditions:
-
-   1. 1. You must give any other recipients of the Work or  Derivative Works a copy of this License; and
-
-   2. 2. You must cause any modified files to carry prominent notices  stating that You changed the files; and
-
-   3. 3. You must retain, in the Source form of any Derivative Works  that You distribute, all copyright, patent, trademark, and  attribution notices from the Source form of the Work,  excluding those notices that do not pertain to any part of  the Derivative Works; and
-
-   4. 4. If the Work includes a "NOTICE" text file as part of its  distribution, then any Derivative Works that You distribute must  include a readable copy of the attribution notices contained  within such NOTICE file, excluding those notices that do not  pertain to any part of the Derivative Works, in at least one  of the following places: within a NOTICE text file distributed  as part of the Derivative Works; within the Source form or  documentation, if provided along with the Derivative Works; or,  within a display generated by the Derivative Works, if and  wherever such third-party notices normally appear. The contents  of the NOTICE file are for informational purposes only and  do not modify the License. You may add Your own attribution  notices within Derivative Works that You distribute, alongside  or as an addendum to the NOTICE text from the Work, provided  that such additional attribution notices cannot be construed  as modifying the License.
-
- You may add Your own copyright statement to Your modifications and  may provide additional or different license terms and conditions  for use, reproduction, or distribution of Your modifications, or  for any such Derivative Works as a whole, provided Your use,  reproduction, and distribution of the Work otherwise complies with  the conditions stated in this License.
-
-4. Submission of Contributions. Unless You explicitly state otherwise,  any Contribution intentionally submitted for inclusion in the Work  by You to the Licensor shall be under the terms and conditions of  this License, without any additional terms or conditions.  Notwithstanding the above, nothing herein shall supersede or modify  the terms of any separate license agreement you may have executed  with Licensor regarding such Contributions.
-
-5. Trademarks. This License does not grant permission to use the trade  names, trademarks, service marks, or product names of the Licensor,  except as required for reasonable and customary use in describing the  origin of the Work and reproducing the content of the NOTICE file.
-
-6. Disclaimer of Warranty. Unless required by applicable law or  agreed to in writing, Licensor provides the Work (and each  Contributor provides its Contributions) on an "AS IS" BASIS,  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or  implied, including, without limitation, any warranties or conditions  of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A  PARTICULAR PURPOSE. You are solely responsible for determining the  appropriateness of using or redistributing the Work and assume any  risks associated with Your exercise of permissions under this License.
-
-7. Limitation of Liability. In no event and under no legal theory,  whether in tort (including negligence), contract, or otherwise,  unless required by applicable law (such as deliberate and grossly  negligent acts) or agreed to in writing, shall any Contributor be  liable to You for damages, including any direct, indirect, special,  incidental, or consequential damages of any character arising as a  result of this License or out of the use or inability to use the  Work (including but not limited to damages for loss of goodwill,  work stoppage, computer failure or malfunction, or any and all  other commercial damages or losses), even if such Contributor  has been advised of the possibility of such damages.
-
-8. Accepting Warranty or Additional Liability. While redistributing  the Work or Derivative Works thereof, You may choose to offer,  and charge a fee for, acceptance of support, warranty, indemnity,  or other liability obligations and/or rights consistent with this  License. However, in accepting such obligations, You may act only  on Your own behalf and on Your sole responsibility, not on behalf  of any other Contributor, and only if You agree to indemnify,  defend, and hold each Contributor harmless for any liability  incurred by, or claims asserted against, such Contributor by reason  of your accepting any such warranty or additional liability.
-
-__END OF TERMS AND CONDITIONS__
-
-### APPENDIX: How to apply the Apache License to your work.
-
-To apply the Apache License to your work, attach the following boilerplate notice, with the fields enclosed by brackets "[]" replaced with your own identifying information. (Don't include the brackets!) The text should be enclosed in the appropriate comment syntax for the file format. We also recommend that a file or class name and description of purpose be included on the same "printed page" as the copyright notice for easier identification within third-party archives.
-
-        Copyright [yyyy] [name of copyright owner]
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="utf-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <meta name="description" content="Home page of The Apache Software Foundation">
+          
+          <link rel="apple-touch-icon" sizes="57x57" href="/favicons/apple-touch-icon-57x57.png">
+          <link rel="apple-touch-icon" sizes="60x60" href="/favicons/apple-touch-icon-60x60.png">
+          <link rel="apple-touch-icon" sizes="72x72" href="/favicons/apple-touch-icon-72x72.png">
+          <link rel="apple-touch-icon" sizes="76x76" href="/favicons/apple-touch-icon-76x76.png">
+          <link rel="apple-touch-icon" sizes="114x114" href="/favicons/apple-touch-icon-114x114.png">
+          <link rel="apple-touch-icon" sizes="120x120" href="/favicons/apple-touch-icon-120x120.png">
+          <link rel="apple-touch-icon" sizes="144x144" href="/favicons/apple-touch-icon-144x144.png">
+          <link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-touch-icon-152x152.png">
+          <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon-180x180.png">
+          <link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+          <link rel="icon" type="image/png" href="/favicons/favicon-194x194.png" sizes="194x194">
+          <link rel="icon" type="image/png" href="/favicons/favicon-96x96.png" sizes="96x96">
+          <link rel="icon" type="image/png" href="/favicons/android-chrome-192x192.png" sizes="192x192">
+          <link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+          <link rel="manifest" href="/favicons/manifest.json">
+          <link rel="shortcut icon" href="/favicons/favicon.ico">
+          <meta name="msapplication-TileColor" content="#603cba">
+          <meta name="msapplication-TileImage" content="/favicons/mstile-144x144.png">
+          <meta name="msapplication-config" content="/favicons/browserconfig.xml">
+          <meta name="theme-color" content="#303284">
         
-        Licensed under the Apache License, Version 2.0 (the "License");
+          <title>Apache License, Version 2.0</title>
+          <link href='https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700%7cDroid+Serif:400,700' rel='stylesheet' type='text/css'>
+          <link href="/css/min.bootstrap.css" rel="stylesheet">
+          <link href="/css/styles.css" rel="stylesheet">  
+            
+        
+            <!-- Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership.  The ASF licenses this file to you under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use this file except in compliance with the License.  You may obtain a copy of the License at . http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the License for the specific language governing permissions and limitations under the License. -->
+        
+        </head>
+        
+        <body>
+        <!-- Navigation -->  
+        <header>
+          <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+              <div class="navbar-header">
+                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#mainnav-collapse">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+                <a href="#" class="navbar-brand"><span class="glyphicon glyphicon-home"></span></a>
+              </div>
+              <div class="collapse navbar-collapse" id="mainnav-collapse">
+                <div style="line-height:20px; padding-top:5px; float:left"><a href="/">Home</a>&nbsp;&raquo&nbsp;<a href="/licenses/">Licenses</a></div>
+                <ul class="nav navbar-nav navbar-right">
+                  <li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <span class="caret"></span></a>
+                      <ul class="dropdown-menu" role="menu">
+                              <li><a href="/foundation">Overview</a></li>
+                              <li><a href="/foundation/members.html">Members</a></li>
+                              <li><a href="/foundation/how-it-works.html">Process</a></li>
+                              <li><a href="/foundation/sponsorship.html">Sponsorship</a></li>
+                              <li><a href="/foundation/glossary.html">Glossary</a></li>
+                              <li><a href="/foundation/preFAQ.html">FAQ</a></li>
+                              <li><a href="/foundation/contact.html ">Contact</a></li>                      
+                      </ul>
+                  </li>
+                    <li><a href="/index.html#projects-list">Projects</a></li>
+                          <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">People <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                                  <li><a href="http://people.apache.org/">Overview</a></li>
+                                  <li><a href="http://people.apache.org/committer-index.html">Committers</a></li>
+                                  <li><a href="/foundation/how-it-works.html#meritocracy">Meritocracy</a></li>
+                                  <li><a href="/foundation/how-it-works.html#roles">Roles</a></li>
+                                  <li><a href="http://planet.apache.org/">Planet Apache</a></li>
+                        </ul>
+                    </li>
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Get Involved <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="/foundation/getinvolved.html">Overview</a></li>
+                              <li><a href="http://community.apache.org/">Community Development</a></li>
+                            <li><a href="http://helpwanted.apache.org/">Help Wanted</a></li>
+                              <li><a href="http://www.apachecon.com/">ApacheCon</a></li>
+                    </ul>
+                          </li>
+                  <li><a href="/dyn/closer.cgi">Download</a></li>
+                  <li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown">Support Apache <span class="caret"></span></a>
+                      <ul class="dropdown-menu" role="menu">
+                              <li><a href="/foundation/sponsorship.html">Sponsorship</a></li>
+                              <li><a href="/foundation/contributing.html">Donations</a></li>
+                              <li><a href="/foundation/buy_stuff.html">Buy Stuff</a></li>
+                              <li><a href="/foundation/thanks.html">Thanks</a></li>
+                      </ul>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+        </header>
+        <!-- / Navigation -->
+        <div class="container">
+          <div class="row">
+            <div class="col-md-9 col-sm-8 col-xs-12">
+              <img src="/img/asf_logo.png" alt="Apache Logo" style="max-width: 100%;">
+            </div>
+            <div class="col-md-3 col-sm-4 col-xs-12">
+              <div class="input-group" style="margin-bottom: 5px;">
+                        <script>
+          (function() {
+            var cx = '005703438322411770421:5mgshgrgx2u';
+            var gcse = document.createElement('script');
+            gcse.type = 'text/javascript';
+            gcse.async = true;
+            gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+                '//cse.google.com/cse.js?cx=' + cx;
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(gcse, s);
+          })();
+        </script>
+                  <gcse:searchbox-only></gcse:searchbox-only>
+                    </div>
+                    <a role="button" class="btn btn-block btn-default btn-xs" href="/foundation/governance/">The Apache Way</a>
+                    <a role="button" class="btn btn-block btn-default btn-xs" href="https://community.apache.org/contributors/">Contribute</a>
+                    <a role="button" class="btn btn-block btn-default btn-xs" href="/foundation/thanks.html">ASF Sponsors</a>
+            </div>
+          </div>
+        </div>
+        <div class="container"><style type="text/css">
+        /* The following code is added by mdx_elementid.py
+           It was originally lifted from http://subversion.apache.org/style/site.css */
+        /*
+         * Hide class="elementid-permalink", except when an enclosing heading
+         * has the :hover property.
+         */
+        .headerlink, .elementid-permalink {
+          visibility: hidden;
+        }
+        h2:hover > .headerlink, h3:hover > .headerlink, h1:hover > .headerlink, h6:hover > .headerlink, h4:hover > .headerlink, h5:hover > .headerlink, dt:hover > .elementid-permalink { visibility: visible }</style>
+        <p>Apache License<br></br>Version 2.0, January 2004<br></br>
+        <a href="http://www.apache.org/licenses/">http://www.apache.org/licenses/</a> </p>
+        <p>TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION</p>
+        <p><strong><a name="definitions">1. Definitions</a></strong>.</p>
+        <p>"License" shall mean the terms and conditions for use, reproduction, and
+        distribution as defined by Sections 1 through 9 of this document.</p>
+        <p>"Licensor" shall mean the copyright owner or entity authorized by the
+        copyright owner that is granting the License.</p>
+        <p>"Legal Entity" shall mean the union of the acting entity and all other
+        entities that control, are controlled by, or are under common control with
+        that entity. For the purposes of this definition, "control" means (i) the
+        power, direct or indirect, to cause the direction or management of such
+        entity, whether by contract or otherwise, or (ii) ownership of fifty
+        percent (50%) or more of the outstanding shares, or (iii) beneficial
+        ownership of such entity.</p>
+        <p>"You" (or "Your") shall mean an individual or Legal Entity exercising
+        permissions granted by this License.</p>
+        <p>"Source" form shall mean the preferred form for making modifications,
+        including but not limited to software source code, documentation source,
+        and configuration files.</p>
+        <p>"Object" form shall mean any form resulting from mechanical transformation
+        or translation of a Source form, including but not limited to compiled
+        object code, generated documentation, and conversions to other media types.</p>
+        <p>"Work" shall mean the work of authorship, whether in Source or Object form,
+        made available under the License, as indicated by a copyright notice that
+        is included in or attached to the work (an example is provided in the
+        Appendix below).</p>
+        <p>"Derivative Works" shall mean any work, whether in Source or Object form,
+        that is based on (or derived from) the Work and for which the editorial
+        revisions, annotations, elaborations, or other modifications represent, as
+        a whole, an original work of authorship. For the purposes of this License,
+        Derivative Works shall not include works that remain separable from, or
+        merely link (or bind by name) to the interfaces of, the Work and Derivative
+        Works thereof.</p>
+        <p>"Contribution" shall mean any work of authorship, including the original
+        version of the Work and any modifications or additions to that Work or
+        Derivative Works thereof, that is intentionally submitted to Licensor for
+        inclusion in the Work by the copyright owner or by an individual or Legal
+        Entity authorized to submit on behalf of the copyright owner. For the
+        purposes of this definition, "submitted" means any form of electronic,
+        verbal, or written communication sent to the Licensor or its
+        representatives, including but not limited to communication on electronic
+        mailing lists, source code control systems, and issue tracking systems that
+        are managed by, or on behalf of, the Licensor for the purpose of discussing
+        and improving the Work, but excluding communication that is conspicuously
+        marked or otherwise designated in writing by the copyright owner as "Not a
+        Contribution."</p>
+        <p>"Contributor" shall mean Licensor and any individual or Legal Entity on
+        behalf of whom a Contribution has been received by Licensor and
+        subsequently incorporated within the Work.</p>
+        <p><strong><a name="copyright">2. Grant of Copyright License</a></strong>. Subject to the
+        terms and conditions of this License, each Contributor hereby grants to You
+        a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+        copyright license to reproduce, prepare Derivative Works of, publicly
+        display, publicly perform, sublicense, and distribute the Work and such
+        Derivative Works in Source or Object form.</p>
+        <p><strong><a name="patent">3. Grant of Patent License</a></strong>. Subject to the terms
+        and conditions of this License, each Contributor hereby grants to You a
+        perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+        (except as stated in this section) patent license to make, have made, use,
+        offer to sell, sell, import, and otherwise transfer the Work, where such
+        license applies only to those patent claims licensable by such Contributor
+        that are necessarily infringed by their Contribution(s) alone or by
+        combination of their Contribution(s) with the Work to which such
+        Contribution(s) was submitted. If You institute patent litigation against
+        any entity (including a cross-claim or counterclaim in a lawsuit) alleging
+        that the Work or a Contribution incorporated within the Work constitutes
+        direct or contributory patent infringement, then any patent licenses
+        granted to You under this License for that Work shall terminate as of the
+        date such litigation is filed.</p>
+        <p><strong><a name="redistribution">4. Redistribution</a></strong>. You may reproduce and
+        distribute copies of the Work or Derivative Works thereof in any medium,
+        with or without modifications, and in Source or Object form, provided that
+        You meet the following conditions:</p>
+        <ol style="list-style: lower-latin;">
+        <li>You must give any other recipients of the Work or Derivative Works a
+        copy of this License; and</li>
+        
+        <li>You must cause any modified files to carry prominent notices stating
+        that You changed the files; and</li>
+        
+        <li>You must retain, in the Source form of any Derivative Works that You
+        distribute, all copyright, patent, trademark, and attribution notices from
+        the Source form of the Work, excluding those notices that do not pertain to
+        any part of the Derivative Works; and</li>
+        
+        <li>If the Work includes a "NOTICE" text file as part of its distribution,
+        then any Derivative Works that You distribute must include a readable copy
+        of the attribution notices contained within such NOTICE file, excluding
+        those notices that do not pertain to any part of the Derivative Works, in
+        at least one of the following places: within a NOTICE text file distributed
+        as part of the Derivative Works; within the Source form or documentation,
+        if provided along with the Derivative Works; or, within a display generated
+        by the Derivative Works, if and wherever such third-party notices normally
+        appear. The contents of the NOTICE file are for informational purposes only
+        and do not modify the License. You may add Your own attribution notices
+        within Derivative Works that You distribute, alongside or as an addendum to
+        the NOTICE text from the Work, provided that such additional attribution
+        notices cannot be construed as modifying the License.
+        <br/>
+        <br/>
+        You may add Your own copyright statement to Your modifications and may
+        provide additional or different license terms and conditions for use,
+        reproduction, or distribution of Your modifications, or for any such
+        Derivative Works as a whole, provided Your use, reproduction, and
+        distribution of the Work otherwise complies with the conditions stated in
+        this License.
+        </li>
+        
+        </ol>
+        
+        <p><strong><a name="contributions">5. Submission of Contributions</a></strong>. Unless You
+        explicitly state otherwise, any Contribution intentionally submitted for
+        inclusion in the Work by You to the Licensor shall be under the terms and
+        conditions of this License, without any additional terms or conditions.
+        Notwithstanding the above, nothing herein shall supersede or modify the
+        terms of any separate license agreement you may have executed with Licensor
+        regarding such Contributions.</p>
+        <p><strong><a name="trademarks">6. Trademarks</a></strong>. This License does not grant
+        permission to use the trade names, trademarks, service marks, or product
+        names of the Licensor, except as required for reasonable and customary use
+        in describing the origin of the Work and reproducing the content of the
+        NOTICE file.</p>
+        <p><strong><a name="no-warranty">7. Disclaimer of Warranty</a></strong>. Unless required by
+        applicable law or agreed to in writing, Licensor provides the Work (and
+        each Contributor provides its Contributions) on an "AS IS" BASIS, WITHOUT
+        WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied, including,
+        without limitation, any warranties or conditions of TITLE,
+        NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE. You
+        are solely responsible for determining the appropriateness of using or
+        redistributing the Work and assume any risks associated with Your exercise
+        of permissions under this License.</p>
+        <p><strong><a name="no-liability">8. Limitation of Liability</a></strong>. In no event and
+        under no legal theory, whether in tort (including negligence), contract, or
+        otherwise, unless required by applicable law (such as deliberate and
+        grossly negligent acts) or agreed to in writing, shall any Contributor be
+        liable to You for damages, including any direct, indirect, special,
+        incidental, or consequential damages of any character arising as a result
+        of this License or out of the use or inability to use the Work (including
+        but not limited to damages for loss of goodwill, work stoppage, computer
+        failure or malfunction, or any and all other commercial damages or losses),
+        even if such Contributor has been advised of the possibility of such
+        damages.</p>
+        <p><strong><a name="additional">9. Accepting Warranty or Additional Liability</a></strong>.
+        While redistributing the Work or Derivative Works thereof, You may choose
+        to offer, and charge a fee for, acceptance of support, warranty, indemnity,
+        or other liability obligations and/or rights consistent with this License.
+        However, in accepting such obligations, You may act only on Your own behalf
+        and on Your sole responsibility, not on behalf of any other Contributor,
+        and only if You agree to indemnify, defend, and hold each Contributor
+        harmless for any liability incurred by, or claims asserted against, such
+        Contributor by reason of your accepting any such warranty or additional
+        liability.</p>
+        <p>END OF TERMS AND CONDITIONS</p>
+        <h1 id="apply">APPENDIX: How to apply the Apache License to your work<a class="headerlink" href="#apply" title="Permanent link">&para;</a></h1>
+        <p>To apply the Apache License to your work, attach the following boilerplate
+        notice, with the fields enclosed by brackets "[]" replaced with your own
+        identifying information. (Don't include the brackets!) The text should be
+        enclosed in the appropriate comment syntax for the file format. We also
+        recommend that a file or class name and description of purpose be included
+        on the same "printed page" as the copyright notice for easier
+        identification within third-party archives.</p>
+        <div class="codehilite"><pre>Copyright [yyyy] [name of copyright owner]
+        
+        Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
         you may not use this file except in compliance with the License.
         You may obtain a copy of the License at
         
             http://www.apache.org/licenses/LICENSE-2.0
         
         Unless required by applicable law or agreed to in writing, software
-        distributed under the License is distributed on an "AS IS" BASIS,
+        distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
         See the License for the specific language governing permissions and
         limitations under the License.
+        </pre></div></div>
+        
+        <!-- Footer -->
+        
+        <footer class="bg-primary">
+          <div class="container">
+                    <div class="row">
+                        <br />
+                        <div class="col-sm-1">
+                            
+                        </div>
+                        <div class="col-sm-2">
+                            <h5 class="white">Community</h5>
+                            <ul class="list-unstyled white" role="menu">
+                                <li><a href="http://community.apache.org/">Overview</a></li>
+                                <li><a href="/foundation/conferences.html">Conferences</a></li>
+                                <li><a href="http://community.apache.org/gsoc.html">Summer of Code</a></li>
+                                <li><a href="http://community.apache.org/newcomers/">Getting Started</a></li>
+                                <li><a href="/foundation/how-it-works.html">The Apache Way</a></li>
+                                <li><a href="/travel/">Travel Assistance</a></li>
+                                <li><a href="/foundation/getinvolved.html">Get Involved</a></li>
+                                <li><a href="http://community.apache.org/newbiefaq.html">Community FAQ</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div class="col-sm-2">
+                            <h5 class="white">Innovation</h5>
+                            <ul class="list-unstyled white" role="menu">
+                                <li><a href="http://incubator.apache.org/">Incubator</a></li>
+                                <li><a href="http://labs.apache.org/">Labs</a></li>
+                                <li><a href="/licenses/">Licensing</a></li>
+                                <li><a href="/foundation/license-faq.html">Licensing FAQ</a></li>
+                                <li><a href="/foundation/marks/">Trademark Policy</a></li>
+                                <li><a href="/foundation/contact.html">Contacts</a></li>
+                            </ul>
+                        </div>
+        
+                        <div class="col-sm-2">
+                            <h5 class="white">Tech Operations</h5>
+                        <ul class="list-unstyled white" role="menu">
+                                  <li><a href="/dev/">Developer Information</a></li>
+                                  <li><a href="/dev/infrastructure.html">Infrastructure</a></li>
+                                  <li><a href="/security/">Security</a></li>
+                                  <li><a href="http://status.apache.org">Status</a></li>
+                                  <li><a href="/foundation/contact.html">Contacts</a></li>
+                        </ul>
+                        </div>
+        
+                        <div class="col-sm-2">
+                            <h5 class="white">Press</h5>
+                    <ul class="list-unstyled white" role="menu">
+                                <li><a href="/press/">Overview</a></li>
+                                <li><a href="https://blogs.apache.org/">ASF News</a></li>
+                                <li><a href="https://blogs.apache.org/foundation/">Announcements</a></li>
+                                <li><a href="https://twitter.com/TheASF">Twitter Feed</a></li>
+                                <li><a href="/press/#contact">Contacts</a></li>
+                    </ul>
+                        </div>
+                        
+                        <div class="col-sm-2">
+                            <h5 class="white">Legal</h5>
+                    <ul class="list-unstyled white" role="menu">
+                                <li><a href="/legal/">Legal Affairs</a></li>
+                                <li><a href="/licenses/">Licenses</a></li>
+                                <li><a href="/foundation/marks/">Trademark Policy</a></li>
+                                <li><a href="/foundation/records/">Public Records</a></li>
+                    <li><a href="/foundation/policies/privacy.html">Privacy Policy</a></li>
+                                <li><a href="/licenses/exports/">Export Information</a></li>
+                                <li><a href="/foundation/license-faq.html">License/Distribution FAQ</a></li>
+                                <li><a href="/foundation/contact.html">Contacts</a></li>
+                    </ul>
+                        </div>
+        
+                        <div class="col-sm-1">
+                        </div>
+        
+                    </div>
+                    <hr class="col-lg-12 hr-white" />
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <p class="text-center">Copyright &#169; 2016 The Apache Software Foundation, Licensed under the <a class="white" href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.</p>
+                            <p class="text-center">Apache and the Apache feather logo are trademarks of The Apache Software Foundation.</p>
+                        </div>
+                    </div>
+                </div>
+        
+        </footer>
+        
+        <!-- / Footer -->
+        
+        <script src="/js/jquery-2.1.1.min.js"></script>
+        <script src="/js/bootstrap.js"></script>
+        </body>
+        </html>
+
+<!--
+  
+  This was created by CodeLicenseManager
+-->
+## Apache Software License version 2.0
+
+                                         Apache License
+                                   Version 2.0, January 2004
+                                http://www.apache.org/licenses/
+        
+           TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+        
+           1. Definitions.
+        
+              "License" shall mean the terms and conditions for use, reproduction,
+              and distribution as defined by Sections 1 through 9 of this document.
+        
+              "Licensor" shall mean the copyright owner or entity authorized by
+              the copyright owner that is granting the License.
+        
+              "Legal Entity" shall mean the union of the acting entity and all
+              other entities that control, are controlled by, or are under common
+              control with that entity. For the purposes of this definition,
+              "control" means (i) the power, direct or indirect, to cause the
+              direction or management of such entity, whether by contract or
+              otherwise, or (ii) ownership of fifty percent (50%) or more of the
+              outstanding shares, or (iii) beneficial ownership of such entity.
+        
+              "You" (or "Your") shall mean an individual or Legal Entity
+              exercising permissions granted by this License.
+        
+              "Source" form shall mean the preferred form for making modifications,
+              including but not limited to software source code, documentation
+              source, and configuration files.
+        
+              "Object" form shall mean any form resulting from mechanical
+              transformation or translation of a Source form, including but
+              not limited to compiled object code, generated documentation,
+              and conversions to other media types.
+        
+              "Work" shall mean the work of authorship, whether in Source or
+              Object form, made available under the License, as indicated by a
+              copyright notice that is included in or attached to the work
+              (an example is provided in the Appendix below).
+        
+              "Derivative Works" shall mean any work, whether in Source or Object
+              form, that is based on (or derived from) the Work and for which the
+              editorial revisions, annotations, elaborations, or other modifications
+              represent, as a whole, an original work of authorship. For the purposes
+              of this License, Derivative Works shall not include works that remain
+              separable from, or merely link (or bind by name) to the interfaces of,
+              the Work and Derivative Works thereof.
+        
+              "Contribution" shall mean any work of authorship, including
+              the original version of the Work and any modifications or additions
+              to that Work or Derivative Works thereof, that is intentionally
+              submitted to Licensor for inclusion in the Work by the copyright owner
+              or by an individual or Legal Entity authorized to submit on behalf of
+              the copyright owner. For the purposes of this definition, "submitted"
+              means any form of electronic, verbal, or written communication sent
+              to the Licensor or its representatives, including but not limited to
+              communication on electronic mailing lists, source code control systems,
+              and issue tracking systems that are managed by, or on behalf of, the
+              Licensor for the purpose of discussing and improving the Work, but
+              excluding communication that is conspicuously marked or otherwise
+              designated in writing by the copyright owner as "Not a Contribution."
+        
+              "Contributor" shall mean Licensor and any individual or Legal Entity
+              on behalf of whom a Contribution has been received by Licensor and
+              subsequently incorporated within the Work.
+        
+           2. Grant of Copyright License. Subject to the terms and conditions of
+              this License, each Contributor hereby grants to You a perpetual,
+              worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+              copyright license to reproduce, prepare Derivative Works of,
+              publicly display, publicly perform, sublicense, and distribute the
+              Work and such Derivative Works in Source or Object form.
+        
+           3. Grant of Patent License. Subject to the terms and conditions of
+              this License, each Contributor hereby grants to You a perpetual,
+              worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+              (except as stated in this section) patent license to make, have made,
+              use, offer to sell, sell, import, and otherwise transfer the Work,
+              where such license applies only to those patent claims licensable
+              by such Contributor that are necessarily infringed by their
+              Contribution(s) alone or by combination of their Contribution(s)
+              with the Work to which such Contribution(s) was submitted. If You
+              institute patent litigation against any entity (including a
+              cross-claim or counterclaim in a lawsuit) alleging that the Work
+              or a Contribution incorporated within the Work constitutes direct
+              or contributory patent infringement, then any patent licenses
+              granted to You under this License for that Work shall terminate
+              as of the date such litigation is filed.
+        
+           4. Redistribution. You may reproduce and distribute copies of the
+              Work or Derivative Works thereof in any medium, with or without
+              modifications, and in Source or Object form, provided that You
+              meet the following conditions:
+        
+              (a) You must give any other recipients of the Work or
+                  Derivative Works a copy of this License; and
+        
+              (b) You must cause any modified files to carry prominent notices
+                  stating that You changed the files; and
+        
+              (c) You must retain, in the Source form of any Derivative Works
+                  that You distribute, all copyright, patent, trademark, and
+                  attribution notices from the Source form of the Work,
+                  excluding those notices that do not pertain to any part of
+                  the Derivative Works; and
+        
+              (d) If the Work includes a "NOTICE" text file as part of its
+                  distribution, then any Derivative Works that You distribute must
+                  include a readable copy of the attribution notices contained
+                  within such NOTICE file, excluding those notices that do not
+                  pertain to any part of the Derivative Works, in at least one
+                  of the following places: within a NOTICE text file distributed
+                  as part of the Derivative Works; within the Source form or
+                  documentation, if provided along with the Derivative Works; or,
+                  within a display generated by the Derivative Works, if and
+                  wherever such third-party notices normally appear. The contents
+                  of the NOTICE file are for informational purposes only and
+                  do not modify the License. You may add Your own attribution
+                  notices within Derivative Works that You distribute, alongside
+                  or as an addendum to the NOTICE text from the Work, provided
+                  that such additional attribution notices cannot be construed
+                  as modifying the License.
+        
+              You may add Your own copyright statement to Your modifications and
+              may provide additional or different license terms and conditions
+              for use, reproduction, or distribution of Your modifications, or
+              for any such Derivative Works as a whole, provided Your use,
+              reproduction, and distribution of the Work otherwise complies with
+              the conditions stated in this License.
+        
+           5. Submission of Contributions. Unless You explicitly state otherwise,
+              any Contribution intentionally submitted for inclusion in the Work
+              by You to the Licensor shall be under the terms and conditions of
+              this License, without any additional terms or conditions.
+              Notwithstanding the above, nothing herein shall supersede or modify
+              the terms of any separate license agreement you may have executed
+              with Licensor regarding such Contributions.
+        
+           6. Trademarks. This License does not grant permission to use the trade
+              names, trademarks, service marks, or product names of the Licensor,
+              except as required for reasonable and customary use in describing the
+              origin of the Work and reproducing the content of the NOTICE file.
+        
+           7. Disclaimer of Warranty. Unless required by applicable law or
+              agreed to in writing, Licensor provides the Work (and each
+              Contributor provides its Contributions) on an "AS IS" BASIS,
+              WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+              implied, including, without limitation, any warranties or conditions
+              of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+              PARTICULAR PURPOSE. You are solely responsible for determining the
+              appropriateness of using or redistributing the Work and assume any
+              risks associated with Your exercise of permissions under this License.
+        
+           8. Limitation of Liability. In no event and under no legal theory,
+              whether in tort (including negligence), contract, or otherwise,
+              unless required by applicable law (such as deliberate and grossly
+              negligent acts) or agreed to in writing, shall any Contributor be
+              liable to You for damages, including any direct, indirect, special,
+              incidental, or consequential damages of any character arising as a
+              result of this License or out of the use or inability to use the
+              Work (including but not limited to damages for loss of goodwill,
+              work stoppage, computer failure or malfunction, or any and all
+              other commercial damages or losses), even if such Contributor
+              has been advised of the possibility of such damages.
+        
+           9. Accepting Warranty or Additional Liability. While redistributing
+              the Work or Derivative Works thereof, You may choose to offer,
+              and charge a fee for, acceptance of support, warranty, indemnity,
+              or other liability obligations and/or rights consistent with this
+              License. However, in accepting such obligations, You may act only
+              on Your own behalf and on Your sole responsibility, not on behalf
+              of any other Contributor, and only if You agree to indemnify,
+              defend, and hold each Contributor harmless for any liability
+              incurred by, or claims asserted against, such Contributor by reason
+              of your accepting any such warranty or additional liability.
+        
+           END OF TERMS AND CONDITIONS
+        
+           APPENDIX: How to apply the Apache License to your work.
+        
+              To apply the Apache License to your work, attach the following
+              boilerplate notice, with the fields enclosed by brackets "[]"
+              replaced with your own identifying information. (Don't include
+              the brackets!)  The text should be enclosed in the appropriate
+              comment syntax for the file format. We also recommend that a
+              file or class name and description of purpose be included on the
+              same "printed page" as the copyright notice for easier
+              identification within third-party archives.
+        
+           Copyright [yyyy] [name of copyright owner]
+        
+           Licensed under the Apache License, Version 2.0 (the "License");
+           you may not use this file except in compliance with the License.
+           You may obtain a copy of the License at
+        
+               http://www.apache.org/licenses/LICENSE-2.0
+        
+           Unless required by applicable law or agreed to in writing, software
+           distributed under the License is distributed on an "AS IS" BASIS,
+           WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+           See the License for the specific language governing permissions and
+           limitations under the License.
+
+<!--
+  
+  This was created by CodeLicenseManager
+-->
+## Apache version 2.0
+
+<!--
+  
+  This was created by CodeLicenseManager
+-->
+## Apache version 2
+
+                                         Apache License
+                                   Version 2.0, January 2004
+                                http://www.apache.org/licenses/
+        
+           TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+        
+           1. Definitions.
+        
+              "License" shall mean the terms and conditions for use, reproduction,
+              and distribution as defined by Sections 1 through 9 of this document.
+        
+              "Licensor" shall mean the copyright owner or entity authorized by
+              the copyright owner that is granting the License.
+        
+              "Legal Entity" shall mean the union of the acting entity and all
+              other entities that control, are controlled by, or are under common
+              control with that entity. For the purposes of this definition,
+              "control" means (i) the power, direct or indirect, to cause the
+              direction or management of such entity, whether by contract or
+              otherwise, or (ii) ownership of fifty percent (50%) or more of the
+              outstanding shares, or (iii) beneficial ownership of such entity.
+        
+              "You" (or "Your") shall mean an individual or Legal Entity
+              exercising permissions granted by this License.
+        
+              "Source" form shall mean the preferred form for making modifications,
+              including but not limited to software source code, documentation
+              source, and configuration files.
+        
+              "Object" form shall mean any form resulting from mechanical
+              transformation or translation of a Source form, including but
+              not limited to compiled object code, generated documentation,
+              and conversions to other media types.
+        
+              "Work" shall mean the work of authorship, whether in Source or
+              Object form, made available under the License, as indicated by a
+              copyright notice that is included in or attached to the work
+              (an example is provided in the Appendix below).
+        
+              "Derivative Works" shall mean any work, whether in Source or Object
+              form, that is based on (or derived from) the Work and for which the
+              editorial revisions, annotations, elaborations, or other modifications
+              represent, as a whole, an original work of authorship. For the purposes
+              of this License, Derivative Works shall not include works that remain
+              separable from, or merely link (or bind by name) to the interfaces of,
+              the Work and Derivative Works thereof.
+        
+              "Contribution" shall mean any work of authorship, including
+              the original version of the Work and any modifications or additions
+              to that Work or Derivative Works thereof, that is intentionally
+              submitted to Licensor for inclusion in the Work by the copyright owner
+              or by an individual or Legal Entity authorized to submit on behalf of
+              the copyright owner. For the purposes of this definition, "submitted"
+              means any form of electronic, verbal, or written communication sent
+              to the Licensor or its representatives, including but not limited to
+              communication on electronic mailing lists, source code control systems,
+              and issue tracking systems that are managed by, or on behalf of, the
+              Licensor for the purpose of discussing and improving the Work, but
+              excluding communication that is conspicuously marked or otherwise
+              designated in writing by the copyright owner as "Not a Contribution."
+        
+              "Contributor" shall mean Licensor and any individual or Legal Entity
+              on behalf of whom a Contribution has been received by Licensor and
+              subsequently incorporated within the Work.
+        
+           2. Grant of Copyright License. Subject to the terms and conditions of
+              this License, each Contributor hereby grants to You a perpetual,
+              worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+              copyright license to reproduce, prepare Derivative Works of,
+              publicly display, publicly perform, sublicense, and distribute the
+              Work and such Derivative Works in Source or Object form.
+        
+           3. Grant of Patent License. Subject to the terms and conditions of
+              this License, each Contributor hereby grants to You a perpetual,
+              worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+              (except as stated in this section) patent license to make, have made,
+              use, offer to sell, sell, import, and otherwise transfer the Work,
+              where such license applies only to those patent claims licensable
+              by such Contributor that are necessarily infringed by their
+              Contribution(s) alone or by combination of their Contribution(s)
+              with the Work to which such Contribution(s) was submitted. If You
+              institute patent litigation against any entity (including a
+              cross-claim or counterclaim in a lawsuit) alleging that the Work
+              or a Contribution incorporated within the Work constitutes direct
+              or contributory patent infringement, then any patent licenses
+              granted to You under this License for that Work shall terminate
+              as of the date such litigation is filed.
+        
+           4. Redistribution. You may reproduce and distribute copies of the
+              Work or Derivative Works thereof in any medium, with or without
+              modifications, and in Source or Object form, provided that You
+              meet the following conditions:
+        
+              (a) You must give any other recipients of the Work or
+                  Derivative Works a copy of this License; and
+        
+              (b) You must cause any modified files to carry prominent notices
+                  stating that You changed the files; and
+        
+              (c) You must retain, in the Source form of any Derivative Works
+                  that You distribute, all copyright, patent, trademark, and
+                  attribution notices from the Source form of the Work,
+                  excluding those notices that do not pertain to any part of
+                  the Derivative Works; and
+        
+              (d) If the Work includes a "NOTICE" text file as part of its
+                  distribution, then any Derivative Works that You distribute must
+                  include a readable copy of the attribution notices contained
+                  within such NOTICE file, excluding those notices that do not
+                  pertain to any part of the Derivative Works, in at least one
+                  of the following places: within a NOTICE text file distributed
+                  as part of the Derivative Works; within the Source form or
+                  documentation, if provided along with the Derivative Works; or,
+                  within a display generated by the Derivative Works, if and
+                  wherever such third-party notices normally appear. The contents
+                  of the NOTICE file are for informational purposes only and
+                  do not modify the License. You may add Your own attribution
+                  notices within Derivative Works that You distribute, alongside
+                  or as an addendum to the NOTICE text from the Work, provided
+                  that such additional attribution notices cannot be construed
+                  as modifying the License.
+        
+              You may add Your own copyright statement to Your modifications and
+              may provide additional or different license terms and conditions
+              for use, reproduction, or distribution of Your modifications, or
+              for any such Derivative Works as a whole, provided Your use,
+              reproduction, and distribution of the Work otherwise complies with
+              the conditions stated in this License.
+        
+           5. Submission of Contributions. Unless You explicitly state otherwise,
+              any Contribution intentionally submitted for inclusion in the Work
+              by You to the Licensor shall be under the terms and conditions of
+              this License, without any additional terms or conditions.
+              Notwithstanding the above, nothing herein shall supersede or modify
+              the terms of any separate license agreement you may have executed
+              with Licensor regarding such Contributions.
+        
+           6. Trademarks. This License does not grant permission to use the trade
+              names, trademarks, service marks, or product names of the Licensor,
+              except as required for reasonable and customary use in describing the
+              origin of the Work and reproducing the content of the NOTICE file.
+        
+           7. Disclaimer of Warranty. Unless required by applicable law or
+              agreed to in writing, Licensor provides the Work (and each
+              Contributor provides its Contributions) on an "AS IS" BASIS,
+              WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+              implied, including, without limitation, any warranties or conditions
+              of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+              PARTICULAR PURPOSE. You are solely responsible for determining the
+              appropriateness of using or redistributing the Work and assume any
+              risks associated with Your exercise of permissions under this License.
+        
+           8. Limitation of Liability. In no event and under no legal theory,
+              whether in tort (including negligence), contract, or otherwise,
+              unless required by applicable law (such as deliberate and grossly
+              negligent acts) or agreed to in writing, shall any Contributor be
+              liable to You for damages, including any direct, indirect, special,
+              incidental, or consequential damages of any character arising as a
+              result of this License or out of the use or inability to use the
+              Work (including but not limited to damages for loss of goodwill,
+              work stoppage, computer failure or malfunction, or any and all
+              other commercial damages or losses), even if such Contributor
+              has been advised of the possibility of such damages.
+        
+           9. Accepting Warranty or Additional Liability. While redistributing
+              the Work or Derivative Works thereof, You may choose to offer,
+              and charge a fee for, acceptance of support, warranty, indemnity,
+              or other liability obligations and/or rights consistent with this
+              License. However, in accepting such obligations, You may act only
+              on Your own behalf and on Your sole responsibility, not on behalf
+              of any other Contributor, and only if You agree to indemnify,
+              defend, and hold each Contributor harmless for any liability
+              incurred by, or claims asserted against, such Contributor by reason
+              of your accepting any such warranty or additional liability.
+        
+           END OF TERMS AND CONDITIONS
+        
+           APPENDIX: How to apply the Apache License to your work.
+        
+              To apply the Apache License to your work, attach the following
+              boilerplate notice, with the fields enclosed by brackets "[]"
+              replaced with your own identifying information. (Don't include
+              the brackets!)  The text should be enclosed in the appropriate
+              comment syntax for the file format. We also recommend that a
+              file or class name and description of purpose be included on the
+              same "printed page" as the copyright notice for easier
+              identification within third-party archives.
+        
+           Copyright [yyyy] [name of copyright owner]
+        
+           Licensed under the Apache License, Version 2.0 (the "License");
+           you may not use this file except in compliance with the License.
+           You may obtain a copy of the License at
+        
+               http://www.apache.org/licenses/LICENSE-2.0
+        
+           Unless required by applicable law or agreed to in writing, software
+           distributed under the License is distributed on an "AS IS" BASIS,
+           WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+           See the License for the specific language governing permissions and
+           limitations under the License.
 
 <!--
   
@@ -5872,367 +6376,5 @@ This Agreement is governed by the laws of the State of New York and the intellec
   
   This was created by CodeLicenseManager
 -->
-## GNU Public License version v2
-
-                    GNU GENERAL PUBLIC LICENSE
-                       Version 2, June 1991
-        
-         Copyright (C) 1989, 1991 Free Software Foundation, Inc.,
-         51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
-         Everyone is permitted to copy and distribute verbatim copies
-         of this license document, but changing it is not allowed.
-        
-                        Preamble
-        
-          The licenses for most software are designed to take away your
-        freedom to share and change it.  By contrast, the GNU General Public
-        License is intended to guarantee your freedom to share and change free
-        software--to make sure the software is free for all its users.  This
-        General Public License applies to most of the Free Software
-        Foundation's software and to any other program whose authors commit to
-        using it.  (Some other Free Software Foundation software is covered by
-        the GNU Lesser General Public License instead.)  You can apply it to
-        your programs, too.
-        
-          When we speak of free software, we are referring to freedom, not
-        price.  Our General Public Licenses are designed to make sure that you
-        have the freedom to distribute copies of free software (and charge for
-        this service if you wish), that you receive source code or can get it
-        if you want it, that you can change the software or use pieces of it
-        in new free programs; and that you know you can do these things.
-        
-          To protect your rights, we need to make restrictions that forbid
-        anyone to deny you these rights or to ask you to surrender the rights.
-        These restrictions translate to certain responsibilities for you if you
-        distribute copies of the software, or if you modify it.
-        
-          For example, if you distribute copies of such a program, whether
-        gratis or for a fee, you must give the recipients all the rights that
-        you have.  You must make sure that they, too, receive or can get the
-        source code.  And you must show them these terms so they know their
-        rights.
-        
-          We protect your rights with two steps: (1) copyright the software, and
-        (2) offer you this license which gives you legal permission to copy,
-        distribute and/or modify the software.
-        
-          Also, for each author's protection and ours, we want to make certain
-        that everyone understands that there is no warranty for this free
-        software.  If the software is modified by someone else and passed on, we
-        want its recipients to know that what they have is not the original, so
-        that any problems introduced by others will not reflect on the original
-        authors' reputations.
-        
-          Finally, any free program is threatened constantly by software
-        patents.  We wish to avoid the danger that redistributors of a free
-        program will individually obtain patent licenses, in effect making the
-        program proprietary.  To prevent this, we have made it clear that any
-        patent must be licensed for everyone's free use or not licensed at all.
-        
-          The precise terms and conditions for copying, distribution and
-        modification follow.
-        
-                    GNU GENERAL PUBLIC LICENSE
-           TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-        
-          0. This License applies to any program or other work which contains
-        a notice placed by the copyright holder saying it may be distributed
-        under the terms of this General Public License.  The "Program", below,
-        refers to any such program or work, and a "work based on the Program"
-        means either the Program or any derivative work under copyright law:
-        that is to say, a work containing the Program or a portion of it,
-        either verbatim or with modifications and/or translated into another
-        language.  (Hereinafter, translation is included without limitation in
-        the term "modification".)  Each licensee is addressed as "you".
-        
-        Activities other than copying, distribution and modification are not
-        covered by this License; they are outside its scope.  The act of
-        running the Program is not restricted, and the output from the Program
-        is covered only if its contents constitute a work based on the
-        Program (independent of having been made by running the Program).
-        Whether that is true depends on what the Program does.
-        
-          1. You may copy and distribute verbatim copies of the Program's
-        source code as you receive it, in any medium, provided that you
-        conspicuously and appropriately publish on each copy an appropriate
-        copyright notice and disclaimer of warranty; keep intact all the
-        notices that refer to this License and to the absence of any warranty;
-        and give any other recipients of the Program a copy of this License
-        along with the Program.
-        
-        You may charge a fee for the physical act of transferring a copy, and
-        you may at your option offer warranty protection in exchange for a fee.
-        
-          2. You may modify your copy or copies of the Program or any portion
-        of it, thus forming a work based on the Program, and copy and
-        distribute such modifications or work under the terms of Section 1
-        above, provided that you also meet all of these conditions:
-        
-            a) You must cause the modified files to carry prominent notices
-            stating that you changed the files and the date of any change.
-        
-            b) You must cause any work that you distribute or publish, that in
-            whole or in part contains or is derived from the Program or any
-            part thereof, to be licensed as a whole at no charge to all third
-            parties under the terms of this License.
-        
-            c) If the modified program normally reads commands interactively
-            when run, you must cause it, when started running for such
-            interactive use in the most ordinary way, to print or display an
-            announcement including an appropriate copyright notice and a
-            notice that there is no warranty (or else, saying that you provide
-            a warranty) and that users may redistribute the program under
-            these conditions, and telling the user how to view a copy of this
-            License.  (Exception: if the Program itself is interactive but
-            does not normally print such an announcement, your work based on
-            the Program is not required to print an announcement.)
-        
-        These requirements apply to the modified work as a whole.  If
-        identifiable sections of that work are not derived from the Program,
-        and can be reasonably considered independent and separate works in
-        themselves, then this License, and its terms, do not apply to those
-        sections when you distribute them as separate works.  But when you
-        distribute the same sections as part of a whole which is a work based
-        on the Program, the distribution of the whole must be on the terms of
-        this License, whose permissions for other licensees extend to the
-        entire whole, and thus to each and every part regardless of who wrote it.
-        
-        Thus, it is not the intent of this section to claim rights or contest
-        your rights to work written entirely by you; rather, the intent is to
-        exercise the right to control the distribution of derivative or
-        collective works based on the Program.
-        
-        In addition, mere aggregation of another work not based on the Program
-        with the Program (or with a work based on the Program) on a volume of
-        a storage or distribution medium does not bring the other work under
-        the scope of this License.
-        
-          3. You may copy and distribute the Program (or a work based on it,
-        under Section 2) in object code or executable form under the terms of
-        Sections 1 and 2 above provided that you also do one of the following:
-        
-            a) Accompany it with the complete corresponding machine-readable
-            source code, which must be distributed under the terms of Sections
-            1 and 2 above on a medium customarily used for software interchange; or,
-        
-            b) Accompany it with a written offer, valid for at least three
-            years, to give any third party, for a charge no more than your
-            cost of physically performing source distribution, a complete
-            machine-readable copy of the corresponding source code, to be
-            distributed under the terms of Sections 1 and 2 above on a medium
-            customarily used for software interchange; or,
-        
-            c) Accompany it with the information you received as to the offer
-            to distribute corresponding source code.  (This alternative is
-            allowed only for noncommercial distribution and only if you
-            received the program in object code or executable form with such
-            an offer, in accord with Subsection b above.)
-        
-        The source code for a work means the preferred form of the work for
-        making modifications to it.  For an executable work, complete source
-        code means all the source code for all modules it contains, plus any
-        associated interface definition files, plus the scripts used to
-        control compilation and installation of the executable.  However, as a
-        special exception, the source code distributed need not include
-        anything that is normally distributed (in either source or binary
-        form) with the major components (compiler, kernel, and so on) of the
-        operating system on which the executable runs, unless that component
-        itself accompanies the executable.
-        
-        If distribution of executable or object code is made by offering
-        access to copy from a designated place, then offering equivalent
-        access to copy the source code from the same place counts as
-        distribution of the source code, even though third parties are not
-        compelled to copy the source along with the object code.
-        
-          4. You may not copy, modify, sublicense, or distribute the Program
-        except as expressly provided under this License.  Any attempt
-        otherwise to copy, modify, sublicense or distribute the Program is
-        void, and will automatically terminate your rights under this License.
-        However, parties who have received copies, or rights, from you under
-        this License will not have their licenses terminated so long as such
-        parties remain in full compliance.
-        
-          5. You are not required to accept this License, since you have not
-        signed it.  However, nothing else grants you permission to modify or
-        distribute the Program or its derivative works.  These actions are
-        prohibited by law if you do not accept this License.  Therefore, by
-        modifying or distributing the Program (or any work based on the
-        Program), you indicate your acceptance of this License to do so, and
-        all its terms and conditions for copying, distributing or modifying
-        the Program or works based on it.
-        
-          6. Each time you redistribute the Program (or any work based on the
-        Program), the recipient automatically receives a license from the
-        original licensor to copy, distribute or modify the Program subject to
-        these terms and conditions.  You may not impose any further
-        restrictions on the recipients' exercise of the rights granted herein.
-        You are not responsible for enforcing compliance by third parties to
-        this License.
-        
-          7. If, as a consequence of a court judgment or allegation of patent
-        infringement or for any other reason (not limited to patent issues),
-        conditions are imposed on you (whether by court order, agreement or
-        otherwise) that contradict the conditions of this License, they do not
-        excuse you from the conditions of this License.  If you cannot
-        distribute so as to satisfy simultaneously your obligations under this
-        License and any other pertinent obligations, then as a consequence you
-        may not distribute the Program at all.  For example, if a patent
-        license would not permit royalty-free redistribution of the Program by
-        all those who receive copies directly or indirectly through you, then
-        the only way you could satisfy both it and this License would be to
-        refrain entirely from distribution of the Program.
-        
-        If any portion of this section is held invalid or unenforceable under
-        any particular circumstance, the balance of the section is intended to
-        apply and the section as a whole is intended to apply in other
-        circumstances.
-        
-        It is not the purpose of this section to induce you to infringe any
-        patents or other property right claims or to contest validity of any
-        such claims; this section has the sole purpose of protecting the
-        integrity of the free software distribution system, which is
-        implemented by public license practices.  Many people have made
-        generous contributions to the wide range of software distributed
-        through that system in reliance on consistent application of that
-        system; it is up to the author/donor to decide if he or she is willing
-        to distribute software through any other system and a licensee cannot
-        impose that choice.
-        
-        This section is intended to make thoroughly clear what is believed to
-        be a consequence of the rest of this License.
-        
-          8. If the distribution and/or use of the Program is restricted in
-        certain countries either by patents or by copyrighted interfaces, the
-        original copyright holder who places the Program under this License
-        may add an explicit geographical distribution limitation excluding
-        those countries, so that distribution is permitted only in or among
-        countries not thus excluded.  In such case, this License incorporates
-        the limitation as if written in the body of this License.
-        
-          9. The Free Software Foundation may publish revised and/or new versions
-        of the General Public License from time to time.  Such new versions will
-        be similar in spirit to the present version, but may differ in detail to
-        address new problems or concerns.
-        
-        Each version is given a distinguishing version number.  If the Program
-        specifies a version number of this License which applies to it and "any
-        later version", you have the option of following the terms and conditions
-        either of that version or of any later version published by the Free
-        Software Foundation.  If the Program does not specify a version number of
-        this License, you may choose any version ever published by the Free Software
-        Foundation.
-        
-          10. If you wish to incorporate parts of the Program into other free
-        programs whose distribution conditions are different, write to the author
-        to ask for permission.  For software which is copyrighted by the Free
-        Software Foundation, write to the Free Software Foundation; we sometimes
-        make exceptions for this.  Our decision will be guided by the two goals
-        of preserving the free status of all derivatives of our free software and
-        of promoting the sharing and reuse of software generally.
-        
-                        NO WARRANTY
-        
-          11. BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
-        FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN
-        OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
-        PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED
-        OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-        MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.  THE ENTIRE RISK AS
-        TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH YOU.  SHOULD THE
-        PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL NECESSARY SERVICING,
-        REPAIR OR CORRECTION.
-        
-          12. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
-        WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
-        REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU FOR DAMAGES,
-        INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING
-        OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED
-        TO LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY
-        YOU OR THIRD PARTIES OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER
-        PROGRAMS), EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE
-        POSSIBILITY OF SUCH DAMAGES.
-        
-                     END OF TERMS AND CONDITIONS
-        
-                How to Apply These Terms to Your New Programs
-        
-          If you develop a new program, and you want it to be of the greatest
-        possible use to the public, the best way to achieve this is to make it
-        free software which everyone can redistribute and change under these terms.
-        
-          To do so, attach the following notices to the program.  It is safest
-        to attach them to the start of each source file to most effectively
-        convey the exclusion of warranty; and each file should have at least
-        the "copyright" line and a pointer to where the full notice is found.
-        
-            <one line to give the program's name and a brief idea of what it does.>
-            Copyright (C) <year>  <name of author>
-        
-            This program is free software; you can redistribute it and/or modify
-            it under the terms of the GNU General Public License as published by
-            the Free Software Foundation; either version 2 of the License, or
-            (at your option) any later version.
-        
-            This program is distributed in the hope that it will be useful,
-            but WITHOUT ANY WARRANTY; without even the implied warranty of
-            MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-            GNU General Public License for more details.
-        
-            You should have received a copy of the GNU General Public License along
-            with this program; if not, write to the Free Software Foundation, Inc.,
-            51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-        
-        Also add information on how to contact you by electronic and paper mail.
-        
-        If the program is interactive, make it output a short notice like this
-        when it starts in an interactive mode:
-        
-            Gnomovision version 69, Copyright (C) year name of author
-            Gnomovision comes with ABSOLUTELY NO WARRANTY; for details type `show w'.
-            This is free software, and you are welcome to redistribute it
-            under certain conditions; type `show c' for details.
-        
-        The hypothetical commands `show w' and `show c' should show the appropriate
-        parts of the General Public License.  Of course, the commands you use may
-        be called something other than `show w' and `show c'; they could even be
-        mouse-clicks or menu items--whatever suits your program.
-        
-        You should also get your employer (if you work as a programmer) or your
-        school, if any, to sign a "copyright disclaimer" for the program, if
-        necessary.  Here is a sample; alter the names:
-        
-          Yoyodyne, Inc., hereby disclaims all copyright interest in the program
-          `Gnomovision' (which makes passes at compilers) written by James Hacker.
-        
-          <signature of Ty Coon>, 1 April 1989
-          Ty Coon, President of Vice
-        
-        This General Public License does not permit incorporating your program into
-        proprietary programs.  If your program is a subroutine library, you may
-        consider it more useful to permit linking proprietary applications with the
-        library.  If this is what you want to do, use the GNU Lesser General
-        Public License instead of this License.
-
-## OSGi Specification License, Version 2.0.
-
-License Grant
-
-OSGi Alliance (“OSGi”) hereby grants you a fully-paid, non-exclusive, non-transferable, worldwide, limited license (without the right to sublicense), under OSGi’s applicable intellectual property rights to view, download, and reproduce this OSGi Specification (“Specification”) which follows this License Agreement (“Agreement”). You are not authorized to create any derivative work of the Specification. However, to the extent that an implementation of the Specification would necessarily be a derivative work of the Specification, OSGi also grants you a perpetual, non-exclusive, worldwide, fully paid-up, royalty free, limited license (without the right to sublicense) under any applicable copyrights, to create and/or distribute an implementation of the Specification that: (i) fully implements the Specification including all its required interfaces and functionality; (ii) does not modify, subset, superset or otherwise extend the OSGi Name Space, or include any public or protected packages, classes, Java interfaces, fields or methods within the OSGi Name Space other than those required and authorized by the Specification. An implementation that does not satisfy limitations (i)-(ii) is not considered an implementation of the Specification, does not receive the benefits of this license, and must not be described as an implementation of the Specification. An implementation of the Specification must not claim to be a compliant implementation of the Specification unless it passes the OSGi Compliance Tests for the Specification in accordance with OSGi processes. “OSGi Name Space” shall mean the public class or interface declarations whose names begin with “org.osgi" or any recognized successors or replacements thereof.
-
-OSGi Participants (as such term is defined in the OSGi Intellectual Property Rights Policy) have made non-assert and licensing commitments regarding patent claims necessary to implement the Specification, if any, under the OSGi Intellectual Property Rights Policy which is available for examination on the OSGi public web site (www.osgi.org).
-
-No Warranties and Limitation of Liability
-
-THE SPECIFICATION IS PROVIDED "AS IS," AND OSGi AND ANY OTHER AUTHORS MAKE NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, OR TITLE; THAT THE CONTENTS OF THE SPECIFICATION ARE SUITABLE FOR ANY PURPOSE; NOR THAT THE IMPLEMENTATION OF SUCH CONTENTS WILL NOT INFRINGE ANY THIRD PARTY PATENTS, COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS. OSGi AND ANY OTHER AUTHORS WILL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES ARISING OUT OF ANY USE OF THE SPECIFICATION OR THE PERFORMANCE OR IMPLEMENTATION OF THE CONTENTS THEREOF.
-
-Covenant Not to Assert
-
-As a material condition to this license you hereby agree, to the extent that you have any patent claims which are necessarily infringed by an implementation of the Specification, not to assert any such patent claims against the creation, distribution or use of an implementation of the Specification.
-
-General
-
-The name and trademarks of OSGi or any other Authors may NOT be used in any manner, including advertising or publicity pertaining to the Specification or its contents without specific, written prior permission. Title to copyright in the Specification will at all times remain with OSGi.
-
-No other rights are granted by implication, estoppel or otherwise.
+## OSGi version 2.0
 
