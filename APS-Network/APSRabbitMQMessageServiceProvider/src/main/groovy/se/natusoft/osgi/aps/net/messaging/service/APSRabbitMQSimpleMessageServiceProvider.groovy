@@ -233,7 +233,7 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService
             description = [
                     "reported version:14.0.2-2016.1, date reported:28 Dec 2014",
                     "'Object instance ->' is incorrectly marked as an error!",
-                    "This has priority 'Major' and nothing has been done yet!"
+                    "This has priority 'Major' and nothing has been done yet! (April 2016)"
                     ],
             url = "https://youtrack.jetbrains.com/issue/IDEA-134831"
     )
