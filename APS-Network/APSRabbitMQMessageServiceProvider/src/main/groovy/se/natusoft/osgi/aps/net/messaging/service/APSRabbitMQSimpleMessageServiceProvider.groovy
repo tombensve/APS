@@ -18,7 +18,8 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 /**
  * Provides and manages this service.
  *
- * __NOTE:__ This implementation does not support "contentType"! It will ignore what is passed and always deliver "UNKNOWN".
+ * __NOTE:__ This implementation does not support "TypedData.contentType"! It will ignore what is passed and
+ * always deliver "UNKNOWN".
  */
 @CompileStatic
 @TypeChecked
