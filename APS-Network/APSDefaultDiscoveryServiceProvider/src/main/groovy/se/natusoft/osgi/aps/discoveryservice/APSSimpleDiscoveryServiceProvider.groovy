@@ -20,11 +20,11 @@ import java.util.concurrent.TimeUnit
  * to receive and announce services. What is in the end supported depends on how it is configured.
  */
 @OSGiServiceProvider(properties = [
-        @OSGiProperty(name = APS.SERVICE_PROVIDER, value = "aps-default-discovery-service-provider"),
-        @OSGiProperty(name = APS.SERVICE_CATEGORY, value = "network"),
-        @OSGiProperty(name = APS.SERVICE_FUNCTION, value = "discovery"),
-        @OSGiProperty(name = "network", value = APS.TRUE),
-        @OSGiProperty(name = "discovery", value = APS.TRUE),
+        @OSGiProperty(name = APS.Service.Provider, value = "aps-default-discovery-service-provider"),
+        @OSGiProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Network),
+        @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Discovery),
+        @OSGiProperty(name = APS.Uses.Network, value = APS.TRUE),
+        @OSGiProperty(name = APS.Provides.Discovery, value = APS.TRUE),
 ])
 @CompileStatic
 @TypeChecked
@@ -79,14 +79,6 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
                 this.logger.error(e.getMessage(), e)
             }
         }
-    }
-
-    /**
-     * This gets called on bundle stop by APSActivator.
-     */
-    @BundleStop
-    void shutdown() {
-        this.discoverer.shutdown()
     }
 
     /**
