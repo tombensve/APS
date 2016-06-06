@@ -1,5 +1,7 @@
 package se.natusoft.osgi.aps.discoveryservice.config
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.config.ManagedConfig
 import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigDescription
@@ -8,6 +10,8 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigList
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValueList
 
+@CompileStatic
+@TypeChecked
 @APSConfigDescription(
         configId = "se.natusoft.osgi.aps.net.default-discovery-svc",
         description = "Configuration for aps-default-discovery-service.",
