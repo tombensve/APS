@@ -96,11 +96,6 @@
         <osgi.embed.directory>lib</osgi.embed.directory>
 
         <!--
-             Trigger tiles.
-         -->
-        <tile.deploy>${project.groupId}:DeployBundleTile:${project.version}</tile.deploy>
-
-        <!--
             Misc properties
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
