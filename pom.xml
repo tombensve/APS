@@ -86,7 +86,7 @@
         <clm.version>2.1.6</clm.version>
         <ftpPlugin.version>1.0.1</ftpPlugin.version>
         <markdownDoc.version>1.4.2</markdownDoc.version>
-        <groovy.version>2.4.5</groovy.version>
+        <groovy.version>2.4.6</groovy.version>
     </properties>
 
     <!--
@@ -114,8 +114,8 @@
         </developer>
     </developers>
     <scm>
-        <connection>https://github.com/tombensve/APS.git</connection>
-        <url/>
+        <connection>scm:https://github.com/tombensve/APS.git</connection>
+        <url>scm:https://github.com/tombensve/APS.git</url>
     </scm>
     <issueManagement>
         <system>github</system>

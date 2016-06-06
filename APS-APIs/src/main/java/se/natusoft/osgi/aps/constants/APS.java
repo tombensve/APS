@@ -56,6 +56,7 @@ public interface APS {
                 String Authentication = "authentication";
                 String Transform = "transform";
                 String DataFormats = "data.formats";
+                String Misc = "misc";
             }
 
             interface Function {
@@ -65,6 +66,7 @@ public interface APS {
                 String Configuration = "configuration";
                 String Database = "database";
                 String Filesystem = "filesystem";
+                String Time = "time";
             }
         }
     }

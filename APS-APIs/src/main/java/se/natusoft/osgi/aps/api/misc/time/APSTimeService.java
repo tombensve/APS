@@ -1,4 +1,7 @@
-package se.natusoft.osgi.aps.api.net.time.service;
+package se.natusoft.osgi.aps.api.misc.time;
+
+import se.natusoft.docutations.NotNull;
+import se.natusoft.docutations.Nullable;
 
 import java.time.Instant;
 
@@ -11,5 +14,10 @@ public interface APSTimeService {
     /**
      * Returns the time provided by the service.
      */
-    Instant getTime();
+    @NotNull Instant getTime();
+
+    /**
+     * Returns the last time the time was updated or null if there have been no successful updates.
+     */
+    @Nullable Instant getLastTimeUpdate();
 }
