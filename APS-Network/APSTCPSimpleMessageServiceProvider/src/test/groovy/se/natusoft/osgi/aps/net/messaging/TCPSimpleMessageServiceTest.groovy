@@ -92,9 +92,10 @@ class TCPSimpleMessageServiceTest extends OSGIServiceTestTools {
                         new APSServiceTracker<>(context, MessageReceivedService.class, "2 seconds")
                 msgRecvSvcTracker.start()
                 MessageReceivedService messageReceivedService = msgRecvSvcTracker.allocateService()
+                    TypedData receivedData = TypedData.Provider.fromBytes(messageReceivedService.receivedMessage)
 
-                    String messageType = messageReceivedService?.receivedMessage?.contentType
-                    byte[] msgBytes = messageReceivedService?.receivedMessage?.content
+                    String messageType = receivedData?.contentType
+                    byte[] msgBytes = receivedData?.content
                     String messageText = new String(msgBytes != null ? msgBytes : new byte[0])
 
                 msgRecvSvcTracker.releaseService()
@@ -120,8 +121,10 @@ class TCPSimpleMessageServiceTest extends OSGIServiceTestTools {
 /**
  * The service interface implemented by ReceiverSvc to be able to fetch received message.
  */
+@CompileStatic
+@TypeChecked
 interface MessageReceivedService {
-    TypedData getReceivedMessage();
+    byte[] getReceivedMessage();
 }
 
 /**
@@ -131,10 +134,12 @@ interface MessageReceivedService {
  * by APSActivator. Thereby it is possible to lookup the instance using a service tracker and call it
  * to get the received message for validation.
  */
+@CompileStatic
+@TypeChecked
 @OSGiServiceProvider
 class ReceiverSvc implements MessageReceivedService, APSSimpleMessageService.MessageListener {
 
-    private TypedData message = null
+    private byte[] message = null
 
     @OSGiService(timeout = "2 seconds")
     private APSSimpleMessageService msgService
@@ -150,12 +155,12 @@ class ReceiverSvc implements MessageReceivedService, APSSimpleMessageService.Mes
     }
 
     @Override
-    void messageReceived(String topic, TypedData message) {
+    void messageReceived(String topic, byte[] message) {
         this.message = message
     }
 
     @Override
-    TypedData getReceivedMessage() {
+    byte[] getReceivedMessage() {
         this.message
     }
 }
@@ -163,17 +168,19 @@ class ReceiverSvc implements MessageReceivedService, APSSimpleMessageService.Mes
 /**
  * Represents a service in a Bundle that sends messages.
  */
+@CompileStatic
+@TypeChecked
 class SenderSvc {
 
-    public static final CONTENT_TYPE = "saltwater/fish"
+    public static final String CONTENT_TYPE = "saltwater/fish"
     // I was listening to Scooters "How much is the fish" when I got the idea for test data :-)
-    public static final CONTENT = "><> ><> <>< ><>"
+    public static final String CONTENT = "><> ><> <>< ><>"
 
     @OSGiService(timeout = "2 seconds")
     private APSSimpleMessageService msgService
 
     @BundleStart
     public void start() throws Exception {
-        this.msgService.sendMessage "test", new TypedData.Provider(contentType: CONTENT_TYPE, content: CONTENT.getBytes())
+        this.msgService.sendMessage "test", new TypedData.Provider(contentType: CONTENT_TYPE, content: CONTENT.getBytes()).toBytes()
     }
 }

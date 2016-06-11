@@ -158,8 +158,7 @@ public class ReceiveThread extends Thread {
 
                             for (APSSimpleMessageService.MessageListener listener : this.listeners) {
                                 try {
-                                    TypedData td = new TypedData.Provider(delivery.body, TypedData.UNKNOWN_CONTENT_TYPE)
-                                    listener.messageReceived(this.topic, td)
+                                    listener.messageReceived(this.topic, delivery.body)
                                 }
                                 catch (RuntimeException re) {
                                     this.logger.error("Failure during listener call: " + re.getMessage(), re)

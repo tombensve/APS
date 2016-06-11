@@ -36,6 +36,8 @@
  */
 package se.natusoft.osgi.aps.api.net.util;
 
+import java.io.*;
+
 /**
  * Defines data with content type.
  */
@@ -67,6 +69,36 @@ public interface TypedData {
      * Returns the type of the content.
      */
     String getContentType();
+
+    /**
+     * Writes this instance to the specified stream.
+     *
+     * @param writeStream The stream to write to.
+     *
+     * @throws IOException On any IO failure.
+     */
+    void write(OutputStream writeStream) throws IOException;
+
+    /**
+     * Reads data into this instance from the specified stream.
+     *
+     * @param readStream The stream to read from.
+     *
+     * @throws IOException On any IO failure.
+     */
+    void read(InputStream readStream) throws IOException;
+
+    /**
+     * Set the content of this whole object from bytes. This includes both content type and content.
+     *
+     * @param bytes The bytes to get instance content from.
+     */
+    void setTypedDataBytes(byte[] bytes);
+
+    /**
+     * Get this whole object including content type and content as bytes.
+     */
+    byte[] toBytes();
 
     /**
      * Utility implementation.
@@ -146,6 +178,81 @@ public interface TypedData {
         @Override
         public String getContentType() {
             return this.contentType;
+        }
+
+        /**
+         * Writes this instance to the specified stream.
+         *
+         * @param writeStream The stream to write to.
+         * @throws IOException On any IO failure.
+         */
+        @Override
+        public void write(OutputStream writeStream) throws IOException {
+            ObjectOutputStream oos = new ObjectOutputStream(writeStream);
+            oos.writeUTF(this.contentType);
+            oos.writeInt(this.content.length);
+            oos.write(this.content);
+            oos.flush();
+        }
+
+        /**
+         * Reads data into this instance from the specified stream.
+         *
+         * @param readStream The stream to read from.
+         * @throws IOException On any IO failure.
+         */
+        @Override
+        public void read(InputStream readStream) throws IOException {
+            ObjectInputStream ois = new ObjectInputStream(readStream);
+            this.contentType = ois.readUTF();
+            int contentSize = ois.readInt();
+            this.content = new byte[contentSize];
+            int bytesRead = ois.read(this.content, 0 , contentSize);
+            if (bytesRead != contentSize) throw new IOException("Failed to read complete content!");
+        }
+
+        /**
+         * Set the content of this whole object from bytes. This includes both content type and content.
+         *
+         * @param bytes The bytes to get instance content from.
+         */
+        @Override
+        public void setTypedDataBytes(byte[] bytes) {
+            try {
+                ByteArrayInputStream byteStream = new ByteArrayInputStream(bytes);
+                read(byteStream);
+                byteStream.close();
+            }
+            catch (IOException ignore) {
+                // This will not happen with a ByteArrayInputStream.
+            }
+        }
+
+        /**
+         * Get this whole object including content type and content as bytes.
+         */
+        @Override
+        public byte[] toBytes() {
+            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+            try {
+                write(byteStream);
+                byteStream.close();
+            }
+            catch (IOException ignore) {
+                // Wont happen with a ByteArrayOutputStream.
+            }
+            return byteStream.toByteArray();
+        }
+
+        /**
+         * Returns a TypedData instance created from the passed bytes.
+         *
+         * @param bytes The bytes to create the TypedData from.
+         */
+        public static Provider fromBytes(byte[] bytes) {
+            Provider provider = new Provider();
+            provider.setTypedDataBytes(bytes);
+            return provider;
         }
     }
 }

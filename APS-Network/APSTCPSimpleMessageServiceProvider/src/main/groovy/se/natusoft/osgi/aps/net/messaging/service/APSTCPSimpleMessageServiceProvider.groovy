@@ -12,7 +12,6 @@ import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
 import se.natusoft.osgi.aps.api.net.tcpip.APSTCPIPService
 import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequest
 import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequestListener
-import se.natusoft.osgi.aps.api.net.util.TypedData
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.messaging.config.ServiceConfig
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -92,7 +91,7 @@ class APSTCPSimpleMessageServiceProvider implements APSSimpleMessageService, APS
 
     @BundleStop
     void exit() {
-        this.tcpipService.removeStreamedRequestListener(this.recvConnectionPoint, this)
+        shutdownReceiver()
         unregisterWithDiscoveryService()
 
         this.threadPool.shutdown()
@@ -120,11 +119,15 @@ class APSTCPSimpleMessageServiceProvider implements APSSimpleMessageService, APS
     }
 
     private void setupReceiver() {
+        shutdownReceiver()
+        this.recvConnectionPoint = new URI(ServiceConfig.managed.get().listenConnectionPointUrl.string)
+        this.tcpipService.setStreamedRequestListener(this.recvConnectionPoint, this)
+    }
+
+    private void shutdownReceiver() {
         if (this.recvConnectionPoint != null) {
             this.tcpipService.removeStreamedRequestListener(this.recvConnectionPoint, this)
         }
-        this.recvConnectionPoint = new URI(ServiceConfig.managed.get().listenConnectionPointUrl.string)
-        this.tcpipService.setStreamedRequestListener(this.recvConnectionPoint, this)
     }
 
     private void setupSenders() {
@@ -168,15 +171,15 @@ class APSTCPSimpleMessageServiceProvider implements APSSimpleMessageService, APS
     /**
      * Adds a listener for types.
      *
-     * @param topic The topic to listen to.
+     * @param target The topic to listen to.
      * @param listener The listener to add.
      */
     @Implements(APSSimpleMessageService.class)
-    void addMessageListener(String topic, APSSimpleMessageService.MessageListener listener) {
-        List<APSSimpleMessageService.MessageListener> listeners = this.msgListeners.get(topic)
+    void addMessageListener(String target, APSSimpleMessageService.MessageListener listener) {
+        List<APSSimpleMessageService.MessageListener> listeners = this.msgListeners.get(target)
         if (listeners == null) {
             listeners = new LinkedList<>()
-            this.msgListeners.put(topic, listeners)
+            this.msgListeners.put(target, listeners)
         }
         listeners.add(listener)
     }
@@ -184,16 +187,16 @@ class APSTCPSimpleMessageServiceProvider implements APSSimpleMessageService, APS
     /**
      * Removes a messaging listener.
      *
-     * @param topic The topic to stop listening to.
+     * @param target The topic to stop listening to.
      * @param listener The listener to remove.
      */
     @Implements(APSSimpleMessageService.class)
-    void removeMessageListener(String topic, APSSimpleMessageService.MessageListener listener) {
-        List<APSSimpleMessageService.MessageListener> listeners = this.msgListeners.get(topic)
+    void removeMessageListener(String target, APSSimpleMessageService.MessageListener listener) {
+        List<APSSimpleMessageService.MessageListener> listeners = this.msgListeners.get(target)
         if (listeners != null) {
             listeners.remove(listener)
             if (listeners.isEmpty()) {
-                this.msgListeners.remove(topic)
+                this.msgListeners.remove(target)
             }
         }
     }
@@ -201,16 +204,16 @@ class APSTCPSimpleMessageServiceProvider implements APSSimpleMessageService, APS
     /**
      * Sends a message.
      *
-     * @param topic The topic of the message.
+     * @param target The target of the message.
      * @param message The message to send.
      *
      * @throws APSMessagingException on failure.
      */
     @Implements(APSSimpleMessageService.class)
-    void sendMessage(String topic, TypedData message) throws APSMessagingException {
+    void sendMessage(String target, byte[] message) throws APSMessagingException {
         APSMessagingException msgException = new APSMessagingException("Send not entirely successful! Failing recipients: ")
 
-        Message msg = new Message(topic: topic, typedData: message)
+        Message msg = new Message(target: target, data: message)
 
         def futures = [] as List<Future>
 
@@ -274,9 +277,9 @@ class APSTCPSimpleMessageServiceProvider implements APSSimpleMessageService, APS
     @Implements(StreamedRequestListener.class)
     void requestReceived(URI receivePoint, InputStream requestStream, OutputStream responseStream) throws IOException {
         Message msg = new Message() << requestStream
-        this.msgListeners.get(msg.topic)?.each { APSSimpleMessageService.MessageListener listener ->
+        this.msgListeners.get(msg.target)?.each { APSSimpleMessageService.MessageListener listener ->
             try {
-                listener.messageReceived(msg.topic, msg.typedData)
+                listener.messageReceived(msg.target, msg.data)
             }
             catch (Throwable t) {
                 this.logger.error("Failed to call listener: ${listener}", t)

@@ -42,19 +42,9 @@ import java.io.*;
  * This represents a generic container for putting data in. This can be extended for specific types of boxes.
  * See APSJSONBox for an example.
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public interface APSBox extends TypedData {
 
-    /**
-     * Set the content bytes of the box.
-     *
-     * @param content The content bytes to set.
-     */
-    void setContent(byte[] content);
-
-    /**
-     * Returns the content bytes of this box.
-     */
-    byte[] getContent();
 
     /**
      * Returns an OutputStream on which to write to the box.
@@ -83,6 +73,7 @@ public interface APSBox extends TypedData {
     /**
      * This defines a factory for creating APSBox:es.
      */
+    @SuppressWarnings("unused")
     interface APSBoxFactory<BoxType> {
 
         /**
@@ -101,6 +92,7 @@ public interface APSBox extends TypedData {
     /**
      * A factory for creating default APSBox implementation.
      */
+    @SuppressWarnings("unused")
     class APSBoxDefaultProviderFactory implements APSBoxFactory<APSBox> {
 
         /**
@@ -127,15 +119,9 @@ public interface APSBox extends TypedData {
     /**
      * This provides a usable, but non required implementation of this interface.
      */
-    class APSBoxDefaultProvider implements APSBox {
+    @SuppressWarnings("WeakerAccess")
+    class APSBoxDefaultProvider extends TypedData.Provider implements APSBox {
 
-        //
-        // Private Members
-        //
-
-        private byte[] content = new byte[0];
-
-        private String contentType = "";
 
         //
         // Constructors
@@ -151,42 +137,6 @@ public interface APSBox extends TypedData {
         //
 
         /**
-         * Set the content bytes of the box.
-         *
-         * @param content The content bytes to set.
-         */
-        @Override
-        public void setContent(byte[] content) {
-            this.content = content;
-        }
-
-        /**
-         * Returns the content bytes of this box.
-         */
-        @Override
-        public byte[] getContent() {
-            return this.content;
-        }
-
-        /**
-         * Sets the type of the content.
-         *
-         * @param contentType The type to set. Preferably use mime types like "application/json", etc.
-         */
-        @Override
-        public void setContentType(String contentType) {
-            this.contentType = contentType;
-        }
-
-        /**
-         * Returns the type of the content.
-         */
-        @Override
-        public String getContentType() {
-            return this.contentType;
-        }
-
-        /**
          * Returns an OutputStream on which to write to the box.
          */
         @Override
@@ -194,7 +144,7 @@ public interface APSBox extends TypedData {
             return new ObjectOutputStream(new ByteArrayOutputStream() {
                 @Override
                 public void close() throws IOException {
-                    APSBoxDefaultProvider.this.content = getContent();
+                    APSBoxDefaultProvider.this.setContent(toByteArray());
                 }
             });
         }
@@ -204,7 +154,7 @@ public interface APSBox extends TypedData {
          */
         @Override
         public ObjectInputStream getContentInputStream() throws IOException {
-            return new ObjectInputStream(new ByteArrayInputStream(this.content));
+            return new ObjectInputStream(new ByteArrayInputStream(getContent()));
         }
 
         /**
@@ -212,7 +162,7 @@ public interface APSBox extends TypedData {
          */
         @Override
         public int getSize() {
-            return this.content.length;
+            return getContent().length;
         }
     }
 }

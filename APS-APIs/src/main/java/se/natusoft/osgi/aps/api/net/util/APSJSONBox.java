@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
  *         2016-02-27: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.api.net.util;
 
@@ -48,6 +48,7 @@ import java.io.IOException;
 /**
  * Adds JSON storage support to APSBox. This makes use of the APS JSON APIs.
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public interface APSJSONBox extends APSBox {
 
     /**
@@ -69,6 +70,7 @@ public interface APSJSONBox extends APSBox {
     /**
      * Creates APSJSONBox instances.
      */
+    @SuppressWarnings("unused")
     interface APSJSONBoxFactory extends APSBoxFactory<APSJSONBox> {
 
         /**
@@ -82,6 +84,7 @@ public interface APSJSONBox extends APSBox {
     /**
      * A factory that creates a default implementation of APSJSONBox.
      */
+    @SuppressWarnings("unused")
     class APSJSONBoxDefaultProviderFactory implements APSJSONBoxFactory {
         //
         // Private Members
@@ -95,11 +98,13 @@ public interface APSJSONBox extends APSBox {
         // Constructors
         //
 
-        APSJSONBoxDefaultProviderFactory(APSJSONService apsjsonService) {
+        @SuppressWarnings("WeakerAccess")
+        public APSJSONBoxDefaultProviderFactory(APSJSONService apsjsonService) {
             this.apsjsonService = apsjsonService;
         }
 
-        APSJSONBoxDefaultProviderFactory(APSJSONService apsjsonService, LogService logService) {
+        @SuppressWarnings("unused")
+        public APSJSONBoxDefaultProviderFactory(APSJSONService apsjsonService, LogService logService) {
             this(apsjsonService);
             this.logService = logService;
         }
@@ -149,6 +154,7 @@ public interface APSJSONBox extends APSBox {
     /**
      * Provides a default implementation of APSJSONBox.
      */
+    @SuppressWarnings("WeakerAccess")
     class APSJSONBoxDefaultProvider extends APSBoxDefaultProvider implements APSJSONBox, JSONErrorHandler {
         //
         // Private Members

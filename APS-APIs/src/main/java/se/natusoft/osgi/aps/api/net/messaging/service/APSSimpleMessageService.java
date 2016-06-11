@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -37,7 +37,6 @@
 package se.natusoft.osgi.aps.api.net.messaging.service;
 
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException;
-import se.natusoft.osgi.aps.api.net.util.TypedData;
 
 import java.util.*;
 
@@ -47,6 +46,11 @@ import java.util.*;
  *
  * Since the actual members are outside of this service API, it doesn't really know who they are and doesn't
  * care, all members are defined by configuration.
+ *
+ * The term 'target' is used in this API. This can be anything relevant for routing a message to its
+ * destination. It depends a lot on the underlaying implementation. JMS for example have both a Queues
+ * that can be sent to using queue names, but also topics. If JMS is used then the target can be either a
+ * queue or a topic. The target just represents some destination of the message.
  */
 public interface APSSimpleMessageService {
 
@@ -54,6 +58,7 @@ public interface APSSimpleMessageService {
      * Multiple providers of this service can be deployed at the same time. Using this property
      * when registering services for a provider allows clients to lookup a specific provider.
      */
+    @SuppressWarnings("unused")
     String APS_MESSAGE_SERVICE_PROVIDER = "aps-message-service-provider";
 
     /**
@@ -64,37 +69,37 @@ public interface APSSimpleMessageService {
         /**
          * This is called when a message is received.
          *
-         * @param topic The topic the message belongs to.
+         * @param target The target the message was sent to.
          * @param message The received message.
          */
-        void messageReceived(String topic, TypedData message);
+        void messageReceived(String target, byte[] message);
     }
 
     /**
      * Adds a listener for types.
      *
-     * @param topic The topic to listen to.
+     * @param target The target to listen to.
      * @param listener The listener to add.
      */
-    void addMessageListener(String topic, MessageListener listener);
+    void addMessageListener(String target, MessageListener listener);
 
     /**
      * Removes a messaging listener.
      *
-     * @param topic The topic to stop listening to.
+     * @param target The target to stop listening to.
      * @param listener The listener to remove.
      */
-    void removeMessageListener(String topic, MessageListener listener);
+    void removeMessageListener(String target, MessageListener listener);
 
     /**
      * Sends a message.
      *
-     * @param topic The topic of the message.
+     * @param target The target of the message.
      * @param message The message to send.
      *
      * @throws APSMessagingException on failure.
      */
-    void sendMessage(String topic, TypedData message) throws APSMessagingException;
+    void sendMessage(String target, byte[] message) throws APSMessagingException;
 
     //
     // Inner Classes
@@ -103,6 +108,7 @@ public interface APSSimpleMessageService {
     /**
      * Provides an abstract implementation of the APSMessageService interface.
      */
+    @SuppressWarnings("unused")
     abstract class AbstractMessageServiceProvider implements APSSimpleMessageService {
         //
         // Private Members
@@ -118,15 +124,15 @@ public interface APSSimpleMessageService {
         /**
          * Adds a listener for types.
          *
-         * @param topic The topic to listen to.
+         * @param target The topic to listen to.
          * @param listener The listener to add.
          */
         @Override
-        public void addMessageListener(String topic, MessageListener listener) {
-            List<MessageListener> listeners = lookupMessageListeners(topic);
+        public void addMessageListener(String target, MessageListener listener) {
+            List<MessageListener> listeners = lookupMessageListeners(target);
             if (listeners == null) {
                 listeners = new LinkedList<>();
-                this.messageListeners.put(topic, listeners);
+                this.messageListeners.put(target, listeners);
             }
             listeners.add(listener);
         }
@@ -134,12 +140,12 @@ public interface APSSimpleMessageService {
         /**
          * Removes a messaging listener.
          *
-         * @param topic The topic to stop listening to.
+         * @param target The topic to stop listening to.
          * @param listener The listener to remove.
          */
         @Override
-        public void removeMessageListener(String topic, MessageListener listener) {
-            List<MessageListener> listeners = lookupMessageListeners(topic);
+        public void removeMessageListener(String target, MessageListener listener) {
+            List<MessageListener> listeners = lookupMessageListeners(target);
             if (listeners != null) {
                 listeners.remove(listener);
             }
@@ -148,22 +154,25 @@ public interface APSSimpleMessageService {
         /**
          * Sends a message to the registered listeners.
          *
+         * @param target The target of the message whose listeners to forward to.
          * @param message The message to send.
          */
-        protected void sendToListeners(String topic, TypedData message) {
-            List<MessageListener> listeners = lookupMessageListeners(topic);
+        @SuppressWarnings("unused")
+        protected void sendToListeners(String target, byte[] message) {
+            List<MessageListener> listeners = lookupMessageListeners(target);
             for (MessageListener messageListener : listeners) {
-                messageListener.messageReceived(topic, message);
+                messageListener.messageReceived(target, message);
             }
         }
 
         /**
-         * Returns the message listeners for a topic.
+         * Returns the message listeners for a target.
          *
-         * @param topic The topic to get listeners for.
+         * @param target The target to get listeners for.
          */
-        protected List<MessageListener> lookupMessageListeners(String topic) {
-            return this.messageListeners.get(topic);
+        @SuppressWarnings("WeakerAccess")
+        protected List<MessageListener> lookupMessageListeners(String target) {
+            return this.messageListeners.get(target);
         }
     }
 

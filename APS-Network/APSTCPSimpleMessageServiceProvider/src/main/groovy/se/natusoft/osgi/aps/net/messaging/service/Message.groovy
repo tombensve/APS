@@ -2,7 +2,6 @@ package se.natusoft.osgi.aps.net.messaging.service
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.net.util.TypedData
 
 /**
  * This represents a message to be send and received.
@@ -15,11 +14,11 @@ class Message {
     // Properties
     //
 
-    /** The topic of the message. */
-    String topic
+    /** The target of the message. */
+    String target
 
     /** The message content and content type. */
-    TypedData typedData
+    byte[] data
 
     //
     // Methods
@@ -34,12 +33,10 @@ class Message {
      */
     public void read(InputStream inputStream) throws IOException {
         DataInputStream dataStream = new DataInputStream(inputStream)
-        this.topic = dataStream.readUTF()
-        String contentType = dataStream.readUTF()
+        this.target = dataStream.readUTF()
         int msgSize = dataStream.readInt()
-        byte[] content = new byte[msgSize]
-        dataStream.read(content, 0, msgSize)
-        this.typedData = new TypedData.Provider(content, contentType)
+        this.data = new byte[msgSize]
+        dataStream.read(this.data, 0, msgSize)
     }
 
     /**
@@ -65,10 +62,9 @@ class Message {
      */
     public void write(OutputStream outputStream) throws IOException {
         DataOutputStream dataStream = new DataOutputStream(outputStream)
-        dataStream.writeUTF(this.topic)
-        dataStream.writeUTF(typedData.contentType)
-        dataStream.writeInt(typedData.content.length)
-        dataStream.write(typedData.content)
+        dataStream.writeUTF(this.target)
+        dataStream.writeInt(data.length)
+        dataStream.write(data)
         dataStream.flush()
     }
 

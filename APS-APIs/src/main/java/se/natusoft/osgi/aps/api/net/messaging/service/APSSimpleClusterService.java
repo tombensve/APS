@@ -1,49 +1,47 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
  *         2016-02-27: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.api.net.messaging.service;
-
-import se.natusoft.osgi.aps.api.net.util.APSBox;
-import se.natusoft.osgi.aps.api.net.util.TypedData;
 
 import java.util.*;
 
 /**
  * This service defines a synchronized cluster.
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public interface APSSimpleClusterService {
 
     /**
@@ -63,7 +61,7 @@ public interface APSSimpleClusterService {
          * @param name The name of the updated data.
          * @param data The updated data.
          */
-        void clusterUpdated(String clusterName, String name, TypedData data);
+        void clusterUpdated(String clusterName, String name, byte[] data);
     }
 
     /**
@@ -71,11 +69,11 @@ public interface APSSimpleClusterService {
      *
      * @param clusterName The name of a cluster to store in.
      * @param name The name of the value to store.
-     * @param typedData The value to store.
+     * @param data The data to store.
      *
      * @throws IllegalArgumentException on any problem with clusterName.
      */
-    void provideData(String clusterName, String name, TypedData typedData);
+    void provideData(String clusterName, String name, byte[] data);
 
     /**
      * Gets a value stored in a named cluster. Returns null if it does not exists.
@@ -83,7 +81,7 @@ public interface APSSimpleClusterService {
      * @param clusterName The name of the cluster to get data from.
      * @param name The name of the cluster data to get.
      */
-    TypedData retrieveData(String clusterName, String name);
+    byte[] retrieveData(String clusterName, String name);
 
     /**
      * Adds an update listener.
@@ -108,6 +106,7 @@ public interface APSSimpleClusterService {
     /**
      * Support base for implementations. This is of course entirely optional!
      */
+    @SuppressWarnings("unused")
     abstract class AbstractAPSSimpleClusterService implements APSSimpleClusterService {
 
         //
@@ -158,7 +157,7 @@ public interface APSSimpleClusterService {
          * @param name The name of the updated data.
          * @param data The actual data.
          */
-        protected void updateListeners(String clusterName, String name, TypedData data) {
+        protected void updateListeners(String clusterName, String name, byte[] data) {
             List<UpdateListener> clisteners = this.listeners.get(clusterName);
             if (clisteners != null) {
                 for (UpdateListener listener : clisteners) {

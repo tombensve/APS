@@ -2,13 +2,11 @@ package se.natusoft.osgi.aps.net.messaging.service
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import org.osgi.framework.BundleContext
 import se.natusoft.docutations.Issue
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent
 import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
 import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
-import se.natusoft.osgi.aps.api.net.util.TypedData
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.PeskyWabbitConnectionManager
@@ -44,9 +42,6 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService
     @Managed(loggingFor = "aps-rabbitmq-simple-message-service-provider")
     private APSLogger logger
 
-    @Managed
-    private BundleContext bundleContext
-
     /** Listens to configuration changes. */
     private APSConfigChangedListener configChangedListener
 
@@ -63,14 +58,14 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService
     /**
      * Adds a listener for types.
      *
-     * @param topic The topic to listen to.
+     * @param target The topic to listen to.
      * @param listener The listener to add.
      */
     @Override
-    void addMessageListener(String topic, APSSimpleMessageService.MessageListener listener) {
-        APSRabbitMQMessageProvider messageProvider = this.instances.get(topic)
+    void addMessageListener(String target, APSSimpleMessageService.MessageListener listener) {
+        APSRabbitMQMessageProvider messageProvider = this.instances.get(target)
         if (messageProvider == null) {
-            throw new IllegalArgumentException("addMessageListener(): No such topic: '${topic}'!")
+            throw new IllegalArgumentException("addMessageListener(): No such topic: '${target}'!")
         }
         messageProvider.addMessageListener(listener)
     }
@@ -78,14 +73,14 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService
     /**
      * Removes a messaging listener.
      *
-     * @param topic The topic to stop listening to.
+     * @param target The topic to stop listening to.
      * @param listener The listener to remove.
      */
     @Override
-    void removeMessageListener(String topic, APSSimpleMessageService.MessageListener listener) {
-        APSRabbitMQMessageProvider messageProvider = this.instances.get(topic)
+    void removeMessageListener(String target, APSSimpleMessageService.MessageListener listener) {
+        APSRabbitMQMessageProvider messageProvider = this.instances.get(target)
         if (messageProvider == null) {
-            throw new IllegalArgumentException("removeMessageListener(): No such topic: '${topic}'!")
+            throw new IllegalArgumentException("removeMessageListener(): No such topic: '${target}'!")
         }
         messageProvider.removeMessageListener(listener)
     }
@@ -99,12 +94,12 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService
      * @throws se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException on failure.
      */
     @Override
-    void sendMessage(String topic, TypedData message) throws APSMessagingException{
+    void sendMessage(String topic, byte[] message) throws APSMessagingException{
         APSRabbitMQMessageProvider messageProvider = this.instances.get(topic)
         if (messageProvider == null) {
             throw new IllegalArgumentException("sendMessage(): No such topic: '${topic}'!")
         }
-        messageProvider.sendMessage(message.content)
+        messageProvider.sendMessage(message)
     }
 
 
@@ -157,6 +152,7 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService
      *
      * It will take down all instances.
      */
+    @SuppressWarnings("GroovyUnusedDeclaration")
     @BundleStop
     public void shutdown() {
         if (this.configChangedListener != null) {
