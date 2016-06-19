@@ -49,7 +49,10 @@
       Protocols:      
     </p>
     <p>
-      &nbsp; &nbsp; &nbsp; &nbsp;<strong>tcp</strong>,<strong> udp</strong>,<strong> multicast</strong>      
+      &nbsp; &nbsp; &nbsp; &nbsp;<strong>tcp</strong>,<strong> udp</strong>,<strong> multicast</strong>,<strong> named</strong>      
+    </p>
+    <p>
+      The <em>named</em> protocol just provides a name for the <em>host</em> part of the URI. This is not however a hostname! It is a name that has been entered in the service configuration and which has an URI value which will be used instead. So<em> named://mysvc</em> will lookup a config value having "mysvc" as destination name and use its destination URI as connection URI. So the valid URI protocols in the configuration is then tcp, udp, and multicast.      
     </p>
     <p>
       Fragments:      

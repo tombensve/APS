@@ -4,11 +4,14 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
 import org.osgi.framework.BundleContext
+import se.natusoft.osgi.aps.api.core.config.model.APSConfigList
 import se.natusoft.osgi.aps.api.net.tcpip.APSTCPIPService
 import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequest
 import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequestListener
+import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
 import se.natusoft.osgi.aps.tcpipsvc.config.ExpertConfig
+import se.natusoft.osgi.aps.tcpipsvc.config.NamedDestinationsConfig
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
@@ -41,6 +44,16 @@ class TCPConProviderTest {
 
         testTCPIPConfig.expert = expertConfig
 
+        NamedDestinationsConfig ndConfig = new NamedDestinationsConfig()
+        ndConfig.destName = new TestConfigValue(value: "test-target")
+        ndConfig.destURI = new TestConfigValue(value: "tcp://localhost:12345")
+        List<NamedDestinationsConfig> ndcList = new LinkedList<>()
+        ndcList.add(ndConfig)
+        TestConfigList<NamedDestinationsConfig> namedConfigs = new TestConfigList<>()
+        namedConfigs.setConfigs(ndcList)
+
+        testTCPIPConfig.namedDestinations = namedConfigs
+
         TCPIPConfig.managed.serviceProviderAPI.configInstance = testTCPIPConfig
         TCPIPConfig.managed.serviceProviderAPI.setManaged() // VERY IMPORTANT!
     }
@@ -48,6 +61,9 @@ class TCPConProviderTest {
     @Test
     public void testSendAndReceive() {
         if (testActive) {
+            println("This test opens both server and client sockets and sends and receives data!")
+            println("It might collide if run concurrently in a CI server!")
+            println("Run with -Daps.test.disabled=true to disable it.")
 
             configSetup1()
 
@@ -59,7 +75,7 @@ class TCPConProviderTest {
             APSActivator activator = new APSActivator()
             activator.start(bundle.bundleContext)
 
-            URI cp = new URI("tcp://localhost:12345")
+            URI cp = new URI("named://test-target")
 
             try {
                 receive(bundle.bundleContext, cp) { InputStream requestStream, OutputStream responseStream ->
@@ -116,10 +132,6 @@ class TCPConProviderTest {
             finally {
                 activator.stop(bundle.bundleContext)
             }
-        }
-        else {
-            println("This test is currently disabled!")
-            println("Run with -Daps.test.disabled=false to run it.")
         }
 
         System.out.println("Test done!")

@@ -1,11 +1,11 @@
 <!-- Created by CodeLicenseManager -->
 ## Project License
 
-__[Apache Software License version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)__
+__[Apache version 2.0](https://github.com/tombensve/APS/blob/master/lics/Apache-2.0.md)__
 
 ## Third Party Licenses
 
-__[OSGi Specification License version 2.0](http://www.osgi.org/Specifications/Licensing)__
+__[OSGi version 2.0](https://github.com/tombensve/APS/blob/master/lics/OSGi-2.0.md)__
 
 The following third party products are using this license:
 

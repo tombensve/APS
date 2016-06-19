@@ -67,7 +67,10 @@ class TCPIPConfig extends APSConfig {
             defaultValue = [@APSDefaultValue(value = "10000")])
     public APSConfigValue byteBufferSize
 
-    @APSConfigItemDescription(description = "Expert configuration. This means, hands off if you do not know what you are doing!")
+    @APSConfigItemDescription(description = "Expert configuration. This means, hands off if you do not know what you are doing!",
+            environmentSpecific = true)
     public ExpertConfig expert
 
+    @APSConfigItemDescription(description = "Named destinations for named://<destination name> URIs.", environmentSpecific = true)
+    public APSConfigList<NamedDestinationsConfig> namedDestinations
 }

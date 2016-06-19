@@ -23,7 +23,9 @@ The URI format is this:
 
 Protocols:
 
-&nbsp;&nbsp;&nbsp;&nbsp;__tcp, udp, multicast__
+&nbsp;&nbsp;&nbsp;&nbsp;__tcp, udp, multicast, named__
+
+The _named_ protocol just provides a name for the _host_ part of the URI. This is not however a hostname! It is a name that has been entered in the service configuration and which has an URI value which will be used instead. So_ named://mysvc_ will lookup a config value having "mysvc" as destination name and use its destination URI as connection URI. So the valid URI protocols in the configuration is then tcp, udp, and multicast.
 
 Fragments:
 

@@ -43,6 +43,8 @@ import groovy.transform.TypeChecked
 import se.natusoft.docutations.Issue
 import se.natusoft.docutations.NotNull
 import se.natusoft.osgi.aps.exceptions.APSConfigException
+import se.natusoft.osgi.aps.tcpipsvc.config.NamedDestinationsConfig
+import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
 import se.natusoft.osgi.aps.tcpipsvc.security.UDPSecurityHandler
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -86,10 +88,7 @@ class ConnectionResolver {
         if (connectionPoint == null) throw new IllegalArgumentException("'connectionPoint' argument is required! It cannot be null!")
         if (direction == null) throw new IllegalArgumentException("'direction' argument is required! It cannot be null!")
 
-        //noinspection GroovyUnusedAssignment
-        @Issue(id = "IDEA-149960", url = "https://youtrack.jetbrains.com/issue/IDEA-149960",
-                description = "Problem: 'Assignment is not used.' warning.")
-        ConnectionProvider connectionProvider = null
+        ConnectionProvider connectionProvider
 
         switch (connectionPoint.scheme.toLowerCase()) {
             case "tcp":
@@ -145,13 +144,32 @@ class ConnectionResolver {
                 }
                 connectionProvider.start() // <-- Usage of connectionProvider.
                 break
+            case "named":
+                String resolvedURIStr = lookupNamed(connectionPoint.host)
+                if (resolvedURIStr == null) {
+                    throw new IOException("Named connectionpoint '${connectionPoint.host}' is not configured!")
+                }
+                URI resolvedURI = new URI(resolvedURIStr)
+                connectionProvider = resolve(resolvedURI, direction)
+                break;
             default:
                 throw new IOException(
-                        "Connection point URI (${connectionPoint}) is not valid! Only 'tcp://', 'udp://' and 'multicast://' are allowed!"
+                        "Connection point URI (${connectionPoint}) is not valid! Only 'tcp://', 'udp://', 'multicast://, and named://' " +
+                                "are allowed!"
                 )
         }
 
         return connectionProvider // <-- Usage of connectionProvider.
     }
 
+    private static String lookupNamed(String name) {
+        // Groovy .each { ... } does not seem to work on an Iterable!
+        for (NamedDestinationsConfig ndc : TCPIPConfig.managed.get().namedDestinations) {
+            if (ndc.destName.string == name) {
+                return ndc.destURI.string
+            }
+        }
+
+        return null
+    }
 }

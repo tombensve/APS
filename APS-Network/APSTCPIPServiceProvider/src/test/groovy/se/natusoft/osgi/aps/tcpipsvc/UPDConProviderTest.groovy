@@ -45,6 +45,10 @@ class UPDConProviderTest {
     @Test
     public void testSendAndReceive() throws Exception {
         if (testActive) {
+            println("This test opens both server and client sockets and sends and receives data!")
+            println("It might collide if run concurrently in a CI server!")
+            println("Run with -Daps.test.disabled=true to disable it.")
+
             configSetup1()
 
             File testFile = new File(".")
@@ -102,10 +106,6 @@ class UPDConProviderTest {
                 activator.stop(testBundle.bundleContext)
             }
 
-        }
-        else {
-            println("This test is currently disabled!")
-            println("Run with -Daps.test.disabled=false to run it.")
         }
     }
 
