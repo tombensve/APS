@@ -1,3 +1,40 @@
+/* 
+ * 
+ * PROJECT
+ *     Name
+ *         APS TCP Simple Message Service Provider
+ *     
+ *     Code Version
+ *         1.0.0
+ *     
+ *     Description
+ *         Provides a direct TCP based message service that is not persistent. This service makes use of
+ *         the TCPIPService.
+ *         
+ * COPYRIGHTS
+ *     Copyright (C) 2012 by Natusoft AB All rights reserved.
+ *     
+ * LICENSE
+ *     Apache 2.0 (Open Source)
+ *     
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *     
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *     
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *     
+ * AUTHORS
+ *     tommy ()
+ *         Changes:
+ *         2016-06-19: Created!
+ *         
+ */
 package se.natusoft.osgi.aps.net.messaging.service
 
 import groovy.transform.CompileStatic
@@ -8,6 +45,7 @@ import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue
 import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
+import se.natusoft.osgi.aps.api.net.messaging.service.APSMessage
 import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
 import se.natusoft.osgi.aps.api.net.tcpip.APSTCPIPService
 import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequest
@@ -169,12 +207,22 @@ class APSTCPSimpleMessageServiceProvider implements APSSimpleMessageService, APS
     }
 
     /**
+     * Creates a new APSMessage.
+     */
+    @Implements(APSSimpleMessageService.class)
+    @Override
+    APSMessage createMessage() {
+        new APSMessage.Provider()
+    }
+
+    /**
      * Adds a listener for types.
      *
      * @param target The topic to listen to.
      * @param listener The listener to add.
      */
     @Implements(APSSimpleMessageService.class)
+    @Override
     void addMessageListener(String target, APSSimpleMessageService.MessageListener listener) {
         List<APSSimpleMessageService.MessageListener> listeners = this.msgListeners.get(target)
         if (listeners == null) {
@@ -191,6 +239,7 @@ class APSTCPSimpleMessageServiceProvider implements APSSimpleMessageService, APS
      * @param listener The listener to remove.
      */
     @Implements(APSSimpleMessageService.class)
+    @Override
     void removeMessageListener(String target, APSSimpleMessageService.MessageListener listener) {
         List<APSSimpleMessageService.MessageListener> listeners = this.msgListeners.get(target)
         if (listeners != null) {
@@ -210,10 +259,11 @@ class APSTCPSimpleMessageServiceProvider implements APSSimpleMessageService, APS
      * @throws APSMessagingException on failure.
      */
     @Implements(APSSimpleMessageService.class)
-    void sendMessage(String target, byte[] message) throws APSMessagingException {
+    @Override
+    void sendMessage(String target, APSMessage message) throws APSMessagingException {
         APSMessagingException msgException = new APSMessagingException("Send not entirely successful! Failing recipients: ")
 
-        Message msg = new Message(target: target, data: message)
+        ProtocolMessage msg = new ProtocolMessage(target: target, data: message.bytes)
 
         def futures = [] as List<Future>
 
@@ -276,10 +326,12 @@ class APSTCPSimpleMessageServiceProvider implements APSSimpleMessageService, APS
      */
     @Implements(StreamedRequestListener.class)
     void requestReceived(URI receivePoint, InputStream requestStream, OutputStream responseStream) throws IOException {
-        Message msg = new Message() << requestStream
+        ProtocolMessage msg = new ProtocolMessage() << requestStream
         this.msgListeners.get(msg.target)?.each { APSSimpleMessageService.MessageListener listener ->
             try {
-                listener.messageReceived(msg.target, msg.data)
+                APSMessage message = createMessage()
+                message.bytes = msg.data
+                listener.messageReceived(msg.target, message)
             }
             catch (Throwable t) {
                 this.logger.error("Failed to call listener: ${listener}", t)

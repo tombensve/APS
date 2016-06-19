@@ -4,6 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
 import org.osgi.framework.BundleContext
+import se.natusoft.osgi.aps.api.net.messaging.service.APSMessage
 import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
 import se.natusoft.osgi.aps.net.messaging.config.ServiceConfig
 import se.natusoft.osgi.aps.api.net.util.TypedData
@@ -124,7 +125,7 @@ class TCPSimpleMessageServiceTest extends OSGIServiceTestTools {
 @CompileStatic
 @TypeChecked
 interface MessageReceivedService {
-    byte[] getReceivedMessage();
+    byte[] getReceivedMessage()
 }
 
 /**
@@ -134,6 +135,7 @@ interface MessageReceivedService {
  * by APSActivator. Thereby it is possible to lookup the instance using a service tracker and call it
  * to get the received message for validation.
  */
+@SuppressWarnings("GroovyUnusedDeclaration")
 @CompileStatic
 @TypeChecked
 @OSGiServiceProvider
@@ -155,8 +157,8 @@ class ReceiverSvc implements MessageReceivedService, APSSimpleMessageService.Mes
     }
 
     @Override
-    void messageReceived(String topic, byte[] message) {
-        this.message = message
+    void messageReceived(String topic, APSMessage message) {
+        this.message = message.bytes
     }
 
     @Override
@@ -179,8 +181,11 @@ class SenderSvc {
     @OSGiService(timeout = "2 seconds")
     private APSSimpleMessageService msgService
 
+    @SuppressWarnings("GroovyUnusedDeclaration")
     @BundleStart
     public void start() throws Exception {
-        this.msgService.sendMessage "test", new TypedData.Provider(contentType: CONTENT_TYPE, content: CONTENT.getBytes()).toBytes()
+        APSMessage message = this.msgService.createMessage()
+        message.bytes = new TypedData.Provider(contentType: CONTENT_TYPE, content: CONTENT.getBytes()).toBytes()
+        this.msgService.sendMessage "test", message
     }
 }
