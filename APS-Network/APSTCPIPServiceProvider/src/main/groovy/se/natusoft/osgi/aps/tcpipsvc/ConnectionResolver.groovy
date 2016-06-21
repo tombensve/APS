@@ -40,7 +40,6 @@ package se.natusoft.osgi.aps.tcpipsvc
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.docutations.Issue
 import se.natusoft.docutations.NotNull
 import se.natusoft.osgi.aps.exceptions.APSConfigException
 import se.natusoft.osgi.aps.tcpipsvc.config.NamedDestinationsConfig
@@ -124,7 +123,7 @@ class ConnectionResolver {
                             securityHandler: udpSecurityHandler
                     )
                 }
-                connectionProvider.start() // <-- Usage of connectionProvider.
+                connectionProvider.start()
                 break
 
             case "multicast":
@@ -142,7 +141,7 @@ class ConnectionResolver {
                             securityHandler: udpSecurityHandler
                     )
                 }
-                connectionProvider.start() // <-- Usage of connectionProvider.
+                connectionProvider.start()
                 break
             case "named":
                 String resolvedURIStr = lookupNamed(connectionPoint.host)
