@@ -66,6 +66,7 @@
         <module>APSTCPIPServiceProvider</module>
         <module>APSDefaultDiscoveryServiceProvider</module>
         <module>APSTCPSimpleMessageServiceProvider</module>
+        <module>APSSSHTunnelProvider</module>
     </modules>
 
 </project>
