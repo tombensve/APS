@@ -20,7 +20,7 @@ import se.natusoft.osgi.aps.tools.tracker.WithService
 
 @CompileStatic
 @TypeChecked
-class APSSimpleDiscoveryServiceTest extends OSGIServiceTestTools {
+class APSSimpleDiscoveryServiceMulticastTest extends OSGIServiceTestTools {
 
     // If this test fails, raise this number! I have a very fast machine ...
     private static final int DELAY = 1000
@@ -30,7 +30,7 @@ class APSSimpleDiscoveryServiceTest extends OSGIServiceTestTools {
     }
 
     @Test
-    public void testAPSSimpleDiscoveryServiceTest() {
+    public void testAPSSimpleDiscoveryServiceTest() throws Exception {
         if (testActive) {
             runTest()
         }
@@ -42,7 +42,7 @@ class APSSimpleDiscoveryServiceTest extends OSGIServiceTestTools {
         println "Test done!"
     }
 
-    private void runTest() throws Throwable {
+    private void runTest() throws Exception {
         // ---- Deploy some bundles (Using Groovy DSL:ish goodness :-)) ---- //
         deploy 'aps-tcpip-service-provider' with new APSActivator() with {
             TCPIPConfig testTCPIPConfig = new TCPIPConfig()
@@ -103,7 +103,7 @@ class APSSimpleDiscoveryServiceTest extends OSGIServiceTestTools {
         }
     }
 
-    // The first invokation is the publishing discovery service, the second invokation is the receiving
+    // The first invocation is the publishing discovery service, the second invocation is the receiving
     // discovery service that should have received what the first published.
     private int invokation = 0;
     private void handleSvc(APSSimpleDiscoveryService service) throws Exception {
@@ -118,8 +118,9 @@ class APSSimpleDiscoveryServiceTest extends OSGIServiceTestTools {
         }
         else {
             Set<Properties> services = service.getServices("(serviceName=testSvc)")
-            assertEquals(1, services.size())
-            Properties serviceDescription = services.getAt(0)
+            // With both ethernet cable and wifi enabled it goes both ways and arrives twice.
+            assertTrue(services.size() > 0)
+            Properties serviceDescription = services[0]
             assertEquals("testSvc", serviceDescription.serviceName)
             assertEquals("multicast://all-systems.mcast.net:56789", serviceDescription.serviceURI)
         }

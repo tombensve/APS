@@ -115,15 +115,15 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
     @Override
     Set<Properties> getServices(String propertyQuery) {
         Filter sdPropsFilter = FrameworkUtil.createFilter(propertyQuery)
-        Set<Properties> remoteSvcs = this.discoverer.remoteServices.findAll { Properties serviceDescription ->
+        Set<Properties> svcs = this.discoverer.remoteServices.findAll { Properties serviceDescription ->
             sdPropsFilter.match(serviceDescription)
         }
         Set<Properties> localSvcs = this.discoverer.localServices.findAll { Properties serviceDescription ->
             sdPropsFilter.match(serviceDescription)
         }
-        remoteSvcs.addAll(localSvcs)
+        svcs.addAll(localSvcs)
 
-        return remoteSvcs
+        return svcs
     }
 
     /**

@@ -141,8 +141,8 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
         this.logger.info("Old setup cleaned ...")
 
         try {
-            String mcastConnectionPoint = DiscoveryConfig.managed.get().multicastConnectionPoint.string
-            if (mcastConnectionPoint != null && mcastConnectionPoint.empty) {
+            String mcastConnectionPoint = DiscoveryConfig.managed.get()?.multicastConnectionPoint?.string
+            if (mcastConnectionPoint == null || mcastConnectionPoint.empty) {
                 this.mcastConnectionPointURI = null
             } else {
                 this.mcastConnectionPointURI = new URI(mcastConnectionPoint)
@@ -155,8 +155,8 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
         }
 
         try {
-            String tcpReceiverConnectionPoint = DiscoveryConfig.managed.get().tcpReceiverConnectionPoint.string
-            if (tcpReceiverConnectionPoint != null && tcpReceiverConnectionPoint.empty) {
+            String tcpReceiverConnectionPoint = DiscoveryConfig.managed.get()?.tcpReceiverConnectionPoint?.string
+            if (tcpReceiverConnectionPoint == null || tcpReceiverConnectionPoint.empty) {
                 this.tcpReceiverConnectionPointURI = null
             } else {
                 this.tcpReceiverConnectionPointURI = new URI(tcpReceiverConnectionPoint)
@@ -168,7 +168,8 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
             throw new APSDiscoveryException("Bad configuration! 'tcpReceiverConnectionPoint' must follow URI syntax!", use)
         }
 
-        if (!DiscoveryConfig.managed.get().tcpPublishToConnectionPoints.empty) {
+        if (DiscoveryConfig.managed.get()?.tcpPublishToConnectionPoints != null &&
+                !DiscoveryConfig.managed.get().tcpPublishToConnectionPoints.empty) {
             try {
                 this.senderURIs = new LinkedList<>()
                 DiscoveryConfig.managed.get().tcpPublishToConnectionPoints.each { APSConfigValue tcpSvcConfig ->
@@ -287,7 +288,7 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
     void requestReceived(URI receivePoint, InputStream requestStream, OutputStream responseStream) throws IOException {
 
         JSONValue json = this.jsonService.readJSON(requestStream, this.readErrorHandler)
-        if (JSONObject.class.isAssignableFrom(json.getClass())) {
+        if (!JSONObject.class.isAssignableFrom(json.class)) {
             throw new IOException("Received unexpected JSON! [${json}]")
         }
 
