@@ -31,44 +31,32 @@
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
- *         2012-12-28: Created!
+ *         2014-10-27: Created!
  *
  */
-package se.natusoft.osgi.aps.api.net.groups.service;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.UUID;
+package se.natusoft.osgi.aps.api.net.messaging.exception;
 
 /**
- * This represents a complete messaging containing any data you want to send to the group. You provide the messaging
- * with data using the _OutputStream_, and read messaging data using the _InputStream_.
+ * Indicates a problem with received message.
  */
-@Deprecated
-public interface Message {
-    /**
-     * Returns an _OutputStream_ to write messaging on. Multiple calls to this will return the same _OutputStream_!
-     */
-    OutputStream getOutputStream();
+public class APSBadMessageException extends APSMessagingException {
 
     /**
-     * Returns an _InputStream_ for reading the messaging. Multiple calls to this will return new _InputStream_:s starting
-     * from the beginning!
+     * Creates a new APSBadMessageException.
+     *
+     * @param message The exception message.
      */
-    InputStream getInputStream();
+    public APSBadMessageException(String message) {
+        super(message);
+    }
 
     /**
-     * Returns the id of this messaging.
+     * Creates a new APSBadMessageException.
+     *
+     *  @param message The exception message.
+     * @param cause The cause of this exception.
      */
-    UUID getId();
-
-    /**
-     * @return id of member as a string.
-     */
-    String getMemberId();
-
-    /**
-     * @return The name of the group this messaging belongs to.
-     */
-    String getGroupName();
+    public APSBadMessageException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
