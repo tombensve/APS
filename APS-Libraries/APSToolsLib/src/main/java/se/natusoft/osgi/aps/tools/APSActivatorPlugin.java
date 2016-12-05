@@ -1,7 +1,5 @@
 package se.natusoft.osgi.aps.tools;
 
-import java.lang.reflect.Field;
-
 /**
  * A service API to implement and publish to be able to plugin to APSActivator.
  *

@@ -1,36 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    PROJECT
-        Name
-            APS TCP Simple Message Service Provider
-        
-        Code Version
-            1.0.0
-        
-        Description
-            Provides a direct TCP based message service that is not persistent. This service makes use of
-            the TCPIPService.
-        
-    COPYRIGHTS
-        Copyright (C) 2012 by Natusoft AB All rights reserved.
-        
-    LICENSE
-        Apache 2.0 (Open Source)
-        
-        Licensed under the Apache License, Version 2.0 (the "License");
-        you may not use this file except in compliance with the License.
-        You may obtain a copy of the License at
-        
-          http://www.apache.org/licenses/LICENSE-2.0
-        
-        Unless required by applicable law or agreed to in writing, software
-        distributed under the License is distributed on an "AS IS" BASIS,
-        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-        See the License for the specific language governing permissions and
-        limitations under the License.
-
-    AUTHORS
-        tommy
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -42,14 +11,12 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>aps-tcp-simple-message-service-provider</artifactId>
+    <artifactId>aps-netty-messaging-provider</artifactId>
     <packaging>bundle</packaging>
 
-    <name>APS TCP Simple Message Service Provider</name>
+    <name>APSNettyMessagingProvider</name>
 
     <description>
-        Provides a direct TCP based message service that is not persistent. This service makes use of
-        the TCPIPService.
     </description>
 
     <properties>
@@ -72,9 +39,7 @@
 
         <!-- The private packages. -->
         <osgi.private.package>
-            se.natusoft.osgi.aps.net.messaging,
-            se.natusoft.osgi.aps.net.messaging.config,
-            se.natusoft.osgi.aps.net.messaging.service
+            se.natusoft.osgi.aps
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->
@@ -96,7 +61,7 @@
         -->
 
         <!-- We register our configuration for auto registration and management. -->
-        <aps.config.classes>se.natusoft.osgi.aps.net.messaging.config.ServiceConfig</aps.config.classes>
+        <aps.config.classes></aps.config.classes>
 
         <!--
              Trigger tiles.
@@ -124,45 +89,8 @@
         </dependency>
 
         <!--
-            Test
-
-                NOTE: The tests run for this compile send and receive network traffic. One test listens
-                      to TCP connections. This might cause problems if this is run in a CI server and
-                      there are parallel builds building the same code. To avoid such problems, pass
-                      -Daps.test.disabled=true to the build.
+            APSNettyMessagingProvider dependencies
         -->
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-service-test-support</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-osgi-test-tools</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-tcpip-service-provider</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!--
-            This is here due to a IntelliJ IDEA 15.0.4 no longer even lets you mark a project as a Groovy
-            project in the project settings which means that you cannot work with Groovy in IDEA without
-            adding this maven-wise unnecessary dependency. This is quite annoying.
-
-            JB Issue: https://youtrack.jetbrains.com/issue/IDEA-152648
-        -->
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <scope>provided</scope>
-            <classifier>indy</classifier>
-        </dependency>
 
     </dependencies>
 
