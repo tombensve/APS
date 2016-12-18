@@ -17,14 +17,12 @@ import java.util.Map;
  *         {
  *             comment: [
  *                 "This defines all communication for one topic. This example is a bit extreme since",
- *                 "it does a lot of protocols/transports in one topic, but it just serves to demonstrate",
+ *                 "it does a lot of protocols in one topic, but it just serves to demonstrate",
  *                 "how things can be setup, and I was a bit lazy and had bad imagination, OK!"
  *             ],
  *             topic: "discovery",
- *             transports: [
- *                 "%% These are URIs specifying transport type (protocol), source/destination and direction.",
- *                 "%% There will be APSTransport services that provide one or more of these protocol/transports",
- *                 "%% and the job will be delegated to first such found.",
+ *             protocols: [
+ *                 "%% These are URIs specifying protocol, source/destination and direction.",
  *
  *                 "multicast://all-systems.mcast.net:1234#out",
  *                 "multicast://all-systems.mcast.net:1234#in",
