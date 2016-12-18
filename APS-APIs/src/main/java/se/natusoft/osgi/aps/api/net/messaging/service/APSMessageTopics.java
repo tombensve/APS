@@ -12,16 +12,16 @@ import java.util.Map;
  * The following is a JSON topic routing configuration that should be used for defining topic from and to.
  *
  * {
- *     version: "2.4",
- *     topics: [
+ *     "version": "2.4",
+ *     "topics": [
  *         {
- *             comment: [
+ *             "comment": [
  *                 "This defines all communication for one topic. This example is a bit extreme since",
  *                 "it does a lot of protocols in one topic, but it just serves to demonstrate",
  *                 "how things can be setup, and I was a bit lazy and had bad imagination, OK!"
  *             ],
- *             topic: "discovery",
- *             protocols: [
+ *             "topic": "discovery",
+ *             "protocols": [
  *                 "%% These are URIs specifying protocol, source/destination and direction.",
  *
  *                 "multicast://all-systems.mcast.net:1234#out",
@@ -106,20 +106,16 @@ public interface APSMessageTopics {
 
             /**
              * Creates a new Topic provider.
+             */
+            public Provider() {}
+
+            /**
+             * Creates a new Topic provider.
              *
              * @param name The name to the topic.
              */
             public Provider(@NotNull String name) {
                 this.name = name;
-            }
-
-            /**
-             * Creates a new Topic provider.
-             *
-             * @param protocols The protocols for the topic.
-             */
-            public Provider(@NotNull List<URI> protocols) {
-                this.protocols.addAll(protocols);
             }
 
             //
@@ -131,6 +127,15 @@ public interface APSMessageTopics {
              */
             public String getName() {
                 return this.name;
+            }
+
+            /**
+             * Sets the name of the topic.
+             *
+             * @param name The name to set.
+             */
+            public void setName(String name) {
+                this.name = name;
             }
 
             /**
