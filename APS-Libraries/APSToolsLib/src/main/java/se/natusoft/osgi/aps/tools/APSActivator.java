@@ -51,11 +51,13 @@ import se.natusoft.osgi.aps.tools.tuples.Tuple2;
 import se.natusoft.osgi.aps.tools.tuples.Tuple4;
 import se.natusoft.osgi.aps.tools.util.Failures;
 
-import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class can be specified as bundle activator in which case you use the following annotations:
@@ -277,7 +279,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         if (!this.activatorMode) {
             classEntries.addAll(this.managedInstances.keySet());
         }
-        collectClassEntries(bundle, classEntries, "/");
+        BundleClassCollector.collectClassEntries(bundle, classEntries, "/", this.activatorLogger);
 
         // Classes annotated with @OSGiServiceProvider having threadStart=true need to run the
         // startup setup, injections, etc in a separate thread and this start method should not
@@ -1106,11 +1108,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     }
                 }
                 if (executorInst == null) {
-                    executorInst = this.internallyManagedScheduledExecutionServices.get(schedule.poolSize());
-                    if (executorInst == null) {
-                        executorInst = Executors.newScheduledThreadPool(schedule.poolSize());
-                        this.internallyManagedScheduledExecutionServices.put(schedule.poolSize(), executorInst);
-                    }
+                    executorInst = this.internallyManagedScheduledExecutionServices.computeIfAbsent(schedule.poolSize(), k -> Executors.newScheduledThreadPool(schedule.poolSize()));
                     this.activatorLogger.info("Using internal ScheduledExecutorService of max pool size " + schedule.poolSize() +
                             " : " + executorInst);
                 }
@@ -1385,11 +1383,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param instanceRepresentative The instance representative to add.
      */
     protected void addManagedInstanceRep(Class managedClass, InstanceRepresentative instanceRepresentative) {
-        List<InstanceRepresentative> instances = this.managedInstances.get(managedClass);
-        if (instances == null) {
-            instances = new LinkedList<>();
-            this.managedInstances.put(managedClass, instances);
-        }
+        List<InstanceRepresentative> instances = this.managedInstances.computeIfAbsent(managedClass, k -> new LinkedList<>());
 
         // Cleanup InstanceRepresentative if needed.
         instances.stream().filter(ir -> ir.instance == null).forEach(ir -> ir.instance = createInstance(managedClass));
@@ -1430,81 +1424,6 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         catch (IllegalAccessException iae) {
             throw new APSActivatorException("Failed to inject managed field [" + field + "] into [" +
                     injectTo.getClass() + "]", iae);
-        }
-    }
-
-    /**
-     * Populates the entries list with recursively found class entries.
-     *
-     * @param bundle The bundle to get class entries for.
-     * @param entries The list to add the class entries to.
-     * @param startPath The start path to look for entries.
-     */
-    protected void collectClassEntries(Bundle bundle, List<Class> entries, String startPath) {
-        Enumeration entryPathEnumeration = bundle.getEntryPaths(startPath);
-        while (entryPathEnumeration.hasMoreElements()) {
-            String entryPath = entryPathEnumeration.nextElement().toString();
-            if (entryPath.endsWith("/")) {
-                collectClassEntries(bundle, entries, entryPath);
-            }
-            else if (entryPath.endsWith(".class")) {
-                try {
-                    String classQName = entryPath.substring(0, entryPath.length() - 6).replace(File.separatorChar, '.');
-                    if (classQName.startsWith("WEB-INF.classes.")) {
-                        classQName = classQName.substring(16);
-                    }
-                    try {
-                        Class entryClass = bundle.loadClass(classQName);
-                        // If not activatorMode is true then there will be classes in this list already on the first
-                        // call to this method. Therefore we skip duplicates.
-                        if (!entries.contains(entryClass)) {
-                            entries.add(entryClass);
-                        }
-                    }
-                    catch (NullPointerException npe) {
-                        this.activatorLogger.error(npe.getMessage(), npe);
-                        // Felix (when used by Karaf) seems to have problems here for a perfectly good classQName!
-                        // No, it is not null, if it where null it would explain this!
-                        //
-                        // It is:
-                        //
-                        //     se.natusoft.osgi.aps.userservice.config.UserServiceInstConfig.UserServiceInstance
-                        //
-                        // that cause this NPE. It belongs to APSSimpleUserServiceProvider and is a perfectly OK
-                        // class that compiles flawlessly. The classQName also contains a perfectly correct reference
-                        // to the class.
-                        //
-                        // This is the exception thrown:
-                        //
-                        //   Caused by: java.lang.NullPointerException
-                        //   at org.apache.felix.framework.BundleWiringImpl$BundleClassLoader.findClass(BundleWiringImpl.java:2015)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleWiringImpl.findClassOrResourceByDelegation(BundleWiringImpl.java:1501)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleWiringImpl.access$400(BundleWiringImpl.java:75)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleWiringImpl$BundleClassLoader.loadClass(BundleWiringImpl.java:1955)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at java.lang.ClassLoader.loadClass(ClassLoader.java:358)[:1.7.0_60]
-                        //   at org.apache.felix.framework.BundleWiringImpl.getClassByDelegation(BundleWiringImpl.java:1374)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleWiringImpl.searchImports(BundleWiringImpl.java:1553)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleWiringImpl.findClassOrResourceByDelegation(BundleWiringImpl.java:1484)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleWiringImpl.access$400(BundleWiringImpl.java:75)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleWiringImpl$BundleClassLoader.loadClass(BundleWiringImpl.java:1955)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at java.lang.ClassLoader.loadClass(ClassLoader.java:358)[:1.7.0_60]
-                        //   at java.lang.ClassLoader.defineClass1(Native Method)[:1.7.0_60]
-                        //   at java.lang.ClassLoader.defineClass(ClassLoader.java:800)[:1.7.0_60]
-                        //   at org.apache.felix.framework.BundleWiringImpl$BundleClassLoader.findClass(BundleWiringImpl.java:2279)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleWiringImpl.findClassOrResourceByDelegation(BundleWiringImpl.java:1501)[org.apache.felix.framework-4.2.1.jar:]
-                        //    at org.apache.felix.framework.BundleWiringImpl.access$400(BundleWiringImpl.java:75)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleWiringImpl$BundleClassLoader.loadClass(BundleWiringImpl.java:1955)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at java.lang.ClassLoader.loadClass(ClassLoader.java:358)[:1.7.0_60]
-                        //   at org.apache.felix.framework.Felix.loadBundleClass(Felix.java:1844)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleImpl.loadClass(BundleImpl.java:937)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at se.natusoft.osgi.aps.tools.APSActivator.collectClassEntries(APSActivator.java:962)[104:aps-tools-lib:1.0.0]
-
-                    }
-                }
-                catch (ClassNotFoundException | NoClassDefFoundError cnfe) {
-                    this.activatorLogger.warn("Failed to load bundle class!", cnfe);
-                }
-            }
         }
     }
 
