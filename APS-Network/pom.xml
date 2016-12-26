@@ -66,8 +66,9 @@
         <module>APSTCPIPServiceProvider</module>
         <module>APSDefaultDiscoveryServiceProvider</module>
         <module>APSSSHTunnelProvider</module>
-        <module>APSNettyMessagingProvider</module>
+        <module>APSVertxMessagingProvider</module>
         <module>APSMessageTopicsConfigProvider</module>
+        <module>APSDefaultMessageRouter</module>
     </modules>
 
 </project>

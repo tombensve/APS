@@ -23,13 +23,11 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 @TypeChecked
 @OSGiServiceProvider(
         properties = [
-                @OSGiProperty(name = APS.SERVICE_PROVIDER, value = "aps-rabbitmq-simple-message-provider"),
-                @OSGiProperty(name = APS.SERVICE_CATEGORY, value = APS.Messaging.SERVICE_CATEGORY),
-                @OSGiProperty(name = APS.SERVICE_FUNCTION, value = APS.Messaging.SERVICE_FUNCTION),
-                @OSGiProperty(name = APS.Messaging.PERSISTENT, value = "true"),
-                @OSGiProperty(name = APS.Messaging.MULTIPLE_RECEIVERS, value = "true"),
-                @OSGiProperty(name = APS.Messaging.SERVICE_CATEGORY, value = APS.TRUE),
-                @OSGiProperty(name = APS.Messaging.SERVICE_FUNCTION, value = APS.TRUE)
+                @OSGiProperty(name = APS.Service.Provider, value = "aps-rabbitmq-simple-message-provider"),
+                @OSGiProperty(name = APS.Service.Category, value = APS.Value.Messaging.Service.Category),
+                @OSGiProperty(name = APS.Service.Function, value = APS.Value.Messaging.Service.Function),
+                @OSGiProperty(name = APS.Messaging.Persistent, value = APS.TRUE),
+                @OSGiProperty(name = APS.Messaging.MultipleReceivers, value = APS.TRUE)
         ]
 )
 class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService {

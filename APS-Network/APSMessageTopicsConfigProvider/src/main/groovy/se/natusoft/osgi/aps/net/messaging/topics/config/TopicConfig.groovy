@@ -32,9 +32,28 @@ class TopicConfig extends APSConfig {
 
 
     @APSConfigItemDescription(
-            description = "A JSON object conforming to the APSMessageTopics documentation.",
+            description = "Provides a list of topics and the implementations to use for sending and receiving messages on these topics. For these mappings to have any effect the code must use APS.Messaging.Protocol.Name ('aps-messaging-protocol') OSGi service property constant with a value of APS.Value.Messaging.Protocol.ROUTER ('ROUTER') when looking up an APSMessageService.",
             environmentSpecific = true
     )
-    public APSConfigValue topicConfigJson
+    public APSConfigList<Topic> topics
 
+    @APSConfigDescription(
+            configId = "topic-entry",
+            description = "Maps a topic to an implementation.",
+            version = "1.0.0"
+    )
+    static class Topic extends APSConfig {
+
+        @APSConfigItemDescription(
+                description = "The name of the topic.",
+                environmentSpecific = false
+        )
+        public APSConfigValue name
+
+        @APSConfigItemDescription(
+                description = "The protocol to use for this topic. It is basically a name to differentiate different coexisting implementations. Each implementation will register themselves with this name in property 'aps-messaging-protocol' and the name here will be used to find the correct implementation by using the same property when looking for service. The documentation for each implementation should specify which name it is using in this property when registering itself as an OSGi service.",
+                environmentSpecific = false
+        )
+        public APSConfigValue protocol
+    }
 }

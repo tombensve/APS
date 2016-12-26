@@ -94,7 +94,7 @@
                 <artifactId>groovy-all</artifactId>
                 <scope>provided</scope>
                 <classifier>indy</classifier>
-                <version>2.4.6</version>
+                <version>${groovy.version}</version>
             </dependency>
 
         <!--

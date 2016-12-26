@@ -11,10 +11,10 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>aps-netty-messaging-provider</artifactId>
+    <artifactId>aps-default-message-router</artifactId>
     <packaging>bundle</packaging>
 
-    <name>APSNettyMessagingProvider</name>
+    <name>APS Default Message Router</name>
 
     <description>
     </description>
@@ -88,8 +88,17 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Unfortunately needed since IDEA can't see the mixin and keep removing groovy if added manually in IDEA. -->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <scope>provided</scope>
+            <classifier>indy</classifier>
+            <version>${groovy.version}</version>
+        </dependency>
+
         <!--
-            APSNettyMessagingProvider dependencies
+            APSDefaultMessageRouter dependencies
         -->
 
     </dependencies>
