@@ -89,9 +89,12 @@ import java.util.concurrent.TimeUnit;
  *
  * * **@BundleStart** -
  *   This should be used on a method and will be called on bundle start. The method should take no arguments.
- *   If you need a BundleContext just declare a field of BundleContext type and it will be injected. The use
- *   of this annotation is only needed for things not supported by this activator. Please note that a method
- *   annotated with this annotation can be static!
+ *   If you need a BundleContext just declare a field of BundleContext type and it will be injected. Please
+ *   note that a method annotated with this annotation can be static!
+ *
+ *   There can be any number of usages of this annotation! It can be useful for many things, like features
+ *   not supported by APSActivator. But it can also be used for self managed services that configures
+ *   themselves on start and cleans up on stop.
  *
  * * **@BundleStop** -
  *   This should be used on a method and will be called on bundle stop. The method should take no arguments.
@@ -810,6 +813,13 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
             for (InstanceRepresentative instRep : instanceReps) {
                 if (instRep.service) {
+                    Properties svcProps = osgiPropertiesToProperties(serviceProvider.properties());
+                    if (instRep.props == null) {
+                        instRep.props = new Properties();
+                    }
+                    for (String propName : svcProps.stringPropertyNames()) {
+                        instRep.props.setProperty(propName, svcProps.getProperty(propName));
+                    }
                     instRep.props.put(Constants.SERVICE_PID, managedClass.getName());
                     instRep.props.put(Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE, context.getBundle().getSymbolicName());
                     if (externalizable) {
