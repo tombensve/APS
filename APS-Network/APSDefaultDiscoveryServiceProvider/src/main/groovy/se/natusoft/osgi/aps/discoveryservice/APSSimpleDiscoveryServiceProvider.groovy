@@ -8,7 +8,7 @@ import se.natusoft.docutations.Implements
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue
 import se.natusoft.osgi.aps.api.net.discovery.exception.APSDiscoveryException
 import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService
-import se.natusoft.osgi.aps.api.constants.APS
+import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.discoveryservice.config.DiscoveryConfig
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*

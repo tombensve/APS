@@ -34,7 +34,7 @@
  *         2016-06-12: Created!
  *
  */
-package se.natusoft.osgi.aps.api.constants;
+package se.natusoft.osgi.aps.constants;
 
 /**
  * Hierarchy of constants.

@@ -5,7 +5,7 @@ import groovy.transform.TypeChecked
 import org.osgi.framework.BundleContext
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
-import se.natusoft.osgi.aps.api.constants.APS
+import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
 import se.natusoft.osgi.aps.api.net.messaging.model.APSMessage
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
@@ -34,7 +34,7 @@ import se.natusoft.osgi.aps.tools.tracker.WithService
                 @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Messaging)
         ]
 )
-class APSDefaultMessageRouter implements APSMessageService {
+class APSDefaultMessageRouter implements APSMessageService, APSMessageTopicsService.TopicsUpdatedListener {
 
     //
     // Private Members
@@ -46,7 +46,8 @@ class APSDefaultMessageRouter implements APSMessageService {
     @Managed(loggingFor = "aps-default-message-router")
     private APSLogger logger
 
-    private Map<String, APSServiceTracker<APSMessageService>> trackers = new HashMap<>()
+    private Map<String /*Topic*/, APSServiceTracker<APSMessageService>> trackers =
+            (Map<String, APSServiceTracker<APSMessageService>>)Collections.synchronizedMap(new HashMap<>())
 
     @OSGiService(timeout = "20 sec")
     private APSMessageTopicsService apsTopicsService
@@ -57,8 +58,16 @@ class APSDefaultMessageRouter implements APSMessageService {
 
     @Initializer
     void init() {
+        Thread.start {
+            loadTrackers()
+            this.apsTopicsService.addTopicsUpdatedListener(this)
+        }
+    }
+
+    void loadTrackers() {
+        List<String> validTopics = new LinkedList<>()
         this.apsTopicsService.topics.each { APSMessageTopicsService.APSTopic topic ->
-            if (!this.trackers.containsKey(topic.protocol)) {
+            if (!this.trackers.containsKey(topic.name)) {
                 APSServiceTracker<APSMessageService> tracker =
                         new APSServiceTracker<>(
                                 this.context,
@@ -69,11 +78,21 @@ class APSDefaultMessageRouter implements APSMessageService {
                 tracker.start()
                 this.trackers.put(topic.name, tracker)
             }
+            validTopics << topic.name
+        }
+
+        // Remove any previously created trackers for services that have been removed in config.
+        this.trackers.findAll { String key, APSServiceTracker<APSMessageService> value -> !validTopics.contains(key) }.each {
+            String topic, APSServiceTracker<APSMessageService>  value ->
+            value.stop()
+            this.trackers.remove(topic)
         }
     }
 
     @BundleStop
     void shutdown() {
+        this.apsTopicsService.removeTopicsUpdatedListener(this)
+
         this.trackers.each { String key, APSServiceTracker<APSMessageService> tracker ->
             tracker.stop()
         }
@@ -91,9 +110,12 @@ class APSDefaultMessageRouter implements APSMessageService {
      */
     private void callAllServices(@NotNull String topic, @NotNull Closure action) {
         APSServiceTracker<APSMessageService> tracker = this.trackers.get(topic)
+
         if (tracker != null) {
             if (!tracker.hasTrackedService()) {
-                this.logger.error("The topic '${topic}' has no tracked services!")
+                String message = "The topic '${topic}' has no tracked services!"
+                this.logger.error(message)
+                throw new APSMessagingException(message)
             }
             tracker.withAllAvailableServices(new WithService<APSMessageService>() {
                 void withService(APSMessageService service) throws Exception {
@@ -102,7 +124,7 @@ class APSDefaultMessageRouter implements APSMessageService {
             })
         }
         else {
-            String message = "The topic '${topic}' has no trackers! This is a bug!"
+            String message = "The topic '${topic}' has no trackers! This is probably due to bad configuration!"
             this.logger.error(message)
             throw new APSMessagingException(message)
         }
@@ -147,5 +169,14 @@ class APSDefaultMessageRouter implements APSMessageService {
         callAllServices(topic, { APSMessageService service ->
             service.removeMessageListener(topic, listener)
         })
+    }
+
+    /**
+     * Indicates that the list of topics have been updaetd.
+     */
+    @Override
+    void topicsUpdated() {
+        loadTrackers()
+        logger.info("Updated service trackers due to config change!")
     }
 }

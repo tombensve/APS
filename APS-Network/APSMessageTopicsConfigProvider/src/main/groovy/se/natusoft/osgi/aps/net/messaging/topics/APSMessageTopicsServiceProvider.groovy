@@ -28,6 +28,8 @@ class APSMessageTopicsServiceProvider implements APSMessageTopicsService, APSCon
 
     private Map<String, APSMessageTopicsService.APSTopic> _topics = null
 
+    private List<APSMessageTopicsService.TopicsUpdatedListener> topicListeners = new LinkedList<>()
+
     //
     // Used services
     //
@@ -44,22 +46,21 @@ class APSMessageTopicsServiceProvider implements APSMessageTopicsService, APSCon
      * is done in another thread. We however limit the waiting time and throw an IllegalStateException if the data
      * does not become available in a reasonable time (one second!).
      */
-    private synchronized void ensureContentLoaded() {
-        if (this._topics == null) {
-            TopicConfig topicConfig = TopicConfig.managed.get()
+    private synchronized void loadContent() {
+        TopicConfig topicConfig = TopicConfig.managed.get()
 
-            this._topics = new HashMap<>()
-            topicConfig.topics.each { TopicConfig.Topic topic ->
-                APSMessageTopicsService.APSTopic apsTopic =
-                        new APSMessageTopicsService.APSTopic.Provider(name: topic.name.string, protocol: topic.protocol.string)
-                this._topics.put(apsTopic.name, apsTopic)
-            }
+        this._topics = new HashMap<>()
+        topicConfig.topics.each { TopicConfig.Topic topic ->
+            APSMessageTopicsService.APSTopic apsTopic =
+                    new APSMessageTopicsService.APSTopic.Provider(name: topic.name.string, protocol: topic.protocol.string)
+            this._topics.put(apsTopic.name, apsTopic)
         }
     }
 
     @Initializer
     init() {
         Thread.start {
+            loadContent()
             TopicConfig.managed.get().addConfigChangedListener(this)
         }
     }
@@ -71,6 +72,8 @@ class APSMessageTopicsServiceProvider implements APSMessageTopicsService, APSCon
      */
     synchronized void apsConfigChanged(APSConfigChangedEvent event) {
         this._topics = null
+        loadContent()
+        triggerTopicsUpdatedEvent()
     }
 
     /**
@@ -81,7 +84,6 @@ class APSMessageTopicsServiceProvider implements APSMessageTopicsService, APSCon
     @Override
     @Nullable
     APSMessageTopicsService.APSTopic getTopic(@NotNull String name) {
-        ensureContentLoaded()
         this._topics?.get(name)
     }
 
@@ -91,7 +93,42 @@ class APSMessageTopicsServiceProvider implements APSMessageTopicsService, APSCon
     @Override
     @Nullable
     List<APSMessageTopicsService.APSTopic> getTopics() {
-        ensureContentLoaded()
         this._topics?.collect { it.value }
+    }
+
+    /**
+     * Adds a listener for updates to the topics.
+     *
+     * @param listener The listener to add.
+     */
+    @Override
+    void addTopicsUpdatedListener(APSMessageTopicsService.TopicsUpdatedListener listener) {
+        this.topicListeners += listener
+    }
+
+    /**
+     * Removes a listener from receiving updates of changed topics.
+     *
+     * @param listener The listener to remove.
+     */
+    @Override
+    void removeTopicsUpdatedListener(APSMessageTopicsService.TopicsUpdatedListener listener) {
+        this.topicListeners -= listener
+    }
+
+    /**
+     * Updates topics listeners.
+     */
+    private void triggerTopicsUpdatedEvent() {
+        Thread.start {
+            this.topicListeners.each { APSMessageTopicsService.TopicsUpdatedListener listener ->
+                try {
+                    listener.topicsUpdated()
+                }
+                catch (Exception e) {
+                    logger.error("Failed updating topics listener!", e)
+                }
+            }
+        }
     }
 }

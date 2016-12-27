@@ -46,7 +46,7 @@
     <artifactId>aps-osgi-test-tools</artifactId>
     <packaging>jar</packaging>
 
-    <name>APSOSGiTestTools</name>
+    <name>APS OSGi Test Tools</name>
 
     <description>
         Provides tools for testing OSGi services.

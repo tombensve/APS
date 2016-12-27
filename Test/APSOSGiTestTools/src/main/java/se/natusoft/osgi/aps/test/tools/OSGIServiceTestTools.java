@@ -164,6 +164,19 @@ public class OSGIServiceTestTools {
     }
 
     /**
+     * Undeploys a bundle.
+     *
+     * @param name The name of the bundle to undeploy.
+     */
+    public void undeploy(String name) {
+        BundleBuilder bb = this.bundleBuilders.stream().filter(b -> b.getName().equals(name)).findFirst().orElse(null);
+        if (bb != null) {
+            this.bundleBuilders.remove(bb);
+            bb.shutdown();
+        }
+    }
+
+    /**
      * API to implement for passing to withNewBundle.
      */
     public interface WithBundle {
@@ -223,6 +236,7 @@ public class OSGIServiceTestTools {
         private TestBundle bundle = null;
         private BundleActivator activator = null;
         private boolean started = false;
+        private String name = null;
 
         /**
          * Creates the BundleManager instance.
@@ -230,7 +244,15 @@ public class OSGIServiceTestTools {
          * @param name The name of the bundle managed.
          */
         public BundleBuilder(String name) {
+            this.name = name;
             this.bundle = createBundle(name);
+        }
+
+        /**
+         * Returns the name of the Bundle this BundleBuilder represents.
+         */
+        String getName() {
+            return this.name;
         }
 
         /**

@@ -25,9 +25,30 @@ public interface APSMessageTopicsService {
      */
     List<APSTopic> getTopics();
 
+    /**
+     * Adds a listener for updates to the topics.
+     *
+     * @param listener The listener to add.
+     */
+    void addTopicsUpdatedListener(TopicsUpdatedListener listener);
+
+    /**
+     * Removes a listener from receiving updates of changed topics.
+     *
+     * @param listener The listener to remove.
+     */
+    void removeTopicsUpdatedListener(TopicsUpdatedListener listener);
+
     //
     // Inner classes
     //
+
+    interface TopicsUpdatedListener {
+        /**
+         * Indicates that the list of topics have been updaetd.
+         */
+        void topicsUpdated();
+    }
 
     /**
      * Represents one specific topic.
@@ -125,6 +146,9 @@ public interface APSMessageTopicsService {
         /** The available topics. */
         private Map<String, APSTopic> topics = new HashMap<>();
 
+        /** Topics listeners. */
+        private List<TopicsUpdatedListener> listeners = new LinkedList<>();
+
         //
         // Constructors
         //
@@ -179,6 +203,45 @@ public interface APSMessageTopicsService {
             }
 
             return _topics;
+        }
+
+        /**
+         * Adds a listener for updates to the topics.
+         *
+         * @param listener The listener to add.
+         */
+        @Override
+        public void addTopicsUpdatedListener(TopicsUpdatedListener listener) {
+            this.listeners.add(listener);
+        }
+
+        /**
+         * Removes a listener from receiving updates of changed topics.
+         *
+         * @param listener The listener to remove.
+         */
+        @Override
+        public void removeTopicsUpdatedListener(TopicsUpdatedListener listener) {
+            this.listeners.remove(listener);
+        }
+
+        /**
+         * Informs all listeners that the list of topic have been updated.
+         */
+        protected void triggerTopicsUpdatedEvent() {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (TopicsUpdatedListener listener : listeners) {
+                        try {
+                            listener.topicsUpdated();
+                        }
+                        catch (Exception e) {
+                            System.err.println(e.getMessage());
+                        }
+                    }
+                }
+            }).start();
         }
     }
 }
