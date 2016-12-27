@@ -810,6 +810,13 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
             for (InstanceRepresentative instRep : instanceReps) {
                 if (instRep.service) {
+                    Properties svcProps = osgiPropertiesToProperties(serviceProvider.properties());
+                    if (instRep.props == null) {
+                        instRep.props = new Properties();
+                    }
+                    for (String propName : svcProps.stringPropertyNames()) {
+                        instRep.props.setProperty(propName, svcProps.getProperty(propName));
+                    }
                     instRep.props.put(Constants.SERVICE_PID, managedClass.getName());
                     instRep.props.put(Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE, context.getBundle().getSymbolicName());
                     if (externalizable) {
