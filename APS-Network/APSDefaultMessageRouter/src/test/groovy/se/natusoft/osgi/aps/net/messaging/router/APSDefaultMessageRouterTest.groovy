@@ -140,14 +140,10 @@ class MsgSvc1 implements APSMessageService {
     }
 
     @Override
-    void addMessageListener(@NotNull String topic, @NotNull APSMessageService.Listener listener) {
-
-    }
+    void addMessageListener(@NotNull String topic, @NotNull APSMessageService.Listener listener) {}
 
     @Override
-    void removeMessageListener(@NotNull String topic, @NotNull APSMessageService.Listener listener) {
-
-    }
+    void removeMessageListener(@NotNull String topic, @NotNull APSMessageService.Listener listener) {}
 }
 
 @OSGiServiceProvider(
@@ -170,13 +166,9 @@ class MsgSvc2 implements APSMessageService {
     }
 
     @Override
-    void addMessageListener(@NotNull String topic, @NotNull APSMessageService.Listener listener) {
-
-    }
+    void addMessageListener(@NotNull String topic, @NotNull APSMessageService.Listener listener) {}
 
     @Override
-    void removeMessageListener(@NotNull String topic, @NotNull APSMessageService.Listener listener) {
-
-    }
+    void removeMessageListener(@NotNull String topic, @NotNull APSMessageService.Listener listener) {}
 }
 
