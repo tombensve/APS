@@ -4,20 +4,13 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.osgi.framework.BundleContext
 import se.natusoft.docutations.NotNull
-import se.natusoft.docutations.Nullable
-import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
-import se.natusoft.osgi.aps.api.net.messaging.model.APSMessage
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageTopicsService
+import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.APSServiceTracker
-import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
-import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+import se.natusoft.osgi.aps.tools.annotation.activator.*
 import se.natusoft.osgi.aps.tools.tracker.WithService
 
 /**
@@ -28,10 +21,10 @@ import se.natusoft.osgi.aps.tools.tracker.WithService
 @TypeChecked
 @OSGiServiceProvider(
         properties = [
-                @OSGiProperty(name = APS.Messaging.Protocol.Name, value = APS.Value.Messaging.Protocol.ROUTER),
                 @OSGiProperty(name = APS.Service.Provider, value = "aps-default-message-router"),
                 @OSGiProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Network),
-                @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Messaging)
+                @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Messaging),
+                @OSGiProperty(name = APS.Messaging.Protocol.Name, value = APS.Value.Messaging.Protocol.ROUTER)
         ]
 )
 class APSDefaultMessageRouter implements APSMessageService, APSMessageTopicsService.TopicsUpdatedListener {
@@ -135,13 +128,12 @@ class APSDefaultMessageRouter implements APSMessageService, APSMessageTopicsServ
      *
      * @param topic The destination to send message.
      * @param message The message to send.
-     * @param reply If the underlying message mechanism supports replies to specific messages such will be delivered to
-     *              this listener. Can be null.
+     * @param receivers Receivers.ONE or Receivers.ALL. For ONE it is up to the implementation which receiver receives the message.
      */
     @Override
-    void sendMessage(@NotNull String topic, @NotNull APSMessage message, @Nullable APSMessageService.Listener reply) {
+    void publish(@NotNull String topic, @NotNull Object message, @NotNull APSMessageService.Receivers receivers) {
         callAllServices(topic, { APSMessageService service ->
-            service.sendMessage(topic, message, reply)
+            service.publish(topic, message, receivers)
         })
     }
 
@@ -152,9 +144,9 @@ class APSDefaultMessageRouter implements APSMessageService, APSMessageTopicsServ
      * @param listener The listener to call with received messages.
      */
     @Override
-    void addMessageListener(@NotNull String topic, @NotNull APSMessageService.Listener listener) {
+    void subscribe(@NotNull String topic, @NotNull APSMessageService.Listener listener) {
         callAllServices(topic, { APSMessageService service ->
-            service.addMessageListener(topic, listener)
+            service.subscribe(topic, listener)
         })
     }
 
@@ -165,9 +157,9 @@ class APSDefaultMessageRouter implements APSMessageService, APSMessageTopicsServ
      * @param listener The listener to remove.
      */
     @Override
-    void removeMessageListener(@NotNull String topic, @NotNull APSMessageService.Listener listener) {
+    void unsubscribe(@NotNull String topic, @NotNull APSMessageService.Listener listener) {
         callAllServices(topic, { APSMessageService service ->
-            service.removeMessageListener(topic, listener)
+            service.unsubscribe(topic, listener)
         })
     }
 

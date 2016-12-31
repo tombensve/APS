@@ -662,6 +662,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             for (Annotation methodAnn : method.getDeclaredAnnotations()) {
                 for (Class activatorMethodAnnClass : methodAnnotations) {
                     if (methodAnn.getClass().equals(activatorMethodAnnClass)) {
+
                         InstanceRepresentative ir = new InstanceRepresentative(createInstance(managedClass));
                         ir.service = false;
                         addManagedInstanceRep(managedClass, ir);
@@ -697,7 +698,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
         if (serviceProvider != null) {
             if (this.requiredServices.isEmpty()) {
-                    registerServices(managedClass, context, this.services);
+                    registerServiceInstances(managedClass, context, this.services);
             }
             else {
                 for (Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService : this.requiredServices) {
@@ -742,7 +743,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 for (Tuple4<APSServiceTracker, Class, Boolean, List<ServiceRegistration>> requiredService : this.requiredServices) {
                     if (requiredService.t2.equals(managedClass) && !requiredService.t3) {
                         this.activatorLogger.info("Registering services for: " + managedClass.getName());
-                        registerServices(requiredService.t2, this.context, requiredService.t4);
+                        registerServiceInstances(requiredService.t2, this.context, requiredService.t4);
                         this.services.addAll(requiredService.t4);
                         requiredService.t3 = true;
                     }
@@ -800,7 +801,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param serviceRegs The list to save all service registrations to for later deregistration.
      * @throws Exception pass exceptions upward.
      */
-    protected void registerServices(Class managedClass, BundleContext context, List<ServiceRegistration> serviceRegs) throws Exception {
+    protected void registerServiceInstances(Class managedClass, BundleContext context, List<ServiceRegistration> serviceRegs) throws Exception {
         OSGiServiceProvider serviceProvider = (OSGiServiceProvider)managedClass.getAnnotation(OSGiServiceProvider.class);
         if (serviceProvider != null) {
 
@@ -874,11 +875,19 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param managedClass The managed class to inject into.
      * @param context The bundles context.
      */
-    protected void doFieldInjectionsIntoManagedInstances(Class managedClass, BundleContext context) {
+    protected Map<Class, Object> doFieldInjectionsIntoManagedInstances(Class managedClass, BundleContext context) {
+        Map<Class, Object> result = new HashMap<>();
+
         for (Field field : managedClass.getDeclaredFields()) {
             doServiceInjection(field, managedClass, context);
-            doInstanceInjection(field, managedClass, context);
+
+            Map<Class, Object> res = doInstanceInjection(field, managedClass, context);
+            if (!res.isEmpty()) {
+                result.putAll(res);
+            }
         }
+
+        return result;
     }
 
     /**
@@ -981,14 +990,23 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param field The field to inject into.
      * @param managedClass Used to lookup or create an instance of this class to inject into.
      * @param context The bundle context.
+     *
+     * @return A Map of special handling objects keyed on class.
      */
-    protected void doInstanceInjection(Field field, Class managedClass, BundleContext context) {
+    protected Map<Class, Object> doInstanceInjection(Field field, Class managedClass, BundleContext context) {
+        Map<Class, Object> result = new HashMap<>();
+
         Managed managed = field.getAnnotation(Managed.class);
         if (managed != null) {
             String namedInstanceKey = managed.name() + field.getType().getName();
             Object namedInstance = this.namedInstances.get(namedInstanceKey);
 
             if (namedInstance == null) {
+                // Check for special types first ...
+
+                //
+                // Handle APSLogger specialities.
+                //
                 if (field.getType().equals(APSLogger.class)) {
                     namedInstance = new APSLogger(System.out);
                     if (managed.loggingFor().length() > 0) {
@@ -996,9 +1014,15 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     }
                     ((APSLogger)namedInstance).start(context);
                 }
+
+                // Inject BundleContext of the bundle.
                 else if (field.getType().equals(BundleContext.class)) {
                     namedInstance = context;
                 }
+
+                //
+                // Create and inject a ScheduledExecutorService using additional @ExecutorSvc annotation.
+                //
                 else if (field.getType().equals(ScheduledExecutorService.class)) {
                     int parallelism = 10;
                     ExecutorSvc.ExecutorType type = ExecutorSvc.ExecutorType.Scheduled;
@@ -1028,6 +1052,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     }
                     namedInstance = ses;
                 }
+
+                //
+                // Create an inject an ExecutorService using additional @ExecutionSvc annotation.
+                //
                 else if (field.getType().equals(ExecutorService.class)) {
                     int parallelism = 10;
                     ExecutorSvc.ExecutorType type = ExecutorSvc.ExecutorType.FixedSize;
@@ -1063,9 +1091,23 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     }
                     namedInstance = es;
                 }
+
+                //
+                // Case if APSActivatorInteraction being injected.
+                //
+                else if(APSActivatorInteraction.class.isAssignableFrom(field.getType())) {
+                    Interaction interaction = new Interaction();
+                    namedInstance = interaction;
+                    result.put(APSActivatorInteraction.class, interaction);
+                }
+
+                //
+                // The default non special object to inject based on field type.
+                //
                 else {
                     namedInstance = getManagedInstanceRep(field.getType()).instance;
                 }
+
                 // For a scheduled Runnable there wont be an instance!
                 if (namedInstance != null) {
                     this.namedInstances.put(namedInstanceKey, namedInstance);
@@ -1094,6 +1136,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                         context.getBundle().getSymbolicName() + "!");
             }
         }
+
+        return result;
     }
 
     /**
@@ -1454,6 +1498,76 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     //
 
     /**
+     * Provides interaction with activator managed services.
+     */
+    private class Interaction implements APSActivatorInteraction {
+
+        private State state = DEFAULT_VALUE;
+
+        private Map<State, Runnable> stateHandlers = new HashMap<>();
+
+        /**
+         * Sends signals to the APSActivator.
+         *
+         * @param state The state to set.
+         */
+        @Override
+        public void setState(State state) {
+                Runnable stateHandler = this.stateHandlers.get(state);
+                if (stateHandler != null) {
+                    try {
+                        stateHandler.run();
+                    }
+                    catch (Exception e) {
+                        APSActivator.this.activatorLogger.error(e.getMessage(), e);
+                    }
+                }
+        }
+
+        /**
+         * Returns the current state.
+         */
+        @Override
+        public State getState() {
+            return this.state;
+        }
+
+        /**
+         * Sets a handler for a state.
+         *
+         * @param state The state to set handler for.
+         * @param handler The handler to set.
+         */
+        public void setStateHandler(State state, Runnable handler) {
+            this.stateHandlers.put(state, handler);
+        }
+    }
+
+    /**
+     * This is used to handle delayed service registrations.
+     */
+    private class DelayedSvcRegInteractionStateHandler implements Runnable {
+
+        private BundleContext context;
+        private Class entryClass;
+
+        public DelayedSvcRegInteractionStateHandler(Class entryClass, BundleContext context) {
+            this.entryClass = entryClass;
+            this.context = context;
+        }
+
+        @Override
+        public void run() {
+            try {
+                doServiceRegistrationsOfManagedServiceInstances(this.entryClass, this.context);
+            }
+            catch (Exception e) {
+                e.printStackTrace(System.err);
+            }
+        }
+    }
+
+    /**
      * Provides a Runnable for each entry class that scans the class for annotations and acts on them.
      */
     private class PerClassWorkRunnable implements Runnable {
@@ -1485,9 +1599,28 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     APSActivator.this.activatorLogger.error("Failed executing a plugin!", e);
                 }
 
-                doFieldInjectionsIntoManagedInstances(entryClass, context);
+                // Check if service registrations should be delayed.
+                boolean delaySvcReg = false;
+                for (Field field : entryClass.getDeclaredFields()) {
+                    if (APSActivatorInteraction.class.isAssignableFrom(field.getType())) {
+                        delaySvcReg = true;
+                        break;
+                    }
+                }
+
+                Map<Class, Object> res = doFieldInjectionsIntoManagedInstances(entryClass, context);
                 scheduleTasks(entryClass);
-                doServiceRegistrationsOfManagedServiceInstances(entryClass, context);
+
+                if (res.containsKey(APSActivatorInteraction.class)) {
+                    Interaction interaction = (Interaction)res.get(APSActivatorInteraction.class);
+                    interaction.setStateHandler(
+                            APSActivatorInteraction.State.READY,
+                            new DelayedSvcRegInteractionStateHandler(entryClass, context)
+                    );
+                }
+                else {
+                    doServiceRegistrationsOfManagedServiceInstances(entryClass, context);
+                }
                 handleMethodInvocationsOnManagedInstances(entryClass, context, initMethods);
             }
             catch (Exception e) {

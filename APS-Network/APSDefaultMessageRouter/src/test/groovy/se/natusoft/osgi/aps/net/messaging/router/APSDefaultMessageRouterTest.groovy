@@ -3,12 +3,9 @@ package se.natusoft.osgi.aps.net.messaging.router
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
-import static org.junit.Assert.*;
 import org.osgi.framework.BundleContext
 import se.natusoft.docutations.NotNull
-import se.natusoft.docutations.Nullable
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
-import se.natusoft.osgi.aps.api.net.messaging.model.APSMessage
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
@@ -21,6 +18,8 @@ import se.natusoft.osgi.aps.tools.APSServiceTracker
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+
+import static org.junit.Assert.fail
 
 @CompileStatic
 @TypeChecked
@@ -80,17 +79,17 @@ class APSDefaultMessageRouterTest extends OSGIServiceTestTools {
                     // fail. Testing the other 2 methods also will give you a bit more code, and a bit more to
                     // execute when run, but will not in any way make the test better!
 
-                    router.sendMessage("dest-one", new APSMessage.Provider(message: "qwerty".getBytes()), null)
+                    router.publish("dest-one", "qwerty", APSMessageService.Receivers.ALL)
                     assert send1
                     assert !send2
 
-                    router.sendMessage("dest-two", new APSMessage.Provider(message: "qwerty".getBytes()), null)
+                    router.publish("dest-two", "qwerty", APSMessageService.Receivers.ALL)
                     assert send2
 
                     // This will leave the first service tracker without any services.
                     undeploy 'msg-svc-one'
                     try {
-                        router.sendMessage("dest-one", new APSMessage.Provider(message: "qwerty".getBytes()), null)
+                        router.publish("dest-one", "qwerty", APSMessageService.Receivers.ALL)
                         fail("This should have thrown an APSMessagingException!")
                     }
                     catch (APSMessagingException ame) {
@@ -103,7 +102,7 @@ class APSDefaultMessageRouterTest extends OSGIServiceTestTools {
                     topicConfig.triggerConfigChangedEvent("dest-one")
                     Thread.sleep(300) // Wait for service to have time to update itself.
                     try {
-                        router.sendMessage("dest-one", new APSMessage.Provider(message: "qwerty".getBytes()), null)
+                        router.publish("dest-one", "qwerty", APSMessageService.Receivers.ALL)
                     }
                     catch (APSMessagingException ame) {
                         assert ame.message.contains("has no trackers! This is probably due to bad configuration!")
@@ -134,16 +133,16 @@ class MsgSvc1 implements APSMessageService {
     private APSLogger logger
 
     @Override
-    void sendMessage(@NotNull String topic, @NotNull APSMessage message, @Nullable APSMessageService.Listener reply) {
+    void publish(@NotNull String topic, @NotNull Object message, APSMessageService.Receivers receivers) {
         this.logger.info("In sendMessage(...)!")
         APSDefaultMessageRouterTest.send1 = true
     }
 
     @Override
-    void addMessageListener(@NotNull String topic, @NotNull APSMessageService.Listener listener) {}
+    void subscribe(@NotNull String topic, @NotNull APSMessageService.Listener listener) {}
 
     @Override
-    void removeMessageListener(@NotNull String topic, @NotNull APSMessageService.Listener listener) {}
+    void unsubscribe(@NotNull String topic, @NotNull APSMessageService.Listener listener) {}
 }
 
 @OSGiServiceProvider(
@@ -160,15 +159,15 @@ class MsgSvc2 implements APSMessageService {
     private APSLogger logger
 
     @Override
-    void sendMessage(@NotNull String topic, @NotNull APSMessage message, @Nullable APSMessageService.Listener reply) {
+    void publish(@NotNull String topic, @NotNull Object message, APSMessageService.Receivers receivers) {
         this.logger.info("In sendMessage(...)!")
         APSDefaultMessageRouterTest.send2 = true
     }
 
     @Override
-    void addMessageListener(@NotNull String topic, @NotNull APSMessageService.Listener listener) {}
+    void subscribe(@NotNull String topic, @NotNull APSMessageService.Listener listener) {}
 
     @Override
-    void removeMessageListener(@NotNull String topic, @NotNull APSMessageService.Listener listener) {}
+    void unsubscribe(@NotNull String topic, @NotNull APSMessageService.Listener listener) {}
 }
 

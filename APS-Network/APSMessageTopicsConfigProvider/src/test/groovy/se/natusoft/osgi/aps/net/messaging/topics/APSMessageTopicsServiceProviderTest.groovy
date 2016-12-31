@@ -67,7 +67,7 @@ class APSMessageTopicsServiceProviderTest extends OSGIServiceTestTools {
                 assertTrue("Expected 'amqp'!", topics.getTopic("myTopic").protocol == "amqp")
 
                 // Change config value
-                topicConfig.topics.get(0).protocol = new TestConfigValue(value: "netty")
+                topicConfig.topics.get(0).protocol = new TestConfigValue(value: "vertx")
 
                 // Should still have old value:
                 assertTrue("Expected 'vert.x'!", topics.getTopic("config").protocol == "vert.x")
@@ -76,7 +76,7 @@ class APSMessageTopicsServiceProviderTest extends OSGIServiceTestTools {
                 topicConfig.triggerConfigChangedEvent("topic-entry")
 
                 // Now expects new value.
-                assertTrue("Expected 'netty'!", topics.getTopic("config").protocol == "netty")
+                assertTrue("Expected 'vertx'!", topics.getTopic("config").protocol == "vertx")
 
                 topicsServiceTracker.releaseService()
             }

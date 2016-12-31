@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
+    This bundle makes a clustered Vert.x event bus available as implementation for APSMessageService.
 
+    Also note that this pom defines an deploy-dependencies-vagrant profile which will install all vert.x & vertx
+    dependencies in the vagrant deployment.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -11,10 +14,10 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>aps-vertx-messaging-provider</artifactId>
+    <artifactId>aps-vertx-event-bus-messaging-provider</artifactId>
     <packaging>bundle</packaging>
 
-    <name>APSVertxMessagingProvider</name>
+    <name>APSVertxEventBusMessagingProvider</name>
 
     <description>
     </description>
@@ -39,7 +42,7 @@
 
         <!-- The private packages. -->
         <osgi.private.package>
-            se.natusoft.osgi.aps
+            se.natusoft.osgi.aps.net.messaging.vertx
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embedded jars -->
@@ -114,18 +117,18 @@
         From: https://github.com/vert-x3/vertx-examples/blob/master/osgi-examples/README.adoc
 
         [13] - io.vertx.core - 3.3.3
-        [14] - io.netty.common - 4.1.1.Final
-        [15] - io.netty.buffer - 4.1.1.Final
-        [16] - io.netty.transport - 4.1.1.Final
-        [17] - io.netty.handler - 4.1.1.Final
-        [18] - io.netty.codec - 4.1.1.Final
-        [19] - io.netty.handler-proxy - 4.1.1.Final
-        [20] - io.netty.codec-socks - 4.1.1.Final
-        [21] - io.netty.codec-http - 4.1.1.Final
-        [22] - io.netty.codec-http2 - 4.1.1.Final
-        [23] - io.netty.codec-dns - 4.1.1.Final
-        [24] - io.netty.resolver - 4.1.1.Final
-        [25] - io.netty.resolver-dns - 4.1.1.Final
+        [14] - io.vertx.common - 4.1.1.Final
+        [15] - io.vertx.buffer - 4.1.1.Final
+        [16] - io.vertx.transport - 4.1.1.Final
+        [17] - io.vertx.handler - 4.1.1.Final
+        [18] - io.vertx.codec - 4.1.1.Final
+        [19] - io.vertx.handler-proxy - 4.1.1.Final
+        [20] - io.vertx.codec-socks - 4.1.1.Final
+        [21] - io.vertx.codec-http - 4.1.1.Final
+        [22] - io.vertx.codec-http2 - 4.1.1.Final
+        [23] - io.vertx.codec-dns - 4.1.1.Final
+        [24] - io.vertx.resolver - 4.1.1.Final
+        [25] - io.vertx.resolver-dns - 4.1.1.Final
         [26] - com.fasterxml.jackson.core.jackson-core - 2.7.4
         [27] - com.fasterxml.jackson.core.jackson-databind - 2.7.4
         [28] - com.fasterxml.jackson.core.jackson-annotations - 2.7.0
@@ -235,6 +238,21 @@
             <version>${version.netty}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+
+        <!--
+            Test
+        -->
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-osgi-test-tools</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
