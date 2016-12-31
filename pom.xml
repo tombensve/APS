@@ -83,10 +83,10 @@
         <vaadin.version>7.1.14</vaadin.version>
         <osgi.version>4.2.0</osgi.version>
         <mixin.plugin.version>0.1-alpha-34</mixin.plugin.version>
-        <clm.version>2.1.6</clm.version>
+        <clm.version>2.2.1</clm.version>
         <ftpPlugin.version>1.0.1</ftpPlugin.version>
         <markdownDoc.version>1.4.2</markdownDoc.version>
-        <groovy.version>2.4.6</groovy.version>
+        <groovy.version>2.4.7</groovy.version>
     </properties>
 
     <!--

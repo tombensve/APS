@@ -22,9 +22,7 @@ import java.util.concurrent.TimeUnit
 @OSGiServiceProvider(properties = [
         @OSGiProperty(name = APS.Service.Provider, value = "aps-default-discovery-service-provider"),
         @OSGiProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Network),
-        @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Discovery),
-        @OSGiProperty(name = APS.Uses.Network, value = APS.TRUE),
-        @OSGiProperty(name = APS.Provides.Discovery, value = APS.TRUE),
+        @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Discovery)
 ])
 @CompileStatic
 @TypeChecked
