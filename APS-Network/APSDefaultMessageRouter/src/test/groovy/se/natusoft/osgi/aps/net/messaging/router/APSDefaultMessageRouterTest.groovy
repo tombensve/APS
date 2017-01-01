@@ -79,17 +79,17 @@ class APSDefaultMessageRouterTest extends OSGIServiceTestTools {
                     // fail. Testing the other 2 methods also will give you a bit more code, and a bit more to
                     // execute when run, but will not in any way make the test better!
 
-                    router.publish("dest-one", "qwerty", APSMessageService.Receivers.ALL)
+                    router.publish("dest-one", "qwerty")
                     assert send1
                     assert !send2
 
-                    router.publish("dest-two", "qwerty", APSMessageService.Receivers.ALL)
+                    router.publish("dest-two", "qwerty")
                     assert send2
 
                     // This will leave the first service tracker without any services.
                     undeploy 'msg-svc-one'
                     try {
-                        router.publish("dest-one", "qwerty", APSMessageService.Receivers.ALL)
+                        router.publish("dest-one", "qwerty")
                         fail("This should have thrown an APSMessagingException!")
                     }
                     catch (APSMessagingException ame) {
@@ -102,7 +102,7 @@ class APSDefaultMessageRouterTest extends OSGIServiceTestTools {
                     topicConfig.triggerConfigChangedEvent("dest-one")
                     Thread.sleep(300) // Wait for service to have time to update itself.
                     try {
-                        router.publish("dest-one", "qwerty", APSMessageService.Receivers.ALL)
+                        router.publish("dest-one", "qwerty")
                     }
                     catch (APSMessagingException ame) {
                         assert ame.message.contains("has no trackers! This is probably due to bad configuration!")
@@ -127,22 +127,22 @@ class APSDefaultMessageRouterTest extends OSGIServiceTestTools {
                 @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Messaging)
         ]
 )
-class MsgSvc1 implements APSMessageService {
+class MsgSvc1 extends APSMessageService.AbstractAPSMessageService implements APSMessageService {
 
     @Managed(loggingFor = "msg-svc-one")
     private APSLogger logger
 
     @Override
-    void publish(@NotNull String topic, @NotNull Object message, APSMessageService.Receivers receivers) {
+    void publish(@NotNull String topic, @NotNull Object message, Properties properties) {
         this.logger.info("In sendMessage(...)!")
         APSDefaultMessageRouterTest.send1 = true
     }
 
     @Override
-    void subscribe(@NotNull String topic, @NotNull APSMessageService.Listener listener) {}
+    void subscribe(@NotNull String topic, @NotNull APSMessageService.Subscriber subscriber, Properties properties) {}
 
     @Override
-    void unsubscribe(@NotNull String topic, @NotNull APSMessageService.Listener listener) {}
+    void unsubscribe(@NotNull String topic, @NotNull APSMessageService.Subscriber subscriber) {}
 }
 
 @OSGiServiceProvider(
@@ -153,21 +153,21 @@ class MsgSvc1 implements APSMessageService {
                 @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Messaging)
         ]
 )
-class MsgSvc2 implements APSMessageService {
+class MsgSvc2 extends APSMessageService.AbstractAPSMessageService implements APSMessageService {
 
     @Managed(loggingFor = "msg-svc-two")
     private APSLogger logger
 
     @Override
-    void publish(@NotNull String topic, @NotNull Object message, APSMessageService.Receivers receivers) {
+    void publish(@NotNull String topic, @NotNull Object message, Properties properties) {
         this.logger.info("In sendMessage(...)!")
         APSDefaultMessageRouterTest.send2 = true
     }
 
     @Override
-    void subscribe(@NotNull String topic, @NotNull APSMessageService.Listener listener) {}
+    void subscribe(@NotNull String topic, @NotNull APSMessageService.Subscriber subscriber, Properties properties) {}
 
     @Override
-    void unsubscribe(@NotNull String topic, @NotNull APSMessageService.Listener listener) {}
+    void unsubscribe(@NotNull String topic, @NotNull APSMessageService.Subscriber subscriber) {}
 }
 

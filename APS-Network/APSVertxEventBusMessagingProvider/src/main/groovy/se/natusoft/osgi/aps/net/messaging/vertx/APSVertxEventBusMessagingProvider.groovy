@@ -9,16 +9,13 @@ import io.vertx.groovy.core.eventbus.Message
 import io.vertx.groovy.core.eventbus.MessageConsumer
 import org.osgi.framework.BundleContext
 import se.natusoft.docutations.NotNull
+import se.natusoft.docutations.Nullable
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.tools.APSActivatorInteraction
 import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
-import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+import se.natusoft.osgi.aps.tools.annotation.activator.*
 
 // Note to IDEA users: IDEA underlines (in beige color if you are using Darcula theme) all references to classes that are not
 // OSGi compatible (no OSGi MANIFEST.MF entries). The underlines you see here is for the Groovy wrapper of Vert.x. It is OK
@@ -31,15 +28,23 @@ import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
 @OSGiServiceProvider(
         // Possible criteria for client lookups. ex: "(${APS.Messaging.Protocol.Name}=vertx-eventbus)" In most cases clients won't care.
         properties = [
-                @OSGiProperty( name = APS.Service.Provider, value = "aps-vertx-event-bus-messaging-provider" ),
-                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Network ),
-                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
-                @OSGiProperty( name = APS.Messaging.Protocol.Name, value = "vertx-eventbus" )
+                @OSGiProperty( name = APS.Service.Provider,        value = "aps-vertx-event-bus-messaging-provider" ),
+                @OSGiProperty( name = APS.Service.Category,        value = APS.Value.Service.Category.Network ),
+                @OSGiProperty( name = APS.Service.Function,        value = APS.Value.Service.Function.Messaging ),
+                @OSGiProperty( name = APS.Messaging.Protocol.Name, value = "vertx-eventbus" ),
+                @OSGiProperty( name = APS.Messaging.Persistent,    value = APS.FALSE )
+
         ]
 )
 @CompileStatic
 @TypeChecked
-class APSVertxEventBusMessagingProvider implements APSMessageService {
+class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMessageService implements APSMessageService {
+
+    //
+    // Constants
+    //
+
+    private static final String VERTX_ONE_RECEIVER = "vertx-one-receiver"
 
     //
     // Private Members
@@ -58,7 +63,7 @@ class APSVertxEventBusMessagingProvider implements APSMessageService {
     private APSActivatorInteraction interaction
 
     /** The listeners of this service. */
-    private Map<String, List<APSMessageService.Listener>> listeners = [ : ]
+    private Map<String, List<APSMessageService.Subscriber>> listeners = [: ]
 
     /** We have one consumer per topic towards Vert.x. If we have more that one listener on a topic we handle that internally. */
     private Map<String, MessageConsumer> consumers = [ : ]
@@ -78,7 +83,9 @@ class APSVertxEventBusMessagingProvider implements APSMessageService {
      */
     @Initializer
     void init() {
-        this.logger.start( this.context ) // Connect to OSGi log service if available.
+        this.logger.connectToLogService( this.context ) // Connect to OSGi log service if available. APSLogger does not use a timeout when
+                                                        // tracking the LogService so it will fail immediately if service is not available,
+                                                        // so there is no risk of blocking (which there is when timeout is used).
 
         Map<String, Object> options = [ workerPoolSize:40 ] as HashMap < String, Object >
 
@@ -118,6 +125,8 @@ class APSVertxEventBusMessagingProvider implements APSMessageService {
                 else {
                     this.logger.error "Vert.x failed to shut down! [${res.cause()}]"
                 }
+
+                this.logger.disconnectFormLogService( this.context )
             }
         }
     }
@@ -131,8 +140,8 @@ class APSVertxEventBusMessagingProvider implements APSMessageService {
      *
      * @param topic The topic to get listeners for.
      */
-    private @NotNull List<APSMessageService.Listener> getListenersForTopic(@NotNull String topic ) {
-        List<APSMessageService.Listener> topicListeners = this.listeners [ topic ]
+    private @NotNull List<APSMessageService.Subscriber> getListenersForTopic(@NotNull String topic ) {
+        List<APSMessageService.Subscriber> topicListeners = this.listeners [ topic ]
 
         if ( topicListeners == null ) {
             topicListeners = new LinkedList<>()
@@ -145,39 +154,44 @@ class APSVertxEventBusMessagingProvider implements APSMessageService {
     /**
      * Sends a message to the destination.
      *
+     * Valid properties:
+     *
+     *      'vertx-one-receiver' : 'true/false'
+     *
      * @param topic The destination to send message.
      * @param message The message to send.
-     * @param reply If the underlying message mechanism supports replies to specific messages such will be delivered to
-     *              this listener. Can be null.
+     * @param props Implementation specific properties.
      */
     @Override
-    void publish( @NotNull String topic, @NotNull Object message, @NotNull APSMessageService.Receivers receivers ) {
-        switch ( receivers ) {
-            case APSMessageService.Receivers.ALL:
-                this.eventBus.publish topic, message
-                break
-
-            case APSMessageService.Receivers.ONE:
-                this.eventBus.send topic, message, { AsyncResult < Message > res ->
-                    if ( res.succeeded() ) {
-                        this.listeners [ topic ] ?. each { APSMessageService.Listener listener ->
-                            listener.messageReceived res.result().body()
-                        }
+    void publish( @NotNull String topic, @NotNull Object message, @Nullable Properties props) {
+        if (props != null && props.getProperty(VERTX_ONE_RECEIVER)?.toLowerCase() == "true") {
+            this.eventBus.send topic, message, { AsyncResult < Message > res ->
+                if ( res.succeeded() ) {
+                    this.listeners [ topic ] ?. each { APSMessageService.Subscriber listener ->
+                        listener.subscription res.result().body()
                     }
                 }
-                break
+            }
+        }
+        else {
+            this.eventBus.publish topic, message
         }
     }
 
     /**
      * Adds a listener for messages arriving on a specific source.
      *
+     * Valid properties:
+     *
+     *      none
+     *
      * @param topic The endpoint to listen to.
      * @param listener The listener to call with received messages.
+     * @param props Implementation specific properties.
      */
     @Override
-    void subscribe( @NotNull String topic, @NotNull APSMessageService.Listener listener ) {
-        List<APSMessageService.Listener> topicListeners = getListenersForTopic topic
+    void subscribe( @NotNull String topic, @NotNull APSMessageService.Subscriber listener, Properties props ) {
+        List<APSMessageService.Subscriber> topicListeners = getListenersForTopic topic
         boolean newTopic = topicListeners.size() == 0
 
         if ( !topicListeners.contains( listener ) ) {
@@ -191,8 +205,8 @@ class APSVertxEventBusMessagingProvider implements APSMessageService {
             if (consumer == null) {
                 consumer = this.eventBus.consumer( topic ).handler { Message message ->
 
-                    getListenersForTopic message.address() each { APSMessageService.Listener toListener ->
-                        toListener.messageReceived message.body()
+                    getListenersForTopic message.address() each { APSMessageService.Subscriber toListener ->
+                        toListener.subscription message.body()
                     }
                 }
                 this.consumers [ topic ] = consumer
@@ -207,8 +221,8 @@ class APSVertxEventBusMessagingProvider implements APSMessageService {
      * @param listener The listener to remove.
      */
     @Override
-    void unsubscribe( @NotNull String topic, @NotNull APSMessageService.Listener listener ) {
-        List<APSMessageService.Listener> topicListeners = getListenersForTopic topic
+    void unsubscribe( @NotNull String topic, @NotNull APSMessageService.Subscriber listener ) {
+        List<APSMessageService.Subscriber> topicListeners = getListenersForTopic topic
         topicListeners.remove listener
 
         if ( topicListeners.isEmpty() ) {
