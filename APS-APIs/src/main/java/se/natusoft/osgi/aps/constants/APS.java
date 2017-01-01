@@ -36,6 +36,8 @@
  */
 package se.natusoft.osgi.aps.constants;
 
+import java.util.Properties;
+
 /**
  * Hierarchy of constants.
  */
@@ -43,6 +45,10 @@ public interface APS {
 
     String TRUE = "true";
     String FALSE = "false";
+    String UNKNOWN = "unknown";
+
+    /** A special constant that can be used for optional Properties parameters. */
+    Properties NO_PROPS = new Properties();
 
     interface Service {
         String Provider = "service-provider";
@@ -70,6 +76,7 @@ public interface APS {
         String MultipleReceivers = "messaging-multiple-receivers";
 
         interface Protocol {
+            /** This is for router implementations of APSMessageService to be able to delegate to provider of correct protocol. */
             String Name = "aps-messaging-protocol";
         }
     }

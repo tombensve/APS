@@ -37,7 +37,7 @@ class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
                 synchronized ( this ) {
                     wait( 200 )
                 }
-                ++count;
+                ++count
                 if ( count > 20 ) break // If build on a really slow machine this might not be enough!
             }
             assert messageReceived
@@ -49,7 +49,9 @@ class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
 
 }
 
+interface MsgReceiverSvc {}
 
+@SuppressWarnings("GroovyUnusedDeclaration")
 @OSGiServiceProvider(
         properties = [
                 @OSGiProperty( name = APS.Service.Provider, value = "aps-vertx-event-bus-receiver" ),
@@ -59,7 +61,7 @@ class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
 )
 @CompileStatic
 @TypeChecked
-class MsgReceiver implements APSMessageService.Listener {
+class MsgReceiver implements MsgReceiverSvc, APSMessageService.Subscriber {
 
     @OSGiService( timeout = "15 sec" )
     private APSMessageService msgService
@@ -78,7 +80,7 @@ class MsgReceiver implements APSMessageService.Listener {
     }
 
     @Override
-    void messageReceived( @NotNull Object message ) {
+    void subscription(@NotNull Object message ) {
         this.logger.info( "Message received: [${message}]" )
 
         if ( message.toString() == APSVertXEventBusMessagingTest.GOAT ) {
@@ -87,7 +89,9 @@ class MsgReceiver implements APSMessageService.Listener {
     }
 }
 
+interface MsgSenderSvc {}
 
+@SuppressWarnings("GroovyUnusedDeclaration")
 @OSGiServiceProvider(
         properties = [
                 @OSGiProperty( name = APS.Service.Provider, value = "aps-vertx-event-bus-sender" ),
@@ -97,7 +101,7 @@ class MsgReceiver implements APSMessageService.Listener {
 )
 @CompileStatic
 @TypeChecked
-class MsgSender  {
+class MsgSender implements MsgSenderSvc {
 
     @OSGiService
     private APSMessageService msgService
@@ -106,7 +110,7 @@ class MsgSender  {
     void init() {
         // See the comment on MsgReceiver. The same applies here.
 
-        this.msgService.publish( "goat", APSVertXEventBusMessagingTest.GOAT, APSMessageService.Receivers.ALL )
+        this.msgService.publish( "goat", APSVertXEventBusMessagingTest.GOAT )
     }
 }
 

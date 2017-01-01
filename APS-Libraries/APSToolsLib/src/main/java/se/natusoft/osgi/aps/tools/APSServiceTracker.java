@@ -87,34 +87,38 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     //
 
     /** Can be used for String timeout value. */
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static final String SHORT_TIMEOUT = "3 seconds";
 
     /** Can be used for String timeout value. */
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static final String MEDIUM_TIMEOUT = "30 seconds";
 
     /** Can be used for String timeout value. */
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static final String LARGE_TIMEOUT = "2 minutes";
 
     /** Can be used for String timeout value. */
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static final String VERY_LARGE_TIMEOUT = "5 minutes";
 
     /** Can be used for String timeout value. */
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static final String HUGE_LARGE_TIMEOUT = "10 minutes";
 
     /** Can be used for String timeout value. */
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static final String NO_TIMEOUT = "forever";
 
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static final String DEFAULT_TIMEOUT = MEDIUM_TIMEOUT;
 
     //
     // Private Members
     //
 
-    /** The timeout when waiting for service to become available. */
+    /** The timeout when waiting for service to become available. Default value is fail immediately if service is not available! */
     private int timeout = -1;
-
-    /** If set to true timeout will be ignored if used from a BundleActivator! */
-    private boolean smartTimeout = false; // TODO: Remove this!
 
     /** The service class to track. */
     private Class<Service> serviceClass = null;
@@ -154,6 +158,8 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     /**
      * Creates a new _APSServiceTracker_ instance.
      *
+     * __Note:__ This instance will fail immediately if tracked service is not available!
+     *
      * @param context The bundles context.
      * @param serviceClass The class of the service to track.
      */
@@ -164,6 +170,8 @@ public class APSServiceTracker<Service>  implements ServiceListener{
 
     /**
      * Creates a new _APSServiceTracker_ instance.
+     *
+     * __Note:__ This instance will fail immediately if tracked service is not available!
      *
      * @param context The bundles context.
      * @param serviceClass The class of the service to track.
@@ -184,7 +192,9 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      *
      * @param context The bundles context.
      * @param serviceClass The class of the service to track.
-     * @param timeout The time in seconds to wait for a service to become available.
+     * @param timeout The time in seconds to wait for a service to become available. Setting timeout to 0 (or lower) will have
+     *                the effect of not waiting at all, and will fail immediately if tracked service is not available. But you
+     *                should consider using a constructor that does not supply a timeout instead in that case.
      */
     public APSServiceTracker(BundleContext context, Class<Service> serviceClass, int timeout) {
         this(context, serviceClass);
@@ -196,7 +206,9 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      *
      * @param context The bundles context.
      * @param serviceClass The class of the service to track.
-     * @param timeout The time to wait for a service to become available.
+     * @param timeout The time to wait for a service to become available. Setting timeout to 0 (or lower) will have
+     *                the effect of not waiting at all, and will fail immediately if tracked service is not available.
+     *                But you should consider using a constructor that does not supply a timeout instead in that case.
      * @param timeUnit The unit of time in timeout.
      */
     public APSServiceTracker(BundleContext context, Class<Service> serviceClass, long timeout, TimeUnit timeUnit) {
@@ -226,7 +238,10 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      *
      * @param context The bundles context.
      * @param serviceClass The class of the service to track.
-     * @param timeout The time to wait for a service to become available. Formats: "5 min[utes]" / "300 sec[onds]" / "300000 mili[seconds]" / "forever".
+     * @param timeout The time to wait for a service to become available. Formats: "5 min[utes]" / "300 sec[onds]" /
+     *                "300000 mili[seconds]" / "forever". Setting timeout value to 0 (or lower) will have the effect
+     *                of not waiting at all, and will fail immediately if tracked service is not available. But you
+     *                should consider using a constructor that does not supply a timeout instead in that case.
      */
     public APSServiceTracker(BundleContext context, Class<Service> serviceClass, String timeout) {
         this(context, serviceClass);
@@ -242,7 +257,9 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      *                                 be "(&(objectClass=service)additionalSearchCriteria)". This parameter should
      *                                 thereby always start with an '(' and end with an ')'!
      * @param timeout The time to wait for a service to become available. Formats: "5 min[utes]" / "300 sec[onds]" /
-     *                "300000 mili[seconds]" / "forever".
+     *                "300000 mili[seconds]" / "forever". Setting timeout value to 0 (or lower) will have the effect
+     *                of not waiting at all, and will fail immediately if tracked service is not available. But you
+     *                should consider using a constructor that does not supply a timeout instead in that case.
      */
     public APSServiceTracker(BundleContext context, Class<Service> serviceClass, String additionalSearchCriteria, String timeout) {
         this(context, serviceClass);
@@ -258,7 +275,9 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * @param additionalSearchCriteria An LDAP search string not including the service! The final search string will
      *                                 be "(&(objectClass=service)additionalSearchCriteria)". This parameter should
      *                                 thereby always start with an '(' and end with an ')'!
-     * @param timeout The time to wait for a service to become available.
+     * @param timeout The time to wait for a service to become available. Setting timeout to 0 (or lower) will have
+     *                the effect of not waiting at all, and will fail immediately if tracked service is not available.
+     *                But you should consider using a constructor that does not supply a timeout instead in that case.
      * @param timeUnit The unit of time in timeout.
      */
     public APSServiceTracker(BundleContext context, Class<Service> serviceClass, String additionalSearchCriteria, long timeout,
@@ -677,9 +696,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      */
     public Service allocateService() throws APSNoServiceAvailableException {
         if (!this.active.hasActiveService()) {
-            if (hasServiceAvailabilityTimeout()) {
-                waitForService(this.timeout);
-            }
+            waitForService(this.timeout);
             if (!this.active.hasActiveService()) {
                 if (this.onTimeout != null) {
                     onTimeout.onTimeout();
@@ -1028,21 +1045,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          * @param timeout Wait at most this long (in milliseconds). 0 == wait forever.
          */
         public synchronized void waitForActiveService(long timeout) {
-            boolean doWait = true;
-            if (APSServiceTracker.this.smartTimeout) {
-                StackTraceElement[] trace = new Exception().getStackTrace();
-                int loops = 0;
-                for (StackTraceElement ste : trace) {
-                    if (ste.getMethodName().equals("start") || ste.getMethodName().equals("stop")) {
-                        doWait = false;
-                        break;
-                    }
-                    if (++loops > 5) {
-                        break;
-                    }
-                }
-            }
-            if (doWait) {
+            if (hasServiceAvailabilityTimeout()) {
                 try {
                     this.wait(timeout);
                 } catch (InterruptedException e) {

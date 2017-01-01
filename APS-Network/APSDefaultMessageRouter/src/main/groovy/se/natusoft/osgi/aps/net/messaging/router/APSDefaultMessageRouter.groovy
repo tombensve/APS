@@ -4,6 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.osgi.framework.BundleContext
 import se.natusoft.docutations.NotNull
+import se.natusoft.docutations.Nullable
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageTopicsService
@@ -27,7 +28,9 @@ import se.natusoft.osgi.aps.tools.tracker.WithService
                 @OSGiProperty(name = APS.Messaging.Protocol.Name, value = APS.Value.Messaging.Protocol.ROUTER)
         ]
 )
-class APSDefaultMessageRouter implements APSMessageService, APSMessageTopicsService.TopicsUpdatedListener {
+class APSDefaultMessageRouter
+        extends APSMessageService.AbstractAPSMessageService
+        implements APSMessageService, APSMessageTopicsService.TopicsUpdatedListener {
 
     //
     // Private Members
@@ -128,12 +131,12 @@ class APSDefaultMessageRouter implements APSMessageService, APSMessageTopicsServ
      *
      * @param topic The destination to send message.
      * @param message The message to send.
-     * @param receivers Receivers.ONE or Receivers.ALL. For ONE it is up to the implementation which receiver receives the message.
+     * @param properties Implementation specific properties. Can be null.
      */
     @Override
-    void publish(@NotNull String topic, @NotNull Object message, @NotNull APSMessageService.Receivers receivers) {
+    void publish(@NotNull String topic, @NotNull Object message, @Nullable Properties properties) {
         callAllServices(topic, { APSMessageService service ->
-            service.publish(topic, message, receivers)
+            service.publish(topic, message, properties)
         })
     }
 
@@ -142,11 +145,12 @@ class APSDefaultMessageRouter implements APSMessageService, APSMessageTopicsServ
      *
      * @param topic The endpoint to listen to.
      * @param listener The listener to call with received messages.
+     * @param properties Implementation specific properties. Can be null.
      */
     @Override
-    void subscribe(@NotNull String topic, @NotNull APSMessageService.Listener listener) {
+    void subscribe(@NotNull String topic, @NotNull APSMessageService.Subscriber listener, @Nullable Properties properties) {
         callAllServices(topic, { APSMessageService service ->
-            service.subscribe(topic, listener)
+            service.subscribe(topic, listener, properties)
         })
     }
 
@@ -157,7 +161,7 @@ class APSDefaultMessageRouter implements APSMessageService, APSMessageTopicsServ
      * @param listener The listener to remove.
      */
     @Override
-    void unsubscribe(@NotNull String topic, @NotNull APSMessageService.Listener listener) {
+    void unsubscribe(@NotNull String topic, @NotNull APSMessageService.Subscriber listener) {
         callAllServices(topic, { APSMessageService service ->
             service.unsubscribe(topic, listener)
         })
