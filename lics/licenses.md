@@ -21,7 +21,6 @@ The following third party products are using this license:
 * [vertx-core-3.3.3](http://www.apache.org/licenses/LICENSE-2.0.txt)
 * [vertx-auth-common-3.3.3](http://rubygems-proxy.torquebox.org/releases)
 * [vertx-web-3.3.3](http://rubygems-proxy.torquebox.org/releases)
-* [vertx-hazelcast-3.3.3](http://www.apache.org/licenses/LICENSE-2.0.txt)
 * [netty-common-4.1.6.Final](http://netty.io/)
 * [netty-buffer-4.1.6.Final](http://netty.io/)
 * [netty-transport-4.1.6.Final](http://netty.io/)
@@ -33,6 +32,7 @@ The following third party products are using this license:
 * [netty-codec-dns-4.1.6.Final](http://netty.io/)
 * [netty-resolver-4.1.6.Final](http://netty.io/)
 * [netty-resolver-dns-4.1.6.Final](http://netty.io/)
+* [vertx-hazelcast-3.3.3](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 __[Eclipse Public License -v 1.0 version 1.0](http://www.eclipse.org/legal/epl-v10.html)__
 

@@ -2,15 +2,16 @@
 <!--
     PROJECT
         Name
-            APS Default Message Router
+            APS VertX Provider
         
         Code Version
             1.0.0
         
         Description
-            An implementation of APSMessageService that registers itself with protocol "ROUTER", and tracks other
-            APSMessageService instances not using "ROUTER" as protocol name. It uses configuration to map between
-            topics and protocol name, and then forwards calls to tracked services of that protocol name.
+            This service provides configured Vertx instances allowing multiple services to use the same Vertx instance.
+            
+            This service also provides for multiple instances of VertX by associating an instance with a name. Everyone
+            asking for the same name will get the same instance.
         
     COPYRIGHTS
         Copyright (C) 2012 by Natusoft AB All rights reserved.
@@ -29,12 +30,12 @@
         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
         See the License for the specific language governing permissions and
         limitations under the License.
-
+        
     AUTHORS
         tommy ()
             Changes:
             2017-01-01: Created!
-            
+
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -45,15 +46,16 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>aps-default-message-router</artifactId>
+    <artifactId>aps-vertx-provider</artifactId>
     <packaging>bundle</packaging>
 
-    <name>APS Default Message Router</name>
+    <name>APS VertX Provider</name>
 
     <description>
-        An implementation of APSMessageService that registers itself with protocol "ROUTER", and tracks other
-        APSMessageService instances not using "ROUTER" as protocol name. It uses configuration to map between
-        topics and protocol name, and then forwards calls to tracked services of that protocol name.
+        This service provides configured Vertx instances allowing multiple services to use the same Vertx instance.
+
+        This service also provides for multiple instances of VertX by associating an instance with a name. Everyone
+        asking for the same name will get the same instance.
     </description>
 
     <properties>
@@ -69,6 +71,7 @@
 
         <!-- The bundle packages to export. -->
         <osgi.export.package>
+            se.natusoft.osgi.aps.net.messaging.vertx.api
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->
@@ -76,11 +79,28 @@
 
         <!-- The private packages. -->
         <osgi.private.package>
-            se.natusoft.osgi.aps.net.messaging.router
+            se.natusoft.osgi.aps.net.messaging.vertx
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->
+        <!--
+            Export the non OSGi compliant vertx-lang-groovy packages.
+        -->
         <osgi.export.dependency.package>
+            io.vertx.groovy.core,
+            io.vertx.groovy.core.buffer,
+            io.vertx.groovy.core.cli,
+            io.vertx.groovy.core.datagram,
+            io.vertx.groovy.core.dns,
+            io.vertx.groovy.core.eventbus,
+            io.vertx.groovy.core.file,
+            io.vertx.groovy.core.http,
+            io.vertx.groovy.core.metrics,
+            io.vertx.groovy.core.net,
+            io.vertx.groovy.core.parsetools,
+            io.vertx.groovy.core.shareddata,
+            io.vertx.groovy.core.streams,
+            io.vertx.lang.groovy
         </osgi.export.dependency.package>
 
         <!-- The resources to include in the bundle -->
@@ -88,7 +108,7 @@
         </osgi.include.resource>
 
         <!-- The default for embedding dependencies in bundle. -->
-        <osgi.embed.dependency>*;scope=system</osgi.embed.dependency>
+        <osgi.embed.dependency>*;scope=compile</osgi.embed.dependency>
 
         <!-- The directory whose content should be embeded into the bundle jar. -->
         <osgi.embed.directory>lib</osgi.embed.directory>
@@ -101,8 +121,10 @@
         <aps.config.classes></aps.config.classes>
 
         <!--
-             Trigger tiles.
+             Dependency Versions
          -->
+        <version.vertx>3.3.3</version.vertx>
+        <version.netty>4.1.6.Final</version.netty>
 
         <!--
             Other properties
@@ -135,28 +157,160 @@
         </dependency>
 
         <!--
-            Test
+            APSVertXProvider dependencies
         -->
 
+        <!-- This dependency is exported by this bundle! -->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-lang-groovy</artifactId>
+            <version>${version.vertx}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!--
+        From: https://github.com/vert-x3/vertx-examples/blob/master/osgi-examples/README.adoc
+
+        [13] - io.vertx.core - 3.3.3
+        [14] - io.vertx.common - 4.1.1.Final
+        [15] - io.vertx.buffer - 4.1.1.Final
+        [16] - io.vertx.transport - 4.1.1.Final
+        [17] - io.vertx.handler - 4.1.1.Final
+        [18] - io.vertx.codec - 4.1.1.Final
+        [19] - io.vertx.handler-proxy - 4.1.1.Final
+        [20] - io.vertx.codec-socks - 4.1.1.Final
+        [21] - io.vertx.codec-http - 4.1.1.Final
+        [22] - io.vertx.codec-http2 - 4.1.1.Final
+        [23] - io.vertx.codec-dns - 4.1.1.Final
+        [24] - io.vertx.resolver - 4.1.1.Final
+        [25] - io.vertx.resolver-dns - 4.1.1.Final
+        [26] - com.fasterxml.jackson.core.jackson-core - 2.7.4
+        [27] - com.fasterxml.jackson.core.jackson-databind - 2.7.4
+        [28] - com.fasterxml.jackson.core.jackson-annotations - 2.7.0
+        [29] - vertx-web - 3.3.3
+        [30] - vertx-auth-common - 3.3.3
+        [31] - vertx-jdbc-client - 3.3.3
+        [32] - vertx-sql-common - 3.3.3
+        -->
+        <!--
+            These all need to be deployed in the OSGi container!
+
+            Doing: 'mvn -Pdeploy-dependencies-vagrant install' will do that for the local vagrant deployment.
+        -->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-core</artifactId>
+            <version>${version.vertx}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-auth-common</artifactId>
+            <version>${version.vertx}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web</artifactId>
+            <version>${version.vertx}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-common</artifactId>
+            <version>${version.netty}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+            <version>${version.netty}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport</artifactId>
+            <version>${version.netty}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler</artifactId>
+            <version>${version.netty}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec</artifactId>
+            <version>${version.netty}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler-proxy</artifactId>
+            <version>${version.netty}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
+            <version>${version.netty}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http2</artifactId>
+            <version>${version.netty}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-dns</artifactId>
+            <version>${version.netty}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-resolver</artifactId>
+            <version>${version.netty}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-resolver-dns</artifactId>
+            <version>${version.netty}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+
+        <!-- Clusters -->
+
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-hazelcast</artifactId>
+            <version>3.3.3</version>
+            <scope>compile</scope>
+        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>io.vertx</groupId>-->
+        <!--<artifactId>vertx-jgroups</artifactId>-->
+        <!--<version>3.3.3</version>-->
+        <!--<scope>compile</scope>-->
+        <!--</dependency>-->
+
+        <!--
+            Test
+        -->
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-osgi-test-tools</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-service-test-support</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-message-topics-config-provider</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
 
     </dependencies>
 

@@ -20,7 +20,9 @@ class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
     static boolean messageReceived = false
 
     @Test
-    void test() throws Exception {
+    void runTest() throws Exception {
+
+        deploy 'aps-vertx-provider' with new APSActivator() from 'se.natusoft.osgi.aps', 'aps-vertx-provider', '1.0.0'
 
         deploy 'aps-vertx-event-bus-messaging-provider' with new APSActivator() from 'APS-Network/APSVertxEventBusMessagingProvider/target/classes'
 
@@ -44,6 +46,7 @@ class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
         }
         finally {
             shutdown()
+            Thread.sleep(500) // Give Vertx time to shut down.
         }
     }
 

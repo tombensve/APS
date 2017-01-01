@@ -1,3 +1,39 @@
+/* 
+ * 
+ * PROJECT
+ *     Name
+ *         APSVertxEventBusMessagingProvider
+ *     
+ *     Code Version
+ *         1.0.0
+ *     
+ *     Description
+ *         Provides an implementation of APSMessageService using Vert.x event bus.
+ *         
+ * COPYRIGHTS
+ *     Copyright (C) 2012 by Natusoft AB All rights reserved.
+ *     
+ * LICENSE
+ *     Apache 2.0 (Open Source)
+ *     
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *     
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *     
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *     
+ * AUTHORS
+ *     tommy ()
+ *         Changes:
+ *         2017-01-01: Created!
+ *         
+ */
 package se.natusoft.osgi.aps.net.messaging.vertx
 
 import groovy.transform.CompileStatic
@@ -13,6 +49,7 @@ import se.natusoft.docutations.Nullable
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
 import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.osgi.aps.net.messaging.vertx.api.APSVertXService
 import se.natusoft.osgi.aps.tools.APSActivatorInteraction
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
@@ -50,6 +87,7 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
     // Constants
     //
 
+    /** Sending property for sending to only one member. Value is true / false. */
     private static final String VERTX_ONE_RECEIVER = "vertx-one-receiver"
 
     //
@@ -68,8 +106,11 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
     @Managed
     private APSActivatorInteraction interaction
 
+    @OSGiService
+    private APSVertXService vertxService
+
     /** The listeners of this service. */
-    private Map<String, List<APSMessageService.Subscriber>> listeners = [: ]
+    private Map<String, List<APSMessageService.Subscriber>> listeners = [ : ]
 
     /** We have one consumer per topic towards Vert.x. If we have more that one listener on a topic we handle that internally. */
     private Map<String, MessageConsumer> consumers = [ : ]
@@ -93,11 +134,9 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
                                                         // tracking the LogService so it will fail immediately if service is not available,
                                                         // so there is no risk of blocking (which there is when timeout is used).
 
-        Map<String, Object> options = [ workerPoolSize:40 ] as HashMap < String, Object >
-
-        Vertx.clusteredVertx( options, { AsyncResult < Vertx > res ->
-            if ( res.succeeded() ) {
-                this.vertx = res.result()
+        this.vertxService.useGroovyVertX( APS.DEFAULT, { AsyncResult < Vertx > result ->
+            if ( result.succeeded() ) {
+                this.vertx = result.result()
                 this.eventBus = this.vertx.eventBus()
 
                 // Notify APSActivator that we are ready to work. APSActivator will register this as service with OSGi on this state.
@@ -107,7 +146,7 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
             }
             else {
                 this.interaction.state = APSActivatorInteraction.State.STARTUP_FAILED
-                this.logger.error "Vert.x cluster failed to start: ${res.cause()}, shutting down bundle!"
+                this.logger.error "Vert.x cluster failed to start: ${result.cause()}, shutting down bundle!"
                 this.context.bundle.stop()
             }
         })
@@ -123,17 +162,8 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
         }
 
         if ( this.vertx != null ) {
-            this.vertx.close { AsyncResult res ->
-
-                if ( res.succeeded() ) {
-                    this.logger.info "Vert.x successfully shut down!"
-                }
-                else {
-                    this.logger.error "Vert.x failed to shut down! [${res.cause()}]"
-                }
-
-                this.logger.disconnectFormLogService( this.context )
-            }
+            this.vertxService.releaseGroovyVertX( APS.DEFAULT )
+            this.logger.disconnectFormLogService( this.context )
         }
     }
 

@@ -69,6 +69,7 @@
         <module>APSVertxEventBusMessagingProvider</module>
         <module>APSMessageTopicsConfigProvider</module>
         <module>APSDefaultMessageRouter</module>
+        <module>APSVertXProvider</module>
     </modules>
 
 </project>
