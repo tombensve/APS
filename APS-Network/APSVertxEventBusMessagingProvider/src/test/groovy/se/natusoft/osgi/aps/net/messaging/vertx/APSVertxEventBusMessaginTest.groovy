@@ -6,6 +6,9 @@ import org.junit.Test
 import se.natusoft.docutations.NotNull
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
 import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
+import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
+import se.natusoft.osgi.aps.net.messaging.vertx.config.VertxConfig
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -22,7 +25,23 @@ class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
     @Test
     void runTest() throws Exception {
 
-        deploy 'aps-vertx-provider' with new APSActivator() from 'se.natusoft.osgi.aps', 'aps-vertx-provider', '1.0.0'
+        deploy 'aps-vertx-provider' with new APSActivator() with {
+
+            VertxConfig config = new VertxConfig()
+            TestConfigList<VertxConfig.VertxConfigValue> entries = new TestConfigList<>()
+
+            VertxConfig.VertxConfigValue entry = new VertxConfig.VertxConfigValue()
+            entry.name = new TestConfigValue(value: "workerPoolSize")
+            entry.value = new TestConfigValue(value: "40")
+            entry.type = new TestConfigValue(value: "Int")
+
+            entries.configs.add(entry)
+
+            config.optionsValues = entries
+
+            config
+
+        } from 'se.natusoft.osgi.aps', 'aps-vertx-provider', '1.0.0'
 
         deploy 'aps-vertx-event-bus-messaging-provider' with new APSActivator() from 'APS-Network/APSVertxEventBusMessagingProvider/target/classes'
 

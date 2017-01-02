@@ -87,6 +87,9 @@
         <ftpPlugin.version>1.0.1</ftpPlugin.version>
         <markdownDoc.version>1.4.2</markdownDoc.version>
         <groovy.version>2.4.7</groovy.version>
+        <vertx.version>3.3.3</vertx.version>
+        <netty.version>4.1.6.Final</netty.version>
+
     </properties>
 
     <!--

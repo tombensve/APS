@@ -47,6 +47,7 @@ import io.vertx.groovy.core.Vertx
 import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.messaging.vertx.api.APSVertXService
+import se.natusoft.osgi.aps.net.messaging.vertx.config.VertxConfig
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
@@ -86,6 +87,37 @@ class APSVertxProvider implements APSVertXService {
     //
 
     /**
+     * Loads config options into a Vertx options Map.
+     *
+     * @param options The map to load options into.
+     */
+    private static void loadOptions(Map<String, Object> options) {
+        VertxConfig.managed.get().optionsValues.each { VertxConfig.VertxConfigValue  entry ->
+            Object value = ""
+
+            // The type value will *always* contain one of these values and nothing else.
+            switch ( entry.type.string ) {
+                case "String":
+                    value = entry.value.string
+                    break
+
+                case "Int":
+                    value = Integer.valueOf( entry.value.string )
+                    break
+
+                case "Float":
+                    value = Float.valueOf ( entry.value.string )
+                    break
+
+                case "Boolean":
+                    value = Boolean.valueOf( entry.value.string )
+            }
+
+            options [ entry.name.string ] = value
+        }
+    }
+
+    /**
      * Creates a new Vertx instance.
      *
      * @param name The name to save this instance as.
@@ -93,7 +125,8 @@ class APSVertxProvider implements APSVertXService {
      */
     private void createVertxInstance(String name, Handler<AsyncResult<Vertx>> result) {
 
-        Map<String, Object> options = [ workerPoolSize:40 ] as HashMap <String, Object>
+        Map<String, Object> options = [ : ]
+        loadOptions(options)
 
         Vertx.clusteredVertx( options, { AsyncResult< Vertx > res ->
             if ( res.succeeded() ) {

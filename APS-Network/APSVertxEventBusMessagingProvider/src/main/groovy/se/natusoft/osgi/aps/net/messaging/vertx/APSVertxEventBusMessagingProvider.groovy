@@ -99,10 +99,10 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
     BundleContext context
 
     /** For logging. */
-    @Managed(loggingFor = "aps-vertx-messaging-provider[event bus]")
+    @Managed(loggingFor = "aps-vertx-event-bus-messaging-provider")
     private APSLogger logger
 
-    /** This is used to interact with APSActivator, which is our BundleActivator. This forces delayed registration of service. */
+    /** This is used to interact with APSActivator, which is our BundleActivator. Injecting this forces delayed registration of service. */
     @Managed
     private APSActivatorInteraction interaction
 
@@ -134,7 +134,7 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
                                                         // tracking the LogService so it will fail immediately if service is not available,
                                                         // so there is no risk of blocking (which there is when timeout is used).
 
-        this.vertxService.useGroovyVertX( APS.DEFAULT, { AsyncResult < Vertx > result ->
+        this.vertxService.useGroovyVertX( APS.DEFAULT, { AsyncResult<Vertx> result ->
             if ( result.succeeded() ) {
                 this.vertx = result.result()
                 this.eventBus = this.vertx.eventBus()
@@ -176,7 +176,7 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
      *
      * @param topic The topic to get listeners for.
      */
-    private @NotNull List<APSMessageService.Subscriber> getListenersForTopic(@NotNull String topic ) {
+    private @NotNull List<APSMessageService.Subscriber> getListenersForTopic( @NotNull String topic ) {
         List<APSMessageService.Subscriber> topicListeners = this.listeners [ topic ]
 
         if ( topicListeners == null ) {
@@ -199,9 +199,9 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
      * @param props Implementation specific properties.
      */
     @Override
-    void publish( @NotNull String topic, @NotNull Object message, @Nullable Properties props) {
-        if (props != null && props.getProperty(VERTX_ONE_RECEIVER)?.toLowerCase() == "true") {
-            this.eventBus.send topic, message, { AsyncResult < Message > reply ->
+    void publish( @NotNull String topic, @NotNull Object message, @Nullable Properties props ) {
+        if ( props != null && props.getProperty( VERTX_ONE_RECEIVER ) ?. toLowerCase() == "true" ) {
+            this.eventBus.send topic, message, { AsyncResult<Message> reply ->
                 if ( reply.succeeded() ) {
                     this.listeners [ topic ] ?. each { APSMessageService.Subscriber listener ->
                         listener.subscription reply.result().body()
