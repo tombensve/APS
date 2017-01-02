@@ -61,10 +61,6 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 /**
  * Provides messaging using vertx. In this a clustered event bus.
  *
- * Note that vert.x uses JSON when transferring data on the network! This means that you cannot just send *any* object!
- * It must be a structure that is possible to convert to JSON. Lists and Maps are supported, but do consider the contents
- * in those.
- *
  * See http://vertx.io/docs/ for more information.
  */
 @SuppressWarnings( "GroovyUnusedDeclaration" ) // This is never referenced directly, only through APSMessageService API.

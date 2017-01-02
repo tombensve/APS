@@ -39,8 +39,8 @@ package se.natusoft.osgi.aps.net.messaging.vertx
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.core.AsyncResult
+import io.vertx.core.net.NetServer
 import io.vertx.groovy.core.Vertx
-import io.vertx.groovy.core.eventbus.EventBus
 import io.vertx.groovy.core.eventbus.Message
 import io.vertx.groovy.core.eventbus.MessageConsumer
 import org.osgi.framework.BundleContext
@@ -61,10 +61,6 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 /**
  * Provides messaging using vertx. In this a clustered event bus.
  *
- * Note that vert.x uses JSON when transferring data on the network! This means that you cannot just send *any* object!
- * It must be a structure that is possible to convert to JSON. Lists and Maps are supported, but do consider the contents
- * in those.
- *
  * See http://vertx.io/docs/ for more information.
  */
 @SuppressWarnings( "GroovyUnusedDeclaration" ) // This is never referenced directly, only through APSMessageService API.
@@ -81,14 +77,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 )
 @CompileStatic
 @TypeChecked
-class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMessageService implements APSMessageService {
-
-    //
-    // Constants
-    //
-
-    /** Sending property for sending to only one member. Value is true / false. */
-    private static final String VERTX_ONE_RECEIVER = "vertx-one-receiver"
+class APSVertxTCPMessagingProvider extends APSMessageService.AbstractAPSMessageService implements APSMessageService {
 
     //
     // Private Members
@@ -118,8 +107,8 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
     /** The root of all Vert.x! */
     private Vertx vertx = null
 
-    /** The clustered event bus we are communicating over. */
-    private EventBus eventBus = null
+    /** The server for receiving requests. */
+    private NetServer netServer = null
 
     //
     // Initializer
@@ -137,7 +126,7 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
         this.vertxService.useGroovyVertX( APS.DEFAULT, { AsyncResult<Vertx> result ->
             if ( result.succeeded() ) {
                 this.vertx = result.result()
-                this.eventBus = this.vertx.eventBus()
+                this.netServer = this.vertx.eventBus()
 
                 // Notify APSActivator that we are ready to work. APSActivator will register this as service with OSGi on this state.
                 this.interaction.state = APSActivatorInteraction.State.READY
@@ -157,8 +146,8 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
      */
     @BundleStop
     void stop() {
-        if ( this.eventBus != null ) {
-            this.eventBus = null
+        if ( this.netServer != null ) {
+            this.netServer = null
         }
 
         if ( this.vertx != null ) {
@@ -201,7 +190,7 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
     @Override
     void publish( @NotNull String topic, @NotNull Object message, @Nullable Properties props ) {
         if ( props != null && props.getProperty( VERTX_ONE_RECEIVER ) ?. toLowerCase() == "true" ) {
-            this.eventBus.send topic, message, { AsyncResult<Message> reply ->
+            this.netServer.send topic, message, { AsyncResult<Message> reply ->
                 if ( reply.succeeded() ) {
                     this.listeners [ topic ] ?. each { APSMessageService.Subscriber listener ->
                         listener.subscription reply.result().body()
@@ -210,7 +199,7 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
             }
         }
         else {
-            this.eventBus.publish topic, message
+            this.netServer.publish topic, message
         }
     }
 
@@ -239,7 +228,7 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
             MessageConsumer consumer = this.consumers [ topic ]
 
             if (consumer == null) {
-                consumer = this.eventBus.consumer( topic ).handler { Message message ->
+                consumer = this.netServer.consumer( topic ).handler { Message message ->
 
                     getListenersForTopic message.address() each { APSMessageService.Subscriber toListener ->
                         toListener.subscription message.body()

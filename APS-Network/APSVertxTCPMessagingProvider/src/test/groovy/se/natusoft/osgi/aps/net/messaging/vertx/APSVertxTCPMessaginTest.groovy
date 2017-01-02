@@ -16,7 +16,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 
 @CompileStatic
 @TypeChecked
-class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
+class APSVertxTCPMessagingTest extends OSGIServiceTestTools {
 
     static final String GOAT = "baeaeae"
 

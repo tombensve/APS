@@ -70,6 +70,7 @@
         <module>APSMessageTopicsConfigProvider</module>
         <module>APSDefaultMessageRouter</module>
         <module>APSVertXProvider</module>
+        <module>APSVertxTCPMessagingProvider</module>
     </modules>
 
 </project>

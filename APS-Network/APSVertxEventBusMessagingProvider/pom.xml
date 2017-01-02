@@ -55,7 +55,7 @@
     <artifactId>aps-vertx-event-bus-messaging-provider</artifactId>
     <packaging>bundle</packaging>
 
-    <name>APSVertxEventBusMessagingProvider</name>
+    <name>APS Vertx Event Bus Messaging Provider</name>
 
     <description>
         Provides an implementation of APSMessageService using Vert.x event bus.
@@ -106,12 +106,6 @@
         <aps.config.classes></aps.config.classes>
 
         <!--
-             Dependency Versions
-         -->
-        <version.vertx>3.3.3</version.vertx>
-        <version.netty>4.1.6.Final</version.netty>
-
-        <!--
             Other properties
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -160,7 +154,7 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-lang-groovy</artifactId>
-            <version>${version.vertx}</version>
+            <version>${vertx.version}</version>
             <scope>provided</scope>
         </dependency>
 
