@@ -5,6 +5,7 @@ import groovy.transform.TypeChecked
 import org.junit.Test
 import se.natusoft.docutations.NotNull
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
+import se.natusoft.osgi.aps.api.net.messaging.service.APSSubscriber
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
@@ -83,7 +84,7 @@ interface MsgReceiverSvc {}
 )
 @CompileStatic
 @TypeChecked
-class MsgReceiver implements MsgReceiverSvc, APSMessageService.Subscriber {
+class MsgReceiver implements MsgReceiverSvc, APSSubscriber {
 
     @OSGiService( timeout = "15 sec" )
     private APSMessageService msgService
@@ -102,7 +103,7 @@ class MsgReceiver implements MsgReceiverSvc, APSMessageService.Subscriber {
     }
 
     @Override
-    void subscription(@NotNull Object message ) {
+    void subscription(@NotNull String topic, @NotNull Object message) {
         this.logger.info( "Message received: [${message}]" )
 
         if ( message.toString() == APSVertXEventBusMessagingTest.GOAT ) {

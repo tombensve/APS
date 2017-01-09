@@ -46,6 +46,7 @@ import se.natusoft.docutations.Nullable
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageTopicsService
+import se.natusoft.osgi.aps.api.net.messaging.service.APSSubscriber
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.APSServiceTracker
@@ -186,7 +187,7 @@ class APSDefaultMessageRouter
      * @param properties Implementation specific properties. Can be null.
      */
     @Override
-    void subscribe(@NotNull String topic, @NotNull APSMessageService.Subscriber listener, @Nullable Properties properties) {
+    void subscribe(@NotNull String topic, @NotNull APSSubscriber listener, @Nullable Properties properties) {
         callAllServices(topic, { APSMessageService service ->
             service.subscribe(topic, listener, properties)
         })
@@ -199,7 +200,7 @@ class APSDefaultMessageRouter
      * @param listener The listener to remove.
      */
     @Override
-    void unsubscribe(@NotNull String topic, @NotNull APSMessageService.Subscriber listener) {
+    void unsubscribe(@NotNull String topic, @NotNull APSSubscriber listener) {
         callAllServices(topic, { APSMessageService service ->
             service.unsubscribe(topic, listener)
         })

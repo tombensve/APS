@@ -76,7 +76,7 @@ public interface APSMessageService {
      * @param subscriber The subscriber to call with received messages.
      * @param properties Implementation specific properties. Can be null.
      */
-    void subscribe(@NotNull String topic, @NotNull Subscriber subscriber, @Nullable Properties properties);
+    void subscribe(@NotNull String topic, @NotNull APSSubscriber subscriber, @Nullable Properties properties);
 
     /**
      * Adds a listener for messages arriving on a specific source.
@@ -84,7 +84,7 @@ public interface APSMessageService {
      * @param topic The endpoint to listen to.
      * @param subscriber The subscriber to call with received messages.
      */
-    void subscribe(@NotNull String topic, @NotNull Subscriber subscriber);
+    void subscribe(@NotNull String topic, @NotNull APSSubscriber subscriber);
 
     /**
      * Removes a listener for a source.
@@ -92,20 +92,7 @@ public interface APSMessageService {
      * @param topic The endpoint to remove listener for.
      * @param subscriber The subscriber to remove.
      */
-    void unsubscribe(@NotNull String topic, @NotNull Subscriber subscriber);
-
-    /**
-     * This should be implemented by those wanting to receive messages from a source.
-     */
-    interface Subscriber {
-
-        /**
-         * Called on received message.
-         *
-         * @param message The message received.
-         */
-        void subscription(@NotNull Object message);
-    }
+    void unsubscribe(@NotNull String topic, @NotNull APSSubscriber subscriber);
 
     /**
      * An abstract base class to make implementation cleaner when no properties are supported.
@@ -128,7 +115,7 @@ public interface APSMessageService {
          * @param topic The endpoint to listen to.
          * @param subscriber The subscriber to call with received messages.
          */
-        public void subscribe(@NotNull String topic, @NotNull Subscriber subscriber) {
+        public void subscribe(@NotNull String topic, @NotNull APSSubscriber subscriber) {
             subscribe(topic, subscriber, null);
         }
     }

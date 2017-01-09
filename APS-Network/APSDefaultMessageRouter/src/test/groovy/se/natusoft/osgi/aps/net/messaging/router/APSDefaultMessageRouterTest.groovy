@@ -7,6 +7,7 @@ import org.osgi.framework.BundleContext
 import se.natusoft.docutations.NotNull
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
+import se.natusoft.osgi.aps.api.net.messaging.service.APSSubscriber
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
@@ -139,10 +140,10 @@ class MsgSvc1 extends APSMessageService.AbstractAPSMessageService implements APS
     }
 
     @Override
-    void subscribe(@NotNull String topic, @NotNull APSMessageService.Subscriber subscriber, Properties properties) {}
+    void subscribe(@NotNull String topic, @NotNull APSSubscriber subscriber, Properties properties) {}
 
     @Override
-    void unsubscribe(@NotNull String topic, @NotNull APSMessageService.Subscriber subscriber) {}
+    void unsubscribe(@NotNull String topic, @NotNull APSSubscriber subscriber) {}
 }
 
 @OSGiServiceProvider(
@@ -165,9 +166,9 @@ class MsgSvc2 extends APSMessageService.AbstractAPSMessageService implements APS
     }
 
     @Override
-    void subscribe(@NotNull String topic, @NotNull APSMessageService.Subscriber subscriber, Properties properties) {}
+    void subscribe(@NotNull String topic, @NotNull APSSubscriber subscriber, Properties properties) {}
 
     @Override
-    void unsubscribe(@NotNull String topic, @NotNull APSMessageService.Subscriber subscriber) {}
+    void unsubscribe(@NotNull String topic, @NotNull APSSubscriber subscriber) {}
 }
 

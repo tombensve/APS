@@ -49,7 +49,10 @@ import io.vertx.groovy.core.Vertx
  * This service also provides for multiple instances of VertX by associating an instance with a name. Everyone
  * asking for the same name will get the same instance.
  */
-interface APSVertXService {
+interface APSVertxService {
+
+    /** Names the default instance. */
+    String DEFAULT_INST = "default"
 
     /**
      * Returns The Groovy Vert.x instance for the specified name. Do getDelegate() on this to get the Java Vertx instance.

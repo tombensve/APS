@@ -46,7 +46,7 @@ import io.vertx.core.Handler
 import io.vertx.groovy.core.Vertx
 import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.constants.APS
-import se.natusoft.osgi.aps.net.messaging.vertx.api.APSVertXService
+import se.natusoft.osgi.aps.net.messaging.vertx.api.APSVertxService
 import se.natusoft.osgi.aps.net.messaging.vertx.config.VertxConfig
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
@@ -66,7 +66,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
 )
 @CompileStatic
 @TypeChecked
-class APSVertxProvider implements APSVertXService {
+class APSVertxProvider implements APSVertxService {
 
     //
     // Private Members

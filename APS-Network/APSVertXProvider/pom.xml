@@ -80,7 +80,9 @@
 
         <!-- The private packages. -->
         <osgi.private.package>
-            se.natusoft.osgi.aps.net.messaging.vertx
+            se.natusoft.osgi.aps.net.messaging.vertx,
+            se.natusoft.osgi.aps.net.messaging.vertx.config,
+            se.natusoft.osgi.aps.net.messaging.vertx.api
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->

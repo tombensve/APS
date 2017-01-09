@@ -58,7 +58,7 @@
             <artifactId>groovy-all</artifactId>
             <scope>provided</scope>
             <classifier>indy</classifier>
-            <version>2.4.6</version>
+            <version>${groovy.version}</version>
         </dependency>
     </dependencies>
 
@@ -118,7 +118,7 @@
 
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
+                <version>1.8</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.codehaus.groovy</groupId>
