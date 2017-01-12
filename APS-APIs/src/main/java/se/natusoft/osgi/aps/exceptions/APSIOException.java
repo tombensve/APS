@@ -39,7 +39,12 @@ package se.natusoft.osgi.aps.exceptions;
 /**
  * This is a general IO exception for APS.
  */
-public class APSIOException extends APSRuntimeException {
+public class APSIOException extends APSException {
+
+    /**
+     * Creates a new APSIOException instance.
+     */
+    public APSIOException() {}
 
     /**
      * Creates a new APSIOException instance.

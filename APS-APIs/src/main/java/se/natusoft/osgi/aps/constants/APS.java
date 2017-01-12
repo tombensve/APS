@@ -68,6 +68,11 @@ public interface APS {
         String Discovery = "provides.discovery";
     }
 
+    interface Network {
+        /** This is for APSSender and APSReceiver to use in their properties. */
+        String CONNECTION_POINT_NAME = "connection-point-name";
+    }
+
     interface Messaging {
         String Provider = "messaging-provider";
 

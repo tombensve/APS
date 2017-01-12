@@ -36,18 +36,42 @@
  */
 package se.natusoft.osgi.aps.exceptions;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * A very lonely exception.
+ * The base of all APSExceptions.
  *
- * I have finally come to an agreement with many others who I at first thought crazy that checked exceptions
- * are kind of evil. :-). It took me some time, but I finally got there. Just like JEE which I used to strongly
- * defend, but not so much anymore.
+ * This provides a non standard API in addtion to the standard API.
  *
- * Anyhow, this exception is here just for the heck of it! All other APS exceptions inherits from APSRuntimeException,
- * which makes them far more flexible, can be handled at the correct place, and no tons of catch-wrap-throw. I do
- * however document them in JavaDoc even if they are runtime exceptions.
+ * From Groovy:
+ *
+ *   ` throw new APSException(message: "Something bad happened!", cause: badException) `
+ *
+ * From Java:
+ *
+ *   ` throw new APSException().appendMessage("Something bad happened!").addCause(badException); `
  */
-public class APSException extends Exception {
+public class APSException extends RuntimeException {
+
+    //
+    // Private Members
+    //
+
+    /** The exception message. */
+    private StringBuilder messageBuilder = new StringBuilder();
+
+    /** Support for multiple causes for this exception. */
+    private List<Throwable> causes = new LinkedList<>();
+
+    //
+    // Constructors
+    //
+
+    /**
+     * Creates a new APSException.
+     */
+    public APSException() {}
 
     /**
      * Creates a new _APSException_ instance.
@@ -55,7 +79,7 @@ public class APSException extends Exception {
      * @param message The exception message.
      */
     public APSException(String message) {
-        super(message);
+        this.messageBuilder.append(message);
     }
 
     /**
@@ -65,6 +89,81 @@ public class APSException extends Exception {
      * @param cause The cause of this exception.
      */
     public APSException(String message, Throwable cause) {
-        super(message, cause);
+        this.messageBuilder.append(message);
+        this.causes.add(cause);
     }
+
+    //
+    // Methods
+    //
+
+    /**
+     * Sets the exception message.
+     *
+     * @param message The message to set.
+     */
+    public void setMessage( String message ) {
+        this.messageBuilder.append( message );
+    }
+
+    /**
+     * Sets a cause for the exception.
+     *
+     * @param cause The cause to set.
+     */
+    public void setCause(Throwable cause) {
+        this.causes.add(cause);
+    }
+
+    /**
+     * Adds text the the exception message.
+     *
+     * @param text The text to add.
+     */
+    public APSException appendMessage(String text) {
+        this.messageBuilder.append(" ");
+        this.messageBuilder.append(text);
+        return this;
+    }
+
+    /**
+     * Returns the exception message.
+     */
+    @Override
+    public String getMessage() {
+        return this.messageBuilder.toString();
+    }
+
+    /**
+     * Adds a cause to this exception.
+     *
+     * @param cause The cause to add.
+     */
+    public APSException appendCause(Throwable cause) {
+        this.causes.add(cause);
+        return this;
+    }
+
+    /**
+     * Override to return the first cause in the list if any. If no causes then null is returned.
+     */
+    @Override
+    public Throwable getCause() {
+        return hasCauses() ? this.causes.get(0) : null;
+    }
+
+    /**
+     * Returns a list of causes for this exception.
+     */
+    public List<Throwable> getCauses() {
+        return this.causes;
+    }
+
+    /**
+     * Returns true if there is at least one cause exception added to this exception.
+     */
+    public boolean hasCauses() {
+        return !this.causes.isEmpty();
+    }
+
 }

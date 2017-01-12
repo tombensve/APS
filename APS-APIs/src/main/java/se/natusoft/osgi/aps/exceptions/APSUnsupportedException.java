@@ -42,6 +42,11 @@ package se.natusoft.osgi.aps.exceptions;
 public class APSUnsupportedException extends APSRuntimeException {
     /**
      * Creates a new _APSUnsupportedException_ instance.
+     */
+    public APSUnsupportedException() {}
+
+    /**
+     * Creates a new _APSUnsupportedException_ instance.
      *
      * @param message The exception message.
      */

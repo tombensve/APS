@@ -42,6 +42,7 @@ import java.util.List;
 /**
  * Base exception for basically all other exceptions thrown by the APIs and services.
  */
+@Deprecated
 public class APSRuntimeException extends RuntimeException {
 
     //
@@ -61,7 +62,9 @@ public class APSRuntimeException extends RuntimeException {
     /**
      * Creates a new _APSRuntimeException_ instance.
      */
-    public APSRuntimeException() {}
+    public APSRuntimeException() {
+        super("[This exception is deprecated! All exceptions are now runtime!] ");
+    }
 
     /**
      * Creates a new _APSRuntimeException_ instance.
@@ -69,7 +72,7 @@ public class APSRuntimeException extends RuntimeException {
      * @param message The exception message.
      */
     public APSRuntimeException(String message) {
-        super(message);
+        super("[This exception is deprecated! All exceptions are now runtime!] " + message);
         this.messageBuilder.append(message);
     }
 
@@ -80,7 +83,7 @@ public class APSRuntimeException extends RuntimeException {
      * @param cause The cause of this exception.
      */
     public APSRuntimeException(String message, Throwable cause) {
-        super(message, cause);
+        super("[This exception is deprecated! All exceptions are now runtime!] " + message, cause);
         this.messageBuilder.append(message);
         this.causes.add(cause);
     }

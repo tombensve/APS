@@ -39,7 +39,12 @@ package se.natusoft.osgi.aps.exceptions;
 /**
  * This indicates an invalid context in which execution cannot continue.
  */
-public class APSInvalidContextException extends APSRuntimeException {
+public class APSInvalidContextException extends APSException {
+
+    /**
+     * Creates a new _APSInvalidContextException_ instance.
+     */
+    public APSInvalidContextException() {}
 
     /**
      * Creates a new _APSInvalidContextException_ instance.
