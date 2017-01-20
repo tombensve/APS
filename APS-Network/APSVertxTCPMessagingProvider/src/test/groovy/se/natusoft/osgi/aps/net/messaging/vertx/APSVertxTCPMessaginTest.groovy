@@ -33,6 +33,10 @@ class APSVertxTCPMessagingTest extends OSGIServiceTestTools {
     void runTest() throws Exception {
 
         // Deliberately deploying in dependency-wise wrong order since in a real deployment the order of deployment is undetermined.
+        // Since OSGiServiceTestTools.shutdown() reverses the order of deploy when shutting down this means that aps-vertx-provider
+        // will be shut down before aps-vertx-tcp-messaging-provider. The latter tries to disconnect from the previous on shutdown
+        // which will result in an APSNoServiceAvailableException. A warning log about this will be output in the log, but is entirely
+        // OK. This can also happen in reality.
 
         deploy 'aps-vertx-tcp-messaging-provider' with new APSActivator() from 'APS-Network/APSVertxTCPMessagingProvider/target/classes'
 

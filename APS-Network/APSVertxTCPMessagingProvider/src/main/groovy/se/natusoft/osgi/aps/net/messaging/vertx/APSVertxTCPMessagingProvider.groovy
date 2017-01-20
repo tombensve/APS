@@ -60,6 +60,7 @@ import se.natusoft.osgi.aps.tools.APSServiceTracker
 import se.natusoft.osgi.aps.tools.APSSimplePool
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException
+import se.natusoft.osgi.aps.tools.tracker.WithServiceException
 
 // Note to IDEA users: IDEA underlines (in beige color if you are using Darcula theme) all references to classes that are not
 // OSGi compatible (no OSGi MANIFEST.MF entries). The underlines you see here is for the Groovy wrapper of Vert.x. It is OK
@@ -88,10 +89,10 @@ import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException
 @OSGiServiceProvider(
         // Possible criteria for client lookups. ex: "(${APS.Messaging.Protocol.Name}=vertx-eventbus)" In most cases clients won't care.
         properties = [
-                @OSGiProperty( name = APS.Service.Provider,        value = "aps-vertx-event-bus-messaging-provider" ),
+                @OSGiProperty( name = APS.Service.Provider,        value = "aps-vertx-tcp-messaging-provider" ),
                 @OSGiProperty( name = APS.Service.Category,        value = APS.Value.Service.Category.Network ),
                 @OSGiProperty( name = APS.Service.Function,        value = APS.Value.Service.Function.Messaging ),
-                @OSGiProperty( name = APS.Messaging.Protocol.Name, value = "vertx-eventbus" ),
+                @OSGiProperty( name = APS.Messaging.Protocol.Name, value = "TCP" ),
                 @OSGiProperty( name = APS.Messaging.Persistent,    value = APS.FALSE )
         ],
         threadStart = true // Required since we are putting ourselves in a blocking situation when we are calling
@@ -170,7 +171,7 @@ class APSVertxTCPMessagingProvider extends APSMessageService.AbstractAPSMessageS
             }
 
             else {
-                this.logger.error "Vert.x cluster failed to start: ${result.cause()}, shutting down bundle!"
+                this.logger.error "Vert.x cluster failed to start: ${result.cause().message}, shutting down bundle!" , result.cause()
                 this.activatorInteraction.state = APSActivatorInteraction.State.STARTUP_FAILED
 
                 this.context.bundle.stop()
@@ -220,7 +221,13 @@ class APSVertxTCPMessagingProvider extends APSMessageService.AbstractAPSMessageS
             try {
                 this.vertxService.releaseGroovyVertX APS.DEFAULT
             }
-            catch ( APSNoServiceAvailableException ignore ) {}
+            catch ( APSNoServiceAvailableException ignore ) {
+                // We don't want a stacktrace with this log since that make this seem more serious than it really is.
+                // This happens on shutdown and APSVertxService shuts down before this service. We are on out way down,
+                // and if APSVertxService went down before us it already released/disconnected us.
+                this.logger.warn "Failed to disconnect Vertx instance from APSVertxService! This most probably means " +
+                        "that the APSVertxService has shut down faster than this service. This is OK in that case."
+            }
         }
 
         this.logger.disconnectFromLogService this.context
@@ -237,13 +244,15 @@ class APSVertxTCPMessagingProvider extends APSMessageService.AbstractAPSMessageS
         if ( this.topicURIConfig == null) {
             this.topicURIConfig = new LinkedHashMap<>()
             try {
+                this.tcpMessagingOptionsTracker.waitForService( 10000 )
                 this.tcpMessagingOptionsTracker.withAllAvailableServices { APSVertxTCPMessagingOptions options, Object[] ignore ->
                     if (options.topicToURIMapping != null) {
                         this.topicURIConfig.putAll options.topicToURIMapping
                     }
                 }
             }
-            catch (APSNoServiceAvailableException ignore) {
+            catch (WithServiceException wse) {
+                this.logger.error "Failed to get options for aps-vertx-tcp-messaging-provider!" , wse
             }
         }
 

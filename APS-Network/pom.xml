@@ -71,6 +71,7 @@
         <module>APSDefaultMessageRouter</module>
         <module>APSVertXProvider</module>
         <module>APSVertxTCPMessagingProvider</module>
+        <module>APSVertxUDPMessagingProvider</module>
     </modules>
 
 </project>
