@@ -4,7 +4,7 @@ Copyright © 2013 Natusoft AB
 
 __Version:__ 1.0.0
 
-This repo is used for development and will be delived to APS repo when released. 
+This repo is used for development. __This repo is thereby work in progress and cannot be expected to be stable nor build completely!!__ Releases will be done to _APS_ repo. Why do development in a separate repo ? Well, not sure, but it felt like a good idea at the time :-). I however see no problems with it either.
 
 __Author:__ Tommy Svensson (tommy@natusoft.se)
 
