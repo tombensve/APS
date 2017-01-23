@@ -2,7 +2,9 @@
 
 Copyright © 2013 Natusoft AB
 
-__Version:__ 0.10.0
+__Version:__ 1.0.0
+
+This repo is used for development and will be delived to APS repo when released. 
 
 __Author:__ Tommy Svensson (tommy@natusoft.se)
 
