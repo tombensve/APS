@@ -6,6 +6,10 @@ __Version:__ 1.0.0
 
 This repo is used for development. __This repo is thereby work in progress and cannot be expected to be stable nor build completely!!__ Releases will be done to _APS_ repo. Why do development in a separate repo ? Well, not sure, but it felt like a good idea at the time :-). I however see no problems with it either.
 
+__A side note:__ APS-Libraries/APSTools are used by almost all other bundles, but itself has no other dependencies. It contains the very useful _APSActivator_ which I consider quite stable.  
+
+Work is slow, whenever time permits.
+
 __Author:__ Tommy Svensson (tommy@natusoft.se)
 
 ---
@@ -20,7 +24,7 @@ Short feature list:
 
 * Uses only basic OSGi functionallity, no SCR or blueprint, etc. 
 
-* _APSTools/APSActivator_ provides a generic BundleActivator implementation that makes use of annotations to do DI and more:
+* _APS-Libraries/APSTools/APSActivator_ provides a generic BundleActivator implementation that makes use of annotations to do DI and more:
   * @Managed - basic DI but with special feature for providing name for APSLogger when injecting such. 
   * @OSGiServiceProvider - Register a class as an OSGi service using first implemented interface if not specified in annotation. Properties for the service registration can also be provided. It also supports special instance factories for registering multiple instances.
   * @OSGiService - As default this annotation should be used on a service interface member type and will then have an instance of _APSServiceTracker_ wrapped as proxied service. That is, each call on a service method will allocate the service the standard OSGi way, call the service method, release the service, and then return the method call result. Note that _APSServiceTracker_ works different that the standard _SeriveTracker_ since it never returns a null service, but throws an _APSNoServiceAvailable_ exception instead after the service has not become available for a specified timeout time. _APSServiceTracker_ can also be the member type for this annotation in which case an _APSServiceTracker_ instance will be injected directly instead of being wrapped as a service.
