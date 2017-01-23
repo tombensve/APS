@@ -27,6 +27,8 @@ Short feature list:
 
 * _APSOSGiTestTools_ provides testing support by implementing the 4 basic OSGi interfaces enough to deploy and run in test. Contains an easy to use API for deploying from target/classes or maven GAV which will use ~/.m2/repository to lookup code to deploy. The API (Java) is designed so that it aalso works as DSL when used from Groovy. Just let JUnit tests extend _APSOSGiTestTools_, deploy dependent on services, deploy service to test, deploy local in test Bundle that will get a BundleContext and can lookup, inject, whatever to test. Very easy and clean. Support for mocking configuration, but otherwise little mocking is requred. You just deploy and run as you would in a real server. 
 
+* Complete redo of most networking APIs, and provided implementations are based on Vert.x.
+
 * Provides a far more flexible and usable service tracker than the standard one, that allows you to set a timeout and throws an exception on timeout. The tracker can also provide a Proxied implementation of the service interface using the tracker to make calls. APS has the goal of keeping things upp rather than tear things down when services temporarily goes away.
 
 * Provides an authenticationable and pluggable administration web which different administration applications can plug into participating in a common login (SSO). APSConfigAdminWeb and APSUserAdminWeb are two such plugin admin applications.
@@ -35,10 +37,10 @@ Short feature list:
    * Advanced structured config models with config values and submodels and lists of values and submodels.
    * Supports multiple configuration environments.
    * A web application (WAB) for editing/publishing configurations.
-   * Can synchronize configuration between installations.
+   * Can synchronize configuration between installations (In 1.0.0 this will work better!)
 
 * Provides easy to use authentication and user services. These are easier and more comprehensable than the UserAdmin service!
-   * Provides an easy to use admin web for administration of users and roles.
+   * Provides an easy to use default admin web for administration of users and roles.
 
 * Provides a JPA service (using OpenJPA) that is more flexible and easier to use than the EntityManagerFactoryBuilder.
 
