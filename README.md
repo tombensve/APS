@@ -14,13 +14,18 @@ _A "smorgasbord" of OSGi services that focuses on ease of use and good enough fu
 
 It can be seen as osgi-ee-ish that is easy to use. The services are of platform type: configuration, database, JPA, etc.
 
-Please note that APS uses Java 7 code! It will not run in any J2ME environment! My intention with APS is a platform for writing modular web applications with easy administration.
+Please note that APS uses Java 8 code! It will not run in any J2ME environment! My intention with APS is a platform for writing modular web applications with easy administration.
 
 Short feature list:
 
-* Uses only basic OSGi functionallity, no SCR or blueprint.
+* Uses only basic OSGi functionallity, no SCR or blueprint, etc. 
 
-* Provides a far more flexible and usable service tracker than the standard one, that allows you to set a timeout and throws an exception on timeout. The tracker can also provide a Proxied implementation of the service interface using the tracker to make calls. 
+* _APSTools/APSActivator_ provides a generic BundleActivator implementation that makes use of annotations to do DI and more:
+  * @Managed - basic DI but with special feature for providing name for APSLogger when injecting such. 
+  * @OSGiServiceProvider - Register a class as an OSGi service using first implemented interface if not specified in annotation. Properties for the service registration can also be provided. It also supports special instance factories for registering multiple instances.
+  * @OSGiService - As default this annotation should be used on a service interface member type and will then have an instance of APSServiceTracker wrapped as proxied service. That is, each call on a service method will allocate the service the standard OSGi way, call the service method, release the service, and then restur the method call result. Note that APSServiceTracker works different that the standard _SeriveTracker_ since it never returns a null service, but throws an _APSNoServiceAvailable_ exception instead after the service has not become available for a specified timeout time.
+
+* Provides a far more flexible and usable service tracker than the standard one, that allows you to set a timeout and throws an exception on timeout. The tracker can also provide a Proxied implementation of the service interface using the tracker to make calls. APS has the goal of keeping things upp rather than tear things down when services temporarily goes away.
 
 * Provides an authenticationable and pluggable administration web which different administration applications can plug into participating in a common login (SSO). APSConfigAdminWeb and APSUserAdminWeb are two such plugin admin applications.
 
