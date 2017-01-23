@@ -4,6 +4,8 @@ Copyright © 2013 Natusoft AB
 
 __Version:__ 0.10.0
 
+Newer version in APS-Dev repo, but note that APS-Dev is still work in progress! APS-Dev will be released here when done.
+
 __Author:__ Tommy Svensson (tommy@natusoft.se)
 
 ---
