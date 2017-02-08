@@ -10,7 +10,11 @@
 
     <script src="node_modules/typescript/lib/typescript.js"></script>
     <script src="node_modules/systemjs/dist/system.src.js"></script>
+
     <script src="systemjs.config.js"></script>
+
+    <script src="static/sockjs-0.3.4.min.js"></script>
+    <script src='node_modules/vertx3-eventbus-client/vertx-eventbus.js'></script>
 
     <script>
         System.import('app').catch(console.error.bind(console));
@@ -21,6 +25,6 @@
 
 <aps-admin-web>Loading...</aps-admin-web>
 <hr/>
-<router-outlet/>
+<!--<router-outlet></router-outlet>-->
 </body>
 </html>

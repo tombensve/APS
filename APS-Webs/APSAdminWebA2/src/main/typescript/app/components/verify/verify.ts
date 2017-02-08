@@ -1,6 +1,10 @@
 import {Component, ViewEncapsulation} from '@angular/core';
 import {FetchAdminWebs} from "../../services/FetchAdminWebs";
 import {AdminAppModel} from "../../services/models";
+//import {EventBus} from "vertx-eventbus";
+
+import EventBus from 'vertx3-eventbus-client';
+export let eventBus = EventBus("http://locahost:8080/eventbus", {});
 
 /**
  * This is the main application top level component.
@@ -10,11 +14,13 @@ import {AdminAppModel} from "../../services/models";
     templateUrl: 'app/components/verify/verify-tpl.html',
     encapsulation:ViewEncapsulation.None
 })
-export default class VerifyComponent {
+export class VerifyComponent {
     public content : string;
     private fetchAdminWebs : FetchAdminWebs;
+    //private eventBus : EventBus;
 
     public constructor(adminWebs : FetchAdminWebs) {
+        eventBus.send({});
         this.fetchAdminWebs = adminWebs;
         let admins : Array<AdminAppModel>;
         admins = this.fetchAdminWebs.getAdminApps();

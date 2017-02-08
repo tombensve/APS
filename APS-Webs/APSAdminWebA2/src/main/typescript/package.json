@@ -1,6 +1,6 @@
 {
-  "name": "angular-seed",
-  "description": "An initial npm-managed project for Chapter 2",
+  "name": "APSAdminWeb",
+  "description": "A general administration web for APS bundles.",
   "private": true,
   "scripts": {
     "start": "live-server"
@@ -14,13 +14,14 @@
     "@angular/platform-browser": "^2.0.0",
     "@angular/platform-browser-dynamic": "^2.0.0",
     "@angular/router": "^3.0.0",
-
     "core-js": "^2.4.0",
     "rxjs": "^5.0.1",
     "systemjs": "0.19.37",
-    "zone.js": "^0.7.2"
+    "zone.js": "^0.7.2",
+    "vertx3-eventbus-client": "3.3.3"
   },
   "devDependencies": {
+    "gulp-browserify": "^0.5.1",
     "live-server": "0.8.2",
     "typescript": "^2.0.0"
   }
