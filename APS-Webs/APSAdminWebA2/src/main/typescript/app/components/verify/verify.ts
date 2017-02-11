@@ -1,10 +1,13 @@
 import {Component, ViewEncapsulation} from '@angular/core';
 import {FetchAdminWebs} from "../../services/FetchAdminWebs";
 import {AdminAppModel} from "../../services/models";
-//import {EventBus} from "vertx-eventbus";
+import {EventBusProvider} from "../../services/EventBusProvider";
+import {Vertx3EventBusFacade} from "../../services/Vertx3EventBusFacade";
 
-import EventBus from 'vertx3-eventbus-client';
-export let eventBus = EventBus("http://locahost:8080/eventbus", {});
+//import {EventBusProvider} from "vertx-eventbus";
+
+// import EventBus from 'vertx3-eventbus-client';
+// let eventBus = EventBus("http://locahost:8080/eventbus", {});
 
 /**
  * This is the main application top level component.
@@ -17,10 +20,11 @@ export let eventBus = EventBus("http://locahost:8080/eventbus", {});
 export class VerifyComponent {
     public content : string;
     private fetchAdminWebs : FetchAdminWebs;
-    //private eventBus : EventBus;
+    private eventBusProvider : Vertx3EventBusFacade;
 
     public constructor(adminWebs : FetchAdminWebs) {
-        eventBus.send({});
+        this.eventBusProvider = new Vertx3EventBusFacade("http://localhost:8080/eventbus", {});
+        // this.eventBusProvider.send("myaddr", "{'content': 'Hello!'}", { });
         this.fetchAdminWebs = adminWebs;
         let admins : Array<AdminAppModel>;
         admins = this.fetchAdminWebs.getAdminApps();

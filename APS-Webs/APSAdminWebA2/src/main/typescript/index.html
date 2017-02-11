@@ -13,8 +13,11 @@
 
     <script src="systemjs.config.js"></script>
 
-    <script src="static/sockjs-0.3.4.min.js"></script>
-    <script src='node_modules/vertx3-eventbus-client/vertx-eventbus.js'></script>
+    <!-- Make vertx3-eventbus-client available! -->
+    <script src="node_modules/sockjs-client/dist/sockjs.min.js"></script>
+    <script src="node_modules/vertx3-eventbus-client/vertx-eventbus.js"></script>
+
+    <!--<script src=""></script>-->
 
     <script>
         System.import('app').catch(console.error.bind(console));
