@@ -8,13 +8,6 @@
 var gulp = require('gulp');
 var rename = require("gulp-rename");
 var browserify = require('gulp-browserify');
-// var uglify = require('uglify-js');
-// var browserify = require('browserify');
-// var tsify = require('tsify');
-
-//var pug = require('gulp-pug');
-//var less = require('gulp-less');
-//var minifyCSS = require('gulp-csso');
 
 gulp.task('prod', function() {
     gulp.src('app/main.js').pipe(browserify()).pipe(uglify()).pipe(gulp.dest('static'))

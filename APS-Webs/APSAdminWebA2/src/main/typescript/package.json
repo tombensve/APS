@@ -23,6 +23,9 @@
   "devDependencies": {
     "gulp-browserify": "^0.5.1",
     "live-server": "0.8.2",
-    "typescript": "^2.0.0"
+    "ts-loader": "^2.0.0",
+    "typescript": "^2.0.0",
+    "webpack": "^2.2.1",
+    "webpack-dev-server": "^2.3.0"
   }
 }
