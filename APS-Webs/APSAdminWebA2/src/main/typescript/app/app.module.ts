@@ -5,7 +5,7 @@ import {RouterModule} from "@angular/router";
 import {LocationStrategy, HashLocationStrategy} from "@angular/common";
 import {APSAdminWebComponent} from "./components/apsadminweb/apsadminweb";
 import {VerifyComponent} from "./components/verify/verify";
-import {FetchAdminWebs} from "./services/FetchAdminWebs";
+import {AdminAppsService} from "./services/AdminAppsService";
 import {routing} from "./components/app.routing";
 
 @NgModule({
@@ -17,7 +17,7 @@ import {routing} from "./components/app.routing";
         APSAdminWebComponent, VerifyComponent
     ],
     providers: [
-        FetchAdminWebs,
+        AdminAppsService,
         APSAdminWebComponent,
         VerifyComponent,
         {provide: LocationStrategy, useClass: HashLocationStrategy}

@@ -5,7 +5,7 @@ import { AdminAppModel } from './models'
  *
  */
 @Injectable()
-export class FetchAdminWebs {
+export class AdminAppsService {
 
     private adminApps: Array<AdminAppModel> = [];
 

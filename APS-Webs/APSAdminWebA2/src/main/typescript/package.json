@@ -2,9 +2,6 @@
   "name": "APSAdminWeb",
   "description": "A general administration web for APS bundles.",
   "private": true,
-  "scripts": {
-    "start": "live-server"
-  },
   "dependencies": {
     "@angular/common": "^2.0.0",
     "@angular/compiler": "^2.0.0",

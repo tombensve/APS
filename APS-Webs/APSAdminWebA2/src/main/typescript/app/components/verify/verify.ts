@@ -1,28 +1,27 @@
-import {Component, ViewEncapsulation} from '@angular/core';
-import {FetchAdminWebs} from "../../services/FetchAdminWebs";
+import {Component, ViewEncapsulation, forwardRef, Inject} from '@angular/core';
+import {AdminAppsService} from "../../services/AdminAppsService";
 import {AdminAppModel} from "../../services/models";
-// import {EventBusProvider} from "../../services/EventBusProvider";
-// import {Vertx3EventBusFacade} from "../../services/Vertx3EventBusFacade";
+import {Vertx3EventBusFacade} from "../../services/Vertx3EventBusFacade";
+//import {EventBusProvider} from "../../services/EventBusProvider";
 
 /**
  * This is the main application top level component.
  */
 @Component({
     selector: 'admin-verify',
-    templateUrl: './verify-tpl.html',
-    encapsulation:ViewEncapsulation.None
+    templateUrl: './app/components/verify/verify-tpl.html',
+    encapsulation: ViewEncapsulation.None
 })
 export class VerifyComponent {
     public content : string;
-    private fetchAdminWebs : FetchAdminWebs;
-    // private eventBusProvider : Vertx3EventBusFacade;
+    private eventBusProvider : Vertx3EventBusFacade;
 
-    public constructor(adminWebs : FetchAdminWebs) {
-        // this.eventBusProvider = new Vertx3EventBusFacade("http://localhost:8080/eventbus", {});
+    public constructor(@Inject(forwardRef(() => AdminAppsService)) public adminAppsService : AdminAppsService) {
+
+        this.eventBusProvider = new Vertx3EventBusFacade("http://localhost:8080/eventbus", {});
         // this.eventBusProvider.send("myaddr", "{'content': 'Hello!'}", {});
-        this.fetchAdminWebs = adminWebs;
         let admins : Array<AdminAppModel>;
-        admins = this.fetchAdminWebs.getAdminApps();
+        admins = this.adminAppsService.getAdminApps();
         this.content = "";
 
         for ( let model of admins) {

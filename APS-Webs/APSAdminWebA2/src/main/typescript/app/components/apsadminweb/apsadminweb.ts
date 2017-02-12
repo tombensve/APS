@@ -5,9 +5,8 @@ import {Component, ViewEncapsulation} from '@angular/core';
  */
 @Component({
   selector: 'aps-admin-web',
-  templateUrl: 'app/components/apsadminweb/apsadminweb-tpl.html',
-  styleUrls: ['app/components/apsadminweb/apsadminweb.css'],
+  templateUrl: './app/components/apsadminweb/apsadminweb-tpl.html',
+  styleUrls: ['./app/components/apsadminweb/apsadminweb.css'],
   encapsulation:ViewEncapsulation.None
 })
-
 export class APSAdminWebComponent {}
