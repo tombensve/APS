@@ -76,12 +76,12 @@ public interface APSConfigValue {
     /**
      * Returns the value is a byte.
      */
-    public byte getByte();
+    byte getByte();
 
     /**
      * Returns the value as a short.
      */
-    public short getShort();
+    short getShort();
 
     /**
      * Returns the value as a Date.
@@ -135,14 +135,14 @@ public interface APSConfigValue {
      *
      * @param configEnvironment The config environment to get config value for.
      */
-    public byte getByte(String configEnvironment);
+    byte getByte(String configEnvironment);
 
     /**
      * Returns the value as a short.
      *
      * @param configEnvironment The config environment to get config value for.
      */
-    public short getShort(String configEnvironment);
+    short getShort(String configEnvironment);
 
     /**
      * Returns the value as a Date.
@@ -160,7 +160,7 @@ public interface APSConfigValue {
     /**
      * Returns true if value is empty.
      */
-    public boolean isEmpty(String configEnvironment);
+    boolean isEmpty(String configEnvironment);
 
     //
     // Deprecated
@@ -275,7 +275,7 @@ public interface APSConfigValue {
      * @param configEnvironment The config environment to get config value for.
      */
     @Deprecated
-    public byte toByte(String configEnvironment);
+    byte toByte(String configEnvironment);
 
     /**
      * Returns the value as a short.
@@ -283,7 +283,7 @@ public interface APSConfigValue {
      * @param configEnvironment The config environment to get config value for.
      */
     @Deprecated
-    public short toShort(String configEnvironment);
+    short toShort(String configEnvironment);
 
     /**
      * Returns the value as a Date.

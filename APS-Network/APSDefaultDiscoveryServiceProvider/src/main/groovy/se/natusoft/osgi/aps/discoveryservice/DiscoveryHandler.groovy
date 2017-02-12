@@ -146,7 +146,7 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
                 this.mcastConnectionPointURI = null
             } else {
                 this.mcastConnectionPointURI = new URI(mcastConnectionPoint)
-                this.tcpipService.addDataPacketListener(this.mcastConnectionPointURI, this)
+                this.tcpipService.addDataPacketReceiver(this.mcastConnectionPointURI, this)
                 this.logger.info("Added multicast listener for named config: " + this.mcastConnectionPointURI)
             }
         }
@@ -186,7 +186,7 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
 
     synchronized void cleanup() {
         if (this.mcastConnectionPointURI != null) {
-            this.tcpipService.removeDataPacketListener(this.mcastConnectionPointURI, this)
+            this.tcpipService.removeDataPacketReceiver(this.mcastConnectionPointURI, this)
             this.logger.info("Removed UDP listener for named config: " + this.mcastConnectionPointURI)
         }
         if (this.tcpReceiverConnectionPointURI != null) {

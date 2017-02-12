@@ -39,7 +39,12 @@ package se.natusoft.osgi.aps.exceptions;
 /**
  * Thrown on config problems.
  */
-public class APSConfigException extends APSRuntimeException {
+public class APSConfigException extends APSException {
+
+    /**
+     * Creates a new _APSConfigException_ instance.
+     */
+    public APSConfigException() {}
 
     /**
      * Creates a new _APSConfigException_ instance.

@@ -43,6 +43,11 @@ public class APSPersistenceException extends APSIOException {
 
     /**
      * Creates a new _APSPersistenceException_ instance.
+     */
+    public APSPersistenceException() {}
+
+    /**
+     * Creates a new _APSPersistenceException_ instance.
      *
      * @param message The exception message.
      */

@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS Tools Library
- *
+ *     
  *     Code Version
  *         1.0.0
- *
+ *     
  *     Description
  *         Provides a library of utilities, among them APSServiceTracker used by all other APS bundles.
- *
+ *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *
+ *     
  * LICENSE
  *     Apache 2.0 (Open Source)
- *
+ *     
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *
+ *     
  *       http://www.apache.org/licenses/LICENSE-2.0
- *
+ *     
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *
+ *     
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -40,6 +40,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
+import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException;
 import se.natusoft.osgi.aps.tools.tuples.Tuple3;
 
 import java.io.OutputStream;
@@ -166,10 +167,23 @@ public class APSLogger implements LogService {
      *
      * @param context The bundle context.
      */
+    @Deprecated
     public void start(BundleContext context) {
+        connectToLogService(context);
+    }
+
+    /**
+     * This will start tracking a LogService to use for logging. When available logs will be sent to
+     * the LogService instead of the backup stream.
+     *
+     * @param context The bundle context.
+     */
+    public void connectToLogService(BundleContext context) {
+        // This has no timeout and will thus fail immediately if no service is available to avoid longer blocking when logger
+        // is used from bundle activator start() method.
         this.logServiceTracker = new APSServiceTracker<>(context, LogService.class);
         this.logServiceTracker.start();
-        this.logService = this.logServiceTracker.getWrappedService();
+        this.logService = this.logServiceTracker.getWrappedService(); // This is what is used from now on to log to LogService.
         if (this.delayedLogEntries != null) {
             this.delayedLogEntries.forEach(entry -> {
                 try {
@@ -186,7 +200,17 @@ public class APSLogger implements LogService {
      *
      * @param context The bundle context.
      */
+    @Deprecated
     public void stop(BundleContext context) {
+        disconnectFromLogService(context);
+    }
+
+    /**
+     * Stops tracking a LogService to log to.
+     *
+     * @param context The bundle context.
+     */
+    public void disconnectFromLogService(BundleContext context) {
         this.logService = null;
         if (this.logServiceTracker != null) {
             this.logServiceTracker.stop(context);
@@ -231,8 +255,12 @@ public class APSLogger implements LogService {
             try {
                     logToService(this.logService, level, message, cause);
             }
+            catch (APSNoServiceAvailableException nsae) {
+                logToOutStream(level, message, cause);
+            }
             catch (Exception e) {
                 logToOutStream(level, message, cause);
+                logToOutStream(LogService.LOG_ERROR, "APSLogger had an unexpected problem when trying to use LogService!", e);
             }
         }
         else {

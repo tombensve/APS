@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="generated-by" content="MarkdownDoc"/>
+    <link href="docs.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body>
+    <H2>APSVertxTCPMessagingProvider</H2>
+    <p>
+      This is an implementation of <em>APSMessageService</em> that uses Vert.x to provide the TCP communication. It is dependent on the <strong>aps-vertx-provider</strong> bundle which provides reusable <em>Vertx</em> instances.      
+    </p>
+    <H3>Configuration</H3>
+    <p>
+      This bundle exposes a service interface: <code>APSVertxTCPMessagingOptions</code>. This should be implemented and published as an OSGi service. This provider will look for an implementation of that service and configure itself accoding to the supplied configuration.      
+    </p>
+    <p>
+      Here is the API:      
+    </p>
+    <pre>
+      <code>
+    package se.natusoft.osgi.aps.net.messaging.vertx.api
+    
+    /**
+     * This is a service API for providers of options to provide an implementation of.
+     */
+    interface APSVertxTCPMessagingOptions {
+    
+        /**
+         * @return A Map containing Vert.x Net server options. Contents: name, value
+         */
+        Map&lt;String, Object&gt; getServerOptions()
+    
+        /**
+         * @return A Map containing Vert.x Net client options. Contents: name, value.
+         */
+        Map&lt;String, Object&gt; getClientOptions()
+    
+        /**
+         * @return Mappings between topic and the URI for the topic.
+         */
+        Map&lt;String, String&gt; getTopicToURIMapping()
+    }
+      </code>
+    </pre>
+    <p>
+      Since this is build on top of Vert.x it takes Vertx options Map:s. See the Vertx <a href='http://vertx.io/docs/vertx-core/groovy/' title=''>documentation</a> for more info.      
+    </p>
+    <p>
+      The topic to URI mapping is a simple mapping per topic what it should listen to for received messages and where it should send published messages.      
+    </p>
+    <p>
+      Here is an example from the test code:      
+    </p>
+    <pre>
+      <code>
+    Map&lt;String, String&gt; getTopicToURIMapping() {
+        return [
+                testOne:   "tcp://localhost:13987?inst=4#in,tcp://localhost:13988/?inst=2#out,tcp://localhost:13989/#out",
+                testTwo:   "tcp://localhost:13988?inst=2#in,tcp://localhost:13987/#out,tcp://localhost:13989/#out",
+                testThree: "tcp://localhost:13989/#in,tcp://localhost:13988/#out,tcp://localhost:13987/#out"
+        ]
+    }
+      </code>
+    </pre>
+    <p>
+      Note that this is Groovy syntax, but it shold be self explanatory what is topic and what is URIs :-).      
+    </p>
+    <ul>
+      <li>
+        <p>
+          There are commas between each URI.          
+        </p>
+      </li>
+      <li>
+        <p>
+          The protocol is always 'tcp'.          
+        </p>
+      </li>
+      <li>
+        <p>
+          The fragment part (#) has either an "in" or and "out". This is required. There should always only be one #in, and one or more #out.          
+        </p>
+      </li>
+      <li>
+        <p>
+          The only query is <em>inst=n</em> This is optional.          
+        </p>
+      </li>
+      <ul>
+        <li>
+          <p>
+            For an #in <em>inst</em> number of services listening on host and port of the URI will be created. This is how Vert.x distributes service jobs across processor cores. There should be at least as many as there are cores if you want to utilize the processor to its fullest.            
+          </p>
+        </li>
+        <li>
+          <p>
+            For an #out there will be a pool of clients that will hold at most <em>inst</em> number of clients. This is for multiple threads to be able to send messages to the same topic. Each client instance will have its own connection to the receiving service. If the pool gets full and no clients are free then a new client will be created, and then deleted again. A warning will be displayed on the log in this case.            
+          </p>
+        </li>
+      </ul>
+    </ul>
+    <p>
+      As can be seen in the example above, each topic has one service (#in) and 2 clients (#out), one for each of the other 2 topics. So these 3 topics send their messages to the other 2, whatever is sent by one the other 2 will get.      
+    </p>
+  </body>
+</html>

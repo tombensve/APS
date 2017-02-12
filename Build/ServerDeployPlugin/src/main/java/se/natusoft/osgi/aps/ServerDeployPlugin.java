@@ -42,6 +42,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 
 import java.io.*;
+import java.util.List;
 
 /**
  * Deploys to server by simply copying one file from one place to another place.
@@ -49,22 +50,28 @@ import java.io.*;
  * @goal copy
  * @phase install
  */
+@SuppressWarnings("JavaDoc")
 public class ServerDeployPlugin extends AbstractMojo {
     /**
-     * Source file.
+     * Source file. This is for backwards compatibility. 'deployableList' should be used instead.
      *
      * @parameter
-     * @required
      */
     private String sourceFile;
 
     /**
-     * Destination file.
+     * Destination file. This is for backwards compatibility. 'deployableList' should be used instead.
      *
      * @parameter
-     * @required
      */
     private String destFile;
+
+    /**
+     * A list of file to deploy.
+     *
+     * @parameter
+     */
+    private List<Deployable> deployables;
 
     /**
      * @parameter expression="${project}"
@@ -72,8 +79,47 @@ public class ServerDeployPlugin extends AbstractMojo {
     private MavenProject project;
 
     public void execute() throws MojoExecutionException {
-        File source = new File(this.sourceFile);
-        File dest = new File(this.destFile);
+        try {
+            getLog().info("Executing ServerDeployPlugin!");
+            // For backwards compatibility.
+            if (this.sourceFile != null && this.destFile != null && this.sourceFile.trim().length() > 0 && this.destFile.trim().length() > 0) {
+                deploy(new Deployable().setSourceFile(this.sourceFile).setDestFile(this.destFile));
+            }
+            // The new way of doing it.
+            else if (deployables != null && !deployables.isEmpty()) {
+                for (Deployable deployable : deployables) {
+                    deploy(deployable);
+                }
+            } else {
+                throw new MojoExecutionException("No sourceFile & destFile nor a deployableList have been provided! Nothing will be deployed!");
+            }
+        }
+        catch (MojoExecutionException mee) {
+            throw mee;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new MojoExecutionException("Failed due to bug in plugin!", e);
+        }
+    }
+
+    private void deploy(Deployable deployable) throws MojoExecutionException {
+        deployable.sourceFile = expandHome(deployable.sourceFile);
+        deployable.destFile = expandHome(deployable.destFile);
+        deployable.destPath = expandHome(deployable.destPath);
+
+        File source = new File(deployable.sourceFile);
+        File dest = null;
+        if (deployable.destFile != null && !deployable.destFile.trim().isEmpty()) {
+            dest = new File(deployable.destFile);
+        }
+        else {
+            String destPath = deployable.destPath;
+            if (!destPath.endsWith(File.separator)) {
+                destPath += File.separator;
+            }
+            dest = new File(destPath + source.getName());
+        }
 
         boolean validRun = true;
         if (this.project.getPackaging().equals("pom")) {
@@ -91,8 +137,8 @@ public class ServerDeployPlugin extends AbstractMojo {
 
         if (validRun) {
             try {
-                BufferedInputStream srcStream = new BufferedInputStream(new FileInputStream(this.sourceFile));
-                BufferedOutputStream destStream = new BufferedOutputStream(new FileOutputStream(this.destFile));
+                BufferedInputStream srcStream = new BufferedInputStream(new FileInputStream(source));
+                BufferedOutputStream destStream = new BufferedOutputStream(new FileOutputStream(dest));
                 int b = srcStream.read();
                 do {
                     destStream.write(b);
@@ -107,5 +153,78 @@ public class ServerDeployPlugin extends AbstractMojo {
                 throw new MojoExecutionException(ioe.getMessage(), ioe);
             }
         }
+
     }
+
+    private static String expandHome(String path) {
+        if (path == null) return null;
+
+        String result = path;
+
+        if (result.startsWith("~")) {
+            String home = System.getProperty("user.home");
+            result = home + result.substring(1);
+        }
+
+        return result;
+    }
+
+    //
+    // Internal Classes
+    //
+
+    /**
+     * This represents one deployable.
+     */
+    public static final class Deployable {
+        /**
+         * Source file.
+         *
+         * @parameter
+         * @required
+         */
+        private String sourceFile;
+
+        /**
+         * Destination file.
+         *
+         * @parameter
+         */
+        private String destFile;
+
+        /**
+         * Destingation path without the filename.
+         *
+         * @parameter
+         */
+        private String destPath;
+
+        public Deployable setSourceFile(String sourceFile) {
+            this.sourceFile = sourceFile;
+            return this;
+        }
+
+        public Deployable setDestFile(String destFile) {
+            this.destFile = destFile;
+            return this;
+        }
+
+        public Deployable setDestPath(String destPath) {
+            this.destPath = destPath;
+            return this;
+        }
+
+        public String getSourceFile() {
+            return this.sourceFile;
+        }
+
+        public String getDestFile() {
+            return this.destFile;
+        }
+
+        public String getDestPath() {
+            return this.destPath;
+        }
+    }
+
 }

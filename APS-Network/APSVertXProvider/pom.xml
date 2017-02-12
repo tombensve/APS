@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    PROJECT
+        Name
+            APS VertX Provider
+        
+        Code Version
+            1.0.0
+        
+        Description
+            This service provides configured Vertx instances allowing multiple services to use the same Vertx instance.
+            
+            This service also provides for multiple instances of VertX by associating an instance with a name. Everyone
+            asking for the same name will get the same instance.
+        
+    COPYRIGHTS
+        Copyright (C) 2012 by Natusoft AB All rights reserved.
+        
+    LICENSE
+        Apache 2.0 (Open Source)
+        
+        Licensed under the Apache License, Version 2.0 (the "License");
+        you may not use this file except in compliance with the License.
+        You may obtain a copy of the License at
+        
+          http://www.apache.org/licenses/LICENSE-2.0
+        
+        Unless required by applicable law or agreed to in writing, software
+        distributed under the License is distributed on an "AS IS" BASIS,
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        See the License for the specific language governing permissions and
+        limitations under the License.
+        
+    AUTHORS
+        tommy ()
+            Changes:
+            2017-01-01: Created!
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>APS-Network</artifactId>
+        <groupId>se.natusoft.osgi.aps</groupId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>aps-vertx-provider</artifactId>
+    <packaging>bundle</packaging>
+
+    <name>APS VertX Provider</name>
+
+    <description>
+        This service provides configured Vertx instances allowing multiple services to use the same Vertx instance.
+
+        This service also provides for multiple instances of VertX by associating an instance with a name. Everyone
+        asking for the same name will get the same instance.
+    </description>
+
+    <properties>
+        <!--
+            Bundle properties
+        -->
+
+        <!-- The symbolic name of the bundle. Defaults to the artifact id, but can be overridden. -->
+        <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
+
+        <!-- The bundle activator class -->
+        <osgi.bundle.activator>se.natusoft.osgi.aps.tools.APSActivator</osgi.bundle.activator>
+
+        <!-- The bundle packages to export. -->
+        <osgi.export.package>
+            se.natusoft.osgi.aps.net.messaging.se.natusoft.osgi.aps.net.messaging.vertx.api,
+            se.natusoft.osgi.aps.net.messaging.se.natusoft.osgi.aps.net.messaging.vertx.config
+        </osgi.export.package>
+
+        <!-- The packages to import for the bundle. -->
+        <osgi.import.package>*</osgi.import.package>
+
+        <!-- The private packages. -->
+        <osgi.private.package>
+            se.natusoft.osgi.aps.net.messaging.vertx,
+            se.natusoft.osgi.aps.net.messaging.vertx.config,
+            se.natusoft.osgi.aps.net.messaging.vertx.api
+        </osgi.private.package>
+
+        <!-- The packages to export from dependent & embeded jars -->
+        <!--
+            Export the non OSGi compliant vertx-lang-groovy packages.
+        -->
+        <osgi.export.dependency.package>
+            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core,
+            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.buffer,
+            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.cli,
+            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.datagram,
+            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.dns,
+            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.eventbus,
+            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.file,
+            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.http,
+            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.metrics,
+            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.net,
+            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.parsetools,
+            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.shareddata,
+            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.streams,
+            io.se.natusoft.osgi.aps.net.messaging.vertx.lang.groovy
+        </osgi.export.dependency.package>
+
+        <!-- The resources to include in the bundle -->
+        <osgi.include.resource>
+        </osgi.include.resource>
+
+        <!-- The default for embedding dependencies in bundle. -->
+        <osgi.embed.dependency>*;scope=compile</osgi.embed.dependency>
+
+        <!-- The directory whose content should be embeded into the bundle jar. -->
+        <osgi.embed.directory>lib</osgi.embed.directory>
+
+        <!--
+            APS properties.
+        -->
+
+        <!-- We register our configuration for auto registration and management. -->
+        <aps.config.classes>
+            se.natusoft.osgi.aps.net.messaging.se.natusoft.osgi.aps.net.messaging.vertx.config.VertxConfig
+        </aps.config.classes>
+
+        <!--
+            Other properties
+        -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!--
+            APS
+        -->
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-apis</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-tools-lib</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Unfortunately needed since IDEA can't see the mixin and keep removing groovy if added manually in IDEA. -->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <scope>provided</scope>
+            <classifier>indy</classifier>
+            <version>${groovy.version}</version>
+        </dependency>
+
+        <!--
+            APSVertXProvider dependencies
+        -->
+
+        <!-- This dependency is exported by this bundle! -->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-lang-groovy</artifactId>
+            <version>${vertx.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!--
+        From: https://github.com/vert-x3/vertx-examples/blob/master/osgi-examples/README.adoc
+
+        [13] - io.vertx.core - 3.3.3
+        [14] - io.vertx.common - 4.1.1.Final
+        [15] - io.vertx.buffer - 4.1.1.Final
+        [16] - io.vertx.transport - 4.1.1.Final
+        [17] - io.vertx.handler - 4.1.1.Final
+        [18] - io.vertx.codec - 4.1.1.Final
+        [19] - io.vertx.handler-proxy - 4.1.1.Final
+        [20] - io.vertx.codec-socks - 4.1.1.Final
+        [21] - io.vertx.codec-http - 4.1.1.Final
+        [22] - io.vertx.codec-http2 - 4.1.1.Final
+        [23] - io.vertx.codec-dns - 4.1.1.Final
+        [24] - io.vertx.resolver - 4.1.1.Final
+        [25] - io.vertx.resolver-dns - 4.1.1.Final
+        [26] - com.fasterxml.jackson.core.jackson-core - 2.7.4
+        [27] - com.fasterxml.jackson.core.jackson-databind - 2.7.4
+        [28] - com.fasterxml.jackson.core.jackson-annotations - 2.7.0
+        [29] - vertx-web - 3.3.3
+        [30] - vertx-auth-common - 3.3.3
+        [31] - vertx-jdbc-client - 3.3.3
+        [32] - vertx-sql-common - 3.3.3
+        -->
+        <!--
+            These all need to be deployed in the OSGi container!
+
+            Doing: 'mvn -Pdeploy-dependencies-vagrant install' will do that for the local vagrant deployment.
+        -->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-core</artifactId>
+            <version>${vertx.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-auth-common</artifactId>
+            <version>${vertx.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web</artifactId>
+            <version>${vertx.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-common</artifactId>
+            <version>${netty.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+            <version>${netty.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport</artifactId>
+            <version>${netty.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler</artifactId>
+            <version>${netty.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec</artifactId>
+            <version>${netty.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler-proxy</artifactId>
+            <version>${netty.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
+            <version>${netty.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http2</artifactId>
+            <version>${netty.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-dns</artifactId>
+            <version>${netty.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-resolver</artifactId>
+            <version>${netty.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-resolver-dns</artifactId>
+            <version>${netty.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Clusters -->
+
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-hazelcast</artifactId>
+            <version>3.3.3</version>
+            <scope>compile</scope>
+        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>io.vertx</groupId>-->
+        <!--<artifactId>vertx-jgroups</artifactId>-->
+        <!--<version>3.3.3</version>-->
+        <!--<scope>compile</scope>-->
+        <!--</dependency>-->
+
+        <!--
+            Test
+        -->
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-osgi-test-tools</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <!--
+                Force the jar plugin to use the maven-bundle-plugin generated manifest.
+            -->
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!--
+                Mixins
+            -->
+            <plugin>
+                <groupId>com.github.odavid.maven.plugins</groupId>
+                <artifactId>mixin-maven-plugin</artifactId>
+                <configuration>
+                    <mixins>
+                        <mixin>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>groovy-mixin</artifactId>
+                            <version>${project.version}</version>
+                        </mixin>
+                        <mixin>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>deploy-bundle-mixin</artifactId>
+                            <version>${project.version}</version>
+                        </mixin>
+                    </mixins>
+                </configuration>
+            </plugin>
+
+            <!--
+                OSGi bundle handling.
+            -->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <supportedProjectTypes>
+                        <supportedProjectType>jar</supportedProjectType>
+                        <supportedProjectType>bundle</supportedProjectType>
+                    </supportedProjectTypes>
+                    <archive>
+                        <manifestEntries>
+                            <APS-Configs>${aps.config.classes}</APS-Configs>
+                            <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
+                        </manifestEntries>
+                    </archive>
+                    <instructions>
+                        <Export-Package>${osgi.export.package}</Export-Package>
+                        <Import-Package>${osgi.import.package}</Import-Package>
+                        <_exportcontents>${osgi.export.dependency.package}</_exportcontents>
+                        <Private-Package>${osgi.private.package}</Private-Package>
+                        <Include-Resource>${osgi.include.resource}</Include-Resource>
+                        <Bundle-SymbolicName>${osgi.bundle.symbolic.name}</Bundle-SymbolicName>
+                        <Bundle-Activator>${osgi.bundle.activator}</Bundle-Activator>
+                        <Embed-Directory>${osgi.embed.directory}</Embed-Directory>
+                        <Embed-Dependency>${osgi.embed.dependency}</Embed-Dependency>
+                    </instructions>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>deploy-dependencies-vagrant</id>
+
+            <build>
+                <plugins>
+
+                    <!--
+                        Deploy dependencies to vagrant installation.
+                    -->
+                    <plugin>
+                        <groupId>se.natusoft.osgi.aps</groupId>
+                        <artifactId>ServerDeployPlugin</artifactId>
+                        <version>${project.version}</version>
+                        <executions>
+                            <execution>
+                                <id>copy-deps</id>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <phase>install</phase>
+                                <configuration>
+                                    <deployables>
+                                        <deployable>
+                                            <sourceFile>
+                                                ~/.m2/repository/io/vertx/vertx-core/${vertx.version}/vertx-core-${vertx.version}.jar
+                                            </sourceFile>
+                                            <destPath>${aps.root.dir}/vagrant/deploy/</destPath>
+                                        </deployable>
+                                        <deployable>
+                                            <sourceFile>
+                                                ~/.m2/repository/io/vertx/vertx-auth-common/${vertx.version}/vertx-auth-common-${vertx.version}.jar
+                                            </sourceFile>
+                                            <destPath>${aps.root.dir}/vagrant/deploy/</destPath>
+                                        </deployable>
+                                        <deployable>
+                                            <sourceFile>
+                                                ~/.m2/repository/io/vertx/vertx-web/${vertx.version}/vertx-web-${vertx.version}.jar
+                                            </sourceFile>
+                                            <destPath>${aps.root.dir}/vagrant/deploy/</destPath>
+                                        </deployable>
+                                        <deployable>
+                                            <sourceFile>
+                                                ~/.m2/repository/io/netty/netty-common/${netty.version}/netty-common-${netty.version}.jar
+                                            </sourceFile>
+                                            <destPath>${aps.root.dir}/vagrant/deploy/</destPath>
+                                        </deployable>
+                                        <deployable>
+                                            <sourceFile>
+                                                ~/.m2/repository/io/netty/netty-buffer/${netty.version}/netty-buffer-${netty.version}.jar
+                                            </sourceFile>
+                                            <destPath>${aps.root.dir}/vagrant/deploy/</destPath>
+                                        </deployable>
+                                        <deployable>
+                                            <sourceFile>
+                                                ~/.m2/repository/io/netty/netty-transport/${netty.version}/netty-transport-${netty.version}.jar
+                                            </sourceFile>
+                                            <destPath>${aps.root.dir}/vagrant/deploy/</destPath>
+                                        </deployable>
+                                        <deployable>
+                                            <sourceFile>
+                                                ~/.m2/repository/io/netty/netty-handler/${netty.version}/netty-handler-${netty.version}.jar
+                                            </sourceFile>
+                                            <destPath>${aps.root.dir}/vagrant/deploy/</destPath>
+                                        </deployable>
+                                        <deployable>
+                                            <sourceFile>
+                                                ~/.m2/repository/io/netty/netty-codec/${netty.version}/netty-codec-${netty.version}.jar
+                                            </sourceFile>
+                                            <destPath>${aps.root.dir}/vagrant/deploy/</destPath>
+                                        </deployable>
+                                        <deployable>
+                                            <sourceFile>
+                                                ~/.m2/repository/io/netty/netty-handler-proxy/${netty.version}/netty-handler-proxy-${netty.version}.jar
+                                            </sourceFile>
+                                            <destPath>${aps.root.dir}/vagrant/deploy/</destPath>
+                                        </deployable>
+                                        <deployable>
+                                            <sourceFile>
+                                                ~/.m2/repository/io/netty/netty-codec-http/${netty.version}/netty-codec-http-${netty.version}.jar
+                                            </sourceFile>
+                                            <destPath>${aps.root.dir}/vagrant/deploy/</destPath>
+                                        </deployable>
+                                        <deployable>
+                                            <sourceFile>
+                                                ~/.m2/repository/io/netty/netty-codec-http2/${netty.version}/netty-codec-http2-${netty.version}.jar
+                                            </sourceFile>
+                                            <destPath>${aps.root.dir}/vagrant/deploy/</destPath>
+                                        </deployable>
+                                        <deployable>
+                                            <sourceFile>
+                                                ~/.m2/repository/io/netty/netty-codec-dns/${netty.version}/netty-codec-dns-${netty.version}.jar
+                                            </sourceFile>
+                                            <destPath>${aps.root.dir}/vagrant/deploy/</destPath>
+                                        </deployable>
+                                        <deployable>
+                                            <sourceFile>
+                                                ~/.m2/repository/io/netty/netty-resolver/${netty.version}/netty-resolver-${netty.version}.jar
+                                            </sourceFile>
+                                            <destPath>${aps.root.dir}/vagrant/deploy/</destPath>
+                                        </deployable>
+                                        <deployable>
+                                            <sourceFile>
+                                                ~/.m2/repository/io/netty/netty-resolver-dns/${netty.version}/netty-resolver-dns-${netty.version}.jar
+                                            </sourceFile>
+                                            <destPath>${aps.root.dir}/vagrant/deploy/</destPath>
+                                        </deployable>
+                                    </deployables>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>
