@@ -162,7 +162,9 @@ class APSVertxProvider implements APSVertxService {
         }
     }
 
-    /** After having called useGroovyVertX(...) in a bundle, call this when shutting down! */
+    /**
+     * After having called useGroovyVertX(...) in a bundle, call this when shutting down!
+     */
     @Override
     void releaseGroovyVertX( String name ) {
         if (decreaseUsageCount( name ) == 0) {
