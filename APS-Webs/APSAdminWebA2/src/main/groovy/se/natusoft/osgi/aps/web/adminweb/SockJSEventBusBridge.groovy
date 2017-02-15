@@ -15,7 +15,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
 
 // If you are using IntelliJ IDEA then there will be a lot of red in this project since there
-// are 2 types of sources in this probject, TypeScript and Groovy. Client, and server. IDEA
+// are 2 types of sources in this project, TypeScript and Groovy. Client, and server. IDEA
 // however have serious problems with this. Maven does not.
 
 /**
