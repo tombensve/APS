@@ -37,26 +37,30 @@
  *         2017-01-01: Created!
  *         
  */
-package se.natusoft.osgi.aps.net.messaging.vertx
+package se.natusoft.osgi.aps.net.vertx
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.core.AsyncResult
 import io.vertx.core.Handler
 import io.vertx.groovy.core.Vertx
-import org.osgi.framework.BundleContext
+import org.osgi.framework.ServiceReference
+import se.natusoft.osgi.aps.api.reactive.DataConsumer
 import se.natusoft.osgi.aps.constants.APS
-import se.natusoft.osgi.aps.net.messaging.vertx.api.APSVertxService
-import se.natusoft.osgi.aps.net.messaging.vertx.config.VertxConfig
+import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
+import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
 import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+import se.natusoft.osgi.aps.tools.APSServiceTracker
+import se.natusoft.osgi.aps.tools.annotation.activator.*
+
+import java.util.concurrent.TimeUnit
 
 /**
- * Implements APSVertXService.
+ * Implements APSVertXService and also calls all DataConsumer<Vertx> services found with an Vertx instance.
+ *
+ * Do consider using the DataConsumer.DataConsumerProvider utility implementation for callback delivery of Vertx.
  */
-@SuppressWarnings( "GroovyUnusedDeclaration" ) // This is never referenced directly, only through APSMessageService API.
+@SuppressWarnings(["GroovyUnusedDeclaration", "PackageAccessibility"])
 @OSGiServiceProvider(
         properties = [
                 @OSGiProperty( name = APS.Service.Provider,        value = "aps-vertx-provider" ),
@@ -72,19 +76,106 @@ class APSVertxProvider implements APSVertxService {
     // Private Members
     //
 
-    @Managed
-    private BundleContext context
-
+    /** The logger for this service. */
     @Managed( loggingFor = "aps-vertx-service" )
     private APSLogger logger
 
+    /**
+     * This tracks DataConsumer<Vertx> OSGi services which will be called with a Vertx instance to use.
+     * This is a reversed reactive API variant. Also called the Hollywood principle: Don't call us, we
+     * call you!
+     */
+    @OSGiService
+    private APSServiceTracker<DataConsumer<Vertx>> apsVertxConsumers
+
+    /**
+     * This associates a name with each Vertx instance. This is to allow multiple clients to share the same
+     * Vertx instance with the default name being "default". But if some bundle want to use an app/service/bundle
+     * specific instance of Vertx then they can provide a unique name to get their own instance.
+     *
+     * __DO NOTE:__ Vertx can handle multiple servers listening on the same port, but multiple Vertx instances is a
+     * different thing and will most probably conflict when services are bound to same hosts and ports as a different
+     * Vertx instance on the same host. But for different services on different ports it should be OK, and thereby
+     * multiple Vertx instances are allowed by this service.
+     */
     private Map<String, Vertx> namedInstances = Collections.synchronizedMap( [ : ] )
 
+    /**
+     * This keeps track of how many are using a specific instance of Vertx. useGroovyVertx(...) will increase
+     * the count, and releaseGroovyVertx(...) will decrease the count. If the count reaches 0 the Vertx instance
+     * will be shut down.
+     */
     private Map<String, Integer> usageCount = [ : ]
+
+    /**
+     * This tracks DataConsumer<Vertx> services and saves them using the ServiceReference of the service.
+     * The service will only be called back with the DataConsumer<Vertx> once when the service reference is
+     * not in this map. If the service itself does release() on the DataConsumer<Vertx> then the service
+     * will be removed from this map and the next run if the service is still upp and running will call
+     * the service again and add the service reference to this map. If the service itself calls release()
+     * it usually means that the service is going down.
+     */
+    private Map<ServiceReference, DataConsumer.DataHolder<Vertx>> callbackInstances = Collections.synchronizedMap( [ : ] )
+
+    /**
+     * This does the reverse of APSVertxService: It listens to InstanceConsumer services and calls them with
+     * Vertx instance when available.
+     *
+     * If anything else than the default Vertx instance is wanted a Properties object containing named-instance: "name"
+     * should be provided.
+     */
+    @SuppressWarnings("PackageAccessibility")
+    @Schedule(delay = 0L, repeat = 15L, timeUnit = TimeUnit.SECONDS)
+    private Runnable updateVertxConsumers = {
+        Map<ServiceReference, ServiceReference> currentServices = [ : ]
+
+        this.apsVertxConsumers.onServiceAvailable { DataConsumer<Vertx> dataConsumer, ServiceReference serviceReference ->
+            currentServices.put serviceReference, serviceReference
+
+            String name = DEFAULT_INST
+            if (dataConsumer.options() != null && dataConsumer.options().containsKey("named-instance")) {
+                name = dataConsumer.options() [ "named-instance" ]
+            }
+
+            // Check for new service
+            if ( !this.callbackInstances.containsKey(serviceReference) ) {
+
+                useGroovyVertX(name, { AsyncResult<Vertx> result ->
+                    if (result.succeeded()) {
+
+                        DataConsumer.DataHolder<Vertx> vertxProvider = new DataConsumer.DataHolder.DataHolderProvider<Vertx>(result.result()) {
+                            @Override
+                            void release() {
+                                callbackInstances.remove(serviceReference)
+                                releaseGroovyVertX(name)
+                                logger.info("Released '${name}'!")
+                            }
+                        }
+
+                        this.callbackInstances.put( serviceReference , vertxProvider )
+
+                        dataConsumer.onDataAvailable(vertxProvider)
+                    } else {
+                        dataConsumer.onDataUnavailable()
+                    }
+                })
+            }
+        }
+    }
 
     //
     // Methods
     //
+
+    /**
+     * Release Vertx for any existing callback instances.
+     */
+    @BundleStop
+    void shutdown() {
+        this.callbackInstances.keySet().each { ServiceReference sr ->
+            this.callbackInstances.get(sr).release()
+        }
+    }
 
     /**
      * Loads config options into a Vertx options Map.
@@ -123,6 +214,7 @@ class APSVertxProvider implements APSVertxService {
      * @param name The name to save this instance as.
      * @param result The handler to forward result to.
      */
+    @SuppressWarnings("PackageAccessibility")
     private void createVertxInstance(String name, Handler<AsyncResult<Vertx>> result) {
 
         Map<String, Object> options = [ : ]
@@ -149,8 +241,9 @@ class APSVertxProvider implements APSVertxService {
      *
      * @param name The name of the instance to get.
      */
+    @SuppressWarnings("PackageAccessibility")
     @Override
-    void useGroovyVertX( String name, Handler<AsyncResult<Vertx>> result ) {
+    void useGroovyVertX(String name, Handler<AsyncResult<Vertx>> result ) {
         Vertx vertx = this.namedInstances [ name ]
 
         if (vertx != null) {
@@ -165,8 +258,9 @@ class APSVertxProvider implements APSVertxService {
     /**
      * After having called useGroovyVertX(...) in a bundle, call this when shutting down!
      */
+    @SuppressWarnings("PackageAccessibility")
     @Override
-    void releaseGroovyVertX( String name ) {
+    void releaseGroovyVertX(String name ) {
         if (decreaseUsageCount( name ) == 0) {
             Vertx vertx = this.namedInstances.remove( name )
             this.usageCount.remove( name )
@@ -205,6 +299,7 @@ class APSVertxProvider implements APSVertxService {
     /**
      * For providing result back to called the same way as Vertx does.
      */
+    @SuppressWarnings("PackageAccessibility")
     private static class AsyncResultProvider implements AsyncResult< Vertx > {
         Vertx vertx
         boolean succeeded

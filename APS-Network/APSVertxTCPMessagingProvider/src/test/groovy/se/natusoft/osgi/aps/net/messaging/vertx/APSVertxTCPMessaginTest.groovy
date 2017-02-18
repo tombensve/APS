@@ -9,7 +9,7 @@ import se.natusoft.osgi.aps.api.net.messaging.service.APSSubscriber
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
 import se.natusoft.osgi.aps.net.messaging.vertx.api.APSVertxTCPMessagingOptions
-import se.natusoft.osgi.aps.net.messaging.vertx.config.VertxConfig
+import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator
 import se.natusoft.osgi.aps.tools.APSLogger

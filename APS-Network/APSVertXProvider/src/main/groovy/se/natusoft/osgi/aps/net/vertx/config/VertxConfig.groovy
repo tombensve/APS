@@ -37,7 +37,7 @@
  *         2017-01-02: Created!
  *         
  */
-package se.natusoft.osgi.aps.net.messaging.vertx.config
+package se.natusoft.osgi.aps.net.vertx.config
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
@@ -47,7 +47,6 @@ import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigDescription
 import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigItemDescription
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigList
 import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue
-import se.natusoft.osgi.aps.api.core.config.model.APSConfigValueList
 
 @CompileStatic
 @TypeChecked

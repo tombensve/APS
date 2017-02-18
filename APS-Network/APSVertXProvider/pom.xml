@@ -71,8 +71,8 @@
 
         <!-- The bundle packages to export. -->
         <osgi.export.package>
-            se.natusoft.osgi.aps.net.messaging.se.natusoft.osgi.aps.net.messaging.vertx.api,
-            se.natusoft.osgi.aps.net.messaging.se.natusoft.osgi.aps.net.messaging.vertx.config
+            se.natusoft.osgi.aps.net.vertx.api,
+            se.natusoft.osgi.aps.net.vertx.config
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->
@@ -80,9 +80,7 @@
 
         <!-- The private packages. -->
         <osgi.private.package>
-            se.natusoft.osgi.aps.net.messaging.vertx,
-            se.natusoft.osgi.aps.net.messaging.vertx.config,
-            se.natusoft.osgi.aps.net.messaging.vertx.api
+            se.natusoft.osgi.aps.net.vertx
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->
@@ -90,20 +88,20 @@
             Export the non OSGi compliant vertx-lang-groovy packages.
         -->
         <osgi.export.dependency.package>
-            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core,
-            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.buffer,
-            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.cli,
-            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.datagram,
-            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.dns,
-            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.eventbus,
-            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.file,
-            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.http,
-            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.metrics,
-            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.net,
-            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.parsetools,
-            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.shareddata,
-            io.se.natusoft.osgi.aps.net.messaging.vertx.groovy.core.streams,
-            io.se.natusoft.osgi.aps.net.messaging.vertx.lang.groovy
+            io.vertx.groovy.core,
+            io.vertx.groovy.core.buffer,
+            io.vertx.groovy.core.cli,
+            io.vertx.groovy.core.datagram,
+            io.vertx.groovy.core.dns,
+            io.vertx.groovy.core.eventbus,
+            io.vertx.groovy.core.file,
+            io.vertx.groovy.core.http,
+            io.vertx.groovy.core.metrics,
+            io.vertx.groovy.core.net,
+            io.vertx.groovy.core.parsetools,
+            io.vertx.groovy.core.shareddata,
+            io.vertx.groovy.core.streams,
+            io.vertx.lang.groovy
         </osgi.export.dependency.package>
 
         <!-- The resources to include in the bundle -->
@@ -122,7 +120,7 @@
 
         <!-- We register our configuration for auto registration and management. -->
         <aps.config.classes>
-            se.natusoft.osgi.aps.net.messaging.se.natusoft.osgi.aps.net.messaging.vertx.config.VertxConfig
+            se.natusoft.osgi.aps.net.messaging.se.natusoft.osgi.aps.net.vertx.config.VertxConfig
         </aps.config.classes>
 
         <!--
@@ -308,6 +306,11 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-osgi-test-tools</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-service-test-support</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -497,6 +500,12 @@
                                         <deployable>
                                             <sourceFile>
                                                 ~/.m2/repository/io/netty/netty-resolver-dns/${netty.version}/netty-resolver-dns-${netty.version}.jar
+                                            </sourceFile>
+                                            <destPath>${aps.root.dir}/vagrant/deploy/</destPath>
+                                        </deployable>
+                                        <deployable>
+                                            <sourceFile>
+                                                ~/.m2/repository/io/reactivex/rxjava2/rxjava/${rxjava.version}/rxjava-${rxjava.version}.jar
                                             </sourceFile>
                                             <destPath>${aps.root.dir}/vagrant/deploy/</destPath>
                                         </deployable>

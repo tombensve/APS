@@ -34,7 +34,7 @@
  *         2017-01-01: Created!
  *         
  */
-package se.natusoft.osgi.aps.net.messaging.vertx
+package se.natusoft.osgi.aps.net.vertx
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
@@ -50,7 +50,7 @@ import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
 import se.natusoft.osgi.aps.api.net.messaging.service.APSSubscriber
 import se.natusoft.osgi.aps.constants.APS
-import se.natusoft.osgi.aps.net.messaging.vertx.api.APSVertxService
+import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
 import se.natusoft.osgi.aps.tools.APSActivatorInteraction
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
@@ -107,7 +107,7 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
     private APSVertxService vertxService
 
     /** The listeners of this service. */
-    private Map<String, List<APSSubscriber>> listeners = [: ]
+    private Map<String, List<APSSubscriber>> listeners = [ : ]
 
     /** We have one consumer per topic towards Vert.x. If we have more that one listener on a topic we handle that internally. */
     private Map<String, MessageConsumer> consumers = [ : ]

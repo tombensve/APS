@@ -65,6 +65,7 @@
         <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
 
         <!-- The bundle activator class -->
+        <!--suppress CheckTagEmptyBody -->
         <osgi.bundle.activator></osgi.bundle.activator>
 
         <!-- The bundle packages to export. -->
@@ -124,6 +125,7 @@
             se.natusoft.osgi.aps.api.net.time.service;version="${project.version}",
             se.natusoft.osgi.aps.api.net.tcpip;version="${project.version}",
             se.natusoft.osgi.aps.api.net.util;version="${project.version}",
+            se.natusoft.osgi.aps.api.reactive;version="${project.version}",
             se.natusoft.osgi.aps.api.web.config;version="${project.version}",
             se.natusoft.osgi.aps.constants;version="${project.version}",
             se.natusoft.osgi.aps.util;version="${project.version}"

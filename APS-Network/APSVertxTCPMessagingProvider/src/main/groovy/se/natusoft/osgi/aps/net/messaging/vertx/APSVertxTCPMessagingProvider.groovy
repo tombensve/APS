@@ -52,7 +52,7 @@ import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
 import se.natusoft.osgi.aps.api.net.messaging.service.APSSubscriber
 import se.natusoft.osgi.aps.constants.APS
-import se.natusoft.osgi.aps.net.messaging.vertx.api.APSVertxService
+import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
 import se.natusoft.osgi.aps.net.messaging.vertx.api.APSVertxTCPMessagingOptions
 import se.natusoft.osgi.aps.tools.APSActivatorInteraction
 import se.natusoft.osgi.aps.tools.APSLogger

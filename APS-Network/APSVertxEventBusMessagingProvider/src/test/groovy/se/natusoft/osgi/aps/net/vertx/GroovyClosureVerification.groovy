@@ -1,4 +1,4 @@
-package se.natusoft.osgi.aps.net.messaging.vertx
+package se.natusoft.osgi.aps.net.vertx
 
 import org.junit.Test
 

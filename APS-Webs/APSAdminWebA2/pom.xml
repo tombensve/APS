@@ -102,7 +102,7 @@
         <!-- We register our configuration for auto registration and management. -->
         <aps.config.classes>
             <!--
-            se.natusoft.osgi.aps.net.messaging.se.natusoft.osgi.aps.net.messaging.vertx.config.VertxConfig
+            se.natusoft.osgi.aps.net.messaging.VertxConfig
             -->
         </aps.config.classes>
 
@@ -131,6 +131,23 @@
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-vertx-provider</artifactId>
             <version>1.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-vertx-provider</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--
+            This is installed in local vagrant along with vert.x by APSVertXProvider!
+        -->
+        <dependency>
+            <groupId>io.reactivex.rxjava2</groupId>
+            <artifactId>rxjava</artifactId>
+            <version>${rxjava.version}</version>
             <scope>provided</scope>
         </dependency>
 

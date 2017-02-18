@@ -1,4 +1,4 @@
-package se.natusoft.osgi.aps.net.messaging.vertx
+package se.natusoft.osgi.aps.net.vertx
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
@@ -9,7 +9,7 @@ import se.natusoft.osgi.aps.api.net.messaging.service.APSSubscriber
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
-import se.natusoft.osgi.aps.net.messaging.vertx.config.VertxConfig
+import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -46,9 +46,9 @@ class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
 
         deploy 'aps-vertx-event-bus-messaging-provider' with new APSActivator() from 'APS-Network/APSVertxEventBusMessagingProvider/target/classes'
 
-        deploy 'msg-receiver' with new APSActivator() using '/se/natusoft/osgi/aps/net/messaging/vertx/MsgReceiver.class'
+        deploy 'msg-receiver' with new APSActivator() using '/se/natusoft/osgi/aps/net/vertx/MsgReceiver.class'
 
-        deploy 'msg-sender' with new APSActivator() using '/se/natusoft/osgi/aps/net/messaging/vertx/MsgSender.class'
+        deploy 'msg-sender' with new APSActivator() using '/se/natusoft/osgi/aps/net/vertx/MsgSender.class'
 
 
         // Wait for and then validate result. Even if in this case a cluster of one member is created, it takes

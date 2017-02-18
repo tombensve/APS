@@ -37,7 +37,7 @@
  *         2017-01-01: Created!
  *         
  */
-package se.natusoft.osgi.aps.net.messaging.vertx.api
+package se.natusoft.osgi.aps.net.vertx.api
 
 import io.vertx.core.AsyncResult
 import io.vertx.core.Handler
