@@ -949,10 +949,23 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     if (tracker == null) {
                         Class svcClass = field.getType();
 
-                        if (field.getType().equals(APSServiceTracker.class)) {
-                            Type svcType = field.getGenericType();
-                            if (svcType instanceof ParameterizedType) {
-                                svcClass = (Class)((ParameterizedType) svcType).getActualTypeArguments()[0];
+                        if (svcClass.equals(APSServiceTracker.class)) {
+                            if (service.serviceAPI() != Object.class) {
+                                svcClass = service.serviceAPI();
+                            }
+                            else {
+                                // This resolves the declared generic class being tracked by the APSServiceTracker.
+                                Type svcType = field.getGenericType();
+                                if (svcType instanceof ParameterizedType) {
+                                    String typeName = ((ParameterizedType) svcType).getActualTypeArguments()[0].getTypeName();
+                                    // Remove additional generics of the generic type by splitting on '<'.
+                                    typeName = typeName.split("<")[0];
+                                    try {
+                                        svcClass = Class.forName(typeName);
+                                    } catch (ClassNotFoundException cnfe) {
+                                        this.activatorLogger.error("Failed to load generic type! [" + cnfe.getMessage() + "]");
+                                    }
+                                }
                             }
                         }
 

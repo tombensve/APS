@@ -68,4 +68,7 @@ public @interface OSGiService {
 
     /** If set to true the service using this service will not be registered until the service becomes available. */
     boolean required() default false;
+
+    /** When APSServiceTracker is injected rather than service then this provides the service interface to track. */
+    Class serviceAPI() default Object.class;
 }
