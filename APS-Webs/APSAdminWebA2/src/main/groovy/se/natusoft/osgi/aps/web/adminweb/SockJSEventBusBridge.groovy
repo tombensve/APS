@@ -40,6 +40,9 @@ class SockJSEventBusBridge implements ObjectConsumer<Vertx> {
     // Methods
     //
 
+    /**
+     * Called after all injections are done.
+     */
     @Initializer
     void init() {
         this.logger.connectToLogService( this.context )
@@ -100,7 +103,7 @@ class SockJSEventBusBridge implements ObjectConsumer<Vertx> {
 
     @BundleStop
     void shutdown() {
-        if (this.vertx != null) this.vertx.release()
         if (this.router != null) this.router.clear()
+        if (this.vertx != null) this.vertx.release()
     }
 }
