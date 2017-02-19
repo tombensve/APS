@@ -1,5 +1,7 @@
 package se.natusoft.osgi.aps.web.adminweb
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
 import io.vertx.groovy.core.Vertx
 import io.vertx.groovy.ext.web.Router
 import io.vertx.groovy.ext.web.handler.sockjs.SockJSHandler
@@ -16,6 +18,8 @@ import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
  * Provides a Vertx EventBus bridge.
  */
 @SuppressWarnings(["GroovyUnusedDeclaration", "PackageAccessibility"])
+@CompileStatic
+@TypeChecked
 @OSGiServiceProvider(
         properties = [ @OSGiProperty( name = "consumed", value = "vertx") ]
 )
