@@ -134,13 +134,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-vertx-provider</artifactId>
-            <version>1.0.0</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!--
             This is installed in local vagrant along with vert.x by APSVertXProvider!
         -->
@@ -163,13 +156,6 @@
         <!--
             APSVertXProvider dependencies
         -->
-
-        <!--<dependency>-->
-            <!--<groupId>io.vertx</groupId>-->
-            <!--<artifactId>vertx-lang-groovy</artifactId>-->
-            <!--<version>${vertx.version}</version>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>io.vertx</groupId>

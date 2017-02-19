@@ -77,7 +77,7 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
 @TypeChecked
 class VertxConsumerService extends ObjectConsumer.ObjectConsumerProvider<Vertx> implements ObjectConsumer<Vertx> {
 
-    @Managed
+    @Managed(loggingFor = "Test:VertxConsumerService")
     APSLogger logger
 
     /**
@@ -98,8 +98,16 @@ class VertxConsumerService extends ObjectConsumer.ObjectConsumerProvider<Vertx> 
      */
     @Override
     void onObjectUnavailable() {
-        logger.error("No vertx instance available!")
+        this.logger.error("No vertx instance available!")
         throw new Exception("Failure, no vertx service available!")
+    }
+
+    /**
+     * Called if/when a previously made available object is no longer valid.
+     */
+    @Override
+    void onObjectRevoked() {
+        this.logger.info("Vertx instance revoked!")
     }
 }
 

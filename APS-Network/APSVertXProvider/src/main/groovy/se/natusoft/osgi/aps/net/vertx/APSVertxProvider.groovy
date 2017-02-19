@@ -133,8 +133,8 @@ class APSVertxProvider implements APSVertxService {
             currentServices.put serviceReference, serviceReference
 
             String name = DEFAULT_INST
-            if (dataConsumer.options() != null && dataConsumer.options().containsKey("named-instance")) {
-                name = dataConsumer.options() [ "named-instance" ]
+            if (dataConsumer.consumerOptions() != null && dataConsumer.consumerOptions().containsKey("named-instance")) {
+                name = dataConsumer.consumerOptions() [ "named-instance" ]
             }
 
             // Check for new service
@@ -264,6 +264,10 @@ class APSVertxProvider implements APSVertxService {
         if (decreaseUsageCount( name ) == 0) {
             Vertx vertx = this.namedInstances.remove( name )
             this.usageCount.remove( name )
+
+            this.apsVertxConsumers.onServiceAvailable { ObjectConsumer<Vertx> dataConsumer, ServiceReference serviceReference ->
+                dataConsumer.onObjectRevoked()
+            }
 
             vertx.close { AsyncResult res ->
 

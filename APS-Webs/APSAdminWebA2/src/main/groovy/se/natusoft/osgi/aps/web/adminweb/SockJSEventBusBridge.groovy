@@ -1,29 +1,27 @@
 package se.natusoft.osgi.aps.web.adminweb
 
-import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
-import io.vertx.core.AsyncResult
 import io.vertx.groovy.core.Vertx
 import io.vertx.groovy.ext.web.Router
 import io.vertx.groovy.ext.web.handler.sockjs.SockJSHandler
 import org.osgi.framework.BundleContext
-import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
+import se.natusoft.osgi.aps.api.reactive.ObjectConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
 import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
+import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
+import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
 
 /**
- * This will provide the SockJS eventbus bridge to the client side.
- */ //                       v--- Due to IDEA BS!
-@SuppressWarnings(["PackageAccessibility", "GroovyUnusedDeclaration"])
-@CompileStatic
-@TypeChecked
-class SockJSEventBusBridge {
-
+ * Provides a Vertx EventBus bridge.
+ */
+@SuppressWarnings(["GroovyUnusedDeclaration", "PackageAccessibility"])
+@OSGiServiceProvider(
+        properties = [ @OSGiProperty( name = "consumed", value = "vertx") ]
+)
+class SockJSEventBusBridge implements ObjectConsumer<Vertx> {
     //
-    // Managed Members
+    // Private Members
     //
 
     @Managed
@@ -32,14 +30,7 @@ class SockJSEventBusBridge {
     @Managed(loggingFor = "aps-sockjs-eventbus-bridge")
     private APSLogger logger
 
-    @OSGiService
-    private APSVertxService vertxService
-
-    //
-    // Private Members
-    //
-
-    private Vertx vertx
+    private ObjectConsumer.ObjectHolder<Vertx> vertx
 
     private SockJSHandler sockJSHandler
 
@@ -51,42 +42,65 @@ class SockJSEventBusBridge {
 
     @Initializer
     void init() {
-        // Connect to OSGi log service if available. APSLogger does not use a timeout when
-        // tracking the LogService so it will fail immediately if service is not available,
-        // so there is no risk of blocking (which there is when timeout is used).
         this.logger.connectToLogService( this.context )
+    }
 
-        this.vertxService.useGroovyVertX( APSVertxService.DEFAULT_INST, { AsyncResult<Vertx> result ->
-            if ( result.succeeded() ) {
-                this.vertx = result.result()
+    /**
+     * Specific options for the consumer.
+     */
+    @Override
+    Properties consumerOptions() { return null }
 
-                this.router = Router.router(this.vertx)
+    /**
+     * Called with requested object type when available.
+     *
+     * @param object The received object.
+     */
+    @SuppressWarnings("PackageAccessibility")
+    @Override
+    void onObjectAvailable(ObjectConsumer.ObjectHolder<Vertx> vertx) {
+        this.vertx = vertx
 
-                // Currently no more detailed permissions than on target address. Might add limits on message contents
-                // later.
-                def twowaysPermitted1 = [ address: "aps.admin.web.event" ]
+        this.router = Router.router(this.vertx.use())
 
-                this.sockJSHandler = SockJSHandler.create(vertx).bridge( [
-                        inboundPermitteds: [ twowaysPermitted1 ] as Object,
-                        outboundPermitteds: [ twowaysPermitted1 ] as Object
-                ] )
+        // Currently no more detailed permissions than on target address. Might add limits on message contents
+        // later.
+        def twowaysPermitted1 = [ address: "aps.admin.web.event" ]
 
-                router.route("/eventbus/*").handler(this.sockJSHandler)
+        this.sockJSHandler = SockJSHandler.create(this.vertx.use()).bridge( [
+                inboundPermitteds: [ twowaysPermitted1 ] as Object,
+                outboundPermitteds: [ twowaysPermitted1 ] as Object
+        ] )
 
-                this.logger.info "Vert.x SockJSEventBusBridge started successfully!"
-            }
-            else {
-                this.logger.error "Vert.x SockJSEventBusBridge failed to start: ${result.cause()}, shutting down bundle!"
-                this.context.bundle.stop()
-            }
-        })
+        router.route("/eventbus/*").handler(this.sockJSHandler)
+
+        this.logger.info "Vert.x SockJSHandler for event bus bridging started successfully!"
+
+    }
+
+    /**
+     * Called when there is a failure to deliver requested object.
+     */
+    @Override
+    void onObjectUnavailable() {
+        this.logger.error("Failed to setup SockJSHandler due to no Vertx instance available!")
+    }
+
+    /**
+     * Called if/when a previously made available object is no longer valid.
+     */
+    @Override
+    void onObjectRevoked() {
+        this.logger.error("Vertx instance have been revoked! Until new becomes available there will be no server access!")
+        if (this.router != null) this.router.clear()
+        this.router = null
+        this.sockJSHandler = null
+        this.vertx = null
     }
 
     @BundleStop
     void shutdown() {
-        this.router.clear()
-        // There is interestingly no stop/shutdown/unhandle/unregister/... for SockJSHandler!
-        this.vertxService.releaseGroovyVertX(APSVertxService.DEFAULT_INST)
+        if (this.vertx != null) this.vertx.release()
+        if (this.router != null) this.router.clear()
     }
-
 }
