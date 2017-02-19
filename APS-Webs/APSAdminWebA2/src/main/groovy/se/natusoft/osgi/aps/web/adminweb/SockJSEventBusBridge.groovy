@@ -21,7 +21,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
 @CompileStatic
 @TypeChecked
 @OSGiServiceProvider(
-        properties = [ @OSGiProperty( name = "consumed", value = "vertx") ]
+        properties = [ @OSGiProperty( name = "consumed", value = "vertx" ) ]
 )
 class SockJSEventBusBridge implements ObjectConsumer<Vertx> {
     //
@@ -31,7 +31,7 @@ class SockJSEventBusBridge implements ObjectConsumer<Vertx> {
     @Managed
     private BundleContext context
 
-    @Managed(loggingFor = "aps-sockjs-eventbus-bridge")
+    @Managed( loggingFor = "aps-sockjs-eventbus-bridge" )
     private APSLogger logger
 
     private ObjectConsumer.ObjectHolder<Vertx> vertx
@@ -65,21 +65,21 @@ class SockJSEventBusBridge implements ObjectConsumer<Vertx> {
      */
     @SuppressWarnings("PackageAccessibility")
     @Override
-    void onObjectAvailable(ObjectConsumer.ObjectHolder<Vertx> vertx) {
+    void onObjectAvailable( ObjectConsumer.ObjectHolder<Vertx> vertx ) {
         this.vertx = vertx
 
-        this.router = Router.router(this.vertx.use())
+        this.router = Router.router( this.vertx.use() )
 
         // Currently no more detailed permissions than on target address. Might add limits on message contents
         // later.
         def twowaysPermitted1 = [ address: "aps.admin.web.event" ]
 
-        this.sockJSHandler = SockJSHandler.create(this.vertx.use()).bridge( [
+        this.sockJSHandler = SockJSHandler.create( this.vertx.use() ).bridge( [
                 inboundPermitteds: [ twowaysPermitted1 ] as Object,
                 outboundPermitteds: [ twowaysPermitted1 ] as Object
         ] )
 
-        router.route("/eventbus/*").handler(this.sockJSHandler)
+        router.route( "/eventbus/*" ).handler( this.sockJSHandler )
 
         this.logger.info "Vert.x SockJSHandler for event bus bridging started successfully!"
 
@@ -99,7 +99,7 @@ class SockJSEventBusBridge implements ObjectConsumer<Vertx> {
     @Override
     void onObjectRevoked() {
         this.logger.error "Vertx instance have been revoked! Until new becomes available there will be no server access!"
-        if (this.router != null) this.router.clear()
+        if ( this.router != null ) this.router.clear()
         this.router = null
         this.sockJSHandler = null
         this.vertx = null
@@ -107,7 +107,7 @@ class SockJSEventBusBridge implements ObjectConsumer<Vertx> {
 
     @BundleStop
     void shutdown() {
-        if (this.router != null) this.router.clear()
-        if (this.vertx != null) this.vertx.release()
+        if ( this.router != null ) this.router.clear()
+        if ( this.vertx != null ) this.vertx.release()
     }
 }
