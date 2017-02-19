@@ -90,7 +90,7 @@ class SockJSEventBusBridge implements ObjectConsumer<Vertx> {
      */
     @Override
     void onObjectUnavailable() {
-        this.logger.error("Failed to setup SockJSHandler due to no Vertx instance available!")
+        this.logger.error "Failed to setup SockJSHandler due to no Vertx instance available!"
     }
 
     /**
@@ -98,7 +98,7 @@ class SockJSEventBusBridge implements ObjectConsumer<Vertx> {
      */
     @Override
     void onObjectRevoked() {
-        this.logger.error("Vertx instance have been revoked! Until new becomes available there will be no server access!")
+        this.logger.error "Vertx instance have been revoked! Until new becomes available there will be no server access!"
         if (this.router != null) this.router.clear()
         this.router = null
         this.sockJSHandler = null
