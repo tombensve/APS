@@ -4,8 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.groovy.core.Vertx
 import org.junit.Test
-import se.natusoft.osgi.aps.api.reactive.DataConsumer
-import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.osgi.aps.api.reactive.ObjectConsumer
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
 import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
@@ -16,12 +15,18 @@ import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+@CompileStatic
+@TypeChecked
 class APSVertxProviderTest extends OSGIServiceTestTools {
 
-    public static DataConsumer.DataHolder<Vertx> vertx = null
+    public static ObjectConsumer.ObjectHolder<Vertx> vertx = null
 
     @Test
     void reactiveAPITest() throws Exception {
+        // Most of the unfamiliar constructs here are provided by OSGiServiceTestTools and groovy DSL features.
 
         println "============================================================================"
         println "DO NOTE: All the RED colored output comes from Vertx! It is not something "
@@ -44,19 +49,13 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
 
             config
 
-        } with new APSActivator() using '/se/natusoft/osgi/aps/net/vertx/APSVertxProvider.class'
+        } using '/se/natusoft/osgi/aps/net/vertx/APSVertxProvider.class'
 
         deploy 'vertx-consumer-svc' with new APSActivator() using '/se/natusoft/osgi/aps/net/vertx/VertxConsumerService.class'
 
         try {
-            int count = 0
-            while ( vertx == null ) {
-                synchronized ( this ) {
-                    wait( 200 )
-                }
-                ++count
-                if ( count > 40 ) break
-            }
+
+            hold() whilst { vertx == null } maxTime 5L unit SECONDS go()
 
             assert vertx != null
             assert vertx.use() != null
@@ -65,7 +64,7 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
         finally {
             if (vertx != null) vertx.release()
             shutdown()
-            Thread.sleep(500) // Give Vertx time to shut down.
+            hold() maxTime 500 unit MILLISECONDS go() // Give Vertx time to shut down.
         }
 
     }
@@ -73,16 +72,10 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
 }
 
 @SuppressWarnings("GroovyUnusedDeclaration")
-@OSGiServiceProvider(
-        properties = [
-                @OSGiProperty( name = APS.Service.Provider, value = "aps-vertx-provider:test" ),
-                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Network ),
-                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging )
-        ]
-)
+@OSGiServiceProvider( properties = [ @OSGiProperty( name = "consumed", value = "vertx") ] )
 @CompileStatic
 @TypeChecked
-class VertxConsumerService extends DataConsumer.DataConsumerProvider<Vertx> implements DataConsumer<Vertx> {
+class VertxConsumerService extends ObjectConsumer.ObjectConsumerProvider<Vertx> implements ObjectConsumer<Vertx> {
 
     @Managed
     APSLogger logger
@@ -93,7 +86,7 @@ class VertxConsumerService extends DataConsumer.DataConsumerProvider<Vertx> impl
      * @param data The new data.
      */
     @Override
-    void onDataAvailable(DataConsumer.DataHolder<Vertx> vertx) {
+    void onObjectAvailable(ObjectConsumer.ObjectHolder<Vertx> vertx) {
         this.logger.info("VertxConsumerService.onDataAvailable(...) called!")
         APSVertxProviderTest.vertx = vertx
     }
@@ -104,7 +97,7 @@ class VertxConsumerService extends DataConsumer.DataConsumerProvider<Vertx> impl
      * Haven't found a way to make Vertx fail yet, so this will never be called.
      */
     @Override
-    void onDataUnavailable() {
+    void onObjectUnavailable() {
         logger.error("No vertx instance available!")
         throw new Exception("Failure, no vertx service available!")
     }

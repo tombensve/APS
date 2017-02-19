@@ -2,32 +2,32 @@
  *
  * PROJECT
  *     Name
- *         APSOSGiTestTools
- *
+ *         APS OSGi Test Tools
+ *     
  *     Code Version
  *         1.0.0
- *
+ *     
  *     Description
  *         Provides tools for testing OSGi services.
- *
+ *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *
+ *     
  * LICENSE
  *     Apache 2.0 (Open Source)
- *
+ *     
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *
+ *     
  *       http://www.apache.org/licenses/LICENSE-2.0
- *
+ *     
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *
+ *     
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -49,6 +49,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This is the entry point to using the OSGi service test tools.
@@ -104,7 +105,7 @@ public class OSGIServiceTestTools {
      * @param bundleContext The context of the bundle to remove.
      */
     public void removeBundle(TestBundleContext bundleContext) {
-        removeBundle((TestBundle)bundleContext.getBundle());
+        removeBundle((TestBundle) bundleContext.getBundle());
     }
 
     /**
@@ -143,18 +144,16 @@ public class OSGIServiceTestTools {
 
     /**
      * Test deploys a bundle using a BundleActivator.
-     *
+     * <p>
      * Usage:
-     *
-     *     BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from("proj root relative bundle root path.");
-     *     BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from(new File("proj root relative bundle root path."));
-     *     BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from("group", "artifact", "version");
-     *     BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from("bundle content path", ...);
+     * <p>
+     * BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from("proj root relative bundle root path.");
+     * BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from(new File("proj root relative bundle root path."));
+     * BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from("group", "artifact", "version");
+     * BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from("bundle content path", ...);
      *
      * @param name The name of the bundle to create and deploy.
-     *
      * @return An intermediate BundleManager that handles the with() and from() giving you a BundleContext in the end.
-     *
      * @throws IOException
      */
     public BundleBuilder deploy(String name) throws IOException {
@@ -186,9 +185,8 @@ public class OSGIServiceTestTools {
     /**
      * Runs a piece of code as part of a temporary bundle.
      *
-     * @param name The name of the bundle.
+     * @param name       The name of the bundle.
      * @param withBundle The code to run.
-     *
      * @throws Exception
      */
     public void with_new_bundle(String name, WithBundle withBundle) throws Throwable {
@@ -203,7 +201,6 @@ public class OSGIServiceTestTools {
      * Provides a delay so that concurrent things can finish before checking results.
      *
      * @param milliseconds The number of milliseconds to wait.
-     *
      * @throws InterruptedException
      */
     public void delay(int milliseconds) throws InterruptedException {
@@ -214,18 +211,81 @@ public class OSGIServiceTestTools {
      * Provides a delay so that concurrent things can finish before checking results.
      *
      * @param delay A string. 'long' ==> 10000ms, 'very small' ==> 500ms, anything else ==> 1000ms.
-     *
      * @throws InterruptedException
      */
     public void delay(String delay) throws InterruptedException {
         int ms = 1000;
         if (delay.startsWith("long")) {
             ms = 10000;
-        }
-        else if (delay.startsWith("very small")) {
+        } else if (delay.startsWith("very small")) {
             ms = 500;
         }
         delay(ms);
+    }
+
+    /**
+     * Waits for a condition with a timeout using creative synonyms to reserved words ...
+     * <p>
+     * Assuming: static import java.util.concurrent.TimeUnit.*;
+     * <p>
+     * Usage Java (Java 8+: A lambda could possible be used as Callable):
+     * * hold().whilst(new Callable&lt;Boolean&gt;(){...}).maxTime(30L).unit(SECONDS).go();
+     * * hold().until(new Callable&lt;Boolean&gt;(){...}).maxTime(30L).unit(SECONDS).go();
+     * <p>
+     * Usage Groovy:
+     * * hold().whilst { this.something == null } maxTime 30L unit SECONDS go()
+     * * hold().until { this.something != null } macTime 10L unit SECONDS go()
+     */
+    public Wait hold() {
+        return new Wait();
+    }
+
+    public class Wait {
+        private long maxTime = 5;
+        private TimeUnit timeUnit = TimeUnit.SECONDS;
+        private Callable<Boolean> condition;
+
+        public Wait whilst(Callable<Boolean> condition) {
+            this.condition = condition;
+            return this;
+        }
+
+        public Wait until(Callable<Boolean> condition) {
+            this.condition = new Callable<Boolean>() {
+                public Boolean call() throws Exception {
+                    return !condition.call();
+                }
+            };
+            return this;
+        }
+
+        public Wait maxTime(long time) {
+            this.maxTime = time;
+            return this;
+        }
+
+        public Wait unit(TimeUnit timeUnit) {
+            this.timeUnit = timeUnit;
+            return this;
+        }
+
+        public void go() {
+            try {
+                if (this.condition != null) {
+                    int maxCount = (int) (TimeUnit.MILLISECONDS.convert(this.maxTime, this.timeUnit) / 200);
+                    int count = 0;
+                    while (this.condition.call()) {
+                        synchronized (this) {
+                            wait(200);
+                        }
+                        ++count;
+                        if (count > maxCount) break;
+                    }
+                } else {
+                    Thread.sleep(TimeUnit.MILLISECONDS.convert(this.maxTime, this.timeUnit));
+                }
+            } catch (Exception ignore) {}
+        }
     }
 
     /**
@@ -306,7 +366,7 @@ public class OSGIServiceTestTools {
                     field.setAccessible(true); // This should not be needed!
                     Object managed = field.get(apsConfig);
                     if (managed != null && ManagedConfig.class.isAssignableFrom(managed.getClass())) {
-                        ManagedConfig managedConfig = (ManagedConfig)managed;
+                        ManagedConfig managedConfig = (ManagedConfig) managed;
                         //noinspection unchecked
                         managedConfig.serviceProviderAPI.setConfigInstance(apsConfig);
                         managedConfig.serviceProviderAPI.setManaged();
@@ -320,9 +380,9 @@ public class OSGIServiceTestTools {
         /**
          * Provides bundle content by reading maven artifact.
          *
-         * @param group The artifact group
+         * @param group    The artifact group
          * @param artifact The artifact.
-         * @param version The artifact version
+         * @param version  The artifact version
          * @return itself
          * @throws Exception
          */
@@ -387,8 +447,7 @@ public class OSGIServiceTestTools {
         public void shutdown() {
             try {
                 this.activator.stop(this.bundle.getBundleContext());
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace(System.err);
             }
             removeBundle(this.bundle);

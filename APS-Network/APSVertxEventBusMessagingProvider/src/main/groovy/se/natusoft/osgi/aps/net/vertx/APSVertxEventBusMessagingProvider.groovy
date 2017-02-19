@@ -64,7 +64,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
  *
  * See http://vertx.io/docs/ for more information.
  */
-@SuppressWarnings( "GroovyUnusedDeclaration" ) // This is never referenced directly, only through APSMessageService API.
+@SuppressWarnings(["GroovyUnusedDeclaration", "PackageAccessibility"]) // This is never referenced directly, only through APSMessageService API.
 @OSGiServiceProvider(
         // Possible criteria for client lookups. ex: "(${APS.Messaging.Protocol.Name}=vertx-eventbus)" In most cases clients won't care.
         properties = [
@@ -125,6 +125,7 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
     /**
      * Setup. This is called after all injections are done.
      */
+    @SuppressWarnings("PackageAccessibility")
     @Initializer
     void init() {
         this.logger.connectToLogService( this.context ) // Connect to OSGi log service if available. APSLogger does not use a timeout when
@@ -195,8 +196,9 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
      * @param message The message to send.
      * @param props Implementation specific properties.
      */
+    @SuppressWarnings("PackageAccessibility")
     @Override
-    void publish( @NotNull String topic, @NotNull Object message, @Nullable Properties props ) {
+    void publish(@NotNull String topic, @NotNull Object message, @Nullable Properties props ) {
         if ( props != null && props.getProperty( VERTX_ONE_RECEIVER ) ?. toLowerCase() == "true" ) {
             this.eventBus.send topic, message, { AsyncResult<Message> reply ->
                 if ( reply.succeeded() ) {
@@ -253,8 +255,9 @@ class APSVertxEventBusMessagingProvider extends APSMessageService.AbstractAPSMes
      * @param topic The endpoint to remove listener for.
      * @param listener The listener to remove.
      */
+    @SuppressWarnings("PackageAccessibility")
     @Override
-    void unsubscribe( @NotNull String topic, @NotNull APSSubscriber listener ) {
+    void unsubscribe(@NotNull String topic, @NotNull APSSubscriber listener ) {
         List<APSSubscriber> topicListeners = getListenersForTopic topic
         topicListeners.remove listener
 
