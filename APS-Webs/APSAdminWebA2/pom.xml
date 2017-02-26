@@ -190,6 +190,11 @@
             <artifactId>aps-osgi-test-tools</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>APSGroovyToolsLib</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
     </dependencies>
 

@@ -34,6 +34,7 @@
 
         <!-- The bundle packages to export. -->
         <osgi.export.package>
+            se.natusoft.osgi.aps.tools.groovy.lib
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->
@@ -41,7 +42,6 @@
 
         <!-- The private packages. -->
         <osgi.private.package>
-            se.natusoft.osgi.aps.tools.groovy.lib
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->
