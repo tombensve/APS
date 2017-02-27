@@ -13,6 +13,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+import static Constants.*
 
 /**
  * Provides a Vertx EventBus bridge.
@@ -21,7 +22,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
 @CompileStatic
 @TypeChecked
 @OSGiServiceProvider( properties = [ @OSGiProperty( name = "consumed", value = "vertx" ) ] )
-class SockJSEventBusBridge implements ObjectConsumer<Vertx> , Constants {
+class SockJSEventBusBridge implements ObjectConsumer<Vertx> {
     //
     // Private Members
     //
@@ -67,7 +68,7 @@ class SockJSEventBusBridge implements ObjectConsumer<Vertx> , Constants {
 
         // Currently no more detailed permissions than on target address. Might add limits on message contents
         // later.
-        def twowaysPermitted1 = [ address: EVENT_BUS_ADDRESS ]
+        def twowaysPermitted1 = [ address: EVENT.ADDRESS ]
 
         SockJSHandler sockJSHandler = SockJSHandler.create( this.vertx.use() ).bridge( [
                 inboundPermitteds: [ twowaysPermitted1 ] as Object,
