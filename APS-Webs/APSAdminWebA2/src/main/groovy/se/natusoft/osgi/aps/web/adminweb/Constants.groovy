@@ -23,6 +23,8 @@ interface Constants {
             String ADDRESS = "address"
             String CLASSIFIER = "classifier"
             String ACTION = "action"
+            String REPLY = "reply"
+            String ERROR = "error"
         }
 
         interface ACTION {

@@ -37,16 +37,19 @@ class AdminWebsProvider {
                 switch ((event[EVENT.FIELD.BODY])[EVENT.FIELD.ACTION] as String) {
                     case EVENT.ACTION.GET_WEBS:
                         handleGetWebs(event)
+                        EventDefinition.validate(event)
                         break
                     default:
-                        this.localBus.send(EventDefinition.createError([ code: 2, message: "Bad action!"]))
+                        event[EVENT.FIELD.ERROR] = EventDefinition.createError([ code: 2, message: "Bad action!"])
                 }
 
             }
             catch (Exception e) {
                 this.logger.error("Problem with received event: ${e.message}")
-                this.localBus.send(EventDefinition.createError([ code: 1, message: "Problem with received event: ${e.message}"]))
+                event[EVENT.FIELD.ERROR] = EventDefinition.createError([ code: 1, message: "Problem with received event: ${e.message}"])
             }
+
+            null // Might need a real Disposable implementation here!
         }
     }
 
