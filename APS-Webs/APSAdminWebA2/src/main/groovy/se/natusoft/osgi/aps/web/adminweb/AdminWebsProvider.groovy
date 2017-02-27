@@ -5,42 +5,17 @@ import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
-import se.natusoft.osgi.aps.tools.groovy.lib.MapJsonDocVerifier
+import static se.natusoft.osgi.aps.web.adminweb.Constants.*
 
 /**
  * General services.
  */
 class AdminWebsProvider {
     //
-    // Constants
-    //
-
-    private static final Map<String, Object> EVENT_SCHEMA = [
-            header_1: [
-                    type_1      : "service",
-                    address_1   : "?aps\\.admin\\..*",
-                    classifier_1: "?public|private"
-            ],
-            body_1  : [
-                    action_1: "get-webs"
-            ],
-            reply_0: [
-                    webs_1: [
-                            [
-                                    name_1: "?.*",
-                                    url_1: "?^https?://.*"
-                            ]
-                    ]
-            ]
-    ] as Map<String, Object>
-
-    private static final MapJsonDocVerifier EVENT_VERIFIER = new MapJsonDocVerifier( validStructure: EVENT_SCHEMA)
-
-    //
     // Private Members
     //
 
-    @Managed( loggingFor = "aps-admin-web:admin-webs-provider" )
+    @Managed(loggingFor = "aps-admin-web:admin-webs-provider")
     private APSLogger logger
 
     @Managed
@@ -57,13 +32,25 @@ class AdminWebsProvider {
     void init() {
         this.localBus.consume { Map<String, Object> event ->
             try {
-                EVENT_VERIFIER.validate(event)
+                EventDefinition.validate(event)
 
+                switch ((event[EVENT.FIELD.BODY])[EVENT.FIELD.ACTION] as String) {
+                    case EVENT.ACTION.GET_WEBS:
+                        handleGetWebs(event)
+                        break
+                    default:
+                        this.localBus.send(EventDefinition.createError([ code: 2, message: "Bad action!"]))
+                }
 
             }
             catch (Exception e) {
-                this.logger.error("Problem with received event: $e.message")
+                this.logger.error("Problem with received event: ${e.message}")
+                this.localBus.send(EventDefinition.createError([ code: 1, message: "Problem with received event: ${e.message}"]))
             }
         }
+    }
+
+    private void handleGetWebs(Map<String, Object> event) {
+
     }
 }

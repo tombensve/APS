@@ -12,11 +12,8 @@ import io.vertx.groovy.core.eventbus.MessageConsumer
 import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.api.reactive.ObjectConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
-import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+import se.natusoft.osgi.aps.tools.annotation.activator.*
+
 import static se.natusoft.osgi.aps.web.adminweb.Constants.*
 
 /**
@@ -38,13 +35,11 @@ import static se.natusoft.osgi.aps.web.adminweb.Constants.*
  *
  * The message structure looks like this:
  *
- *     {
- *         "type": "service" / ...,
+ *{*         "type": "service" / ...,
  *         "classifier": "public" / "private",
  *         "action": "(action)"
  *         ...
- *     }
- *
+ *}*
  * ### Suppressed Warnings
  *
  * This applies to IDEA and probably other IDEs too.
@@ -73,8 +68,8 @@ import static se.natusoft.osgi.aps.web.adminweb.Constants.*
 @SuppressWarnings(["GroovyUnusedDeclaration", "PackageAccessibility"])
 @CompileStatic
 @TypeChecked
-@OSGiServiceProvider( properties = [ @OSGiProperty( name = "consumed", value = "vertx" ) ] )
-class EventRouter implements ObjectConsumer<Vertx> , Constants {
+@OSGiServiceProvider(properties = [@OSGiProperty(name = "consumed", value = "vertx")])
+class EventRouter implements ObjectConsumer<Vertx> {
 
     //
     // Private Members
@@ -111,7 +106,7 @@ class EventRouter implements ObjectConsumer<Vertx> , Constants {
      */
     @Initializer
     void init() {
-        this.logger.connectToLogService( this.context )
+        this.logger.connectToLogService(this.context)
     }
 
     //
@@ -131,13 +126,13 @@ class EventRouter implements ObjectConsumer<Vertx> , Constants {
      */
     @SuppressWarnings("PackageAccessibility")
     @Override
-    void onObjectAvailable( ObjectConsumer.ObjectHolder<Vertx> vertx ) {
+    void onObjectAvailable(ObjectConsumer.ObjectHolder<Vertx> vertx) {
         this.vertx = vertx
 
         this.eventBus = this.vertx.use().eventBus()
 
         // Handles public events
-        this.eventConsumer = eventBus.consumer( BusEvent._Address.PUBLIC ).handler { Message message ->
+        this.eventConsumer = eventBus.consumer(EVENT.ADDRESS).handler { Message message ->
             routePublicBusEvents(message)
         }
 
@@ -154,28 +149,26 @@ class EventRouter implements ObjectConsumer<Vertx> , Constants {
      *
      * @param eventMessage A received public messages. These can be both from client(s) and other service instances.
      */
-    @SuppressWarnings( "PackageAccessibility" )
-    private void routePublicBusEvents( Message eventMessage ) {
+    @SuppressWarnings("PackageAccessibility")
+    private void routePublicBusEvents(Message eventMessage) {
         // Convert from JSON string to a Map<String, Object> which can be used almost like client side JSON by Groovy.
         Map<String, Object> event
-        if ( JsonObject.class.isAssignableFrom( eventMessage.body().class ) ) {
+        if (JsonObject.class.isAssignableFrom(eventMessage.body().class)) {
             event = (eventMessage.body() as JsonObject).map
-        }
-        else {
-            event = new JsonObject( eventMessage.body().toString() ).map
+        } else {
+            event = new JsonObject(eventMessage.body().toString()).map
         }
 
-        if ( event [ 'type' ] == "service" ) {
+        if (event['type'] == "service") {
             this.localBus.send(event)
 
-            if ( event [ 'reply' ] != null ) {
-                Map<String, Object> reply = event[ 'reply' ] as Map<String, Object>
+            if (event['reply'] != null) {
+                Map<String, Object> reply = event['reply'] as Map<String, Object>
                 JsonObject replyJson = new JsonObject(reply)
-                if ( eventMessage.replyAddress() != null && !eventMessage.replyAddress().empty ) {
+                if (eventMessage.replyAddress() != null && !eventMessage.replyAddress().empty) {
                     eventMessage.reply(replyJson)
-                }
-                else {
-                    this.eventBus.send( BusEvent._Address.PUBLIC , replyJson )
+                } else {
+                    this.eventBus.send(EVENT.ADDRESS, replyJson)
                 }
             }
         }
@@ -186,9 +179,9 @@ class EventRouter implements ObjectConsumer<Vertx> , Constants {
      *
      * @param event The event to route. This event is local to the application.
      */
-    private void routeLocalBusEvents( Map<String, Object> event ) {
-        if ( BusEvent._Address.PUBLIC == event [ BusEvent.Address ] && BusEvent._Classifier.PUBLIC == event [ BusEvent.Classifier ] ) {
-            this.eventBus.send( BusEvent._Address.PUBLIC , new JsonObject( event ) )
+    private void routeLocalBusEvents(Map<String, Object> event) {
+        if (EVENT.ADDRESS == event[EVENT.FIELD.ADDRESS] && EVENT.CLASSIFIER.PUBLIC == event[EVENT.FIELD.CLASSIFIER]) {
+            this.eventBus.send(EVENT.ADDRESS, new JsonObject(event))
         }
     }
 
@@ -196,19 +189,18 @@ class EventRouter implements ObjectConsumer<Vertx> , Constants {
      * Unregisters ourself as consumer on event bus.
      */
     private void stopEventConsumption() {
-        if ( this.eventConsumer != null ) {
+        if (this.eventConsumer != null) {
             this.eventConsumer.unregister { AsyncResult res ->
 
-                if ( res.succeeded() ) {
+                if (res.succeeded()) {
                     this.logger.info "Unregistered 'aps-admin-web' event consumer!"
                     this.eventConsumer = null
-                }
-                else {
+                } else {
                     this.logger.error "Failed to unregister 'aps-admin-web' event consuemr! [${res.cause()}]"
                 }
             }
         }
-        if ( this.localConsumer != null ) {
+        if (this.localConsumer != null) {
             this.localConsumer.dispose()
             this.localConsumer = null
         }
