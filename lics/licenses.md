@@ -16,6 +16,10 @@ __[Apache Software License version 2.0](http://www.apache.org/licenses/LICENSE-2
 
 The following third party products are using this license:
 
+* [rxjava-2.0.6](https://github.com/ReactiveX/RxJava)
 * [groovy-all-2.4.7](http://groovy-lang.org)
+* [vertx-core-3.3.3](http://www.apache.org/licenses/LICENSE-2.0.txt)
+* [vertx-auth-common-3.3.3](http://rubygems-proxy.torquebox.org/releases)
+* [vertx-web-3.3.3](http://rubygems-proxy.torquebox.org/releases)
 
 <!-- CLM -->

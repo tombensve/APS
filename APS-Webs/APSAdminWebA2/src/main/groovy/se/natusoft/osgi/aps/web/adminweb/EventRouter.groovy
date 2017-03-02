@@ -14,8 +14,6 @@ import se.natusoft.osgi.aps.api.reactive.ObjectConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 
-import static se.natusoft.osgi.aps.web.adminweb.Constants.*
-
 /**
  * This service listens to both public Vertx event-bus messages, and internal 'LocalEventBus' messages.
  * It routes specific messages from one to the other.
@@ -69,7 +67,7 @@ import static se.natusoft.osgi.aps.web.adminweb.Constants.*
 @CompileStatic
 @TypeChecked
 @OSGiServiceProvider(properties = [@OSGiProperty(name = "consumed", value = "vertx")])
-class EventRouter implements ObjectConsumer<Vertx> {
+class EventRouter implements ObjectConsumer<Vertx> , Constants {
 
     //
     // Private Members
@@ -132,7 +130,7 @@ class EventRouter implements ObjectConsumer<Vertx> {
         this.eventBus = this.vertx.use().eventBus()
 
         // Handles public events
-        this.eventConsumer = eventBus.consumer(EVENT.ADDRESS).handler { Message message ->
+        this.eventConsumer = eventBus.consumer(BUS_ADDRESS).handler { Message message ->
             routePublicBusEvents(message)
         }
 
@@ -168,7 +166,7 @@ class EventRouter implements ObjectConsumer<Vertx> {
                 if (eventMessage.replyAddress() != null && !eventMessage.replyAddress().empty) {
                     eventMessage.reply(replyJson)
                 } else {
-                    this.eventBus.send(EVENT.ADDRESS, replyJson)
+                    this.eventBus.send(BUS_ADDRESS, replyJson)
                 }
             }
         }
@@ -180,8 +178,8 @@ class EventRouter implements ObjectConsumer<Vertx> {
      * @param event The event to route. This event is local to the application.
      */
     private void routeLocalBusEvents(Map<String, Object> event) {
-        if (EVENT.ADDRESS == event[EVENT.FIELD.ADDRESS] && EVENT.CLASSIFIER.PUBLIC == event[EVENT.FIELD.CLASSIFIER]) {
-            this.eventBus.send(EVENT.ADDRESS, new JsonObject(event))
+        if (BUS_ADDRESS == event[_address_] && CLASSIFIER_PUBLIC == event[_classifier_]) {
+            this.eventBus.send(BUS_ADDRESS, new JsonObject(event))
         }
     }
 
