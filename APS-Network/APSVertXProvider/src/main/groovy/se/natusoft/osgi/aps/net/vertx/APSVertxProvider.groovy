@@ -45,7 +45,7 @@ import io.vertx.core.AsyncResult
 import io.vertx.core.Handler
 import io.vertx.groovy.core.Vertx
 import org.osgi.framework.ServiceReference
-import se.natusoft.osgi.aps.api.reactive.ObjectConsumer
+import se.natusoft.osgi.aps.api.reactive.Consumer
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
 import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
@@ -86,7 +86,7 @@ class APSVertxProvider implements APSVertxService {
      * call you!
      */
     @OSGiService( additionalSearchCriteria = "(consumed=vertx)" )
-    private APSServiceTracker<ObjectConsumer<Vertx>> apsVertxConsumers
+    private APSServiceTracker<Consumer<Vertx>> apsVertxConsumers
 
     /**
      * This associates a name with each Vertx instance. This is to allow multiple clients to share the same
@@ -115,7 +115,7 @@ class APSVertxProvider implements APSVertxService {
      * the service again and add the service reference to this map. If the service itself calls release()
      * it usually means that the service is going down.
      */
-    private Map<ServiceReference, ObjectConsumer.ObjectHolder<Vertx>> callbackInstances = Collections.synchronizedMap( [ : ] )
+    private Map<ServiceReference, Consumer.ConsumedHolder<Vertx>> callbackInstances = Collections.synchronizedMap( [: ] )
 
     /**
      * This does the reverse of APSVertxService: It listens to InstanceConsumer services and calls them with
@@ -129,7 +129,7 @@ class APSVertxProvider implements APSVertxService {
     private Runnable updateVertxConsumers = {
         Map<ServiceReference, ServiceReference> currentServices = [ : ]
 
-        this.apsVertxConsumers.onServiceAvailable { ObjectConsumer<Vertx> dataConsumer, ServiceReference serviceReference ->
+        this.apsVertxConsumers.onServiceAvailable { Consumer<Vertx> dataConsumer, ServiceReference serviceReference ->
             currentServices.put serviceReference, serviceReference
 
             String name = DEFAULT_INST
@@ -143,8 +143,8 @@ class APSVertxProvider implements APSVertxService {
                 useGroovyVertX(name, { AsyncResult<Vertx> result ->
                     if ( result.succeeded() ) {
 
-                        ObjectConsumer.ObjectHolder<Vertx> vertxProvider =
-                                new ObjectConsumer.ObjectHolder.ObjectHolderProvider<Vertx>( result.result() ) {
+                        Consumer.ConsumedHolder<Vertx> vertxProvider =
+                                new Consumer.ConsumedHolder.ConsumedHolderProvider<Vertx>( result.result() ) {
                             @Override
                             void release() {
                                 callbackInstances.remove( serviceReference )
@@ -266,7 +266,7 @@ class APSVertxProvider implements APSVertxService {
             Vertx vertx = this.namedInstances.remove name
             this.usageCount.remove name
 
-            this.apsVertxConsumers.onServiceAvailable { ObjectConsumer<Vertx> dataConsumer, ServiceReference serviceReference ->
+            this.apsVertxConsumers.onServiceAvailable { Consumer<Vertx> dataConsumer, ServiceReference serviceReference ->
                 dataConsumer.onObjectRevoked()
             }
 

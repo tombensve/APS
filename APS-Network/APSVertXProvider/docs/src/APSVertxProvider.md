@@ -40,12 +40,12 @@ Use the APSVertxService:
 Or use the Hollywood principle: Don't call us, we call you!
 
     @OSGiServiceProvider
-    class VertxConsumerService extends DataConsumer.DataConsumerProvider<Vertx> implements DataConsumer<Vertx> {
+    class VertxConsumerService extends Consumer.ConsumerProvider<Vertx> implements Consumer<Vertx> {
     
         @Managed
         private APSLogger logger
     
-        private DataConsumer.DataHolder<Vertx> vertx
+        private Consumer.ConsumedHolder<Vertx> vertx
     
         /**
          * Called when there is updated data available.
@@ -53,7 +53,7 @@ Or use the Hollywood principle: Don't call us, we call you!
          * @param data The new data.
          */
         @Override
-        void onDataAvailable(DataConsumer.DataHolder<Vertx> vertx) {
+        void onDataAvailable(Consumer.ConsumedHolder<Vertx> vertx) {
             this.vertx = vertx
             
             EventBus eventBus = this.vertx.use().eventBus()
@@ -73,7 +73,6 @@ Or use the Hollywood principle: Don't call us, we call you!
         }
     }
 
-It is the APSVertxService that also listens to all `DataConsumer<Vertx>` services and calls them back with a Vertx instance. The received object is wrapped and you have to call `.use()` on it to get the real Vertx instance. `.release()` says that you are done with the instance, and when the useage count reaches 0 APSVertxService will shut down the Vertx cluster again.
+It is the APSVertxService that also listens to all `Consumer<Vertx>` services and calls them back with a Vertx instance. The received object is wrapped and you have to call `.use()` on it to get the real Vertx instance. `.release()` says that you are done with the instance, and when the useage count reaches 0 APSVertxService will shut down the Vertx cluster again.
 
 This service allows for multiple Bundles and services to use the same Vertx instance acting as part of one application.  
-         
