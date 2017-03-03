@@ -47,14 +47,8 @@ import java.util.Properties;
  * Instead of tracking a service and call it to get something, you publish a service implementing this interface and it will get
  * called with something for you. So the service becomes a client instead and calls you back with the information you want. This
  * to work better with reactive APIs like Vert.x.
- *
- * I have to admit to having a great difficulty in coming up with a good name for this! I've renamed it a few times! Since all
- * instances of something (try to ignore that there are primitives for the moment) are an instance of java.lang.Object, I
- * now decided to use the term 'Object' to mean anything/something/whatever. This API is used to consume anything/something/
- * whatever. It can be pure data, it can be functionality, it doesn't really matter what it is. It is something that something
- * else is interested in, whatever it is.
  */
-public interface ObjectConsumer<ObjectType> {
+public interface Consumer<ConsumedType> {
 
     /**
      * Specific options for the consumer.
@@ -66,7 +60,7 @@ public interface ObjectConsumer<ObjectType> {
      *
      * @param object The received object.
      */
-    void onObjectAvailable(ObjectHolder<ObjectType> object);
+    void onObjectAvailable(ConsumedHolder<ConsumedType> object);
 
     /**
      * Called when there is a failure to deliver requested object.
@@ -81,13 +75,13 @@ public interface ObjectConsumer<ObjectType> {
     /**
      * Wraps the provided object and provides possibility to release it.
      *
-     * @param <IObjectType> The type of the held object.
+     * @param <HeldType> The type of the held object.
      */
-    interface ObjectHolder<IObjectType> {
+    interface ConsumedHolder<HeldType> {
         /**
          * @return The actual object.
          */
-        IObjectType use();
+        HeldType use();
 
         /**
          * Releases the object.
@@ -97,12 +91,12 @@ public interface ObjectConsumer<ObjectType> {
         /**
          * Helper implementation.
          *
-         * @param <IPObjectType> The type held.
+         * @param <ProviderHeldType> The type held.
          */
-        class ObjectHolderProvider<IPObjectType> implements ObjectHolder<IPObjectType> {
-            private IPObjectType object;
+        class ConsumedHolderProvider<ProviderHeldType> implements ConsumedHolder<ProviderHeldType> {
+            private ProviderHeldType object;
 
-            public ObjectHolderProvider(IPObjectType object) {
+            public ConsumedHolderProvider(ProviderHeldType object) {
                 this.object = object;
             }
 
@@ -110,7 +104,7 @@ public interface ObjectConsumer<ObjectType> {
              * @return The actual object.
              */
             @Override
-            public IPObjectType use() {
+            public ProviderHeldType use() {
                 return object;
             }
 
@@ -125,13 +119,13 @@ public interface ObjectConsumer<ObjectType> {
     /**
      * Utility partial implementation of ObjectConsumer.
      *
-     * @param <DCPObjectType> The type to consume.
+     * @param <ProviderConsumedType> The type to consume.
      */
-    abstract class ObjectConsumerProvider<DCPObjectType> implements ObjectConsumer<DCPObjectType> {
+    abstract class ConsumerProvider<ProviderConsumedType> implements Consumer<ProviderConsumedType> {
 
         private Properties options;
 
-        public ObjectConsumerProvider() {
+        public ConsumerProvider() {
             Properties loadOpts = new Properties();
             loadOptions(loadOpts);
             if (!loadOpts.isEmpty()) {
