@@ -6,7 +6,7 @@ import org.junit.Test
 
 @CompileStatic
 @TypeChecked
-class MapJsonDocVerifierTest {
+class MapsonDocValidatorTest {
 
     private Map<String, Object> schema = [
             header_1: [
@@ -31,7 +31,7 @@ class MapJsonDocVerifierTest {
             ]
     ] as Map<String, Object>
 
-    private MapJsonDocVerifier verifier = new MapJsonDocVerifier( validStructure: schema )
+    private MapsonDocValidator verifier = new MapsonDocValidator( validStructure: schema )
 
     @Test
     void testFullyCorrect() throws Exception {
