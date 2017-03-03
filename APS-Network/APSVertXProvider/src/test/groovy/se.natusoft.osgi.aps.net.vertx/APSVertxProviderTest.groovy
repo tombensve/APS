@@ -4,7 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.groovy.core.Vertx
 import org.junit.Test
-import se.natusoft.osgi.aps.api.reactive.ObjectConsumer
+import se.natusoft.osgi.aps.api.reactive.Consumer
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
 import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
@@ -22,7 +22,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 @TypeChecked
 class APSVertxProviderTest extends OSGIServiceTestTools {
 
-    public static ObjectConsumer.ObjectHolder<Vertx> vertx = null
+    public static Consumer.ConsumedHolder<Vertx> vertx = null
 
     @Test
     void reactiveAPITest() throws Exception {
@@ -75,7 +75,7 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
 @OSGiServiceProvider( properties = [ @OSGiProperty( name = "consumed", value = "vertx") ] )
 @CompileStatic
 @TypeChecked
-class VertxConsumerService extends ObjectConsumer.ObjectConsumerProvider<Vertx> implements ObjectConsumer<Vertx> {
+class VertxConsumerService extends Consumer.ConsumerProvider<Vertx> implements Consumer<Vertx> {
 
     @Managed(loggingFor = "Test:VertxConsumerService")
     APSLogger logger
@@ -86,7 +86,7 @@ class VertxConsumerService extends ObjectConsumer.ObjectConsumerProvider<Vertx> 
      * @param data The new data.
      */
     @Override
-    void onObjectAvailable(ObjectConsumer.ObjectHolder<Vertx> vertx) {
+    void onObjectAvailable(Consumer.ConsumedHolder<Vertx> vertx) {
         this.logger.info("VertxConsumerService.onDataAvailable(...) called!")
         APSVertxProviderTest.vertx = vertx
     }
