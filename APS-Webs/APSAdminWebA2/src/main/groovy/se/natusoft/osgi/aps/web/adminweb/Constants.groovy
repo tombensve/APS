@@ -5,6 +5,8 @@ package se.natusoft.osgi.aps.web.adminweb
  */
 interface Constants {
 
+    static final String APP_NAME = "aps-admin-web-a2"
+
     //
     // Message keys
     //

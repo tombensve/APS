@@ -58,7 +58,7 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
             hold() whilst { vertx == null } maxTime 5L unit SECONDS go()
 
             assert vertx != null
-            assert vertx.use() != null
+            assert vertx.get() != null
 
         }
         finally {

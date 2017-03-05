@@ -10,7 +10,7 @@ import io.vertx.groovy.core.eventbus.EventBus
 import io.vertx.groovy.core.eventbus.Message
 import io.vertx.groovy.core.eventbus.MessageConsumer
 import org.osgi.framework.BundleContext
-import se.natusoft.osgi.aps.api.reactive.ObjectConsumer
+import se.natusoft.osgi.aps.api.reactive.Consumer
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 
@@ -31,13 +31,8 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
  * network. Local services only uses the local bus, it is only this router that manages to and from messages to the
  * public event-bus.
  *
- * The message structure looks like this:
+ * See EventDefinition.EVENT_SCHEMA for a definition of the event structure.
  *
- *{*         "type": "service" / ...,
- *         "classifier": "public" / "private",
- *         "action": "(action)"
- *         ...
- *}*
  * ### Suppressed Warnings
  *
  * This applies to IDEA and probably other IDEs too.
@@ -67,7 +62,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 @CompileStatic
 @TypeChecked
 @OSGiServiceProvider(properties = [@OSGiProperty(name = "consumed", value = "vertx")])
-class EventRouter implements ObjectConsumer<Vertx> , Constants {
+class EventRouter implements Consumer<Vertx>, Constants {
 
     //
     // Private Members
@@ -84,7 +79,7 @@ class EventRouter implements ObjectConsumer<Vertx> , Constants {
     private LocalEventBus localBus
 
     /** A Vertx instance. Received in onObjectAvailable(...). */
-    private ObjectConsumer.ObjectHolder<Vertx> vertx
+    private Consumer.ConsumedHolder<Vertx> vertx
 
     /** Our public event-bus. */
     private EventBus eventBus
@@ -124,10 +119,10 @@ class EventRouter implements ObjectConsumer<Vertx> , Constants {
      */
     @SuppressWarnings("PackageAccessibility")
     @Override
-    void onObjectAvailable(ObjectConsumer.ObjectHolder<Vertx> vertx) {
+    void onObjectAvailable(Consumer.ConsumedHolder<Vertx> vertx) {
         this.vertx = vertx
 
-        this.eventBus = this.vertx.use().eventBus()
+        this.eventBus = this.vertx.get().eventBus()
 
         // Handles public events
         this.eventConsumer = eventBus.consumer(BUS_ADDRESS).handler { Message message ->
@@ -150,11 +145,20 @@ class EventRouter implements ObjectConsumer<Vertx> , Constants {
     @SuppressWarnings("PackageAccessibility")
     private void routePublicBusEvents(Message eventMessage) {
         // Convert from JSON string to a Map<String, Object> which can be used almost like client side JSON by Groovy.
-        Map<String, Object> event
+        Map<String, Object> event = null
         if (JsonObject.class.isAssignableFrom(eventMessage.body().class)) {
             event = (eventMessage.body() as JsonObject).map
-        } else {
+        } else if (String.class.isAssignableFrom(eventMessage.body().class)) {
             event = new JsonObject(eventMessage.body().toString()).map
+        } else {
+            sendReply(
+                    EventDefinition.createError(
+                            event,
+                            [code: 2, message: "Bad format of message body! Must be JsonObject or String!"] as Map<String, Object>)
+                    ,
+                    eventMessage
+            )
+            return
         }
 
         if (event['type'] == "service") {
@@ -162,13 +166,23 @@ class EventRouter implements ObjectConsumer<Vertx> , Constants {
 
             if (event['reply'] != null) {
                 Map<String, Object> reply = event['reply'] as Map<String, Object>
-                JsonObject replyJson = new JsonObject(reply)
-                if (eventMessage.replyAddress() != null && !eventMessage.replyAddress().empty) {
-                    eventMessage.reply(replyJson)
-                } else {
-                    this.eventBus.send(BUS_ADDRESS, replyJson)
-                }
+                sendReply(reply, eventMessage)
             }
+        }
+    }
+
+    /**
+     * Sends a reply.
+     *
+     * @param reply The reply to send.
+     * @param eventMessage The original event message.
+     */
+    private void sendReply(Map<String, Object> reply, Message eventMessage) {
+        JsonObject replyJson = new JsonObject(reply)
+        if (eventMessage.replyAddress() != null && !eventMessage.replyAddress().empty) {
+            eventMessage.reply(replyJson)
+        } else {
+            this.eventBus.send(BUS_ADDRESS, replyJson)
         }
     }
 

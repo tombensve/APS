@@ -81,51 +81,18 @@ public class BundleClassCollector {
                     if (classQName.startsWith("WEB-INF.classes.")) {
                         classQName = classQName.substring(16);
                     }
-                    try {
-                        Class entryClass = bundle.loadClass(classQName);
-                        // If not activatorMode is true then there will be classes in this list already on the first
-                        // call to this method. Therefore we skip duplicates.
-                        if (!entries.contains(entryClass)) {
-                            entries.add(entryClass);
+                    // We skip log for Groovy closures. They are embedded in parent class and not separate classes.
+                    if (!classQName.contains("closure")) {
+                        try {
+                            Class entryClass = bundle.loadClass(classQName);
+                            // If not activatorMode is true then there will be classes in this list already on the first
+                            // call to this method. Therefore we skip duplicates.
+                            if (!entries.contains(entryClass)) {
+                                entries.add(entryClass);
+                            }
+                        } catch (NullPointerException npe) {
+                            if (logger != null) logger.error(npe.getMessage(), npe);
                         }
-                    } catch (NullPointerException npe) {
-                        if (logger != null) logger.error(npe.getMessage(), npe);
-                        // Felix (when used by Karaf) seems to have problems here for a perfectly good classQName!
-                        // No, it is not null, if it where null it would explain this!
-                        //
-                        // It is:
-                        //
-                        //     se.natusoft.osgi.aps.userservice.config.UserServiceInstConfig.UserServiceInstance
-                        //
-                        // that cause this NPE. It belongs to APSSimpleUserServiceProvider and is a perfectly OK
-                        // class that compiles flawlessly. The classQName also contains a perfectly correct reference
-                        // to the class.
-                        //
-                        // This is the exception thrown:
-                        //
-                        //   Caused by: java.lang.NullPointerException
-                        //   at org.apache.felix.framework.BundleWiringImpl$BundleClassLoader.findClass(BundleWiringImpl.java:2015)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleWiringImpl.findClassOrResourceByDelegation(BundleWiringImpl.java:1501)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleWiringImpl.access$400(BundleWiringImpl.java:75)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleWiringImpl$BundleClassLoader.loadClass(BundleWiringImpl.java:1955)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at java.lang.ClassLoader.loadClass(ClassLoader.java:358)[:1.7.0_60]
-                        //   at org.apache.felix.framework.BundleWiringImpl.getClassByDelegation(BundleWiringImpl.java:1374)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleWiringImpl.searchImports(BundleWiringImpl.java:1553)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleWiringImpl.findClassOrResourceByDelegation(BundleWiringImpl.java:1484)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleWiringImpl.access$400(BundleWiringImpl.java:75)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleWiringImpl$BundleClassLoader.loadClass(BundleWiringImpl.java:1955)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at java.lang.ClassLoader.loadClass(ClassLoader.java:358)[:1.7.0_60]
-                        //   at java.lang.ClassLoader.defineClass1(Native Method)[:1.7.0_60]
-                        //   at java.lang.ClassLoader.defineClass(ClassLoader.java:800)[:1.7.0_60]
-                        //   at org.apache.felix.framework.BundleWiringImpl$BundleClassLoader.findClass(BundleWiringImpl.java:2279)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleWiringImpl.findClassOrResourceByDelegation(BundleWiringImpl.java:1501)[org.apache.felix.framework-4.2.1.jar:]
-                        //    at org.apache.felix.framework.BundleWiringImpl.access$400(BundleWiringImpl.java:75)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleWiringImpl$BundleClassLoader.loadClass(BundleWiringImpl.java:1955)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at java.lang.ClassLoader.loadClass(ClassLoader.java:358)[:1.7.0_60]
-                        //   at org.apache.felix.framework.Felix.loadBundleClass(Felix.java:1844)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at org.apache.felix.framework.BundleImpl.loadClass(BundleImpl.java:937)[org.apache.felix.framework-4.2.1.jar:]
-                        //   at se.natusoft.osgi.aps.tools.APSActivator.collectClassEntries(APSActivator.java:962)[104:aps-tools-lib:1.0.0]
-
                     }
                 } catch (ClassNotFoundException | NoClassDefFoundError cnfe) {
                     if (logger != null) logger.warn("Failed to load bundle class!", cnfe);

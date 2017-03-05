@@ -81,7 +81,7 @@ public interface Consumer<ConsumedType> {
         /**
          * @return The actual object.
          */
-        HeldType use();
+        HeldType get();
 
         /**
          * Releases the object.
@@ -104,7 +104,7 @@ public interface Consumer<ConsumedType> {
              * @return The actual object.
              */
             @Override
-            public ProviderHeldType use() {
+            public ProviderHeldType get() {
                 return object;
             }
 

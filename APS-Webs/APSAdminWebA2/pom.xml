@@ -192,6 +192,11 @@
         </dependency>
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-service-test-support</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>APSGroovyToolsLib</artifactId>
             <version>1.0.0</version>
         </dependency>
@@ -233,6 +238,41 @@
                         </mixin>
                     </mixins>
                 </configuration>
+            </plugin>
+
+            <!--
+                Copy web content
+            -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <target>
+                                <copy file="src/main/typescript/index.html"
+                                      tofile="src/main/resources/webContent/index.html" filtering="false"/>
+                                <copy file="src/main/typescript/node_modules/core-js/client/shim.min.js"
+                                      tofile="src/main/resources/webContent/shim.min.js" filtering="false"/>
+                                <copy file="src/main/typescript/node_modules/zone.js/dist/zone.js"
+                                      tofile="src/main/resources/webContent/" filtering="false"/>
+                                <copy file="src/main/typescript/node_modules/sockjs-client/dist/sockjs.min.js"
+                                      tofile="src/main/resources/webContent/sockjs.min.js" filtering="false"/>
+                                <copy file="src/main/typescript/node_modules/vertx3-eventbus-client/vertx-eventbus.js"
+                                      tofile="src/main/resources/webContent/vertx-eventbus.js" filtering="false"/>
+                                <copy file="src/main/typescript/static/adminweb-bundle.js"
+                                      tofile="src/main/resources/webContent/adminweb-bundle.js" filtering="false"/>
+                                <!--<copy file="src/main/typescript/node_modules/" tofile="src/main/resources/webContent/" filtering="false"/>-->
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+
+                    </execution>
+                </executions>
+
             </plugin>
 
             <!--

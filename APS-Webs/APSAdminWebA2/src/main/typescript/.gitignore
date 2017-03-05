@@ -1,2 +1,6 @@
 node_modules
 ***/*.js
+!gulpfile.js
+!systemjs.config.js
+!webpack.config.js
+
