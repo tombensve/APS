@@ -6,6 +6,7 @@ import io.vertx.core.AsyncResult
 import io.vertx.groovy.core.Vertx
 import io.vertx.groovy.core.http.HttpServerRequest
 import io.vertx.groovy.core.http.HttpServerResponse
+import se.natusoft.docutations.Implements
 import se.natusoft.osgi.aps.api.reactive.Consumer
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
@@ -69,6 +70,7 @@ class WebContentServer implements Consumer<Vertx>, Constants {
      * @param object The received object.
      */
     @SuppressWarnings("PackageAccessibility")
+    @Implements(Consumer.class)
     @Override
     void onObjectAvailable(Consumer.ConsumedHolder<Vertx> vertx) {
         // Default values, can be overridden by loaded options.
@@ -174,6 +176,7 @@ class WebContentServer implements Consumer<Vertx>, Constants {
     /**
      * Called when there is a failure to deliver requested object.
      */
+    @Implements(Consumer.class)
     @Override
     void onObjectUnavailable() {
         this.logger.error("Failed to get Vertx instance! Web content server cannot be started!")
@@ -213,6 +216,7 @@ class WebContentServer implements Consumer<Vertx>, Constants {
     /**
      * Called if/when a previously made available object is no longer valid.
      */
+    @Implements(Consumer.class)
     @Override
     void onObjectRevoked() {
         /*
