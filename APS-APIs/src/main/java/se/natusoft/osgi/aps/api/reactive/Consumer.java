@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
  *         2017-02-19: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.api.reactive;
 
@@ -58,26 +58,26 @@ public interface Consumer<ConsumedType> {
     /**
      * Called with requested object type when available.
      *
-     * @param object The received object.
+     * @param consumed The consumed object.
      */
-    void onObjectAvailable(ConsumedHolder<ConsumedType> object);
+    void onConsumedAvailable(Consumed<ConsumedType> consumed);
 
     /**
      * Called when there is a failure to deliver requested object.
      */
-    void onObjectUnavailable();
+    void onConsumedUnavailable();
 
     /**
      * Called if/when a previously made available object is no longer valid.
      */
-    void onObjectRevoked();
+    void onConsumedRevoked();
 
     /**
      * Wraps the provided object and provides possibility to release it.
      *
      * @param <HeldType> The type of the held object.
      */
-    interface ConsumedHolder<HeldType> {
+    interface Consumed<HeldType> {
         /**
          * @return The actual object.
          */
@@ -93,10 +93,10 @@ public interface Consumer<ConsumedType> {
          *
          * @param <ProviderHeldType> The type held.
          */
-        class ConsumedHolderProvider<ProviderHeldType> implements ConsumedHolder<ProviderHeldType> {
+        class ConsumedProvider<ProviderHeldType> implements Consumed<ProviderHeldType> {
             private ProviderHeldType object;
 
-            public ConsumedHolderProvider(ProviderHeldType object) {
+            public ConsumedProvider(ProviderHeldType object) {
                 this.object = object;
             }
 
@@ -117,15 +117,18 @@ public interface Consumer<ConsumedType> {
     }
 
     /**
-     * Utility partial implementation of ObjectConsumer.
+     * Utility partial implementation of Consumer.
      *
-     * @param <ProviderConsumedType> The type to consume.
+     * @param <DefaultConsumedType> The type to consume.
      */
-    abstract class ConsumerProvider<ProviderConsumedType> implements Consumer<ProviderConsumedType> {
+    abstract class DefaultConsumer<DefaultConsumedType> implements Consumer<DefaultConsumedType> {
 
         private Properties options;
 
-        public ConsumerProvider() {
+        /**
+         * A default implementation of Consumer missing only 'void onConsumedAvailable(Consumed<ConsumedType> consumed);'.
+         */
+        public DefaultConsumer() {
             Properties loadOpts = new Properties();
             loadOptions(loadOpts);
             if (!loadOpts.isEmpty()) {
@@ -136,6 +139,7 @@ public interface Consumer<ConsumedType> {
         /**
          * For overriding.
          */
+        @SuppressWarnings("WeakerAccess")
         protected void loadOptions(Properties options) {}
 
         /**
@@ -145,5 +149,18 @@ public interface Consumer<ConsumedType> {
         public Properties consumerOptions() {
             return this.options;
         }
+
+        /**
+         * Called when there is a failure to deliver requested object.
+         */
+        @Override
+        public void onConsumedUnavailable() {}
+
+        /**
+         * Called if/when a previously made available object is no longer valid.
+         */
+        @Override
+        public void onConsumedRevoked() {}
+
     }
 }

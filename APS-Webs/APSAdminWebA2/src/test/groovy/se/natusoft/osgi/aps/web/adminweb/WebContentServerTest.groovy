@@ -19,7 +19,7 @@ import static java.util.concurrent.TimeUnit.SECONDS
 @TypeChecked
 class WebContentServerTest extends OSGIServiceTestTools {
 
-    public static Consumer.ConsumedHolder<Vertx> vertx = null
+    public static Consumer.Consumed<Vertx> vertx = null
 
     @Test
     void testWebContentServer() throws Exception {
@@ -82,7 +82,7 @@ class WebContentServerTest extends OSGIServiceTestTools {
 
     }
 
-    private String loadFromStream(InputStream readStream) {
+    private static String loadFromStream(InputStream readStream) {
         StringBuilder sb = new StringBuilder()
         BufferedReader reader = new BufferedReader(new InputStreamReader(readStream))
 

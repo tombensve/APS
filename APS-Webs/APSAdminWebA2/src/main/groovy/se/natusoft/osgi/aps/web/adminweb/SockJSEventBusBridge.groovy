@@ -50,7 +50,7 @@ class SockJSEventBusBridge implements Consumer<Vertx>, Constants {
     private APSLogger logger
 
     /** A Vertx instance. Received in onObjectAvailable(...). */
-    private Consumer.ConsumedHolder<Vertx> vertx
+    private Consumer.Consumed<Vertx> vertx
 
     //
     // Methods
@@ -77,7 +77,7 @@ class SockJSEventBusBridge implements Consumer<Vertx>, Constants {
      */
     @SuppressWarnings("PackageAccessibility")
     @Override
-    void onObjectAvailable(Consumer.ConsumedHolder<Vertx> vertx) {
+    void onConsumedAvailable(Consumer.Consumed<Vertx> vertx) {
         this.vertx = vertx
 
         Router router = Router.router(this.vertx.get())
@@ -91,6 +91,7 @@ class SockJSEventBusBridge implements Consumer<Vertx>, Constants {
                 outboundPermitteds: [twowaysPermitted1] as Object
         ])
 
+        // TODO: Need to pass HTTP requests to router.accept(...)!
         router.route("/eventbus/*").handler(sockJSHandler)
 
         this.logger.info "Vert.x SockJSHandler for event bus bridging started successfully!"
@@ -101,7 +102,7 @@ class SockJSEventBusBridge implements Consumer<Vertx>, Constants {
      * Called when there is a failure to deliver requested object.
      */
     @Override
-    void onObjectUnavailable() {
+    void onConsumedUnavailable() {
         this.logger.error "Failed to setup SockJSHandler due to no Vertx instance available!"
     }
 
@@ -109,7 +110,7 @@ class SockJSEventBusBridge implements Consumer<Vertx>, Constants {
      * Called if/when a previously made available object is no longer valid.
      */
     @Override
-    void onObjectRevoked() {
+    void onConsumedRevoked() {
         this.vertx = null
         this.logger.warn "Vertx instance have been revoked! Until new becomes available there will be no server access!"
     }

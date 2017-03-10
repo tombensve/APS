@@ -43,7 +43,7 @@ import se.natusoft.osgi.aps.web.adminweb.config.ContentServerConfig
 @CompileStatic
 @TypeChecked
 @OSGiServiceProvider(properties = [@OSGiProperty(name = "consumed", value = "vertx")])
-class WebContentServer implements Consumer<Vertx>, Constants {
+class WebContentServer extends Consumer.DefaultConsumer implements Consumer<Vertx>, Constants {
 
     //
     // Private Members
@@ -61,7 +61,7 @@ class WebContentServer implements Consumer<Vertx>, Constants {
     /**
      * Specific options for the consumer.
      */
-    @Override
+    @Implements(Consumer.class)
     Properties consumerOptions() { return null }
 
     /**
@@ -71,10 +71,9 @@ class WebContentServer implements Consumer<Vertx>, Constants {
      */
     @SuppressWarnings("PackageAccessibility")
     @Implements(Consumer.class)
-    @Override
-    void onObjectAvailable(Consumer.ConsumedHolder<Vertx> vertx) {
+    void onConsumedAvailable(Consumer.Consumed<Vertx> vertx) {
         // Default values, can be overridden by loaded options.
-        Map<String, Object> options = [
+        def options = [
                 logActivity: true,
                 listenPort : 9080
         ] as Map<String, Object>
@@ -102,6 +101,14 @@ class WebContentServer implements Consumer<Vertx>, Constants {
                 this.logger.error("Web content HTTP server failed to start! [${res.cause().message}]", res.cause())
             }
         }
+    }
+
+    /**
+     * Called when there is a failure to deliver requested object.
+     */
+    @Implements(Consumer.class)
+    void onConsumedUnavailable() {
+        this.logger.error("Failed to get Vertx instance! Web content server cannot be started!")
     }
 
     /**
@@ -174,15 +181,6 @@ class WebContentServer implements Consumer<Vertx>, Constants {
     }
 
     /**
-     * Called when there is a failure to deliver requested object.
-     */
-    @Implements(Consumer.class)
-    @Override
-    void onObjectUnavailable() {
-        this.logger.error("Failed to get Vertx instance! Web content server cannot be started!")
-    }
-
-    /**
      * Loads config options into a Vertx options Map.
      *
      * @param options The map to load options into.
@@ -211,18 +209,6 @@ class WebContentServer implements Consumer<Vertx>, Constants {
 
             options[entry.name.string] = value
         }
-    }
-
-    /**
-     * Called if/when a previously made available object is no longer valid.
-     */
-    @Implements(Consumer.class)
-    @Override
-    void onObjectRevoked() {
-        /*
-         * There is nothing we can do if we loose the Vertx object! Vertx will shut down itself and cleanup. On a new instance
-         * being available onObjectAvailable(...) will be called again.
-         */
     }
 
     @BundleStop

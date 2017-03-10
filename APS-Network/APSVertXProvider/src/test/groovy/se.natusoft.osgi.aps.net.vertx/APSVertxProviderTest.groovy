@@ -22,7 +22,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 @TypeChecked
 class APSVertxProviderTest extends OSGIServiceTestTools {
 
-    public static Consumer.ConsumedHolder<Vertx> vertx = null
+    public static Consumer.Consumed<Vertx> vertx = null
 
     @Test
     void reactiveAPITest() throws Exception {
@@ -75,7 +75,7 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
 @OSGiServiceProvider( properties = [ @OSGiProperty( name = "consumed", value = "vertx") ] )
 @CompileStatic
 @TypeChecked
-class VertxConsumerService extends Consumer.ConsumerProvider<Vertx> implements Consumer<Vertx> {
+class VertxDefaultConsumerService extends Consumer.DefaultConsumer<Vertx> implements Consumer<Vertx> {
 
     @Managed(loggingFor = "Test:VertxConsumerService")
     APSLogger logger
@@ -86,7 +86,7 @@ class VertxConsumerService extends Consumer.ConsumerProvider<Vertx> implements C
      * @param data The new data.
      */
     @Override
-    void onObjectAvailable(Consumer.ConsumedHolder<Vertx> vertx) {
+    void onConsumedAvailable(Consumer.Consumed<Vertx> vertx) {
         this.logger.info("VertxConsumerService.onDataAvailable(...) called!")
         APSVertxProviderTest.vertx = vertx
     }
@@ -97,7 +97,7 @@ class VertxConsumerService extends Consumer.ConsumerProvider<Vertx> implements C
      * Haven't found a way to make Vertx fail yet, so this will never be called.
      */
     @Override
-    void onObjectUnavailable() {
+    void onConsumedUnavailable() {
         this.logger.error("No vertx instance available!")
         throw new Exception("Failure, no vertx service available!")
     }
@@ -106,7 +106,7 @@ class VertxConsumerService extends Consumer.ConsumerProvider<Vertx> implements C
      * Called if/when a previously made available object is no longer valid.
      */
     @Override
-    void onObjectRevoked() {
+    void onConsumedRevoked() {
         this.logger.info("Vertx instance revoked!")
     }
 }

@@ -79,10 +79,7 @@ class EventRouter implements Consumer<Vertx>, Constants {
     private LocalEventBus localBus
 
     /** A Vertx instance. Received in onObjectAvailable(...). */
-    private Consumer.ConsumedHolder<Vertx> vertx
-
-    /** Our public event-bus. */
-    private EventBus eventBus
+    private Consumer.Consumed<Vertx> vertx
 
     /** Consumer of public event-bus messages. */
     private MessageConsumer eventConsumer
@@ -119,13 +116,11 @@ class EventRouter implements Consumer<Vertx>, Constants {
      */
     @SuppressWarnings("PackageAccessibility")
     @Override
-    void onObjectAvailable(Consumer.ConsumedHolder<Vertx> vertx) {
+    void onConsumedAvailable(Consumer.Consumed<Vertx> vertx) {
         this.vertx = vertx
 
-        this.eventBus = this.vertx.get().eventBus()
-
         // Handles public events
-        this.eventConsumer = eventBus.consumer(BUS_ADDRESS).handler { Message message ->
+        this.eventConsumer = this.vertx.get().eventBus().consumer(BUS_ADDRESS).handler { Message message ->
             routePublicBusEvents(message)
         }
 
@@ -182,7 +177,7 @@ class EventRouter implements Consumer<Vertx>, Constants {
         if (eventMessage.replyAddress() != null && !eventMessage.replyAddress().empty) {
             eventMessage.reply(replyJson)
         } else {
-            this.eventBus.send(BUS_ADDRESS, replyJson)
+            this.vertx.get().eventBus().send(BUS_ADDRESS, replyJson)
         }
     }
 
@@ -193,7 +188,7 @@ class EventRouter implements Consumer<Vertx>, Constants {
      */
     private void routeLocalBusEvents(Map<String, Object> event) {
         if (BUS_ADDRESS == event[_address_] && CLASSIFIER_PUBLIC == event[_classifier_]) {
-            this.eventBus.send(BUS_ADDRESS, new JsonObject(event))
+            this.vertx.get().eventBus().send(BUS_ADDRESS, new JsonObject(event))
         }
     }
 
@@ -222,7 +217,7 @@ class EventRouter implements Consumer<Vertx>, Constants {
      * Called when there is a failure to deliver requested object.
      */
     @Override
-    void onObjectUnavailable() {
+    void onConsumedUnavailable() {
         this.logger.error "Failed to setup local event router due to no Vertx instance available!"
     }
 
@@ -232,7 +227,7 @@ class EventRouter implements Consumer<Vertx>, Constants {
      * Do note that we do not need to shut down due to this! We can just wait for a new Vertx instance to be delivered.
      */
     @Override
-    void onObjectRevoked() {
+    void onConsumedRevoked() {
         this.logger.error "Vertx instance have been revoked!"
         stopEventConsumption()
         this.vertx = null
@@ -245,7 +240,7 @@ class EventRouter implements Consumer<Vertx>, Constants {
     void shutdown() {
         this.logger.info("Shutting down!")
         stopEventConsumption()
+        if (this.vertx != null) this.vertx.release()
         this.vertx = null
-        this.eventBus = null
     }
 }
