@@ -90,7 +90,7 @@ class APSSimpleDiscoveryServiceMulticastTest extends OSGIServiceTestTools {
 
                 discoveryServiceTracker.withAllAvailableServices(new WithService<APSSimpleDiscoveryService>() {
                     @Override
-                    public void withService(APSSimpleDiscoveryService service) throws Exception {
+                    public void withService(APSSimpleDiscoveryService service, Object... args) throws Exception {
                         handleSvc(service)
                     }
                 })
