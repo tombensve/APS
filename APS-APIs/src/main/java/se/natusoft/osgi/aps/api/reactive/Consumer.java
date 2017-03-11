@@ -51,26 +51,21 @@ import java.util.Properties;
 public interface Consumer<ConsumedType> {
 
     /**
-     * Specific options for the consumer.
+     * Specific requirements of the consumer.
      */
-    Properties consumerOptions();
+    Properties getConsumerRequirements();
 
     /**
      * Called with requested object type when available.
      *
-     * @param consumed The consumed object.
+     * @param status The status of this call.
+     * @param consumed The consumed object. This is only available on Status.OK otherwise this will be null!
      */
-    void onConsumedAvailable(Consumed<ConsumedType> consumed);
+    void onConsumed(Status status, Consumed<ConsumedType> consumed);
 
-    /**
-     * Called when there is a failure to deliver requested object.
-     */
-    void onConsumedUnavailable();
-
-    /**
-     * Called if/when a previously made available object is no longer valid.
-     */
-    void onConsumedRevoked();
+    enum Status {
+        OK, UNAVAILABLE, REVOKED
+    }
 
     /**
      * Wraps the provided object and provides possibility to release it.
@@ -117,50 +112,44 @@ public interface Consumer<ConsumedType> {
     }
 
     /**
-     * Utility partial implementation of Consumer.
+     * A default implementation of Consumer missing only 'void onConsumedAvailable(Consumed<ConsumedType> consumed);'.
      *
      * @param <DefaultConsumedType> The type to consume.
      */
     abstract class DefaultConsumer<DefaultConsumedType> implements Consumer<DefaultConsumedType> {
 
-        private Properties options;
+        /** Potential consumer requirements. */
+        private Properties requirements;
 
         /**
-         * A default implementation of Consumer missing only 'void onConsumedAvailable(Consumed<ConsumedType> consumed);'.
+         * Provide a complete set of requirements.
+         *
+         * @param requirements The requirements to provide.
          */
-        public DefaultConsumer() {
-            Properties loadOpts = new Properties();
-            loadOptions(loadOpts);
-            if (!loadOpts.isEmpty()) {
-                this.options = loadOpts;
-            }
+        public void setRequirements(Properties requirements) {
+            this.requirements = requirements;
         }
 
         /**
-         * For overriding.
+         * Provide one individual requirement.
+         *
+         * @param name The name of the requirement property.
+         * @param value The value of the requirement property.
          */
-        @SuppressWarnings("WeakerAccess")
-        protected void loadOptions(Properties options) {}
+        public void setRequirement(String name, String value) {
+            if (this.requirements == null) {
+                this.requirements = new Properties();
+            }
+            this.requirements.setProperty(name, value);
+        }
 
         /**
          * Specific options for the consumer.
          */
         @Override
-        public Properties consumerOptions() {
-            return this.options;
+        public Properties getConsumerRequirements() {
+            return this.requirements;
         }
-
-        /**
-         * Called when there is a failure to deliver requested object.
-         */
-        @Override
-        public void onConsumedUnavailable() {}
-
-        /**
-         * Called if/when a previously made available object is no longer valid.
-         */
-        @Override
-        public void onConsumedRevoked() {}
 
     }
 }

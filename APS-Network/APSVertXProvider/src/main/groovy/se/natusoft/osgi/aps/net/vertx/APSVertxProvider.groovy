@@ -133,14 +133,14 @@ class APSVertxProvider implements APSVertxService {
             currentServices.put serviceReference, serviceReference
 
             String name = DEFAULT_INST
-            if ( dataConsumer.consumerOptions() != null && dataConsumer.consumerOptions().containsKey( "named-instance" ) ) {
-                name = dataConsumer.consumerOptions() [ "named-instance" ]
+            if ( dataConsumer.getConsumerRequirements() != null && dataConsumer.getConsumerRequirements().containsKey( NAMED_INSTANCE ) ) {
+                name = dataConsumer.getConsumerRequirements() [ NAMED_INSTANCE ]
             }
 
             // Check for new service
             if ( !this.callbackInstances.containsKey(serviceReference) ) {
 
-                useGroovyVertX(name, { AsyncResult<Vertx> result ->
+                useGroovyVertX(name) { AsyncResult<Vertx> result ->
                     if ( result.succeeded() ) {
 
                         Consumer.Consumed<Vertx> vertxProvider =
@@ -155,11 +155,11 @@ class APSVertxProvider implements APSVertxService {
 
                         this.callbackInstances.put( serviceReference , vertxProvider )
 
-                        dataConsumer.onConsumedAvailable( vertxProvider )
+                        dataConsumer.onConsumed( Consumer.Status.OK,  vertxProvider )
                     } else {
-                        dataConsumer.onConsumedUnavailable()
+                        dataConsumer.onConsumed( Consumer.Status.UNAVAILABLE, null)
                     }
-                })
+                }
             }
         }
     }
@@ -221,7 +221,7 @@ class APSVertxProvider implements APSVertxService {
         Map<String, Object> options = [ : ]
         loadOptions(options)
 
-        Vertx.clusteredVertx( options, { AsyncResult<Vertx> res ->
+        Vertx.clusteredVertx( options ) { AsyncResult<Vertx> res ->
             if ( res.succeeded() ) {
                 this.logger.info "Vert.x cluster started successfully!"
 
@@ -234,7 +234,7 @@ class APSVertxProvider implements APSVertxService {
                 this.logger.error "Vert.x cluster failed to start: ${res.cause()}, for '${name}'!"
                 result.handle( res )
             }
-        })
+        }
     }
 
     /**
@@ -249,7 +249,8 @@ class APSVertxProvider implements APSVertxService {
 
         if (vertx != null) {
             increaseUsageCount( name )
-            result.handle new AsyncResultProvider( vertx: vertx, succeeded: true )
+            // We have to thread this or risk bundle start deadlock if called from @Initializer method!
+            Thread.start { result.handle new AsyncResultProvider( vertx: vertx, succeeded: true ) }
         }
         else {
             createVertxInstance( name , result )
@@ -267,7 +268,7 @@ class APSVertxProvider implements APSVertxService {
             this.usageCount.remove name
 
             this.apsVertxConsumers.onServiceAvailable { Consumer<Vertx> dataConsumer, ServiceReference serviceReference ->
-                dataConsumer.onConsumedRevoked()
+                dataConsumer.onConsumed(Consumer.Status.REVOKED, null)
             }
 
             vertx.close { AsyncResult res ->

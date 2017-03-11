@@ -6,11 +6,11 @@ import io.reactivex.disposables.Disposable
 import io.vertx.core.AsyncResult
 import io.vertx.core.json.JsonObject
 import io.vertx.groovy.core.Vertx
-import io.vertx.groovy.core.eventbus.EventBus
 import io.vertx.groovy.core.eventbus.Message
 import io.vertx.groovy.core.eventbus.MessageConsumer
 import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.api.reactive.Consumer
+import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 
@@ -62,7 +62,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 @CompileStatic
 @TypeChecked
 @OSGiServiceProvider(properties = [@OSGiProperty(name = "consumed", value = "vertx")])
-class EventRouter implements Consumer<Vertx>, Constants {
+class EventRouter extends VertxConsumer implements Consumer<Vertx>, Constants {
 
     //
     // Private Members
@@ -88,6 +88,31 @@ class EventRouter implements Consumer<Vertx>, Constants {
     private Disposable localConsumer
 
     //
+    // Constructor
+    //
+
+    EventRouter() {
+        this.onVertxAvailable = { Consumer.Consumed<Vertx> vertx ->
+            this.vertx = vertx
+
+            // Handles public events
+            this.eventConsumer = this.vertx.get().eventBus().consumer(BUS_ADDRESS).handler { Message message ->
+                routePublicBusEvents(message)
+            }
+
+            // Handle local events
+            this.localConsumer = this.localBus.consume { Map<String, Object> localEvent ->
+                routeLocalBusEvents(localEvent)
+            }
+        }
+
+        this.onVertxRevoked = {
+            this.vertx = null
+            this.logger.error("Vertx just got revoked! This event router will thereby not work until a new Vertx is provided.")
+        }
+    }
+
+    //
     // Initializer
     //
 
@@ -102,34 +127,6 @@ class EventRouter implements Consumer<Vertx>, Constants {
     //
     // Methods
     //
-
-    /**
-     * Specific options for the consumer.
-     */
-    @Override
-    Properties consumerOptions() { return null }
-
-    /**
-     * Called with requested object type when available.
-     *
-     * @param object The received object.
-     */
-    @SuppressWarnings("PackageAccessibility")
-    @Override
-    void onConsumedAvailable(Consumer.Consumed<Vertx> vertx) {
-        this.vertx = vertx
-
-        // Handles public events
-        this.eventConsumer = this.vertx.get().eventBus().consumer(BUS_ADDRESS).handler { Message message ->
-            routePublicBusEvents(message)
-        }
-
-        // Handle local events
-        this.localConsumer = this.localBus.consume { Map<String, Object> localEvent ->
-            routeLocalBusEvents(localEvent)
-        }
-
-    }
 
     /**
      * This takes pubic messages from client(s) and routes specific messages to the local bus for servicing
@@ -214,26 +211,6 @@ class EventRouter implements Consumer<Vertx>, Constants {
     }
 
     /**
-     * Called when there is a failure to deliver requested object.
-     */
-    @Override
-    void onConsumedUnavailable() {
-        this.logger.error "Failed to setup local event router due to no Vertx instance available!"
-    }
-
-    /**
-     * Called if/when a previously made available Vertx object is no longer valid.
-     *
-     * Do note that we do not need to shut down due to this! We can just wait for a new Vertx instance to be delivered.
-     */
-    @Override
-    void onConsumedRevoked() {
-        this.logger.error "Vertx instance have been revoked!"
-        stopEventConsumption()
-        this.vertx = null
-    }
-
-    /**
      * Now we are really shutting down.
      */
     @BundleStop
@@ -241,6 +218,6 @@ class EventRouter implements Consumer<Vertx>, Constants {
         this.logger.info("Shutting down!")
         stopEventConsumption()
         if (this.vertx != null) this.vertx.release()
-        this.vertx = null
     }
+
 }

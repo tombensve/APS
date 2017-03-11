@@ -65,7 +65,7 @@ import se.natusoft.docutations.Nullable
  */
 @CompileStatic
 @TypeChecked
-class MapsonDocValidator {
+class MapJsonDocValidator {
 
     /**
      * Converts the original map into 2 maps that is easier to work against.

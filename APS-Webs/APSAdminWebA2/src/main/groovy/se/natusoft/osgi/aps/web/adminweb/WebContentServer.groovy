@@ -6,8 +6,8 @@ import io.vertx.core.AsyncResult
 import io.vertx.groovy.core.Vertx
 import io.vertx.groovy.core.http.HttpServerRequest
 import io.vertx.groovy.core.http.HttpServerResponse
-import se.natusoft.docutations.Implements
 import se.natusoft.osgi.aps.api.reactive.Consumer
+import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
@@ -43,7 +43,7 @@ import se.natusoft.osgi.aps.web.adminweb.config.ContentServerConfig
 @CompileStatic
 @TypeChecked
 @OSGiServiceProvider(properties = [@OSGiProperty(name = "consumed", value = "vertx")])
-class WebContentServer extends Consumer.DefaultConsumer implements Consumer<Vertx>, Constants {
+class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constants {
 
     //
     // Private Members
@@ -52,64 +52,59 @@ class WebContentServer extends Consumer.DefaultConsumer implements Consumer<Vert
     @Managed(loggingFor = "aps-admin-web-a2:web-content-server")
     private APSLogger logger
 
+    /** Maps the requested file names to the path of the actual file. */
     private Map<String, File> serveFiles = [:]
+
+    private Consumer.Consumed<Vertx> vertx
+
+    //
+    // Constructors
+    //
+
+    WebContentServer() {
+        this.onVertxAvailable = { Consumer.Consumed<Vertx> vertx ->
+            this.vertx = vertx
+
+            // Default values, can be overridden by loaded options.
+            def options = [
+                    logActivity: true,
+                    listenPort : 9080
+            ] as Map<String, Object>
+
+            loadOptions(options)
+
+            def listenPort = options.remove('listenPort') as int
+
+            vertx.get().createHttpServer(options).requestHandler { HttpServerRequest request ->
+                request.exceptionHandler { Throwable exception ->
+
+                    this.logger.error(exception.message, exception)
+                    request.response()
+                            .setStatusMessage(exception.message)
+                            .setStatusCode(500)
+                            .end()
+                }
+
+                handleRequest(request)
+
+            }.listen(listenPort) { AsyncResult res ->
+                if (res.succeeded()) {
+                    logger.info("Web content HTTP server is up and running!")
+                } else {
+                    this.logger.error("Web content HTTP server failed to start! [${res.cause().message}]", res.cause())
+                }
+            }
+        }
+
+        this.onVertxRevoked = {
+            this.vertx = null
+            this.logger.error("Vertx instance was revoked. Will not operate until new instance is available!")
+        }
+    }
 
     //
     // Methods
     //
-
-    /**
-     * Specific options for the consumer.
-     */
-    @Implements(Consumer.class)
-    Properties consumerOptions() { return null }
-
-    /**
-     * Called with requested object type when available.
-     *
-     * @param object The received object.
-     */
-    @SuppressWarnings("PackageAccessibility")
-    @Implements(Consumer.class)
-    void onConsumedAvailable(Consumer.Consumed<Vertx> vertx) {
-        // Default values, can be overridden by loaded options.
-        def options = [
-                logActivity: true,
-                listenPort : 9080
-        ] as Map<String, Object>
-
-        loadOptions(options)
-
-        def listenPort = options.remove('listenPort') as int
-
-        vertx.get().createHttpServer(options).requestHandler { HttpServerRequest request ->
-            request.exceptionHandler { Throwable exception ->
-
-                this.logger.error(exception.message, exception)
-                request.response()
-                        .setStatusMessage(exception.message)
-                        .setStatusCode(500)
-                        .end()
-            }
-
-            handleRequest(request)
-
-        }.listen(listenPort) { AsyncResult res ->
-            if (res.succeeded()) {
-                logger.info("Web content HTTP server is up and running!")
-            } else {
-                this.logger.error("Web content HTTP server failed to start! [${res.cause().message}]", res.cause())
-            }
-        }
-    }
-
-    /**
-     * Called when there is a failure to deliver requested object.
-     */
-    @Implements(Consumer.class)
-    void onConsumedUnavailable() {
-        this.logger.error("Failed to get Vertx instance! Web content server cannot be started!")
-    }
 
     /**
      * Handles HTTP requests.
@@ -213,6 +208,8 @@ class WebContentServer extends Consumer.DefaultConsumer implements Consumer<Vert
 
     @BundleStop
     void shutdown() {
+        if (this.vertx != null) this.vertx.release()
+
         // It is not a bad idea to delete these even on redeployment or shutdown of bundle for other reasons.
         this.serveFiles.each { String key, File file ->
             if (!file.delete()) { this.logger.error("${file.absolutePath} could not be deleted!") }

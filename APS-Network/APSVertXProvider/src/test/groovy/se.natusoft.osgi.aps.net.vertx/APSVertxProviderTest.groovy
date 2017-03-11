@@ -7,6 +7,7 @@ import org.junit.Test
 import se.natusoft.osgi.aps.api.reactive.Consumer
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
+import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
 import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator
@@ -75,39 +76,25 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
 @OSGiServiceProvider( properties = [ @OSGiProperty( name = "consumed", value = "vertx") ] )
 @CompileStatic
 @TypeChecked
-class VertxDefaultConsumerService extends Consumer.DefaultConsumer<Vertx> implements Consumer<Vertx> {
+// Important: Service interface must be the first after "implements"!! Otherwise serviceAPIs=[Consumer.class] must be specified
+// in @OSGiServiceProvider annotation.
+class VertxConsumerService extends VertxConsumer implements Consumer<Vertx>  {
 
     @Managed(loggingFor = "Test:VertxConsumerService")
     APSLogger logger
 
-    /**
-     * Called when there is updated data available.
-     *
-     * @param data The new data.
-     */
-    @Override
-    void onConsumedAvailable(Consumer.Consumed<Vertx> vertx) {
-        this.logger.info("VertxConsumerService.onDataAvailable(...) called!")
-        APSVertxProviderTest.vertx = vertx
-    }
-
-    /**
-     * Called when there is a failure to deliver requested instance.
-     *
-     * Haven't found a way to make Vertx fail yet, so this will never be called.
-     */
-    @Override
-    void onConsumedUnavailable() {
-        this.logger.error("No vertx instance available!")
-        throw new Exception("Failure, no vertx service available!")
-    }
-
-    /**
-     * Called if/when a previously made available object is no longer valid.
-     */
-    @Override
-    void onConsumedRevoked() {
-        this.logger.info("Vertx instance revoked!")
+    VertxConsumerService() {
+        this.onVertxAvailable = { Consumer.Consumed<Vertx> vertx ->
+            this.logger.info("VertxConsumerService onAvailable closure called! [${vertx}]")
+            APSVertxProviderTest.vertx = vertx
+        }
+        this.onVertxUnavilable = {
+            this.logger.error("No vertx instance available!")
+            throw new Exception("Failure, no vertx service available!")
+        }
+        this.onVertxRevoked = {
+            this.logger.info("Vertx instance revoked!")
+        }
     }
 }
 

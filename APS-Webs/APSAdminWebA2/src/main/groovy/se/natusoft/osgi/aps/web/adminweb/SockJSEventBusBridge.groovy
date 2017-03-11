@@ -7,6 +7,7 @@ import io.vertx.groovy.ext.web.Router
 import io.vertx.groovy.ext.web.handler.sockjs.SockJSHandler
 import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.api.reactive.Consumer
+import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 
@@ -38,7 +39,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 @CompileStatic
 @TypeChecked
 @OSGiServiceProvider(properties = [@OSGiProperty(name = "consumed", value = "vertx")])
-class SockJSEventBusBridge implements Consumer<Vertx>, Constants {
+class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Constants  {
     //
     // Private Members
     //
@@ -53,6 +54,39 @@ class SockJSEventBusBridge implements Consumer<Vertx>, Constants {
     private Consumer.Consumed<Vertx> vertx
 
     //
+    // Constructors
+    //
+
+    SockJSEventBusBridge() {
+        this.onVertxAvailable = { Consumer.Consumed<Vertx> vertx ->
+            this.vertx = vertx
+
+            Router router = Router.router(this.vertx.get())
+
+            // Currently no more detailed permissions than on target address. Might add limits on message contents
+            // later.
+            def twowaysPermitted1 = [address: BUS_ADDRESS]
+
+            SockJSHandler sockJSHandler = SockJSHandler.create(this.vertx.get()).bridge([
+                    inboundPermitteds : [twowaysPermitted1] as Object,
+                    outboundPermitteds: [twowaysPermitted1] as Object
+            ])
+
+            // TODO: Need to pass HTTP requests to router.accept(...)!
+            router.route("/eventbus/*").handler(sockJSHandler)
+
+            this.logger.info "Vert.x SockJSHandler for event bus bridging started successfully!"
+        }
+
+        this.onVertxUnavilable = { this.logger.error("Vertx currently not available!") }
+
+        this.onVertxRevoked = {
+            this.vertx = null
+            this.logger.info("Vertx was revoked. This bridge will be down until new Vertx arrives.")
+        }
+    }
+
+    //
     // Methods
     //
 
@@ -62,57 +96,6 @@ class SockJSEventBusBridge implements Consumer<Vertx>, Constants {
     @Initializer
     void init() {
         this.logger.connectToLogService(this.context)
-    }
-
-    /**
-     * Specific options for the consumer.
-     */
-    @Override
-    Properties consumerOptions() { return null }
-
-    /**
-     * Called with requested object type when available.
-     *
-     * @param object The received object.
-     */
-    @SuppressWarnings("PackageAccessibility")
-    @Override
-    void onConsumedAvailable(Consumer.Consumed<Vertx> vertx) {
-        this.vertx = vertx
-
-        Router router = Router.router(this.vertx.get())
-
-        // Currently no more detailed permissions than on target address. Might add limits on message contents
-        // later.
-        def twowaysPermitted1 = [address: BUS_ADDRESS]
-
-        SockJSHandler sockJSHandler = SockJSHandler.create(this.vertx.get()).bridge([
-                inboundPermitteds : [twowaysPermitted1] as Object,
-                outboundPermitteds: [twowaysPermitted1] as Object
-        ])
-
-        // TODO: Need to pass HTTP requests to router.accept(...)!
-        router.route("/eventbus/*").handler(sockJSHandler)
-
-        this.logger.info "Vert.x SockJSHandler for event bus bridging started successfully!"
-
-    }
-
-    /**
-     * Called when there is a failure to deliver requested object.
-     */
-    @Override
-    void onConsumedUnavailable() {
-        this.logger.error "Failed to setup SockJSHandler due to no Vertx instance available!"
-    }
-
-    /**
-     * Called if/when a previously made available object is no longer valid.
-     */
-    @Override
-    void onConsumedRevoked() {
-        this.vertx = null
-        this.logger.warn "Vertx instance have been revoked! Until new becomes available there will be no server access!"
     }
 
     @BundleStop

@@ -48,7 +48,7 @@ class WebContentServerTest extends OSGIServiceTestTools {
 
         } from 'se.natusoft.osgi.aps', 'aps-vertx-provider', '1.0.0'
 
-        deploy 'aps-admin-web-a2' with new APSActivator() with {
+        deploy 'web-content-server' with new APSActivator() with {
             ContentServerConfig config = new ContentServerConfig()
 
             TestConfigList<ContentServerConfig.ConfigValue> entries = new TestConfigList<>()

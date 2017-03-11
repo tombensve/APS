@@ -3,34 +3,34 @@
     PROJECT
         Name
             APS VertX Provider
-        
+
         Code Version
             1.0.0
-        
+
         Description
             This service provides configured Vertx instances allowing multiple services to use the same Vertx instance.
-            
+
             This service also provides for multiple instances of VertX by associating an instance with a name. Everyone
             asking for the same name will get the same instance.
-        
+
     COPYRIGHTS
         Copyright (C) 2012 by Natusoft AB All rights reserved.
-        
+
     LICENSE
         Apache 2.0 (Open Source)
-        
+
         Licensed under the Apache License, Version 2.0 (the "License");
         you may not use this file except in compliance with the License.
         You may obtain a copy of the License at
-        
+
           http://www.apache.org/licenses/LICENSE-2.0
-        
+
         Unless required by applicable law or agreed to in writing, software
         distributed under the License is distributed on an "AS IS" BASIS,
         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
         See the License for the specific language governing permissions and
         limitations under the License.
-        
+
     AUTHORS
         tommy ()
             Changes:
@@ -75,7 +75,8 @@
 
         <!-- The private packages. -->
         <osgi.private.package>
-            se.natusoft.osgi.aps.web.adminweb
+            se.natusoft.osgi.aps.web.adminweb,
+            se.natusoft.osgi.aps.web.adminweb.config
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->
@@ -87,6 +88,11 @@
 
         <!-- The resources to include in the bundle -->
         <osgi.include.resource>
+            webContent/adminweb-bundle.js=src/main/resources/webContent/adminweb-bundle.js,
+            webContent/index.html=src/main/resources/webContent/index.html,
+            webContent/shim.min.js=src/main/resources/webContent/shim.min.js,
+            webContent/sockjs.min.js=src/main/resources/webContent/sockjs.min.js,
+            webContent/vertx-eventbus.js=src/main/resources/webContent/vertx-eventbus.js
         </osgi.include.resource>
 
         <!-- The default for embedding dependencies in bundle. -->
@@ -101,9 +107,7 @@
 
         <!-- We register our configuration for auto registration and management. -->
         <aps.config.classes>
-            <!--
-            se.natusoft.osgi.aps.net.messaging.VertxConfig
-            -->
+            se.natusoft.osgi.aps.web.adminweb.config.ContentServerConfig.class
         </aps.config.classes>
 
         <!--
@@ -131,6 +135,7 @@
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-admin-web-service-provider</artifactId>
             <version>1.0.0</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -157,6 +162,13 @@
             <scope>provided</scope>
             <classifier>indy</classifier>
             <version>${groovy.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>APSGroovyToolsLib</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
         </dependency>
 
         <!--
@@ -194,11 +206,6 @@
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-service-test-support</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>APSGroovyToolsLib</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
     </dependencies>

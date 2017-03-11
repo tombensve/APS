@@ -1,6 +1,6 @@
 package se.natusoft.osgi.aps.web.adminweb
 
-import se.natusoft.osgi.aps.tools.groovy.lib.MapsonDocValidator
+import se.natusoft.osgi.aps.tools.groovy.lib.MapJsonDocValidator
 
 /**
  * This contains the definition of the events handled.
@@ -37,7 +37,7 @@ class EventDefinition {
      * A validator instance to use for event validations. Note that it is not private! The validate(...) method on this
      * class is a convenience for calling EVENT_VALIDATOR.validate(...).
      */
-    static final MapsonDocValidator EVENT_VALIDATOR = new MapsonDocValidator(validStructure: EVENT_SCHEMA)
+    static final MapJsonDocValidator EVENT_VALIDATOR = new MapJsonDocValidator(validStructure: EVENT_SCHEMA)
 
     /**
      * Validates the specified Map structure.
