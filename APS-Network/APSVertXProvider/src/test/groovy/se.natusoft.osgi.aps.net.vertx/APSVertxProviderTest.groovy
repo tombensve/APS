@@ -85,7 +85,7 @@ class VertxConsumerService extends VertxConsumer implements Consumer<Vertx>  {
 
     VertxConsumerService() {
         this.onVertxAvailable = { Consumer.Consumed<Vertx> vertx ->
-            this.logger.info("VertxConsumerService onAvailable closure called! [${vertx}]")
+            this.logger.info("Received Vertx instance! [${vertx}]")
             APSVertxProviderTest.vertx = vertx
         }
         this.onVertxUnavilable = {

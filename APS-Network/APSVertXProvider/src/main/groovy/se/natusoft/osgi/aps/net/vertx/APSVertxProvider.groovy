@@ -53,8 +53,6 @@ import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.APSServiceTracker
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 
-import java.util.concurrent.TimeUnit
-
 /**
  * Implements APSVertXService and also calls all DataConsumer<Vertx> services found with an Vertx instance.
  *
@@ -63,9 +61,9 @@ import java.util.concurrent.TimeUnit
 @SuppressWarnings(["GroovyUnusedDeclaration", "PackageAccessibility"])
 @OSGiServiceProvider(
         properties = [
-                @OSGiProperty( name = APS.Service.Provider,        value = "aps-vertx-provider" ),
-                @OSGiProperty( name = APS.Service.Category,        value = APS.Value.Service.Category.Network ),
-                @OSGiProperty( name = APS.Service.Function,        value = APS.Value.Service.Function.Messaging )
+                @OSGiProperty(name = APS.Service.Provider, value = "aps-vertx-provider"),
+                @OSGiProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Network),
+                @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Messaging)
         ]
 )
 @CompileStatic
@@ -77,7 +75,7 @@ class APSVertxProvider implements APSVertxService {
     //
 
     /** The logger for this service. */
-    @Managed( loggingFor = "aps-vertx-service" )
+    @Managed(loggingFor = "aps-vertx-service")
     private APSLogger logger
 
     /**
@@ -85,7 +83,7 @@ class APSVertxProvider implements APSVertxService {
      * This is a reversed reactive API variant. Also called the Hollywood principle: Don't call us, we
      * call you!
      */
-    @OSGiService( additionalSearchCriteria = "(consumed=vertx)" )
+    @OSGiService(additionalSearchCriteria = "(consumed=vertx)")
     private APSServiceTracker<Consumer<Vertx>> apsVertxConsumers
 
     /**
@@ -98,14 +96,14 @@ class APSVertxProvider implements APSVertxService {
      * Vertx instance on the same host. But for different services on different ports it should be OK, and thereby
      * multiple Vertx instances are allowed by this service.
      */
-    private Map<String, Vertx> namedInstances = Collections.synchronizedMap( [ : ] )
+    private Map<String, Vertx> namedInstances = Collections.synchronizedMap([:])
 
     /**
      * This keeps track of how many are using a specific instance of Vertx. useGroovyVertx(...) will increase
      * the count, and releaseGroovyVertx(...) will decrease the count. If the count reaches 0 the Vertx instance
      * will be shut down.
      */
-    private Map<String, Integer> usageCount = [ : ]
+    private Map<String, Integer> usageCount = [:]
 
     /**
      * This tracks DataConsumer<Vertx> services and saves them using the ServiceReference of the service.
@@ -115,52 +113,54 @@ class APSVertxProvider implements APSVertxService {
      * the service again and add the service reference to this map. If the service itself calls release()
      * it usually means that the service is going down.
      */
-    private Map<ServiceReference, Consumer.Consumed<Vertx>> callbackInstances = Collections.synchronizedMap( [: ] )
+    private Map<ServiceReference, Consumer.Consumed<Vertx>> callbackInstances = Collections.synchronizedMap([:])
 
     /**
-     * This does the reverse of APSVertxService: It listens to InstanceConsumer services and calls them with
-     * Vertx instance when available.
-     *
-     * If anything else than the default Vertx instance is wanted a Properties object containing named-instance: "name"
-     * should be provided.
+     * This is used when a Consumer.Consumed<Vertx> service is leaving to get the name of the service
+     * for calling releaseGroovyVertx(name) with.
      */
-    @SuppressWarnings( "PackageAccessibility" )
-    @Schedule( delay = 0L, repeat = 10L, timeUnit = TimeUnit.SECONDS )
-    private Runnable updateVertxConsumers = {
-        Map<ServiceReference, ServiceReference> currentServices = [ : ]
+    private Map<ServiceReference, String> svcRefNamedInst = Collections.synchronizedMap([:])
 
+    @Initializer
+    void init() {
         this.apsVertxConsumers.onServiceAvailable { Consumer<Vertx> dataConsumer, ServiceReference serviceReference ->
-            currentServices.put serviceReference, serviceReference
 
             String name = DEFAULT_INST
-            if ( dataConsumer.getConsumerRequirements() != null && dataConsumer.getConsumerRequirements().containsKey( NAMED_INSTANCE ) ) {
-                name = dataConsumer.getConsumerRequirements() [ NAMED_INSTANCE ]
+            if (dataConsumer.getConsumerRequirements() != null && dataConsumer.getConsumerRequirements().containsKey(NAMED_INSTANCE)) {
+                name = dataConsumer.getConsumerRequirements()[NAMED_INSTANCE]
             }
 
+            svcRefNamedInst[serviceReference] = name
+
             // Check for new service
-            if ( !this.callbackInstances.containsKey(serviceReference) ) {
+            if (!callbackInstances.containsKey(serviceReference)) {
 
                 useGroovyVertX(name) { AsyncResult<Vertx> result ->
-                    if ( result.succeeded() ) {
+                    if (result.succeeded()) {
 
                         Consumer.Consumed<Vertx> vertxProvider =
-                                new Consumer.Consumed.ConsumedProvider<Vertx>( result.result() ) {
-                            @Override
-                            void release() {
-                                callbackInstances.remove( serviceReference )
-                                releaseGroovyVertX( name )
-                                logger.info( "Released '${name}'!" )
-                            }
-                        }
+                                new Consumer.Consumed.ConsumedProvider<Vertx>(result.result()) {
+                                    @Override
+                                    void release() {
+                                        callbackInstances.remove(serviceReference)
+                                        svcRefNamedInst.remove(serviceReference)
+                                        releaseGroovyVertX(name)
+                                        logger.info("Released '${name}'!")
+                                    }
+                                }
 
-                        this.callbackInstances.put( serviceReference , vertxProvider )
+                        callbackInstances.put(serviceReference, vertxProvider)
 
-                        dataConsumer.onConsumed( Consumer.Status.OK,  vertxProvider )
+                        dataConsumer.consume(Consumer.Status.AVAILABLE, vertxProvider)
                     } else {
-                        dataConsumer.onConsumed( Consumer.Status.UNAVAILABLE, null)
+                        dataConsumer.consume(Consumer.Status.UNAVAILABLE, null)
                     }
                 }
             }
+        }
+        this.apsVertxConsumers.onServiceLeaving { ServiceReference serviceReference, Class serviceAPI ->
+            String name = svcRefNamedInst.remove(serviceReference)
+            releaseGroovyVertX(name)
         }
     }
 
@@ -173,8 +173,8 @@ class APSVertxProvider implements APSVertxService {
      */
     @BundleStop
     void shutdown() {
-        this.callbackInstances.keySet().each { ServiceReference sr ->
-            this.callbackInstances.get( sr ).release()
+        this.callbackInstances.each { ServiceReference sr, Consumer.Consumed<Vertx> vertx ->
+            vertx.release()
         }
     }
 
@@ -183,29 +183,29 @@ class APSVertxProvider implements APSVertxService {
      *
      * @param options The map to load options into.
      */
-    private static void loadOptions( Map<String, Object> options ) {
-        VertxConfig.managed.get().optionsValues.each { VertxConfig.VertxConfigValue  entry ->
+    private static void loadOptions(Map<String, Object> options) {
+        VertxConfig.managed.get().optionsValues.each { VertxConfig.VertxConfigValue entry ->
             Object value = ""
 
             // The type value will *always* contain one of these values and nothing else.
-            switch ( entry.type.string ) {
+            switch (entry.type.string) {
                 case "String":
                     value = entry.value.string
                     break
 
                 case "Int":
-                    value = Integer.valueOf( entry.value.string )
+                    value = Integer.valueOf(entry.value.string)
                     break
 
                 case "Float":
-                    value = Float.valueOf ( entry.value.string )
+                    value = Float.valueOf(entry.value.string)
                     break
 
                 case "Boolean":
-                    value = Boolean.valueOf( entry.value.string )
+                    value = Boolean.valueOf(entry.value.string)
             }
 
-            options [ entry.name.string ] = value
+            options[entry.name.string] = value
         }
     }
 
@@ -216,23 +216,22 @@ class APSVertxProvider implements APSVertxService {
      * @param result The handler to forward result to.
      */
     @SuppressWarnings("PackageAccessibility")
-    private void createVertxInstance( String name, Handler<AsyncResult<Vertx>> result ) {
+    private void createVertxInstance(String name, Handler<AsyncResult<Vertx>> result) {
 
-        Map<String, Object> options = [ : ]
+        Map<String, Object> options = [:]
         loadOptions(options)
 
-        Vertx.clusteredVertx( options ) { AsyncResult<Vertx> res ->
-            if ( res.succeeded() ) {
-                this.logger.info "Vert.x cluster started successfully!"
+        Vertx.clusteredVertx(options) { AsyncResult<Vertx> res ->
+            if (res.succeeded()) {
+                logger.info "Vert.x cluster started successfully!"
 
                 Vertx vertx = res.result()
-                this.namedInstances.put( name, vertx )
-                increaseUsageCount( name )
-                result.handle( res )
-            }
-            else {
-                this.logger.error "Vert.x cluster failed to start: ${res.cause()}, for '${name}'!"
-                result.handle( res )
+                namedInstances[name] = vertx
+                increaseUsageCount(name)
+                result.handle(res)
+            } else {
+                logger.error "Vert.x cluster failed to start: ${res.cause()}, for '${name}'!"
+                result.handle(res)
             }
         }
     }
@@ -244,16 +243,15 @@ class APSVertxProvider implements APSVertxService {
      */
     @SuppressWarnings("PackageAccessibility")
     @Override
-    void useGroovyVertX( String name, Handler<AsyncResult<Vertx>> result ) {
-        Vertx vertx = this.namedInstances [ name ]
+    void useGroovyVertX(String name, Handler<AsyncResult<Vertx>> result) {
+        Vertx vertx = this.namedInstances[name]
 
         if (vertx != null) {
-            increaseUsageCount( name )
+            increaseUsageCount(name)
             // We have to thread this or risk bundle start deadlock if called from @Initializer method!
-            Thread.start { result.handle new AsyncResultProvider( vertx: vertx, succeeded: true ) }
-        }
-        else {
-            createVertxInstance( name , result )
+            Thread.start { result.handle new AsyncResultProvider(vertx: vertx, succeeded: true) }
+        } else {
+            createVertxInstance(name, result)
         }
     }
 
@@ -262,13 +260,13 @@ class APSVertxProvider implements APSVertxService {
      */
     @SuppressWarnings("PackageAccessibility")
     @Override
-    void releaseGroovyVertX( String name ) {
-        if (decreaseUsageCount( name ) == 0) {
+    void releaseGroovyVertX(String name) {
+        if (decreaseUsageCount(name) == 0 && this.namedInstances.containsKey(name)) {
             Vertx vertx = this.namedInstances.remove name
             this.usageCount.remove name
 
             this.apsVertxConsumers.onServiceAvailable { Consumer<Vertx> dataConsumer, ServiceReference serviceReference ->
-                dataConsumer.onConsumed(Consumer.Status.REVOKED, null)
+                dataConsumer.consume(Consumer.Status.REVOKED, null)
             }
 
             vertx.close { AsyncResult res ->
@@ -282,21 +280,20 @@ class APSVertxProvider implements APSVertxService {
         }
     }
 
-    private void increaseUsageCount( String name ) {
-        if ( this.usageCount [ name ] == null ) {
-            this.usageCount [ name ] = 1
-        }
-        else {
-            this.usageCount [ name ] = this.usageCount [ name ] + 1
+    private void increaseUsageCount(String name) {
+        if (this.usageCount[name] == null) {
+            this.usageCount[name] = 1
+        } else {
+            this.usageCount[name] = this.usageCount[name] + 1
         }
     }
 
-    private int decreaseUsageCount( String name ) {
+    private int decreaseUsageCount(String name) {
         int result = 0
 
-        if ( this.usageCount [ name ] != null) {
-            this.usageCount [ name ] = this.usageCount [name ] - 1
-            result = this.usageCount [ name ]
+        if (this.usageCount[name] != null) {
+            this.usageCount[name] = this.usageCount[name] - 1
+            result = this.usageCount[name]
         }
 
         return result
@@ -306,7 +303,7 @@ class APSVertxProvider implements APSVertxService {
      * For providing result back to called the same way as Vertx does.
      */
     @SuppressWarnings("PackageAccessibility")
-    private static class AsyncResultProvider implements AsyncResult< Vertx > {
+    private static class AsyncResultProvider implements AsyncResult<Vertx> {
         Vertx vertx
         boolean succeeded
 

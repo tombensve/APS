@@ -54,8 +54,8 @@ class VertxConsumer implements Consumer<Vertx> {
      * @param vertx The Vertx holder received.
      */
     @Override
-    void onConsumed(Consumer.Status status, Consumer.Consumed<Vertx> vertx) {
-        if (status == Consumer.Status.OK) {
+    void consume(Consumer.Status status, Consumer.Consumed<Vertx> vertx) {
+        if (status == Consumer.Status.AVAILABLE) {
             if (this.onVertxAvailable != null) this.onVertxAvailable.call(vertx)
         }
         else if (status == Consumer.Status.UNAVAILABLE) {

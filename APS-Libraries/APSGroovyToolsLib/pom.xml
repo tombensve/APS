@@ -11,10 +11,10 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>APSGroovyToolsLib</artifactId>
+    <artifactId>aps-groovy-tools-lib</artifactId>
     <packaging>bundle</packaging>
 
-    <name>APSGroovyToolsLib</name>
+    <name>APS Groovy Tools Lib</name>
 
     <description>
         This library is made in Groovy and thus depends on Groovy, and contains functionality that

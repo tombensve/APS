@@ -61,10 +61,17 @@ public interface Consumer<ConsumedType> {
      * @param status The status of this call.
      * @param consumed The consumed object. This is only available on Status.OK otherwise this will be null!
      */
-    void onConsumed(Status status, Consumed<ConsumedType> consumed);
+    void consume(Status status, Consumed<ConsumedType> consumed);
 
     enum Status {
-        OK, UNAVAILABLE, REVOKED
+        /** Means that the consumed object is available. consumed arg will be non-null. This should always be supported. */
+        AVAILABLE,
+
+        /** This means that the consumed object currently cannot be delivered by its provider. This is optional functionality. */
+        UNAVAILABLE,
+
+        /** This means that a previously delivered object just have been revoked and are no longer valid. This is optional functionality. */
+        REVOKED
     }
 
     /**
