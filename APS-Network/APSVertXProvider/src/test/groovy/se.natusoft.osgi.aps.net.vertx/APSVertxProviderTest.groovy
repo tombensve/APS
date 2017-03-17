@@ -3,11 +3,13 @@ package se.natusoft.osgi.aps.net.vertx
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.groovy.core.Vertx
+import io.vertx.groovy.ext.web.Router
 import org.junit.Test
 import se.natusoft.osgi.aps.api.reactive.Consumer
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
 import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
+import se.natusoft.osgi.aps.net.vertx.api.WebRouterConsumer
 import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator
@@ -24,6 +26,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 class APSVertxProviderTest extends OSGIServiceTestTools {
 
     public static Consumer.Consumed<Vertx> vertx = null
+    public static Consumer.Consumed<Router> router = null
 
     @Test
     void reactiveAPITest() throws Exception {
@@ -60,6 +63,8 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
 
             assert vertx != null
             assert vertx.get() != null
+            assert router != null
+            assert router.get() != null
 
         }
         finally {
@@ -78,7 +83,7 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
 @TypeChecked
 // Important: Service interface must be the first after "implements"!! Otherwise serviceAPIs=[Consumer.class] must be specified
 // in @OSGiServiceProvider annotation.
-class VertxConsumerService extends VertxConsumer implements Consumer<Vertx>  {
+class VertxConsumerService extends VertxConsumer implements Consumer<Vertx>, WebRouterConsumer {
 
     @Managed(loggingFor = "Test:VertxConsumerService")
     APSLogger logger
@@ -94,6 +99,14 @@ class VertxConsumerService extends VertxConsumer implements Consumer<Vertx>  {
         }
         this.onVertxRevoked = {
             this.logger.info("Vertx instance revoked!")
+        }
+        setHttpSericePort(9999)
+        this.onRouterAvailable = { Consumer.Consumed<Router> router ->
+            this.logger.info("Received Router instance! [${router}]")
+            APSVertxProviderTest.router = router
+        }
+        this.onError = { String message ->
+            this.logger.error(message)
         }
     }
 }

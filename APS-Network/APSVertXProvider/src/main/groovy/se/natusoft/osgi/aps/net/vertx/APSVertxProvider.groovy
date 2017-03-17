@@ -44,10 +44,13 @@ import groovy.transform.TypeChecked
 import io.vertx.core.AsyncResult
 import io.vertx.core.Handler
 import io.vertx.groovy.core.Vertx
+import io.vertx.groovy.core.http.HttpServer
+import io.vertx.groovy.ext.web.Router
 import org.osgi.framework.ServiceReference
 import se.natusoft.osgi.aps.api.reactive.Consumer
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
+import se.natusoft.osgi.aps.net.vertx.api.WebRouterConsumer
 import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.APSServiceTracker
@@ -69,6 +72,20 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 @CompileStatic
 @TypeChecked
 class APSVertxProvider implements APSVertxService {
+
+    /**
+     * A JavaBean holding the Vertx instance and HttpServer+Router instances created by that Vertx instance.
+     */
+    private static class VertxAndHttpServer {
+        /** The wrapped Vertx instance. */
+        Consumer.Consumed<Vertx> vertx
+
+        /** A map of HTTP servers per service port. These are internal to this bundle. */
+        Map<Integer, HttpServer> httpServerByPort = Collections.synchronizedMap([:])
+
+        /** A map of Routers for HTTP servers per service port. These are provided to those that wants to serve a path. */
+        Map<Integer, Router> httpServerRouterByPort = Collections.synchronizedMap([:])
+    }
 
     //
     // Private Members
@@ -113,7 +130,7 @@ class APSVertxProvider implements APSVertxService {
      * the service again and add the service reference to this map. If the service itself calls release()
      * it usually means that the service is going down.
      */
-    private Map<ServiceReference, Consumer.Consumed<Vertx>> callbackInstances = Collections.synchronizedMap([:])
+    private Map<ServiceReference, VertxAndHttpServer> callbackInstances = Collections.synchronizedMap([:])
 
     /**
      * This is used when a Consumer.Consumed<Vertx> service is leaving to get the name of the service
@@ -137,9 +154,10 @@ class APSVertxProvider implements APSVertxService {
 
                 useGroovyVertX(name) { AsyncResult<Vertx> result ->
                     if (result.succeeded()) {
+                        Vertx vertx = result.result()
 
                         Consumer.Consumed<Vertx> vertxProvider =
-                                new Consumer.Consumed.ConsumedProvider<Vertx>(result.result()) {
+                                new Consumer.Consumed.ConsumedProvider<Vertx>(vertx) {
                                     @Override
                                     void release() {
                                         callbackInstances.remove(serviceReference)
@@ -148,10 +166,36 @@ class APSVertxProvider implements APSVertxService {
                                         logger.info("Released '${name}'!")
                                     }
                                 }
-
-                        callbackInstances.put(serviceReference, vertxProvider)
+                        VertxAndHttpServer vertxAndCo = new VertxAndHttpServer(vertx: vertxProvider)
+                        callbackInstances.put(serviceReference, vertxAndCo)
 
                         dataConsumer.consume(Consumer.Status.AVAILABLE, vertxProvider)
+
+                        // if the consumer is also consuming an HTTP service router then pass that on to the consumer.
+                        if (dataConsumer instanceof WebRouterConsumer) {
+                            // Hmm ... getProperty(HTTP_SERVICE_PORT) returns null, get(HTTP_SERVICE_PORT) as string returns the value ...
+                            // Yes, it is a java.util.Properties object!!!
+                            Integer port = Integer.valueOf(dataConsumer.consumerRequirements.get(HTTP_SERVICE_PORT, "8080") as String)
+
+                            // We keep a server for each listened to port.
+                            HttpServer httpServer = vertxAndCo.httpServerByPort[port]
+                            if (httpServer == null) {
+                                httpServer = vertx.createHttpServer()
+                                vertxAndCo.httpServerByPort[port] = httpServer
+                            }
+
+                            // Consumers don't get direct access to the HttpServer, only to its Router.
+                            Router router = vertxAndCo.httpServerRouterByPort[port]
+                            if (router == null) {
+                                router = Router.router(vertx)
+                                vertxAndCo.httpServerRouterByPort[port] = router
+                                httpServer.requestHandler(router.&accept).listen(port)
+                                this.logger.info("HTTP server now listening on port ${port}!")
+                            }
+
+                            (dataConsumer as Consumer<Router>).
+                                    consume(Consumer.Status.AVAILABLE, new Consumer.Consumed.ConsumedProvider<Router>(router))
+                        }
                     } else {
                         dataConsumer.consume(Consumer.Status.UNAVAILABLE, null)
                     }
@@ -159,6 +203,7 @@ class APSVertxProvider implements APSVertxService {
             }
         }
         this.apsVertxConsumers.onServiceLeaving { ServiceReference serviceReference, Class serviceAPI ->
+            callbackInstances.remove(serviceReference)
             String name = svcRefNamedInst.remove(serviceReference)
             releaseGroovyVertX(name)
         }
@@ -173,8 +218,8 @@ class APSVertxProvider implements APSVertxService {
      */
     @BundleStop
     void shutdown() {
-        this.callbackInstances.each { ServiceReference sr, Consumer.Consumed<Vertx> vertx ->
-            vertx.release()
+        this.callbackInstances.each { ServiceReference sr, VertxAndHttpServer vertxAndCo ->
+            vertxAndCo.vertx.release()
         }
     }
 

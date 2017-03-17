@@ -1,6 +1,9 @@
 package se.natusoft.osgi.aps.net.vertx.api
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
 import io.vertx.groovy.core.Vertx
+import io.vertx.groovy.ext.web.Router
 import se.natusoft.osgi.aps.api.reactive.Consumer
 
 /**
@@ -10,7 +13,9 @@ import se.natusoft.osgi.aps.api.reactive.Consumer
  * NOTE: My first attempt was to make this a trait rather than a class. This however fails with OSGi since
  *       traits seem to produce code in the default package, which is an OSGi no no!
  */
-class VertxConsumer implements Consumer<Vertx> {
+@CompileStatic
+@TypeChecked
+class VertxConsumer implements Consumer<Object> {
 
     //
     // Properties
@@ -25,12 +30,18 @@ class VertxConsumer implements Consumer<Vertx> {
     /** Called if the Vertx object is revoked. */
     Closure onVertxRevoked
 
+    /** Called when a HTTP Router is available. */
+    Closure onRouterAvailable
+
     //
     // Private Members
     //
 
+    /** Set this to get notified of errors. */
+    protected Closure onError
+
     /** Potential consumer requirements. */
-    private Properties requirements
+    private Properties requirements = new Properties()
 
     //
     // Methods
@@ -42,8 +53,15 @@ class VertxConsumer implements Consumer<Vertx> {
      * @param instanceName The Vertx instance name.
      */
     void setVertxInstanceName(String instanceName) {
-        this.requirements = new Properties()
-        properties[ APSVertxService.NAMED_INSTANCE ] = instanceName
+        this.requirements[APSVertxService.NAMED_INSTANCE] = instanceName
+    }
+
+    /**
+     * Provide a port to use for HTTP service.
+     * @param port
+     */
+    void setHttpSericePort(int port) {
+        this.requirements[APSVertxService.HTTP_SERVICE_PORT] = "${port}"
     }
 
     /**
@@ -53,17 +71,26 @@ class VertxConsumer implements Consumer<Vertx> {
      * @param status The status of this call.
      * @param vertx The Vertx holder received.
      */
+    @SuppressWarnings("PackageAccessibility")
     @Override
-    void consume(Consumer.Status status, Consumer.Consumed<Vertx> vertx) {
+    void consume(Consumer.Status status, Consumer.Consumed<Object> consumed) {
         if (status == Consumer.Status.AVAILABLE) {
-            if (this.onVertxAvailable != null) this.onVertxAvailable.call(vertx)
+            if (consumed.get().class == Vertx.class) {
+                if (this.onVertxAvailable != null) this.onVertxAvailable.call(consumed)
+            }
+            else if (consumed.get().class == Router.class) {
+                if (this.onRouterAvailable != null) this.onRouterAvailable.call(consumed)
+            }
+            else {
+                if (this.onError != null) this.onError.call("Unknown object consumed! [${consumed.get()}]")
+            }
         }
         else if (status == Consumer.Status.UNAVAILABLE) {
             if (this.onVertxUnavilable != null) this.onVertxUnavilable.call()
         }
         else if (status == Consumer.Status.REVOKED) {
             if (this.onVertxRevoked != null) this.onVertxRevoked.call()
-         }
+        }
     }
 
     /**

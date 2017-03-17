@@ -52,7 +52,10 @@ import io.vertx.groovy.core.Vertx
 interface APSVertxService {
 
     /** The Consumer property name for providing an instance name. */
-    String NAMED_INSTANCE = "named-instance"
+    String NAMED_INSTANCE = "named.instance"
+
+    /** The Consumer property for requesting an HTTP server on a specific port other than 8080. */
+    String HTTP_SERVICE_PORT = "http.service.port"
 
     /** Names the default instance. */
     String DEFAULT_INST = "default"
