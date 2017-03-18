@@ -9,7 +9,8 @@ import io.vertx.groovy.core.Vertx
 import io.vertx.groovy.core.eventbus.Message
 import io.vertx.groovy.core.eventbus.MessageConsumer
 import org.osgi.framework.BundleContext
-import se.natusoft.osgi.aps.api.reactive.Consumer
+import se.natusoft.osgi.aps.net.vertx.APSVertxProvider
+import se.natusoft.osgi.aps.tools.reactive.Consumer
 import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
@@ -61,7 +62,9 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 @SuppressWarnings(["GroovyUnusedDeclaration", "PackageAccessibility"])
 @CompileStatic
 @TypeChecked
-@OSGiServiceProvider(properties = [@OSGiProperty(name = "consumed", value = "vertx")])
+@OSGiServiceProvider(properties = [
+        @OSGiProperty(name = "consumed", value = "vertx")
+])
 class EventRouter extends VertxConsumer implements Consumer<Vertx>, Constants {
 
     //

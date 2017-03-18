@@ -143,6 +143,7 @@ class APSVertxProvider implements APSVertxService {
      */
     private Map<String, Object> config = [
             vertx_http_service_default: 8080,
+            vertx_http_service_AdminWebContent: 9080,
             vertx_http_service_test: 8888
     ] as Map<String, Object>
 
@@ -191,7 +192,7 @@ class APSVertxProvider implements APSVertxService {
                                 // We keep a server for each listened to port.
                                 HttpServer httpServer = vertxAndCo.httpServerByPort[port]
                                 if (httpServer == null) {
-                                    httpServer = vertx.createHttpServer()
+                                    httpServer = vertx.createHttpServer(/* TODO: Provide options. */)
                                     vertxAndCo.httpServerByPort[port] = httpServer
                                 }
 

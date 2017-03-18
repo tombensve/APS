@@ -2,18 +2,19 @@ package se.natusoft.osgi.aps.web.adminweb
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import io.vertx.core.AsyncResult
 import io.vertx.groovy.core.Vertx
 import io.vertx.groovy.core.http.HttpServerRequest
 import io.vertx.groovy.core.http.HttpServerResponse
-import se.natusoft.osgi.aps.api.reactive.Consumer
+import io.vertx.groovy.ext.web.Router
+import io.vertx.groovy.ext.web.RoutingContext
+import se.natusoft.osgi.aps.net.vertx.APSVertxProvider
 import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
-import se.natusoft.osgi.aps.web.adminweb.config.ContentServerConfig
+import se.natusoft.osgi.aps.tools.reactive.Consumer
 
 /**
  * Delivers HTTP content to a browser.
@@ -42,7 +43,10 @@ import se.natusoft.osgi.aps.web.adminweb.config.ContentServerConfig
 @SuppressWarnings(["GroovyUnusedDeclaration", "PackageAccessibility"])
 @CompileStatic
 @TypeChecked
-@OSGiServiceProvider(properties = [@OSGiProperty(name = "consumed", value = "vertx")])
+@OSGiServiceProvider(properties = [
+        @OSGiProperty(name = "consumed", value = "vertx"),
+        @OSGiProperty(name = APSVertxProvider.HTTP_SERVICE_NAME, value = "AdminWebContent")
+])
 class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constants {
 
     //
@@ -57,6 +61,8 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
 
     private Consumer.Consumed<Vertx> vertx
 
+    private Consumer.Consumed<Router> router
+
     //
     // Constructors
     //
@@ -64,41 +70,34 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
     WebContentServer() {
         this.onVertxAvailable = { Consumer.Consumed<Vertx> vertx ->
             this.vertx = vertx
+        }
 
-            // Default values, can be overridden by loaded options.
-            def options = [
-                    logActivity: true,
-                    listenPort : 9080
-            ] as Map<String, Object>
+        this.onRouterAvailable = { Consumer.Consumed<Router> router ->
+            this.router = router
 
-            loadOptions(options)
-
-            def listenPort = options.remove('listenPort') as int
-
-            vertx.get().createHttpServer(options).requestHandler { HttpServerRequest request ->
-                request.exceptionHandler { Throwable exception ->
+            this.router.get().route("/apsadminweb/*").handler { RoutingContext context ->
+                context.request().exceptionHandler { Throwable exception ->
 
                     this.logger.error(exception.message, exception)
-                    request.response()
+                    context.response()
                             .setStatusMessage(exception.message)
                             .setStatusCode(500)
                             .end()
                 }
 
-                handleRequest(request)
-
-            }.listen(listenPort) { AsyncResult res ->
-                if (res.succeeded()) {
-                    logger.info("Web content HTTP server is up and running!")
-                } else {
-                    this.logger.error("Web content HTTP server failed to start! [${res.cause().message}]", res.cause())
-                }
+                handleRequest(context.request())
             }
+            this.logger.info("Added route '/apsadminweb/*'.")
+
         }
 
         this.onVertxRevoked = {
             this.vertx = null
-            this.logger.error("Vertx instance was revoked. Will not operate until new instance is available!")
+            this.logger.info("Vertx instance was revoked. Will not operate until new instance is available!")
+        }
+
+        this.onError = { String message ->
+            this.logger.error(message)
         }
     }
 
@@ -116,11 +115,8 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
 
         HttpServerResponse response = request.response()
 
-        String reqFile = request.path()
-        if (reqFile.trim().isEmpty()) {
-            reqFile = "/index.html"
-        }
-        else if (reqFile.trim() == "/") {
+        String reqFile = request.path().trim()
+        if (reqFile == "/" || reqFile.endsWith("/")) {
             reqFile = "/index.html"
         }
 
@@ -170,49 +166,26 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
             to.close()
 
             this.serveFiles[requestFile] = serveFile
+            this.logger.info("Temporarily cached file ${serveFile.absolutePath}!")
         }
 
         serveFile
     }
 
-    /**
-     * Loads config options into a Vertx options Map.
-     *
-     * @param options The map to load options into.
-     */
-    private static void loadOptions(Map<String, Object> options) {
-        ContentServerConfig.managed.get().optionsValues.each { ContentServerConfig.ConfigValue entry ->
-            Object value = ""
-
-            // The type value will *always* contain one of these values and nothing else.
-            switch (entry.type.string) {
-                case "String":
-                    value = entry.value.string
-                    break
-
-                case "Int":
-                    value = Integer.valueOf(entry.value.string)
-                    break
-
-                case "Float":
-                    value = Float.valueOf(entry.value.string)
-                    break
-
-                case "Boolean":
-                    value = Boolean.valueOf(entry.value.string)
-            }
-
-            options[entry.name.string] = value
-        }
-    }
-
     @BundleStop
     void shutdown() {
+        if (this.router != null) {
+            this.router.get().get("/apsadminweb/*").remove()
+            this.logger.info("Removed '/apsadminweb/*' route.")
+            this.router.release()
+        }
+
         if (this.vertx != null) this.vertx.release()
 
         // It is not a bad idea to delete these even on redeployment or shutdown of bundle for other reasons.
         this.serveFiles.each { String key, File file ->
-            if (!file.delete()) { this.logger.error("${file.absolutePath} could not be deleted!") }
+            if (!file.delete()) { this.logger.error "${file.absolutePath} could not be deleted!" }
+            else { this.logger.info "${file.absolutePath} was deleted!" }
         }
     }
 }

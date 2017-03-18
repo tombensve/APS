@@ -4,7 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.groovy.core.Vertx
 import org.junit.Test
-import se.natusoft.osgi.aps.api.reactive.Consumer
+import se.natusoft.osgi.aps.tools.reactive.Consumer
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
 import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
@@ -59,17 +59,25 @@ class WebContentServerTest extends OSGIServiceTestTools {
 
         try {
 
-            println ">>> Waiting 5 seconds for server to come up."
+            println "[WebContentServerTest]: Waiting 5 seconds for server to come up."
             hold() maxTime 5L unit SECONDS go()
 
-            println ">>> Calling server ..."
-            URL url = new URL("http://localhost:9080/")
-            String indexHtmlServer = loadFromStream(url.openStream())
-            String indexHtmlLocal = loadFromStream(System.getResourceAsStream("/webContent/index.html"))
+            println "[WebContentServerTest]: Calling server ..."
 
-            assert indexHtmlServer == indexHtmlLocal
-            println ">>> index.html served correctly!"
-
+            getAndVerify("", "index.html")
+            getAndVerify("index.html", "index.html")
+            getAndVerify("adminweb-bundle.js", "adminweb-bundle.js")
+            getAndVerify("shim.min.js", "shim.min.js")
+            getAndVerify("sockjs.min.js", "sockjs.min.js")
+            getAndVerify("vertx-eventbus.js", "vertx-eventbus.js")
+            try {
+                getAndVerify("nonexistent", null)
+                throw new Exception("A FileNotFoundException was expected!")
+            }
+            // You don't get an HTTP status from java.net.URL! It throws exceptions instead.
+            catch (FileNotFoundException ignore) {
+                println "[WebContentServerTest]: Correctly got a FileNotFoundException for 'nonexistent'!"
+            }
         }
         catch (Exception e) {
             shutdown()
@@ -79,7 +87,16 @@ class WebContentServerTest extends OSGIServiceTestTools {
             shutdown()
             hold() maxTime 500 unit MILLISECONDS go() // Give Vertx time to shut down.
         }
+    }
 
+    private static void getAndVerify(String serverFile, String localFile) throws Exception {
+        URL url = new URL("http://localhost:9080/apsadminweb/${serverFile}")
+        String fileFromServer = loadFromStream(url.openStream())
+        if (localFile != null) {
+            String fileFromLocal = loadFromStream(System.getResourceAsStream("/webContent/${localFile}"))
+            assert fileFromServer == fileFromLocal
+            println "[WebContentServerTest]: ${serverFile} served correctly!"
+        }
     }
 
     private static String loadFromStream(InputStream readStream) {

@@ -6,7 +6,8 @@ import io.vertx.groovy.core.Vertx
 import io.vertx.groovy.ext.web.Router
 import io.vertx.groovy.ext.web.handler.sockjs.SockJSHandler
 import org.osgi.framework.BundleContext
-import se.natusoft.osgi.aps.api.reactive.Consumer
+import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
+import se.natusoft.osgi.aps.tools.reactive.Consumer
 import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
@@ -38,7 +39,10 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 @SuppressWarnings(["GroovyUnusedDeclaration", "PackageAccessibility"])
 @CompileStatic
 @TypeChecked
-@OSGiServiceProvider(properties = [@OSGiProperty(name = "consumed", value = "vertx")])
+@OSGiServiceProvider(properties = [
+        @OSGiProperty(name = "consumed", value = "vertx"),
+        @OSGiProperty(name = APSVertxService.HTTP_SERVICE_NAME, value = "default")
+])
 class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Constants  {
     //
     // Private Members
@@ -50,18 +54,22 @@ class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Con
     @Managed(loggingFor = "aps-admin-web-a2:sockjs-eventbus-bridge")
     private APSLogger logger
 
-    /** A Vertx instance. Received in onObjectAvailable(...). */
+    /** A Vertx instance. */
     private Consumer.Consumed<Vertx> vertx
+
+    /** A Router for an HTTP server. */
+    private Consumer.Consumed<Router> router
 
     //
     // Constructors
     //
 
     SockJSEventBusBridge() {
-        this.onVertxAvailable = { Consumer.Consumed<Vertx> vertx ->
-            this.vertx = vertx
 
-            Router router = Router.router(this.vertx.get())
+        this.onVertxAvailable = { Consumer.Consumed<Vertx> vertx -> this.vertx = vertx }
+
+        this.onRouterAvailable = { Consumer.Consumed<Router> router ->
+            this.router = router
 
             // Currently no more detailed permissions than on target address. Might add limits on message contents
             // later.
@@ -72,13 +80,11 @@ class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Con
                     outboundPermitteds: [twowaysPermitted1] as Object
             ])
 
-            // TODO: Need to pass HTTP requests to router.accept(...)!
-            router.route("/eventbus/*").handler(sockJSHandler)
+            // Note that this router is already bound to an HTTP server!
+            router.get().route("/eventbus/*").handler(sockJSHandler)
 
             this.logger.info "Vert.x SockJSHandler for event bus bridging started successfully!"
         }
-
-        this.onVertxUnavilable = { this.logger.error("Vertx currently not available!") }
 
         this.onVertxRevoked = {
             this.vertx = null
@@ -100,6 +106,11 @@ class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Con
 
     @BundleStop
     void shutdown() {
+        if (this.router != null) {
+            this.router.get().get("/eventbus/*").remove()
+            this.router.release()
+        }
         if (this.vertx != null) this.vertx.release()
+        this.logger.disconnectFromLogService(this.context)
     }
 }
