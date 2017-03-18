@@ -5,11 +5,12 @@ import groovy.transform.TypeChecked
 import io.vertx.groovy.core.Vertx
 import io.vertx.groovy.ext.web.Router
 import org.junit.Test
-import se.natusoft.osgi.aps.api.reactive.Consumer
+import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
+import se.natusoft.osgi.aps.tools.reactive.Consumer
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
+import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
 import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
-import se.natusoft.osgi.aps.net.vertx.api.WebRouterConsumer
 import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator
@@ -72,22 +73,27 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
             shutdown()
             hold() maxTime 500 unit MILLISECONDS go() // Give Vertx time to shut down.
         }
-
     }
 
 }
 
 @SuppressWarnings("GroovyUnusedDeclaration")
-@OSGiServiceProvider( properties = [ @OSGiProperty( name = "consumed", value = "vertx") ] )
+@OSGiServiceProvider( properties = [
+        @OSGiProperty( name = "consumed", value = "vertx"),
+        @OSGiProperty( name = APSVertxService.HTTP_SERVICE_NAME, value = "test")
+] )
 @CompileStatic
 @TypeChecked
 // Important: Service interface must be the first after "implements"!! Otherwise serviceAPIs=[Consumer.class] must be specified
 // in @OSGiServiceProvider annotation.
-class VertxConsumerService extends VertxConsumer implements Consumer<Vertx>, WebRouterConsumer {
+class VertxConsumerService extends VertxConsumer implements Consumer<Vertx> {
 
     @Managed(loggingFor = "Test:VertxConsumerService")
     APSLogger logger
 
+    // Note that this only registers callbacks! The callbacks themselves will not be called until the
+    // service have been published. This will not happen util after all injections are done. Thereby
+    // this.logger.info(...) will always work.
     VertxConsumerService() {
         this.onVertxAvailable = { Consumer.Consumed<Vertx> vertx ->
             this.logger.info("Received Vertx instance! [${vertx}]")
@@ -100,7 +106,6 @@ class VertxConsumerService extends VertxConsumer implements Consumer<Vertx>, Web
         this.onVertxRevoked = {
             this.logger.info("Vertx instance revoked!")
         }
-        setHttpSericePort(9999)
         this.onRouterAvailable = { Consumer.Consumed<Router> router ->
             this.logger.info("Received Router instance! [${router}]")
             APSVertxProviderTest.router = router

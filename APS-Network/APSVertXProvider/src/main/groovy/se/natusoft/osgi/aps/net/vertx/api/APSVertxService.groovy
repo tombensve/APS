@@ -48,14 +48,17 @@ import io.vertx.groovy.core.Vertx
  *
  * This service also provides for multiple instances of VertX by associating an instance with a name. Everyone
  * asking for the same name will get the same instance.
+ *
+ * An alternative to using this service is to publish a service implementing APSToolsLib/se.natusoft.osgi.aps.tools.reactive.Consumer<Vertx>.
+ * It will be called with the Vertx instance when available.
  */
 interface APSVertxService {
 
     /** The Consumer property name for providing an instance name. */
     String NAMED_INSTANCE = "named.instance"
 
-    /** The Consumer property for requesting an HTTP server on a specific port other than 8080. */
-    String HTTP_SERVICE_PORT = "http.service.port"
+    /** The Consumer property for requesting a named HTTP server instance. */
+    String HTTP_SERVICE_NAME = "http.service.name"
 
     /** Names the default instance. */
     String DEFAULT_INST = "default"

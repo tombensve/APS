@@ -47,15 +47,15 @@ import io.vertx.groovy.core.Vertx
 import io.vertx.groovy.core.http.HttpServer
 import io.vertx.groovy.ext.web.Router
 import org.osgi.framework.ServiceReference
-import se.natusoft.osgi.aps.api.reactive.Consumer
+import se.natusoft.osgi.aps.tools.reactive.Consumer
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
-import se.natusoft.osgi.aps.net.vertx.api.WebRouterConsumer
 import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.APSServiceTracker
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 
+// TODO: Make clustering optional.
 /**
  * Implements APSVertXService and also calls all DataConsumer<Vertx> services found with an Vertx instance.
  *
@@ -138,13 +138,21 @@ class APSVertxProvider implements APSVertxService {
      */
     private Map<ServiceReference, String> svcRefNamedInst = Collections.synchronizedMap([:])
 
+    /**
+     * Temporary config handling until the APS config overhaul.
+     */
+    private Map<String, Object> config = [
+            vertx_http_service_default: 8080,
+            vertx_http_service_test: 8888
+    ] as Map<String, Object>
+
     @Initializer
     void init() {
         this.apsVertxConsumers.onServiceAvailable { Consumer<Vertx> dataConsumer, ServiceReference serviceReference ->
 
             String name = DEFAULT_INST
-            if (dataConsumer.getConsumerRequirements() != null && dataConsumer.getConsumerRequirements().containsKey(NAMED_INSTANCE)) {
-                name = dataConsumer.getConsumerRequirements()[NAMED_INSTANCE]
+            if (serviceReference.getProperty(NAMED_INSTANCE) != null) {
+                name = serviceReference.getProperty(NAMED_INSTANCE)
             }
 
             svcRefNamedInst[serviceReference] = name
@@ -172,31 +180,39 @@ class APSVertxProvider implements APSVertxService {
                         dataConsumer.consume(Consumer.Status.AVAILABLE, vertxProvider)
 
                         // if the consumer is also consuming an HTTP service router then pass that on to the consumer.
-                        if (dataConsumer instanceof WebRouterConsumer) {
-                            // Hmm ... getProperty(HTTP_SERVICE_PORT) returns null, get(HTTP_SERVICE_PORT) as string returns the value ...
-                            // Yes, it is a java.util.Properties object!!!
-                            Integer port = Integer.valueOf(dataConsumer.consumerRequirements.get(HTTP_SERVICE_PORT, "8080") as String)
+                        String httpServiceName = serviceReference.getProperty(HTTP_SERVICE_NAME)
+                        if (httpServiceName != null) {
+                            // Hmm ... "vertx_http_service_${httpServiceName}" fails here! Null gets returned for a valid name!
+                            // Not even forcing a GString helps:
+                            // Integer port = this.config["""vertx_http_service_${httpServiceName}"""] as Integer
+                            Integer port = this.config["vertx_http_service_" + httpServiceName] as Integer
 
-                            // We keep a server for each listened to port.
-                            HttpServer httpServer = vertxAndCo.httpServerByPort[port]
-                            if (httpServer == null) {
-                                httpServer = vertx.createHttpServer()
-                                vertxAndCo.httpServerByPort[port] = httpServer
+                            if (port != null) {
+                                // We keep a server for each listened to port.
+                                HttpServer httpServer = vertxAndCo.httpServerByPort[port]
+                                if (httpServer == null) {
+                                    httpServer = vertx.createHttpServer()
+                                    vertxAndCo.httpServerByPort[port] = httpServer
+                                }
+
+                                // Consumers don't get direct access to the HttpServer, only to its Router.
+                                Router router = vertxAndCo.httpServerRouterByPort[port]
+                                if (router == null) {
+                                    router = Router.router(vertx)
+                                    vertxAndCo.httpServerRouterByPort[port] = router
+                                    httpServer.requestHandler(router.&accept).listen(port)
+                                    this.logger.info("HTTP server now listening on port ${port}!")
+                                }
+
+                                (dataConsumer as Consumer<Router>).
+                                        consume(Consumer.Status.AVAILABLE, new Consumer.Consumed.ConsumedProvider<Router>(router))
                             }
-
-                            // Consumers don't get direct access to the HttpServer, only to its Router.
-                            Router router = vertxAndCo.httpServerRouterByPort[port]
-                            if (router == null) {
-                                router = Router.router(vertx)
-                                vertxAndCo.httpServerRouterByPort[port] = router
-                                httpServer.requestHandler(router.&accept).listen(port)
-                                this.logger.info("HTTP server now listening on port ${port}!")
+                            else {
+                                this.logger.error("Unknown HTTP service requested! [${httpServiceName}]")
                             }
-
-                            (dataConsumer as Consumer<Router>).
-                                    consume(Consumer.Status.AVAILABLE, new Consumer.Consumed.ConsumedProvider<Router>(router))
                         }
-                    } else {
+
+                    } else { // Failure
                         dataConsumer.consume(Consumer.Status.UNAVAILABLE, null)
                     }
                 }

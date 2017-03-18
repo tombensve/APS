@@ -34,9 +34,7 @@
  *         2017-02-19: Created!
  *
  */
-package se.natusoft.osgi.aps.api.reactive;
-
-import java.util.Properties;
+package se.natusoft.osgi.aps.tools.reactive;
 
 /**
  * This is an API to publish as an OSGi service and be called back with some object.
@@ -49,11 +47,6 @@ import java.util.Properties;
  * to work better with reactive APIs like Vert.x.
  */
 public interface Consumer<ConsumedType> {
-
-    /**
-     * Specific requirements of the consumer.
-     */
-    Properties getConsumerRequirements();
 
     /**
      * Called with requested object type when available.
@@ -116,47 +109,5 @@ public interface Consumer<ConsumedType> {
             @Override
             public void release() {}
         }
-    }
-
-    /**
-     * A default implementation of Consumer missing only 'void onConsumedAvailable(Consumed<ConsumedType> consumed);'.
-     *
-     * @param <DefaultConsumedType> The type to consume.
-     */
-    abstract class DefaultConsumer<DefaultConsumedType> implements Consumer<DefaultConsumedType> {
-
-        /** Potential consumer requirements. */
-        private Properties requirements;
-
-        /**
-         * Provide a complete set of requirements.
-         *
-         * @param requirements The requirements to provide.
-         */
-        public void setRequirements(Properties requirements) {
-            this.requirements = requirements;
-        }
-
-        /**
-         * Provide one individual requirement.
-         *
-         * @param name The name of the requirement property.
-         * @param value The value of the requirement property.
-         */
-        public void setRequirement(String name, String value) {
-            if (this.requirements == null) {
-                this.requirements = new Properties();
-            }
-            this.requirements.setProperty(name, value);
-        }
-
-        /**
-         * Specific options for the consumer.
-         */
-        @Override
-        public Properties getConsumerRequirements() {
-            return this.requirements;
-        }
-
     }
 }

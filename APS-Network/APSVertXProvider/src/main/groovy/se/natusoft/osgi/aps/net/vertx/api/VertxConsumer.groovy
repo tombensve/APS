@@ -4,7 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.groovy.core.Vertx
 import io.vertx.groovy.ext.web.Router
-import se.natusoft.osgi.aps.api.reactive.Consumer
+import se.natusoft.osgi.aps.tools.reactive.Consumer
 
 /**
  * This actually implements the Consumer<Vertx> method onConsumed(...) and forwards to 3 closures if
@@ -33,36 +33,12 @@ class VertxConsumer implements Consumer<Object> {
     /** Called when a HTTP Router is available. */
     Closure onRouterAvailable
 
-    //
-    // Private Members
-    //
-
     /** Set this to get notified of errors. */
-    protected Closure onError
-
-    /** Potential consumer requirements. */
-    private Properties requirements = new Properties()
+    Closure onError
 
     //
     // Methods
     //
-
-    /**
-     * Provide the name of the Vertx instance to consume.
-     *
-     * @param instanceName The Vertx instance name.
-     */
-    void setVertxInstanceName(String instanceName) {
-        this.requirements[APSVertxService.NAMED_INSTANCE] = instanceName
-    }
-
-    /**
-     * Provide a port to use for HTTP service.
-     * @param port
-     */
-    void setHttpSericePort(int port) {
-        this.requirements[APSVertxService.HTTP_SERVICE_PORT] = "${port}"
-    }
 
     /**
      * Handles onConsumed and forwards to closures if provided. Basically cosmetics ...
@@ -92,13 +68,4 @@ class VertxConsumer implements Consumer<Object> {
             if (this.onVertxRevoked != null) this.onVertxRevoked.call()
         }
     }
-
-    /**
-     * Specific options for the consumer.
-     */
-    @Override
-    Properties getConsumerRequirements() {
-        return this.requirements
-    }
-
 }
