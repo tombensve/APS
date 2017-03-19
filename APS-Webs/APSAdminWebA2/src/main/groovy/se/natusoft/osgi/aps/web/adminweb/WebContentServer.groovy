@@ -4,7 +4,6 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.groovy.core.Vertx
 import io.vertx.groovy.core.http.HttpServerRequest
-import io.vertx.groovy.core.http.HttpServerResponse
 import io.vertx.groovy.ext.web.Router
 import io.vertx.groovy.ext.web.RoutingContext
 import se.natusoft.osgi.aps.net.vertx.APSVertxProvider
@@ -19,6 +18,8 @@ import se.natusoft.osgi.aps.tools.reactive.Consumer
 /**
  * Delivers HTTP content to a browser.
  *
+ * ### Suppressed Warnings
+ *
  * __GroovyUnusedDeclaration__
  *
  * There are complains that this class is not used, this because it is managed by APSActivator and the IDE
@@ -27,8 +28,8 @@ import se.natusoft.osgi.aps.tools.reactive.Consumer
  * __PackageAccessibility__
  *
  * This is an OSGi issue. OSGi imports and exports packages, and to be deployable a jar must contain a
- * valid MANIFEST.MF with OSGi keys for imports, exports, etc. Must 3rd party jars do contain a valid
- * OSGi MANIFEST.MF exporting all packages of the jar sp that they can just be dropped into an OSGi
+ * valid MANIFEST.MF with OSGi keys for imports, exports, etc. Most 3rd party jars do contain a valid
+ * OSGi MANIFEST.MF exporting all packages of the jar so that they can just be dropped into an OSGi
  * container and have their classpath be made available to all other code running in the container.
  *
  * The Groovy Vertx wrapper code does not contain a valid OSGi MANIFEST.MF. I have solved this by having
@@ -39,13 +40,18 @@ import se.natusoft.osgi.aps.tools.reactive.Consumer
  * and used in the code without including the dependency jar in the bundle, and complains about
  * that. But since in reality this code will be available at runtime I just hide these incorrect
  * warnings.
+ *
+ * __UnnecessaryQualifiedReference__
+ *
+ * IDEA does not seem to resolve that the usage of Constants.APP_NAME is outside of the
+ * class implementing Constants! It thereby needs to be fully qualified.
  */
-@SuppressWarnings(["GroovyUnusedDeclaration", "PackageAccessibility"])
+@SuppressWarnings(["GroovyUnusedDeclaration", "PackageAccessibility", "UnnecessaryQualifiedReference"])
 @CompileStatic
 @TypeChecked
 @OSGiServiceProvider(properties = [
         @OSGiProperty(name = "consumed", value = "vertx"),
-        @OSGiProperty(name = APSVertxProvider.HTTP_SERVICE_NAME, value = "AdminWebContent")
+        @OSGiProperty(name = APSVertxProvider.HTTP_SERVICE_NAME, value = Constants.APP_NAME)
 ])
 class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constants {
 
@@ -76,24 +82,22 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
             this.router = router
 
             this.router.get().route("/apsadminweb/*").handler { RoutingContext context ->
-                context.request().exceptionHandler { Throwable exception ->
+                handleRequest(context.request().exceptionHandler { Throwable exception ->
 
                     this.logger.error(exception.message, exception)
                     context.response()
                             .setStatusMessage(exception.message)
                             .setStatusCode(500)
                             .end()
-                }
-
-                handleRequest(context.request())
+                })
             }
-            this.logger.info("Added route '/apsadminweb/*'.")
+            this.logger.info "Added route '/apsadminweb/*'."
 
         }
 
         this.onVertxRevoked = {
             this.vertx = null
-            this.logger.info("Vertx instance was revoked. Will not operate until new instance is available!")
+            this.logger.info "Vertx instance was revoked. Will not operate until new instance is available!"
         }
 
         this.onError = { String message ->
@@ -113,8 +117,6 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
     @SuppressWarnings("PackageAccessibility")
     private void handleRequest(HttpServerRequest request) {
 
-        HttpServerResponse response = request.response()
-
         String reqFile = request.path().trim()
         if (reqFile == "/" || reqFile.endsWith("/")) {
             reqFile = "/index.html"
@@ -122,9 +124,9 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
 
         File serveFile = fileToServe(reqFile.substring(reqFile.lastIndexOf('/')))
         if (serveFile != null) {
-            response.sendFile(serveFile.absolutePath)
+            request.response().sendFile(serveFile.absolutePath)
         } else {
-            response.setStatusMessage("${request.path()} was not found!")
+            request.response().setStatusMessage("${request.path()} was not found!")
                     .setStatusCode(404)
                     .end()
         }
@@ -176,7 +178,7 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
     void shutdown() {
         if (this.router != null) {
             this.router.get().get("/apsadminweb/*").remove()
-            this.logger.info("Removed '/apsadminweb/*' route.")
+            this.logger.info "Removed '/apsadminweb/*' route."
             this.router.release()
         }
 

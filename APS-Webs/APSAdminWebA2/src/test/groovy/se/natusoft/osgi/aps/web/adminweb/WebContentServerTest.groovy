@@ -4,6 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.groovy.core.Vertx
 import org.junit.Test
+import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.reactive.Consumer
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
@@ -18,6 +19,8 @@ import static java.util.concurrent.TimeUnit.SECONDS
 @CompileStatic
 @TypeChecked
 class WebContentServerTest extends OSGIServiceTestTools {
+
+    private static APSLogger logger = new APSLogger(APSLogger.PROP_LOGGING_FOR, "WebContentServerTest")
 
     public static Consumer.Consumed<Vertx> vertx = null
 
@@ -58,11 +61,10 @@ class WebContentServerTest extends OSGIServiceTestTools {
         } using '/se/natusoft/osgi/aps/web/adminweb/WebContentServer.class'
 
         try {
-
-            println "[WebContentServerTest]: Waiting 5 seconds for server to come up."
+            logger.info "Waiting 5 seconds for server to come up."
             hold() maxTime 5L unit SECONDS go()
 
-            println "[WebContentServerTest]: Calling server ..."
+            logger.info "Calling server ..."
 
             getAndVerify("", "index.html")
             getAndVerify("index.html", "index.html")
@@ -76,7 +78,7 @@ class WebContentServerTest extends OSGIServiceTestTools {
             }
             // You don't get an HTTP status from java.net.URL! It throws exceptions instead.
             catch (FileNotFoundException ignore) {
-                println "[WebContentServerTest]: Correctly got a FileNotFoundException for 'nonexistent'!"
+                logger.info "Correctly got a FileNotFoundException for 'nonexistent'!"
             }
         }
         catch (Exception e) {
@@ -95,7 +97,7 @@ class WebContentServerTest extends OSGIServiceTestTools {
         if (localFile != null) {
             String fileFromLocal = loadFromStream(System.getResourceAsStream("/webContent/${localFile}"))
             assert fileFromServer == fileFromLocal
-            println "[WebContentServerTest]: ${serverFile} served correctly!"
+            logger.info "${serverFile} served correctly!"
         }
     }
 

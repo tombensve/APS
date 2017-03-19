@@ -143,7 +143,7 @@ class APSVertxProvider implements APSVertxService {
      */
     private Map<String, Object> config = [
             vertx_http_service_default: 8080,
-            vertx_http_service_AdminWebContent: 9080,
+            "vertx_http_service_aps-admin-web-a2": 9080,
             vertx_http_service_test: 8888
     ] as Map<String, Object>
 

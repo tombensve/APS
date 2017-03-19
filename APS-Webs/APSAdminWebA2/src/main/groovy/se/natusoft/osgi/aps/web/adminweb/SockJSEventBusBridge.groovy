@@ -15,6 +15,8 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 /**
  * Provides a Vertx EventBus bridge.
  *
+ * ### Suppressed Warnings
+ *
  * __GroovyUnusedDeclaration__
  *
  * There are complains that this class is not used, this because it is managed by APSActivator and the IDE
@@ -41,7 +43,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 @TypeChecked
 @OSGiServiceProvider(properties = [
         @OSGiProperty(name = "consumed", value = "vertx"),
-        @OSGiProperty(name = APSVertxService.HTTP_SERVICE_NAME, value = "default")
+        @OSGiProperty(name = APSVertxService.HTTP_SERVICE_NAME, value = Constants.APP_NAME)
 ])
 class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Constants  {
     //
