@@ -17,18 +17,5 @@ __[Apache Software License version 2.0](http://www.apache.org/licenses/LICENSE-2
 The following third party products are using this license:
 
 * [groovy-all-2.4.7](http://groovy-lang.org)
-* [vertx-lang-groovy-3.3.3](http://www.apache.org/licenses/LICENSE-2.0.txt)
-* [vertx-core-3.3.3](http://www.apache.org/licenses/LICENSE-2.0.txt)
-* [vertx-auth-common-3.3.3](http://rubygems-proxy.torquebox.org/releases)
-* [vertx-web-3.3.3](http://rubygems-proxy.torquebox.org/releases)
-* [jackson-core-2.7.4](https://github.com/FasterXML/jackson-core)
-* [jackson-annotations-2.7.0](http://github.com/FasterXML/jackson)
-* [jackson-databind-2.7.4](http://github.com/FasterXML/jackson)
-* [netty-codec-http2-4.1.6.Final](http://netty.io/)
-* [netty-handler-proxy-4.1.6.Final](http://netty.io/)
-* [netty-codec-socks-4.1.6.Final](http://netty.io/)
-* [netty-resolver-dns-4.1.6.Final](http://netty.io/)
-* [vertx-hazelcast-3.3.3](http://www.apache.org/licenses/LICENSE-2.0.txt)
-* [hazelcast-3.6.3](http://www.hazelcast.com/)
 
 <!-- CLM -->

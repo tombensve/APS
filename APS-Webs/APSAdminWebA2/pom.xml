@@ -152,16 +152,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--
-            This is installed in local vagrant along with vert.x by APSVertXProvider!
-        -->
-        <dependency>
-            <groupId>io.reactivex.rxjava2</groupId>
-            <artifactId>rxjava</artifactId>
-            <version>${rxjava.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- Unfortunately needed since IDEA can't see the mixin and keep removing groovy if added manually in IDEA. -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
@@ -170,7 +160,6 @@
             <classifier>indy</classifier>
             <version>${groovy.version}</version>
         </dependency>
-
 
         <!--
             APSVertXProvider dependencies
