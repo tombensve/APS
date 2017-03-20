@@ -37,8 +37,13 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
  * and used in the code without including the dependency jar in the bundle, and complains about
  * that. But since in reality this code will be available at runtime I just hide these incorrect
  * warnings.
+ *
+ * __UnnecessaryQualifiedReference__
+ *
+ * IDEA does not seem to resolve that the usage of Constants.APP_NAME is outside of the
+ * class implementing Constants! It thereby needs to be fully qualified.
  */
-@SuppressWarnings(["GroovyUnusedDeclaration", "PackageAccessibility"])
+@SuppressWarnings(["GroovyUnusedDeclaration", "PackageAccessibility", "UnnecessaryQualifiedReference"])
 @CompileStatic
 @TypeChecked
 @OSGiServiceProvider(properties = [
