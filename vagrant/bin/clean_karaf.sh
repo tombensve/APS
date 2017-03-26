@@ -11,7 +11,7 @@ echo "Removing deployment data ..."
 rm -rf /home/vagrant/server/apache-karaf/data
 
 echo "Starting Karaf ..."
-/home/vagrant/server/apache-karaf/bin/start debug
+/home/vagrant/server/apache-karaf/bin/start
 echo "Waiting for Karaf to start ..."
 sleep 8
 echo "Installing web features ..."
