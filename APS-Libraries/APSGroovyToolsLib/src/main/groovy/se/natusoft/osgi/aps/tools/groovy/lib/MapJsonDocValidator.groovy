@@ -258,7 +258,7 @@ class MapJsonDocValidator {
      *                   numbers and integers.
      */
     private static void validateNumberAsJavaLangNumber(Number sourceValue, boolean equals, @Nullable String from, String to,
-                                                       Object errorSource , Closure<Number> fromString ) {
+                                                       Object errorSource, Closure<Number> fromString ) {
         Number value = sourceValue as Number
 
         if (equals) {

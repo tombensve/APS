@@ -1,11 +1,15 @@
 package se.natusoft.osgi.aps.web.adminweb
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.apsadminweb.service.APSAdminWebService
 import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.tools.LocalEventBus
 import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
 
+// IDEA shows this as not used, but that is not true!! This class will not compile without this import.
 /**
  * General services.
  *
@@ -31,6 +35,8 @@ import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
  * warnings.
  */
 @SuppressWarnings("GroovyUnusedDeclaration")
+@CompileStatic
+@TypeChecked
 class AdminWebsProvider implements Constants {
     //
     // Private Members
@@ -51,11 +57,11 @@ class AdminWebsProvider implements Constants {
 
     @Initializer
     void init() {
-        this.localBus.consume { Map<String, Object> event ->
+        this.localBus.subscribe(LOCAL_BUS_ADDRESS) { Map<String, Object> event ->
             try {
                 EventDefinition.validate(event)
 
-                switch ((event[_body_])[_action_] as String) {
+                switch (event[_body_][_action_] as String) {
                     case ACTION_GET_WEBS:
                         handleGetWebs(event)
                         break
@@ -64,10 +70,12 @@ class AdminWebsProvider implements Constants {
             }
             catch (Exception e) {
                 this.logger.error("Problem with received event: ${e.message}")
-                event[_error_] = EventDefinition.createError([code: 1, message: "Problem with received event: ${e.message}"])
+                // Smells like a Groovy bug! "Constants." is required for a pub, but not for the get call above!
+                //noinspection UnnecessaryQualifiedReference
+                event[Constants._error_] =
+                        EventDefinition.createError(code: 1, message: "Problem with received event: ${e.message}" as Object)
             }
 
-            null // Might need a real Disposable implementation here!
         }
     }
 

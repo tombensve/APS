@@ -2,18 +2,17 @@ package se.natusoft.osgi.aps.web.adminweb
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import io.reactivex.disposables.Disposable
 import io.vertx.core.AsyncResult
 import io.vertx.core.json.JsonObject
-import io.vertx.groovy.core.Vertx
-import io.vertx.groovy.core.eventbus.Message
-import io.vertx.groovy.core.eventbus.MessageConsumer
+import io.vertx.core.Vertx
+import io.vertx.core.eventbus.Message
+import io.vertx.core.eventbus.MessageConsumer
 import org.osgi.framework.BundleContext
-import se.natusoft.osgi.aps.net.vertx.APSVertxProvider
-import se.natusoft.osgi.aps.tools.reactive.Consumer
 import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.tools.LocalEventBus
 import se.natusoft.osgi.aps.tools.annotation.activator.*
+import se.natusoft.osgi.aps.tools.reactive.Consumer
 
 /**
  * This service listens to both public Vertx event-bus messages, and internal 'LocalEventBus' messages.
@@ -87,9 +86,6 @@ class EventRouter extends VertxConsumer implements Consumer<Vertx>, Constants {
     /** Consumer of public event-bus messages. */
     private MessageConsumer eventConsumer
 
-    /** Consumer of local bus messages. */
-    private Disposable localConsumer
-
     //
     // Constructor
     //
@@ -99,13 +95,15 @@ class EventRouter extends VertxConsumer implements Consumer<Vertx>, Constants {
             this.vertx = vertx
 
             // Handles public events
-            this.eventConsumer = this.vertx.get().eventBus().consumer(BUS_ADDRESS).handler { Message message ->
+            this.eventConsumer = this.vertx.get().eventBus().consumer(GLOBAL_BUS_ADDRESS).handler { Message message ->
                 routePublicBusEvents(message)
             }
 
             // Handle local events
-            this.localConsumer = this.localBus.consume { Map<String, Object> localEvent ->
-                routeLocalBusEvents(localEvent)
+            this.localBus.onError { Exception e -> this.logger.error("Local bus problem!", e)}
+                .onWarning {String message -> this.logger.warn(message)}
+                .subscribe("adminweb.general") { Map<String, Object> localEvent ->
+                   routeLocalBusEvents(localEvent)
             }
         }
 
@@ -157,11 +155,10 @@ class EventRouter extends VertxConsumer implements Consumer<Vertx>, Constants {
         }
 
         if (event['type'] == "service") {
-            this.localBus.send(event)
+            this.localBus.publish(LOCAL_BUS_ADDRESS, event)
 
             if (event['reply'] != null) {
-                Map<String, Object> reply = event['reply'] as Map<String, Object>
-                sendReply(reply, eventMessage)
+                sendReply(event['reply'] as Map<String, Object>, eventMessage)
             }
         }
     }
@@ -172,12 +169,10 @@ class EventRouter extends VertxConsumer implements Consumer<Vertx>, Constants {
      * @param reply The reply to send.
      * @param eventMessage The original event message.
      */
-    private void sendReply(Map<String, Object> reply, Message eventMessage) {
+    private static void sendReply(Map<String, Object> reply, Message eventMessage) {
         JsonObject replyJson = new JsonObject(reply)
         if (eventMessage.replyAddress() != null && !eventMessage.replyAddress().empty) {
             eventMessage.reply(replyJson)
-        } else {
-            this.vertx.get().eventBus().send(BUS_ADDRESS, replyJson)
         }
     }
 
@@ -187,8 +182,8 @@ class EventRouter extends VertxConsumer implements Consumer<Vertx>, Constants {
      * @param event The event to route. This event is local to the application.
      */
     private void routeLocalBusEvents(Map<String, Object> event) {
-        if (BUS_ADDRESS == event[_address_] && CLASSIFIER_PUBLIC == event[_classifier_]) {
-            this.vertx.get().eventBus().send(BUS_ADDRESS, new JsonObject(event))
+        if (GLOBAL_BUS_ADDRESS == event[_address_] && CLASSIFIER_PUBLIC == event[_classifier_]) {
+            this.vertx.get().eventBus().send(GLOBAL_BUS_ADDRESS, new JsonObject(event))
         }
     }
 
@@ -206,10 +201,6 @@ class EventRouter extends VertxConsumer implements Consumer<Vertx>, Constants {
                     this.logger.error "Failed to unregister 'aps-admin-web' event consuemr! [${res.cause()}]"
                 }
             }
-        }
-        if (this.localConsumer != null) {
-            this.localConsumer.dispose()
-            this.localConsumer = null
         }
     }
 

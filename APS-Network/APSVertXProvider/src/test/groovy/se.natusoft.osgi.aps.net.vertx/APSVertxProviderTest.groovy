@@ -2,11 +2,9 @@ package se.natusoft.osgi.aps.net.vertx
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import io.vertx.groovy.core.Vertx
-import io.vertx.groovy.ext.web.Router
+import io.vertx.core.Vertx
+import io.vertx.ext.web.Router
 import org.junit.Test
-import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
-import se.natusoft.osgi.aps.tools.reactive.Consumer
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
 import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
@@ -18,9 +16,10 @@ import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+import se.natusoft.osgi.aps.tools.reactive.Consumer
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS
 
 @CompileStatic
 @TypeChecked
@@ -60,7 +59,7 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
 
         try {
 
-            hold() whilst { vertx == null } maxTime 15L unit SECONDS go()
+            hold() whilst { vertx == null } maxTime 25L unit SECONDS go()
 
             assert vertx != null
             assert vertx.get() != null

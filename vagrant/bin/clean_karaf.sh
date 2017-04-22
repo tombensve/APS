@@ -3,6 +3,7 @@
 # This scripts stops karaf, cleans the deployments, starts karaf again, and then sets up web and webconsole.
 #
 
+unset KARAF_DEBUG
 echo "Stopping Karaf ..."
 /home/vagrant/server/apache-karaf/bin/stop now
 echo "Waiting for Karaf to stop ..."
@@ -10,6 +11,7 @@ sleep 10
 echo "Removing deployment data ..."
 rm -rf /home/vagrant/server/apache-karaf/data
 
+export KARAF_DEBUG=true
 echo "Starting Karaf ..."
 /home/vagrant/server/apache-karaf/bin/start
 echo "Waiting for Karaf to start ..."

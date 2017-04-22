@@ -2,9 +2,9 @@ package se.natusoft.osgi.aps.web.adminweb
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import io.vertx.groovy.core.Vertx
-import io.vertx.groovy.ext.web.Router
-import io.vertx.groovy.ext.web.handler.sockjs.SockJSHandler
+import io.vertx.core.Vertx
+import io.vertx.ext.web.Router
+import io.vertx.ext.web.handler.sockjs.SockJSHandler
 import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
 import se.natusoft.osgi.aps.tools.reactive.Consumer
@@ -80,7 +80,7 @@ class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Con
 
             // Currently no more detailed permissions than on target address. Might add limits on message contents
             // later.
-            def twowaysPermitted1 = [address: BUS_ADDRESS]
+            def twowaysPermitted1 = [address: GLOBAL_BUS_ADDRESS]
 
             SockJSHandler sockJSHandler = SockJSHandler.create(this.vertx.get()).bridge([
                     inboundPermitteds : [twowaysPermitted1] as Object,

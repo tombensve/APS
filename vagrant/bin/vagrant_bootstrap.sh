@@ -28,7 +28,9 @@ installKaraf() {
     mkdir server
     cd server
 
-        KARAF_VERSION=4.1.0
+        # http://apache.mirrors.spacedump.net/karaf/4.1.1/apache-karaf-4.1.1.tar.gz
+
+        KARAF_VERSION=4.1.1
         wget http://apache.mirrors.spacedump.net/karaf/${KARAF_VERSION}/apache-karaf-${KARAF_VERSION}.tar.gz
         tar xvf apache-karaf-${KARAF_VERSION}.tar.gz
         ln -s apache-karaf-${KARAF_VERSION} apache-karaf

@@ -2,8 +2,8 @@ package se.natusoft.osgi.aps.net.vertx.api
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import io.vertx.groovy.core.Vertx
-import io.vertx.groovy.ext.web.Router
+import io.vertx.core.Vertx
+import io.vertx.ext.web.Router
 import se.natusoft.osgi.aps.tools.reactive.Consumer
 
 /**
@@ -51,10 +51,10 @@ class VertxConsumer implements Consumer<Object> {
     @Override
     void consume(Consumer.Status status, Consumer.Consumed<Object> consumed) {
         if (status == Consumer.Status.AVAILABLE) {
-            if (consumed.get().class == Vertx.class) {
+            if (Vertx.class.isAssignableFrom(consumed.get().class)) {
                 if (this.onVertxAvailable != null) this.onVertxAvailable.call(consumed)
             }
-            else if (consumed.get().class == Router.class) {
+            else if (Router.class.isAssignableFrom(consumed.get().class)) {
                 if (this.onRouterAvailable != null) this.onRouterAvailable.call(consumed)
             }
             else {

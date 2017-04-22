@@ -34,7 +34,7 @@
 
         <!-- The bundle packages to export. -->
         <osgi.export.package>
-            se.natusoft.osgi.aps.tools.groovy.lib
+            se.natusoft.osgi.aps.tools.groovy.lib;version="${project.version}"
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->
@@ -155,7 +155,7 @@
                     </supportedProjectTypes>
                     <archive>
                         <manifestEntries>
-                            <APS-Configs>${aps.config.classes}</APS-Configs>
+                            <!--<APS-Configs>${aps.config.classes}</APS-Configs>-->
                             <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
                         </manifestEntries>
                     </archive>

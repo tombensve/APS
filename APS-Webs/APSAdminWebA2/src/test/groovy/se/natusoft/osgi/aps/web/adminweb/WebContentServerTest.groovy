@@ -2,7 +2,7 @@ package se.natusoft.osgi.aps.web.adminweb
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import io.vertx.groovy.core.Vertx
+import io.vertx.core.Vertx
 import org.junit.Test
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.reactive.Consumer
@@ -50,6 +50,10 @@ class WebContentServerTest extends OSGIServiceTestTools {
             config
 
         } from 'se.natusoft.osgi.aps', 'aps-vertx-provider', '1.0.0'
+
+        // We deploy this service not to test it, but to add one more client to VertxProvider and verify
+        // that it can handle more than one. It didn't at first :-).
+        deploy 'sockJs-event-bus-bridge' with new APSActivator() using '/se/natusoft/osgi/aps/web/adminweb/SockJSEventBusBridge.class'
 
         deploy 'web-content-server' with new APSActivator() with {
             ContentServerConfig config = new ContentServerConfig()

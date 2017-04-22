@@ -1,10 +1,14 @@
 package se.natusoft.osgi.aps.web.adminweb
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.tools.groovy.lib.MapJsonDocValidator
 
 /**
  * This contains the definition of the events handled.
  */
+@CompileStatic
+@TypeChecked
 class EventDefinition {
 
     /**
@@ -92,7 +96,7 @@ class EventDefinition {
      * @param reply Reply data.
      * @param error Error data.
      */
-    private static Map<String, Object> createBasicPublicEvent(Map<String, Object> reply, Map<String, Object> error) {
+    static Map<String, Object> createBasicPublicEvent(Map<String, Object> reply, Map<String, Object> error) {
         Map<String, Object> event = [
                 header: [
                         type      : "service",

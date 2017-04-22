@@ -2,10 +2,10 @@ package se.natusoft.osgi.aps.web.adminweb
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import io.vertx.groovy.core.Vertx
-import io.vertx.groovy.core.http.HttpServerRequest
-import io.vertx.groovy.ext.web.Router
-import io.vertx.groovy.ext.web.RoutingContext
+import io.vertx.core.Vertx
+import io.vertx.core.http.HttpServerRequest
+import io.vertx.ext.web.Router
+import io.vertx.ext.web.RoutingContext
 import se.natusoft.osgi.aps.net.vertx.APSVertxProvider
 import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -65,8 +65,6 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
     /** Maps the requested file names to the path of the actual file. */
     private Map<String, File> serveFiles = [:]
 
-    private Consumer.Consumed<Vertx> vertx
-
     private Consumer.Consumed<Router> router
 
     //
@@ -74,9 +72,6 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
     //
 
     WebContentServer() {
-        this.onVertxAvailable = { Consumer.Consumed<Vertx> vertx ->
-            this.vertx = vertx
-        }
 
         this.onRouterAvailable = { Consumer.Consumed<Router> router ->
             this.router = router
@@ -96,7 +91,6 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
         }
 
         this.onVertxRevoked = {
-            this.vertx = null
             this.logger.info "Vertx instance was revoked. Will not operate until new instance is available!"
         }
 
@@ -181,8 +175,6 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
             this.logger.info "Removed '/apsadminweb/*' route."
             this.router.release()
         }
-
-        if (this.vertx != null) this.vertx.release()
 
         // It is not a bad idea to delete these even on redeployment or shutdown of bundle for other reasons.
         this.serveFiles.each { String key, File file ->
