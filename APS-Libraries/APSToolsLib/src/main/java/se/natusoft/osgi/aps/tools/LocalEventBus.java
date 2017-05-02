@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class LocalEventBus {
 
-    public interface Calle<T> {
+    public interface Caller<T> {
         void call(T arg);
     }
 
@@ -19,13 +19,13 @@ public class LocalEventBus {
     //
 
     /** The subscribes per address. */
-    private Map<String/*Address*/, List<Calle<Map<String, Object>/*event*/>>/*Subscriber*/> subscribers = new LinkedHashMap<>();
+    private Map<String/*Address*/, List<Caller<Map<String, Object>/*event*/>>/*Subscriber*/> subscribers = new LinkedHashMap<>();
 
     /** This error handler will be called on exceptions during publish. */
-    private Calle<Exception> errorHandler;
+    private Caller<Exception> errorHandler;
 
     /** This handler will be called on warnings. */
-    private Calle<String> warningHandler;
+    private Caller<String> warningHandler;
 
     //
     // Methods
@@ -37,8 +37,8 @@ public class LocalEventBus {
      * @param address The address to subscribe to.
      * @param subscriber The subscriber to call with messages to the address.
      */
-    public LocalEventBus subscribe(String address, Calle<Map<String, Object>> subscriber) {
-        List<Calle<Map<String, Object>>> subs = this.subscribers.computeIfAbsent(address, key -> new LinkedList<>());
+    public LocalEventBus subscribe(String address, Caller<Map<String, Object>> subscriber) {
+        List<Caller<Map<String, Object>>> subs = this.subscribers.computeIfAbsent(address, key -> new LinkedList<>());
 
         subs.add(subscriber);
 
@@ -52,7 +52,7 @@ public class LocalEventBus {
      * @param message The message to publish.
      */
     public LocalEventBus publish(String address, Map<String, Object> message) {
-        List<Calle<Map<String, Object>>> subs = this.subscribers.get(address);
+        List<Caller<Map<String, Object>>> subs = this.subscribers.get(address);
 
         if (subs != null) {
             subs.forEach(subscriber -> {
@@ -77,7 +77,7 @@ public class LocalEventBus {
      *
      * @param errorHandler The error handler to set.
      */
-    public LocalEventBus onError(Calle<Exception> errorHandler) {
+    public LocalEventBus onError(Caller<Exception> errorHandler) {
         this.errorHandler = errorHandler;
         return this;
     }
@@ -87,7 +87,7 @@ public class LocalEventBus {
      *
      * @param warningHandler The warning handler to set.
      */
-    public LocalEventBus onWarning(Calle<String> warningHandler) {
+    public LocalEventBus onWarning(Caller<String> warningHandler) {
         this.warningHandler = warningHandler;
         return this;
     }
