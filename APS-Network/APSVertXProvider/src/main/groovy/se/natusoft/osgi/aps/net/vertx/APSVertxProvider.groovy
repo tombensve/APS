@@ -49,7 +49,10 @@ import io.vertx.core.http.HttpServer
 import io.vertx.ext.web.Router
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceReference
+import se.natusoft.docutations.Important
+import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.NotUsed
+import se.natusoft.docutations.Note
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
 import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
@@ -58,7 +61,10 @@ import se.natusoft.osgi.aps.tools.APSServiceTracker
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 import se.natusoft.osgi.aps.tools.reactive.Consumer
 
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
+
+import static se.natusoft.osgi.aps.tools.util.StaticUtils.*;
 
 // TODO: Make clustering optional.
 /**
@@ -120,17 +126,17 @@ class APSVertxProvider implements APSVertxService {
      * specific instance of Vertx then they can provide a unique name to get their own instance.
      *
      * __DO NOTE:__ Vertx can handle multiple servers listening on the same port, but multiple Vertx instances is a
-     * different thing and will most probably conflict when services are bound to same hosts and ports as a different
+     * different thing and will conflict when services are bound to same hosts and ports as a different
      * Vertx instance on the same host. But for different services on different ports it should be OK, and thereby
      * multiple Vertx instances are allowed by this service.
      */
-    private Map<String, NamedVertxInstance> namedInstances = Collections.synchronizedMap([:])
+    private Map<String, NamedVertxInstance> namedInstances = new ConcurrentHashMap<>()
 
     /** A map of HTTP servers per service port. These are internal to this bundle. */
-    private Map<Integer, HttpServer> httpServerByPort = Collections.synchronizedMap([:])
+    private Map<Integer, HttpServer> httpServerByPort = new ConcurrentHashMap<>()
 
     /** A map of Routers for HTTP servers per service port. These are provided to those that wants to serve a path. */
-    private Map<Integer, Router> httpServerRouterByPort = Collections.synchronizedMap([:])
+    private Map<Integer, Router> httpServerRouterByPort = new ConcurrentHashMap<>()
 
     /**
      * This keeps track of how many are using a specific instance of Vertx. useGroovyVertx(...) will increase
@@ -147,18 +153,18 @@ class APSVertxProvider implements APSVertxService {
      * the service again and add the service reference to this map. If the service itself calls release()
      * it usually means that the service is going down.
      */
-    private Map<ServiceReference, Consumer.Consumed<Vertx>> callbackInstances = Collections.synchronizedMap([:])
+    private Map<ServiceReference, Consumer.Consumed<Vertx>> callbackInstances = new ConcurrentHashMap<>()
 
     /**
      * This is used when a Consumer.Consumed<Vertx> service is leaving to get the name of the service
      * for calling releaseGroovyVertx(name) with.
      */
-    private Map<ServiceReference, String> svcRefNamedInst = Collections.synchronizedMap([:])
+    private Map<ServiceReference, String> svcRefNamedInst = new ConcurrentHashMap<>()
 
     /**
      * Temporary config handling until the APS config overhaul.
      */
-    private Map<String, Object> config = [
+    private def config = [
             vertx_http_service_default: 9088,
             "vertx_http_service_aps-admin-web-a2": 9080,
             vertx_http_service_test: 8888
@@ -167,9 +173,7 @@ class APSVertxProvider implements APSVertxService {
     @Initializer
     void init() {
         this.logger.connectToLogService(this.context)
-
         this.apsVertxConsumers.onServiceAvailable this.&onServiceAvailableHandler
-
         this.apsVertxConsumers.onServiceLeaving this.&onServiceLeavingHandler
     }
 
@@ -183,7 +187,8 @@ class APSVertxProvider implements APSVertxService {
      * @param dataConsumer The newly available consumer.
      * @param serviceReference The service reference of the consumer. Used as an id.
      */
-    private void onServiceAvailableHandler(Consumer<Vertx> dataConsumer, ServiceReference serviceReference) {
+    private void onServiceAvailableHandler(@NotNull Consumer<Vertx> dataConsumer, @NotNull ServiceReference serviceReference) {
+        this.logger.info("######## onServiceAvailableHandler(${dataConsumer}, ${serviceReference})")
 
         String name = DEFAULT_INST
         if (serviceReference.getProperty(NAMED_INSTANCE) != null) {
@@ -196,6 +201,7 @@ class APSVertxProvider implements APSVertxService {
         if (!callbackInstances.containsKey(serviceReference)) {
 
             useGroovyVertX(name) { AsyncResult<Vertx> result ->
+
                 if (result.succeeded()) {
                     Vertx vertx = result.result()
 
@@ -215,6 +221,8 @@ class APSVertxProvider implements APSVertxService {
 
                     // if the consumer is also consuming an HTTP service router then pass that on to the consumer.
                     String httpServiceName = serviceReference.getProperty(HTTP_SERVICE_NAME)
+                    this.logger.info("######## serviceReference: ${serviceReference.propertyKeys}, httpServiceName: ${httpServiceName}")
+
                     if (httpServiceName != null) {
                         // Hmm ... "vertx_http_service_${httpServiceName}" fails here! Null gets returned for a valid name!
                         // Not even forcing a GString helps:
@@ -246,7 +254,7 @@ class APSVertxProvider implements APSVertxService {
                         }
                     }
                     else {
-                        this.logger.error("Tried to use non configured HTTP service!")
+                        this.logger.error("No HTTP service configuration name provided!")
                     }
 
                 } else { // Failure
@@ -262,7 +270,7 @@ class APSVertxProvider implements APSVertxService {
      * @param serviceReference The service reference of the leaving consumer. Used as an id.
      * @param serviceAPI The class of the leaving service. Not used.
      */
-    private synchronized void onServiceLeavingHandler(ServiceReference serviceReference, @NotUsed Class serviceAPI) {
+    private synchronized void onServiceLeavingHandler(@NotNull ServiceReference serviceReference, @NotUsed Class serviceAPI) {
         callbackInstances.remove(serviceReference)
         String name = svcRefNamedInst.remove(serviceReference)
         releaseGroovyVertX(name)
@@ -284,7 +292,7 @@ class APSVertxProvider implements APSVertxService {
      *
      * @param options The map to load options into.
      */
-    private static void loadOptions(Map<String, Object> options) {
+    private static void loadOptions(@NotNull Map<String, Object> options) {
         VertxConfig.managed.get().optionsValues.each { VertxConfig.VertxConfigValue entry ->
             Object value = ""
 
@@ -317,35 +325,34 @@ class APSVertxProvider implements APSVertxService {
      * @param result The handler to forward result to.
      */
     @SuppressWarnings("PackageAccessibility")
-    private void createVertxInstance(String name, Handler<AsyncResult<Vertx>> result) {
+    @Important("This gets called sequentially on the same thread by this.sequentialExecutor! See useGroovyVertX(...) below.")
+    private void createVertxInstance(@NotNull String name, @NotNull Handler<AsyncResult<Vertx>> result) {
         Map<String, Object> options = [:]
         loadOptions(options)
 
-        // We have to supply a context classloader for Vertx to init correctly.
-        ClassLoader origClassLoader = Thread.currentThread().contextClassLoader
-        Thread.currentThread().setContextClassLoader(this.class.classLoader)
-        boolean failed = false
+        runWithContextClassLoader(this.class.classLoader) {
+            boolean failed = false
 
-        Vertx.clusteredVertx(options) { AsyncResult<Vertx> res ->
-            if (res.succeeded()) {
-                logger.info "Vert.x cluster started successfully!"
-                Vertx vertx = res.result()
-                NamedVertxInstance nvi = new NamedVertxInstance(vertx: vertx, vertxContext: Vertx.currentContext())
-                namedInstances[name] = nvi
-                increaseUsageCount(name)
-            } else {
-                failed = true
-                logger.error "Vert.x cluster failed to start: ${res.cause()}, for '${name}'!"
+            Vertx.clusteredVertx(options) { AsyncResult<Vertx> res ->
+                if (res.succeeded()) {
+                    logger.info "Vert.x cluster started successfully!"
+                    Vertx vertx = res.result()
+                    NamedVertxInstance nvi = new NamedVertxInstance(vertx: vertx, vertxContext: Vertx.currentContext())
+                    namedInstances[name] = nvi
+                    increaseUsageCount(name)
+                } else {
+                    failed = true
+                    logger.error "Vert.x cluster failed to start: ${res.cause()}, for '${name}'!"
+                }
+                result.handle(res)
             }
-            result.handle(res)
-        }
 
-        Thread.currentThread().setContextClassLoader(origClassLoader)
-
-        // This is called from useGroovyVertX(...) which is run in a single thread by an ExecutionService.
-        // We have to wait for a result before returning the thread.
-        while (this.namedInstances[name] == null && !failed) {
-            Thread.sleep(500)
+            // This is called from useGroovyVertX(...) which is run in a single thread by an ExecutionService.
+            // We have to wait for a result before returning the thread.
+            while (this.namedInstances[name] == null && !failed) {
+                this.logger.info("######## Sleeping ...")
+                Thread.sleep(500)
+            }
         }
     }
 
@@ -356,7 +363,7 @@ class APSVertxProvider implements APSVertxService {
      */
     @SuppressWarnings("PackageAccessibility")
     @Override
-    void useGroovyVertX(String name, Handler<AsyncResult<Vertx>> result) {
+    void useGroovyVertX(@NotNull String name, @NotNull Handler<AsyncResult<Vertx>> result) {
         // We need to do each of these sequentially on one thread otherwise we will create multiple Vertx
         // instances in parallel.
         this.sequentialExecutor.submit {
@@ -380,7 +387,7 @@ class APSVertxProvider implements APSVertxService {
      */
     @SuppressWarnings("PackageAccessibility")
     @Override
-    void releaseGroovyVertX(String name) {
+    void releaseGroovyVertX(@NotNull String name) {
         this.sequentialExecutor.submit {
             if (decreaseUsageCount(name) == 0 && this.namedInstances.containsKey(name)) {
                 NamedVertxInstance nvi = this.namedInstances.remove name
@@ -407,7 +414,7 @@ class APSVertxProvider implements APSVertxService {
         }
     }
 
-    private void increaseUsageCount(String name) {
+    private void increaseUsageCount(@NotNull String name) {
         if (this.usageCount[name] == null) {
             this.usageCount[name] = 1
         } else {
@@ -415,7 +422,7 @@ class APSVertxProvider implements APSVertxService {
         }
     }
 
-    private int decreaseUsageCount(String name) {
+    private int decreaseUsageCount(@NotNull String name) {
         int result = 0
 
         if (this.usageCount[name] != null) {
@@ -431,7 +438,7 @@ class APSVertxProvider implements APSVertxService {
      */
     @SuppressWarnings("PackageAccessibility")
     private static class AsyncResultProvider implements AsyncResult<Vertx> {
-        Vertx vertx
+        @NotNull Vertx vertx
         boolean succeeded
 
         @Override

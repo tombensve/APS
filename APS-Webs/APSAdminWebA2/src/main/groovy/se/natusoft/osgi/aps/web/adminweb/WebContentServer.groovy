@@ -6,10 +6,16 @@ import io.vertx.core.Vertx
 import io.vertx.core.http.HttpServerRequest
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+import org.osgi.framework.BundleContext
+import se.natusoft.docutations.NotNull
+import se.natusoft.docutations.Note
+import se.natusoft.docutations.Nullable
 import se.natusoft.osgi.aps.net.vertx.APSVertxProvider
+import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
 import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
+import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
@@ -51,7 +57,7 @@ import se.natusoft.osgi.aps.tools.reactive.Consumer
 @TypeChecked
 @OSGiServiceProvider(properties = [
         @OSGiProperty(name = "consumed", value = "vertx"),
-        @OSGiProperty(name = APSVertxProvider.HTTP_SERVICE_NAME, value = Constants.APP_NAME)
+        @OSGiProperty(name = APSVertxService.HTTP_SERVICE_NAME, value = Constants.APP_NAME)
 ])
 class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constants {
 
@@ -59,8 +65,11 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
     // Private Members
     //
 
-    @Managed(loggingFor = "aps-admin-web-a2:web-content-server")
+    @Managed(name="web-content-server", loggingFor = "aps-admin-web-a2:web-content-server")
     private APSLogger logger
+
+    @Managed
+    private BundleContext context
 
     /** Maps the requested file names to the path of the actual file. */
     private Map<String, File> serveFiles = [:]
@@ -99,6 +108,12 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
         }
     }
 
+    @Initializer
+    @Note("This is executed after all injections are done.")
+    void init() {
+        this.logger.connectToLogService(this.context)
+    }
+
     //
     // Methods
     //
@@ -109,10 +124,10 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
      * @param request The request to handle.
      */
     @SuppressWarnings("PackageAccessibility")
-    private void handleRequest(HttpServerRequest request) {
+    private void handleRequest(@NotNull HttpServerRequest request) {
 
         String reqFile = request.path().trim()
-        if (reqFile == "/" || reqFile.endsWith("/")) {
+        if (reqFile.endsWith("/")) {
             reqFile = "/index.html"
         }
 
@@ -136,33 +151,33 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
      *
      * @param requestFile The request file to get on disk File object for.
      */
-    private File fileToServe(String requestFile) {
+    private @Nullable File fileToServe(@NotNull String requestFile) {
         File serveFile = this.serveFiles[requestFile]
         if (serveFile == null) {
-            serveFile = File.createTempFile("aps-admin-web", "${new Random(new Date().getTime()).nextLong()}")
-            serveFile.deleteOnExit()
 
-            InputStream embeddedStream = System.getResourceAsStream("/webContent" + requestFile)
-            if (embeddedStream == null) {
-                return null
-            }
-            InputStream from = new BufferedInputStream(embeddedStream)
-            OutputStream to = new BufferedOutputStream(new FileOutputStream(serveFile))
+            URL resourceURL = this.context.getBundle().getResource("/webContent" + requestFile)
+            if (resourceURL != null) {
+                serveFile = File.createTempFile("aps-admin-web", "${new Random(new Date().getTime()).nextLong()}")
+                serveFile.deleteOnExit()
 
-            boolean done = false
-            while (!done) {
-                int b = from.read()
-                if (b != -1) {
-                    to.write(b)
-                } else {
-                    done = true
+                InputStream embeddedStream = resourceURL.openStream()
+                if (embeddedStream == null) {
+                    return null
                 }
-            }
-            from.close()
-            to.close()
+                InputStream from = new BufferedInputStream(embeddedStream)
+                OutputStream to = new BufferedOutputStream(new FileOutputStream(serveFile))
 
-            this.serveFiles[requestFile] = serveFile
-            this.logger.info("Temporarily cached file ${serveFile.absolutePath}!")
+                boolean done = false
+                while (!done) {
+                    int b = from.read()
+                    if (b != -1) { to.write(b) } else { done = true }
+                }
+                from.close()
+                to.close()
+
+                this.serveFiles[requestFile] = serveFile
+                this.logger.info("Temporarily cached file ${serveFile.absolutePath}!")
+            }
         }
 
         serveFile

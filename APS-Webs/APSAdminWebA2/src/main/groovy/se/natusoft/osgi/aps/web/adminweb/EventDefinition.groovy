@@ -2,6 +2,8 @@ package se.natusoft.osgi.aps.web.adminweb
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import se.natusoft.docutations.NotNull
+import se.natusoft.docutations.Nullable
 import se.natusoft.osgi.aps.tools.groovy.lib.MapJsonDocValidator
 
 /**
@@ -48,7 +50,7 @@ class EventDefinition {
      *
      * @param event The event Map structure to validate.
      */
-    static void validate(Map<String, Object> event) {
+    static void validate(@NotNull Map<String, Object> event) {
         EVENT_VALIDATOR.validate(event)
     }
 
@@ -56,7 +58,7 @@ class EventDefinition {
      * Creates an error.
      * @param error The error to create.
      */
-    static Map<String, Object> createError(Map<String, Object> error) {
+    static @NotNull Map<String, Object> createError(@NotNull Map<String, Object> error) {
         createBasicPublicEvent(null, error)
     }
 
@@ -68,7 +70,7 @@ class EventDefinition {
      *
      * @return A new or updated event.
      */
-    static Map<String, Object> createError(Map<String, Object> event, Map<String, Object> error) {
+    static @NotNull Map<String, Object> createError(@NotNull Map<String, Object> event, @NotNull Map<String, Object> error) {
         if (event == null) {
             event = [
                     header: [
@@ -86,7 +88,7 @@ class EventDefinition {
      * Creates a reply.
      * @param reply The reply to create.
      */
-    static Map<String, Object> createReply(Map<String, Object> reply) {
+    static @NotNull Map<String, Object> createReply(@Nullable("In theory ...") Map<String, Object> reply) {
         createBasicPublicEvent(reply, null)
     }
 
@@ -96,7 +98,7 @@ class EventDefinition {
      * @param reply Reply data.
      * @param error Error data.
      */
-    static Map<String, Object> createBasicPublicEvent(Map<String, Object> reply, Map<String, Object> error) {
+    static @NotNull Map<String, Object> createBasicPublicEvent(@Nullable Map<String, Object> reply, @Nullable Map<String, Object> error) {
         Map<String, Object> event = [
                 header: [
                         type      : "service",

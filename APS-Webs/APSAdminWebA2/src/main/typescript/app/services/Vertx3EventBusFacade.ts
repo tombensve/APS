@@ -45,7 +45,7 @@ export class Vertx3EventBusFacade implements EventBusProvider {
      * @param options
      */
     public constructor(url : string, options : Object) {
-        this.eventBus = new EventBus(url, options); // TS7009 Can't get rid of this red marking, but works fine.
+        this.eventBus = new EventBus(url, options);
         this.eventBus.onerror = (err: Error) : void => {
             console.log(err);
             this.errMsg = err.toString();

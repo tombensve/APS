@@ -2,6 +2,8 @@ package se.natusoft.osgi.aps.web.adminweb
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import org.osgi.framework.BundleContext
+import se.natusoft.docutations.NotNull
 import se.natusoft.osgi.aps.apsadminweb.service.APSAdminWebService
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.LocalEventBus
@@ -42,6 +44,9 @@ class AdminWebsProvider implements Constants {
     // Private Members
     //
 
+    @Managed
+    private BundleContext context
+
     @Managed(loggingFor = "aps-admin-web-a2:admin-webs-provider")
     private APSLogger logger
 
@@ -57,6 +62,7 @@ class AdminWebsProvider implements Constants {
 
     @Initializer
     void init() {
+        this.logger.connectToLogService(this.context)
         this.localBus.subscribe(LOCAL_BUS_ADDRESS) { Map<String, Object> event ->
             try {
                 EventDefinition.validate(event)
@@ -79,7 +85,7 @@ class AdminWebsProvider implements Constants {
         }
     }
 
-    private void handleGetWebs(Map<String, Object> event) {
+    private void handleGetWebs(@NotNull Map<String, Object> event) {
 
     }
 }

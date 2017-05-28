@@ -76,7 +76,8 @@
         <!-- The private packages. -->
         <osgi.private.package>
             se.natusoft.osgi.aps.web.adminweb;version="${project.version}",
-            se.natusoft.osgi.aps.web.adminweb.config;version="${project.version}"
+            se.natusoft.osgi.aps.web.adminweb.config;version="${project.version}",
+            webContent;version="${project.version}"
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->
@@ -88,11 +89,16 @@
 
         <!-- The resources to include in the bundle -->
         <osgi.include.resource>
-            webContent/adminweb-bundle.js=src/main/resources/webContent/adminweb-bundle.js,
+            <!--webContent/adminweb-bundle.js=src/main/resources/webContent/adminweb-bundle.js,-->
             webContent/index.html=src/main/resources/webContent/index.html,
             webContent/shim.min.js=src/main/resources/webContent/shim.min.js,
             webContent/sockjs.min.js=src/main/resources/webContent/sockjs.min.js,
-            webContent/vertx-eventbus.js=src/main/resources/webContent/vertx-eventbus.js
+            webContent/vertx-eventbus.js=src/main/resources/webContent/vertx-eventbus.js,
+            webContent/zone.js=src/main/resources/webContent/zone.js,
+            webContent/apsadminweb-tpl.html=src/main/typescript/app/components/apsadminweb/apsadminweb-tpl.html,
+            webContent/apsadminweb.css=src/main/typescript/app/components/apsadminweb/apsadminweb.css,
+            webContent/static/=src/main/typescript/static/,
+            webContent/verify-tpl.html=src/main/typescript/app/components/verify/verify-tpl.html
         </osgi.include.resource>
 
         <!-- The default for embedding dependencies in bundle. -->
@@ -248,8 +254,8 @@
                                       tofile="src/main/resources/webContent/index.html" filtering="false"/>
                                 <copy file="src/main/typescript/node_modules/core-js/client/shim.min.js"
                                       tofile="src/main/resources/webContent/shim.min.js" filtering="false"/>
-                                <copy file="src/main/typescript/node_modules/zone.js/dist/zone.js"
-                                      tofile="src/main/resources/webContent/" filtering="false"/>
+                                <copy file="src/main/typescript/node_modules/zone.js/dist/zone.min.js"
+                                      tofile="src/main/resources/webContent/zone.js" filtering="false"/>
                                 <copy file="src/main/typescript/node_modules/sockjs-client/dist/sockjs.min.js"
                                       tofile="src/main/resources/webContent/sockjs.min.js" filtering="false"/>
                                 <copy file="src/main/typescript/node_modules/vertx3-eventbus-client/vertx-eventbus.js"

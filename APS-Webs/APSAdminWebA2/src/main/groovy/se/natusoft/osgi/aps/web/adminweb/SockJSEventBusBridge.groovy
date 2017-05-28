@@ -4,13 +4,14 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.core.Vertx
 import io.vertx.ext.web.Router
+import io.vertx.ext.web.handler.sockjs.BridgeEvent
 import io.vertx.ext.web.handler.sockjs.SockJSHandler
 import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
-import se.natusoft.osgi.aps.tools.reactive.Consumer
 import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
+import se.natusoft.osgi.aps.tools.reactive.Consumer
 
 /**
  * Provides a Vertx EventBus bridge.
@@ -58,7 +59,7 @@ class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Con
     @Managed
     private BundleContext context
 
-    @Managed(loggingFor = "aps-admin-web-a2:sockjs-eventbus-bridge")
+    @Managed(name="sockjs-evenbus-bridge", loggingFor = "aps-admin-web-a2:sockjs-eventbus-bridge")
     private APSLogger logger
 
     /** A Vertx instance. */
@@ -73,24 +74,33 @@ class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Con
 
     SockJSEventBusBridge() {
 
-        this.onVertxAvailable = { Consumer.Consumed<Vertx> vertx -> this.vertx = vertx }
+        this.onVertxAvailable = { Consumer.Consumed<Vertx> vertx ->
+            this.logger.info("######## SockJSEventBusBridge.onVertxAvailable")
+            this.vertx = vertx
+        }
 
         this.onRouterAvailable = { Consumer.Consumed<Router> router ->
+            this.logger.info("######## SockJSEventBusBridge.onRouterAvailable")
             this.router = router
 
             // Currently no more detailed permissions than on target address. Might add limits on message contents
             // later.
-            def twowaysPermitted1 = [address: GLOBAL_BUS_ADDRESS]
-
-            SockJSHandler sockJSHandler = SockJSHandler.create(this.vertx.get()).bridge([
-                    inboundPermitteds : [twowaysPermitted1] as Object,
-                    outboundPermitteds: [twowaysPermitted1] as Object
-            ])
+            def inboundPermitted = [address: GLOBAL_BUS_ADDRESS + ".service"]
+            def outboundPermitted = [address: GLOBAL_BUS_ADDRESS + ".client"]
+            def options = [
+                    inboundPermitteds: [inboundPermitted],
+                    outboundPermitteds: [outboundPermitted]
+            ] as Map<String, Object>
 
             // Note that this router is already bound to an HTTP server!
-            router.get().route("/eventbus/*").handler(sockJSHandler)
+            SockJSHandler sockJSHandler = SockJSHandler.create(this.vertx.get())
+            sockJSHandler.bridge(options) { BridgeEvent be ->
+                this.logger.info("SockJSBridge - Type: ${be.type()}")
+                be.complete(Boolean.TRUE)
+            }
+            this.router.get().route("/eventbus/*").handler(sockJSHandler)
 
-            this.logger.info "Vert.x SockJSHandler for event bus bridging started successfully!"
+//            this.logger.info "Vert.x SockJSHandler for event bus bridging started successfully!"
         }
 
         this.onVertxRevoked = {

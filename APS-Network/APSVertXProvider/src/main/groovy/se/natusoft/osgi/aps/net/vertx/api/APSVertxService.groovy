@@ -42,6 +42,7 @@ package se.natusoft.osgi.aps.net.vertx.api
 import io.vertx.core.AsyncResult
 import io.vertx.core.Handler
 import io.vertx.core.Vertx
+import se.natusoft.docutations.NotNull
 
 /**
  * This service provides configured Vertx instances allowing multiple services to use the same Vertx instance.
@@ -70,8 +71,8 @@ interface APSVertxService {
      *
      * @param name The name of the instance to get.
      */
-    void useGroovyVertX(String name, Handler<AsyncResult<Vertx>> result)
+    void useGroovyVertX(@NotNull String name, @NotNull Handler<AsyncResult<Vertx>> result)
 
     /** After having called useGroovyVertX(...) in a bundle, call this when shutting down! */
-    void releaseGroovyVertX(String name)
+    void releaseGroovyVertX(@NotNull String name)
 }
