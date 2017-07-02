@@ -5,8 +5,9 @@ import org.junit.Test;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static se.natusoft.osgi.aps.tools.MapBuilder.map;
 
-public class LocalEventBusTest extends MapBuilder {
+public class LocalEventBusTest {
 
     private int res = 0;
     private boolean warning = false, error = false;
@@ -16,10 +17,16 @@ public class LocalEventBusTest extends MapBuilder {
 
         new LocalEventBus()
                 .subscribe("nisse", (Map<String, Object> event) -> {
-                    res += (int) event.get("number");
+                    NumberEvent ne = new NumberEvent(event);
+                    if (ne.getAction().equals("number")) {
+                        res += ne.getNumber();
+                    }
                     throw new RuntimeException("Should not effect anything!");
                 }).subscribe("nisse", (Map<String, Object> event) -> System.out.println("number: " + event.get("number")))
-                .publish("nisse", map("action::", "number", "number:", 5))
+                .subscribe("tomte", (Map<String, Object> event) -> {
+                    throw new RuntimeException("This should not be called!");
+                })
+                .publish("nisse", map("action:", "number", "number:", 5))
                 .publish("nisse", map("action:", "number", "number:", 8))
                 .onError(e -> {
                     assertEquals(e.getMessage(), "Should not effect anything!");
@@ -31,11 +38,25 @@ public class LocalEventBusTest extends MapBuilder {
                     warning = true;
                 })
                 .publish("misse", map("action:", "number", "number:", 24));
-//        .publish("nisse", MapBuilder.map().k("action").v("number").k("number").v(5).toMap());
 
         assert res == 25;
         assert warning;
         assert error;
     }
 
+    private static final class NumberEvent {
+        private Map<String, Object> event;
+
+        public NumberEvent(Map<String, Object> event) {
+            this.event = event;
+        }
+
+        public String getAction() {
+            return (String)event.get("action");
+        }
+
+        public int getNumber() {
+            return (int)event.get("number");
+        }
+    }
 }

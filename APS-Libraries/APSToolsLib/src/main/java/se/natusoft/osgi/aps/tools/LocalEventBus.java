@@ -19,7 +19,7 @@ public class LocalEventBus {
     //
 
     /** The subscribes per address. */
-    private Map<String/*Address*/, List<Caller<Map<String, Object>/*event*/>>/*Subscriber*/> subscribers = new LinkedHashMap<>();
+    private Map<String/*subject*/, List<Caller<Map<String, Object>/*event*/>>/*Subscriber*/> subscribers = new LinkedHashMap<>();
 
     /** This error handler will be called on exceptions during publish. */
     private Caller<Exception> errorHandler;
@@ -32,15 +32,13 @@ public class LocalEventBus {
     //
 
     /**
-     * Subscribes to an address.
+     * Subscribes to a subject.
      *
-     * @param address The address to subscribe to.
+     * @param subject The subject to subscribe to.
      * @param subscriber The subscriber to call with messages to the address.
      */
-    public LocalEventBus subscribe(String address, Caller<Map<String, Object>> subscriber) {
-        List<Caller<Map<String, Object>>> subs = this.subscribers.computeIfAbsent(address, key -> new LinkedList<>());
-
-        subs.add(subscriber);
+    public LocalEventBus subscribe(String subject, Caller<Map<String, Object>> subscriber) {
+        this.subscribers.computeIfAbsent(subject, key -> new LinkedList<>()).add(subscriber);
 
         return this;
     }
@@ -48,11 +46,11 @@ public class LocalEventBus {
     /**
      * Publish a message on the bus.
      *
-     * @param address The address to publish to.
+     * @param subject The subject to publish to.
      * @param message The message to publish.
      */
-    public LocalEventBus publish(String address, Map<String, Object> message) {
-        List<Caller<Map<String, Object>>> subs = this.subscribers.get(address);
+    public LocalEventBus publish(String subject, Map<String, Object> message) {
+        List<Caller<Map<String, Object>>> subs = this.subscribers.get(subject);
 
         if (subs != null) {
             subs.forEach(subscriber -> {
@@ -65,7 +63,7 @@ public class LocalEventBus {
         }
         else {
             if (this.warningHandler != null) {
-                this.warningHandler.call("There are no subscribers for '" + address + "'!");
+                this.warningHandler.call("There are no subscribers for '" + subject + "'!");
             }
         }
 
