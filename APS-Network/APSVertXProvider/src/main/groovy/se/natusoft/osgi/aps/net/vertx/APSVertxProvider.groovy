@@ -52,7 +52,6 @@ import org.osgi.framework.ServiceReference
 import se.natusoft.docutations.Important
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.NotUsed
-import se.natusoft.docutations.Note
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
 import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
@@ -63,8 +62,9 @@ import se.natusoft.osgi.aps.tools.reactive.Consumer
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
+import java.util.concurrent.TimeUnit
 
-import static se.natusoft.osgi.aps.tools.util.StaticUtils.*;
+import static se.natusoft.osgi.aps.tools.util.StaticUtils.*
 
 // TODO: Make clustering optional.
 /**
@@ -72,12 +72,12 @@ import static se.natusoft.osgi.aps.tools.util.StaticUtils.*;
  *
  * Do consider using the DataConsumer.DataConsumerProvider utility implementation for callback delivery of Vertx.
  */
-@SuppressWarnings(["GroovyUnusedDeclaration", "PackageAccessibility"])
+@SuppressWarnings( [ "GroovyUnusedDeclaration", "PackageAccessibility" ] )
 @OSGiServiceProvider(
         properties = [
-                @OSGiProperty(name = APS.Service.Provider, value = "aps-vertx-provider"),
-                @OSGiProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Network),
-                @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Messaging)
+                @OSGiProperty( name = APS.Service.Provider, value = "aps-vertx-provider" ),
+                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Network ),
+                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging )
         ]
 )
 @CompileStatic
@@ -104,20 +104,25 @@ class APSVertxProvider implements APSVertxService {
     private BundleContext context
 
     /** The logger for this service. */
-    @Managed(loggingFor = "aps-vertx-service")
+    @Managed( loggingFor = "aps-vertx-service" )
     private APSLogger logger
 
     /** For sequential one threaded executions. */
     @Managed
-    @ExecutorSvc(type = ExecutorSvc.ExecutorType.Single, unConfigurable = true)
+    @ExecutorSvc( type = ExecutorSvc.ExecutorType.Single, unConfigurable = true )
     private ExecutorService sequentialExecutor
 
+    /** For offloading to separate thread when receiving external notification of new consumer. */
+    @Managed
+    @ExecutorSvc( type = ExecutorSvc.ExecutorType.FixedSize, unConfigurable = true )
+    private ExecutorService poolExecutor
+
     /**
-     * This tracks DataConsumer<Vertx> OSGi services which will be called with a Vertx instance to use.
+     * This tracks Consumer<Vertx> OSGi services which will be called with a Vertx instance to use.
      * This is a reversed reactive API variant. Also called the Hollywood principle: Don't call us, we
      * call you!
      */
-    @OSGiService(additionalSearchCriteria = "(consumed=vertx)")
+    @OSGiService( additionalSearchCriteria = "(consumed=vertx)" )
     private APSServiceTracker<Consumer<Vertx>> apsVertxConsumers
 
     /**
@@ -165,14 +170,14 @@ class APSVertxProvider implements APSVertxService {
      * Temporary config handling until the APS config overhaul.
      */
     private def config = [
-            vertx_http_service_default: 9088,
+            vertx_http_service_default           : 9088,
             "vertx_http_service_aps-admin-web-a2": 9080,
-            vertx_http_service_test: 8888
+            vertx_http_service_test              : 8888
     ] as Map<String, Object>
 
     @Initializer
     void init() {
-        this.logger.connectToLogService(this.context)
+        this.logger.connectToLogService( this.context )
         this.apsVertxConsumers.onServiceAvailable this.&onServiceAvailableHandler
         this.apsVertxConsumers.onServiceLeaving this.&onServiceLeavingHandler
     }
@@ -187,80 +192,153 @@ class APSVertxProvider implements APSVertxService {
      * @param dataConsumer The newly available consumer.
      * @param serviceReference The service reference of the consumer. Used as an id.
      */
-    private void onServiceAvailableHandler(@NotNull Consumer<Vertx> dataConsumer, @NotNull ServiceReference serviceReference) {
-        this.logger.info("######## onServiceAvailableHandler(${dataConsumer}, ${serviceReference})")
+    private void onServiceAvailableHandler( @NotNull Consumer<Vertx> dataConsumer,
+                                            @NotNull ServiceReference serviceReference ) {
+        this.poolExecutor.submit {
+            _onServiceAvailableHandler( dataConsumer, serviceReference )
+        }
+    }
+
+    /**
+     * This gets called when there is a new VertX consumer available.
+     *
+     * @param dataConsumer The newly available consumer.
+     * @param serviceReference The service reference of the consumer. Used as an id.
+     */
+    private void _onServiceAvailableHandler( @NotNull Consumer<Vertx> dataConsumer,
+                                             @NotNull ServiceReference serviceReference ) {
+        this.logger.info( "######## onServiceAvailableHandler(${ dataConsumer }, ${ serviceReference })" )
 
         String name = DEFAULT_INST
-        if (serviceReference.getProperty(NAMED_INSTANCE) != null) {
-            name = serviceReference.getProperty(NAMED_INSTANCE)
+        if ( serviceReference.getProperty( NAMED_INSTANCE ) != null ) {
+            name = serviceReference.getProperty( NAMED_INSTANCE )
         }
 
-        svcRefNamedInst[serviceReference] = name
+        svcRefNamedInst[ serviceReference ] = name
 
         // Check for new service
-        if (!callbackInstances.containsKey(serviceReference)) {
+        if ( !callbackInstances.containsKey( serviceReference ) ) {
+            handleNewConsumer( dataConsumer, serviceReference, name )
+        }
+    }
 
-            useGroovyVertX(name) { AsyncResult<Vertx> result ->
+    /**
+     * Handles a new consumer having published itself as a service. This service will be called
+     * with a vertx instance.
+     *
+     * @param dataConsumer The new consumer service.
+     * @param serviceReference The service reference of the service.
+     * @param name The instance name of vertx the consumer have requested.
+     */
+    private void handleNewConsumer( Consumer<Vertx> dataConsumer, ServiceReference serviceReference, String name ) {
+        useGroovyVertX( name ) { AsyncResult<Vertx> result ->
 
-                if (result.succeeded()) {
-                    Vertx vertx = result.result()
+            if ( result.succeeded() ) {
+                Vertx vertx = result.result()
 
-                    Consumer.Consumed<Vertx> vertxProvider =
-                            new Consumer.Consumed.ConsumedProvider<Vertx>(vertx) {
-                                @Override
-                                void release() {
-                                    callbackInstances.remove(serviceReference)
-                                    svcRefNamedInst.remove(serviceReference)
-                                    releaseGroovyVertX(name)
-                                    logger.info("Released '${name}'!")
-                                }
+                Consumer.Consumed<Vertx> vertxProvider =
+                        new Consumer.Consumed.ConsumedProvider<Vertx>( vertx ) {
+                            @Override
+                            void release() {
+                                callbackInstances.remove( serviceReference )
+                                svcRefNamedInst.remove( serviceReference )
+                                releaseGroovyVertX( name )
+                                logger.info( "Released '${ name }'!" )
                             }
-                    callbackInstances.put(serviceReference, vertxProvider)
-
-                    dataConsumer.consume(Consumer.Status.AVAILABLE, vertxProvider)
-
-                    // if the consumer is also consuming an HTTP service router then pass that on to the consumer.
-                    String httpServiceName = serviceReference.getProperty(HTTP_SERVICE_NAME)
-                    this.logger.info("######## serviceReference: ${serviceReference.propertyKeys}, httpServiceName: ${httpServiceName}")
-
-                    if (httpServiceName != null) {
-                        // Hmm ... "vertx_http_service_${httpServiceName}" fails here! Null gets returned for a valid name!
-                        // Not even forcing a GString helps:
-                        // Integer port = this.config["""vertx_http_service_${httpServiceName}"""] as Integer
-                        Integer port = this.config["vertx_http_service_" + httpServiceName] as Integer
-
-                        if (port != null) {
-                            // We keep a server for each listened to port.
-                            HttpServer httpServer = httpServerByPort[port]
-                            if (httpServer == null) {
-                                httpServer = vertx.createHttpServer(/* TODO: Provide options. */)
-                                httpServerByPort[port] = httpServer
-                            }
-
-                            // Consumers don't get direct access to the HttpServer, only to its Router.
-                            Router router = httpServerRouterByPort[port]
-                            if (router == null) {
-                                router = Router.router(vertx)
-                                httpServerRouterByPort[port] = router
-                                httpServer.requestHandler(router.&accept).listen(port)
-                                this.logger.info("HTTP server now listening on port ${port}!")
-                            }
-
-                            (dataConsumer as Consumer<Router>).
-                                    consume(Consumer.Status.AVAILABLE, new Consumer.Consumed.ConsumedProvider<Router>(router))
                         }
-                        else {
-                            this.logger.error("No port for HTTP service '${httpServiceName}'!")
-                        }
-                    }
-                    else {
-                        this.logger.error("No HTTP service configuration name provided!")
-                    }
+                callbackInstances.put( serviceReference, vertxProvider )
 
-                } else { // Failure
-                    dataConsumer.consume(Consumer.Status.UNAVAILABLE, null)
-                }
+                // Provide Vertx instance to consumer service.
+                dataConsumer.consume( Consumer.Status.AVAILABLE, vertxProvider )
+
+                handleAdditionalConsumerRequests( dataConsumer, serviceReference, vertx )
+
+            } else { // Failure
+                dataConsumer.consume( Consumer.Status.UNAVAILABLE, null )
             }
+        }
+    }
+
+    /**
+     * Any handlers for additional consumer requests are called from here. Additional requests are
+     * identified by properties in the service reference.
+     *
+     * For example "http.service.name" points to a named entry in configuration which provides a port
+     * to listen for http requests on. If that is available in the service reference then an http server
+     * will be setup if not already existing and the consumer will receive a router to that server.
+     *
+     * Currently the http server is the only vertx service currently provided, but when more, like a
+     * TCP service is made available it will be in a method called from here. Note that the consumer
+     * callback used is always the same for the vertx instance and any other instances provided. The
+     * consumer must check what it has received.
+     *
+     * @param dataConsumer The current consumer.
+     * @param serviceReference The service reference to the current consumer.
+     * @param vertx The Vertx instance.
+     */
+    private void handleAdditionalConsumerRequests(
+            Consumer<Vertx> dataConsumer,
+            ServiceReference serviceReference,
+            Vertx vertx
+    ) {
+        // Check if consumer service also wants an http router and provide one if so.
+        handleHttpRouterRequest( dataConsumer, serviceReference, vertx )
+
+        // TODO: Add more handlers here.
+    }
+
+    /**
+     * Handles requests for an Http router.
+     *
+     * @param dataConsumer The consumer to deliver an Http router to.
+     * @param serviceReference The service reference of the consumer.
+     * @param vertx The Vertx instance to use for setting up http server and router.
+     */
+    private void handleHttpRouterRequest(
+            Consumer<Vertx> dataConsumer,
+            ServiceReference serviceReference,
+            Vertx vertx
+    ) {
+
+        // if the consumer is also consuming an HTTP service router then pass that on to the consumer.
+        String httpServiceName = serviceReference.getProperty( HTTP_SERVICE_NAME )
+        this.logger.info( "######## serviceReference: ${ serviceReference.propertyKeys }, httpServiceName: ${ httpServiceName }" )
+
+        if ( httpServiceName != null ) {
+            // Hmm ... "vertx_http_service_${httpServiceName}" fails here! Null gets returned for a valid name!
+            // Not even forcing a GString helps:
+            // Integer port = this.config["""vertx_http_service_${httpServiceName}"""] as Integer
+            Integer port = this.config[ "vertx_http_service_" + httpServiceName ] as Integer
+
+            if ( port != null ) {
+                // We keep a server for each listened to port.
+                HttpServer httpServer = httpServerByPort[ port ]
+                if ( httpServer == null ) {
+                    httpServer = vertx.createHttpServer(/* TODO: Provide options. */ )
+                    httpServerByPort[ port ] = httpServer
+                }
+
+                // Consumers don't get direct access to the HttpServer, only to its Router.
+                Router router = httpServerRouterByPort[ port ]
+                if ( router == null ) {
+                    router = Router.router( vertx )
+                    httpServerRouterByPort[ port ] = router
+                    httpServer.requestHandler( router.&accept ).listen( port )
+                    this.logger.info( "HTTP server now listening on port ${ port }!" )
+                }
+
+                ( dataConsumer as Consumer<Router> ).
+                        consume(
+                                Consumer.Status.AVAILABLE,
+                                new Consumer.Consumed.ConsumedProvider<Router>( router )
+                        )
+            } else {
+                this.logger.error( "No port for HTTP service '${ httpServiceName }'!" )
+            }
+        } else {
+            this.logger.error( "No HTTP service configuration name provided! The consumer must publish its " +
+                    "service with the property specified by APSVertxService.HTTP_SERVICE_NAME containing a " +
+                    "config entry name to use for getting a port to serve on." )
         }
     }
 
@@ -270,10 +348,11 @@ class APSVertxProvider implements APSVertxService {
      * @param serviceReference The service reference of the leaving consumer. Used as an id.
      * @param serviceAPI The class of the leaving service. Not used.
      */
-    private synchronized void onServiceLeavingHandler(@NotNull ServiceReference serviceReference, @NotUsed Class serviceAPI) {
-        callbackInstances.remove(serviceReference)
-        String name = svcRefNamedInst.remove(serviceReference)
-        releaseGroovyVertX(name)
+    private synchronized void onServiceLeavingHandler( @NotNull ServiceReference serviceReference,
+                                                       @NotUsed Class serviceAPI ) {
+        callbackInstances.remove( serviceReference )
+        String name = svcRefNamedInst.remove( serviceReference )
+        releaseGroovyVertX( name )
     }
 
     /**
@@ -284,7 +363,7 @@ class APSVertxProvider implements APSVertxService {
         this.callbackInstances.each { ServiceReference sr, Consumer.Consumed<Vertx> vertx ->
             vertx.release()
         }
-        this.logger.disconnectFromLogService(this.context)
+        this.logger.disconnectFromLogService( this.context )
     }
 
     /**
@@ -292,29 +371,29 @@ class APSVertxProvider implements APSVertxService {
      *
      * @param options The map to load options into.
      */
-    private static void loadOptions(@NotNull Map<String, Object> options) {
+    private static void loadOptions( @NotNull Map<String, Object> options ) {
         VertxConfig.managed.get().optionsValues.each { VertxConfig.VertxConfigValue entry ->
             Object value = ""
 
             // The type value will *always* contain one of these values and nothing else.
-            switch (entry.type.string) {
+            switch ( entry.type.string ) {
                 case "String":
                     value = entry.value.string
                     break
 
                 case "Int":
-                    value = Integer.valueOf(entry.value.string)
+                    value = Integer.valueOf( entry.value.string )
                     break
 
                 case "Float":
-                    value = Float.valueOf(entry.value.string)
+                    value = Float.valueOf( entry.value.string )
                     break
 
                 case "Boolean":
-                    value = Boolean.valueOf(entry.value.string)
+                    value = Boolean.valueOf( entry.value.string )
             }
 
-            options[entry.name.string] = value
+            options[ entry.name.string ] = value
         }
     }
 
@@ -324,34 +403,34 @@ class APSVertxProvider implements APSVertxService {
      * @param name The name to save this instance as.
      * @param result The handler to forward result to.
      */
-    @SuppressWarnings("PackageAccessibility")
-    @Important("This gets called sequentially on the same thread by this.sequentialExecutor! See useGroovyVertX(...) below.")
-    private void createVertxInstance(@NotNull String name, @NotNull Handler<AsyncResult<Vertx>> result) {
+    @SuppressWarnings( "PackageAccessibility" )
+    @Important( "This gets called sequentially on the same thread by this.sequentialExecutor! See useGroovyVertX(...) below." )
+    private void createVertxInstance( @NotNull String name, @NotNull Handler<AsyncResult<Vertx>> result ) {
         Map<String, Object> options = [:]
-        loadOptions(options)
+        loadOptions( options )
 
-        runWithContextClassLoader(this.class.classLoader) {
+        runWithContextClassLoader( this.class.classLoader ) {
             boolean failed = false
 
-            Vertx.clusteredVertx(options) { AsyncResult<Vertx> res ->
-                if (res.succeeded()) {
+            Vertx.clusteredVertx( options ) { AsyncResult<Vertx> res ->
+                if ( res.succeeded() ) {
                     logger.info "Vert.x cluster started successfully!"
                     Vertx vertx = res.result()
-                    NamedVertxInstance nvi = new NamedVertxInstance(vertx: vertx, vertxContext: Vertx.currentContext())
-                    namedInstances[name] = nvi
-                    increaseUsageCount(name)
+                    NamedVertxInstance nvi = new NamedVertxInstance( vertx: vertx, vertxContext: Vertx.currentContext() )
+                    namedInstances[ name ] = nvi
+                    increaseUsageCount( name )
                 } else {
                     failed = true
-                    logger.error "Vert.x cluster failed to start: ${res.cause()}, for '${name}'!"
+                    logger.error "Vert.x cluster failed to start: ${ res.cause() }, for '${ name }'!"
                 }
-                result.handle(res)
+                result.handle( res )
             }
 
             // This is called from useGroovyVertX(...) which is run in a single thread by an ExecutionService.
             // We have to wait for a result before returning the thread.
-            while (this.namedInstances[name] == null && !failed) {
-                this.logger.info("######## Sleeping ...")
-                Thread.sleep(500)
+            while ( this.namedInstances[ name ] == null && !failed ) {
+                this.logger.info( "######## Sleeping ..." )
+                Thread.sleep( 500 )
             }
         }
     }
@@ -361,73 +440,75 @@ class APSVertxProvider implements APSVertxService {
      *
      * @param name The name of the instance to get.
      */
-    @SuppressWarnings("PackageAccessibility")
+    @SuppressWarnings( "PackageAccessibility" )
     @Override
-    void useGroovyVertX(@NotNull String name, @NotNull Handler<AsyncResult<Vertx>> result) {
+    void useGroovyVertX( @NotNull String name, @NotNull Handler<AsyncResult<Vertx>> result ) {
         // We need to do each of these sequentially on one thread otherwise we will create multiple Vertx
         // instances in parallel.
         this.sequentialExecutor.submit {
-            NamedVertxInstance nvi = this.namedInstances[name]
+            NamedVertxInstance nvi = this.namedInstances[ name ]
 
-            if (nvi != null) {
-                increaseUsageCount(name)
+            if ( nvi != null ) {
+                increaseUsageCount( name )
 
                 nvi.vertxContext.runOnContext {
-                    result.handle new AsyncResultProvider(vertx: nvi.vertx, succeeded: true)
+                    result.handle new AsyncResultProvider( vertx: nvi.vertx, succeeded: true )
                 }
 
             } else {
-                createVertxInstance(name, result)
+                createVertxInstance( name, result )
             }
         }
     }
 
     /**
      * After having called useGroovyVertX(...) in a bundle, call this when shutting down!
+     *
+     * @param name The name of the instance to release.
      */
-    @SuppressWarnings("PackageAccessibility")
+    @SuppressWarnings( "PackageAccessibility" )
     @Override
-    void releaseGroovyVertX(@NotNull String name) {
+    void releaseGroovyVertX( @NotNull String name ) {
         this.sequentialExecutor.submit {
-            if (decreaseUsageCount(name) == 0 && this.namedInstances.containsKey(name)) {
+            if ( decreaseUsageCount( name ) == 0 && this.namedInstances.containsKey( name ) ) {
                 NamedVertxInstance nvi = this.namedInstances.remove name
                 this.usageCount.remove name
 
-                this.apsVertxConsumers.onServiceAvailable { Consumer<Vertx> dataConsumer, ServiceReference serviceReference ->
+                this.apsVertxConsumers.withAllAvailableServices { Consumer<Vertx> dataConsumer ->
                     try {
-                        dataConsumer.consume(Consumer.Status.REVOKED, null)
+                        dataConsumer.consume( Consumer.Status.REVOKED, null )
                     }
-                    catch (Exception e) {
-                        this.logger.error("Vertx delivery to consumer failed!", e)
+                    catch ( Exception e ) {
+                        this.logger.error( "Vertx delivery to consumer failed!", e )
                     }
                 }
 
                 nvi.vertx.close { AsyncResult res ->
 
-                    if (res.succeeded()) {
+                    if ( res.succeeded() ) {
                         this.logger.info "Vert.x successfully shut down!"
                     } else {
-                        this.logger.error "Vert.x failed to shut down! [${res.cause()}]"
+                        this.logger.error "Vert.x failed to shut down! [${ res.cause() }]"
                     }
                 }
             }
         }
     }
 
-    private void increaseUsageCount(@NotNull String name) {
-        if (this.usageCount[name] == null) {
-            this.usageCount[name] = 1
+    private void increaseUsageCount( @NotNull String name ) {
+        if ( this.usageCount[ name ] == null ) {
+            this.usageCount[ name ] = 1
         } else {
-            this.usageCount[name] = this.usageCount[name] + 1
+            this.usageCount[ name ] = this.usageCount[ name ] + 1
         }
     }
 
-    private int decreaseUsageCount(@NotNull String name) {
+    private int decreaseUsageCount( @NotNull String name ) {
         int result = 0
 
-        if (this.usageCount[name] != null) {
-            this.usageCount[name] = this.usageCount[name] - 1
-            result = this.usageCount[name]
+        if ( this.usageCount[ name ] != null ) {
+            this.usageCount[ name ] = this.usageCount[ name ] - 1
+            result = this.usageCount[ name ]
         }
 
         return result
@@ -436,9 +517,10 @@ class APSVertxProvider implements APSVertxService {
     /**
      * For providing result back to called the same way as Vertx does.
      */
-    @SuppressWarnings("PackageAccessibility")
+    @SuppressWarnings( "PackageAccessibility" )
     private static class AsyncResultProvider implements AsyncResult<Vertx> {
-        @NotNull Vertx vertx
+        @NotNull
+        Vertx vertx
         boolean succeeded
 
         @Override
