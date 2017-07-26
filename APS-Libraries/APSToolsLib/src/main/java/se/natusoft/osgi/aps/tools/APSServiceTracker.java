@@ -530,6 +530,15 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     }
 
     /**
+     * Property API for Groovy use.
+     *
+     * @param onServiceAvailable The on service available callback.
+     */
+    public void setOnServiceAvailable(OnServiceAvailable onServiceAvailable) {
+        this.trackedServices.setOnServiceAvailable(onServiceAvailable);
+    }
+
+    /**
      * Sets the callback to call when a service is leaving. Please note that this callback gets
      * called for all instances of the tracked service, not just the active! If you only want the active
      * one use _OnActiveServiceLeaving()_!
@@ -537,6 +546,15 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * @param onServiceLeaving The callback to set.
      */
     public void onServiceLeaving(OnServiceLeaving onServiceLeaving) {
+        this.trackedServices.setOnServiceLeaving(onServiceLeaving);
+    }
+
+    /**
+     * Property API for Groovy use.
+     *
+     * @param onServiceLeaving The on service leaving callback.
+     */
+    public void setOnServiceLeaving(OnServiceLeaving onServiceLeaving) {
         this.trackedServices.setOnServiceLeaving(onServiceLeaving);
     }
 
@@ -561,6 +579,15 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     }
 
     /**
+     * Property API for Groovy use.
+     *
+     * @param onActiveServiceAvailable The on active service available callback.
+     */
+    public void setOnActiveServiceAvailable(OnServiceAvailable onActiveServiceAvailable) {
+        this.active.setOnActiveServiceAvailable(onActiveServiceAvailable);
+    }
+
+    /**
      * Sets the callback to call when the active service is leaving.
      *
      * @param onActiveServiceLeaving
@@ -568,6 +595,15 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * @see #onActiveServiceAvailable(se.natusoft.osgi.aps.tools.tracker.OnServiceAvailable)
      */
     public void onActiveServiceLeaving(OnServiceLeaving onActiveServiceLeaving) {
+        this.active.setOnActiveServiceLeaving(onActiveServiceLeaving);
+    }
+
+    /**
+     * Property API for Groovy use.
+     *
+     * @param onActiveServiceLeaving The on active service leaving callback.
+     */
+    public void setOnActiveServiceLeaving(OnServiceLeaving onActiveServiceLeaving) {
         this.active.setOnActiveServiceLeaving(onActiveServiceLeaving);
     }
 
@@ -667,6 +703,33 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     }
 
     /**
+     * Runs the specified callback for all **currently** available services.
+     *
+     * Don't use this in an activator _start()_ method! _onActiveServiceAvailable()_ and _onActiveServiceLeaving()_
+     * are safe in a _start()_ method, this is not!
+     *
+     * @param withService The callback to run and provide service to.
+     * @param args Optional arguments to pass to the callback.
+     *
+     * @throws se.natusoft.osgi.aps.tools.tracker.WithServiceException Wraps any exception thrown by the callback.
+     */
+    @SuppressWarnings("unchecked")
+    public void withAllAvailableServicesIncRef(WithServiceIncRef withService, Object... args) throws WithServiceException {
+        for (ServiceReference svc : this.trackedServices.getServices()) {
+            Object service = this.context.getService(svc);
+            try {
+                withService.withService(service, svc, args);
+            }
+            catch (Exception e) {
+                throw new WithServiceException("withService() threw exception. Get original exception with getCause()!", e);
+            }
+            finally {
+                this.context.ungetService(svc);
+            }
+        }
+    }
+
+    /**
      * Waits for an active service to become available.
      *
      * @param timeout The timeout in milliseconds. 0 == forever.
@@ -744,7 +807,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
         /**
          * Creates a new TrackedServices.
          */
-        public TrackedServices() {}
+        TrackedServices() {}
 
         //
         // Methods
@@ -761,7 +824,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
                 // Please note that the active service is set after this call, so if this happens to be the
                 // same as the active service we cannot reuse its service instance.
                 OnServiceRunnerThread osrt = new OnServiceRunnerThread(serviceRef, this.onServiceAvailable);
-                osrt.start();
+                osrt.run();
             }
         }
 

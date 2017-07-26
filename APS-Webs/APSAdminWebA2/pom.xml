@@ -89,16 +89,16 @@
 
         <!-- The resources to include in the bundle -->
         <osgi.include.resource>
-            <!--webContent/adminweb-bundle.js=src/main/resources/webContent/adminweb-bundle.js,-->
-            webContent/index.html=src/main/resources/webContent/index.html,
-            webContent/shim.min.js=src/main/resources/webContent/shim.min.js,
-            webContent/sockjs.min.js=src/main/resources/webContent/sockjs.min.js,
-            webContent/vertx-eventbus.js=src/main/resources/webContent/vertx-eventbus.js,
-            webContent/zone.js=src/main/resources/webContent/zone.js,
-            webContent/apsadminweb-tpl.html=src/main/typescript/app/components/apsadminweb/apsadminweb-tpl.html,
-            webContent/apsadminweb.css=src/main/typescript/app/components/apsadminweb/apsadminweb.css,
-            webContent/static/=src/main/typescript/static/,
-            webContent/verify-tpl.html=src/main/typescript/app/components/verify/verify-tpl.html
+            webContent/adminweb-bundle.js=src/main/resources/webContent/adminweb-bundle.js,
+            webContent/index.html=src/main/resources/webContent/index.html
+            <!--webContent/shim.min.js=src/main/resources/webContent/shim.min.js,-->
+            <!--webContent/sockjs.min.js=src/main/resources/webContent/sockjs.min.js,-->
+            <!--webContent/vertx-eventbus.js=src/main/resources/webContent/vertx-eventbus.js,-->
+            <!--webContent/zone.js=src/main/resources/webContent/zone.js,-->
+            <!--webContent/apsadminweb-tpl.html=src/main/typescript/app/components/apsadminweb/apsadminweb-tpl.html,-->
+            <!--webContent/apsadminweb.css=src/main/typescript/app/components/apsadminweb/apsadminweb.css,-->
+            <!--webContent/static/=src/main/typescript/static/,-->
+            <!--webContent/verify-tpl.html=src/main/typescript/app/components/verify/verify-tpl.html-->
         </osgi.include.resource>
 
         <!-- The default for embedding dependencies in bundle. -->
@@ -113,7 +113,7 @@
 
         <!-- We register our configuration for auto registration and management. -->
         <aps.config.classes>
-            se.natusoft.osgi.aps.web.adminweb.config.ContentServerConfig.class
+            se.natusoft.osgi.aps.web.adminweb.config.ContentServerConfig
         </aps.config.classes>
 
         <!--
@@ -247,22 +247,41 @@
                 <version>1.8</version>
                 <executions>
                     <execution>
-                        <phase>prepare-package</phase>
+                        <!--
+                            This will not run unless the id is exactly this!!!
+                            When run from IDEA however this doesn't help. Nothing is done!
+                        -->
+                        <id>default-cli</id>
+                        <phase>process-resources</phase>
                         <configuration>
                             <target>
-                                <copy file="src/main/typescript/index.html"
-                                      tofile="src/main/resources/webContent/index.html" filtering="false"/>
-                                <copy file="src/main/typescript/node_modules/core-js/client/shim.min.js"
-                                      tofile="src/main/resources/webContent/shim.min.js" filtering="false"/>
-                                <copy file="src/main/typescript/node_modules/zone.js/dist/zone.min.js"
-                                      tofile="src/main/resources/webContent/zone.js" filtering="false"/>
-                                <copy file="src/main/typescript/node_modules/sockjs-client/dist/sockjs.min.js"
-                                      tofile="src/main/resources/webContent/sockjs.min.js" filtering="false"/>
-                                <copy file="src/main/typescript/node_modules/vertx3-eventbus-client/vertx-eventbus.js"
-                                      tofile="src/main/resources/webContent/vertx-eventbus.js" filtering="false"/>
-                                <copy file="src/main/typescript/static/adminweb-bundle.js"
-                                      tofile="src/main/resources/webContent/adminweb-bundle.js" filtering="false"/>
-                                <!--<copy file="src/main/typescript/node_modules/" tofile="src/main/resources/webContent/" filtering="false"/>-->
+                                <echo message="COPYING WEB FILES!"/>
+                                <copy file="${basedir}/src/main/typescript/index.html"
+                                      tofile="${basedir}/src/main/resources/webContent/index.html"
+                                      filtering="false"
+                                      overwrite="true"
+                                      verbose="true"
+                                />
+                                <!--<copy file="src/main/typescript/node_modules/core-js/client/shim.min.js"-->
+                                <!--tofile="src/main/resources/webContent/shim.min.js" filtering="false"/>-->
+                                <!--<copy file="src/main/typescript/node_modules/zone.js/dist/zone.min.js"-->
+                                <!--tofile="src/main/resources/webContent/zone.js" filtering="false"/>-->
+                                <!--<copy file="src/main/typescript/node_modules/sockjs-client/dist/sockjs.min.js"-->
+                                <!--tofile="src/main/resources/webContent/sockjs.min.js" filtering="false"/>-->
+                                <!--<copy file="src/main/typescript/node_modules/vertx3-eventbus-client/vertx-eventbus.js"-->
+                                <!--tofile="src/main/resources/webContent/vertx-eventbus.js" filtering="false"/>-->
+                                <copy file="${basedir}/src/main/typescript/dist/bundle.js"
+                                      tofile="${basedir}/src/main/resources/webContent/adminweb-bundle.js"
+                                      filtering="false"
+                                      overwrite="true"
+                                      verbose="true"
+                                />
+                                <copy file="${basedir}/src/main/typescript/node_modules/rxjs/util/toSubscriber.js.map"
+                                      toDir="${basedir}/src/main/resources/webContent/"
+                                      filtering="false"
+                                      overwrite="true"
+                                      verbose="true"
+                                />
                             </target>
                         </configuration>
                         <goals>
@@ -318,4 +337,80 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>frontend</id>
+
+            <build>
+                <plugins>
+                    <!--
+                        This plugin from https://github.com/eirslett/frontend-maven-plugin
+                    -->
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <!-- Use the latest released version:
+                        https://repo1.maven.org/maven2/com/github/eirslett/frontend-maven-plugin/ -->
+                        <version>1.5</version>
+
+                        <configuration>
+                            <nodeVersion>v6.10.3</nodeVersion>
+
+                            <!-- optional: with node version greater than 4.0.0 will use npm provided by node distribution -->
+                            <npmVersion>5.3.0</npmVersion>
+                            <workingDirectory>src/main/typescript</workingDirectory>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <!-- optional: you don't really need execution ids, but it looks nice in your build log. -->
+                                <id>install node and npm</id>
+                                <goals>
+                                    <goal>install-node-and-npm</goal>
+                                </goals>
+                                <!-- optional: default phase is "generate-resources" -->
+                                <phase>generate-resources</phase>
+                            </execution>
+
+                            <execution>
+                                <id>npm install</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+
+                                <!-- optional: default phase is "generate-resources" -->
+                                <phase>generate-resources</phase>
+
+                                <configuration>
+                                    <!-- optional: The default argument is actually
+                                    "install", so unless you need to run some other npm command,
+                                    you can remove this whole <configuration> section.
+                                    -->
+                                    <arguments>install</arguments>
+                                </configuration>
+                            </execution>
+
+                            <execution>
+                                <id>webpack build</id>
+                                <goals>
+                                    <goal>webpack</goal>
+                                </goals>
+
+                                <!-- optional: the default phase is "generate-resources" -->
+                                <phase>generate-resources</phase>
+
+                                <!--<configuration>-->
+                                <!--&lt;!&ndash; optional: if not specified, it will run webpack's default-->
+                                <!--build (and you can remove this whole <configuration> section.) &ndash;&gt;-->
+                                <!--<arguments>-p</arguments>-->
+                                <!--</configuration>-->
+                            </execution>
+
+                        </executions>
+
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

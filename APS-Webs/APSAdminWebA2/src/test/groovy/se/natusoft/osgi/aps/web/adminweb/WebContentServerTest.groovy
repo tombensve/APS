@@ -28,10 +28,10 @@ class WebContentServerTest extends OSGIServiceTestTools {
     void testWebContentServer() throws Exception {
         // Most of the unfamiliar constructs here are provided by OSGiServiceTestTools and groovy DSL features.
 
-        println "============================================================================"
-        println "DO NOTE: All the RED colored output comes from Vertx! It is not something "
-        println "that have failed! Vertx have just chosen this color for their log output!"
-        println "============================================================================"
+        println "==============================================================================="
+        println " DO NOTE: All the RED colored output comes from Hazelcast! It is not something "
+        println " that have failed! Hazelcast have just chosen this color for their log output! "
+        println "==============================================================================="
 
         deploy 'aps-vertx-provider' with new APSActivator() with {
 
@@ -53,7 +53,7 @@ class WebContentServerTest extends OSGIServiceTestTools {
 
         // We deploy this service not to test it, but to add one more client to VertxProvider and verify
         // that it can handle more than one. It didn't at first :-).
-        deploy 'sockJs-event-bus-bridge' with new APSActivator() using '/se/natusoft/osgi/aps/web/adminweb/SockJSEventBusBridge.class'
+        deploy 'sockJS-event-bus-bridge' with new APSActivator() using '/se/natusoft/osgi/aps/web/adminweb/SockJSEventBusBridge.class'
 
         deploy 'web-content-server' with new APSActivator() with {
             ContentServerConfig config = new ContentServerConfig()
@@ -65,17 +65,14 @@ class WebContentServerTest extends OSGIServiceTestTools {
         } using '/se/natusoft/osgi/aps/web/adminweb/WebContentServer.class'
 
         try {
-            logger.info "Waiting 5 seconds for server to come up."
-            hold() maxTime 5L unit SECONDS go()
+            logger.info "Waiting 10 seconds for server to come up."
+            hold() maxTime 10L unit SECONDS go()
 
             logger.info "Calling server ..."
 
             getAndVerify("", "index.html")
             getAndVerify("index.html", "index.html")
             getAndVerify("adminweb-bundle.js", "adminweb-bundle.js")
-            getAndVerify("shim.min.js", "shim.min.js")
-            getAndVerify("sockjs.min.js", "sockjs.min.js")
-            getAndVerify("vertx-eventbus.js", "vertx-eventbus.js")
             try {
                 getAndVerify("nonexistent", null)
                 throw new Exception("A FileNotFoundException was expected!")
@@ -91,7 +88,7 @@ class WebContentServerTest extends OSGIServiceTestTools {
         }
         finally {
             shutdown()
-            hold() maxTime 500 unit MILLISECONDS go() // Give Vertx time to shut down.
+            hold() maxTime 1 unit SECONDS go() // Give Vertx time to shut down.
         }
     }
 

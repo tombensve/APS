@@ -1,8 +1,15 @@
 /**
  * This is the main entry point to the APSAdminWeb application.
  */
+import 'zone.js';
+import 'reflect-metadata';
+import '@angular/platform-browser';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { AppModule }  from './app.module';
+import 'rxjs'
+
+// declare function require(path: string) : any;
+// var helper = require('node_modules/');
 
 // This does not work. Will be copied to main.js, but has no effect.
 // var coreJSDep = require("../node_modules/core-js/client/shim.min.js");

@@ -61,6 +61,7 @@ import se.natusoft.osgi.aps.tools.tracker.OnServiceAvailable;
 import se.natusoft.osgi.aps.tools.tracker.OnServiceLeaving;
 
 import java.io.IOException;
+import java.util.Dictionary;
 import java.util.Properties;
 
 public class APSConfigServiceActivator implements BundleActivator {

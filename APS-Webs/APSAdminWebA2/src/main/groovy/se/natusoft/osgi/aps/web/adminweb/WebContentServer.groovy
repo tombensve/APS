@@ -10,15 +10,10 @@ import org.osgi.framework.BundleContext
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Note
 import se.natusoft.docutations.Nullable
-import se.natusoft.osgi.aps.net.vertx.APSVertxProvider
 import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
 import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
-import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+import se.natusoft.osgi.aps.tools.annotation.activator.*
 import se.natusoft.osgi.aps.tools.reactive.Consumer
 
 /**
@@ -57,6 +52,7 @@ import se.natusoft.osgi.aps.tools.reactive.Consumer
 @TypeChecked
 @OSGiServiceProvider(properties = [
         @OSGiProperty(name = "consumed", value = "vertx"),
+        @OSGiProperty(name = "instance", value = "default"),
         @OSGiProperty(name = APSVertxService.HTTP_SERVICE_NAME, value = Constants.APP_NAME)
 ])
 class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constants {

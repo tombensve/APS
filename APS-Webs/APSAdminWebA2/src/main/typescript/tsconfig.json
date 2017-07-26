@@ -4,6 +4,7 @@
     "module": "commonjs",
     "experimentalDecorators": true,
     "noImplicitAny": true,
-    "compilerOptions.module": "systemjs"
+    "compilerOptions.module": "systemjs",
+    "sourceMap": true
   }
 }

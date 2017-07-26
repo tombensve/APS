@@ -1,7 +1,8 @@
 import {Component, ViewEncapsulation, forwardRef, Inject} from '@angular/core';
 import {AdminAppsService} from "../../services/AdminAppsService";
-import {AdminAppModel} from "../../services/models";
-import {Vertx3EventBusFacade} from "../../services/Vertx3EventBusFacade";
+//import {AdminAppModel} from "../../services/models";
+//import {Vertx3EventBusFacade} from "../../services/Vertx3EventBusFacade";
+import {EventBusService} from "../../services/EventBusService";
 //import {EventBusProvider} from "../../services/EventBusProvider";
 
 /**
@@ -14,18 +15,25 @@ import {Vertx3EventBusFacade} from "../../services/Vertx3EventBusFacade";
 })
 export class VerifyComponent {
     public content : string;
-    private eventBusProvider : Vertx3EventBusFacade;
+    //private eventBusProvider : Vertx3EventBusFacade;
+
+    @Inject(EventBusService)
+    private eventBusProvider : EventBusService;
 
     public constructor(@Inject(forwardRef(() => AdminAppsService)) public adminAppsService : AdminAppsService) {
 
-        this.eventBusProvider = new Vertx3EventBusFacade("http://localhost:8080/eventbus", {});
-        // this.eventBusProvider.send("myaddr", "{'content': 'Hello!'}", {});
-        let admins : Array<AdminAppModel>;
-        admins = this.adminAppsService.getAdminApps();
-        this.content = "";
+        //this.eventBusProvider = new Vertx3EventBusFacade("http://localhost:8080/eventbus", {});
 
-        for ( let model of admins) {
-            this.content += "name: " + model.name + "--> url: " + model.url + "\n";
-        }
+        let headers : Array<string>;
+        headers = [];
+        this.eventBusProvider.send("aps.adminweb.service", "{'content': 'Hello!'}", () : void => {} , headers);
+
+        // let admins : Array<AdminAppModel>;
+        // admins = this.adminAppsService.getAdminApps();
+        // this.content = "";
+        //
+        // for ( let model of admins) {
+        //     this.content += "name: " + model.name + "--> url: " + model.url + "\n";
+        // }
     }
 }

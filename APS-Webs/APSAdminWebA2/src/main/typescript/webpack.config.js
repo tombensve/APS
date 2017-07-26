@@ -1,12 +1,12 @@
 const path = require('path');
 
 module.exports = {
-    entry: "./app/main",
+    entry: "./app/main.js",
     output: {
-        path: '/LVolumes/Development/projects/OSGi/APS-Dev/APS-Webs/APSAdminWebA2/src/main/typescript/static',
-        filename: 'adminweb-bundle.js'
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'bundle.js'
     },
-    watch: true,
+    watch: false,
     devServer: {
         contentBase: '.'
     }
@@ -14,9 +14,14 @@ module.exports = {
 
 module.loaders = [
     {
-        test: /\.ts$/,
+        test: /\.tst$/,
         exclude: /node_modules/,
         loader: 'ts-loader'
-    }
+    },
+    // {
+    //     test: /\.js$/,
+    //     include: /node_modules/,
+    //     loaders: ['strip-sourcemap-loader']
+    // }
 ];
 

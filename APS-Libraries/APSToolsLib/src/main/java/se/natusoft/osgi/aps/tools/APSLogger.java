@@ -412,7 +412,14 @@ public class APSLogger implements LogService {
                     log.append("[").append(bundleNameObj).append("] ");
                 }
             }
+
+            log.append("[");
+            log.append(Thread.currentThread().getName());
+            log.append("] ");
+
             log.append(this.loggingFor);
+            log.append(" ");
+
             log.append(message);
             if (cause != null) {
                 log.append('\n');

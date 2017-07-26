@@ -40,7 +40,7 @@ export class Vertx3EventBusFacade implements EventBusProvider {
     //
 
     /**
-     * Creates a new EventBusFacate
+     * Creates a new EventBusFacade
      * @param url
      * @param options
      */
