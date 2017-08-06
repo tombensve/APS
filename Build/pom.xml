@@ -62,6 +62,8 @@
         <module>ServerDeployPlugin</module>
         <module>GroovyMixIn</module>
         <module>DocumentationMixIn</module>
+        <module>BuildNumberMixIn</module>
+
     </modules>
 
 
