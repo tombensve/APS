@@ -11,11 +11,11 @@ updateSystem() {
 
 installJava() {
     echo "==========================================================="
-    echo "  Installing Java 8!"
+    echo "  Installing Java!"
     echo "==========================================================="
 
-    add-apt-repository ppa:webupd8team/java
     apt-get -y -q install default-jdk
+    # This will need updating when default is java 9.
     echo "JAVA_HOME=\"/usr/lib/jvm/java-8-openjdk-amd64\"" >>/etc/environment
 }
 
@@ -77,14 +77,15 @@ setupBin() {
 
     cd /home/vagrant
     ln -s /vagrant/vagrant/bin
-    chmod 755 bin/clean_karaf.sh
+    chmod 755 bin/clean_osgi.sh
+    chmod 755 bin/start_osgi.sh
 }
 
 # Since I do a lot of downloads while testing this config I'm using Squid, a caching proxy. I don't want to get
 # banned from a site for downloading the same thing over and over taking bandwidth :-)
 # A tip to anyone else using SquidMan on Mac OS X: Make sure you don't run it on a port already used by something else!
 # It will not complain and pretend that it is running, and it might be, but it is not listening on any port ...
-export http_proxy="http://192.168.1.17:9999/" # Note that this is explicitly for my machine!
+#export http_proxy="http://192.168.1.17:9999/" # Note that this is explicitly for my machine!
 
 updateSystem
 installJava

@@ -21,3 +21,4 @@ echo "Installing web features ..."
 /home/vagrant/server/apache-karaf/bin/client feature:install war
 
 echo "Karaf redeployed fresh!"
+tail -f /home/vagrant/server/apache-karaf/data/log/karaf.log
