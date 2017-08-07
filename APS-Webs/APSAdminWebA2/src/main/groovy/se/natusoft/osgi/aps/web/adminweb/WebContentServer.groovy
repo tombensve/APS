@@ -47,21 +47,27 @@ import se.natusoft.osgi.aps.tools.reactive.Consumer
  * IDEA does not seem to resolve that the usage of Constants.APP_NAME is outside of the
  * class implementing Constants! It thereby needs to be fully qualified.
  */
-@SuppressWarnings(["GroovyUnusedDeclaration", "PackageAccessibility", "UnnecessaryQualifiedReference"])
+@SuppressWarnings( [ "GroovyUnusedDeclaration", "PackageAccessibility", "UnnecessaryQualifiedReference" ] )
 @CompileStatic
 @TypeChecked
-@OSGiServiceProvider(properties = [
-        @OSGiProperty(name = "consumed", value = "vertx"),
-        @OSGiProperty(name = "instance", value = "default"),
-        @OSGiProperty(name = APSVertxService.HTTP_SERVICE_NAME, value = Constants.APP_NAME)
-])
+@OSGiServiceProvider( properties = [
+        @OSGiProperty( name = "consumed", value = "vertx" ),
+        @OSGiProperty( name = "instance", value = "default" ),
+        @OSGiProperty( name = APSVertxService.HTTP_SERVICE_NAME, value = Constants.APP_NAME )
+] )
 class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constants {
+
+    //
+    // Constants
+    //
+
+    private static final int ROUTE_PART_SIZE = "/apsadminweb".length()
 
     //
     // Private Members
     //
 
-    @Managed(name="web-content-server", loggingFor = "aps-admin-web-a2:web-content-server")
+    @Managed( name = "web-content-server", loggingFor = "aps-admin-web-a2:web-content-server" )
     private APSLogger logger
 
     @Managed
@@ -81,15 +87,15 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
         this.onRouterAvailable = { Consumer.Consumed<Router> router ->
             this.router = router
 
-            this.router.get().route("/apsadminweb/*").handler { RoutingContext context ->
-                handleRequest(context.request().exceptionHandler { Throwable exception ->
+            this.router.get().route( "/apsadminweb/*" ).handler { RoutingContext context ->
+                handleRequest( context.request().exceptionHandler { Throwable exception ->
 
-                    this.logger.error(exception.message, exception)
+                    this.logger.error( exception.message, exception )
                     context.response()
-                            .setStatusMessage(exception.message)
-                            .setStatusCode(500)
+                            .setStatusMessage( exception.message )
+                            .setStatusCode( 500 )
                             .end()
-                })
+                } )
             }
             this.logger.info "Added route '/apsadminweb/*'."
 
@@ -100,14 +106,14 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
         }
 
         this.onError = { String message ->
-            this.logger.error(message)
+            this.logger.error( message )
         }
     }
 
     @Initializer
-    @Note("This is executed after all injections are done.")
+    @Note( "This is executed after all injections are done." )
     void init() {
-        this.logger.connectToLogService(this.context)
+        this.logger.connectToLogService( this.context )
     }
 
     //
@@ -119,20 +125,22 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
      *
      * @param request The request to handle.
      */
-    @SuppressWarnings("PackageAccessibility")
-    private void handleRequest(@NotNull HttpServerRequest request) {
-
+    @SuppressWarnings( "PackageAccessibility" )
+    private void handleRequest( @NotNull HttpServerRequest request ) {
         String reqFile = request.path().trim()
-        if (reqFile.endsWith("/")) {
-            reqFile = "/index.html"
+        if ( reqFile.endsWith( "/" ) ) {
+            reqFile = reqFile + "index.html"
         }
+        this.logger.info( "request path: ${ reqFile }" )
 
-        File serveFile = fileToServe(reqFile.substring(reqFile.lastIndexOf('/')))
-        if (serveFile != null) {
-            request.response().sendFile(serveFile.absolutePath)
-        } else {
-            request.response().setStatusMessage("${request.path()} was not found!")
-                    .setStatusCode(404)
+        //  TODO: Bug här! Fil path klipps!
+        File serveFile = fileToServe( reqFile )
+        if ( serveFile != null ) {
+            request.response().sendFile( serveFile.absolutePath )
+        }
+        else {
+            request.response().setStatusMessage( "${ request.path() } was not found!" )
+                    .setStatusCode( 404 )
                     .end()
         }
     }
@@ -147,32 +155,46 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
      *
      * @param requestFile The request file to get on disk File object for.
      */
-    private @Nullable File fileToServe(@NotNull String requestFile) {
-        File serveFile = this.serveFiles[requestFile]
-        if (serveFile == null) {
+    private @Nullable
+    File fileToServe( @NotNull String requestFile ) {
+        File serveFile = this.serveFiles[ requestFile ]
+        if ( serveFile == null ) {
 
-            URL resourceURL = this.context.getBundle().getResource("/webContent" + requestFile)
-            if (resourceURL != null) {
-                serveFile = File.createTempFile("aps-admin-web", "${new Random(new Date().getTime()).nextLong()}")
+            // Note that this service is routed as /apsadminweb, but the '/apsadminweb' path remains in the
+            // request path.
+            URL resourceURL =
+                    this.context.getBundle().getResource( "/webContent" + requestFile.substring( ROUTE_PART_SIZE ) )
+            //this.logger.info("resourceURL: ${resourceURL}")
+
+            if ( resourceURL != null ) {
+                serveFile = File.createTempFile(
+                        "aps-admin-web",
+                        "${ new Random( new Date().getTime() ).nextLong() }"
+                )
                 serveFile.deleteOnExit()
 
                 InputStream embeddedStream = resourceURL.openStream()
-                if (embeddedStream == null) {
+                if ( embeddedStream == null ) {
                     return null
                 }
-                InputStream from = new BufferedInputStream(embeddedStream)
-                OutputStream to = new BufferedOutputStream(new FileOutputStream(serveFile))
+                InputStream from = new BufferedInputStream( embeddedStream )
+                OutputStream to = new BufferedOutputStream( new FileOutputStream( serveFile ) )
 
                 boolean done = false
-                while (!done) {
+                while ( !done ) {
                     int b = from.read()
-                    if (b != -1) { to.write(b) } else { done = true }
+                    if ( b != -1 ) {
+                        to.write( b )
+                    }
+                    else {
+                        done = true
+                    }
                 }
                 from.close()
                 to.close()
 
-                this.serveFiles[requestFile] = serveFile
-                this.logger.info("Temporarily cached file ${serveFile.absolutePath}!")
+                this.serveFiles[ requestFile ] = serveFile
+                this.logger.info( "Temporarily cached file ${ resourceURL } as ${ serveFile.absolutePath }!" )
             }
         }
 
@@ -181,16 +203,20 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
 
     @BundleStop
     void shutdown() {
-        if (this.router != null) {
-            this.router.get().get("/apsadminweb/*").remove()
+        if ( this.router != null ) {
+            this.router.get().get( "/apsadminweb/*" ).remove()
             this.logger.info "Removed '/apsadminweb/*' route."
             this.router.release()
         }
 
         // It is not a bad idea to delete these even on redeployment or shutdown of bundle for other reasons.
         this.serveFiles.each { String key, File file ->
-            if (!file.delete()) { this.logger.error "${file.absolutePath} could not be deleted!" }
-            else { this.logger.info "${file.absolutePath} was deleted!" }
+            if ( !file.delete() ) {
+                this.logger.error "${ file.absolutePath } could not be deleted!"
+            }
+            else {
+                this.logger.info "${ file.absolutePath } was deleted!"
+            }
         }
     }
 }

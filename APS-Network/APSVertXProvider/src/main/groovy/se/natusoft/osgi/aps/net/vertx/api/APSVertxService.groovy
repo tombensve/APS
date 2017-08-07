@@ -71,8 +71,8 @@ interface APSVertxService {
      *
      * @param name The name of the instance to get.
      */
-    void useGroovyVertX(@NotNull String name, @NotNull Handler<AsyncResult<Vertx>> result)
+    void useGroovyVertX( @NotNull String name, @NotNull Handler<AsyncResult<Vertx>> result )
 
     /** After having called useGroovyVertX(...) in a bundle, call this when shutting down! */
-    void releaseGroovyVertX(@NotNull String name)
+    void releaseGroovyVertX( @NotNull String name )
 }

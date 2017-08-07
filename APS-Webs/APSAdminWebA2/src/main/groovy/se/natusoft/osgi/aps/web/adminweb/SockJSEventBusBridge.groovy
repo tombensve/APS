@@ -94,10 +94,10 @@ class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Con
 
             // Note that this router is already bound to an HTTP server!
             SockJSHandler sockJSHandler = SockJSHandler.create(this.vertx.get())
-            sockJSHandler.bridge(options) { BridgeEvent be ->
+            sockJSHandler.bridge(options) /*{ BridgeEvent be ->
                 this.logger.info("SockJSBridge - Type: ${be.type()}")
                 be.complete()
-            }
+            }*/
             this.router.get().route("/eventbus/*").handler(sockJSHandler)
 
 //            this.logger.info "Vert.x SockJSHandler for event bus bridging started successfully!"

@@ -17,16 +17,17 @@ export class VerifyComponent {
     public content : string;
     //private eventBusProvider : Vertx3EventBusFacade;
 
-    @Inject(EventBusService)
+    // @Inject(EventBusService)
     private eventBusProvider : EventBusService;
 
     public constructor(@Inject(forwardRef(() => AdminAppsService)) public adminAppsService : AdminAppsService) {
 
-        //this.eventBusProvider = new Vertx3EventBusFacade("http://localhost:8080/eventbus", {});
-
+        //this.eventBusProvider = new Vertx3EventBusFacade("http://localhost:9080/eventbus", {});
+        this.eventBusProvider = new EventBusService();
+        this.eventBusProvider.connect("http://192.168.1.60:9080/eventbus/");
         let headers : Array<string>;
         headers = [];
-        this.eventBusProvider.send("aps.adminweb.service", "{'content': 'Hello!'}", () : void => {} , headers);
+        this.eventBusProvider.publish("aps.adminweb", "{'content': 'Hello!'}", headers);
 
         // let admins : Array<AdminAppModel>;
         // admins = this.adminAppsService.getAdminApps();

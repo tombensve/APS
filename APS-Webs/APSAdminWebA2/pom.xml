@@ -56,12 +56,18 @@
     </description>
 
     <properties>
+
         <!--
             Bundle properties
         -->
 
-        <!-- The symbolic name of the bundle. Defaults to the artifact id, but can be overridden. -->
-        <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
+        <!--
+            The symbolic name of the bundle. Defaults to the artifact id, but can be overridden.
+
+            Note that the ${buildNumber} which is probably error marked by your IDE is made available
+            at runtime by build-number-mixin triggered by the mixin-maven-plugin below.
+        -->
+        <osgi.bundle.symbolic.name>${project.artifactId}_${buildNumber}</osgi.bundle.symbolic.name>
 
         <!-- The bundle activator class -->
         <osgi.bundle.activator>se.natusoft.osgi.aps.tools.APSActivator</osgi.bundle.activator>
@@ -88,18 +94,13 @@
         </osgi.export.dependency.package>
 
         <!-- The resources to include in the bundle -->
-        <osgi.include.resource>
-            webContent/adminweb-bundle.js=src/main/resources/webContent/adminweb-bundle.js,
-            webContent/index.html=src/main/resources/webContent/index.html
-            <!--webContent/shim.min.js=src/main/resources/webContent/shim.min.js,-->
-            <!--webContent/sockjs.min.js=src/main/resources/webContent/sockjs.min.js,-->
-            <!--webContent/vertx-eventbus.js=src/main/resources/webContent/vertx-eventbus.js,-->
-            <!--webContent/zone.js=src/main/resources/webContent/zone.js,-->
-            <!--webContent/apsadminweb-tpl.html=src/main/typescript/app/components/apsadminweb/apsadminweb-tpl.html,-->
-            <!--webContent/apsadminweb.css=src/main/typescript/app/components/apsadminweb/apsadminweb.css,-->
-            <!--webContent/static/=src/main/typescript/static/,-->
-            <!--webContent/verify-tpl.html=src/main/typescript/app/components/verify/verify-tpl.html-->
-        </osgi.include.resource>
+        <!--
+            All resources are included for this bundle, so this have no effect!
+        -->
+        <!--<osgi.include.resource>-->
+            <!--webContent/adminweb-bundle.js=src/main/resources/webContent/adminweb-bundle.js,-->
+            <!--webContent/index.html=src/main/resources/webContent/index.html-->
+        <!--</osgi.include.resource>-->
 
         <!-- The default for embedding dependencies in bundle. -->
         <osgi.embed.dependency>*;scope=compile</osgi.embed.dependency>
@@ -235,6 +236,11 @@
                             <artifactId>deploy-bundle-mixin</artifactId>
                             <version>${project.version}</version>
                         </mixin>
+                        <mixin>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>build-number-mixin</artifactId>
+                            <version>${project.version}</version>
+                        </mixin>
                     </mixins>
                 </configuration>
             </plugin>
@@ -247,12 +253,13 @@
                 <version>1.8</version>
                 <executions>
                     <execution>
+
                         <!--
                             This will not run unless the id is exactly this!!!
                             When run from IDEA however this doesn't help. Nothing is done!
                         -->
-                        <id>default-cli</id>
-                        <phase>process-resources</phase>
+                        <id>copy-webContent</id>
+                        <phase>generate-resources</phase>
                         <configuration>
                             <target>
                                 <echo message="COPYING WEB FILES!"/>
@@ -276,18 +283,41 @@
                                       overwrite="true"
                                       verbose="true"
                                 />
-                                <copy file="${basedir}/src/main/typescript/node_modules/rxjs/util/toSubscriber.js.map"
-                                      toDir="${basedir}/src/main/resources/webContent/"
-                                      filtering="false"
-                                      overwrite="true"
-                                      verbose="true"
+                                <!--<copy file="${basedir}/src/main/typescript/node_modules/rxjs/util/toSubscriber.js.map"-->
+                                      <!--toDir="${basedir}/src/main/resources/webContent/"-->
+                                      <!--filtering="false"-->
+                                      <!--overwrite="true"-->
+                                      <!--verbose="true"-->
+                                <!--/>-->
+
+                                <echo message="Copying Angular 2 html templates to src/main/resources/webContent."/>
+                                <copydir src="${project.basedir}/src/main/typescript/"
+                                         dest="${project.basedir}/src/main/resources/webContent"
+                                         includes="**/*.html **/*.css"
+                                         excludes="node/** node_modules/**"
                                 />
+
                             </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
                         </goals>
 
+                    </execution>
+
+                    <execution>
+                        <id>clean-webContent</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <target>
+                                <echo message="Cleaning ${project.basedir}/src/main/resources/webContent."/>
+                                <delete dir="${project.basedir}/src/main/resources/webContent"/>
+                                <mkdir dir="${project.basedir}/src/main/resources/webContent"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
                     </execution>
                 </executions>
 
@@ -325,7 +355,8 @@
                         <Import-Package>${osgi.import.package}</Import-Package>
                         <_exportcontents>${osgi.export.dependency.package}</_exportcontents>
                         <Private-Package>${osgi.private.package}</Private-Package>
-                        <Include-Resource>${osgi.include.resource}</Include-Resource>
+                        <!-- Not specifying this makes it include all resources! -->
+                        <!--<Include-Resource>${osgi.include.resource}</Include-Resource>-->
                         <Bundle-SymbolicName>${osgi.bundle.symbolic.name}</Bundle-SymbolicName>
                         <Bundle-Activator>${osgi.bundle.activator}</Bundle-Activator>
                         <Embed-Directory>${osgi.embed.directory}</Embed-Directory>
@@ -369,7 +400,7 @@
                                     <goal>install-node-and-npm</goal>
                                 </goals>
                                 <!-- optional: default phase is "generate-resources" -->
-                                <phase>generate-resources</phase>
+                                <phase>process-resources</phase>
                             </execution>
 
                             <execution>
@@ -379,7 +410,7 @@
                                 </goals>
 
                                 <!-- optional: default phase is "generate-resources" -->
-                                <phase>generate-resources</phase>
+                                <phase>process-resources</phase>
 
                                 <configuration>
                                     <!-- optional: The default argument is actually
@@ -397,7 +428,7 @@
                                 </goals>
 
                                 <!-- optional: the default phase is "generate-resources" -->
-                                <phase>generate-resources</phase>
+                                <phase>process-resources</phase>
 
                                 <!--<configuration>-->
                                 <!--&lt;!&ndash; optional: if not specified, it will run webpack's default-->

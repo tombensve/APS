@@ -48,25 +48,25 @@ class VertxConsumer implements Consumer<Object> {
      * @param status The status of this call.
      * @param vertx The Vertx holder received.
      */
-    @SuppressWarnings("PackageAccessibility")
+    @SuppressWarnings( "PackageAccessibility" )
     @Override
-    void consume(@NotNull Consumer.Status status, @NotNull Consumer.Consumed<Object> consumed) {
-        if (status == Consumer.Status.AVAILABLE) {
-            if (Vertx.class.isAssignableFrom(consumed.get().class)) {
-                if (this.onVertxAvailable != null) this.onVertxAvailable.call(consumed)
+    void consume( @NotNull Consumer.Status status, @NotNull Consumer.Consumed<Object> consumed ) {
+        if ( status == Consumer.Status.AVAILABLE ) {
+            if ( Vertx.class.isAssignableFrom( consumed.get().class ) ) {
+                if ( this.onVertxAvailable != null ) this.onVertxAvailable.call( consumed )
             }
-            else if (Router.class.isAssignableFrom(consumed.get().class)) {
-                if (this.onRouterAvailable != null) this.onRouterAvailable.call(consumed)
+            else if ( Router.class.isAssignableFrom( consumed.get().class ) ) {
+                if ( this.onRouterAvailable != null ) this.onRouterAvailable.call( consumed )
             }
-            else {
-                if (this.onError != null) this.onError.call("Unknown object consumed! [${consumed.get()}]")
+            else if ( this.onError != null ) {
+                this.onError.call( "Unknown object consumed! [${ consumed.get() }]" )
             }
         }
-        else if (status == Consumer.Status.UNAVAILABLE) {
-            if (this.onVertxUnavilable != null) this.onVertxUnavilable.call()
+        else if ( status == Consumer.Status.UNAVAILABLE ) {
+            if ( this.onVertxUnavilable != null ) this.onVertxUnavilable.call()
         }
-        else if (status == Consumer.Status.REVOKED) {
-            if (this.onVertxRevoked != null) this.onVertxRevoked.call()
+        else if ( status == Consumer.Status.REVOKED ) {
+            if ( this.onVertxRevoked != null ) this.onVertxRevoked.call()
         }
     }
 }

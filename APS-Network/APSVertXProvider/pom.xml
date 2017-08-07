@@ -63,8 +63,13 @@
             Bundle properties
         -->
 
-        <!-- The symbolic name of the bundle. Defaults to the artifact id, but can be overridden. -->
-        <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
+        <!--
+            The symbolic name of the bundle. Defaults to the artifact id, but can be overridden.
+
+            Note that the ${buildNumber} which is probably error marked by your IDE is made available
+            at runtime by build-number-mixin triggered by the mixin-maven-plugin below.
+        -->
+        <osgi.bundle.symbolic.name>${project.artifactId}_${buildNumber}</osgi.bundle.symbolic.name>
 
         <!-- The bundle activator class -->
         <osgi.bundle.activator>se.natusoft.osgi.aps.tools.APSActivator</osgi.bundle.activator>
@@ -362,6 +367,16 @@
             <scope>provided</scope>
         </dependency>
 
+        <!--
+            Needed for full JTA support required by hazelcast.
+            org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1
+        -->
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jta_1.1_spec</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
         <!--<dependency>-->
         <!--<groupId>io.vertx</groupId>-->
         <!--<artifactId>vertx-jgroups</artifactId>-->
@@ -387,6 +402,26 @@
 
     <build>
         <plugins>
+            <!--
+                Doesn't work: https://github.com/mojohaus/buildnumber-maven-plugin/issues/67
+            -->
+            <!--<plugin>-->
+                <!--<groupId>org.codehaus.mojo</groupId>-->
+                <!--<artifactId>buildnumber-maven-plugin</artifactId>-->
+                <!--<version>1.4</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<phase>validate</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>create</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+                <!--<configuration>-->
+                    <!--<doCheck>false</doCheck>-->
+                    <!--<doUpdate>false</doUpdate>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
 
             <!--
                 Force the jar plugin to use the maven-bundle-plugin generated manifest.
@@ -416,6 +451,11 @@
                         <mixin>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>deploy-bundle-mixin</artifactId>
+                            <version>${project.version}</version>
+                        </mixin>
+                        <mixin>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>build-number-mixin</artifactId>
                             <version>${project.version}</version>
                         </mixin>
                     </mixins>
@@ -618,9 +658,15 @@
                                             </sourceFile>
                                             <destPath>${aps.root.dir}/vagrant/deploy/</destPath>
                                         </deployable>
+                                        <!--<deployable>-->
+                                            <!--<sourceFile>-->
+                                                <!--~/.m2/repository/org/apache/geronimo/specs/geronimo-jta_1.1_spec/1.1.1/geronimo-jta_1.1_spec-1.1.1.jar-->
+                                            <!--</sourceFile>-->
+                                            <!--<destPath>${aps.root.dir}/vagrant/deploy/</destPath>-->
+                                        <!--</deployable>-->
 
                                         <!--
-                                            Hazelcast
+                                            Jackson
                                         -->
                                         <deployable>
                                             <sourceFile>

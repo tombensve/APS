@@ -29,7 +29,7 @@ export class EventBusService {
     private eventQueue: QueuedEvent[];
     private handlers: any = {};
     private replyHandlers: any = {};
-    private sockJS;
+    private sockJS : any;
     private state: number;
 
     constructor() {
