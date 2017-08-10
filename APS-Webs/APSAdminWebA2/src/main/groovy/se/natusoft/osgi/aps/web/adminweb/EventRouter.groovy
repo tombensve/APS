@@ -150,7 +150,7 @@ class EventRouter extends VertxConsumer implements Consumer<Vertx>, Constants {
      */
     @SuppressWarnings( "PackageAccessibility" )
     private void routePublicBusEvents( @NotNull Message eventMessage ) {
-        this.logger.info( "#### Received message: ${ eventMessage }" )
+        this.logger.info( "#### Received message: ${ eventMessage.body(  ) }" )
 
         // Convert from JSON string to a Map<String, Object> which can be used almost like client side JSON by Groovy.
         Map<String, Object> event = null

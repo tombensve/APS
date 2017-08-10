@@ -1,9 +1,7 @@
 import {Component, ViewEncapsulation, forwardRef, Inject} from '@angular/core';
 import {AdminAppsService} from "../../services/AdminAppsService";
 //import {AdminAppModel} from "../../services/models";
-//import {Vertx3EventBusFacade} from "../../services/Vertx3EventBusFacade";
 import {EventBusService} from "../../services/EventBusService";
-//import {EventBusProvider} from "../../services/EventBusProvider";
 
 /**
  * This is the main application top level component.
@@ -15,19 +13,16 @@ import {EventBusService} from "../../services/EventBusService";
 })
 export class VerifyComponent {
     public content : string;
-    //private eventBusProvider : Vertx3EventBusFacade;
 
-    // @Inject(EventBusService)
     private eventBusProvider : EventBusService;
 
     public constructor(@Inject(forwardRef(() => AdminAppsService)) public adminAppsService : AdminAppsService) {
 
-        //this.eventBusProvider = new Vertx3EventBusFacade("http://localhost:9080/eventbus", {});
         this.eventBusProvider = new EventBusService();
         this.eventBusProvider.connect("http://192.168.1.60:9080/eventbus/");
         let headers : Array<string>;
         headers = [];
-        this.eventBusProvider.publish("aps.adminweb", "{'content': 'Hello!'}", headers);
+        this.eventBusProvider.publish("aps.adminweb", "{\"content\": \"Hello!\"}", headers);
 
         // let admins : Array<AdminAppModel>;
         // admins = this.adminAppsService.getAdminApps();

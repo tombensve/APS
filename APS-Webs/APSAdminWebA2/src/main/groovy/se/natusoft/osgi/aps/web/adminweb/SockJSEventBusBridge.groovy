@@ -85,8 +85,8 @@ class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Con
 
             // Currently no more detailed permissions than on target address. Might add limits on message contents
             // later.
-            def inboundPermitted = [address: GLOBAL_BUS_ADDRESS + ".service"]
-            def outboundPermitted = [address: GLOBAL_BUS_ADDRESS + ".client"]
+            def inboundPermitted = [address: GLOBAL_BUS_ADDRESS]
+            def outboundPermitted = [address: GLOBAL_BUS_ADDRESS]
             def options = [
                     inboundPermitteds: [inboundPermitted],
                     outboundPermitteds: [outboundPermitted]
