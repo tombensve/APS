@@ -44,14 +44,14 @@ import se.natusoft.osgi.aps.tools.reactive.Consumer
  * IDEA does not seem to resolve that the usage of Constants.APP_NAME is outside of the
  * class implementing Constants! It thereby needs to be fully qualified.
  */
-@SuppressWarnings(["GroovyUnusedDeclaration", "PackageAccessibility", "UnnecessaryQualifiedReference"])
+@SuppressWarnings( [ "GroovyUnusedDeclaration", "PackageAccessibility", "UnnecessaryQualifiedReference" ] )
 @CompileStatic
 @TypeChecked
-@OSGiServiceProvider(properties = [
-        @OSGiProperty(name = "consumed", value = "vertx"),
-        @OSGiProperty(name = APSVertxService.HTTP_SERVICE_NAME, value = Constants.APP_NAME)
-])
-class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Constants  {
+@OSGiServiceProvider( properties = [
+        @OSGiProperty( name = "consumed", value = "vertx" ),
+        @OSGiProperty( name = APSVertxService.HTTP_SERVICE_NAME, value = Constants.APP_NAME )
+] )
+class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Constants {
     //
     // Private Members
     //
@@ -59,11 +59,8 @@ class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Con
     @Managed
     private BundleContext context
 
-    @Managed(name="sockjs-evenbus-bridge", loggingFor = "aps-admin-web-a2:sockjs-eventbus-bridge")
+    @Managed( name = "sockjs-evenbus-bridge", loggingFor = "aps-admin-web-a2:sockjs-eventbus-bridge" )
     private APSLogger logger
-
-    /** A Vertx instance. */
-    private Consumer.Consumed<Vertx> vertx
 
     /** A Router for an HTTP server. */
     private Consumer.Consumed<Router> router
@@ -75,12 +72,11 @@ class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Con
     SockJSEventBusBridge() {
 
         this.onVertxAvailable = { Consumer.Consumed<Vertx> vertx ->
-            this.logger.info("######## SockJSEventBusBridge.onVertxAvailable")
-            this.vertx = vertx
+            this.logger.info( "######## SockJSEventBusBridge.onVertxAvailable" )
         }
 
         this.onRouterAvailable = { Consumer.Consumed<Router> router ->
-            this.logger.info("######## SockJSEventBusBridge.onRouterAvailable")
+            this.logger.info( "######## SockJSEventBusBridge.onRouterAvailable" )
             this.router = router
 
             // Currently no more detailed permissions than on target address. Might add limits on message contents
@@ -88,24 +84,23 @@ class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Con
             def inboundPermitted = [address: GLOBAL_BUS_ADDRESS]
             def outboundPermitted = [address: GLOBAL_BUS_ADDRESS]
             def options = [
-                    inboundPermitteds: [inboundPermitted],
+                    inboundPermitteds : [inboundPermitted],
                     outboundPermitteds: [outboundPermitted]
             ] as Map<String, Object>
 
             // Note that this router is already bound to an HTTP server!
-            SockJSHandler sockJSHandler = SockJSHandler.create(this.vertx.get())
-            sockJSHandler.bridge(options) /*{ BridgeEvent be ->
+            SockJSHandler sockJSHandler = SockJSHandler.create( vertx() )
+            sockJSHandler.bridge( options ) /*{ BridgeEvent be ->
                 this.logger.info("SockJSBridge - Type: ${be.type()}")
                 be.complete()
             }*/
-            this.router.get().route("/eventbus/*").handler(sockJSHandler)
+            this.router.get().route( "/eventbus/*" ).handler( sockJSHandler )
 
 //            this.logger.info "Vert.x SockJSHandler for event bus bridging started successfully!"
         }
 
         this.onVertxRevoked = {
-            this.vertx = null
-            this.logger.info("Vertx was revoked. This bridge will be down until new Vertx arrives.")
+            this.logger.info( "Vertx was revoked. This bridge will be down until new Vertx arrives." )
         }
     }
 
@@ -118,16 +113,16 @@ class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Con
      */
     @Initializer
     void init() {
-        this.logger.connectToLogService(this.context)
+        this.logger.connectToLogService( this.context )
     }
 
     @BundleStop
     void shutdown() {
-        if (this.router != null) {
-            this.router.get().get("/eventbus/*").remove()
+        if ( this.router != null ) {
+            this.router.get().get( "/eventbus/*" ).remove()
             this.router.release()
         }
-        if (this.vertx != null) this.vertx.release()
-        this.logger.disconnectFromLogService(this.context)
+        super.cleanup()
+        this.logger.disconnectFromLogService( this.context )
     }
 }

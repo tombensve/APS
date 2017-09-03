@@ -46,8 +46,8 @@ import se.natusoft.osgi.aps.tools.reactive.Consumer
  * __PackageAccessibility__
  *
  * This is an OSGi issue. OSGi imports and exports packages, and to be deployable a jar must contain a
- * valid MANIFEST.MF with OSGi keys for imports, exports, etc. Must 3rd party jars do contain a valid
- * OSGi MANIFEST.MF exporting all packages of the jar sp that they can just be dropped into an OSGi
+ * valid MANIFEST.MF with OSGi keys for imports, exports, etc. Most 3rd party jars do contain a valid
+ * OSGi MANIFEST.MF exporting all packages of the jar so that they can just be dropped into an OSGi
  * container and have their classpath be made available to all other code running in the container.
  *
  * The Groovy Vertx wrapper code does not contain a valid OSGi MANIFEST.MF. I have solved this by having
@@ -81,9 +81,6 @@ class EventRouter extends VertxConsumer implements Consumer<Vertx>, Constants {
     @Managed
     private LocalEventBus localBus
 
-    /** A Vertx instance. Received in onObjectAvailable(...). */
-    private Consumer.Consumed<Vertx> vertx
-
     /** Consumer of public event-bus messages. */
     private MessageConsumer eventConsumer
 
@@ -95,13 +92,9 @@ class EventRouter extends VertxConsumer implements Consumer<Vertx>, Constants {
         this.onVertxAvailable = { Consumer.Consumed<Vertx> vertx ->
             this.logger.info( "######## EventRouter.onVertxAvailable" )
 
-            this.vertx = vertx
-
             // Handles public events
-            this.eventConsumer = this.vertx.get().eventBus().consumer( GLOBAL_BUS_ADDRESS ).handler
-                    { Message message ->
-                        routePublicBusEvents( message )
-                    }
+            this.eventConsumer = vertx.get().eventBus().consumer( GLOBAL_BUS_ADDRESS ).handler
+                    { Message message -> routePublicBusEvents( message ) }
 
             this.eventConsumer.completionHandler { AsyncResult<Void> ares ->
                 if ( ares.succeeded() ) {
@@ -121,7 +114,6 @@ class EventRouter extends VertxConsumer implements Consumer<Vertx>, Constants {
         }
 
         this.onVertxRevoked = {
-            this.vertx = null
             this.logger.error( "Vertx just got revoked! This event router will thereby not work until a new Vertx is provided." )
         }
     }
@@ -148,9 +140,8 @@ class EventRouter extends VertxConsumer implements Consumer<Vertx>, Constants {
      *
      * @param eventMessage A received public messages. These can be both from client(s) and other service instances.
      */
-    @SuppressWarnings( "PackageAccessibility" )
     private void routePublicBusEvents( @NotNull Message eventMessage ) {
-        this.logger.info( "#### Received message: ${ eventMessage.body(  ) }" )
+        this.logger.info( "#### Received message: ${ eventMessage.body() }" )
 
         // Convert from JSON string to a Map<String, Object> which can be used almost like client side JSON by Groovy.
         Map<String, Object> event = null
@@ -200,7 +191,7 @@ class EventRouter extends VertxConsumer implements Consumer<Vertx>, Constants {
      */
     private void routeLocalBusEvents( @NotNull Map<String, Object> event ) {
         if ( GLOBAL_BUS_ADDRESS == event[ _address_ ] && CLASSIFIER_PUBLIC == event[ _classifier_ ] ) {
-            this.vertx.get().eventBus().send( GLOBAL_BUS_ADDRESS, new JsonObject( event ) )
+            vertx().eventBus().send( GLOBAL_BUS_ADDRESS, new JsonObject( event ) )
         }
     }
 
@@ -229,7 +220,7 @@ class EventRouter extends VertxConsumer implements Consumer<Vertx>, Constants {
     void shutdown() {
         this.logger.info( "Shutting down!" )
         stopEventConsumption()
-        if ( this.vertx != null ) this.vertx.release()
+        super.cleanup()
     }
 
 }

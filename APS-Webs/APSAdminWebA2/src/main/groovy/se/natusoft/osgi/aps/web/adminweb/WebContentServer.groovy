@@ -76,6 +76,7 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
     /** Maps the requested file names to the path of the actual file. */
     private Map<String, File> serveFiles = [:]
 
+    /** Web server router to add service route to. */
     private Consumer.Consumed<Router> router
 
     //
@@ -88,14 +89,16 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
             this.router = router
 
             this.router.get().route( "/apsadminweb/*" ).handler { RoutingContext context ->
-                handleRequest( context.request().exceptionHandler { Throwable exception ->
+                handleRequest( context.request().exceptionHandler
+                        { Throwable exception ->
 
-                    this.logger.error( exception.message, exception )
-                    context.response()
-                            .setStatusMessage( exception.message )
-                            .setStatusCode( 500 )
-                            .end()
-                } )
+                            this.logger.error( exception.message, exception )
+                            context.response()
+                                    .setStatusMessage( exception.message )
+                                    .setStatusCode( 500 )
+                                    .end()
+                        }
+                )
             }
             this.logger.info "Added route '/apsadminweb/*'."
 
@@ -133,7 +136,6 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
         }
         this.logger.info( "request path: ${ reqFile }" )
 
-        //  TODO: Bug här! Fil path klipps!
         File serveFile = fileToServe( reqFile )
         if ( serveFile != null ) {
             request.response().sendFile( serveFile.absolutePath )
@@ -147,7 +149,10 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
 
     /**
      * Since HttpServerResponse does not support sendFile(...) with an InputStream, only path Strings, we have to copy
-     * embedded files to temp area and serve from there.
+     * embedded files to temp area and serve from there. I think the reason for this is that the web server needs
+     * a size of the content to receive before the first byte. Reading the file from a content stream within the jar
+     * does not give you the size. Having a file on disk however allows for asking the file system about the files
+     * size before reading it.
      *
      * The temp files copied to temp area are marked for automatic delete when JVM process dies.
      *
@@ -160,8 +165,8 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
         File serveFile = this.serveFiles[ requestFile ]
         if ( serveFile == null ) {
 
-            // Note that this service is routed as /apsadminweb, but the '/apsadminweb' path remains in the
-            // request path.
+            // Note that the request path is *not* made relative to the route path! You always get the
+            // full path.
             URL resourceURL =
                     this.context.getBundle().getResource( "/webContent" + requestFile.substring( ROUTE_PART_SIZE ) )
             //this.logger.info("resourceURL: ${resourceURL}")
