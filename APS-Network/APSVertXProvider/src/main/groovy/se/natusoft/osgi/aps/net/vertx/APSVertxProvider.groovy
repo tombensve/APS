@@ -55,7 +55,7 @@ import se.natusoft.docutations.NotUsed
 import se.natusoft.osgi.aps.constants.APS
 
 import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
-import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
+//import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.APSServiceTracker
 import se.natusoft.osgi.aps.tools.annotation.activator.*
@@ -175,6 +175,9 @@ class APSVertxProvider implements APSVertxService {
             vertx_http_service_test              : 8888
     ] as Map<String, Object>
 
+    /**
+     * This gets called after all injections are done.
+     */
     @Initializer
     void init() {
         this.logger.connectToLogService( this.context )
@@ -342,6 +345,7 @@ class APSVertxProvider implements APSVertxService {
                     this.logger.info( "HTTP server now listening on port ${ port }!" )
                 }
 
+                // Call consumer with router.
                 ( dataConsumer as Consumer<Router> ).
                         consume(
                                 Consumer.Status.AVAILABLE,

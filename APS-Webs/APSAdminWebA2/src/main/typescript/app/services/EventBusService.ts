@@ -1,6 +1,8 @@
 /**
  * Based on Vertx EventBus Client (https://github.com/vert-x3/vertx-bus-bower)
- * Requires SockJS Client
+ * Requires SockJS Client.
+ *
+ * This class was taken from: https://gist.github.com/benorama/93373c3c1c3574732d6cc1b4754aab9f
  */
 
 import {EventEmitter, Injectable} from "@angular/core";

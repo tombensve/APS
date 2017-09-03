@@ -3,6 +3,7 @@ package se.natusoft.osgi.aps.net.vertx.api
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.core.Vertx
+import io.vertx.core.eventbus.EventBus
 import io.vertx.ext.web.Router
 import se.natusoft.docutations.NotNull
 import se.natusoft.osgi.aps.tools.reactive.Consumer
@@ -38,8 +39,22 @@ class VertxConsumer implements Consumer<Object> {
     Closure onError
 
     //
+    // Private Members
+    //
+
+    /** We save this so that we can release it on shutdown. */
+    private Consumer.Consumed<Vertx> vertx
+
+    //
     // Methods
     //
+
+    /**
+     * Make Vertx instance available to subclasses.
+     */
+    protected Vertx vertx() {
+        this.vertx.get()
+    }
 
     /**
      * Handles onConsumed and forwards to closures if provided. Basically cosmetics ...
@@ -53,6 +68,7 @@ class VertxConsumer implements Consumer<Object> {
     void consume( @NotNull Consumer.Status status, @NotNull Consumer.Consumed<Object> consumed ) {
         if ( status == Consumer.Status.AVAILABLE ) {
             if ( Vertx.class.isAssignableFrom( consumed.get().class ) ) {
+                this.vertx = consumed as Consumer.Consumed<Vertx>
                 if ( this.onVertxAvailable != null ) this.onVertxAvailable.call( consumed )
             }
             else if ( Router.class.isAssignableFrom( consumed.get().class ) ) {
@@ -67,6 +83,17 @@ class VertxConsumer implements Consumer<Object> {
         }
         else if ( status == Consumer.Status.REVOKED ) {
             if ( this.onVertxRevoked != null ) this.onVertxRevoked.call()
+            this.vertx = null
         }
+    }
+
+    protected void cleanup() {
+        if ( this.vertx != null ) this.vertx.release()
+        this.vertx = null
+        this.onRouterAvailable = null
+        this.onVertxUnavilable = null
+        this.onVertxRevoked = null
+        this.onRouterAvailable = null
+        this.onError = null
     }
 }
