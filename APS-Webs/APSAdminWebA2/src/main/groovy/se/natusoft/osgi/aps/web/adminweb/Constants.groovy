@@ -27,7 +27,7 @@ interface Constants {
     // Values
     //
 
-    static final String GLOBAL_BUS_ADDRESS = "aps.adminweb"
+    static final String GLOBAL_BUS_ADDRESS = "aps.admin.web"
     static final String LOCAL_BUS_ADDRESS = "adminweb.general"
 
     static final String TYPE_SERVICE = "service"

@@ -2,6 +2,7 @@ import {Component, ViewEncapsulation, forwardRef, Inject} from '@angular/core';
 import {AdminAppsService} from "../../services/AdminAppsService";
 //import {AdminAppModel} from "../../services/models";
 import {EventBusService} from "../../services/EventBusService";
+import {EventBus} from "../../services/EventBus";
 
 /**
  * This is the main application top level component.
@@ -14,12 +15,17 @@ import {EventBusService} from "../../services/EventBusService";
 export class VerifyComponent {
     public content : string;
 
-    private eventBusProvider : EventBusService;
+    private eventBusProvider : EventBus;
 
     public constructor(@Inject(forwardRef(() => AdminAppsService)) public adminAppsService : AdminAppsService) {
 
         this.eventBusProvider = new EventBusService();
         this.eventBusProvider.connect("http://192.168.1.60:9080/eventbus/");
+
+        this.eventBusProvider.registerHandler("aps.adminweb", function handler(event:object) {
+
+        } , {});
+
         let headers : Array<string>;
         headers = [];
         this.eventBusProvider.publish("aps.adminweb", "{\"content\": \"Hello!\"}", headers);

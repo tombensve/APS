@@ -3,13 +3,17 @@
  * Requires SockJS Client.
  *
  * This class was taken from: https://gist.github.com/benorama/93373c3c1c3574732d6cc1b4754aab9f
+ * and modified slightly:
+ *   - Implements interface EventBus.
+ *   - Added 'any' type to parameters that had none to make IDEA remove most red marks.
  */
 
 import {EventEmitter, Injectable} from "@angular/core";
 import * as SockJS from 'sockjs-client';
+import {EventBus} from "./EventBus";
 
 @Injectable()
-export class EventBusService {
+export class EventBusService implements EventBus {
 
     static initialized: boolean = false;
     static MAX_EVENT_QUEUE_SIZE: number = 100;
@@ -45,9 +49,13 @@ export class EventBusService {
         return this.state === EventBusService.STATE_OPEN;
     }
 
-    connect(url: string, defaultHeaders: any = null, options: any = {}): void {
+    connect(url : string) {
+        this.connectWithOpts(url, null, {});
+    }
+
+    connectWithOpts(url: string, defaultHeaders: any, options: any): void {
         let pingInterval = options.vertxbus_ping_interval || 5000;
-        let pingTimerID;
+        let pingTimerID: any;
 
         this.defaultHeaders = defaultHeaders;
         this.eventQueue = [];
@@ -69,19 +77,19 @@ export class EventBusService {
             this.open.emit(null);
         };
 
-        this.sockJS.onclose = (e) => {
+        this.sockJS.onclose = (e: any) => {
             this.state = EventBusService.STATE_CLOSED;
             if (pingTimerID) clearInterval(pingTimerID);
             this.close.emit(null);
         };
 
-        this.sockJS.onmessage = (e) => {
+        this.sockJS.onmessage = (e: any) => {
             let json = JSON.parse(e.data);
 
             // define a reply function on the message itself
             if (json.replyAddress) {
                 Object.defineProperty(json, 'reply', {
-                    value: function (message, headers, callback) {
+                    value: function (message: any, headers: any, callback: any) {
                         this.send(json.replyAddress, message, headers, callback);
                     }
                 });
@@ -128,7 +136,7 @@ export class EventBusService {
         };
     }
 
-    disconnect() {
+    disconnect() : void {
         if (this.sockJS) {
             this.state = EventBusService.STATE_CLOSING;
             this.sockJS.close();
@@ -288,9 +296,10 @@ export class EventBusService {
         }
     };
 
+
     // PRIVATE
 
-    private addEventToQueue(event) {
+    private addEventToQueue(event: any) {
         if (!this.eventQueue) {
             return;
         }
@@ -337,7 +346,7 @@ function makeUUID() {
     });
 }
 
-function mergeHeaders(defaultHeaders, headers) {
+function mergeHeaders(defaultHeaders: any, headers: any) {
     if (defaultHeaders) {
         if (!headers) {
             return defaultHeaders;
@@ -356,3 +365,4 @@ function mergeHeaders(defaultHeaders, headers) {
     // headers are required to be a object
     return headers || {};
 }
+
