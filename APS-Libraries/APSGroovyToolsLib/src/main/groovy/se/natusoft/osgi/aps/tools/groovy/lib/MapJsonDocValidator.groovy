@@ -3,6 +3,7 @@ package se.natusoft.osgi.aps.tools.groovy.lib
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.docutations.Nullable
+import se.natusoft.osgi.aps.exceptions.APSValidationException
 
 /**
  * This class uses `Map<String, Object>` to represent JSON documents (Vertx:s JsonObject supports mapping to/from this format).
@@ -164,9 +165,10 @@ class MapJsonDocValidator {
      *
      * @param toValidate The map to validate.
      *
-     * @throws IllegalStateException on validation failure.
+     * @throws APSValidationException on validation failure.
      */
-    void validate( Map<String, Object> toValidate ) throws IllegalStateException {
+    void validate( Map<String, Object> toValidate ) throws APSValidationException {
+        if (toValidate == null) throw new APSValidationException("Input to validate is null!")
         validateMap( this.validStructure , toValidate )
     }
 

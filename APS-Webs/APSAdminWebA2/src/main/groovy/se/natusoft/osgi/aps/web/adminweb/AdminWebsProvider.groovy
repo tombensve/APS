@@ -2,14 +2,19 @@ package se.natusoft.osgi.aps.web.adminweb
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import io.vertx.core.Vertx
+import io.vertx.core.eventbus.Message
+import io.vertx.core.eventbus.MessageConsumer
+import io.vertx.core.json.JsonObject
 import org.osgi.framework.BundleContext
-import se.natusoft.docutations.NotNull
 import se.natusoft.osgi.aps.apsadminweb.service.APSAdminWebService
+import se.natusoft.osgi.aps.exceptions.APSValidationException
+import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.LocalEventBus
 import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
+import se.natusoft.osgi.aps.tools.reactive.Consumer
 
 // IDEA shows this as not used, but that is not true!! This class will not compile without this import.
 /**
@@ -36,10 +41,16 @@ import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
  * that. But since in reality this code will be available at runtime I just hide these incorrect
  * warnings.
  */
-@SuppressWarnings("GroovyUnusedDeclaration")
+@SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
 @TypeChecked
-class AdminWebsProvider implements Constants {
+class AdminWebsProvider extends VertxConsumer implements Constants {
+    //
+    // Constants
+    //
+
+    private static final String RESOLVE_ADDRESS = "APSAdminWebA2-Resolver"
+
     //
     // Private Members
     //
@@ -47,14 +58,14 @@ class AdminWebsProvider implements Constants {
     @Managed
     private BundleContext context
 
-    @Managed(loggingFor = "aps-admin-web-a2:admin-webs-provider")
+    @Managed( loggingFor = "aps-admin-web-a2:admin-webs-provider" )
     private APSLogger logger
-
-    @Managed
-    private LocalEventBus localBus
 
     @OSGiService
     private APSAdminWebService adminWebService
+
+    /** Consumer of public event-bus messages. */
+    private MessageConsumer eventConsumer
 
     //
     // Init
@@ -62,30 +73,66 @@ class AdminWebsProvider implements Constants {
 
     @Initializer
     void init() {
-        this.logger.connectToLogService(this.context)
-        this.localBus.subscribe(LOCAL_BUS_ADDRESS) { Map<String, Object> event ->
-            try {
-                EventDefinition.validate(event)
+        this.logger.connectToLogService( this.context )
+        this.useLogger = this.logger // Provide logger to base class.
 
-                switch (event[_body_][_action_] as String) {
-                    case ACTION_GET_WEBS:
-                        handleGetWebs(event)
-                        break
+        this.onVertxAvailable = { Consumer.Consumed<Vertx> vertx ->
+
+            this.eventConsumer = vertx.get().eventBus().consumer( NODE_ADDRESS ).handler { Message message ->
+                Map<String, Object> event = getBody( message )
+
+                try {
+                    EventDefs.EVENT_VALIDATOR.validate( event )
+
+                    JsonObject resp
+
+                    Event ev = new Event( event )
+                    switch ( ev.eventType ) {
+                        case "req-webs":
+                            resp = provideWebs()
+                            break
+                        default:
+                            resp = new Event( NODE_ADDRESS )
+                                    .error( 1, "Only 'req-webs' is allowed for eventType!" )
+                                    .toJson()
+                            eventBusReply( message, resp )
+                    }
+
+                    eventBusReply( message, resp )
+                }
+                catch ( APSValidationException ve ) {
+                    eventBusReply(
+                            message,
+                            new Event( NODE_ADDRESS )
+                                    .error( 10, "Bad message!" )
+                                    .toJson() as JsonObject
+                    )
+                    this.logger.error( "Bad message received! (${ message })", ve )
                 }
 
-            }
-            catch (Exception e) {
-                this.logger.error("Problem with received event: ${e.message}")
-                // Smells like a Groovy bug! "Constants." is required for a pub, but not for the get call above!
-                //noinspection UnnecessaryQualifiedReference
-                event[Constants._error_] =
-                        EventDefinition.createError(code: 1, message: "Problem with received event: ${e.message}" as Object)
             }
 
         }
     }
 
-    private void handleGetWebs(@NotNull Map<String, Object> event) {
+    private static JsonObject provideWebs() {
+
+        // @formatter:off (IDEA does a really poor job here!)
+        new Event( NODE_ADDRESS )
+                .eventType( "provide-webs" )
+                .data( [
+                    webs: [
+                            [
+                                    name: "Network",
+                                    url : "http://localhost/apsadminweb/net"
+                            ],
+                            [
+                                    name: "Users",
+                                    url : "http://localhost/apsadminweb/users"
+                            ]
+                    ]
+                ] as Map<String, Object> ).toJson()
+        // @formatter:on
 
     }
 }

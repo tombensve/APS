@@ -396,8 +396,8 @@ class APSVertxProvider implements APSVertxService {
     @SuppressWarnings( "PackageAccessibility" )
     @Important( "This gets called sequentially on the same thread by this.sequentialExecutor! See useGroovyVertX(...) below." )
     private void createVertxInstance( @NotNull String name, @NotNull Handler<AsyncResult<Vertx>> result ) {
+        // TODO: This is no good! We should call the Vertx consumers directly in if(res.succeeded()) {...}!
         // Hardcode options until we have a new configuration service ...
-        // TODO: We might need some options here for the SockJS bridge to accept clients.
         Map<String, Object> options = [:]
 
         runWithContextClassLoader( this.class.classLoader ) {
@@ -419,6 +419,7 @@ class APSVertxProvider implements APSVertxService {
                 result.handle( res )
             }
 
+            // TODO: When the above TODO is handled this is no longer needed!
             // This is called from useGroovyVertX(...) which is run in a single thread by an ExecutionService.
             // We have to wait for a result before returning the thread.
             while ( this.namedInstances[ name ] == null && !failed ) {
@@ -428,6 +429,7 @@ class APSVertxProvider implements APSVertxService {
         }
     }
 
+    // TODO: Don't allow this variant of aquiring Vertx instance!
     /**
      * Returns The Groovy Vert.x instance for the specified name.
      *
@@ -459,6 +461,7 @@ class APSVertxProvider implements APSVertxService {
         }
     }
 
+    // TODO: Don't allow this variant of aquiring Vertx instance!
     /**
      * After having called useGroovyVertX(...) in a bundle, call this when shutting down!
      *

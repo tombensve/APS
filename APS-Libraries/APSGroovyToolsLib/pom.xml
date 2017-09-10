@@ -91,6 +91,10 @@
             <classifier>indy</classifier>
             <version>${groovy.version}</version>
         </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-apis</artifactId>
+        </dependency>
 
 
     </dependencies>

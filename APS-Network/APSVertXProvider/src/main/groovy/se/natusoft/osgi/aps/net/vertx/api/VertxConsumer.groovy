@@ -4,8 +4,11 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.core.Vertx
 import io.vertx.core.eventbus.EventBus
+import io.vertx.core.eventbus.Message
+import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import se.natusoft.docutations.NotNull
+import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.reactive.Consumer
 
 /**
@@ -37,6 +40,9 @@ class VertxConsumer implements Consumer<Object> {
 
     /** Set this to get notified of errors. */
     Closure onError
+
+    /** Subclasses can provide a logger here if logs from this class is wanted. */
+    APSLogger useLogger
 
     //
     // Private Members
@@ -87,6 +93,9 @@ class VertxConsumer implements Consumer<Object> {
         }
     }
 
+    /**
+     * Call this when shutting down. This will release the Vertx instance.
+     */
     protected void cleanup() {
         if ( this.vertx != null ) this.vertx.release()
         this.vertx = null
@@ -95,5 +104,57 @@ class VertxConsumer implements Consumer<Object> {
         this.onVertxRevoked = null
         this.onRouterAvailable = null
         this.onError = null
+    }
+
+    //
+    // EventBus utilities
+    //
+
+    protected EventBus eventBus() {
+        this.vertx(  ).eventBus(  )
+    }
+
+    /**
+     * Extracts the body of a Vertx 'Message'. It accepts both an JsonObject and a
+     * string as body content. If the latter it expects the string to contain JSON
+     * and wraps it in a JsonObject.
+     *
+     * Independent of how the JsonMap was created the result of getMap() is returned.
+     * Since this is Groovy code and Groovy handles Maps much like JS handles JSON
+     * I decided to use the Map format rather than the JsonObject API.
+     *
+     * @param message The Vertx message to extract body from.
+     *
+     * @return the body as a Map or null if none where found.
+     */
+    protected static Map<String, Object> getBody( Message message ) {
+
+        Map<String, Object> event = null
+
+        if ( JsonObject.class.isAssignableFrom( message.body().class ) ) {
+            event = ( message.body() as JsonObject ).map
+        }
+        else if ( String.class.isAssignableFrom( message.body().class ) ) {
+            event = new JsonObject( message.body().toString() ).map
+        }
+
+        event
+    }
+
+    /**
+     * Utility to send a reply to received message.
+     *
+     * @param receivedMessage The received message to use for reply.
+     * @param reply The reply to send.
+     */
+    protected void eventBusReply(Message receivedMessage, JsonObject reply) {
+        if (receivedMessage.replyAddress(  ) != null && !receivedMessage.replyAddress(  ).isEmpty(  )) {
+            receivedMessage.reply( reply )
+        }
+        else {
+            if (this.useLogger != null) {
+                this.useLogger.error( "(eventBusReply): Provided 'Message' has not reply address!" )
+            }
+        }
     }
 }

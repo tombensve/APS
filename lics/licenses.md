@@ -18,6 +18,6 @@ The following third party products are using this license:
 
 * [vertx-core-3.4.2](http://www.apache.org/licenses/LICENSE-2.0.txt)
 * [vertx-web-3.4.2](http://rubygems-proxy.torquebox.org/releases)
-* [groovy-all-2.4.10](http://groovy-lang.org)
+* [groovy-all-2.4.12](http://groovy-lang.org)
 
 <!-- CLM -->

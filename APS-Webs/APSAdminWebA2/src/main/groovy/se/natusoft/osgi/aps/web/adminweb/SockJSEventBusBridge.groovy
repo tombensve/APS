@@ -5,7 +5,9 @@ import groovy.transform.TypeChecked
 import io.vertx.core.Vertx
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.sockjs.BridgeEvent
+import io.vertx.ext.web.handler.sockjs.BridgeOptions
 import io.vertx.ext.web.handler.sockjs.SockJSHandler
+import io.vertx.ext.web.handler.sockjs.SockJSHandlerOptions
 import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
 import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
@@ -79,21 +81,25 @@ class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Con
             this.logger.info( "######## SockJSEventBusBridge.onRouterAvailable" )
             this.router = router
 
-            // Currently no more detailed permissions than on target address. Might add limits on message contents
-            // later.
-            def inboundPermitted = [address: GLOBAL_BUS_ADDRESS]
-            def outboundPermitted = [address: GLOBAL_BUS_ADDRESS]
-            def options = [
-                    inboundPermitteds : [inboundPermitted],
-                    outboundPermitteds: [outboundPermitted]
-            ] as Map<String, Object>
+//            // Currently no more detailed permissions than on target address. Might add limits on message contents
+//            // later.
+//            def inboundPermitted = [address: NODE_ADDRESS]
+//            def outboundPermitted = [address: NODE_ADDRESS]
+//            def options = [
+//                    inboundPermitteds : [inboundPermitted],
+//                    outboundPermitteds: [outboundPermitted]
+//            ] as Map<String, Object>
 
-            // Note that this router is already bound to an HTTP server!
             SockJSHandler sockJSHandler = SockJSHandler.create( vertx() )
-            sockJSHandler.bridge( options ) /*{ BridgeEvent be ->
-                this.logger.info("SockJSBridge - Type: ${be.type()}")
-                be.complete()
-            }*/
+            BridgeOptions options = new BridgeOptions()
+            sockJSHandler.bridge( options )
+
+//            // Note that this router is already bound to an HTTP server!
+//            SockJSHandler sockJSHandler = SockJSHandler.create( vertx() )
+//            sockJSHandler.bridge( options ) /*{ BridgeEvent be ->
+//                this.logger.info("SockJSBridge - Type: ${be.type()}")
+//                be.complete()
+//            }*/
             this.router.get().route( "/eventbus/*" ).handler( sockJSHandler )
 
 //            this.logger.info "Vert.x SockJSHandler for event bus bridging started successfully!"

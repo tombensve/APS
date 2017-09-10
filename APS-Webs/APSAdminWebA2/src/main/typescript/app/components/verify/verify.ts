@@ -28,7 +28,12 @@ export class VerifyComponent {
 
         let headers : Array<string>;
         headers = [];
-        this.eventBusProvider.publish("aps.adminweb", "{\"content\": \"Hello!\"}", headers);
+        //this.eventBusProvider.publish("aps.adminweb", "{\"content\": \"Hello!\"}", headers);
+        this.eventBusProvider.send("APSAdminWeb", "{ header: {" +
+            " address: \"test\" }, " +
+            " eventType: \"req-webs\" }", (reply : any) => {
+            console.info("Got reply: " + reply)
+        });
 
         // let admins : Array<AdminAppModel>;
         // admins = this.adminAppsService.getAdminApps();
