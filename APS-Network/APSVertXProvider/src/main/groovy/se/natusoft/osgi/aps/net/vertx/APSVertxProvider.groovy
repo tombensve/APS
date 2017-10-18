@@ -64,6 +64,8 @@ import se.natusoft.osgi.aps.tools.reactive.Consumer
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
 
+import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
+
 import static se.natusoft.osgi.aps.tools.util.StaticUtils.runWithContextClassLoader
 
 // TODO: Make clustering optional.
@@ -82,7 +84,7 @@ import static se.natusoft.osgi.aps.tools.util.StaticUtils.runWithContextClassLoa
 )
 @CompileStatic
 @TypeChecked
-class APSVertxProvider implements APSVertxService {
+class APSVertxProvider extends VertxConsumer implements Consumer<Vertx>, APSVertxService {
 
     /**
      * This is stored in the map of named instances.
