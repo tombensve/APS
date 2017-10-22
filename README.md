@@ -6,8 +6,6 @@ __Version:__ 1.0.0
 
 This repo is used for development. __This repo is thereby work in progress and cannot be expected to be stable nor build completely!!__ Releases will be done to _APS_ repo. Why do development in a separate repo ? Well, not sure, but it felt like a good idea at the time :-). I however see no problems with it either.
 
-__A side note:__ APS-Libraries/APSTools are used by almost all other bundles, but itself has no other dependencies. It contains the very useful _APSActivator_ which I consider quite stable.  
-
 Work is slow, whenever time permits.
 
 __Author:__ Tommy Svensson (tommy@natusoft.se)
