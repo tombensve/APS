@@ -14,52 +14,14 @@ __Author:__ Tommy Svensson (tommy@natusoft.se)
 
 ---
 
-_A "smorgasbord" of OSGi services that focuses on ease of use and good enough functionality for many but wont fit all._
+To be very clear: This is currently, and probably for a long time comming, a playground where I'm having fun. The original (and still active) goal with this is to make a very easy to use web platform based on OSGi. APS is however only using the basic 4 OSGi APIs, and currently java8 & Groovy code so it will probably not run in most embedded OSGi containers. 
 
-It can be seen as osgi-ee-ish that is easy to use. The services are of platform type: configuration, database, JPA, etc.
+I have decided to base this project on Vertx rather than traditional EE APIs. I'm also turning OSGi upside down by publishing consuming services that will be called with produced data when available, in a reactive style, which fits Vertx.
 
-Please note that APS uses Java 8 code! It will not run in any J2ME environment! My intention with APS is a platform for writing modular web applications with easy administration.
+Almost all of what is in this version will be replaced, some things just removed. As I said, this is currently a playground, that I play with when I have the time.
 
-Short feature list:
+There is however one thing that is currenlty useful and does not depend on any other bundle: APSToolsLib. This contains a nicer service tracker and something the maven-bundle-plugin people never considered, and might consider me completely crazy: APSActivator. It is a generic bundle activator that makes use of annotations to publish services, etc. It will inject into classes and instantiate annotated classes. It goes through all classes in the bundle and checks them for annotations. This of course means that all the bundles classes will **always** be loaded! maven-bundle-plugin warns about seeing an external activator and suggests that it is probably an error, but it works ... :-).
 
-* Uses only basic OSGi functionallity, no SCR or blueprint, etc. 
+The APSServiceTracker is also a bit different in that it does not like to tear services down, it and APSActivator both work to keep services up. The tracker by providing a timeout and throwing an APSNoServiceAvailableException on timeout. The side effect of this is that you sometimes need to start a thread in Bundle.start(...) to avoid a deadlock. This also means that later failures cannot stop the bundle on failed start! But it is soo much nicer to keep things up IMHO!
 
-* _APS-Libraries/APSTools/APSActivator_ provides a generic BundleActivator implementation that makes use of annotations to do DI and more:
-  * @Managed - basic DI but with special feature for providing name for APSLogger when injecting such. 
-  * @OSGiServiceProvider - Register a class as an OSGi service using first implemented interface if not specified in annotation. Properties for the service registration can also be provided. It also supports special instance factories for registering multiple instances.
-  * @OSGiService - As default this annotation should be used on a service interface member type and will then have an instance of _APSServiceTracker_ wrapped as proxied service. That is, each call on a service method will allocate the service the standard OSGi way, call the service method, release the service, and then return the method call result. Note that _APSServiceTracker_ works different that the standard _SeriveTracker_ since it never returns a null service, but throws an _APSNoServiceAvailable_ exception instead after the service has not become available for a specified timeout time. _APSServiceTracker_ can also be the member type for this annotation in which case an _APSServiceTracker_ instance will be injected directly instead of being wrapped as a service.
-  
-  Do note that _APSActivator_ is not an external service nor an extender that acts from the outside. It is imported from an external Bundle, but runs completely within the using Bundles context and have access to everything in the Bundle! It uses the Bundle classpath to do its work. 
-
-* _APSOSGiTestTools_ provides testing support by implementing the 4 basic OSGi interfaces enough to deploy and run in test. Contains an easy to use API for deploying from target/classes or maven GAV which will use ~/.m2/repository to lookup code to deploy. The API (Java) is designed so that it aalso works as DSL when used from Groovy. Just let JUnit tests extend _APSOSGiTestTools_, deploy dependent on services, deploy service to test, deploy local in test Bundle that will get a BundleContext and can lookup, inject, whatever to test. Very easy and clean. Support for mocking configuration, but otherwise little mocking is requred. You just deploy and run as you would in a real server. 
-
-* Complete redo of most networking APIs, and provided implementations are based on Vert.x.
-
-* Provides a far more flexible and usable service tracker than the standard one, that allows you to set a timeout and throws an exception on timeout. The tracker can also provide a Proxied implementation of the service interface using the tracker to make calls. APS has the goal of keeping things upp rather than tear things down when services temporarily goes away.
-
-* Provides an authenticationable and pluggable administration web which different administration applications can plug into participating in a common login (SSO). APSConfigAdminWeb and APSUserAdminWeb are two such plugin admin applications.
-
-* Provides a high level configuration service where annotated configuration models are automatically registered and populated using the extender pattern. 
-   * Advanced structured config models with config values and submodels and lists of values and submodels.
-   * Supports multiple configuration environments.
-   * A web application (WAB) for editing/publishing configurations.
-   * Can synchronize configuration between installations (In 1.0.0 this will work better!)
-
-* Provides easy to use authentication and user services. These are easier and more comprehensable than the UserAdmin service!
-   * Provides an easy to use default admin web for administration of users and roles.
-
-* Provides a JPA service (using OpenJPA) that is more flexible and easier to use than the EntityManagerFactoryBuilder.
-
-* Provides remote calls via aps-external-protocol-extender that exposes services specified in MANIFEST.MF or in configuration to be remotely available using pluggable transports and protocols. 
-   * Provides an HTTP transport.
-   * Provides a JSONRPC 1.0, 2.0, and a very simplistic JSON protocol.
-   * Protocols are just OSGi services.
-
-* More useful utilities and services ...
-
----
-
-Documentation ([Markdown](https://github.com/tombensve/APS/blob/master/APS-UserGuide/docs/APS-UserGuide.md) | [PDF](https://github.com/tombensve/APS/blob/master/APS-UserGuide/docs/APS-UserGuide.pdf))
-
-[Licenses](https://github.com/tombensve/APS/blob/master/lics/licenses.md)
-
+/Tommy
