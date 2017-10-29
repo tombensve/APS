@@ -78,8 +78,7 @@
             se.natusoft.osgi.aps.tools.exceptions;version="${project.version}",
             se.natusoft.osgi.aps.tools.tuples;version="${project.version}",
             se.natusoft.osgi.aps.tools.debug;version="${project.version}",
-            se.natusoft.osgi.aps.tools.util;version="${project.version}",
-            se.natusoft.osgi.aps.tools.reactive;version="${project.version}"
+            se.natusoft.osgi.aps.tools.util;version="${project.version}"
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->

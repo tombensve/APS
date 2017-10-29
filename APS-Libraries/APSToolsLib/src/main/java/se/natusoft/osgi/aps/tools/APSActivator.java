@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS Tools Library
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides a library of utilities, among them APSServiceTracker used by all other APS bundles.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -239,20 +239,20 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     protected void initMembers() {
         if (this.services == null) {
             this.services = Collections.synchronizedList(new LinkedList<>());
-            this.trackers = Collections.synchronizedMap(new HashMap<>());
-            this.namedInstances = Collections.synchronizedMap(new HashMap<>());
+            this.trackers = Collections.synchronizedMap(new LinkedHashMap<>());
+            this.namedInstances = Collections.synchronizedMap(new LinkedHashMap<>());
             this.shutdownMethods = Collections.synchronizedList(new LinkedList<>());
             if (this.activatorMode) this.managedInstances =
-                    Collections.synchronizedMap(new HashMap<>());
+                    Collections.synchronizedMap(new LinkedHashMap<>());
             this.requiredServices =
                     Collections.synchronizedList(
                             new LinkedList<>()
                     );
 
             this.listeners = Collections.synchronizedList(new LinkedList<>());
-            this.internallyManagedScheduledExecutionServices = new HashMap<>();
+            this.internallyManagedScheduledExecutionServices = new LinkedHashMap<>();
             this.activatorLogger.setLoggingFor("APSActivator");
-            this.activatorLogger.start(context);
+            this.activatorLogger.connectToLogService(context);
         }
     }
 
@@ -287,13 +287,13 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         // Classes annotated with @OSGiServiceProvider having threadStart=true need to run the
         // startup setup, injections, etc in a separate thread and this start method should not
         // care about when they finnish, nor what their results were. The others should have
-        // have done all that before returning from this method.
+        // done all that before returning from this method.
         //
         // I however simplify things by running both variants using single thread ExecutorService,
         // and waiting for the "non threaded" variant to finnish before returning.
         //
         // In other words, the 2 executors are parallel to each other, but sequential within themselves,
-        // and one we care about if it is done or not, the other we dont.
+        // and one we care about if it is done or not, the other we don't.
         ExecutorService parallelExecutorService = Executors.newSingleThreadExecutor();
         ExecutorService waitedForExecutorService = Executors.newSingleThreadExecutor();
         ExecutorService executorService;
@@ -401,6 +401,17 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         this.activatorLogger.info("Stopping APSActivator for bundle '" + context.getBundle().getSymbolicName() +
                 "' with activatorMode: " + this.activatorMode);
 
+        this.services.forEach(serviceRegistration -> {
+            try {
+                serviceRegistration.unregister();
+            }
+            catch (Exception e) {
+                this.activatorLogger.error("Services: Bundle stop problem!", e);
+                failures.addException(e);
+            }
+        });
+        this.services = null;
+
         this.listeners.forEach(listenerWrapper -> listenerWrapper.stop(context));
         this.listeners = null;
 
@@ -414,29 +425,18 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                         context.getBundle().getSymbolicName() + "!");
             }
             catch (Exception e) {
-                this.activatorLogger.error("Bundle stop problem!", e);
+                this.activatorLogger.error("Shutdown methods: Bundle stop problem!", e);
                 failures.addException(e);
             }
         });
         this.shutdownMethods = null;
-
-        this.services.forEach(serviceRegistration -> {
-            try {
-                serviceRegistration.unregister();
-            }
-            catch (Exception e) {
-                this.activatorLogger.error("Bundle stop problem!", e);
-                failures.addException(e);
-            }
-        });
-        this.services = null;
 
         this.trackers.forEach((name, tracker) -> {
             try {
                 tracker.stop(context);
             }
             catch (Exception e) {
-                this.activatorLogger.error("Bundle stop problem!", e);
+                this.activatorLogger.error("Trackers: Bundle stop problem!", e);
                 failures.addException(e);
             }
         });
@@ -445,30 +445,32 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         this.namedInstances.forEach((name, namedInstance)-> {
             if (APSLogger.class.isAssignableFrom(namedInstance.getClass())) {
                 try {
-                    ((APSLogger)namedInstance).stop(context);
+                    ((APSLogger)namedInstance).disconnectFromLogService(context);
                 }
                 catch (Exception e) {
-                    this.activatorLogger.error("Bundle stop problem!", e);
+                    this.activatorLogger.error("Named instances: Bundle stop problem!", e);
                     failures.addException(e);
                 }
             }
             else if (ExecutorService.class.isAssignableFrom(namedInstance.getClass())) {
+                this.activatorLogger.info("Shutting down ExecutorService: " + name);
                 try {
-                    ((ExecutorService)namedInstance).shutdownNow();
+                    ((ExecutorService)namedInstance).shutdown();
                     ((ExecutorService)namedInstance).awaitTermination(15, TimeUnit.SECONDS);
                 }
                 catch (Exception e) {
-                    this.activatorLogger.error("Failed to shutdown executor service withing reasonable time!", e);
+                    this.activatorLogger.error("Named instances/ExecutorService: Failed to shutdown executor service within" +
+                            " reasonable time!", e);
                     failures.addException(e);
                 }
             }
         });
         this.namedInstances = null;
 
-        this.internallyManagedScheduledExecutionServices.forEach((size, service) -> service.shutdownNow());
+        this.internallyManagedScheduledExecutionServices.forEach((size, service) -> service.shutdown());
         this.internallyManagedScheduledExecutionServices = null;
 
-        this.activatorLogger.stop(context);
+        this.activatorLogger.disconnectFromLogService(context);
         this.activatorLogger = null;
 
         if (failures.hasFailures()) {
@@ -1025,7 +1027,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     if (managed.loggingFor().length() > 0) {
                         ((APSLogger)namedInstance).setLoggingFor(managed.loggingFor());
                     }
-                    ((APSLogger)namedInstance).start(context);
+                    ((APSLogger)namedInstance).connectToLogService(context);
                 }
 
                 // Inject BundleContext of the bundle.
@@ -1610,15 +1612,6 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 }
                 catch (Exception e) {
                     APSActivator.this.activatorLogger.error("Failed executing a plugin!", e);
-                }
-
-                // Check if service registrations should be delayed.
-                boolean delaySvcReg = false;
-                for (Field field : entryClass.getDeclaredFields()) {
-                    if (APSActivatorInteraction.class.isAssignableFrom(field.getType())) {
-                        delaySvcReg = true;
-                        break;
-                    }
                 }
 
                 Map<Class, Object> res = doFieldInjectionsIntoManagedInstances(entryClass, context);
