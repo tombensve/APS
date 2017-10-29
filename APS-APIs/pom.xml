@@ -4,31 +4,31 @@
     PROJECT
         Name
             APS APIs
-        
+
         Code Version
             1.0.0
-        
+
         Description
             Provides the APIs for the application platform services.
-        
+
     COPYRIGHTS
         Copyright (C) 2012 by Natusoft AB All rights reserved.
-        
+
     LICENSE
         Apache 2.0 (Open Source)
-        
+
         Licensed under the Apache License, Version 2.0 (the "License");
         you may not use this file except in compliance with the License.
         You may obtain a copy of the License at
-        
+
           http://www.apache.org/licenses/LICENSE-2.0
-        
+
         Unless required by applicable law or agreed to in writing, software
         distributed under the License is distributed on an "AS IS" BASIS,
         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
         See the License for the specific language governing permissions and
         limitations under the License.
-        
+
     AUTHORS
         Tommy Svensson (tommy@natusoft.se)
             Changes:
@@ -118,14 +118,10 @@
             se.natusoft.osgi.aps.api.net.rpc.service;version="${project.version}",
             se.natusoft.osgi.aps.api.net.rpc.exceptions;version="${project.version}",
             se.natusoft.osgi.aps.api.net.groups.service;version="${project.version}",
-            se.natusoft.osgi.aps.api.net.messaging.exception;version="${project.version}",
-            se.natusoft.osgi.aps.api.net.messaging.service;version="${project.version}",
-            se.natusoft.osgi.aps.api.net.messaging.model;version="${project.version}",
-            se.natusoft.osgi.aps.api.net.messaging.annotations;version="${project.version}",
             se.natusoft.osgi.aps.api.net.time.service;version="${project.version}",
             se.natusoft.osgi.aps.api.net.tcpip;version="${project.version}",
             se.natusoft.osgi.aps.api.net.util;version="${project.version}",
-            se.natusoft.osgi.aps.api.reactive;version="${project.version}",
+            se.natusoft.osgi.aps.api.pubcon;version="${project.version}",
             se.natusoft.osgi.aps.api.web.config;version="${project.version}",
             se.natusoft.osgi.aps.constants;version="${project.version}",
             se.natusoft.osgi.aps.util;version="${project.version}"
@@ -178,6 +174,14 @@
     </properties>
 
     <dependencies>
+        <!--
+            Became increasingly difficult to avoid ...
+        -->
+        <dependency>
+            <artifactId>aps-tools-lib</artifactId>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <version>1.0.0</version>
+        </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>javax.persistence</artifactId>

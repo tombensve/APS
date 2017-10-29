@@ -1,5 +1,5 @@
-/*
- *
+/* 
+ * 
  * PROJECT
  *     Name
  *         APS APIs
@@ -29,34 +29,34 @@
  *     limitations under the License.
  *     
  * AUTHORS
- *     Tommy Svensson (tommy@natusoft.se)
+ *     tommy ()
  *         Changes:
- *         2014-10-27: Created!
- *
+ *         2017-10-29: Created!
+ *         
  */
-package se.natusoft.osgi.aps.api.net.messaging.exception;
+package se.natusoft.osgi.aps.api.pubcon;
 
 /**
- * Indicates a problem with received message.
+ * Indicates a problem sending or receiving a messaging.
  */
-public class APSBadMessageException extends APSMessagingException {
+public class APSPubConException extends RuntimeException {
 
     /**
-     * Creates a new APSBadMessageException.
+     * Creates a new APSPubConException.
      *
      * @param message The exception message.
      */
-    public APSBadMessageException(String message) {
+    public APSPubConException(String message) {
         super(message);
     }
 
     /**
-     * Creates a new APSBadMessageException.
+     * Creates a new APSPubConException.
      *
      *  @param message The exception message.
      * @param cause The cause of this exception.
      */
-    public APSBadMessageException(String message, Throwable cause) {
+    public APSPubConException(String message, Throwable cause) {
         super(message, cause);
     }
 }
