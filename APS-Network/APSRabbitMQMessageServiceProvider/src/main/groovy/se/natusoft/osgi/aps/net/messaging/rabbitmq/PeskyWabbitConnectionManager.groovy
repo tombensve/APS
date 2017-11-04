@@ -11,7 +11,7 @@ import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
  */
 @CompileStatic
 @TypeChecked
-public class PeskyWabbitConnectionManager {
+class PeskyWabbitConnectionManager {
     //
     // Private Members
     //
@@ -31,7 +31,7 @@ public class PeskyWabbitConnectionManager {
      *
      * @throws IOException on failure to setup a connection.
      */
-    public synchronized String ensureConnection() throws IOException {
+    synchronized String ensureConnection() throws IOException {
         if (this.connectionFactory == null) {
             this.connectionFactory = new ConnectionFactory()
             connectionFactory.setHost(RabbitMQMessageServiceConfig.managed.get().host.string)
@@ -76,7 +76,7 @@ public class PeskyWabbitConnectionManager {
     /**
      * Closes the connection if not closed already.
      */
-    public  synchronized String ensureConnectionClosed() throws IOException {
+    synchronized String ensureConnectionClosed() throws IOException {
 
         if (this.connection != null) {
             try {
@@ -97,7 +97,7 @@ public class PeskyWabbitConnectionManager {
     /**
      * Closes connection and then creates a new again.
      */
-    public synchronized void reconnect() throws IOException {
+    synchronized void reconnect() throws IOException {
         ensureConnectionClosed()
         ensureConnection()
     }
@@ -105,7 +105,7 @@ public class PeskyWabbitConnectionManager {
     /**
      * @return The current connection.
      */
-    public Connection getConnection() throws IOException {
+    Connection getConnection() throws IOException {
         ensureConnection()
 
         return this.connection

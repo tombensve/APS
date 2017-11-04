@@ -121,6 +121,13 @@
             <artifactId>aps-tools-lib</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <scope>provided</scope>
+            <classifier>indy</classifier>
+            <version>${groovy.version}</version>
+        </dependency>
 
         <!--
             RabbitMQ client jars

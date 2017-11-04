@@ -9,7 +9,7 @@ import groovy.transform.TypeChecked
  */
 @CompileStatic
 @TypeChecked
-public interface ConnectionProvider {
+interface ConnectionProvider {
 
     /**
      * Returns a RabbitMQ connection.

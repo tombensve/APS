@@ -9,16 +9,18 @@ import groovy.transform.TypeChecked
 
 import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
 import se.natusoft.osgi.aps.api.net.util.TypedData
+import se.natusoft.osgi.aps.api.pubcon.APSConsumer
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
 import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.tools.APSServiceTracker
 
 /**
  * Thread that receives queue types.
  */
 @CompileStatic
 @TypeChecked
-public class ReceiveThread extends Thread {
+class ReceiveThread extends Thread {
 
     //
     // Private Members
@@ -37,6 +39,9 @@ public class ReceiveThread extends Thread {
     private List<APSSimpleMessageService.MessageListener> listeners =
             Collections.synchronizedList(new LinkedList<APSSimpleMessageService.MessageListener>())
 
+    // BundleContext context, Class<Service> serviceClass, String additionalSearchCriteria, String timeout
+    private APSServiceTracker<APSConsumer<byte[]>> conumers = new APSServiceTracker<>()
+
     //
     // Properties
     //
@@ -48,13 +53,13 @@ public class ReceiveThread extends Thread {
      * Provides a RabbitMQ Connection. Rather than taking a Connection directly, this can
      * always provide a fresh connection.
      */
-    ConnectionProvider connectionProvider;
+    ConnectionProvider connectionProvider
 
     /** The config for this receiver. */
     RabbitMQMessageServiceConfig.RMQInstance instanceConfig
 
     /** The topic this receiver is working for. */
-    String topic;
+    String topic
 
     //
     // Methods
@@ -63,7 +68,7 @@ public class ReceiveThread extends Thread {
     /**
      * Stops this thread.
      */
-    public synchronized void stopThread() {
+    synchronized void stopThread() {
         this.running = false
     }
 
@@ -79,7 +84,7 @@ public class ReceiveThread extends Thread {
      *
      * @param listener The listener to add.
      */
-    public void addMessageListener(APSSimpleMessageService.MessageListener listener) {
+    void addMessageListener(APSSimpleMessageService.MessageListener listener) {
         this.listeners.add(listener)
     }
 
@@ -88,7 +93,7 @@ public class ReceiveThread extends Thread {
      *
      * @param listener The listener to remove.
      */
-    public void removeMessageListener(APSSimpleMessageService.MessageListener listener) {
+    void removeMessageListener(APSSimpleMessageService.MessageListener listener) {
         this.listeners.remove(listener)
     }
 
@@ -96,7 +101,7 @@ public class ReceiveThread extends Thread {
      * Returns true if there are listeners available.
      */
     @SuppressWarnings("GroovyUnusedDeclaration")
-    public boolean haveListeners() {
+    boolean haveListeners() {
         return !this.listeners.isEmpty()
     }
 
@@ -104,7 +109,7 @@ public class ReceiveThread extends Thread {
      * Removes all listeners.
      */
     @SuppressWarnings("GroovyUnusedDeclaration")
-    public void removeAllListeners() {
+    void removeAllListeners() {
         this.listeners.clear()
     }
 
@@ -139,7 +144,7 @@ public class ReceiveThread extends Thread {
     /**
      * Thread entry and exit point.
      */
-    public void run() {
+    void run() {
 
         int failureCount = 0
 

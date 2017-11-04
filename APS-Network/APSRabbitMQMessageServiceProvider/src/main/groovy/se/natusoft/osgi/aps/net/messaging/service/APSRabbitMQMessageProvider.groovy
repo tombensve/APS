@@ -43,6 +43,7 @@ import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
 
 import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
+import se.natusoft.osgi.aps.api.pubcon.APSMessagingException
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.ReceiveThread
@@ -60,7 +61,7 @@ import se.natusoft.osgi.aps.tools.APSLogger
  */
 @CompileStatic
 @TypeChecked
-public class APSRabbitMQMessageProvider {
+class APSRabbitMQMessageProvider {
 
     //
     // Private Members
@@ -72,7 +73,7 @@ public class APSRabbitMQMessageProvider {
     /** Our cluster channel. */
     private Channel instanceChannel
 
-    /** This receives messages from the cluster. */
+    /** This receives messages. */
     private ReceiveThread instanceReceiveThread
 
     //
@@ -101,7 +102,7 @@ public class APSRabbitMQMessageProvider {
     /**
      * Creates a new APSRabbitMQClusterServiceProvider.
      */
-    public APSRabbitMQMessageProvider() {
+    APSRabbitMQMessageProvider() {
         AMQP.BasicProperties.Builder bob = new AMQP.BasicProperties.Builder()
         this.basicProperties = bob.contentType("application/octet-stream").build()
     }
@@ -153,7 +154,7 @@ public class APSRabbitMQMessageProvider {
 
         if (this.instanceReceiveThread == null) {
             this.instanceReceiveThread = new ReceiveThread(
-                    name: "cluster-receive-thread-" + getName(),
+                    name: "rabbitmq-receive-thread-" + getName(),
                     connectionProvider: this.connectionProvider,
                     instanceConfig: this.instanceConfig,
                     logger: this.logger,
@@ -175,11 +176,11 @@ public class APSRabbitMQMessageProvider {
         }
     }
 
-    public void start() {
+    void start() {
         startReceiveThread()
     }
 
-    public void stop() {
+    void stop() {
         stopReceiveThread()
     }
 

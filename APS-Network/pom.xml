@@ -67,8 +67,6 @@
         <module>APSDefaultDiscoveryServiceProvider</module>
         <module>APSSSHTunnelProvider</module>
         <module>APSVertxEventBusMessagingProvider</module>
-        <module>APSMessageTopicsConfigProvider</module>
-        <module>APSDefaultMessageRouter</module>
         <module>APSVertXProvider</module>
         <module>APSVertxTCPMessagingProvider</module>
     </modules>
