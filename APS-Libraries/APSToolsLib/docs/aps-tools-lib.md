@@ -378,15 +378,15 @@ The _APSActivator_ class has 2 constructors. The default constructor without arg
 
 Since the activator usage will manage and create instances of all annotated classes this will not always work in all situations. One example is web applications where the web container is responsible for creating servlets. If you specifiy APSActivator as an activator for a WAB bundle and then use the annotations in a servlet then APSActivator will have a managed instance of the servlet, but it will not be the same instance as the web contatiner will run.
 
-Therefore APSActivator has another constructor that takes a vararg of instances: `public APSActivator(Object..`.`instances)`. There is also a `public void addManagedInstance(Object instance)` method. These allow you to add an already existing instance to be managed by APSActivator. In addition to the provided existing instances it will still scan the bundle for classes to manage. It will however not double manage any class for which an existing instance of has already been provided. Any annotated class for which existing instances has not been provided will be instantiated by APSActivator.
+Therefore APSActivator has another constructor that takes a vararg of instances: `public APSActivator(Object...``instances)`. There is also a `public void addManagedInstance(Object instance)` method. These allow you to add an already existing instance to be managed by APSActivator. In addition to the provided existing instances it will still scan the bundle for classes to manage. It will however not double manage any class for which an existing instance of has already been provided. Any annotated class for which existing instances has not been provided will be instantiated by APSActivator.
 
 __Please note__ that if you create an instance of APSActivator in a servlet and provide the servlet instance to it and start it (you still need to do _start(BundleContext)_ and _stop(BundleContext)_ when used this way!), then you need to catch the close of the servlet and do _stop_ then.
 
 There are 2 support classes:
 
-* [APSVaadinWebTools]: APSVaadinOSGiApplication - This is subclassed by your Vaading application.
+*  [APSVaadinWebTools]: APSVaadinOSGiApplication - This is subclassed by your Vaading application.
 
-* [APSWebTools]: APSOSGiSupport - You create an instance of this in a servlet and let your servlet implement the _APSOSGiSupportCallbacks_ interface which is then passed to the constructor of APSOSGiSupport.
+*  [APSWebTools]: APSOSGiSupport - You create an instance of this in a servlet and let your servlet implement the _APSOSGiSupportCallbacks_ interface which is then passed to the constructor of APSOSGiSupport.
 
 Both of these creates and manages an APSActivator internally and catches shutdown to take it down. They also provide other utilities like providing the BundleContext. See _APSWebTools_ for more information.
 
@@ -453,9 +453,9 @@ There is one interface:
 
 that have 2 implementations:
 
-* IntID - Produces int ids.
+*  IntID - Produces int ids.
 
-* UUID - Produces java.util.UUID Ids.
+*  UUID - Produces java.util.UUID Ids.
 
 ## Javadoc
 

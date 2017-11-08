@@ -153,7 +153,7 @@ class MapJsonDocValidator {
     // Properties
     //
 
-    /** A valid structure to validate agains. */
+    /** A valid structure to validate against. */
     Map<String, Object> validStructure
 
     //

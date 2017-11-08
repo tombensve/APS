@@ -476,7 +476,7 @@
       Since the activator usage will manage and create instances of all annotated classes this will not always work in all situations. One example is web applications where the web container is responsible for creating servlets. If you specifiy APSActivator as an activator for a WAB bundle and then use the annotations in a servlet then APSActivator will have a managed instance of the servlet, but it will not be the same instance as the web contatiner will run.      
     </p>
     <p>
-      Therefore APSActivator has another constructor that takes a vararg of instances: <code>public APSActivator(Object..</code>.<code> instances)</code>. There is also a <code>public void addManagedInstance(Object instance)</code> method. These allow you to add an already existing instance to be managed by APSActivator. In addition to the provided existing instances it will still scan the bundle for classes to manage. It will however not double manage any class for which an existing instance of has already been provided. Any annotated class for which existing instances has not been provided will be instantiated by APSActivator.      
+      Therefore APSActivator has another constructor that takes a vararg of instances: <code>public APSActivator(Object...</code><code> instances)</code>. There is also a <code>public void addManagedInstance(Object instance)</code> method. These allow you to add an already existing instance to be managed by APSActivator. In addition to the provided existing instances it will still scan the bundle for classes to manage. It will however not double manage any class for which an existing instance of has already been provided. Any annotated class for which existing instances has not been provided will be instantiated by APSActivator.      
     </p>
     <p>
       <strong>Please note</strong> that if you create an instance of APSActivator in a servlet and provide the servlet instance to it and start it (you still need to do <em>start(BundleContext)</em> and <em>stop(BundleContext)</em> when used this way!), then you need to catch the close of the servlet and do <em>stop</em> then.      
@@ -487,12 +487,12 @@
     <ul>
       <li>
         <p>
-          [APSVaadinWebTools]: APSVaadinOSGiApplication - This is subclassed by your Vaading application.          
+           [APSVaadinWebTools]: APSVaadinOSGiApplication - This is subclassed by your Vaading application.          
         </p>
       </li>
       <li>
         <p>
-          [APSWebTools]: APSOSGiSupport - You create an instance of this in a servlet and let your servlet implement the <em>APSOSGiSupportCallbacks</em> interface which is then passed to the constructor of APSOSGiSupport.          
+           [APSWebTools]: APSOSGiSupport - You create an instance of this in a servlet and let your servlet implement the <em>APSOSGiSupportCallbacks</em> interface which is then passed to the constructor of APSOSGiSupport.          
         </p>
       </li>
     </ul>
@@ -579,12 +579,12 @@
     <ul>
       <li>
         <p>
-          IntID - Produces int ids.          
+           IntID - Produces int ids.          
         </p>
       </li>
       <li>
         <p>
-          UUID - Produces java.util.UUID Ids.          
+           UUID - Produces java.util.UUID Ids.          
         </p>
       </li>
     </ul>

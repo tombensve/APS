@@ -9,8 +9,10 @@ import org.junit.Test
 class MapJsonDocValidatorTest {
 
     private Map<String, Object> schema = [
-            header_1: [
-                    type_1      : "service",
+            "meta/header": "meta", // Ignored ----+
+            header_1: [                     //    |
+                    type_1      : "service",//    V
+                    "meta/type" : "metadata", // any schema key not ending with "_[01]" is ignored! Allows for adding own metadata.
                     address_1   : "?aps\\.admin\\..*",
                     classifier_1: "?public|private"
             ],
