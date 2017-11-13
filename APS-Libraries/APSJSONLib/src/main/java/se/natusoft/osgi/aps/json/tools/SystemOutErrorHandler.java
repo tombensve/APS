@@ -40,7 +40,7 @@
  */
 package se.natusoft.osgi.aps.json.tools;
 
-import se.natusoft.osgi.aps.json.JSONErrorHandler;
+import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
 
 /**
  * A simple implementation of _JSONErrorHandler_ that simply displays messages on System.out

@@ -35,7 +35,7 @@ public class JSONMapTest extends OSGIServiceTestTools {
                 props.setProperty("desc", "For testing Map and properties to JSONObject.");
                 props.setProperty("qaz", "wsx");
 
-                Map<String, Serializable> inMap = new HashMap<>();
+                Map<String, Object> inMap = new HashMap<>();
                 inMap.put("action", "Test");
                 inMap.put("data", props);
 

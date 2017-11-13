@@ -70,7 +70,6 @@
 
         <!-- The bundle packages to export. -->
         <osgi.export.package>
-            se.natusoft.osgi.aps.codedoc;version="${project.version}",
             se.natusoft.osgi.aps.annotations;version="${project.version}",
             se.natusoft.osgi.aps.exceptions;version="${project.version}",
             se.natusoft.osgi.aps.api;version="${project.version}",
@@ -82,11 +81,7 @@
             se.natusoft.osgi.aps.api.core.platform.model;version="${project.version}",
             se.natusoft.osgi.aps.api.core.advice.service;version="${project.version}",
             se.natusoft.osgi.aps.api.core.config;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.config.annotation;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.config.event;version="${project.version}",
             se.natusoft.osgi.aps.api.core.config.model;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.config.model.admin;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.config.model.test;version="${project.version}",
             se.natusoft.osgi.aps.api.core.config.service;version="${project.version}",
             se.natusoft.osgi.aps.api.core.config.util;version="${project.version}",
             se.natusoft.osgi.aps.api.core.content;version="${project.version}",
@@ -122,6 +117,7 @@
             se.natusoft.osgi.aps.api.net.tcpip;version="${project.version}",
             se.natusoft.osgi.aps.api.net.util;version="${project.version}",
             se.natusoft.osgi.aps.api.pubcon;version="${project.version}",
+            se.natusoft.osgi.aps.api.util;version="${project.version}",
             se.natusoft.osgi.aps.api.web.config;version="${project.version}",
             se.natusoft.osgi.aps.constants;version="${project.version}",
             se.natusoft.osgi.aps.util;version="${project.version}"

@@ -33,7 +33,7 @@
  */
 package se.natusoft.osgi.aps.net.messaging.models.config;
 
-import se.natusoft.osgi.aps.api.core.config.model.APSConfigList;
+import se.natusoft.osgi.aps.api.core.configold.model.APSConfigList;
 
 import java.util.Iterator;
 import java.util.LinkedList;

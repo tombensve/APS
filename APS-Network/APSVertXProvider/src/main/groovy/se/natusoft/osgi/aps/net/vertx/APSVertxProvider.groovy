@@ -52,10 +52,11 @@ import org.osgi.framework.ServiceReference
 import se.natusoft.docutations.Important
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.NotUsed
+import se.natusoft.osgi.aps.api.pubcon.APSConsumer
 import se.natusoft.osgi.aps.constants.APS
 
 import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
-//import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
+//import se.natusoft.osgi.aps.net.vertx.configold.VertxConfig
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.APSServiceTracker
 import se.natusoft.osgi.aps.tools.annotation.activator.*
@@ -84,7 +85,7 @@ import static se.natusoft.osgi.aps.tools.util.StaticUtils.runWithContextClassLoa
 )
 @CompileStatic
 @TypeChecked
-class APSVertxProvider extends VertxConsumer implements Consumer<Vertx>, APSVertxService {
+class APSVertxProvider extends VertxConsumer implements APSConsumer<Vertx>, APSVertxService {
 
     /**
      * This is stored in the map of named instances.
@@ -125,7 +126,7 @@ class APSVertxProvider extends VertxConsumer implements Consumer<Vertx>, APSVert
      * call you!
      */
     @OSGiService( additionalSearchCriteria = "(consumed=vertx)" )
-    private APSServiceTracker<Consumer<Vertx>> apsVertxConsumers
+    private APSServiceTracker<APSConsumer<Vertx>> apsVertxConsumers
 
     /**
      * This associates a name with each Vertx instance. This is to allow multiple clients to share the same
@@ -169,7 +170,7 @@ class APSVertxProvider extends VertxConsumer implements Consumer<Vertx>, APSVert
     private Map<ServiceReference, String> svcRefNamedInst = new ConcurrentHashMap<>()
 
     /**
-     * Temporary config handling until the APS config overhaul.
+     * Temporary configold handling until the APS configold overhaul.
      */
     private def config = [
             vertx_http_service_default           : 9088,
@@ -327,7 +328,7 @@ class APSVertxProvider extends VertxConsumer implements Consumer<Vertx>, APSVert
         if ( httpServiceName != null ) {
             // Hmm ... "vertx_http_service_${httpServiceName}" fails here! Null gets returned for a valid name!
             // Not even forcing a GString helps:
-            // Integer port = this.config["""vertx_http_service_${httpServiceName}"""] as Integer
+            // Integer port = this.configold["""vertx_http_service_${httpServiceName}"""] as Integer
             Integer port = this.config[ "vertx_http_service_" + httpServiceName ] as Integer
 
             if ( port != null ) {
@@ -361,7 +362,7 @@ class APSVertxProvider extends VertxConsumer implements Consumer<Vertx>, APSVert
         else {
             this.logger.error( "No HTTP service configuration name provided! The consumer must publish its " +
                     "service with the property specified by APSVertxService.HTTP_SERVICE_NAME containing a " +
-                    "config entry name to use for getting a port to serve on." )
+                    "configold entry name to use for getting a port to serve on." )
         }
     }
 

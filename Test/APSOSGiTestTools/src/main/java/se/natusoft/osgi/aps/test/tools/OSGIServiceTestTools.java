@@ -39,8 +39,8 @@ package se.natusoft.osgi.aps.test.tools;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import se.natusoft.osgi.aps.api.core.config.APSConfig;
-import se.natusoft.osgi.aps.api.core.config.ManagedConfig;
+import se.natusoft.osgi.aps.api.core.configold.APSConfig;
+import se.natusoft.osgi.aps.api.core.configold.ManagedConfig;
 import se.natusoft.osgi.aps.test.tools.internal.ServiceRegistry;
 
 import java.io.File;
@@ -357,7 +357,7 @@ public class OSGIServiceTestTools {
 
         /**
          * Supplies a Callable that creates and returns a subclass of APSConfig. If a static ManagedConfig instance
-         * is found in the returned config object then it is setup.
+         * is found in the returned configold object then it is setup.
          *
          * @param config A Callable that should setup configuration and return it.
          * @return itself

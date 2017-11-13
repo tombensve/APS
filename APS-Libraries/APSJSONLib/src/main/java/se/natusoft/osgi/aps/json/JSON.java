@@ -40,6 +40,10 @@
  */
 package se.natusoft.osgi.aps.json;
 
+import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
+import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
+import se.natusoft.osgi.aps.exceptions.APSIOException;
+
 import java.io.*;
 
 /**
@@ -58,13 +62,12 @@ public class JSON {
      * @throws IOException on any IO failures.
      */
     public static JSONValue read(InputStream jsonIn, JSONErrorHandler errorHandler) throws IOException {
-        JSONValue.JSONReader reader = new JSONValue.JSONReader(new PushbackReader(new InputStreamReader(jsonIn, "UTF-8")), errorHandler);
+        JSONValueProvider.JSONReader reader =
+                new JSONValueProvider.JSONReader(new PushbackReader(new InputStreamReader(jsonIn, "UTF-8")), errorHandler);
 
         char c = reader.getChar();
 
-        JSONValue value = JSONValue.resolveAndParseJSONValue(c, reader, errorHandler);
-
-        return value;
+        return JSONValueProvider.resolveAndParseJSONValue(c, reader, errorHandler);
     }
 
     /**
@@ -73,10 +76,10 @@ public class JSON {
      * @param jsonOut The OutputStream to write to.
      * @param value The value to write.
      *
-     * @throws IOException on failure.
+     * @throws APSIOException on failure.
      */
-    public static void write(OutputStream jsonOut, JSONValue value) throws IOException {
-        value.writeJSON(jsonOut);
+    public static void write(OutputStream jsonOut, JSONValue value) throws APSIOException {
+        ((JSONValueProvider)value).writeJSON(jsonOut);
     }
 
     /**
@@ -86,10 +89,10 @@ public class JSON {
      * @param value The value to write.
      * @param compact If true the written JSON is made very compact and hard to read but produce less data.
      *                If false then the output will be larger but readable with indents. Use this when debugging.
-     * @throws IOException
+     * @throws APSIOException on IO problems.
      */
-    public static void write(OutputStream jsonOut, JSONValue value, boolean compact) throws IOException {
-        value.writeJSON(jsonOut, compact);
+    public static void write(OutputStream jsonOut, JSONValue value, boolean compact) throws APSIOException {
+        ((JSONValueProvider)value).writeJSON(jsonOut, compact);
     }
 
 }

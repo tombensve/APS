@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -41,9 +41,6 @@ import org.osgi.service.log.LogService;
 import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService;
-import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
-
-import java.io.IOException;
 
 /**
  * Adds JSON storage support to APSBox. This makes use of the APS JSON APIs.
@@ -181,10 +178,12 @@ public interface APSJSONBox extends APSBox {
             }
 
             @Override
-            public void log(ServiceReference sr, int level, String message) {}
+            public void log(ServiceReference sr, int level, String message) {
+            }
 
             @Override
-            public void log(ServiceReference sr, int level, String message, Throwable exception) {}
+            public void log(ServiceReference sr, int level, String message, Throwable exception) {
+            }
         };
 
         //
@@ -220,12 +219,7 @@ public interface APSJSONBox extends APSBox {
          */
         @Override
         public void setJSONContent(JSONValue jsonValue) {
-            try {
-                setContent(APSJSONService.Tools.toBytes(jsonValue, this.apsjsonService));
-            }
-            catch (IOException ioe) {
-                throw new APSRuntimeException("Failed to convert a JSONValue to bytes!", ioe);
-            }
+            setContent(APSJSONService.Tools.toBytes(jsonValue, this.apsjsonService));
         }
 
         /**
@@ -233,12 +227,7 @@ public interface APSJSONBox extends APSBox {
          */
         @Override
         public JSONValue getJSONContent() {
-            try {
-                return APSJSONService.Tools.fromBytes(getContent(), this.apsjsonService, this);
-            }
-            catch (IOException ioe) {
-                throw new APSRuntimeException("Failed to read bytes as JSON!", ioe);
-            }
+            return APSJSONService.Tools.fromBytes(getContent(), this.apsjsonService, this);
         }
 
         /**

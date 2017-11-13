@@ -36,17 +36,17 @@
  */
 package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.editor;
 
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEditModel;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
+import se.natusoft.osgi.aps.api.core.configold.model.admin.APSConfigEditModel;
+import se.natusoft.osgi.aps.api.core.configold.model.admin.APSConfigReference;
+import se.natusoft.osgi.aps.api.core.configold.model.admin.APSConfigValueEditModel;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import static se.natusoft.osgi.aps.api.core.config.util.APSConfigStaticUtils.refToEditModel;
+import static se.natusoft.osgi.aps.api.core.configold.util.APSConfigStaticUtils.refToEditModel;
 
 /**
- * Manages the current config node.
+ * Manages the current configold node.
  */
 @SuppressWarnings("UnusedDeclaration")
 public class ConfigNode {
@@ -57,7 +57,7 @@ public class ConfigNode {
     /** The current node. */
     private APSConfigEditModel currentNode = null;
 
-    /** The current config instance reference. */
+    /** The current configold instance reference. */
     private APSConfigReference currentRef = null;
 
     /** The editable node values of this node. */
@@ -79,7 +79,7 @@ public class ConfigNode {
     /**
      * Creates a new ConfigNavigator.
      *
-     * @param rootRef The reference to the root node of the config tree.
+     * @param rootRef The reference to the root node of the configold tree.
      * @param indexed The indexed state of this node.
      */
     public ConfigNode(APSConfigReference rootRef, boolean indexed) {
@@ -182,14 +182,14 @@ public class ConfigNode {
     }
 
     /**
-     * @return The config id of the current node.
+     * @return The configold id of the current node.
      */
     public String getNodeConfigId() {
         return this.currentNode.getConfigId();
     }
 
     /**
-     * @return The last part of the node config id.
+     * @return The last part of the node configold id.
      */
     public String getSimpleNodeConfigId() {
         String configId = getNodeConfigId();

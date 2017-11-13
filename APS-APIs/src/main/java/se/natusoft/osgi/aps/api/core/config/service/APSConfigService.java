@@ -1,108 +1,55 @@
-/*
- *
- * PROJECT
- *     Name
- *         APS APIs
- *     
- *     Code Version
- *         1.0.0
- *     
- *     Description
- *         Provides the APIs for the application platform services.
- *         
- * COPYRIGHTS
- *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
- * LICENSE
- *     Apache 2.0 (Open Source)
- *     
- *     Licensed under the Apache License, Version 2.0 (the "License");
- *     you may not use this file except in compliance with the License.
- *     You may obtain a copy of the License at
- *     
- *       http://www.apache.org/licenses/LICENSE-2.0
- *     
- *     Unless required by applicable law or agreed to in writing, software
- *     distributed under the License is distributed on an "AS IS" BASIS,
- *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *     See the License for the specific language governing permissions and
- *     limitations under the License.
- *     
- * AUTHORS
- *     Tommy Svensson (tommy@natusoft.se)
- *         Changes:
- *         2011-05-15: Created!
- *
- */
 package se.natusoft.osgi.aps.api.core.config.service;
 
-import se.natusoft.osgi.aps.api.core.config.APSConfig;
+import se.natusoft.osgi.aps.api.core.config.model.APSConfig;
 
+import java.util.List;
 
 /**
- * This defines the Application-Platform-Services configuration service API.
+ * # APSConfigService
  *
- * Please note that this will always return the configuration for the currently
- * selected environment (which only _APSConfigAdminService_ can change).
+ * To use this service a bundle must have 2 manifest entries:
  *
- * Please note that if you let your configuration be auto-managed by specifying
- * the "APS-Configs: fully_qualified_name_to_config_class,..." MANIFEST.MF entry
- * then this service does not need to be used.
+ * __APSConfigId:__ my.unique.config.id
+ *
+ * __APSConfigSchema:__ The path to configuration schema .json file within the bundle.
+ *
+ * Implementations of this service need to use the OSGi extender pattern and look at deployed
+ * bundles and the above 2 manifest entries.
+ *
+ * - The config id data should be persisted somewhere, and if no such exists it should be created.
+ * - For each config id the configuration should be loaded if available since before and be provided in a
+ *   _APSConfig_ structure.
+ * - The possibly loaded configuration should be passed to all services implementing APSConsumer\<APSConfig\>
+ *   and having a "aps.config.id: _configid_" property in the published service that matches the specific
+ *   config id. APSServiceTracker can help with that.
+ *
  */
 public interface APSConfigService {
 
-    /**
-     * Registers a configuration Class with the configuration service. The passed
-     * class must extend APSConfig and be annotated with _@APSConfigDescription_. Values
-     * must be public fields annotated with _@APSConfigItemDescription_ and of one of the
-     * following types:
-     *
-     *  * _APSConfigValue_ - A simple value.
-     *  * _APSConfigValueList_ - A list of values.
-     *  * _? extends APSConfig_ - Another configuration class following the same rules as this one.
-     *  * _APSConfigList\<? extends APSConfig\>_ - A list of another configuration class.
-     *
-     * The values of the configuration are editable with the _APSConfigAdminService_
-     * which will also persist the configuration values.
-     *
-     * If the version of the config Class is new (first time registered) and the prevVersion has been provided
-     * then the configuration values of the previous version will be loaded and then saved with this version.
-     * Any new values will ofcourse have the default values.
-     *
-     * This should be called on bundle start. It will load the configuration from persistent store
-     * (when such is available) into memory for fast access. A configuration needs to be edited
-     * through _APSConfigAdminService_ before it is persisted. Before that only the default values will
-     * be returned.
-     *
-     * Please also call _unregisterConfiguration(...)_ on bundle stop!
-     *
-     * @param configClass The config class to register.
-     * @param forService If true then this configuration is for a service and will also be registered in the
-     *                   standard OSGi configuration service. (Note: This was a bad idea and is quite useless!)
-     *
-     * @throws APSConfigException on bad configClass interface.
-     */
-    void registerConfiguration(Class<? extends APSConfig> configClass, boolean forService) throws APSConfigException;
+    String APS_CONFIG_ID = "APS-ConfigId";
+    String APS_CONFIG_SCHEMA = "APS-ConfigSchema";
+    String APS_CONFIG_DEFAULTS = "APS-ConfigDefaults";
 
     /**
-     * This tells the _APSConfigService_ that the specified configuration is no longer actively used by anyone and will be
-     * removed from memory.
-     *
-     * This should always be done on bundle stop.
-     *
-     * @param configClass The config Class for the configuration.
+     * @return all registered configuration ids.
      */
-    void unregisterConfiguration(Class<? extends APSConfig> configClass);
+    List<String> getAllConfigIds();
 
     /**
-     * Returns the configuration for the specified configuration Class.
+     * @return The configuration for the specified config id. This can be passed as is
+     * to APSGroovyToolsLib/MapJsonDocValidator toValidate argument.
      *
-     * @param <Config> The configuration type which must be a subclass of APSConfig.
-     * @param configClass The configuration Class to get the configuration for.
-     *
-     * @return An populated config Class instance.
-     *
-     * @throws APSConfigException on failure to get configuration.
+     * @param configId The configuration id for the config to get.
      */
-    <Config extends APSConfig> Config getConfiguration(Class<Config> configClass) throws APSConfigException;
+    APSConfig getConfig(String configId);
+
+    /**
+     * Valdiates a config for a configuration id. This is intended for GUI configuration editors.
+     *
+     * @param configId The id of the configuration to validate.
+     * @param config The actual configuration to validate.
+     *
+     * @return true if OK, false otherwise.
+     */
+    boolean validateConfig(String configId, APSConfig config);
 }

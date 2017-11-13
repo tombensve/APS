@@ -33,7 +33,7 @@
  */
 package se.natusoft.osgi.aps.net.messaging.models.config;
 
-import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
-import se.natusoft.osgi.aps.api.core.config.model.APSConfigValueList;
+import se.natusoft.osgi.aps.api.core.configold.model.APSConfigValue;
+import se.natusoft.osgi.aps.api.core.configold.model.APSConfigValueList;
 
 public class TestConfigValueList extends TestConfigList<APSConfigValue>  implements APSConfigValueList {}

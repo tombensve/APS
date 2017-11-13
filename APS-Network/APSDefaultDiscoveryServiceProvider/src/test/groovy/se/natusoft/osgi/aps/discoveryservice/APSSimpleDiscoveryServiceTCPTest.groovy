@@ -5,7 +5,6 @@ import groovy.transform.TypeChecked
 import org.junit.Test
 import org.osgi.framework.BundleContext
 import org.osgi.framework.Constants
-import se.natusoft.osgi.aps.api.core.config.model.APSConfigValueList
 import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService
 import se.natusoft.osgi.aps.discoveryservice.config.DiscoveryConfig
 import se.natusoft.osgi.aps.json.APSJSONServiceActivator
@@ -17,7 +16,6 @@ import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator
 import se.natusoft.osgi.aps.tools.APSServiceTracker
-import se.natusoft.osgi.aps.tools.tracker.WithService
 
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue

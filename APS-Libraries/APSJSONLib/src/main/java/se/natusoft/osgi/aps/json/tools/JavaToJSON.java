@@ -50,6 +50,7 @@ import java.util.*;
 /**
  * Takes a JavaBean and produces a JSONObject.
  */
+@SuppressWarnings("WeakerAccess")
 public class JavaToJSON {
 
     /**
@@ -61,8 +62,8 @@ public class JavaToJSON {
      *
      * @throws JSONConvertionException on converting failure.
      */
-    public static JSONObject convertObject(Object javaBean) throws JSONConvertionException {
-        return convertObject(new JSONObject(), javaBean);
+    public static JSONObjectProvider convertObject(Object javaBean) throws JSONConvertionException {
+        return convertObject(new JSONObjectProvider(), javaBean);
     }
 
     /**
@@ -75,11 +76,11 @@ public class JavaToJSON {
      *
      * @throws JSONConvertionException on converting failure.
      */
-    public static JSONObject convertObject(JSONObject jsonObject, Object javaBean) throws JSONConvertionException {
+    public static JSONObjectProvider convertObject(JSONObjectProvider jsonObject, Object javaBean) throws JSONConvertionException {
         try {
-            JSONObject obj = jsonObject;
+            JSONObjectProvider obj = jsonObject;
             if (obj == null) {
-                obj = new JSONObject();
+                obj = new JSONObjectProvider();
             }
 
             if (Dictionary.class.isAssignableFrom(javaBean.getClass())) {
@@ -87,12 +88,12 @@ public class JavaToJSON {
                 while (dictEnum.hasMoreElements()) {
                     Object key = dictEnum.nextElement();
                     String value = ((Dictionary) javaBean).get(key).toString();
-                    obj.addProperty(key.toString(), new JSONString(value));
+                    obj.addValue(key.toString(), new JSONStringProvider(value));
                 }
             } else if (Map.class.isAssignableFrom(javaBean.getClass())) {
                 for (Object key : ((Map) javaBean).keySet()) {
                     Object value = ((Map) javaBean).get(key);
-                    obj.addProperty(key.toString(), convertValue(value));
+                    obj.addValue(key.toString(), convertValue(value));
                 }
             } else {
                 for (Method method : javaBean.getClass().getMethods()) {
@@ -106,7 +107,7 @@ public class JavaToJSON {
                                                     )
                                     )
                             ) {
-                        Object value = null;
+                        Object value;
                         String prop = null;
 
                         if (method.getName().startsWith("get")) {
@@ -126,7 +127,7 @@ public class JavaToJSON {
                             value = e.getMessage();
                         }
 
-                        obj.addProperty(prop, convertValue(value));
+                        obj.addValue(prop, convertValue(value));
                     }
                 }
             }
@@ -146,14 +147,14 @@ public class JavaToJSON {
      *
      * @return The converted JSONValue.
      */
-    public static JSONValue convertValue(Object value) {
-        JSONValue json = null;
+    public static JSONValueProvider convertValue(Object value) {
+        JSONValueProvider json;
 
         if (value == null) {
-            json = new JSONNull();
+            json = new JSONNullProvider();
         }
         else if (Date.class.isAssignableFrom(value.getClass()) || Calendar.class.isAssignableFrom(value.getClass()) || Temporal.class.isAssignableFrom(value.getClass())) {
-            json = new JSONString(value.toString());
+            json = new JSONStringProvider(value.toString());
         }
         else if (
                 Number.class.isAssignableFrom(value.getClass()) ||
@@ -164,19 +165,19 @@ public class JavaToJSON {
                 long.class.isAssignableFrom(value.getClass()) ||
                 short.class.isAssignableFrom(value.getClass())
                 ) {
-            json = new JSONNumber((Number)value);
+            json = new JSONNumberProvider((Number)value);
         }
         else if (String.class.isAssignableFrom(value.getClass())) {
-            json = new JSONString((String)value);
+            json = new JSONStringProvider((String)value);
         }
         else if (boolean.class.isAssignableFrom(value.getClass()) || Boolean.class.isAssignableFrom(value.getClass())) {
-            json = new JSONBoolean((Boolean)value);
+            json = new JSONBooleanProvider((Boolean)value);
         }
         else if (Date.class.isAssignableFrom(value.getClass())) {
-            json = new JSONNumber(((Date)value).getTime());
+            json = new JSONNumberProvider(((Date)value).getTime());
         }
         else if (value.getClass().isArray()) {
-            JSONArray array = new JSONArray();
+            JSONArrayProvider array = new JSONArrayProvider();
             int length = Array.getLength(value);
             for (int i = 0; i < length; i++) {
                 Object aValue = Array.get(value, i);
@@ -185,14 +186,14 @@ public class JavaToJSON {
             json = array;
         }
         else if (Collection.class.isAssignableFrom(value.getClass())) {
-            JSONArray array = new JSONArray();
+            JSONArrayProvider array = new JSONArrayProvider();
             for (Object cValue : (Collection)value) {
                 array.addValue(convertValue(cValue));
             }
             json = array;
         }
         else if (value.getClass().isEnum()) {
-            json = new JSONString(((Enum)value).name());
+            json = new JSONStringProvider(((Enum)value).name());
         }
         else { // Treat as object
             json = convertObject(value);

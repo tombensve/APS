@@ -159,7 +159,7 @@
                     </supportedProjectTypes>
                     <archive>
                         <manifestEntries>
-                            <!--<APS-Configs>${aps.config.classes}</APS-Configs>-->
+                            <!--<APS-Configs>${aps.configold.classes}</APS-Configs>-->
                             <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
                         </manifestEntries>
                     </archive>

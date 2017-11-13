@@ -37,23 +37,53 @@
  */
 package se.natusoft.osgi.aps.json.service;
 
+import org.osgi.framework.Constants;
+import se.natusoft.osgi.aps.api.misc.json.JSONEOFException;
 import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
 import se.natusoft.osgi.aps.api.misc.json.model.*;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
-import se.natusoft.osgi.aps.json.JSON;
-import se.natusoft.osgi.aps.json.JSONEOFException;
-import se.natusoft.osgi.aps.json.model.*;
+import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService;
+import se.natusoft.osgi.aps.constants.APS;
+import se.natusoft.osgi.aps.exceptions.APSIOException;
+import se.natusoft.osgi.aps.json.*;
+import se.natusoft.osgi.aps.json.tools.JSONMapConv;
 import se.natusoft.osgi.aps.json.tools.JSONToJava;
 import se.natusoft.osgi.aps.json.tools.JavaToJSON;
+import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty;
+import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceInstance;
+import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 /**
- * Provides an implementation of JSONExtendedService.
+ * Provides an implementation of APSJSONService & APSJSONExtendedService.
  */
 @SuppressWarnings("unchecked")
+@OSGiServiceProvider(
+        instances = {
+                @OSGiServiceInstance(
+                        serviceAPIs = APSJSONService.class,
+                        properties = {
+                                @OSGiProperty( name = Constants.SERVICE_PID, value = "APSJSONService"),
+                                @OSGiProperty( name = APS.Service.Provider, value = "aps-json-service-provider" ),
+                                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Misc ),
+                                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.JSON )
+                        }
+                ),
+                @OSGiServiceInstance(
+                        serviceAPIs = APSJSONExtendedService.class,
+                        properties = {
+                                @OSGiProperty( name = Constants.SERVICE_PID, value = "APSJSONExtendedService"),
+                                @OSGiProperty( name = APS.Service.Provider, value = "aps-json-service-provider" ),
+                                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Misc ),
+                                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.JSON )
+                        }
+                )
+        }
+)
 public class APSJSONServiceProvider implements APSJSONExtendedService {
     //
     // Private Members
@@ -77,7 +107,7 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      */
     @Override
     public JSONObject createJSONObject() {
-        return new JSONObjectModel();
+        return new JSONObjectProvider();
     }
 
     /**
@@ -87,7 +117,7 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      */
     @Override
     public JSONString createJSONString(String value) {
-        return new JSONStringModel(value);
+        return new JSONStringProvider(value);
     }
 
     /**
@@ -97,7 +127,7 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      */
     @Override
     public JSONNumber createJSONNumber(Number value) {
-        return new JSONNumberModel(value);
+        return new JSONNumberProvider(value);
     }
 
     /**
@@ -105,7 +135,7 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      */
     @Override
     public JSONNull createJSONNull() {
-        return new JSONNullModel();
+        return new JSONNullProvider();
     }
 
     /**
@@ -115,7 +145,7 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      */
     @Override
     public JSONBoolean createJSONBoolean(Boolean value) {
-        return new JSONBooleanModel(value);
+        return new JSONBooleanProvider(value);
     }
 
     /**
@@ -123,7 +153,7 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      */
     @Override
     public JSONArray createJSONArray() {
-        return new JSONArrayModel();
+        return new JSONArrayProvider();
     }
 
     /**
@@ -134,40 +164,32 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      *
      * @return A JSONObject.
      *
-     * @throws IOException on IO Failure.
+     * @throws APSIOException on IO Failure.
      */
     @Override
-    public JSONValue readJSON(InputStream in, JSONErrorHandler errorHandler) throws IOException {
-        JSONErrorHandlerProxy errorHandlerProxy = new JSONErrorHandlerProxy(errorHandler);
+    public JSONValue readJSON(InputStream in, JSONErrorHandler errorHandler) throws APSIOException {
         try {
-            se.natusoft.osgi.aps.json.JSONValue jv = JSON.read(in, errorHandlerProxy);
-
-            JSONValue value = null;
-
-            if (jv instanceof se.natusoft.osgi.aps.json.JSONArray) {
-                value = new JSONArrayModel((se.natusoft.osgi.aps.json.JSONArray)jv);
-            }
-            else if (jv instanceof se.natusoft.osgi.aps.json.JSONObject) {
-                value = new JSONObjectModel((se.natusoft.osgi.aps.json.JSONObject)jv);
-            }
-            else if (jv instanceof se.natusoft.osgi.aps.json.JSONBoolean) {
-                value = new JSONBooleanModel((se.natusoft.osgi.aps.json.JSONBoolean)jv);
-            }
-            else if (jv instanceof se.natusoft.osgi.aps.json.JSONNull) {
-                value = new JSONNullModel((se.natusoft.osgi.aps.json.JSONNull)jv);
-            }
-            else if (jv instanceof se.natusoft.osgi.aps.json.JSONNumber) {
-                value = new JSONNumberModel((se.natusoft.osgi.aps.json.JSONNumber)jv);
-            }
-            else if (jv instanceof se.natusoft.osgi.aps.json.JSONString) {
-                value = new JSONStringModel((se.natusoft.osgi.aps.json.JSONString)jv);
-            }
-
-            return value;
+            return JSON.read(in, errorHandler);
         }
         catch (JSONEOFException eofe) {
             throw new se.natusoft.osgi.aps.api.misc.json.JSONEOFException();
         }
+        catch (IOException ioe) {
+            throw new APSIOException(ioe.getMessage(), ioe);
+        }
+    }
+
+    /**
+     * Reads JSON from an InputStream producing a `Map<String, Object>`.
+     *
+     * @param in           The stream to read from. *Must* be a JSON object! Does not support a sub JSON structure.
+     * @param errorHandler An optional error handler for parsing errors. This can be null in which case all parsing errors are ignored.
+     * @return A Map of read JSON data.
+     * @throws APSIOException on IO failure.
+     */
+    @Override
+    public Map<String, Object> readJSONObject(InputStream in, JSONErrorHandler errorHandler) throws APSIOException {
+        return JSONMapConv.jsonObjectToMap(in, errorHandler);
     }
 
     /**
@@ -176,11 +198,11 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      * @param out       The stream to write to.
      * @param jsonValue The value to write.
      *
-     * @throws java.io.IOException on IO failure.
+     * @throws APSIOException on IO failure.
      */
     @Override
-    public void writeJSON(OutputStream out, JSONValue jsonValue) throws IOException {
-        JSON.write(out, ((JSONModel<se.natusoft.osgi.aps.json.JSONValue>)jsonValue).getAggregated());
+    public void writeJSON(OutputStream out, JSONValue jsonValue) throws APSIOException {
+        JSON.write(out, jsonValue);
     }
 
     /**
@@ -190,11 +212,47 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      * @param jsonValue The value to write.
      * @param compact   If true then the output is compact and hard to read, if false then the output is easy to read and larger with indents.
      *
-     * @throws java.io.IOException on IO failure.
+     * @throws APSIOException on IO failure.
      */
     @Override
-    public void writeJSON(OutputStream out, JSONValue jsonValue, boolean compact) throws IOException {
-        JSON.write(out, ((JSONModel<se.natusoft.osgi.aps.json.JSONValue>)jsonValue).getAggregated(), compact);
+    public void writeJSON(OutputStream out, JSONValue jsonValue, boolean compact) throws APSIOException {
+        JSON.write(out, jsonValue, compact);
+    }
+
+    /**
+     * Writes a JSON _Map_ to an _OutputStream_.
+     *
+     * @param out The output stream to write to.
+     * @param jsonMap The Map to write.
+     *
+     * @throws APSIOException on IO failure.
+     */
+    public void writeJSONObject(OutputStream out, Map<String, Object> jsonMap) throws APSIOException {
+        JSONMapConv.mapToJSONObject(jsonMap, out);
+    }
+
+    /**
+     * Converts a JSONObject into a `Map<String, Object>`. This supports working with a JSON structure using a standard
+     * java.util.Map. This works well in languages like Groovy.
+     *
+     * @param jsonObject The JSONObject to convert.
+     * @return A Map containing the same structure as the JSONObject.
+     */
+    @Override
+    public Map<String, Object> toMap(JSONObject jsonObject) {
+        return JSONMapConv.jsonObjectToMap(jsonObject);
+    }
+
+    /**
+     * Converts a `Map<String, Object>` into a JSONObject. This supports working with a JSON structure using a standard
+     * java.util.Map. This works well in languages like Groovy.
+     *
+     * @param jsonMap The map to convert. Expects a JSON compatible structure!
+     * @return The converted to JSONObject.
+     */
+    @Override
+    public JSONObject toJSONObject(Map<String, Object> jsonMap) {
+        return JSONMapConv.mapToJSONObject(jsonMap);
     }
 
     //
@@ -211,13 +269,12 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      *
      * @return An instance of the specified bean type.
      *
-     * @throws IOException on IO failure.
+     * @throws APSIOException on IO failure.
      */
     @Override
-    public <T> T readJSONToBean(InputStream in, JSONErrorHandler errorHandler, Class<T> beanType) throws IOException {
+    public <T> T readJSONToBean(InputStream in, JSONErrorHandler errorHandler, Class<T> beanType) throws APSIOException {
         try {
-            JSONErrorHandlerProxy errorHandlerProxy = new JSONErrorHandlerProxy(errorHandler);
-            se.natusoft.osgi.aps.json.JSONObject obj = new se.natusoft.osgi.aps.json.JSONObject(errorHandlerProxy);
+            JSONObjectProvider obj = new JSONObjectProvider(errorHandler);
             obj.readJSON(in);
             return JSONToJava.convert(obj, beanType);
         }
@@ -232,10 +289,10 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      * @param out          The OutputStream to write to.
      * @param bean         The JavaBean to write.
      *
-     * @throws IOException on IO failure.
+     * @throws APSIOException on IO failure.
      */
     @Override
-    public void writeJSONFromBean(OutputStream out, Object bean) throws IOException {
+    public void writeJSONFromBean(OutputStream out, Object bean) throws APSIOException {
         JavaToJSON.convertObject(bean).writeJSON(out);
     }
 
@@ -250,7 +307,7 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      */
     @Override
     public <T> T jsonToJava(JSONValue jsonValue, Class<T> javaType) {
-        return JSONToJava.convert(((JSONModel<se.natusoft.osgi.aps.json.JSONValue>)jsonValue).getAggregated(), javaType);
+        return JSONToJava.convert(jsonValue, javaType);
     }
 
     /**
@@ -262,7 +319,7 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      */
     @Override
     public JSONValue javaToJSON(Object java) {
-        return JSONModel.convertLibValue(JavaToJSON.convertValue(java));
+        return JavaToJSON.convertValue(java);
     }
 
 }

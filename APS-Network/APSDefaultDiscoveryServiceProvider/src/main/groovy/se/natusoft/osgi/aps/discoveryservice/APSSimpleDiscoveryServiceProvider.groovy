@@ -5,7 +5,7 @@ import groovy.transform.TypeChecked
 import org.osgi.framework.Filter
 import org.osgi.framework.FrameworkUtil
 import se.natusoft.docutations.Implements
-import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue
+import se.natusoft.osgi.aps.api.core.configold.model.APSConfigValue
 import se.natusoft.osgi.aps.api.net.discovery.exception.APSDiscoveryException
 import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService
 import se.natusoft.osgi.aps.constants.APS
@@ -16,7 +16,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 import java.util.concurrent.TimeUnit
 
 /**
- * Provides an implementation of APSSimpleDiscoveryService that uses Multicast, TCP, and manual config entries
+ * Provides an implementation of APSSimpleDiscoveryService that uses Multicast, TCP, and manual configold entries
  * to receive and announce services. What is in the end supported depends on how it is configured.
  */
 @OSGiServiceProvider(properties = [

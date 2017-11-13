@@ -161,6 +161,22 @@ class MapJsonDocValidator {
     //
 
     /**
+     * This is for Java users which can't do a property constructor.
+     *
+     * Use:
+     *
+     *       new MapJsonDocValidator().validStructure(schema).validate(toValidate);
+     *
+     * @param schema The schema to use.
+     *
+     * @return this.
+     */
+    MapJsonDocValidator validStructure(Map<String, Object> schema) {
+        this.validStructure = schema
+        return this
+    }
+
+    /**
      * Validates a Map structure against the structural definition of this object.
      *
      * @param toValidate The map to validate.

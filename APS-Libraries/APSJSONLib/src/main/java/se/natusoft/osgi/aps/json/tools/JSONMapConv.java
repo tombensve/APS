@@ -1,5 +1,7 @@
 package se.natusoft.osgi.aps.json.tools;
 
+import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
+import se.natusoft.osgi.aps.exceptions.APSIOException;
 import se.natusoft.osgi.aps.json.*;
 
 import java.io.*;
@@ -23,12 +25,13 @@ public class JSONMapConv {
      * This takes a String containing a JSON object and returns it as a Map.
      *
      * @param json The JSON content to convert to a Map.
-     *
-     * @throws IOException
+     * @throws APSIOException on failure.
      */
-    public static Map<String, Object> jsonObjectToMap(String json) throws IOException {
+    public static Map<String, Object> jsonObjectToMap(String json) throws APSIOException {
         try (ByteArrayInputStream byteIs = new ByteArrayInputStream(json.getBytes("UTF-8"))) {
             return jsonObjectToMap(byteIs);
+        } catch (IOException ioe) {
+            throw new APSIOException(ioe.getMessage(), ioe);
         }
     }
 
@@ -36,13 +39,34 @@ public class JSONMapConv {
      * This takes an InputStream containing a JSON object and returns it as a Map.
      *
      * @param is The InputStream to read.
-     *
-     * @throws IOException
+     * @throws APSIOException on failure.
      */
-    public static Map<String, Object> jsonObjectToMap(InputStream is) throws IOException {
-        JSONObject jsonObject = new JSONObject();
+    @SuppressWarnings("WeakerAccess")
+    public static Map<String, Object> jsonObjectToMap(InputStream is) throws APSIOException {
+        return jsonObjectToMap(is, null);
+    }
+
+    /**
+     * This takes an InputStream containing a JSON object and returns it as a Map.
+     *
+     * @param is The InputStream to read.
+     * @throws APSIOException on failure.
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static Map<String, Object> jsonObjectToMap(InputStream is, JSONErrorHandler errorHandler) throws APSIOException {
+        JSONObjectProvider jsonObject = new JSONObjectProvider(errorHandler);
         jsonObject.readJSON(is);
 
+        return toMap(jsonObject);
+    }
+
+    /**
+     * This takes a JSONObject and returns a Map.
+     *
+     * @param jsonObject The JSONObject to convert to a Map.
+     * @return The converted Map.
+     */
+    public static Map<String, Object> jsonObjectToMap(se.natusoft.osgi.aps.api.misc.json.model.JSONObject jsonObject) {
         return toMap(jsonObject);
     }
 
@@ -51,23 +75,18 @@ public class JSONMapConv {
      *
      * @param value The JSON value to convert.
      */
-    private static Object toJava(JSONValue value) {
-        if (value instanceof JSONObject) {
-            return toMap((JSONObject)value);
-        }
-        else if (value instanceof JSONArray) {
-            return toArray((JSONArray)value);
-        }
-        else if (value instanceof JSONString) {
+    private static Object toJava(se.natusoft.osgi.aps.api.misc.json.model.JSONValue value) {
+        if (value instanceof JSONObjectProvider) {
+            return toMap((se.natusoft.osgi.aps.api.misc.json.model.JSONObject) value);
+        } else if (value instanceof JSONArrayProvider) {
+            return toArray((se.natusoft.osgi.aps.api.misc.json.model.JSONArray) value);
+        } else if (value instanceof JSONStringProvider) {
             return value.toString();
-        }
-        else if (value instanceof JSONNumber) {
-            return ((JSONNumber)value).toNumber();
-        }
-        else if (value instanceof JSONBoolean) {
-            return ((JSONBoolean)value).getAsBoolean();
-        }
-        else if (value instanceof JSONNull) { // Not entirely sure of this ...
+        } else if (value instanceof JSONNumberProvider) {
+            return ((se.natusoft.osgi.aps.api.misc.json.model.JSONNumber) value).toNumber();
+        } else if (value instanceof JSONBooleanProvider) {
+            return ((se.natusoft.osgi.aps.api.misc.json.model.JSONBoolean) value).toBoolean();
+        } else if (value instanceof JSONNullProvider) { // Not entirely sure of this ...
             return null;
         }
 
@@ -79,11 +98,11 @@ public class JSONMapConv {
      *
      * @param jsonObject The JSONObject to convert.
      */
-    private static Map<String, Object> toMap(JSONObject jsonObject) {
+    private static Map<String, Object> toMap(se.natusoft.osgi.aps.api.misc.json.model.JSONObject jsonObject) {
         Map<String, Object> jsonMap = new HashMap<>();
 
-        jsonObject.getPropertyNames().forEach((name) -> {
-            JSONValue value = jsonObject.getProperty(name);
+        jsonObject.getValueNames().forEach((name) -> {
+            se.natusoft.osgi.aps.api.misc.json.model.JSONValue value = jsonObject.getValue(name);
 
             jsonMap.put(name.toString(), toJava(value));
         });
@@ -96,12 +115,10 @@ public class JSONMapConv {
      *
      * @param array The JSONArray to convert.
      */
-    private static Object[] toArray(JSONArray array) {
+    private static Object[] toArray(se.natusoft.osgi.aps.api.misc.json.model.JSONArray array) {
         ArrayList<Object> arrayList = new ArrayList<>();
 
-        array.getAsList().forEach((value) -> {
-            arrayList.add(toJava(value));
-        });
+        array.getAsList().forEach((value) -> arrayList.add(toJava(value)));
 
         return arrayList.toArray();
     }
@@ -111,61 +128,71 @@ public class JSONMapConv {
     //
 
     /**
-     * This takes a Map (as created by jsonObjectToMap(...)) and returns a JSON object.
+     * This takes a Map (as created by jsonObjectToMap(...)) and returns a JSON String.
      *
      * @param map The Map to convert to JSON.
-     *
-     * @throws IOException
+     * @throws APSIOException on I/O failures.
      */
-    public static String mapToJSONObject(Map<String, Object> map) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        mapToJSONObject(map, baos);
-        baos.close();
-        return new String(baos.toByteArray());
+    public static String mapToJSONObjectString(Map<String, Object> map) throws APSIOException {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            mapToJSONObject(map, baos);
+            baos.close();
+            return new String(baos.toByteArray());
+        } catch (IOException ioe) {
+            throw new APSIOException(ioe.getMessage(), ioe);
+        }
+    }
+
+    /**
+     * Converts a `Map<String, Object>` to a JSONObject.
+     *
+     * @param map The Map to convert.
+     * @return A converted JSONObject.
+     */
+    public static se.natusoft.osgi.aps.api.misc.json.model.JSONObject mapToJSONObject(Map<String, Object> map) {
+        return mapToObject(map);
     }
 
     /**
      * This takes a Map (as created by jsonObjectToMap(...)) and writes it as JSON to the specified OutputStream.
      *
      * @param map The Map to write as JSON.
-     * @param os The OutputStream to write to.
-     *
-     * @throws IOException
+     * @param os  The OutputStream to write to.
+     * @throws APSIOException on I/O failures.
      */
-    public static void mapToJSONObject(Map<String, Object> map, OutputStream os) throws IOException {
-        JSONObject jsonObject = mapToObject(map);
+    @SuppressWarnings("WeakerAccess")
+    public static void mapToJSONObject(Map<String, Object> map, OutputStream os) throws APSIOException {
+        JSONObjectProvider jsonObject = mapToObject(map);
         jsonObject.writeJSON(os, true);
     }
+
+    // Internals
 
     /**
      * Converts a Java value to an internal JSONValue.
      *
      * @param value The value to convert to JSONValue.
      */
-    private static JSONValue toJSON(Object value) {
+    private static JSONValueProvider toJSON(Object value) {
         if (value instanceof Map) {
             //noinspection unchecked
-            return mapToObject((Map<String, Object>)value);
-        }
-        else if (value instanceof Collection) {
-            return collectionToArray((Collection)value);
-        }
-        else if (value.getClass().isArray()) {
+            return mapToObject((Map<String, Object>) value);
+        } else if (value instanceof Collection) {
+            return collectionToArray((Collection) value);
+        } else if (value.getClass().isArray()) {
             LinkedList<Object> list = new LinkedList<>();
             Collections.addAll(list, ((Object[]) value));
             return collectionToArray(list);
-        }
-        else if (value instanceof String) {
-            return new JSONString(value.toString());
-        }
-        else if (value instanceof Number) {
-            return new JSONNumber((Number)value);
-        }
-        else if (value instanceof Boolean) {
-            return new JSONBoolean((boolean)value);
+        } else if (value instanceof String) {
+            return new JSONStringProvider(value.toString());
+        } else if (value instanceof Number) {
+            return new JSONNumberProvider((Number) value);
+        } else if (value instanceof Boolean) {
+            return new JSONBooleanProvider((boolean) value);
         }
 
-        return new JSONNull();
+        return new JSONNullProvider();
     }
 
     /**
@@ -173,12 +200,10 @@ public class JSONMapConv {
      *
      * @param map The Map to convert.
      */
-    private static JSONObject mapToObject(Map<String, Object> map) {
-        JSONObject jsonObject = new JSONObject();
+    private static JSONObjectProvider mapToObject(Map<String, Object> map) {
+        JSONObjectProvider jsonObject = new JSONObjectProvider();
 
-        map.entrySet().forEach((entry) -> {
-            jsonObject.addProperty(entry.getKey(), toJSON(entry.getValue()));
-        });
+        map.forEach((key, value) -> jsonObject.addValue(key, toJSON(value)));
 
         return jsonObject;
     }
@@ -188,12 +213,12 @@ public class JSONMapConv {
      *
      * @param collection The Collection to convert.
      */
-    private static JSONArray collectionToArray(Collection collection) {
-        JSONArray array = new JSONArray();
+    private static JSONArrayProvider collectionToArray(Collection collection) {
+        JSONArrayProvider array = new JSONArrayProvider();
 
         //noinspection unchecked
         collection.forEach((entry) -> {
-            JSONValue value = toJSON(entry);
+            JSONValueProvider value = toJSON(entry);
             array.addValue(value);
         });
 

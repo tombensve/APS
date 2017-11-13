@@ -77,9 +77,9 @@ class ConnectionResolver {
      *
      * @param name The name of the configuration to get a ConnectionProvider for.
      * @param direction The required direction of the provider to return.
-     * @param expectedType A config validation. If config entry is not of this type an exception is thrown.
+     * @param expectedType A configold validation. If configold entry is not of this type an exception is thrown.
      *
-     * @throws APSConfigException on missing or miss-matching config.
+     * @throws APSConfigException on missing or miss-matching configold.
      */
     public synchronized ConnectionProvider resolve(@NotNull URI connectionPoint, @NotNull ConnectionProvider.Direction direction)
             throws IOException {
