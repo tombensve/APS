@@ -22,6 +22,10 @@ There is however one thing that is currenlty useful and does not depend on any o
 
 The APSServiceTracker is also a bit different in that it does not like to tear services down, it and APSActivator both work to keep services up. The tracker by providing a timeout and throwing an APSNoServiceAvailableException on timeout. The side effect of this is that you sometimes need to start a thread in Bundle.start(...) to avoid a deadlock. This also means that later failures cannot stop the bundle on failed start! But it is soo much nicer to keep things up IMHO!
 
-Note that the branch names are YouTrack (JetBrains) issues. I'm using YouTrack as a service from JetBrains using the cheapest license. This unfortunately means that I can't let any one else in to see the issues. YouTrack is so very much nicer than GitHubs issues, and also by far beats JIRA. Public read-only access would have been nice. 
+Note that the branch names are YouTrack (JetBrains) issues. I'm using YouTrack as a service from JetBrains using the cheapest license. Here is a read only access of the YouTrack board:
+
+https://natusoft.myjetbrains.com/youtrack/agiles/90-4/94-6
+
+ytguest / salamiPizza
 
 /Tommy
