@@ -10,7 +10,7 @@ import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleListener
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
-import static se.natusoft.osgi.aps.api.core.config.service.APSConfigService.*
+import static se.natusoft.osgi.aps.api.core.config.model.APSConfig.*
 
 class BundleConfigHandler {
 
@@ -46,6 +46,11 @@ class BundleConfigHandler {
         }
     }
 
+    /**
+     * Manages config for new bundle.
+     *
+     * @param bundle The new bundle to manage config for.
+     */
     private void handleNewBundle(Bundle bundle) {
         String configId = bundle.getHeaders().get(APS_CONFIG_ID)
         if (configId != null) {
