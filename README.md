@@ -28,6 +28,6 @@ https://natusoft.myjetbrains.com/youtrack/agiles/90-4/94-6
 
 ytguest / salamiPizza
 
-Do note that all idea i throw in there does not get implemented for different reasons. That is why I have a "Cancelled" column in the board.
+Do note that all ideas i throw in there does not get implemented for different reasons. That is why I have a "Cancelled" column in the board.
 
 /Tommy
