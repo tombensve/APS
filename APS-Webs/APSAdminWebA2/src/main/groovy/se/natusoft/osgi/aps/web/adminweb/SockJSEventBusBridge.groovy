@@ -8,6 +8,8 @@ import io.vertx.ext.web.handler.sockjs.BridgeEvent
 import io.vertx.ext.web.handler.sockjs.BridgeOptions
 import io.vertx.ext.web.handler.sockjs.SockJSHandler
 import org.osgi.framework.BundleContext
+import se.natusoft.osgi.aps.api.pubcon.APSConsumer
+import se.natusoft.osgi.aps.net.vertx.api.APSVertx
 import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
 import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -50,9 +52,9 @@ import se.natusoft.osgi.aps.tools.reactive.Consumer
 @TypeChecked
 @OSGiServiceProvider( properties = [
         @OSGiProperty( name = "consumed", value = "vertx" ),
-        @OSGiProperty( name = APSVertxService.HTTP_SERVICE_NAME, value = Constants.APP_NAME )
+        @OSGiProperty( name = APSVertx.HTTP_SERVICE_NAME, value = Constants.APP_NAME )
 ] )
-class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Constants {
+class SockJSEventBusBridge extends VertxConsumer implements APSConsumer<Vertx>, Constants {
     //
     // Private Members
     //
@@ -64,7 +66,7 @@ class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Con
     private APSLogger logger
 
     /** A Router for an HTTP server. */
-    private Consumer.Consumed<Router> router
+    private Router router
 
     //
     // Constructors
@@ -72,11 +74,11 @@ class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Con
 
     SockJSEventBusBridge() {
 
-        this.onVertxAvailable = { Consumer.Consumed<Vertx> vertx ->
+        this.onVertxAvailable = { Vertx vertx ->
             this.logger.info( "######## SockJSEventBusBridge.onVertxAvailable" )
         }
 
-        this.onRouterAvailable = { Consumer.Consumed<Router> router ->
+        this.onRouterAvailable = { Router router ->
             this.logger.info( "######## SockJSEventBusBridge.onRouterAvailable" )
             this.router = router
 
@@ -99,7 +101,7 @@ class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Con
                 this.logger.info("SockJSBridge - Type: ${be.type()}")
                 be.complete()
             }
-            this.router.get().route( "/eventbus/*" ).handler( sockJSHandler )
+            this.router.route( "/eventbus/*" ).handler( sockJSHandler )
 
 //            this.logger.info "Vert.x SockJSHandler for event bus bridging started successfully!"
         }
@@ -124,8 +126,7 @@ class SockJSEventBusBridge extends VertxConsumer implements Consumer<Vertx>, Con
     @BundleStop
     void shutdown() {
         if ( this.router != null ) {
-            this.router.get().get( "/eventbus/*" ).remove()
-            this.router.release()
+            this.router.get( "/eventbus/*" ).remove()
         }
         super.cleanup()
         this.logger.disconnectFromLogService( this.context )

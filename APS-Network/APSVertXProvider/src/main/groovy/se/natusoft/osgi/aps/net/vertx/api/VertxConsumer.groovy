@@ -7,20 +7,26 @@ import io.vertx.core.eventbus.EventBus
 import io.vertx.core.eventbus.Message
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
-import se.natusoft.docutations.NotNull
+import se.natusoft.osgi.aps.api.pubcon.APSConsumer
+import se.natusoft.osgi.aps.api.util.APSMeta
 import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.reactive.Consumer
 
 /**
  * This actually implements the Consumer<Vertx> method onConsumed(...) and forwards to 3 closures if
  * made available.
  *
- * NOTE: My first attempt was to make this a trait rather than a class. This however fails with OSGi since
- *       traits seem to produce code in the default package, which is an OSGi no no!
+ * NOTE1: APSVertxProvider will use different APSObjectPublishers for each type published so why are we consuming
+ *        Object rather than Vertx and Router ? Because generics is a compile time feature, and the compiler can't
+ *        tell the difference between APSConsumer<Vertx> and APSConsumer<Router> when both are implemented by this
+ *        class. It complains about duplicate interfaces. Thereby we implement APSConsumer<Object> and check what
+ *        we got.
+ *
+ * NOTE2: My first attempt was to make this a trait rather than a class. This however fails with OSGi since
+ *        traits seem to produce code in the default package, which is an OSGi no no!
  */
 @CompileStatic
 @TypeChecked
-class VertxConsumer implements Consumer<Object> {
+class VertxConsumer implements APSConsumer<Object> {
 
     //
     // Properties
@@ -29,14 +35,14 @@ class VertxConsumer implements Consumer<Object> {
     /** Called when a Vertx instance becomes available. */
     Closure onVertxAvailable
 
-    /** Called if it was not possible to make a Vertx instance available. */
-    Closure onVertxUnavilable
-
     /** Called if the Vertx object is revoked. */
     Closure onVertxRevoked
 
     /** Called when a HTTP Router is available. */
     Closure onRouterAvailable
+
+    /** Called when a router is revoked. */
+    Closure onRouterRevoked
 
     /** Set this to get notified of errors. */
     Closure onError
@@ -49,7 +55,7 @@ class VertxConsumer implements Consumer<Object> {
     //
 
     /** We save this so that we can release it on shutdown. */
-    private Consumer.Consumed<Vertx> vertx
+    private Vertx vertx
 
     //
     // Methods
@@ -59,37 +65,70 @@ class VertxConsumer implements Consumer<Object> {
      * Make Vertx instance available to subclasses.
      */
     protected Vertx vertx() {
-        this.vertx.get()
+        this.vertx
     }
 
     /**
-     * Handles onConsumed and forwards to closures if provided. Basically cosmetics ...
-     * Or the subclass overrides onConsumed(...).
+     * Handles apsConsume and forwards to closures if provided.
      *
-     * @param status The status of this call.
-     * @param vertx The Vertx holder received.
+     * @param consumed The object consumed. This will be delegated based on type.
+     * @param meta Meta data about the consumed object. Delegate method looks at 'status'.
      */
-    @SuppressWarnings( "PackageAccessibility" )
+    @SuppressWarnings("PackageAccessibility")
     @Override
-    void consume( @NotNull Consumer.Status status, @NotNull Consumer.Consumed<Object> consumed ) {
-        if ( status == Consumer.Status.AVAILABLE ) {
-            if ( Vertx.class.isAssignableFrom( consumed.get().class ) ) {
-                this.vertx = consumed as Consumer.Consumed<Vertx>
-                if ( this.onVertxAvailable != null ) this.onVertxAvailable.call( consumed )
-            }
-            else if ( Router.class.isAssignableFrom( consumed.get().class ) ) {
-                if ( this.onRouterAvailable != null ) this.onRouterAvailable.call( consumed )
-            }
-            else if ( this.onError != null ) {
-                this.onError.call( "Unknown object consumed! [${ consumed.get() }]" )
-            }
+    void apsConsume( Object consumed, Map<String, String> meta ) {
+
+        if ( Vertx.class.isAssignableFrom( consumed.class ) ) {
+            apsConsumeVertx( consumed as Vertx, meta )
+        } else if ( Router.class.isAssignableFrom( consumed.class ) ) {
+            apsConsumeRouter( consumed as Router, meta )
+        } else {
+            String msg = "Unknown object received! [${consumed.class}]"
+            this.onError?.call( msg )
+            this.useLogger?.error( msg )
         }
-        else if ( status == Consumer.Status.UNAVAILABLE ) {
-            if ( this.onVertxUnavilable != null ) this.onVertxUnavilable.call()
+    }
+
+    /**
+     * Handles consumed Vertx instance.
+     *
+     * @param vertx The consumed instance.
+     * @param meta Meta data about the consumed object. This method looks at 'status'.
+     */
+    void apsConsumeVertx( Vertx vertx, Map<String, String> meta ) {
+        switch ( meta[ "status" ] ) {
+            case APSMeta.OBJECT_PUBLISHED_STATE:
+                this.vertx = vertx
+                this.onVertxAvailable?.call( vertx )
+                break
+            case APSMeta.OBJECT_REVOKED_STATE:
+                this.onVertxRevoked?.call()
+                break
+            default:
+                String msg = "Unknown status for consumed vertx! [${meta[ "status" ]}]"
+                this.onError?.call( msg )
+                this.useLogger?.error( msg )
         }
-        else if ( status == Consumer.Status.REVOKED ) {
-            if ( this.onVertxRevoked != null ) this.onVertxRevoked.call()
-            this.vertx = null
+    }
+
+    /**
+     * Handles consumed Router instance.
+     *
+     * @param router The consumed Router.
+     * @param meta Meta data about the consumed object. This method looks at 'status'.
+     */
+    void apsConsumeRouter( Router router, Map<String, String> meta ) {
+        switch ( meta[ "status" ] ) {
+            case APSMeta.OBJECT_PUBLISHED_STATE:
+                this.onRouterAvailable?.call( router )
+                break
+            case APSMeta.OBJECT_REVOKED_STATE:
+                this.onRouterRevoked?.call()
+                break
+            default:
+                String msg = "Unknown status for consumed router! [${meta[ "status" ]}]"
+                this.onError?.call( msg )
+                this.useLogger?.error( msg )
         }
     }
 
@@ -97,10 +136,8 @@ class VertxConsumer implements Consumer<Object> {
      * Call this when shutting down. This will release the Vertx instance.
      */
     protected void cleanup() {
-        if ( this.vertx != null ) this.vertx.release()
         this.vertx = null
         this.onRouterAvailable = null
-        this.onVertxUnavilable = null
         this.onVertxRevoked = null
         this.onRouterAvailable = null
         this.onError = null
@@ -110,8 +147,11 @@ class VertxConsumer implements Consumer<Object> {
     // EventBus utilities
     //
 
+    /**
+     * Returns the Vert.x event bus.
+     */
     protected EventBus eventBus() {
-        this.vertx(  ).eventBus(  )
+        this.vertx.eventBus()
     }
 
     /**
@@ -133,8 +173,7 @@ class VertxConsumer implements Consumer<Object> {
 
         if ( JsonObject.class.isAssignableFrom( message.body().class ) ) {
             event = ( message.body() as JsonObject ).map
-        }
-        else if ( String.class.isAssignableFrom( message.body().class ) ) {
+        } else if ( String.class.isAssignableFrom( message.body().class ) ) {
             event = new JsonObject( message.body().toString() ).map
         }
 
@@ -147,14 +186,11 @@ class VertxConsumer implements Consumer<Object> {
      * @param receivedMessage The received message to use for reply.
      * @param reply The reply to send.
      */
-    protected void eventBusReply(Message receivedMessage, JsonObject reply) {
-        if (receivedMessage.replyAddress(  ) != null && !receivedMessage.replyAddress(  ).isEmpty(  )) {
+    protected void eventBusReply( Message receivedMessage, JsonObject reply ) {
+        if ( receivedMessage.replyAddress() != null && !receivedMessage.replyAddress().isEmpty() ) {
             receivedMessage.reply( reply )
-        }
-        else {
-            if (this.useLogger != null) {
-                this.useLogger.error( "(eventBusReply): Provided 'Message' has not reply address!" )
-            }
+        } else {
+            this.useLogger?.error( "(eventBusReply): Provided 'Message' has not reply address!" )
         }
     }
 }

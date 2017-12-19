@@ -85,8 +85,7 @@
 
         <!-- The private packages. -->
         <osgi.private.package>
-            se.natusoft.osgi.aps.net.vertx,
-            se.natusoft.osgi.aps.net.vertx.config
+            se.natusoft.osgi.aps.net.vertx
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->
@@ -137,11 +136,6 @@
             APS properties.
         -->
 
-        <!-- We register our configuration for auto registration and management. -->
-        <aps.config.classes>
-            se.natusoft.osgi.aps.net.vertx.config.VertxConfig
-        </aps.config.classes>
-
         <!--
             Other properties
         -->
@@ -161,6 +155,11 @@
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tools-lib</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-core-lib</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
         <!-- Unfortunately needed since IDEA can't see the mixin and keep removing groovy if added manually in IDEA. -->
@@ -486,7 +485,6 @@
                     </supportedProjectTypes>
                     <archive>
                         <manifestEntries>
-                            <APS-Configs>${aps.config.classes}</APS-Configs>
                             <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
                         </manifestEntries>
                     </archive>

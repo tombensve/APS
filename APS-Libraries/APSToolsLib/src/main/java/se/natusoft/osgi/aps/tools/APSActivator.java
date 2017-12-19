@@ -1403,7 +1403,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     throw new APSActivatorException("Failed to call init method (" + initMethod.t1.getName() +
                             ") on instance (" + instance + ")!", iae);
                 } catch (InvocationTargetException ite) {
-                    throw (Exception) ite.getCause();
+                    throw (Exception) (Exception.class.isAssignableFrom(ite.getCause().getClass()) ? ite.getCause() :
+                            new Exception(ite.getMessage(), ite));
                 }
             }
         }

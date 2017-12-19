@@ -36,40 +36,18 @@
  */
 package se.natusoft.osgi.aps.api.pubcon;
 
-import java.util.Map;
+import se.natusoft.osgi.aps.api.util.APSMeta;
 
 /**
  * API for publishing data to consumers.
- *
- * @param <Published> The type published.
  */
 public interface APSPublisher<Published> {
-
-    /* The following are useful metadata suggestions. */
-
-    /** Names the data. */
-    String META_NAME = "apsName";
-
-    /** When this is non null then state is valid and the property contains one of the above states. */
-    String META_ENABLE_STATE_PROPERTY = "STATE_PROPERTY";
-
-    /** The default state property. */
-    String META_DEFAULT_STATE_PROPERTY = "apsState";
-
-    /** This indicates that the named data delivered is new. */
-    String META_STATE_NEW = "STATE_NEW";
-
-    /** This indicates that the named data delivered have been seen before, but is updated. */
-    String META_STATE_UPDATE = "STATE_UPDATED";
-
-    /** This indicates that the named data have been revoked and is thus invalid. */
-    String META_STATE_REVOKE = "STATE_REVOKED";
 
     /**
      * Publishes data.
      *
-     * @param published The published data.
-     * @param meta Meta data about the published data.
+     * @param toPublish The data to publish.
+     * @param meta Meta data to help the implementation make decisions.
      */
-    void apsPublish(Published published, Map<String, String> meta);
+    void publish(Published toPublish, APSMeta meta);
 }

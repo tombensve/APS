@@ -5,7 +5,7 @@ import groovy.transform.TypeChecked
 import io.vertx.core.json.JsonObject
 import se.natusoft.docutations.NotNull
 import se.natusoft.osgi.aps.api.misc.json.model.JSONObject
-import se.natusoft.osgi.aps.tools.groovy.lib.MapJsonDocValidator
+import se.natusoft.osgi.aps.core.lib.MapJsonDocValidator
 
 /**
  * This class defines a generic event structure in JSONish Map structure as can be defined and validated
