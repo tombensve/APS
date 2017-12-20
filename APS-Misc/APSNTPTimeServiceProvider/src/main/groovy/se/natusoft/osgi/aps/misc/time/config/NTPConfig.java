@@ -38,11 +38,11 @@ package se.natusoft.osgi.aps.misc.time.config;
 
 import groovy.transform.CompileStatic;
 import groovy.transform.TypeChecked;
-import se.natusoft.osgi.aps.api.core.config.APSConfig;
-import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigDescription;
-import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigItemDescription;
-import se.natusoft.osgi.aps.api.core.config.annotation.APSDefaultValue;
-import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
+import se.natusoft.osgi.aps.api.core.configold.APSConfig;
+import se.natusoft.osgi.aps.api.core.configold.annotation.APSConfigDescription;
+import se.natusoft.osgi.aps.api.core.configold.annotation.APSConfigItemDescription;
+import se.natusoft.osgi.aps.api.core.configold.annotation.APSDefaultValue;
+import se.natusoft.osgi.aps.api.core.configold.model.APSConfigValue;
 
 /**
  * Configuration for APSNTPTimeServiceProvider.
@@ -57,7 +57,7 @@ import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
 )
 public class NTPConfig extends APSConfig {
 
-    /** This will receive a populated instance of this config class if it is listed in the APS-Config: manifest entry. */
+    /** This will receive a populated instance of this configold class if it is listed in the APS-Config: manifest entry. */
     public static NTPConfig get;
 
     @APSConfigItemDescription(

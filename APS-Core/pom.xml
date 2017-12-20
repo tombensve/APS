@@ -65,5 +65,6 @@
         <module>APSFilesystemServiceProvider</module>
         <module>APSPlatformServiceProvider</module>
         <module>APSMetaDataServiceProvider</module>
+        <module>APSConfigServiceProvider</module>
     </modules>
 </project>

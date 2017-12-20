@@ -80,14 +80,14 @@
             se.natusoft.osgi.aps.api.core.platform.service;version="${project.version}",
             se.natusoft.osgi.aps.api.core.platform.model;version="${project.version}",
             se.natusoft.osgi.aps.api.core.advice.service;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.config;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.config.annotation;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.config.event;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.config.model;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.config.model.admin;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.config.model.test;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.config.service;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.config.util;version="${project.version}",
+            se.natusoft.osgi.aps.api.core.configold;version="${project.version}",
+            se.natusoft.osgi.aps.api.core.configold.annotation;version="${project.version}",
+            se.natusoft.osgi.aps.api.core.configold.event;version="${project.version}",
+            se.natusoft.osgi.aps.api.core.configold.model;version="${project.version}",
+            se.natusoft.osgi.aps.api.core.configold.model.admin;version="${project.version}",
+            se.natusoft.osgi.aps.api.core.configold.model.test;version="${project.version}",
+            se.natusoft.osgi.aps.api.core.configold.service;version="${project.version}",
+            se.natusoft.osgi.aps.api.core.configold.util;version="${project.version}",
             se.natusoft.osgi.aps.api.core.content;version="${project.version}",
             se.natusoft.osgi.aps.api.core.content.service;version="${project.version}",
             se.natusoft.osgi.aps.api.core.filesystem;version="${project.version}",
@@ -7147,8 +7147,8 @@
             se.natusoft.osgi.aps.api.auth.user.model;version="${aps.import.ver}",
             se.natusoft.osgi.aps.api.auth.user.exceptions;version="${aps.import.ver}",
             se.natusoft.osgi.aps.api.web.config;version="${aps.import.ver}",
-            se.natusoft.osgi.aps.api.core.config.service;version="${aps.import.ver}",
-            se.natusoft.osgi.aps.api.core.config.model;version="${aps.import.ver}"
+            se.natusoft.osgi.aps.api.core.configold.service;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.api.core.configold.model;version="${aps.import.ver}"
         </osgi.import.package>
 
         <!-- The private packages. -->
@@ -7706,8 +7706,8 @@
             org.osgi.framework;version="[1.5,2)",
             org.osgi.service.log;version="[1.3,2)",
             org.osgi.util.tracker;version="[1.4,2)",
-            se.natusoft.osgi.aps.api.core.config;version="${aps.import.ver}",
-            se.natusoft.osgi.aps.api.core.config.annotation;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.api.core.configold;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.api.core.configold.annotation;version="${aps.import.ver}",
             se.natusoft.osgi.aps.exceptions;version="${aps.import.ver}",
             se.natusoft.osgi.aps.tools;version="${aps.import.ver}",
             se.natusoft.osgi.aps.tools.tracker;version="${aps.import.ver}",
@@ -7715,10 +7715,10 @@
             se.natusoft.osgi.aps.tools.exceptions;version="${aps.import.ver}",
             se.natusoft.osgi.aps.apsadminweb.service;version="${aps.import.ver}",
             se.natusoft.osgi.aps.apsadminweb.service.model;version="${aps.import.ver}",
-            se.natusoft.osgi.aps.api.core.config.service;version="${aps.import.ver}",
-            se.natusoft.osgi.aps.api.core.config.model;version="${aps.import.ver}",
-            se.natusoft.osgi.aps.api.core.config.model.admin;version="${aps.import.ver}",
-            se.natusoft.osgi.aps.api.core.config.util;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.api.core.configold.service;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.api.core.configold.model;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.api.core.configold.model.admin;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.api.core.configold.util;version="${aps.import.ver}",
             se.natusoft.osgi.aps.api.auth.user;version="${aps.import.ver}",
             se.natusoft.osgi.aps.api.auth.user.model;version="${aps.import.ver}",
             se.natusoft.osgi.aps.api.misc.session;version="${aps.import.ver}",
@@ -8131,8 +8131,8 @@ WEB-INF/lib/aps-vaadin-web-tools-${project.version}.jar
             se.natusoft.osgi.aps.api.auth.user.model;version="${aps.import.ver}",
             se.natusoft.osgi.aps.api.misc.session;version="${aps.import.ver}",
             se.natusoft.osgi.aps.api.web.config;version="${aps.import.ver}",
-            se.natusoft.osgi.aps.api.core.config.service;version="${aps.import.ver}",
-            se.natusoft.osgi.aps.api.core.config.model;version="${aps.import.ver}"
+            se.natusoft.osgi.aps.api.core.configold.service;version="${aps.import.ver}",
+            se.natusoft.osgi.aps.api.core.configold.model;version="${aps.import.ver}"
         </osgi.import.package>
 
         <!-- The private packages. -->

@@ -1,46 +1,46 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Configuration Admin Web
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Edits configurations registered with the APSConfigurationService.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2012-02-26: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components;
 
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
-import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService.APSConfigEnvAdmin;
+import se.natusoft.osgi.aps.api.core.configold.model.admin.APSConfigEnvironment;
+import se.natusoft.osgi.aps.api.core.configold.service.APSConfigAdminService.APSConfigEnvAdmin;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.css.CSS;
 import se.natusoft.osgi.aps.tools.web.UserNotifier;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.handlerapi.ComponentHandler;
@@ -48,22 +48,22 @@ import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.handlerapi.Menu
 import se.natusoft.osgi.aps.tools.web.vaadin.tools.Refreshables;
 
 /**
- * Edits config environments.
+ * Edits configold environments.
  */
 public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActionExecutor {
     //
     // Constants
     //
-    
+
     /** Indicates editing functionality. */
     public static final int EDIT_ACTION = 1;
-    
+
     /** Indicates delete functionality. */
     public static final int DELETE_ACTION = 2;
 
     /** Indicates change active environment. No GUI is needed for this. */
     public static final int CHANGE_ACTIVE_ACTION = 3;
-    
+
     //
     // Private Members
     //
@@ -71,16 +71,16 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
     /** The configuration admin (part of APSConfigAdminService) to use for adding/removing configuration environments. */
     private APSConfigEnvAdmin configEnvAdmin = null;
 
-    /** The edited config environment. */
+    /** The edited configold environment. */
     private APSConfigEnvironment configEnv = null;
 
-    /** The name of the config environment. */
+    /** The name of the configold environment. */
     private TextField nameTextField = null;
 
-    /** The description of the config environment. */
+    /** The description of the configold environment. */
     private TextArea descriptionTextArea = null;
-    
-    /** The original name of the config env. Needed for when name is changed. */
+
+    /** The original name of the configold env. Needed for when name is changed. */
     private String origName = null;
 
     /** The components that needs to be refreshed due to changes in this one. */
@@ -98,8 +98,8 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
 
     /**
      * Creates a new ConfigEnvEditor.
-     * 
-     * @param configEnv The edited config environment.
+     *
+     * @param configEnv The edited configold environment.
      * @param configEnvAdmin The configuration admin to use for adding/removing configuration environments.
      * @param refreshables The Refreshable components to refresh after edit.
      * @param action The action to perform.
@@ -111,7 +111,7 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
         this.refreshables = refreshables;
         this.action = action;
         this.userNotifier = userNotifier;
-        
+
         if (action == EDIT_ACTION) {
             initForEdit();
         }
@@ -159,11 +159,11 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
         addStyleName(CSS.APS_CONFIGID_LABEL);
 
         if (this.configEnv == null) {
-            setCaption("Creating new config environment");
+            setCaption("Creating new configold environment");
         }
         else {
             this.origName = this.configEnv.getName();
-            setCaption("Editing config environment '" + this.configEnv.getName() + "'");
+            setCaption("Editing configold environment '" + this.configEnv.getName() + "'");
         }
 
         VerticalLayout verticalLayout = new VerticalLayout();
@@ -179,7 +179,7 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
 
         verticalLayout.addComponent(this.nameTextField);
 
-        this.descriptionTextArea = new TextArea("Description of config environment.");
+        this.descriptionTextArea = new TextArea("Description of configold environment.");
         this.descriptionTextArea.setRows(3);
         this.descriptionTextArea.setColumns(60);
         this.descriptionTextArea.setImmediate(true);
@@ -211,28 +211,28 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
         horizontalLayout.addComponent(cancelButton);
 
         setContent(verticalLayout);
-        
+
     }
 
     /**
      * Setup for deleting.
      */
     private void initForDelete() {
-        setCaption("Deleting config environment '" + this.configEnv.getName() + "'");
+        setCaption("Deleting configold environment '" + this.configEnv.getName() + "'");
         setStyleName("aps-editing-text");
 
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.setMargin(true);
         verticalLayout.setSpacing(true);
         verticalLayout.setStyleName(CSS.APS_EDITING_TEXT + " " + CSS.APS_CONTENT_PANEL);
-        
+
         Label nameLabel = new Label("Config environment name:");
         verticalLayout.addComponent(nameLabel);
         Label nameValue = new Label(this.configEnv.getName());
         Panel confNamePanel = new Panel(nameValue);
         verticalLayout.addComponent(confNamePanel);
 
-        Label descLabel = new Label("Description of config environment:");
+        Label descLabel = new Label("Description of configold environment:");
         verticalLayout.addComponent(descLabel);
         Label descValue = new Label(this.configEnv.getDescription());
         Panel confNameDescPanel = new Panel(descValue);
@@ -242,7 +242,7 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
         horizontalLayout.setMargin(false);
         horizontalLayout.setSpacing(true);
         verticalLayout.addComponent(horizontalLayout);
-        
+
         Button deleteButton = new Button("Delete");
         deleteButton.addClickListener(new ClickListener() {
             /** click handling. */
@@ -255,7 +255,7 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
             deleteButton.setEnabled(false);
         }
         horizontalLayout.addComponent(deleteButton);
-        
+
         Button cancelButton = new Button("Cancel");
         cancelButton.addClickListener(new ClickListener() {
             /** Click handling. */
@@ -280,7 +280,7 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
     }
 
     /**
-     * Saves the current config env.
+     * Saves the current configold env.
      */
     private void saveConfigEnv() {
         String name = this.nameTextField.getValue();
@@ -297,7 +297,7 @@ public class ConfigEnvEditor extends Panel implements ComponentHandler, MenuActi
     }
 
     /**
-     * Deletes the current config env.
+     * Deletes the current configold env.
      */
     private void deleteConfigEnv() {
         this.configEnvAdmin.removeConfigEnvironment(this.configEnv);

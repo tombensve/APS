@@ -3,8 +3,8 @@ package se.natusoft.osgi.aps.net.messaging.service
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.docutations.Issue
-import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent
-import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener
+import se.natusoft.osgi.aps.api.core.configold.event.APSConfigChangedEvent
+import se.natusoft.osgi.aps.api.core.configold.event.APSConfigChangedListener
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
 import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
 import se.natusoft.osgi.aps.constants.APS
@@ -109,7 +109,7 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService
      * This method is run on bundle start.
      *
      * It will register a configuration listener and then start all configured instances. The configuration listener
-     * will reconnect to the RabbitMQ message bus in case connection config has changed, and then take down deleted
+     * will reconnect to the RabbitMQ message bus in case connection configold has changed, and then take down deleted
      * instances and start newly defined instances.
      */
     @BundleStart(thread = true)

@@ -39,8 +39,8 @@ package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import se.natusoft.osgi.aps.api.core.config.model.admin.*;
-import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService;
+import se.natusoft.osgi.aps.api.core.configold.model.admin.*;
+import se.natusoft.osgi.aps.api.core.configold.service.APSConfigAdminService;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.ConfigEnvSelector;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.ConfigEnvSelector.ConfigEnvChangeEvent;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.ConfigEnvSelector.ConfigEnvChangeListener;
@@ -59,13 +59,13 @@ import se.natusoft.osgi.aps.tools.web.vaadin.tools.Refreshable;
 
 import java.util.List;
 
-import static se.natusoft.osgi.aps.api.core.config.util.APSConfigStaticUtils.refToEditModel;
+import static se.natusoft.osgi.aps.api.core.configold.util.APSConfigStaticUtils.refToEditModel;
 
 /**
  * This is a component that edits a configuration based on an APSConfigAdmin instance.
  * <p/>
  * This is actually both a component and a kind of controller. This sits on the
- * config service and 3 other relevant objects needed to edit the config. It is also
+ * configold service and 3 other relevant objects needed to edit the configold. It is also
  * doing the editing. Any code that changes the configuration is done here. The
  * sub-components are pure GUI components some of which holds relevant data. All
  * trigger events that are taken care of here, or using data sources that are also
@@ -79,13 +79,13 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
     /** The logger to log to. */
     private APSLogger logger = null;
 
-    /** For getting valid and active config environments and updating edited config. */
+    /** For getting valid and active configold environments and updating edited configold. */
     private APSConfigAdminService configAdminService = null;
 
-    /** The real live config admin instance. */
+    /** The real live configold admin instance. */
     private APSConfigAdmin liveConfigAdmin = null;
 
-    /** A clone of the real config admin instance for editing. */
+    /** A clone of the real configold admin instance for editing. */
     private APSConfigAdmin editedConfigAdmin = null;
 
     /** The currently edited node. */
@@ -96,10 +96,10 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
 
     //----- GUI Components -----//
 
-    /** Selects the config environment to edit for. Also provides the currently selected config environment. */
+    /** Selects the configold environment to edit for. Also provides the currently selected configold environment. */
     private ConfigEnvSelector editForConfigEnvSelect = null;
 
-    /** Selects config nodes of the selected config. */
+    /** Selects configold nodes of the selected configold. */
     private NodeSelector nodeSelector = null;
 
     /** The panel containing the content editor. */
@@ -119,8 +119,8 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
      * Creates a new ConfigEditor.
      *
      * @param configRef A reference representing an instance of the configuration to edit.
-     * @param configAdmin The config admin api.
-     * @param configAdminService The config admin service for getting config envs and updating edited configs.
+     * @param configAdmin The configold admin api.
+     * @param configAdminService The configold admin service for getting configold envs and updating edited configs.
      * @param logger The logger to log to.
      * @param userNotifier For sending notifications to user.
      */
@@ -311,9 +311,9 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
     }
 
     /**
-     * Handles configuration environment selection for config editing.
+     * Handles configuration environment selection for configold editing.
      *
-     * @param selectedConfigEnv The config environment that has been selected.
+     * @param selectedConfigEnv The configold environment that has been selected.
      */
     private void handleChangedConfigEnv(APSConfigEnvironment selectedConfigEnv) {
         refresh();
@@ -325,9 +325,9 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
     }
 
     /**
-     * Handles selection of a config node.
+     * Handles selection of a configold node.
      *
-     * @param configRef The reference to the config node selected.
+     * @param configRef The reference to the configold node selected.
      * @param indexed True if the node is indexed.
      */
     private void selectCurrentNode(APSConfigReference configRef, boolean indexed) {
@@ -410,10 +410,10 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
         try {
             this.configAdminService.updateConfiguration(this.editedConfigAdmin);
             this.editedConfigAdmin.sendConfigModifiedEvent();
-            this.userNotifier.info("Saved!", "Saved config for '" + this.editedConfigAdmin.getConfigId() + "'!");
+            this.userNotifier.info("Saved!", "Saved configold for '" + this.editedConfigAdmin.getConfigId() + "'!");
         }
         catch (APSNoServiceAvailableException nsae) {
-            this.logger.error("Faled to save config for '" + this.editedConfigAdmin.getConfigId() + "'!", nsae);
+            this.logger.error("Faled to save configold for '" + this.editedConfigAdmin.getConfigId() + "'!", nsae);
 
             this.userNotifier.error("Save Faield!",
                     "The configuration service is currently not available on the server! Please try again later.");
@@ -482,7 +482,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
         }
 
         /**
-         * Returns the current config environment.
+         * Returns the current configold environment.
          */
         @Override
         public APSConfigEnvironment getCurrentConfigEnvironment() {
@@ -494,7 +494,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
         /**
          * Returns the number of values.
          *
-         * @param valueRef The config reference representing the value edited by this component instance.
+         * @param valueRef The configold reference representing the value edited by this component instance.
          */
         @Override
         public int getSize(APSConfigReference valueRef) {
@@ -504,7 +504,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
         /**
          * Returns the value at the specified index.
          *
-         * @param valueRef The config reference representing the value edited by this component instance.
+         * @param valueRef The configold reference representing the value edited by this component instance.
          */
         @Override
         public String getValue(APSConfigReference valueRef) {
@@ -514,7 +514,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
         /**
          * Adds the specified value to the set of values.
          *
-         * @param valueRef The config reference representing the value edited by this component instance.
+         * @param valueRef The configold reference representing the value edited by this component instance.
          * @param value The value to add.
          */
         @Override
@@ -525,7 +525,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
         /**
          * Removes a value from the set of values.
          *
-         * @param valueRef The config reference representing the value edited by this component instance.
+         * @param valueRef The configold reference representing the value edited by this component instance.
          */
         @Override
         public void removeValue(APSConfigReference valueRef) {
@@ -535,7 +535,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
         /**
          * Updates a value.
          *
-         * @param valueRef The config reference representing the value edited by this component instance.
+         * @param valueRef The configold reference representing the value edited by this component instance.
          * @param value The value to update with.
          */
         @Override
@@ -548,7 +548,7 @@ public class ConfigEditor extends Panel implements ComponentHandler, Refreshable
     private NodeSelector.DataSource nodeSelectorDataSource = new NodeSelector.DataSource() {
 
         /**
-         * Returns the root node of the config model.
+         * Returns the root node of the configold model.
          */
         @Override
         public APSConfigReference getRootReference() {

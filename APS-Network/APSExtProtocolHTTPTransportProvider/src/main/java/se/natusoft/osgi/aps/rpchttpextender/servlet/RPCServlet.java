@@ -1063,7 +1063,7 @@ public class RPCServlet extends HttpServlet implements APSExternalProtocolListen
                 html.tagc("p",
                         "Note that this is only a transport (over http)! It has nothing to say about protocols which is why the " +
                                 "above auth methods are outside of the protocol, only part of this transport. If you make services that you " +
-                                "expose this way it is also possible to leave the authentication config at false and provide authentication " +
+                                "expose this way it is also possible to leave the authentication configold at false and provide authentication " +
                                 "in your service by using the APSSimpleUserService or something else."
                 );
 

@@ -160,7 +160,7 @@
                     </supportedProjectTypes>
                     <archive>
                         <manifestEntries>
-                            <!--APS-Configs>${aps.config.classes}</APS-Configs-->
+                            <!--APS-Configs>${aps.configold.classes}</APS-Configs-->
                             <APS-Externalizable>se.natusoft.osgi.aps.fortest.pub.ForTestService</APS-Externalizable>
                             <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
                         </manifestEntries>

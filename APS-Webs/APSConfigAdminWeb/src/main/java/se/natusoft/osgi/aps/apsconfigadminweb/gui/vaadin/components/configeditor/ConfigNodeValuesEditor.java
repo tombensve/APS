@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Configuration Admin Web
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Edits configurations registered with the APSConfigurationService.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy.svensson@biltmore.se)
  *         Changes:
  *         2012-04-08: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor;
 
@@ -40,9 +40,9 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
+import se.natusoft.osgi.aps.api.core.configold.model.admin.APSConfigEnvironment;
+import se.natusoft.osgi.aps.api.core.configold.model.admin.APSConfigReference;
+import se.natusoft.osgi.aps.api.core.configold.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.event.ValueChangedEvent;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.event.ValueChangedListener;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.css.CSS;
@@ -51,7 +51,7 @@ import se.natusoft.osgi.aps.tools.web.vaadin.components.HorizontalLine;
 import java.util.List;
 
 /**
- * Edits the values of a config node.
+ * Edits the values of a configold node.
  */
 public class ConfigNodeValuesEditor extends Panel {
     //
@@ -109,7 +109,7 @@ public class ConfigNodeValuesEditor extends Panel {
         int getIndex();
 
         /**
-         * Returns the current config environment.
+         * Returns the current configold environment.
          */
         APSConfigEnvironment getCurrentConfigEnvironment();
     }
@@ -243,8 +243,8 @@ public class ConfigNodeValuesEditor extends Panel {
     /**
      * Handles changes in value.
      *
-     * @param valueRef The config reference representing the config value to update.
-     * @param newValue The new value to update the config value with.
+     * @param valueRef The configold reference representing the configold value to update.
+     * @param newValue The new value to update the configold value with.
      */
     private void valueComponentChanged(APSConfigReference valueRef, String newValue) {
         this.dataSource.updateValue(valueRef, newValue);

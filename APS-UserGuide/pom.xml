@@ -83,7 +83,6 @@
 
                             <pdfGeneratorOptions>
                                 <resultFile>${project.basedir}/docs/${project.artifactId}.pdf</resultFile>
-                                <pageSize>A4</pageSize>
                                 <title>${doc.title}</title>
                                 <subject>User Guide</subject>
                                 <version>${project.version}</version>

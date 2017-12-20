@@ -67,7 +67,7 @@ class APSRabbitMQMessageProvider {
     // Private Members
     //
 
-    /** Basic RabbitMQ config for sending messages. */
+    /** Basic RabbitMQ configold for sending messages. */
     private AMQP.BasicProperties basicProperties
 
     /** Our cluster channel. */

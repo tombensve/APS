@@ -39,8 +39,7 @@ package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configedito
 import com.vaadin.data.Property;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ListSelect;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
+import se.natusoft.osgi.aps.api.core.configold.model.admin.APSConfigReference;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.event.ValueChangedEvent;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.event.ValueChangedListener;
 
@@ -59,7 +58,7 @@ public class ValidValuesValue extends ListSelect implements ValueComponent {
     /** The listeners on this component. */
     private List<ValueChangedListener> listeners = new LinkedList<>();
 
-    /** The config value reference representing the config value. */
+    /** The configold value reference representing the configold value. */
     private APSConfigReference valueRef = null;
 
     private boolean doFireEvent = true;
@@ -71,7 +70,7 @@ public class ValidValuesValue extends ListSelect implements ValueComponent {
     /**
      * Creates a new ValidValuesValue.
      *
-     * @param valueRef The config value reference representing the config value.
+     * @param valueRef The configold value reference representing the configold value.
      */
     public ValidValuesValue(APSConfigReference valueRef) {
         super("", Arrays.asList(valueRef.getConfigValueEditModel().getValidValues()));
@@ -84,7 +83,7 @@ public class ValidValuesValue extends ListSelect implements ValueComponent {
 
         // aps-36: This fix makes sure that the default value shown (first listed of valid values) is also set as
         //         value, and thus also saved. Without this and the user does not change the dropdown of valid values
-        //         the actual value will be an empty string. It will however look correct in the config editor since
+        //         the actual value will be an empty string. It will however look correct in the configold editor since
         //         the first entry is displayed on blank string.
         String[] validValues = this.valueRef.getConfigValueEditModel().getValidValues();
         if (validValues != null && validValues.length >= 1) {

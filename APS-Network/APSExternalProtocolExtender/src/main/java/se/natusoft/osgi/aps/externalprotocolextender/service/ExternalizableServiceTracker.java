@@ -52,10 +52,10 @@
 package se.natusoft.osgi.aps.externalprotocolextender.service;
 
 import org.osgi.framework.*;
-import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent;
-import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener;
-import se.natusoft.osgi.aps.api.core.config.service.APSConfigException;
-import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
+import se.natusoft.osgi.aps.api.core.configold.event.APSConfigChangedEvent;
+import se.natusoft.osgi.aps.api.core.configold.event.APSConfigChangedListener;
+import se.natusoft.osgi.aps.api.core.configold.service.APSConfigException;
+import se.natusoft.osgi.aps.api.core.configold.service.APSConfigService;
 import se.natusoft.osgi.aps.externalprotocolextender.model.ServiceDataReason;
 import se.natusoft.osgi.aps.externalprotocolextender.pub.config.APSExternalProtocolConfig;
 import se.natusoft.osgi.aps.externalprotocolextender.pub.config.APSExternalProtocolConfig.ExternalizableService;
@@ -78,7 +78,7 @@ public class ExternalizableServiceTracker implements ServiceListener, TrivialBus
     /** The configuration service to get APSExternalProtocolConfig from. */
     private APSConfigService configService = null;
 
-    /** our config. */
+    /** our configold. */
     private APSExternalProtocolConfig externalProtocolConfig = null;
 
     /** The logger to log to. */

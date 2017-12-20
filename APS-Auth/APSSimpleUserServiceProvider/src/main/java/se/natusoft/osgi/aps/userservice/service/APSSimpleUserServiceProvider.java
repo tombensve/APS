@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Simple User Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides an implementation of APSSimpleUserService backed by a database.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy.svensson@biltmore.se)
  *         Changes:
  *         2012-07-15: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.userservice.service;
 
@@ -43,7 +43,7 @@ import se.natusoft.osgi.aps.api.auth.user.model.Role;
 import se.natusoft.osgi.aps.api.auth.user.model.RoleAdmin;
 import se.natusoft.osgi.aps.api.auth.user.model.User;
 import se.natusoft.osgi.aps.api.auth.user.model.UserAdmin;
-import se.natusoft.osgi.aps.api.core.config.service.APSConfigService;
+import se.natusoft.osgi.aps.api.core.configold.service.APSConfigService;
 import se.natusoft.osgi.aps.api.data.jdbc.model.DataSourceDef;
 import se.natusoft.osgi.aps.api.data.jdbc.service.APSDataSourceDefService;
 import se.natusoft.osgi.aps.api.data.jpa.service.APSJPAService;

@@ -55,7 +55,7 @@ class ReceiveThread extends Thread {
      */
     ConnectionProvider connectionProvider
 
-    /** The config for this receiver. */
+    /** The configold for this receiver. */
     RabbitMQMessageServiceConfig.RMQInstance instanceConfig
 
     /** The topic this receiver is working for. */

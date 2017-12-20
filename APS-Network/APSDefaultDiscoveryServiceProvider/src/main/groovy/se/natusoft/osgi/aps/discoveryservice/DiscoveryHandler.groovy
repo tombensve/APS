@@ -3,9 +3,9 @@ package se.natusoft.osgi.aps.discoveryservice
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.docutations.Implements
-import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedEvent
-import se.natusoft.osgi.aps.api.core.config.event.APSConfigChangedListener
-import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue
+import se.natusoft.osgi.aps.api.core.configold.event.APSConfigChangedEvent
+import se.natusoft.osgi.aps.api.core.configold.event.APSConfigChangedListener
+import se.natusoft.osgi.aps.api.core.configold.model.APSConfigValue
 import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler
 import se.natusoft.osgi.aps.api.misc.json.model.JSONObject
 import se.natusoft.osgi.aps.api.misc.json.model.JSONValue
@@ -78,16 +78,16 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
     @SuppressWarnings("GroovyUnusedDeclaration")
     @Initializer
     public void init() {
-        // This has to be done in a separate thread or we risk a deadlock due to using a managed config.
-        // *Config.managed.get() will wait for a config to become managed before returning the config,
-        // and if this is done before the config service have been started when called from a bundle activator
-        // then the whole startup process will hang forever, since the config service will never be started due
+        // This has to be done in a separate thread or we risk a deadlock due to using a managed configold.
+        // *Config.managed.get() will wait for a configold to become managed before returning the configold,
+        // and if this is done before the configold service have been started when called from a bundle activator
+        // then the whole startup process will hang forever, since the configold service will never be started due
         // to this code never returning.
 
         this.executorService.submit {
             DiscoveryConfig.managed.get().addConfigChangedListener(this)
 
-            // Do initial setup from config.
+            // Do initial setup from configold.
             apsConfigChanged(null)
         }
     }
@@ -132,7 +132,7 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
     @Implements(APSConfigChangedListener.class)
     synchronized void apsConfigChanged(APSConfigChangedEvent event) {
         // Do note that we ignore "event" since we don't care what has changed, we only remove and add listeners
-        // based on previous and new config. The APSConfigChangedEvent currently has an obvious flaw that prevents
+        // based on previous and new configold. The APSConfigChangedEvent currently has an obvious flaw that prevents
         // its usefulness: only one singe configId can be provided! A task for this have been created: #aps-67.
 
         this.logger.info("Config changed - reconfiguring ...")
@@ -147,7 +147,7 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
             } else {
                 this.mcastConnectionPointURI = new URI(mcastConnectionPoint)
                 this.tcpipService.addDataPacketReceiver(this.mcastConnectionPointURI, this)
-                this.logger.info("Added multicast listener for named config: " + this.mcastConnectionPointURI)
+                this.logger.info("Added multicast listener for named configold: " + this.mcastConnectionPointURI)
             }
         }
         catch (URISyntaxException use) {
@@ -161,7 +161,7 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
             } else {
                 this.tcpReceiverConnectionPointURI = new URI(tcpReceiverConnectionPoint)
                 this.tcpipService.setStreamedRequestListener(this.tcpReceiverConnectionPointURI, this)
-                this.logger.info("Set request listener for named config: " + this.tcpReceiverConnectionPointURI)
+                this.logger.info("Set request listener for named configold: " + this.tcpReceiverConnectionPointURI)
             }
         }
         catch (URISyntaxException use) {
@@ -181,17 +181,17 @@ class DiscoveryHandler implements DatagramPacketListener, StreamedRequestListene
             }
         }
 
-        this.logger.info("Setup according to new config!")
+        this.logger.info("Setup according to new configold!")
     }
 
     synchronized void cleanup() {
         if (this.mcastConnectionPointURI != null) {
             this.tcpipService.removeDataPacketReceiver(this.mcastConnectionPointURI, this)
-            this.logger.info("Removed UDP listener for named config: " + this.mcastConnectionPointURI)
+            this.logger.info("Removed UDP listener for named configold: " + this.mcastConnectionPointURI)
         }
         if (this.tcpReceiverConnectionPointURI != null) {
             this.tcpipService.removeStreamedRequestListener(this.tcpReceiverConnectionPointURI, this)
-            this.logger.info("Removed TCP listener for named config: " + this.tcpReceiverConnectionPointURI)
+            this.logger.info("Removed TCP listener for named configold: " + this.tcpReceiverConnectionPointURI)
         }
     }
 
