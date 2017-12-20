@@ -5,6 +5,7 @@ import org.osgi.framework.ServiceReference
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.NotUsed
 import se.natusoft.osgi.aps.api.pubcon.APSConsumer
+import se.natusoft.osgi.aps.api.pubcon.APSPublisher
 import se.natusoft.osgi.aps.api.util.APSMeta
 
 /**
@@ -27,7 +28,7 @@ import se.natusoft.osgi.aps.api.util.APSMeta
  * that it is no longer interested in the published object.
  */
 @SuppressWarnings("GroovyUnusedDeclaration")
-class APSObjectPublisher<Published> {
+class APSObjectPublisher<Published> implements APSPublisher<Published> {
 
     //
     // Constants
@@ -103,6 +104,27 @@ class APSObjectPublisher<Published> {
             consumer.apsConsume( this.published as Published, OBJECT_UPDATED )
         }
     }
+
+    /**
+     * Publishes data.
+     *
+     * This variant implements APSPublisher, but you have to know what you do more than with the other simple
+     * one org publish(published) method.
+     *
+     * @param toPublish The data to publish.
+     * @param meta Meta data to help the implementation make decisions.
+     */
+
+    @Override
+    void publish( Published published, APSMeta meta ) {
+        this.published = published
+
+        this.consumerTracker.g_withAllAvailableServices { APSConsumer<Published> consumer ->
+            // I believe that the requirement of "as Published" is an IDEA warning bug. this.published is of type Published!
+            consumer.apsConsume( this.published as Published, meta )
+        }
+    }
+
 
     /**
      * Stops tracking consumers.
