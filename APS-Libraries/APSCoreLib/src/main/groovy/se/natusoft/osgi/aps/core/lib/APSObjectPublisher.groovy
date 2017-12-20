@@ -6,7 +6,6 @@ import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.NotUsed
 import se.natusoft.osgi.aps.api.pubcon.APSConsumer
 import se.natusoft.osgi.aps.api.util.APSMeta
-import se.natusoft.osgi.aps.tools.APSServiceTracker
 
 /**
  * This makes use of an APSServiceTracker to track and call APSConsumer services.
@@ -34,9 +33,9 @@ class APSObjectPublisher<Published> {
     // Constants
     //
 
-    private static final APSMeta OBJECT_PUBLISHED = APSMeta.with( [ "state": APSMeta.OBJECT_PUBLISHED_STATE ] )
-    private static final APSMeta OBJECT_UPDATED = APSMeta.with( [ "state": APSMeta.OBJECT_UPDATED_STATE ] )
-    private static final APSMeta OBJECT_REVOKED = APSMeta.with( [ "state": APSMeta.OBJECT_REVOKED_STATE ] )
+    private static final APSMeta OBJECT_PUBLISHED = APSMeta.with( [ "status": APSMeta.OBJECT_PUBLISHED_STATUS ] )
+    private static final APSMeta OBJECT_UPDATED = APSMeta.with( [ "status": APSMeta.OBJECT_UPDATED_STATUS ] )
+    private static final APSMeta OBJECT_REVOKED = APSMeta.with( [ "status": APSMeta.OBJECT_REVOKED_STATUS ] )
 
     //
     // Properties
@@ -59,13 +58,33 @@ class APSObjectPublisher<Published> {
     //
 
     /** For tracking consumers. */
-    private APSServiceTracker<APSConsumer<Published>> consumerTracker
+    private APSGServiceTracker<APSConsumer<Published>> consumerTracker
 
     /** For keeping track of which consumers have received published object. */
     private Map<ServiceReference, APSConsumer> knownConsumers
 
     /** The published object. */
     private Published published
+
+    //
+    // Constructorish
+    //
+
+    /**
+     * This must be called after setting properties, but before calling publish(...).
+     */
+    APSObjectPublisher<Published> init() {
+        this.knownConsumers = [ : ]
+
+        this.consumerTracker = new APSGServiceTracker<>( context, APSConsumer.class, this.consumerQuery, timeout )
+
+        this.consumerTracker.onServiceAvailable = this.&onServiceAvailableHandler
+        this.consumerTracker.onServiceLeaving = this.&onServiceLeavingHandler
+
+        this.consumerTracker.start()
+
+        return this
+    }
 
     //
     // Methods
@@ -79,22 +98,9 @@ class APSObjectPublisher<Published> {
     void publish( @NotNull Published published ) {
         this.published = published
 
-        if ( this.consumerTracker == null ) {
-            this.knownConsumers = [ : ]
-
-            this.consumerTracker = new APSServiceTracker<>( context, APSConsumer.class, this.consumerQuery, timeout )
-
-            this.consumerTracker.onServiceAvailable = this.&onServiceAvailableHandler
-            this.consumerTracker.onServiceLeaving = this.&onServiceLeavingHandler
-
-            this.consumerTracker.start()
-        } else {
-            this.consumerTracker.withAllAvailableServices { APSConsumer<Published> consumer ->
-                // The below suppress of warning is an IDEA bug! 'this.published' is of type Published which is exactly what
-                // apsConsume(...) expects. Doing a cast: "(Published)this.published" makes IDEA happy!
-                //noinspection GroovyAssignabilityCheck
-                consumer.apsConsume( this.published, OBJECT_UPDATED )
-            }
+        this.consumerTracker.g_withAllAvailableServices { APSConsumer<Published> consumer ->
+            // I believe that the requirement of "as Published" is an IDEA warning bug. this.published is of type Published!
+            consumer.apsConsume( this.published as Published, OBJECT_UPDATED )
         }
     }
 
@@ -102,7 +108,7 @@ class APSObjectPublisher<Published> {
      * Stops tracking consumers.
      */
     void revoke() {
-        this.consumerTracker.withAllAvailableServices { APSConsumer<Published> consumer ->
+        this.consumerTracker.g_withAllAvailableServices { APSConsumer<Published> consumer ->
             try {
                 //noinspection GroovyAssignabilityCheck
                 consumer.apsConsume( this.published, OBJECT_REVOKED )
@@ -144,7 +150,7 @@ class APSObjectPublisher<Published> {
     private synchronized void onServiceLeavingHandler( @NotNull ServiceReference serviceReference,
                                                        @NotUsed Class serviceAPI ) {
         if ( this.knownConsumers.containsKey( serviceReference ) ) {
-            this.knownConsumers -= serviceReference
+            this.knownConsumers.remove( serviceReference )
         }
     }
 }

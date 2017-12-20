@@ -6,13 +6,14 @@ import io.vertx.core.Vertx
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.eventbus.Message
 import io.vertx.core.json.JsonObject
+import io.vertx.core.metrics.Measured
 import io.vertx.ext.web.Router
 import se.natusoft.osgi.aps.api.pubcon.APSConsumer
 import se.natusoft.osgi.aps.api.util.APSMeta
 import se.natusoft.osgi.aps.tools.APSLogger
 
 /**
- * This actually implements the Consumer<Vertx> method onConsumed(...) and forwards to 3 closures if
+ * This actually implements the Consumer<Vertx> method onConsumed(...) and forwards to closures if
  * made available.
  *
  * NOTE1: APSVertxProvider will use different APSObjectPublishers for each type published so why are we consuming
@@ -21,12 +22,12 @@ import se.natusoft.osgi.aps.tools.APSLogger
  *        class. It complains about duplicate interfaces. Thereby we implement APSConsumer<Object> and check what
  *        we got.
  *
- * NOTE2: My first attempt was to make this a trait rather than a class. This however fails with OSGi since
- *        traits seem to produce code in the default package, which is an OSGi no no!
+ * (NOTE2: My first attempt was to make this a trait rather than a class. This however fails with OSGi since
+ *        traits seem to produce code in the default package, which is an OSGi no no!) TODO: Possibly remove this.
  */
 @CompileStatic
 @TypeChecked
-class VertxConsumer implements APSConsumer<Object> {
+trait VertxConsumer implements APSConsumer<Object> {
 
     //
     // Properties
@@ -64,7 +65,7 @@ class VertxConsumer implements APSConsumer<Object> {
     /**
      * Make Vertx instance available to subclasses.
      */
-    protected Vertx vertx() {
+    Vertx vertx() {
         this.vertx
     }
 
@@ -78,7 +79,7 @@ class VertxConsumer implements APSConsumer<Object> {
     @Override
     void apsConsume( Object consumed, Map<String, String> meta ) {
 
-        if ( Vertx.class.isAssignableFrom( consumed.class ) ) {
+        if ( Measured.class.isAssignableFrom( consumed.class ) ) {
             apsConsumeVertx( consumed as Vertx, meta )
         } else if ( Router.class.isAssignableFrom( consumed.class ) ) {
             apsConsumeRouter( consumed as Router, meta )
@@ -97,12 +98,14 @@ class VertxConsumer implements APSConsumer<Object> {
      */
     void apsConsumeVertx( Vertx vertx, Map<String, String> meta ) {
         switch ( meta[ "status" ] ) {
-            case APSMeta.OBJECT_PUBLISHED_STATE:
+            case APSMeta.OBJECT_PUBLISHED_STATUS:
                 this.vertx = vertx
                 this.onVertxAvailable?.call( vertx )
                 break
-            case APSMeta.OBJECT_REVOKED_STATE:
+            case APSMeta.OBJECT_REVOKED_STATUS:
                 this.onVertxRevoked?.call()
+                break
+            case APSMeta.OBJECT_UPDATED_STATUS:
                 break
             default:
                 String msg = "Unknown status for consumed vertx! [${meta[ "status" ]}]"
@@ -119,11 +122,13 @@ class VertxConsumer implements APSConsumer<Object> {
      */
     void apsConsumeRouter( Router router, Map<String, String> meta ) {
         switch ( meta[ "status" ] ) {
-            case APSMeta.OBJECT_PUBLISHED_STATE:
+            case APSMeta.OBJECT_PUBLISHED_STATUS:
                 this.onRouterAvailable?.call( router )
                 break
-            case APSMeta.OBJECT_REVOKED_STATE:
+            case APSMeta.OBJECT_REVOKED_STATUS:
                 this.onRouterRevoked?.call()
+                break
+            case APSMeta.OBJECT_UPDATED_STATUS:
                 break
             default:
                 String msg = "Unknown status for consumed router! [${meta[ "status" ]}]"
@@ -135,7 +140,7 @@ class VertxConsumer implements APSConsumer<Object> {
     /**
      * Call this when shutting down. This will release the Vertx instance.
      */
-    protected void cleanup() {
+    void cleanup() {
         this.vertx = null
         this.onRouterAvailable = null
         this.onVertxRevoked = null
@@ -150,7 +155,7 @@ class VertxConsumer implements APSConsumer<Object> {
     /**
      * Returns the Vert.x event bus.
      */
-    protected EventBus eventBus() {
+    EventBus eventBus() {
         this.vertx.eventBus()
     }
 
@@ -167,7 +172,7 @@ class VertxConsumer implements APSConsumer<Object> {
      *
      * @return the body as a Map or null if none where found.
      */
-    protected static Map<String, Object> getBody( Message message ) {
+    static Map<String, Object> getBody( Message message ) {
 
         Map<String, Object> event = null
 
@@ -186,7 +191,7 @@ class VertxConsumer implements APSConsumer<Object> {
      * @param receivedMessage The received message to use for reply.
      * @param reply The reply to send.
      */
-    protected void eventBusReply( Message receivedMessage, JsonObject reply ) {
+    void eventBusReply( Message receivedMessage, JsonObject reply ) {
         if ( receivedMessage.replyAddress() != null && !receivedMessage.replyAddress().isEmpty() ) {
             receivedMessage.reply( reply )
         } else {

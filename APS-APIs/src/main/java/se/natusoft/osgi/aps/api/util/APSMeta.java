@@ -13,9 +13,9 @@ public interface APSMeta extends Map<String, String> {
     //
 
     String STATE = "state";
-    String OBJECT_PUBLISHED_STATE = "object-published";
-    String OBJECT_UPDATED_STATE = "object-updated";
-    String OBJECT_REVOKED_STATE = "object-revoked";
+    String OBJECT_PUBLISHED_STATUS = "object-published";
+    String OBJECT_UPDATED_STATUS = "object-updated";
+    String OBJECT_REVOKED_STATUS = "object-revoked";
 
     //
     // Methods

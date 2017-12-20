@@ -81,7 +81,7 @@ import java.util.concurrent.TimeUnit;
  *  in the activator the startup for that bundle will hang waiting for the service to become available.
  *  Bundle starts taking too much time is in general a bad thing.
  */
-public class APSServiceTracker<Service>  implements ServiceListener{
+public class APSServiceTracker<Service>  implements ServiceListener {
     //
     // Constants
     //
@@ -627,7 +627,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * @throws se.natusoft.osgi.aps.tools.tracker.WithServiceException Wraps any exception thrown by the callback.
      * @throws se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException thrown if there are no services available.
      */
-    public void withService(WithService withService, Object... args) throws WithServiceException, APSNoServiceAvailableException {
+    public void withService(WithService<Service> withService, Object... args) throws WithServiceException, APSNoServiceAvailableException {
 
         if (!this.active.hasActiveService()) {
             if (hasServiceAvailabilityTimeout()) {
@@ -638,7 +638,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
             }
         }
 
-        Object service = this.active.allocateActiveService();
+        Service service = this.active.allocateActiveService();
         try {
             //noinspection unchecked
             withService.withService(service, args);
@@ -666,8 +666,8 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * @throws se.natusoft.osgi.aps.tools.tracker.WithServiceException Wraps any exception thrown by the callback.
      */
     @SuppressWarnings({"unchecked", "unused"})
-    public void withServiceIfAvailable(WithService withService, Object... args) throws WithServiceException {
-        Object service = this.active.allocateActiveService();
+    public void withServiceIfAvailable(WithService<Service> withService, Object... args) throws WithServiceException {
+        Service service = this.active.allocateActiveService();
         if (service != null) {
             try {
                 withService.withService(service, args);
@@ -693,14 +693,14 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * @throws se.natusoft.osgi.aps.tools.tracker.WithServiceException Wraps any exception thrown by the callback.
      */
     @SuppressWarnings("unchecked")
-    public void withAllAvailableServices(WithService withService, Object... args) throws WithServiceException {
+    public void withAllAvailableServices(WithService<Service> withService, Object... args) throws WithServiceException {
         for (ServiceReference svc : this.trackedServices.getServices()) {
-            Object service = this.context.getService(svc);
+            Service service = (Service)this.context.getService(svc);
             try {
                 withService.withService(service, args);
             }
             catch (Exception e) {
-                throw new WithServiceException("withService() threw exception. Get original exception with getCause()!", e);
+                throw new WithServiceException("withService() threw exception. [" + e.getMessage() + "]", e);
             }
             finally {
                 this.context.ungetService(svc);
@@ -720,9 +720,9 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * @throws se.natusoft.osgi.aps.tools.tracker.WithServiceException Wraps any exception thrown by the callback.
      */
     @SuppressWarnings({"unchecked", "unused"})
-    public void withAllAvailableServicesIncRef(WithServiceIncRef withService, Object... args) throws WithServiceException {
+    public void withAllAvailableServicesIncRef(WithServiceIncRef<Service> withService, Object... args) throws WithServiceException {
         for (ServiceReference svc : this.trackedServices.getServices()) {
-            Object service = this.context.getService(svc);
+            Service service = (Service)this.context.getService(svc);
             try {
                 withService.withService(service, svc, args);
             }

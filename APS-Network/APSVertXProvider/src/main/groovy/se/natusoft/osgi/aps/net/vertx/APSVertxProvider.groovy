@@ -47,28 +47,84 @@ import io.vertx.core.Vertx
 import io.vertx.core.http.HttpServer
 import io.vertx.ext.web.Router
 import org.osgi.framework.BundleContext
-import se.natusoft.osgi.aps.api.pubcon.APSConsumer
 import se.natusoft.osgi.aps.core.lib.APSObjectPublisher
 import se.natusoft.osgi.aps.exceptions.APSStartFailureException
 import se.natusoft.osgi.aps.net.vertx.api.APSVertx
-import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
 import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 
-import java.util.concurrent.ConcurrentHashMap
-
 // TODO: Make clustering optional.
 /**
- * Implements APSVertXService and also calls all DataConsumer<Vertx> services found with an Vertx instance.
+ * This is managed by APSActivator. It will start up Vertx, and configured sub services, and then publish
+ * those to consumers consuming them. When the bundle is shutdown Vertx will also be shutdown and all consumer
+ * will be notified about that with a status "revoked".
  *
- * Do consider using the DataConsumer.DataConsumerProvider utility implementation for callback delivery of Vertx.
+ * So in other words, this manages Vertx and its services and provides them to whatever wants to use them.
+ * Clients/consumers will have to publish APSConsumer<Object> as an OSGi service with the following service
+ * properties:
+ *
+ * __Vertx only:__ consumed=vertx
+ *
+ * _Vertx and http router:__ consumed=vertx, http-service-name=_name_
+ * where _name_ matches a config entry for http servers for different ports.
+ *
+ * This class makes use of APSObjectPublisher in aps-core-lib to publish vertx and router instances. APSObjectPublisher
+ * handles new consumer services becoming available after an object have been published, up until the published object
+ * is revoked.
+ *
+ * ## Example (from test code) making use of VertxConsumer trait.
+ *
+ *      \@OSGiServiceProvider(properties = [
+ *          @OSGiProperty(name = "consumed", value = "vertx"),
+ *          @OSGiProperty(name = APSVertx.HTTP_SERVICE_NAME, value = "test")
+ *      ])
+ *      \@CompileStatic
+ *      \@TypeChecked
+ *      class VertxConsumerService implements APSConsumer<Vertx>, VertxConsumer {
+ *
+ *          @Managed(loggingFor = "Test:VertxConsumerService")
+ *          APSLogger logger
+ *
+ *          // Note that this only registers callbacks! The callbacks themselves will not be called until the
+ *          // service have been published. This will not happen util after all injections are done. Thereby
+ *          // this.logger.info(...) will always work.
+ *
+ *          VertxConsumerService() {
+ *              this.onVertxAvailable = { Vertx vertx ->
+ *                  this.logger.info( "Received Vertx instance! [${vertx}]" )
+ *                  APSVertxProviderTest.vertx = vertx
+ *              }
+ *
+ *              this.onVertxRevoked = {
+ *                  this.logger.info( "Vertx instance revoked!" )
+ *              }
+ *
+ *              this.onRouterAvailable = { Router router ->
+ *                  this.logger.info( "Received Router instance! [${router}]" )
+ *                  APSVertxProviderTest.router = router
+ *              }
+ *
+ *              this.onError = { String message ->
+ *                  this.logger.error( message )
+ *              }
+ *          }
+ *      }
+ *
+ * ## OSGi upside-down
+ *
+ * APS uses OSGi a bit upside-down :-) To get information publish an APSConsumer service and the information will be
+ * received when available. This makes it reactive, and does not require as much threading as before. Since APSServiceTracker
+ * waits for a service to become available (with a timeout) in normal cases it meant that APS bundle activators had to
+ * thread startup since a tracker could be hanging waiting for something. When doing it in reverse like described above
+ * that is no longer the case. The code will be called when what it needs is available. The only catch is that it is harder
+ * to determine if not everything becomes available.
  */
 @SuppressWarnings([ "GroovyUnusedDeclaration", "PackageAccessibility" ])
 @CompileStatic
 @TypeChecked
-class APSVertxProvider extends VertxConsumer implements APSConsumer<Vertx> {
+class APSVertxProvider {
 
     /**
      * This is stored in the map of named instances.
@@ -96,10 +152,10 @@ class APSVertxProvider extends VertxConsumer implements APSConsumer<Vertx> {
     private Vertx vertx
 
     /** A map of HTTP servers per service port. These are internal to this bundle. */
-    private Map<Integer, HttpServer> httpServerByPort = new ConcurrentHashMap<>()
+    private Map<Integer, HttpServer> httpServerByPort = [ : ]
 
     /** A map of Routers for HTTP servers per service port. These are provided to those that wants to serve a path. */
-    private Map<Integer, Router> httpServerRouterByPort = new ConcurrentHashMap<>()
+    private Map<Integer, Router> httpServerRouterByPort = [ : ]
 
     /** Publishes the vertx instance. */
     private APSObjectPublisher<Vertx> vertxPublisher
@@ -116,6 +172,8 @@ class APSVertxProvider extends VertxConsumer implements APSConsumer<Vertx> {
             vertx_http_service_test              : 8888
     ]
 
+    private int confPrefixLen = "vertx_http_service_".length()
+
     /**
      * This gets called after all injections are done.
      */
@@ -123,17 +181,11 @@ class APSVertxProvider extends VertxConsumer implements APSConsumer<Vertx> {
     void init() {
         this.logger.connectToLogService( this.context )
 
-        this.vertxPublisher = new APSObjectPublisher<Vertx>( context: this.context, consumerQuery: "(consumed=vertx)" )
-
         startVertx()
-
-        startConfiguredHttpServices(  )
     }
 
     @BundleStop
     void shutdown() {
-        stopConfiguredHttpServices(  )
-
         stopVertx()
 
         this.logger.disconnectFromLogService( this.context )
@@ -143,12 +195,19 @@ class APSVertxProvider extends VertxConsumer implements APSConsumer<Vertx> {
     // Methods
     //
 
+    /**
+     * Starts the main Vertx service which in turn will start other Vertx services when up.
+     */
     private void startVertx() {
         Vertx.clusteredVertx( [ : ] ) { AsyncResult<Vertx> res ->
             if ( res.succeeded() ) {
                 logger.info "Vert.x cluster started successfully!"
                 this.vertx = res.result()
+
+                this.vertxPublisher = new APSObjectPublisher<Vertx>( context: this.context, consumerQuery: "(consumed=vertx)" ).init()
                 this.vertxPublisher.publish( this.vertx )
+
+                startVertxServices()
             } else {
                 logger.error "Vert.x cluster failed to start!", res.cause()
                 throw new APSStartFailureException( "Vert.x cluster failed to start!", res.cause() )
@@ -156,7 +215,12 @@ class APSVertxProvider extends VertxConsumer implements APSConsumer<Vertx> {
         }
     }
 
+    /**
+     * Stops the main Vertx service which first will stop other vertx services.
+     */
     private void stopVertx() {
+        stopVertxServices()
+
         this.vertxPublisher.revoke()
 
         this.vertx.close() { AsyncResult<Vertx> res ->
@@ -168,7 +232,24 @@ class APSVertxProvider extends VertxConsumer implements APSConsumer<Vertx> {
         }
     }
 
-    private void startConfiguredHttpServices() {
+    /**
+     * Start all Vertx sub services.
+     */
+    void startVertxServices() {
+        startHttpServices()
+    }
+
+    /**
+     * Stop all Vertx sub services.
+     */
+    void stopVertxServices() {
+        stopHttpServices()
+    }
+
+    /**
+     * Starts all Vertx Http services and a router for each. It is the router that is published to clients.
+     */
+    private void startHttpServices() {
         this.config.each { String key, Object value ->
             if ( key.startsWith( "vertx_http_service" ) ) {
                 startHttpService( key )
@@ -176,13 +257,17 @@ class APSVertxProvider extends VertxConsumer implements APSConsumer<Vertx> {
         }
     }
 
+    /**
+     * Starts a specific Http servcie and router.
+     *
+     * @param key A key in configuration providing a port to listen to.
+     */
     private void startHttpService( String key ) {
-        // Hmm ... "vertx_http_service_${httpServiceName}" fails here! Null gets returned for a valid name!
-        // Not even forcing a GString helps:
-        // Integer port = this.configold["""vertx_http_service_${httpServiceName}"""] as Integer
-        Integer port = this.config[ "${key}" ] as Integer
+        Integer port = this.config[ key ] as Integer
 
         if ( port != null ) {
+            String serviceName = key.substring( this.confPrefixLen )
+
             // We keep a server for each listened to port.
             HttpServer httpServer = httpServerByPort[ port ] // TODO: Currently single threaded server!!
             if ( httpServer == null ) {
@@ -200,9 +285,9 @@ class APSVertxProvider extends VertxConsumer implements APSConsumer<Vertx> {
 
                 APSObjectPublisher<Router> routerPublisher = new APSObjectPublisher<Router>(
                         context: this.context,
-                        consumerQuery: "(&(consumed=vertx)(${APSVertx.HTTP_SERVICE_NAME}=${key}))",
-                        published: router
-                )
+                        consumerQuery: "(&(consumed=vertx)(${APSVertx.HTTP_SERVICE_NAME}=${serviceName}))"
+                ).init()
+                routerPublisher.publish( router )
                 this.httpRouterPublishers.put( key, routerPublisher )
             }
         } else {
@@ -211,7 +296,10 @@ class APSVertxProvider extends VertxConsumer implements APSConsumer<Vertx> {
 
     }
 
-    private void stopConfiguredHttpServices() {
+    /**
+     * Stops all Http services and their routers.
+     */
+    private void stopHttpServices() {
         this.config.each { String key, Object value ->
             if ( key.startsWith( "vertx_http_service" ) ) {
                 stopHttpService( key )
@@ -219,13 +307,18 @@ class APSVertxProvider extends VertxConsumer implements APSConsumer<Vertx> {
         }
     }
 
+    /**
+     * Stops a Http service and its router.
+     *
+     * @param key A key in configuration providing the service port. This is used to find locally cached service.
+     */
     private void stopHttpService( String key ) {
-        Integer port = this.config[ "${key}" ] as Integer
+        Integer port = this.config[ key ] as Integer
 
         APSObjectPublisher<Router> routerPublisher = this.httpRouterPublishers.remove( key )
         routerPublisher.revoke()
 
-        Router router = httpServerRouterByPort.remove( port )
+        Router router = this.httpServerRouterByPort.remove( port )
         router.delete()
 
         HttpServer httpServer = this.httpServerByPort[ port ]
@@ -237,34 +330,4 @@ class APSVertxProvider extends VertxConsumer implements APSConsumer<Vertx> {
             }
         }
     }
-
-//    /**
-//     * For providing result back to called the same way as Vertx does.
-//     */
-//    @SuppressWarnings("PackageAccessibility")
-//    private static class AsyncResultProvider implements AsyncResult<Vertx> {
-//        @NotNull
-//        Vertx vertx
-//        boolean succeeded
-//
-//        @Override
-//        Vertx result() {
-//            return this.vertx
-//        }
-//
-//        @Override
-//        Throwable cause() {
-//            return null
-//        }
-//
-//        @Override
-//        boolean succeeded() {
-//            return this.succeeded
-//        }
-//
-//        @Override
-//        boolean failed() {
-//            return !succeeded()
-//        }
-//    }
 }

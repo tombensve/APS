@@ -70,7 +70,7 @@
             Note that the ${buildNumber} which is probably error marked by your IDE is made available
             at runtime by build-number-mixin triggered by the mixin-maven-plugin below.
         -->
-        <osgi.bundle.symbolic.name>${project.artifactId}_${buildNumber}</osgi.bundle.symbolic.name>
+        <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
 
         <!-- The bundle activator class -->
         <osgi.bundle.activator>se.natusoft.osgi.aps.tools.APSActivator</osgi.bundle.activator>
