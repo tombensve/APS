@@ -39,8 +39,10 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
         deploy 'vertx-consumer-svc' with new APSActivator() using '/se/natusoft/osgi/aps/net/vertx/VertxConsumerService.class'
 
         try {
-
-            hold() whilst { vertx == null } maxTime 15L unit SECONDS go()
+            println ">>>>> " + new Date()
+            hold() whilst { vertx == null  } maxTime 6L unit SECONDS go()
+            hold() whilst { router == null } maxTime( 6L ) unit SECONDS go()
+            println "<<<<< " + new Date()
 
             assert vertx != null
             assert router != null
@@ -55,15 +57,15 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
 }
 
 @SuppressWarnings("GroovyUnusedDeclaration")
-@OSGiServiceProvider( properties = [
-        @OSGiProperty( name = "consumed", value = "vertx"),
-        @OSGiProperty( name = APSVertx.HTTP_SERVICE_NAME, value = "test")
-] )
+@OSGiServiceProvider(properties = [
+        @OSGiProperty(name = "consumed", value = "vertx"),
+        @OSGiProperty(name = APSVertx.HTTP_SERVICE_NAME, value = "test")
+])
 @CompileStatic
 @TypeChecked
 // Important: Service interface must be the first after "implements"!! Otherwise serviceAPIs=[Consumer.class] must be specified
 // in @OSGiServiceProvider annotation.
-class VertxConsumerService extends VertxConsumer implements APSConsumer<Vertx> {
+class VertxConsumerService implements APSConsumer<Vertx>, VertxConsumer {
 
     @Managed(loggingFor = "Test:VertxConsumerService")
     APSLogger logger
@@ -73,18 +75,18 @@ class VertxConsumerService extends VertxConsumer implements APSConsumer<Vertx> {
     // this.logger.info(...) will always work.
     VertxConsumerService() {
         this.onVertxAvailable = { Vertx vertx ->
-            this.logger.info("Received Vertx instance! [${vertx}]")
+            this.logger.info( "Received Vertx instance! [${vertx}]" )
             APSVertxProviderTest.vertx = vertx
         }
         this.onVertxRevoked = {
-            this.logger.info("Vertx instance revoked!")
+            this.logger.info( "Vertx instance revoked!" )
         }
         this.onRouterAvailable = { Router router ->
-            this.logger.info("Received Router instance! [${router}]")
+            this.logger.info( "Received Router instance! [${router}]" )
             APSVertxProviderTest.router = router
         }
         this.onError = { String message ->
-            this.logger.error(message)
+            this.logger.error( message )
         }
     }
 }
