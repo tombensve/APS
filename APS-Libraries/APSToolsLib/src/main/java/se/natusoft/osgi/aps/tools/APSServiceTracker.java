@@ -42,6 +42,8 @@ import se.natusoft.osgi.aps.tools.tracker.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -149,6 +151,9 @@ public class APSServiceTracker<Service>  implements ServiceListener {
 
     /** Handle start() being called more than once. */
     private boolean started = false;
+
+    /** A pool of executors for handling event driven callbacks. */
+    private ExecutorService executorService = Executors.newWorkStealingPool();
 
     //
     // Constructors
@@ -829,8 +834,8 @@ public class APSServiceTracker<Service>  implements ServiceListener {
             for (ServiceReference serviceRef : this.serviceRefs) {
                 // Please note that the active service is set after this call, so if this happens to be the
                 // same as the active service we cannot reuse its service instance.
-                OnServiceRunnerThread osrt = new OnServiceRunnerThread(serviceRef, this.onServiceAvailable);
-                osrt.run();
+                OnServiceRunner osrt = new OnServiceRunner(serviceRef, this.onServiceAvailable);
+                APSServiceTracker.this.executorService.submit(osrt);
             }
         }
 
@@ -854,8 +859,8 @@ public class APSServiceTracker<Service>  implements ServiceListener {
                 if (this.onServiceAvailable != null) {
                     // Please note that the active service is set after this call, so if this happens to be the
                     // same as the active service we cannot reuse its service instance.
-                    OnServiceRunnerThread osrt = new OnServiceRunnerThread(reference, this.onServiceAvailable);
-                    osrt.start();
+                    OnServiceRunner osrt = new OnServiceRunner(reference, this.onServiceAvailable);
+                    APSServiceTracker.this.executorService.submit(osrt);
                 }
                 if (APSServiceTracker.this.debugLogger != null) {
                     APSServiceTracker.this.debugLogger.debug("Added service: " + reference.toString());
@@ -873,6 +878,7 @@ public class APSServiceTracker<Service>  implements ServiceListener {
         /**
          * @return true if there are tracked services available.
          */
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         synchronized boolean hasServices() {
             return !this.serviceRefs.isEmpty();
         }
@@ -881,9 +887,7 @@ public class APSServiceTracker<Service>  implements ServiceListener {
          * @return A copy of the tracked services.
          */
         public synchronized List<ServiceReference> getServices() {
-            List<ServiceReference> refs = new ArrayList<>();
-            refs.addAll(this.serviceRefs);
-            return refs;
+            return new ArrayList<>(this.serviceRefs);
         }
 
         /**
@@ -921,8 +925,8 @@ public class APSServiceTracker<Service>  implements ServiceListener {
             if (found != null) {
                 this.serviceRefs.remove(found);
                 if (this.onServiceLeaving != null) {
-                    OnServiceRunnerThread osrt = new OnServiceRunnerThread(found, this.onServiceLeaving);
-                    osrt.start();
+                    OnServiceRunner osrt = new OnServiceRunner(found, this.onServiceLeaving);
+                    APSServiceTracker.this.executorService.submit(osrt);
                 }
                 if (APSServiceTracker.this.debugLogger != null) {
                     APSServiceTracker.this.debugLogger.debug("Removed service: " + found.toString());
@@ -934,8 +938,7 @@ public class APSServiceTracker<Service>  implements ServiceListener {
          * Clears all tracked services.
          */
         public synchronized void clear() {
-            List<ServiceReference> toRemove = new ArrayList<>();
-            toRemove.addAll(this.serviceRefs);
+            List<ServiceReference> toRemove = new ArrayList<>(this.serviceRefs);
             for (ServiceReference sref : toRemove) {
                 removeService(sref);
             }
@@ -996,10 +999,10 @@ public class APSServiceTracker<Service>  implements ServiceListener {
         void setOnActiveServiceAvailable(OnServiceAvailable onActiveServiceAvailable) {
             this.onActiveServiceAvailable = onActiveServiceAvailable;
             if (this.active != null) {
-                OnServiceRunnerThread osrt = (APSServiceTracker.this.cacheActiveService && this.activeService != null) ?
-                        new OnServiceRunnerThread(this.activeService, this.onActiveServiceAvailable) :
-                        new OnServiceRunnerThread(this.active, this.onActiveServiceAvailable);
-                osrt.start();
+                OnServiceRunner osrt = (APSServiceTracker.this.cacheActiveService && this.activeService != null) ?
+                        new OnServiceRunner(this.activeService, this.onActiveServiceAvailable) :
+                        new OnServiceRunner(this.active, this.onActiveServiceAvailable);
+                APSServiceTracker.this.executorService.submit(osrt);
             }
         }
 
@@ -1042,8 +1045,8 @@ public class APSServiceTracker<Service>  implements ServiceListener {
                     catch (IllegalArgumentException | IllegalStateException ignore) {}
                 }
                 if (this.onActiveServiceLeaving != null) {
-                    OnServiceRunnerThread osrt = new OnServiceRunnerThread(oldActive, this.onActiveServiceLeaving);
-                    osrt.start();
+                    OnServiceRunner osrt = new OnServiceRunner(oldActive, this.onActiveServiceLeaving);
+                    APSServiceTracker.this.executorService.submit(osrt);
                 }
                 if (APSServiceTracker.this.debugLogger != null) {
                     APSServiceTracker.this.debugLogger.debug("Removed active!");
@@ -1054,10 +1057,10 @@ public class APSServiceTracker<Service>  implements ServiceListener {
                 wakeAllWaiting();
 
                 if (this.onActiveServiceAvailable != null) {
-                    OnServiceRunnerThread osrt = (APSServiceTracker.this.cacheActiveService && this.activeService != null) ?
-                            new OnServiceRunnerThread(this.activeService, this.onActiveServiceAvailable) :
-                            new OnServiceRunnerThread(this.active, this.onActiveServiceAvailable);
-                    osrt.start();
+                    OnServiceRunner osrt = (APSServiceTracker.this.cacheActiveService && this.activeService != null) ?
+                            new OnServiceRunner(this.activeService, this.onActiveServiceAvailable) :
+                            new OnServiceRunner(this.active, this.onActiveServiceAvailable);
+                    APSServiceTracker.this.executorService.submit(osrt);
                 }
                 if (APSServiceTracker.this.debugLogger != null) {
                     APSServiceTracker.this.debugLogger.debug("Set active: " + this.active.toString());
@@ -1149,7 +1152,7 @@ public class APSServiceTracker<Service>  implements ServiceListener {
     /**
      * Runs an _OnServiceAvailable_ or an _OnServiceLeaving_ in another thread.
      */
-    private class OnServiceRunnerThread extends Thread {
+    private class OnServiceRunner implements Runnable {
         //
         // Private Members
         //
@@ -1176,7 +1179,7 @@ public class APSServiceTracker<Service>  implements ServiceListener {
          * @param service The service to act on.
          * @param onServiceAvailable The callback to run.
          */
-        private OnServiceRunnerThread(Service service, OnServiceAvailable onServiceAvailable) {
+        private OnServiceRunner(Service service, OnServiceAvailable onServiceAvailable) {
             if (service == null) {
                 throw new IllegalArgumentException("service argument cannot be null!");
             }
@@ -1190,7 +1193,7 @@ public class APSServiceTracker<Service>  implements ServiceListener {
          * @param reference The service reference to act on.
          * @param onServiceAvailable The callback to run.
          */
-        private OnServiceRunnerThread(ServiceReference reference, OnServiceAvailable onServiceAvailable) {
+        private OnServiceRunner(ServiceReference reference, OnServiceAvailable onServiceAvailable) {
             if (reference == null) {
                 throw new IllegalArgumentException("reference argument cannot be null!");
             }
@@ -1204,7 +1207,7 @@ public class APSServiceTracker<Service>  implements ServiceListener {
          * @param reference The service reference to act on.
          * @param onServiceLeaving The callback to run.
          */
-        private OnServiceRunnerThread(ServiceReference reference, OnServiceLeaving onServiceLeaving) {
+        private OnServiceRunner(ServiceReference reference, OnServiceLeaving onServiceLeaving) {
             if (reference == null) {
                 throw new IllegalArgumentException("reference argument cannot be null!");
             }

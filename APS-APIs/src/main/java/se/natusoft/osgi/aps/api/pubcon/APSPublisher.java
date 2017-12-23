@@ -50,4 +50,5 @@ public interface APSPublisher<Published> {
      * @param meta Meta data to help the implementation make decisions.
      */
     void publish(Published toPublish, APSMeta meta);
+
 }

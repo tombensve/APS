@@ -5,16 +5,13 @@ import groovy.transform.TypeChecked
 import io.vertx.core.Vertx
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.sockjs.BridgeEvent
-import io.vertx.ext.web.handler.sockjs.BridgeOptions
 import io.vertx.ext.web.handler.sockjs.SockJSHandler
 import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.api.pubcon.APSConsumer
 import se.natusoft.osgi.aps.net.vertx.api.APSVertx
-import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
 import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
-import se.natusoft.osgi.aps.tools.reactive.Consumer
 
 /**
  * Provides a Vertx EventBus bridge.
@@ -79,31 +76,36 @@ class SockJSEventBusBridge extends VertxConsumer implements APSConsumer<Vertx>, 
         }
 
         this.onRouterAvailable = { Router router ->
-            this.logger.info( "######## SockJSEventBusBridge.onRouterAvailable" )
-            this.router = router
+            if (vertx() != null) {
+                this.logger.info( "######## SockJSEventBusBridge.onRouterAvailable" )
+                this.router = router
 
-            // Currently no more detailed permissions than on target address. Might add limits on message contents
-            // later.
-            def inboundPermitted = [address: NODE_ADDRESS]
-            def outboundPermitted = [address: NODE_ADDRESS]
-            def options = [
-                    inboundPermitteds : [inboundPermitted],
-                    outboundPermitteds: [outboundPermitted]
-            ] as Map<String, Object>
+                // Currently no more detailed permissions than on target address. Might add limits on message contents
+                // later.
+                def inboundPermitted = [ address: NODE_ADDRESS ]
+                def outboundPermitted = [ address: NODE_ADDRESS ]
+                def options = [
+                        inboundPermitteds : [ inboundPermitted ],
+                        outboundPermitteds: [ outboundPermitted ]
+                ] as Map<String, Object>
 
 //            SockJSHandler sockJSHandler = SockJSHandler.create( vertx() )
 //            BridgeOptions options = new BridgeOptions()
 //            sockJSHandler.bridge( options )
 
-            // Note that this router is already bound to an HTTP server!
-            SockJSHandler sockJSHandler = SockJSHandler.create( vertx() )
-            sockJSHandler.bridge( options ) { BridgeEvent be ->
-                this.logger.info("SockJSBridge - Type: ${be.type()}")
-                be.complete()
-            }
-            this.router.route( "/eventbus/*" ).handler( sockJSHandler )
+                // Note that this router is already bound to an HTTP server!
+                SockJSHandler sockJSHandler = SockJSHandler.create( vertx() )
+                sockJSHandler.bridge( options ) { BridgeEvent be ->
+                    this.logger.info( "SockJSBridge - Type: ${be.type()}" )
+                    be.complete()
+                }
+                this.router.route( "/eventbus/*" ).handler( sockJSHandler )
 
-//            this.logger.info "Vert.x SockJSHandler for event bus bridging started successfully!"
+                this.logger.info "Vert.x SockJSHandler for event bus bridging started successfully!"
+            }
+            else {
+                this.logger.error( "Vertx no longer available!" )
+            }
         }
 
         this.onVertxRevoked = {
@@ -128,7 +130,7 @@ class SockJSEventBusBridge extends VertxConsumer implements APSConsumer<Vertx>, 
         if ( this.router != null ) {
             this.router.get( "/eventbus/*" ).remove()
         }
-        super.cleanup()
+        cleanup()
         this.logger.disconnectFromLogService( this.context )
     }
 }

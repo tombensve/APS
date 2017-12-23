@@ -7,6 +7,7 @@ import se.natusoft.docutations.NotUsed
 import se.natusoft.osgi.aps.api.pubcon.APSConsumer
 import se.natusoft.osgi.aps.api.pubcon.APSPublisher
 import se.natusoft.osgi.aps.api.util.APSMeta
+import se.natusoft.osgi.aps.tools.APSLogger
 
 /**
  * This makes use of an APSServiceTracker to track and call APSConsumer services.
@@ -34,9 +35,9 @@ class APSObjectPublisher<Published> implements APSPublisher<Published> {
     // Constants
     //
 
-    private static final APSMeta OBJECT_PUBLISHED = APSMeta.with( [ "status": APSMeta.OBJECT_PUBLISHED_STATUS ] )
-    private static final APSMeta OBJECT_UPDATED = APSMeta.with( [ "status": APSMeta.OBJECT_UPDATED_STATUS ] )
-    private static final APSMeta OBJECT_REVOKED = APSMeta.with( [ "status": APSMeta.OBJECT_REVOKED_STATUS ] )
+    private static final APSMeta OBJECT_PUBLISHED = APSMeta.with( [ "status": APSMeta.STATUS_PUBLISHED ] )
+    private static final APSMeta OBJECT_UPDATED = APSMeta.with( [ "status": APSMeta.STATUS_UPDATED ] )
+    private static final APSMeta OBJECT_REVOKED = APSMeta.with( [ "status": APSMeta.STATUS_REVOKED ] )
 
     //
     // Properties
@@ -54,27 +55,45 @@ class APSObjectPublisher<Published> implements APSPublisher<Published> {
     /** This will be called with a ServiceReference. A true result will result in that the consumer is accepted. */
     Closure<Boolean> newConsumerCallback
 
+    /**
+     * When this is true there is only one object being published and consumers can come long after the publish
+     * and still receive the published object.
+     *
+     * When this is false, what is published is published at that moment and whoever consumes at that moment gets
+     * it, later the published object is gone.
+     */
+    boolean staticLongLivedPublishObject = false
+
+    /** A logger. */
+    APSLogger logger
+
     //
     // Private Members
     //
 
     /** For tracking consumers. */
-    private APSGServiceTracker<APSConsumer<Published>> consumerTracker
+    private APSGServiceTracker<APSConsumer<Object>> consumerTracker
 
     /** For keeping track of which consumers have received published object. */
     private Map<ServiceReference, APSConsumer> knownConsumers
 
     /** The published object. */
-    private Published published
+    private Published published = null
 
     //
-    // Constructorish
+    // Constructorish (for use after Groovy property constructor)
     //
 
     /**
      * This must be called after setting properties, but before calling publish(...).
      */
     APSObjectPublisher<Published> init() {
+        if ( this.logger == null ) {
+            this.logger = new APSLogger( System.out )
+        }
+
+        this.logger.info( "consumerQuery: ${this.consumerQuery}" )
+
         this.knownConsumers = [ : ]
 
         this.consumerTracker = new APSGServiceTracker<>( context, APSConsumer.class, this.consumerQuery, timeout )
@@ -97,11 +116,18 @@ class APSObjectPublisher<Published> implements APSPublisher<Published> {
      * @param context The bundle context of the caller.
      */
     void publish( @NotNull Published published ) {
-        this.published = published
+        if ( published == null ) throw new IllegalArgumentException( "published cannot be  null!" )
+        APSMeta meta = null
+        if ( this.staticLongLivedPublishObject ) {
+            this.published = published
+            meta = OBJECT_UPDATED
+        } else {
+            meta = APSMeta.empty()
+        }
 
         this.consumerTracker.g_withAllAvailableServices { APSConsumer<Published> consumer ->
             // I believe that the requirement of "as Published" is an IDEA warning bug. this.published is of type Published!
-            consumer.apsConsume( this.published as Published, OBJECT_UPDATED )
+            consumer.apsConsume( published as Published, meta )
         }
     }
 
@@ -116,8 +142,11 @@ class APSObjectPublisher<Published> implements APSPublisher<Published> {
      */
 
     @Override
-    void publish( Published published, APSMeta meta ) {
-        this.published = published
+    void publish( @NotNull Published published, @NotNull APSMeta meta ) {
+        if ( published == null ) throw new IllegalArgumentException( "published cannot be  null!" )
+        if ( this.staticLongLivedPublishObject ) {
+            this.published = published
+        }
 
         this.consumerTracker.g_withAllAvailableServices { APSConsumer<Published> consumer ->
             // I believe that the requirement of "as Published" is an IDEA warning bug. this.published is of type Published!
@@ -125,9 +154,8 @@ class APSObjectPublisher<Published> implements APSPublisher<Published> {
         }
     }
 
-
     /**
-     * Stops tracking consumers.
+     * This should only be called for long lived published objects to revoke them. This will also call stop()
      */
     void revoke() {
         this.consumerTracker.g_withAllAvailableServices { APSConsumer<Published> consumer ->
@@ -140,9 +168,17 @@ class APSObjectPublisher<Published> implements APSPublisher<Published> {
                 System.err.println( e.toString() )
             }
         }
-        this.consumerTracker.stop()
-        this.knownConsumers = null
+        stop()
+        this.knownConsumers.clear()
         this.published = null
+    }
+
+    /**
+     * Stops tracking consumers. This should be used for on the moment publishing. When long lived object are published
+     * revoke() should be used instead.
+     */
+    void stop() {
+        this.consumerTracker.stop()
     }
 
     /**
@@ -153,11 +189,13 @@ class APSObjectPublisher<Published> implements APSPublisher<Published> {
      */
     private void onServiceAvailableHandler( @NotNull APSConsumer<Published> consumer,
                                             @NotNull ServiceReference serviceReference ) {
-        if ( !this.knownConsumers.containsKey( serviceReference ) ) {
-            if ( this.newConsumerCallback == null || this.newConsumerCallback( serviceReference ) ) {
-                //noinspection GroovyAssignabilityCheck
-                consumer.apsConsume( this.published, OBJECT_PUBLISHED )
-                this.knownConsumers[ serviceReference ] = consumer
+        if ( this.staticLongLivedPublishObject ) {
+            if ( !this.knownConsumers.containsKey( serviceReference ) ) {
+                if ( this.newConsumerCallback == null || this.newConsumerCallback( serviceReference ) ) {
+                    //noinspection GroovyAssignabilityCheck
+                    consumer.apsConsume( this.published, OBJECT_PUBLISHED )
+                    this.knownConsumers[ serviceReference ] = consumer
+                }
             }
         }
     }
@@ -171,8 +209,10 @@ class APSObjectPublisher<Published> implements APSPublisher<Published> {
     @SuppressWarnings("GroovyUnusedDeclaration")
     private synchronized void onServiceLeavingHandler( @NotNull ServiceReference serviceReference,
                                                        @NotUsed Class serviceAPI ) {
-        if ( this.knownConsumers.containsKey( serviceReference ) ) {
-            this.knownConsumers.remove( serviceReference )
+        if ( this.staticLongLivedPublishObject ) {
+            if ( this.knownConsumers.containsKey( serviceReference ) ) {
+                this.knownConsumers.remove( serviceReference )
+            }
         }
     }
 }

@@ -5,6 +5,10 @@ import java.util.Map;
 
 /**
  * Meta data utility.
+ *
+ * Note that the defined constants are only utilities! They are not required in any way. Whatever is put in an APSMeta
+ * instance is up to the user. This whole class is just a utility to put a clearer name on a specific usage of
+ * Map&lt;String, String&gt;.
  */
 public interface APSMeta extends Map<String, String> {
 
@@ -12,10 +16,20 @@ public interface APSMeta extends Map<String, String> {
     // Constants
     //
 
+    /** This is a key for a status entry. */
     String STATUS = "status";
-    String OBJECT_PUBLISHED_STATUS = "object-published";
-    String OBJECT_UPDATED_STATUS = "object-updated";
-    String OBJECT_REVOKED_STATUS = "object-revoked";
+
+    /** This is a possible status value. */
+    String STATUS_PUBLISHED = "published";
+
+    /** This is a possible status values */
+    String STATUS_UPDATED = "updated";
+
+    /** This is a possible status value. */
+    String STATUS_REVOKED = "revoked";
+
+    /** Key for a topic. */
+    String TOPIC = "topic";
 
     //
     // Methods
@@ -30,6 +44,13 @@ public interface APSMeta extends Map<String, String> {
         APSMeta meta = new APSMeta.Provider();
         meta.putAll(initial);
         return meta;
+    }
+
+    /**
+     * @return A new empty APSMeta object.
+     */
+    static APSMeta empty() {
+        return new APSMeta.Provider();
     }
 
     //

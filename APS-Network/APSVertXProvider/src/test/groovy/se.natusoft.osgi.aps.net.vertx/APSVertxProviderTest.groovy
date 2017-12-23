@@ -3,6 +3,7 @@ package se.natusoft.osgi.aps.net.vertx
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.core.Vertx
+import io.vertx.core.eventbus.EventBus
 import io.vertx.ext.web.Router
 import org.junit.Test
 import se.natusoft.osgi.aps.api.pubcon.APSConsumer
@@ -24,6 +25,7 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
 
     public static Vertx vertx = null
     public static Router router = null
+    public static EventBus eventBus = null
 
     @Test
     void reactiveAPITest() throws Exception {
@@ -65,7 +67,7 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
 @TypeChecked
 // Important: Service interface must be the first after "implements"!! Otherwise serviceAPIs=[Consumer.class] must be specified
 // in @OSGiServiceProvider annotation.
-class VertxConsumerService implements APSConsumer<Vertx>, VertxConsumer {
+class VertxConsumerService extends VertxConsumer implements APSConsumer<Vertx> {
 
     @Managed(loggingFor = "Test:VertxConsumerService")
     APSLogger logger

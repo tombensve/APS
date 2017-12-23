@@ -112,11 +112,6 @@
             APS properties.
         -->
 
-        <!-- We register our configuration for auto registration and management. -->
-        <aps.config.classes>
-            se.natusoft.osgi.aps.web.adminweb.config.ContentServerConfig
-        </aps.config.classes>
-
         <!--
             Other properties
         -->
@@ -173,7 +168,7 @@
 
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-groovy-tools-lib</artifactId>
+            <artifactId>aps-core-lib</artifactId>
             <version>1.0.0</version>
             <scope>provided</scope>
         </dependency>
@@ -247,6 +242,13 @@
 
             <!--
                 Copy web content
+
+                Note that the web app is in src/main/typescript. This job will copy the relevant js & html files
+                from src/main/typescript to src/main/resources/webContent. Maven will then install src/main/resources/webContent
+                in target/classes. The Vertx web server will then get the files to serve from webContent/... classpath.
+
+                Yes, it would have been possible to do all web client development under src/main/resources/webContent directly.
+                But src/main/groovy and src/main/typescript made more maven sense ...
             -->
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -254,41 +256,52 @@
                 <executions>
                     <execution>
 
-                        <!--
-                            This will not run unless the id is exactly this!!!
-                            When run from IDEA however this doesn't help. Nothing is done!
-                        -->
                         <id>copy-webContent</id>
+                        <!--
+                            This has to be process-resources! frontend-maven-plugin runs in generate-resources. This plugin
+                            produces files we want included in the copy.
+                        -->
                         <phase>process-resources</phase>
                         <configuration>
                             <target>
+                                <!--
+                                    Give maven parallel execution time to catch up before we start copying.
+                                    Without this delay we will not get what we expect ...
+
+                                    I almost went bald, tearing my hair trying to figure this one out!!!
+
+
+                                    Do note that if you have a very slow machine this might need increasing in value!
+                                -->
+                                <sleep milliseconds="3000"/>
+
+                                <mkdir dir="target/classes/webContent"/>
                                 <echo message="COPYING WEB FILES!"/>
+                                <mkdir dir="${project.basedir}/src/main/resources/webContent"/>
                                 <copy file="${basedir}/src/main/typescript/index.html"
                                       tofile="${basedir}/src/main/resources/webContent/index.html"
                                       filtering="false"
                                       overwrite="true"
                                       verbose="true"
                                 />
-                                <!--<copy file="src/main/typescript/node_modules/core-js/client/shim.min.js"-->
-                                <!--tofile="src/main/resources/webContent/shim.min.js" filtering="false"/>-->
-                                <!--<copy file="src/main/typescript/node_modules/zone.js/dist/zone.min.js"-->
-                                <!--tofile="src/main/resources/webContent/zone.js" filtering="false"/>-->
-                                <!--<copy file="src/main/typescript/node_modules/sockjs-client/dist/sockjs.min.js"-->
-                                <!--tofile="src/main/resources/webContent/sockjs.min.js" filtering="false"/>-->
-                                <!--<copy file="src/main/typescript/node_modules/vertx3-eventbus-client/vertx-eventbus.js"-->
-                                <!--tofile="src/main/resources/webContent/vertx-eventbus.js" filtering="false"/>-->
+                                <copy file="${basedir}/src/main/typescript/index.html"
+                                      tofile="${basedir}/target/classes/webContent/index.html"
+                                      filtering="false"
+                                      overwrite="true"
+                                      verbose="true"
+                                />
                                 <copy file="${basedir}/src/main/typescript/dist/bundle.js"
                                       tofile="${basedir}/src/main/resources/webContent/adminweb-bundle.js"
                                       filtering="false"
                                       overwrite="true"
                                       verbose="true"
                                 />
-                                <!--<copy file="${basedir}/src/main/typescript/node_modules/rxjs/util/toSubscriber.js.map"-->
-                                      <!--toDir="${basedir}/src/main/resources/webContent/"-->
-                                      <!--filtering="false"-->
-                                      <!--overwrite="true"-->
-                                      <!--verbose="true"-->
-                                <!--/>-->
+                                <copy file="${basedir}/src/main/typescript/dist/bundle.js"
+                                      tofile="${basedir}/target/classes/webContent/adminweb-bundle.js"
+                                      filtering="false"
+                                      overwrite="true"
+                                      verbose="true"
+                                />
 
                                 <echo message="Copying Angular 2 html templates to src/main/resources/webContent."/>
                                 <copydir src="${project.basedir}/src/main/typescript/"
@@ -296,6 +309,15 @@
                                          includes="**/*.html **/*.css"
                                          excludes="node/** node_modules/**"
                                 />
+                                <copydir src="${project.basedir}/src/main/typescript/"
+                                         dest="${project.basedir}/target/classes/webContent"
+                                         includes="**/*.html **/*.css"
+                                         excludes="node/** node_modules/**"
+                                />
+                                <!--
+                                    We need maven/ant time to catch up here too.
+                                -->
+                                <sleep milliseconds="3000"/>
 
                             </target>
                         </configuration>
@@ -312,7 +334,6 @@
                             <target>
                                 <echo message="Cleaning ${project.basedir}/src/main/resources/webContent."/>
                                 <delete dir="${project.basedir}/src/main/resources/webContent"/>
-                                <mkdir dir="${project.basedir}/src/main/resources/webContent"/>
                             </target>
                         </configuration>
                         <goals>
@@ -346,7 +367,6 @@
                     </supportedProjectTypes>
                     <archive>
                         <manifestEntries>
-                            <APS-Configs>${aps.config.classes}</APS-Configs>
                             <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
                         </manifestEntries>
                     </archive>

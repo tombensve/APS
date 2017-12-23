@@ -14,7 +14,6 @@ import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
-import se.natusoft.osgi.aps.tools.reactive.Consumer
 
 // IDEA shows this as not used, but that is not true!! This class will not compile without this import.
 /**
@@ -76,9 +75,9 @@ class AdminWebsProvider extends VertxConsumer implements Constants {
         this.logger.connectToLogService( this.context )
         this.useLogger = this.logger // Provide logger to base class.
 
-        this.onVertxAvailable = { Consumer.Consumed<Vertx> vertx ->
+        this.onVertxAvailable = { Vertx vertx ->
 
-            this.eventConsumer = vertx.get().eventBus().consumer( NODE_ADDRESS ).handler { Message message ->
+            this.eventConsumer = vertx.eventBus().consumer( NODE_ADDRESS ).handler { Message message ->
                 Map<String, Object> event = getBody( message )
 
                 try {

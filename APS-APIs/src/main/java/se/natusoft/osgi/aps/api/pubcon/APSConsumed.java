@@ -1,7 +1,7 @@
 package se.natusoft.osgi.aps.api.pubcon;
 
 /**
- * This is a wrapper of consumed data.
+ * This is an optional wrapper of consumed data.
  *
  * @param <Consumed> The actual type consumed.
  */

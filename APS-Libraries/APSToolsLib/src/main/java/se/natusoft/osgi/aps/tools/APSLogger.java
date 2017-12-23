@@ -47,6 +47,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -60,6 +61,7 @@ public class APSLogger implements LogService {
     //
 
     /** For property constructor. The value is an OutputStream to log to. */
+    @SuppressWarnings("WeakerAccess")
     public static final String PROP_OUTPUT_STREAM = "out-stream";
 
     /**
@@ -70,6 +72,8 @@ public class APSLogger implements LogService {
 
     /** For setting then name of the logger. */
     public static final String PROP_LOGGING_FOR = "loggingFor";
+
+    private static final SimpleDateFormat YYMMDD_HHMMSS = new SimpleDateFormat("yy-MM-dd hh:mm:ss");
 
     //
     // Private Members
@@ -364,7 +368,8 @@ public class APSLogger implements LogService {
      * @param message The log message.
      * @param cause An optional Throwable that is the cause of the log.
      */
-    protected void logToService(LogService logService, int level, String message, Throwable cause) throws Exception {
+    @SuppressWarnings("WeakerAccess")
+    protected void logToService(LogService logService, int level, String message, Throwable cause) {
         if (svcRef != null) {
             if (cause != null) {
                 logService.log(this.svcRef, level, this.loggingFor + message, cause);
@@ -390,6 +395,7 @@ public class APSLogger implements LogService {
      * @param message The log message.
      * @param cause An optional Throwable that is the cause of the log.
      */
+    @SuppressWarnings("WeakerAccess")
     protected void logToOutStream(int level, String message, Throwable cause) {
         if (this.outStream != null) {
             StringBuilder log = new StringBuilder();
@@ -406,6 +412,10 @@ public class APSLogger implements LogService {
                 case LogService.LOG_WARNING:
                     log.append("WARNING: ");
             }
+
+            log.append(YYMMDD_HHMMSS.format(new Date()));
+            log.append(" ");
+
             if (svcRef != null) {
                 Object bundleNameObj = svcRef.getProperty(Constants.BUNDLE_NAME);
                 if (bundleNameObj != null) {

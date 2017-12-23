@@ -27,7 +27,7 @@ import se.natusoft.osgi.aps.tools.APSLogger
  */
 @CompileStatic
 @TypeChecked
-trait VertxConsumer implements APSConsumer<Object> {
+class VertxConsumer implements APSConsumer<Object> {
 
     //
     // Properties
@@ -65,7 +65,7 @@ trait VertxConsumer implements APSConsumer<Object> {
     /**
      * Make Vertx instance available to subclasses.
      */
-    Vertx vertx() {
+    protected Vertx vertx() {
         this.vertx
     }
 
@@ -98,14 +98,14 @@ trait VertxConsumer implements APSConsumer<Object> {
      */
     void apsConsumeVertx( Vertx vertx, Map<String, String> meta ) {
         switch ( meta[ "status" ] ) {
-            case APSMeta.OBJECT_PUBLISHED_STATUS:
+            case APSMeta.STATUS_PUBLISHED:
                 this.vertx = vertx
                 this.onVertxAvailable?.call( vertx )
                 break
-            case APSMeta.OBJECT_REVOKED_STATUS:
+            case APSMeta.STATUS_REVOKED:
                 this.onVertxRevoked?.call()
                 break
-            case APSMeta.OBJECT_UPDATED_STATUS:
+            case APSMeta.STATUS_UPDATED:
                 break
             default:
                 String msg = "Unknown status for consumed vertx! [${meta[ "status" ]}]"
@@ -122,13 +122,13 @@ trait VertxConsumer implements APSConsumer<Object> {
      */
     void apsConsumeRouter( Router router, Map<String, String> meta ) {
         switch ( meta[ "status" ] ) {
-            case APSMeta.OBJECT_PUBLISHED_STATUS:
+            case APSMeta.STATUS_PUBLISHED:
                 this.onRouterAvailable?.call( router )
                 break
-            case APSMeta.OBJECT_REVOKED_STATUS:
+            case APSMeta.STATUS_REVOKED:
                 this.onRouterRevoked?.call()
                 break
-            case APSMeta.OBJECT_UPDATED_STATUS:
+            case APSMeta.STATUS_UPDATED:
                 break
             default:
                 String msg = "Unknown status for consumed router! [${meta[ "status" ]}]"
@@ -140,7 +140,7 @@ trait VertxConsumer implements APSConsumer<Object> {
     /**
      * Call this when shutting down. This will release the Vertx instance.
      */
-    void cleanup() {
+    protected void cleanup() {
         this.vertx = null
         this.onRouterAvailable = null
         this.onVertxRevoked = null

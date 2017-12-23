@@ -3,13 +3,9 @@ package se.natusoft.osgi.aps.web.adminweb
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
-import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigList
-import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
-import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator
 import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.web.adminweb.config.ContentServerConfig
 
 import static java.util.concurrent.TimeUnit.SECONDS
 
@@ -34,58 +30,45 @@ class WebContentServerTest extends OSGIServiceTestTools {
 
         // We deploy this service not to test it, but to add one more client to VertxProvider and verify
         // that it can handle more than one. It didn't at first :-).
+        deploy 'web-content-server' with new APSActivator() using '/se/natusoft/osgi/aps/web/adminweb/WebContentServer.class'
+
         deploy 'sockJS-event-bus-bridge' with new APSActivator() using '/se/natusoft/osgi/aps/web/adminweb/SockJSEventBusBridge.class'
 
-        deploy 'aps-vertx-provider' with new APSActivator() with {
-
-            VertxConfig config = new VertxConfig()
-            TestConfigList<VertxConfig.VertxConfigValue> entries = new TestConfigList<>()
-
-            VertxConfig.VertxConfigValue entry = new VertxConfig.VertxConfigValue()
-            entry.name = new TestConfigValue( value: "workerPoolSize" )
-            entry.value = new TestConfigValue( value: "40" )
-            entry.type = new TestConfigValue( value: "Int" )
-
-            entries.configs.add( entry )
-
-            config.optionsValues = entries
-
-            config
-
-        } from 'se.natusoft.osgi.aps', 'aps-vertx-provider', '1.0.0'
-
-        deploy 'web-content-server' with new APSActivator() with {
-            ContentServerConfig config = new ContentServerConfig()
-
-            TestConfigList<ContentServerConfig.ConfigValue> entries = new TestConfigList<>()
-            config.optionsValues = entries
-
-            config
-        } using '/se/natusoft/osgi/aps/web/adminweb/WebContentServer.class'
+        deploy 'aps-vertx-provider' with new APSActivator() from 'se.natusoft.osgi.aps', 'aps-vertx-provider', '1.0.0'
 
         try {
-            logger.info "Waiting 10 seconds for server to come up."
-            hold() maxTime 10L unit SECONDS go()
+//            Thread verifyThread = Thread.start {
+                logger.info "Waiting 10 seconds for server to come up."
+                hold() maxTime 10L unit SECONDS go()
 
-            logger.info "Calling server ..."
+                logger.info "Calling server ..."
 
-            getAndVerify( "", "index.html" )
-            getAndVerify( "index.html", "index.html" )
-            getAndVerify( "adminweb-bundle.js", "adminweb-bundle.js" )
-            getAndVerify(
-                    "app/components/apsadminweb/apsadminweb-tpl.html",
-                    "app/components/apsadminweb/apsadminweb-tpl.html"
-            )
-            try {
-                getAndVerify( "nonexistent", null )
-                throw new Exception( "A FileNotFoundException was expected!" )
-            }
-            // You don't get an HTTP status from java.net.URL! It throws exceptions instead.
-            catch ( FileNotFoundException ignore ) {
-                logger.info "Correctly got a FileNotFoundException for 'nonexistent'!"
-            }
+                logger.info "no file"
+                getAndVerify( "", "index.html" )
+                logger.info "index.html"
+                getAndVerify( "index.html", "index.html" )
+                logger.info "adminweb-bundle.js"
+                getAndVerify( "adminweb-bundle.js", "adminweb-bundle.js" )
+                logger.info "app/components/apsadminweb/apsadminweb-tpl.html"
+                getAndVerify(
+                        "app/components/apsadminweb/apsadminweb-tpl.html",
+                        "app/components/apsadminweb/apsadminweb-tpl.html"
+                )
+                try {
+                    getAndVerify( "nonexistent", null )
+                    throw new Exception( "A FileNotFoundException was expected!" )
+                }
+                // You don't get an HTTP status from java.net.URL! It throws exceptions instead.
+                catch ( FileNotFoundException ignore ) {
+                    logger.info "Correctly got a FileNotFoundException for 'nonexistent'!"
+                }
+//            }
+//            synchronized (verifyThread) {
+//                verifyThread.wait( 10000 )
+//            }
         }
         catch ( Exception e ) {
+            logger.error(e.message, e)
             shutdown()
             throw e
         }

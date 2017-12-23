@@ -10,11 +10,11 @@ import org.osgi.framework.BundleContext
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Note
 import se.natusoft.docutations.Nullable
-import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
+import se.natusoft.osgi.aps.api.pubcon.APSConsumer
+import se.natusoft.osgi.aps.net.vertx.api.APSVertx
 import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
-import se.natusoft.osgi.aps.tools.reactive.Consumer
 
 /**
  * Delivers HTTP content to a browser.
@@ -52,10 +52,9 @@ import se.natusoft.osgi.aps.tools.reactive.Consumer
 @TypeChecked
 @OSGiServiceProvider( properties = [
         @OSGiProperty( name = "consumed", value = "vertx" ),
-        @OSGiProperty( name = "instance", value = "default" ),
-        @OSGiProperty( name = APSVertxService.HTTP_SERVICE_NAME, value = Constants.APP_NAME )
+        @OSGiProperty( name = APSVertx.HTTP_SERVICE_NAME, value = Constants.APP_NAME )
 ] )
-class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constants {
+class WebContentServer extends VertxConsumer implements APSConsumer<Vertx>, Constants {
 
     //
     // Constants
@@ -77,7 +76,7 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
     private Map<String, File> serveFiles = [:]
 
     /** Web server router to add service route to. */
-    private Consumer.Consumed<Router> router
+    private Router router
 
     //
     // Constructors
@@ -85,10 +84,11 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
 
     WebContentServer() {
 
-        this.onRouterAvailable = { Consumer.Consumed<Router> router ->
+        this.onRouterAvailable = { Router router ->
+            this.logger.info( "######## WebContentServer.onRouterAvailable" )
             this.router = router
 
-            this.router.get().route( "/apsadminweb/*" ).handler { RoutingContext context ->
+            this.router.route( "/apsadminweb/*" ).handler { RoutingContext context ->
                 handleRequest( context.request().exceptionHandler
                         { Throwable exception ->
 
@@ -117,6 +117,8 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
     @Note( "This is executed after all injections are done." )
     void init() {
         this.logger.connectToLogService( this.context )
+        this.logger.info "WebContentServer starting up ..."
+
     }
 
     //
@@ -130,6 +132,7 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
      */
     @SuppressWarnings( "PackageAccessibility" )
     private void handleRequest( @NotNull HttpServerRequest request ) {
+        this.logger.info "######## Handling request for: " + request
         String reqFile = request.path().trim()
         if ( reqFile.endsWith( "/" ) ) {
             reqFile = reqFile + "index.html"
@@ -162,14 +165,16 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
      */
     private @Nullable
     File fileToServe( @NotNull String requestFile ) {
+        this.logger.info "######## About to serve: ${requestFile}"
         File serveFile = this.serveFiles[ requestFile ]
         if ( serveFile == null ) {
+            this.logger.info "######## File not cached."
 
             // Note that the request path is *not* made relative to the route path! You always get the
             // full path.
             URL resourceURL =
                     this.context.getBundle().getResource( "/webContent" + requestFile.substring( ROUTE_PART_SIZE ) )
-            //this.logger.info("resourceURL: ${resourceURL}")
+            this.logger.info("######## resourceURL: ${resourceURL}")
 
             if ( resourceURL != null ) {
                 serveFile = File.createTempFile(
@@ -209,9 +214,8 @@ class WebContentServer extends VertxConsumer implements Consumer<Vertx>, Constan
     @BundleStop
     void shutdown() {
         if ( this.router != null ) {
-            this.router.get().get( "/apsadminweb/*" ).remove()
+            this.router.get( "/apsadminweb/*" ).remove()
             this.logger.info "Removed '/apsadminweb/*' route."
-            this.router.release()
         }
 
         // It is not a bad idea to delete these even on redeployment or shutdown of bundle for other reasons.
