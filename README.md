@@ -12,7 +12,7 @@ __Author:__ Tommy Svensson (tommy@natusoft.se)
 
 To be very clear: This is currently, and probably for a long time comming, a playground where I'm having fun. The original (and still active) goal with this is to make a very easy to use web platform based on OSGi. APS is however only using the basic 4 OSGi APIs, and currently java8 & Groovy code so it will probably not run in most embedded OSGi containers. 
 
-I have decided to base this project on Vertx rather than traditional EE APIs. I'm also turning OSGi upside down by publishing consuming services that will be called with produced data when available, in a reactive style, which fits Vertx.
+I have decided to base this project on Vertx rather than traditional EE APIs.
 
 Almost all of what is in this version will be replaced, some things just removed. As I said, this is currently a playground, that I play with when I have the time.
 
