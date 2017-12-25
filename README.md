@@ -14,7 +14,7 @@ __Author:__ Tommy Svensson (tommy@natusoft.se)
 
 To be very clear: This is currently, and probably for a long time comming, a playground where I'm having fun. The original (and still active) goal with this is to make a very easy to use web platform based on OSGi. APS is however only using the basic 4 OSGi APIs, and currently java8 & Groovy code so it will probably not run in most embedded OSGi containers. 
 
-I have decided to base this project on Vertx rather than traditional EE APIs. I'm also turning OSGi upside down by publishing consuming services that will be called with produced data when available, in a reactive style, which fits Vertx.
+I have decided to base this project on Vertx rather than traditional EE APIs. 
 
 Almost all of what is in this version will be replaced, some things just removed. As I said, this is currently a playground, that I play with when I have the time.
 
@@ -22,7 +22,9 @@ There is however one thing that is currenlty useful and does not depend on any o
 
 The APSServiceTracker is also a bit different in that it does not like to tear services down, it and APSActivator both work to keep services up. The tracker by providing a timeout and throwing an APSNoServiceAvailableException on timeout. The side effect of this is that you sometimes need to start a thread in Bundle.start(...) to avoid a deadlock. This also means that later failures cannot stop the bundle on failed start! But it is soo much nicer to keep things up IMHO!
 
-Note that the branch names are YouTrack (JetBrains) issues. I'm using YouTrack as a service from JetBrains using the cheapest license. Here is a read only access of the YouTrack board:
+Note that the branch names are YouTrack issues. I'm using YouTrack as a service from JetBrains. 
+
+Here is a read only access of the YouTrack board:
 
 https://natusoft.myjetbrains.com/youtrack/agiles/90-4/94-6
 
