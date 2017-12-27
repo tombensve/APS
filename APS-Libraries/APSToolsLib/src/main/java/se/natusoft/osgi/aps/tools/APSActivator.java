@@ -613,7 +613,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         return toVerify;
     }
 
-    protected void handleAnnotationInstancesServiceInstances(Class managedClass, OSGiServiceProvider serviceProvider) throws Exception {
+    protected void handleAnnotationInstancesServiceInstances(Class managedClass, OSGiServiceProvider serviceProvider) {
         for (OSGiServiceInstance inst : serviceProvider.instances()) {
             InstanceRepresentative ir = new InstanceRepresentative(createInstance(managedClass));
             ir.props = osgiPropertiesToProperties(inst.properties());
@@ -652,7 +652,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         }
     }
 
-    protected void handleDefaultServiceInstance(Class managedClass, OSGiServiceProvider serviceProvider) throws Exception {
+    protected void handleDefaultServiceInstance(Class managedClass, OSGiServiceProvider serviceProvider) {
         InstanceRepresentative ir = new InstanceRepresentative(createInstance(managedClass));
         ir.props = new Properties();
         if (serviceProvider.serviceAPIs().length > 0) {
@@ -670,9 +670,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * Handles collection of non service instances to manage.
      *
      * @param managedClass The managed class to inspect.
-     * @throws Exception pass exceptions upward.
      */
-    protected void collectInjecteeInstancesToManage(Class managedClass) throws Exception {
+    protected void collectInjecteeInstancesToManage(Class managedClass) {
         done:
         for (Method method : managedClass.getDeclaredMethods()) {
             for (Annotation methodAnn : method.getDeclaredAnnotations()) {

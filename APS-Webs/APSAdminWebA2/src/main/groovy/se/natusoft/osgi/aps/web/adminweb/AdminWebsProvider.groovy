@@ -9,7 +9,7 @@ import io.vertx.core.json.JsonObject
 import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.apsadminweb.service.APSAdminWebService
 import se.natusoft.osgi.aps.exceptions.APSValidationException
-import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
+import se.natusoft.osgi.aps.net.vertx.api.VertxSubscriber
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
@@ -43,7 +43,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
 @SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
 @TypeChecked
-class AdminWebsProvider extends VertxConsumer implements Constants {
+class AdminWebsProvider extends VertxSubscriber implements Constants {
     //
     // Constants
     //

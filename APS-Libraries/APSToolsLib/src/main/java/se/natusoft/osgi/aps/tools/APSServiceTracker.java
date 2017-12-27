@@ -320,8 +320,9 @@ public class APSServiceTracker<Service>  implements ServiceListener {
      *
      * @param timeout The timeout to set.
      */
-    public void setTimeout(int timeout) {
+    public APSServiceTracker setTimeout(int timeout) {
         this.timeout = timeout;
+        return this;
     }
 
     /**
@@ -329,7 +330,7 @@ public class APSServiceTracker<Service>  implements ServiceListener {
      *
      * @param timeout The time to wait for a service to become available. Formats: "5 min[utes]" / "300 sec[onds]" / "300000 mili[seconds]" / "forever".
      */
-    public final void setTimeout(String timeout) {
+    public final APSServiceTracker setTimeout(String timeout) {
         String[] toParts = timeout.split(" ");
         if (toParts[0].toLowerCase().equals("forever")) {
             this.timeout = 0;
@@ -350,6 +351,8 @@ public class APSServiceTracker<Service>  implements ServiceListener {
         else {
             this.timeout = this.timeout * 1000;
         }
+
+        return this;
     }
 
     /**
@@ -357,14 +360,15 @@ public class APSServiceTracker<Service>  implements ServiceListener {
      *
      * @param onTimeout The timeout handler to set.
      */
-    public void setOnTimeout(OnTimeout onTimeout) {
+    public APSServiceTracker setOnTimeout(OnTimeout onTimeout) {
         this.onTimeout = onTimeout;
+        return this;
     }
 
     /**
      * Starts tracking services.
      */
-    public synchronized void start() {
+    public synchronized APSServiceTracker start() {
         if (!this.started) {
             // A note to yourself: The reason we don't specify versions here is that they are already specified
             // in bundle manifest import.
@@ -393,13 +397,16 @@ public class APSServiceTracker<Service>  implements ServiceListener {
 
             this.started = true;
         }
+
+        return this;
     }
 
     /**
      * Stops tracking services and clears all tracked services.
      */
-    public void stop() {
+    public APSServiceTracker stop() {
         stop(null);
+        return this;
     }
 
     /**
@@ -407,13 +414,14 @@ public class APSServiceTracker<Service>  implements ServiceListener {
      *
      * @param context The stop context.
      */
-    public synchronized void stop(BundleContext context) {
+    public synchronized APSServiceTracker stop(BundleContext context) {
         if (context == null) context = this.context;
         context.removeServiceListener(this);
         this.trackedServices.clear();
         this.active.wakeAllWaiting();
         this.active.closeActiveService();
         this.started = false;
+        return this;
     }
 
     /**
@@ -523,8 +531,9 @@ public class APSServiceTracker<Service>  implements ServiceListener {
      * @param debugLogger The debug logger to set.
      */
     @SuppressWarnings("unused")
-    public void setDebugLogger(APSLogger debugLogger) {
+    public APSServiceTracker setDebugLogger(APSLogger debugLogger) {
         this.debugLogger = debugLogger;
+        return this;
     }
 
     /**
@@ -760,12 +769,13 @@ public class APSServiceTracker<Service>  implements ServiceListener {
      *
      * @param timeout The timeout in milliseconds. 0 == forever.
      */
-    public void waitForService(long timeout) {
+    public APSServiceTracker waitForService(long timeout) {
         if (this.active.hasActiveService()) {
-            return;
+            return this;
         }
 
         this.active.waitForActiveService(timeout);
+        return this;
     }
 
     /**
@@ -794,8 +804,9 @@ public class APSServiceTracker<Service>  implements ServiceListener {
     /**
      * Releases the previously allocated service.
      */
-    public void releaseService() {
+    public APSServiceTracker releaseService() {
         this.active.releaseActiveService();
+        return this;
     }
 
     /**

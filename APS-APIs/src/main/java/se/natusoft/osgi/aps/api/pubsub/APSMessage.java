@@ -1,4 +1,4 @@
-package se.natusoft.osgi.aps.api.pubcon;
+package se.natusoft.osgi.aps.api.pubsub;
 
 import java.util.Map;
 

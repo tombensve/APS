@@ -38,19 +38,14 @@ package se.natusoft.osgi.aps.net.vertx
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import io.vertx.core.AsyncResult
 import io.vertx.core.Vertx
 import io.vertx.core.eventbus.EventBus
-import io.vertx.core.eventbus.MessageConsumer
 import org.osgi.framework.BundleContext
-import se.natusoft.docutations.NotNull
-import se.natusoft.docutations.Nullable
-import se.natusoft.osgi.aps.api.pubcon.APSPublisher
+import se.natusoft.osgi.aps.api.pubsub.APSPublisher
 import se.natusoft.osgi.aps.api.util.APSMeta
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.APSObjectPublisher
-import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
-import se.natusoft.osgi.aps.tools.APSActivatorInteraction
+import se.natusoft.osgi.aps.net.vertx.api.VertxSubscriber
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 
@@ -80,7 +75,7 @@ import java.util.concurrent.ExecutorService
 )
 @CompileStatic
 @TypeChecked
-class APSVertxEventBusMessagingProvider extends VertxConsumer implements APSPublisher {
+class APSVertxEventBusMessagingProvider extends VertxSubscriber implements APSPublisher {
 
     //
     // Constants

@@ -1,9 +1,9 @@
-package se.natusoft.osgi.aps.api.pubcon;
+package se.natusoft.osgi.aps.api.pubsub;
 
 /**
- * Utility if you don't think the APSPubConException is clear enough.
+ * Utility if you don't think the APSPubSubException is clear enough.
  */
-public class APSMessagingException extends APSPubConException {
+public class APSMessagingException extends APSPubSubException {
 
     public APSMessagingException(String message) {
         super(message);

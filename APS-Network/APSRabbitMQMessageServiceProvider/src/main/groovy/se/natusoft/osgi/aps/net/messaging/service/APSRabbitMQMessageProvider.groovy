@@ -40,10 +40,8 @@ import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.Channel
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
-
 import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
-import se.natusoft.osgi.aps.api.pubcon.APSMessagingException
+import se.natusoft.osgi.aps.api.pubsub.APSMessagingException
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.ReceiveThread

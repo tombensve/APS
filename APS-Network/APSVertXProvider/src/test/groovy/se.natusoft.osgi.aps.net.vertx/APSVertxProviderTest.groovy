@@ -6,15 +6,14 @@ import io.vertx.core.Vertx
 import io.vertx.core.eventbus.EventBus
 import io.vertx.ext.web.Router
 import org.junit.Test
-import se.natusoft.osgi.aps.api.pubcon.APSConsumer
-import se.natusoft.osgi.aps.net.vertx.api.APSVertx
-import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
+import org.osgi.framework.ServiceReference
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator
 import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.tools.APSServiceTracker
+import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static java.util.concurrent.TimeUnit.SECONDS
@@ -38,12 +37,13 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
 
         deploy 'aps-vertx-provider' with new APSActivator() using '/se/natusoft/osgi/aps/net/vertx/APSVertxProvider.class'
 
-        deploy 'vertx-consumer-svc' with new APSActivator() using '/se/natusoft/osgi/aps/net/vertx/VertxConsumerService.class'
+        deploy 'vertx-client' with new APSActivator() using '/se/natusoft/osgi/aps/net/vertx/VertxClient.class'
 
         try {
             println ">>>>> " + new Date()
-            hold() whilst { vertx == null  } maxTime 6L unit SECONDS go()
-            hold() whilst { router == null } maxTime( 6L ) unit SECONDS go()
+            hold() whilst { vertx == null } maxTime 6L unit SECONDS go()
+            hold() whilst { router == null } maxTime 6L unit SECONDS go()
+            hold() whilst { eventBus == null } maxTime 6L unit SECONDS go()
             println "<<<<< " + new Date()
 
             assert vertx != null
@@ -59,37 +59,54 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
 }
 
 @SuppressWarnings("GroovyUnusedDeclaration")
-@OSGiServiceProvider(properties = [
-        @OSGiProperty(name = "consumed", value = "vertx"),
-        @OSGiProperty(name = APSVertx.HTTP_SERVICE_NAME, value = "test")
-])
 @CompileStatic
 @TypeChecked
-// Important: Service interface must be the first after "implements"!! Otherwise serviceAPIs=[Consumer.class] must be specified
-// in @OSGiServiceProvider annotation.
-class VertxConsumerService extends VertxConsumer implements APSConsumer<Vertx> {
+class VertxClient {
 
-    @Managed(loggingFor = "Test:VertxConsumerService")
-    APSLogger logger
+    @Managed(loggingFor = "Test:VertxClient")
+    private APSLogger logger
 
-    // Note that this only registers callbacks! The callbacks themselves will not be called until the
-    // service have been published. This will not happen util after all injections are done. Thereby
-    // this.logger.info(...) will always work.
-    VertxConsumerService() {
-        this.onVertxAvailable = { Vertx vertx ->
-            this.logger.info( "Received Vertx instance! [${vertx}]" )
-            APSVertxProviderTest.vertx = vertx
-        }
-        this.onVertxRevoked = {
-            this.logger.info( "Vertx instance revoked!" )
-        }
-        this.onRouterAvailable = { Router router ->
-            this.logger.info( "Received Router instance! [${router}]" )
+    @OSGiService(additionalSearchCriteria = "(vertx-object=Vertx)", timeout="10 sec")
+    APSServiceTracker<Vertx> vertxTracker
+
+    @OSGiService(additionalSearchCriteria = "(&(vertx-object=Router)(vertx-router=test))", timeout="10 sec")
+    APSServiceTracker<Router> routerTracker
+
+    @OSGiService(additionalSearchCriteria = "(vertx-object=EventBus)", timeout="10 sec")
+    APSServiceTracker<EventBus> eventBusTracker
+
+    @Initializer
+    void init() {
+        this.logger.info "In VertxClient.init()!"
+
+        // Non blocking way of getting a service. If we inject it as a proxy of Vertx instead of the tracker
+        // then the first call might block if the service is not yet available. This can cause deadlocks if it
+        // is done on bundle startup in an @Initializer method!
+
+        this.vertxTracker.onActiveServiceAvailable = this.&onVertxAvailable
+        this.vertxTracker.onServiceLeaving = this.&onVertxLeaving
+
+        // Here we listen to the active, which ever works.
+        this.routerTracker.onActiveServiceAvailable { Router router, ServiceReference routerRef ->
             APSVertxProviderTest.router = router
+            this.logger.info "Got router!"
+        }.onServiceLeaving { ServiceReference sr, Class api ->
+            this.logger.info "Router leaving!"
         }
-        this.onError = { String message ->
-            this.logger.error( message )
+
+        this.eventBusTracker.onActiveServiceAvailable { EventBus eventBus, ServiceReference busRef ->
+            APSVertxProviderTest.eventBus = eventBus
+            this.logger.info "Got event bus!"
         }
+    }
+
+    private void onVertxAvailable(Vertx vertx, ServiceReference vertxRef) {
+        APSVertxProviderTest.vertx = vertx
+        this.logger.info "Got vertx!"
+    }
+
+    private void onVertxLeaving(ServiceReference vertxRef, Class vertxAPIClass) {
+        this.logger.info "Vertx going away!"
     }
 }
 

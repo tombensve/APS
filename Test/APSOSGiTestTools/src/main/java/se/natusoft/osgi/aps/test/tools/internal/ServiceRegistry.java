@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS OSGi Test Tools
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides tools for testing OSGi services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -49,12 +49,13 @@ public class ServiceRegistry {
     /**
      * Holds both listener and its filter.
      */
+    @SuppressWarnings("unused")
     private static class ListenerEntry {
         public ServiceListener listener;
         public String filter;
 
         public ListenerEntry() {}
-        public ListenerEntry(ServiceListener listener, String filter) {
+        ListenerEntry(ServiceListener listener, String filter) {
             this.listener = listener;
             this.filter = filter;
         }
@@ -135,19 +136,14 @@ public class ServiceRegistry {
      *
      * @param listener The listener to add.
      * @param filter An optional filter for the service.
-     *
-     * @throws InvalidSyntaxException
      */
-    public synchronized void addServiceListener(ServiceListener listener, String filter) throws InvalidSyntaxException {
+    public synchronized void addServiceListener(ServiceListener listener, String filter) {
         int ix = filter.indexOf(Constants.OBJECTCLASS);
         String filter2 = filter.substring(ix + Constants.OBJECTCLASS.length() + 1);
         String[] filterParts = filter2.split("[ )]");
         String serviceClass = filterParts[0];
-        List<ListenerEntry> listenerEntries = this.serviceListenerMap.get(serviceClass);
-        if (listenerEntries == null) {
-            listenerEntries = Collections.synchronizedList(new LinkedList<ListenerEntry>());
-            this.serviceListenerMap.put(serviceClass, listenerEntries);
-        }
+        List<ListenerEntry> listenerEntries =
+                this.serviceListenerMap.computeIfAbsent(serviceClass, k -> Collections.synchronizedList(new LinkedList<>()));
         ListenerEntry entry = new ListenerEntry(listener, filter);
         listenerEntries.add(entry);
     }
@@ -158,11 +154,7 @@ public class ServiceRegistry {
      * @param listener The listener to add.
      */
     public synchronized void addServiceListener(ServiceListener listener) {
-        List<ListenerEntry> listenerEntries = this.serviceListenerMap.get("all");
-        if (listenerEntries == null) {
-            listenerEntries = Collections.synchronizedList(new LinkedList<ListenerEntry>());
-            this.serviceListenerMap.put("all", listenerEntries);
-        }
+        List<ListenerEntry> listenerEntries = this.serviceListenerMap.computeIfAbsent("all", k -> Collections.synchronizedList(new LinkedList<>()));
         listenerEntries.add(new ListenerEntry(listener, null));
     }
 
@@ -205,6 +197,7 @@ public class ServiceRegistry {
      * @param clazz The service API class to get ServiceReferences for.
      * @param filter The additional filter for the ServiceReferences to get.
      */
+    @SuppressWarnings("unused")
     public ServiceReference[] getAllServiceReferences(String clazz, String filter) {
         try {
             Filter svcFilter = FrameworkUtil.createFilter(filter);

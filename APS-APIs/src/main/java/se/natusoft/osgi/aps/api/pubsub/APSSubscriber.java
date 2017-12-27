@@ -34,21 +34,22 @@
  *         2017-10-29: Created!
  *
  */
-package se.natusoft.osgi.aps.api.pubcon;
+package se.natusoft.osgi.aps.api.pubsub;
 
-import se.natusoft.osgi.aps.api.util.APSMeta;
+import java.util.Map;
 
 /**
- * API for publishing data to consumers.
+ * API for consuming APS PubSub data.
+ *
+ * @param <Subscribed> The type of data subscribed to.
  */
-public interface APSPublisher<Published> {
+public interface APSSubscriber<Subscribed> {
 
     /**
-     * Publishes data.
+     * Consumes data.
      *
-     * @param toPublish The data to publish.
-     * @param meta Meta data to help the implementation make decisions.
+     * @param subscribed The data subscribed to.
+     * @param meta Meta data about the subscribed data. What this contains depends on the implementation.
      */
-    void publish(Published toPublish, APSMeta meta);
-
+    void apsSubscription(Subscribed subscribed, Map<String, String> meta);
 }

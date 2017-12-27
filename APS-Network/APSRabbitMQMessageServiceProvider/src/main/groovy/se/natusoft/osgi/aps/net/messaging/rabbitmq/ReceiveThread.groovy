@@ -8,8 +8,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
 import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
-import se.natusoft.osgi.aps.api.net.util.TypedData
-import se.natusoft.osgi.aps.api.pubcon.APSConsumer
+import se.natusoft.osgi.aps.api.pubsub.APSSubscriber
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -40,7 +39,7 @@ class ReceiveThread extends Thread {
             Collections.synchronizedList(new LinkedList<APSSimpleMessageService.MessageListener>())
 
     // BundleContext context, Class<Service> serviceClass, String additionalSearchCriteria, String timeout
-    private APSServiceTracker<APSConsumer<byte[]>> conumers = new APSServiceTracker<>()
+    private APSServiceTracker<APSSubscriber<byte[]>> conumers = new APSServiceTracker<>()
 
     //
     // Properties

@@ -6,7 +6,7 @@ import java.util.Map;
 
 /**
  * This represents a JSONish structure with `List<Object>`, `Map<String,Object>`, `String`, `Boolean`, `Number`, and null values,
- * where Òbject` __always__ refers to the same list of types.
+ * where Object` __always__ refers to the same list of types.
  *
  * This represents a JSON schema according to APSGroovyToolsLib/MapJsonDocValidator. Needs GroovyRuntime deployed in server,
  * but can be used from Java.

@@ -7,9 +7,9 @@ import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.sockjs.BridgeEvent
 import io.vertx.ext.web.handler.sockjs.SockJSHandler
 import org.osgi.framework.BundleContext
-import se.natusoft.osgi.aps.api.pubcon.APSConsumer
-import se.natusoft.osgi.aps.net.vertx.api.APSVertx
-import se.natusoft.osgi.aps.net.vertx.api.VertxConsumer
+import se.natusoft.osgi.aps.api.pubsub.APSSubscriber
+import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
+import se.natusoft.osgi.aps.net.vertx.api.VertxSubscriber
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 
@@ -49,9 +49,9 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 @TypeChecked
 @OSGiServiceProvider( properties = [
         @OSGiProperty( name = "consumed", value = "vertx" ),
-        @OSGiProperty( name = APSVertx.HTTP_SERVICE_NAME, value = Constants.APP_NAME )
+        @OSGiProperty( name = APSVertxService.HTTP_SERVICE_NAME, value = Constants.APP_NAME )
 ] )
-class SockJSEventBusBridge extends VertxConsumer implements APSConsumer<Vertx>, Constants {
+class SockJSEventBusBridge extends VertxSubscriber implements APSSubscriber<Vertx>, Constants {
     //
     // Private Members
     //

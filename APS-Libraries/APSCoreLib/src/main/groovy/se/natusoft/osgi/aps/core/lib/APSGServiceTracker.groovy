@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit
  *
  * @param < Service >
  */
+@SuppressWarnings("GroovyUnusedDeclaration")
 class APSGServiceTracker<Service> extends APSServiceTracker<Service> {
 
     //
