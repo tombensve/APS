@@ -38,27 +38,29 @@ package se.natusoft.osgi.aps.net.vertx
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import io.vertx.core.Vertx
 import io.vertx.core.eventbus.EventBus
+import io.vertx.core.eventbus.Message
+import io.vertx.core.json.JsonObject
 import org.osgi.framework.BundleContext
+import org.osgi.framework.ServiceReference
+import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
 import se.natusoft.osgi.aps.api.pubsub.APSPublisher
-import se.natusoft.osgi.aps.api.util.APSMeta
+import se.natusoft.osgi.aps.api.pubsub.APSSender
+import se.natusoft.osgi.aps.api.pubsub.APSSubscriber
 import se.natusoft.osgi.aps.constants.APS
-import se.natusoft.osgi.aps.core.lib.APSObjectPublisher
-import se.natusoft.osgi.aps.net.vertx.api.VertxSubscriber
+import se.natusoft.osgi.aps.core.lib.Actions
 import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.tools.APSServiceTracker
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 
 import java.util.concurrent.ExecutorService
 
-// Note to IDEA users: IDEA underlines (in beige color if you are using Darcula theme) all references to classes that are not
-// OSGi compatible (no OSGi MANIFEST.MF entries). The underlines you see here is for the Groovy wrapper of Vert.x. It is OK
-// since this wrapper gets included in the bundle. The main Vert.x code is OSGi compliant and can be deployed separately.
-
 /**
- * Provides messaging using vertx. In this a clustered event bus.
+ * Provides messaging using vertx event bus.
  *
- * See http://vertx.io/docs/ for more information.
+ * This implementation is non blocking. If the Vertx instance and thus the EventBus is not available due to being on
+ * its way up or being restarted any publish or send calls will be added as Closure objects to a list and will be
+ * executed as soon as Vertx/EventBus becomes available.
  */
 @SuppressWarnings([ "GroovyUnusedDeclaration", "PackageAccessibility" ])
 // This is never referenced directly, only through APSMessageService API.
@@ -70,12 +72,11 @@ import java.util.concurrent.ExecutorService
                 @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Messaging),
                 @OSGiProperty(name = APS.Messaging.Protocol.Name, value = "vertx-eventbus"),
                 @OSGiProperty(name = APS.Messaging.Persistent, value = APS.FALSE),
-                @OSGiProperty(name = "consumed", value = "vertx")
         ]
 )
 @CompileStatic
 @TypeChecked
-class APSVertxEventBusMessagingProvider extends VertxSubscriber implements APSPublisher {
+class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, Object>> {
 
     //
     // Constants
@@ -93,46 +94,32 @@ class APSVertxEventBusMessagingProvider extends VertxSubscriber implements APSPu
     @Managed(loggingFor = "aps-vertx-event-bus-messaging-provider")
     private APSLogger logger
 
+    @OSGiService(additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "30 sec")
+    private APSServiceTracker<EventBus> eventBusTracker
+
     /** All publishing run on this thread. */
     @Managed
     @ExecutorSvc(type = ExecutorSvc.ExecutorType.Single, name = "aps-vertx-eventbus-messaging-provider",
             parallelism = 1, unConfigurable = true)
     private ExecutorService publisher
 
-    /** The clustered event bus we are communicating over. */
-    private synchronized EventBus eventBus = null
+    /** The vertx event bus. */
+    private EventBus eventBus
 
-    /** Items to publish. */
-    private final List<Tuple2<Object, Map<String, String>>> toPublish = [ ]
+    /** Keeps track of subscribers to messages. */
+    private Map<String, List<APSSubscriber>> subscribers = [ : ]
 
-    /** Sends messages on the bus. */
-    private Runnable publishWorker = {
-        synchronized ( toPublish ) {
-            this.toPublish.each { Tuple2<Object, Map<String, String>> work ->
-                String topic = work.second[ APSMeta.TOPIC ]
-                if ( topic != null ) {
-                    this.eventBus.publish( topic, work.first )
-                } else {
-                    this.logger.error( "No topic! Message not published!" )
-                }
-            }
-        }
-    }
+    /**
+     * This is used to cache operations when Vertx/EventBus is not available. The actions will be performed
+     * as soon as the EventBus shows up.
+     */
+    private Actions actions = new Actions()
 
-    /** This is used to deliver received messages to consumers. */
-    private APSObjectPublisher<Object> receivedMessagesDelivery =
-            new APSObjectPublisher<>(context: this.context, consumerQuery: "(consumed=vertx-event-bus-messages)")
+    /** If provided this will be called when EventBus becomes available and we are ready to send and receive. */
+    private Runnable onReady
 
-    //
-    // Constructor
-    //
-
-    APSVertxEventBusMessagingProvider() {
-        this.onVertxAvailable = { Vertx vertx ->
-            this.eventBus = vertx.eventBus()
-            this.publisher.submit( this.publishWorker )
-        }
-    }
+    /** If provided this will be called when EventBus goes away. Until new one becomes available all operations will be cached. */
+    private Runnable onNotReady
 
     //
     // Initializer
@@ -144,7 +131,10 @@ class APSVertxEventBusMessagingProvider extends VertxSubscriber implements APSPu
     @SuppressWarnings("PackageAccessibility")
     @Initializer
     void init() {
-        this.logger.connectToLogService( this.context ) // Connect to OSGi log service if available. APSLogger does not use a timeout when
+        this.logger.connectToLogService( this.context )
+
+        this.eventBusTracker.onActiveServiceAvailable = this.&onEventBusAvailable
+        this.eventBusTracker.onServiceLeaving = this.&onEventBusNotAvailable
     }
 
     /**
@@ -152,8 +142,32 @@ class APSVertxEventBusMessagingProvider extends VertxSubscriber implements APSPu
      */
     @BundleStop
     void stop() {
-        if ( this.eventBus != null ) {
-            this.eventBus = null
+    }
+
+    /**
+     * Called when the event bus becomes available.
+     *
+     * @param eventBus The newly available event bus.
+     * @param eventBusRef The service reference of the event bus.
+     */
+    private void onEventBusAvailable( EventBus eventBus, ServiceReference eventBusRef ) {
+        this.eventBus = eventBus
+        this.actions.run()
+        if ( this.onReady != null ) {
+            this.onReady.run()
+        }
+    }
+
+    /**
+     * Called if the event bus goes away.
+     *
+     * @param eventBus
+     * @param api
+     */
+    private void onEventBusNotAvailable( ServiceReference eventBus, Class api ) {
+        this.eventBus = null
+        if ( this.onNotReady != null ) {
+            this.onNotReady.run()
         }
     }
 
@@ -162,18 +176,88 @@ class APSVertxEventBusMessagingProvider extends VertxSubscriber implements APSPu
     //
 
     /**
-     * Publishes data.
+     * Returns a publisher to publish with.
      *
-     * @param toPublish The data to publish.
-     * @param meta Meta data to help the implementation make decisions.
+     * @param meta Meta data for the publisher.
      */
-    void publish( Object toPublish, APSMeta meta ) {
-        synchronized ( this.toPublish ) {
-            this.toPublish << new Tuple2<Object, Map<String, String>>( toPublish, meta )
-        }
-        if ( this.eventBus != null ) {
-            this.publisher.submit( this.publishWorker )
+    @Override
+    APSPublisher publisher( Map meta ) {
+        return new Publisher( meta: meta, actions: this.actions, getEventBus: { this.eventBus } )
+    }
+
+    /**
+     * Returns a sender to send with. Depending on implementation the APSSender instance returned can possibly
+     * be an APSReplyableSender that allows for providing a subscriber for a reply to the sent message.
+     *
+     * @param meta Meta data for the sender.
+     */
+    @Override
+    APSSender sender( Map meta ) {
+        return new Sender( meta: meta, actions: this.actions, getEventBus: { this.eventBus } )
+    }
+
+    /**
+     * Adds a subscriber.
+     *
+     * @param subscriber The subscriber to add.
+     * @param meta Meta data. This depends on the implementation. Can possibly be null when not used. For example
+     *                   if there is a need for an address or topic put it in the meta data.
+     */
+    @Override
+    synchronized void subscribe( APSSubscriber<Map<String, Object>> subscriber, Map<String, String> meta ) {
+        String address = meta[ ADDRESS ]
+        if (this.subscribers[address] == null) {
+            List<APSSubscriber<Map<String, Object>>> subs = [ subscriber ]
+            this.subscribers[address] = subs
+
+            this.actions.addAction {
+                this.eventBus.consumer( address ) { Message<JsonObject> msg ->
+                    Map<String, Object> message = msg.body().map
+                    Map<String, String> rmeta = [ : ]
+                    if (message["meta"] != null) {
+                        rmeta = message["meta"] as Map<String, String>
+                    }
+
+                    this.subscribers[ address ].each {APSSubscriber<Map<String, Object>> sub ->
+                        sub.apsSubscription( msg.body().map, rmeta )
+                    }
+                }
+            }
         }
     }
 
+    /**
+     * Removes a subscriber.
+     *
+     * @param subscriber The consumer to remove.
+     */
+    @Override
+    synchronized void unsubscribe( APSSubscriber subscriber ) {
+        this.subscribers.each { String key, List<APSSubscriber> value ->
+            value.remove( subscriber )
+        }
+    }
+
+    /**
+     * For services that support it, the passed Runnable will be called when this service is ready to work.
+     *
+     * This to provide a non blocking API.
+     *
+     * @param onReady The callback to call when service is ready to work.
+     */
+    @Override
+    void onReady( Runnable onReady ) {
+        this.onReady = onReady
+    }
+
+    /**
+     * Provides a callback that gets called when service is no longer in a ready state.
+     *
+     * @param onNotReady The callback to call when service is no longer in ready state.
+     */
+    @Override
+    void onNotReady( Runnable onNotReady ) {
+        this.onNotReady = onNotReady
+    }
 }
+

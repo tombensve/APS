@@ -1,37 +1,45 @@
 package se.natusoft.osgi.aps.api.pubsub;
 
-import se.natusoft.docutations.Optional;
+import se.natusoft.osgi.aps.api.util.OnReady;
 
 import java.util.Map;
 
 /**
+ * This API is influenced by Vertx :-)
+ *
  * @param <Message> The data type published or subscribed to.
  */
-public interface APSPubSubService<Message> {
+public interface APSPubSubService<Message> extends OnReady {
+
+    //
+    // Constants
+    //
+
+    /** A topic meta key. For when topics of conversation is relevant */
+    String TOPIC = "topic";
+
+    /** An address meta key. For when an address is needed to communicate.  */
+    String ADDRESS = "address";
+
+
+    //
+    // Methods
+    //
 
     /**
-     * Publishes data.
+     * Returns a publisher to publish with.
      *
-     * @param message The message to publish.
-     * @param meta Can be empty. The usage of this is really up to the implementation and users of it.
+     * @param meta Meta data for the publisher.
      */
-    void publish(Message message, Map<String, String> meta);
+    APSPublisher<Message> publisher(Map<String, String> meta);
 
     /**
-     * This is inspired by the Vertx event bus. For any under-laying service that supports replying to
-     * a specific message can implement this.
+     * Returns a sender to send with. Depending on implementation the APSSender instance returned can possibly
+     * be an APSReplyableSender that allows for providing a subscriber for a reply to the sent message.
      *
-     * Implementation of this is optional. So if this is available or not depends on the implementation.
-     * By default this will throw an UnsupportedOperationException.
-     *
-     * @param message The message to send.
-     * @param meta Can be empty. The usage of this is really up to the implementation and users of it.
-     * @param reply Will be called with reply if implemented.
+     * @param meta Meta data for the sender.
      */
-    @Optional
-    default void send(Message message, Map<String, String> meta, APSSubscriber<Message> reply) {
-        throw new UnsupportedOperationException("This method is not supported by this implementation.");
-    }
+    APSSender<Message> sender(Map<String, String> meta);
 
     /**
      * Adds a subscriber.

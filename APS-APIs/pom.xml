@@ -116,7 +116,7 @@
             se.natusoft.osgi.aps.api.net.time.service;version="${project.version}",
             se.natusoft.osgi.aps.api.net.tcpip;version="${project.version}",
             se.natusoft.osgi.aps.api.net.util;version="${project.version}",
-            se.natusoft.osgi.aps.api.pubcon;version="${project.version}",
+            se.natusoft.osgi.aps.api.pubsub;version="${project.version}",
             se.natusoft.osgi.aps.api.util;version="${project.version}",
             se.natusoft.osgi.aps.api.web.config;version="${project.version}",
             se.natusoft.osgi.aps.constants;version="${project.version}",

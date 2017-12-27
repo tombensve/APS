@@ -148,6 +148,12 @@
             </dependency>
             <dependency>
                 <groupId>se.natusoft.osgi.aps</groupId>
+                <artifactId>aps-core-lib</artifactId>
+                <version>${project.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>se.natusoft.osgi.aps</groupId>
                 <artifactId>aps-json-lib</artifactId>
                 <version>${project.version}</version>
                 <scope>compile</scope>

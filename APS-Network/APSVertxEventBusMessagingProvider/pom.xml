@@ -122,6 +122,11 @@
         </dependency>
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-core-lib</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tools-lib</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -172,6 +177,26 @@
             <artifactId>aps-service-test-support</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web</artifactId>
+            <version>${vertx.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-lang-groovy</artifactId>
+            <version>${vertx.version}</version>
+            <scope>test</scope>
+            <!-- This pulls in an older version of groovy causing problems when running tests. -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.codehaus.groovy</groupId>
+                    <artifactId>groovy-all</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
 
     </dependencies>
 

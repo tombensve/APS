@@ -41,15 +41,15 @@ import java.util.Map;
 /**
  * API for consuming APS PubSub data.
  *
- * @param <Subscribed> The type of data subscribed to.
+ * @param <Message> The type of data subscribed to.
  */
-public interface APSSubscriber<Subscribed> {
+public interface APSSubscriber<Message> {
 
     /**
      * Consumes data.
      *
-     * @param subscribed The data subscribed to.
-     * @param meta Meta data about the subscribed data. What this contains depends on the implementation.
+     * @param message The message subscribed to.
+     * @param meta Meta data about the message data. What this contains depends on the implementation.
      */
-    void apsSubscription(Subscribed subscribed, Map<String, String> meta);
+    void apsSubscription(Message message, Map<String, String> meta);
 }
