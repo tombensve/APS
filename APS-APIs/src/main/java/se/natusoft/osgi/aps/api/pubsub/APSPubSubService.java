@@ -54,7 +54,9 @@ public interface APSPubSubService<Message> extends OnReady {
      * Removes a subscriber.
      *
      * @param subscriber The consumer to remove.
+     * @param meta Meta data. This depends on the implementation. Can possibly be null when not used. For example
+     *                  if there is a need for an address or topic put it in the meta data.
      */
-    void unsubscribe(APSSubscriber<Message> subscriber);
+    void unsubscribe(APSSubscriber<Message> subscriber, Map<String, String> meta);
 
 }

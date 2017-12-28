@@ -43,25 +43,22 @@ class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Obje
      */
     @Override
     APSSender<Map<String, Object>> send( Map<String, Object> message ) {
-//        this.actions.addAction {
-            if ( message[ "meta" ] == null ) {
-                message[ "meta" ] = this.meta
-            }
-            String address = this.meta[ APSPubSubService.ADDRESS ]
-            if ( reply != null ) {
-                getEventBus().send( address, message, { AsyncResult<Message> res ->
-                    if ( res.succeeded() ) {
-                        Map<String, Object> msg = ( res.result().body() as JsonObject ).map
-                        Map<String, String> meta = msg[ "meta" ] as Map<String, String>
-                        if ( meta == null ) meta = [ : ]
-                        this.reply.apsSubscription( msg, meta )
-                    }
-                } )
-            } else {
-                getEventBus().send( address, message )
-            }
-//        }
-//        if ( getEventBus() != null ) this.actions.run()
+        if ( message[ "meta" ] == null ) {
+            message[ "meta" ] = this.meta
+        }
+        String address = this.meta[ APSPubSubService.ADDRESS ]
+        if ( reply != null ) {
+            getEventBus().send( address, message, { AsyncResult<Message> res ->
+                if ( res.succeeded() ) {
+                    Map<String, Object> msg = ( res.result().body() as JsonObject ).map
+                    Map<String, String> meta = msg[ "meta" ] as Map<String, String>
+                    if ( meta == null ) meta = [ : ]
+                    this.reply.apsSubscription( msg, meta )
+                }
+            } )
+        } else {
+            getEventBus().send( address, message )
+        }
 
         return this
     }

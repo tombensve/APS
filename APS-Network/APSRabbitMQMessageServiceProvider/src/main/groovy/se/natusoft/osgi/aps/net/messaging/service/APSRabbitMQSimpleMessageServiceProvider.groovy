@@ -2,13 +2,12 @@ package se.natusoft.osgi.aps.net.messaging.service
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.docutations.Issue
-import se.natusoft.osgi.aps.api.core.configold.event.APSConfigChangedEvent
-import se.natusoft.osgi.aps.api.core.configold.event.APSConfigChangedListener
-import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
-import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
+import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
+import se.natusoft.osgi.aps.api.pubsub.APSPublisher
+import se.natusoft.osgi.aps.api.pubsub.APSSender
+import se.natusoft.osgi.aps.api.pubsub.APSSubscriber
 import se.natusoft.osgi.aps.constants.APS
-import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
+import se.natusoft.osgi.aps.net.messaging.config.Config
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.PeskyWabbitConnectionManager
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
@@ -19,6 +18,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
  * __NOTE:__ This implementation does not support "TypedData.contentType"! It will ignore what is passed and
  * always deliver "UNKNOWN".
  */
+@SuppressWarnings("GroovyUnusedDeclaration")
 @CompileStatic
 @TypeChecked
 @OSGiServiceProvider(
@@ -30,7 +30,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
                 @OSGiProperty(name = APS.Messaging.MultipleReceivers, value = APS.TRUE)
         ]
 )
-class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService {
+class APSRabbitMQSimpleMessageServiceProvider implements APSPubSubService<byte[]> {
 
     //
     // Private Members
@@ -39,9 +39,6 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService
     /** Our logger. */
     @Managed(loggingFor = "aps-rabbitmq-simple-message-service-provider")
     private APSLogger logger
-
-    /** Listens to configuration changes. */
-    private APSConfigChangedListener configChangedListener
 
     /** For connecting to RabbitMQ. */
     private PeskyWabbitConnectionManager rabbitMQConnectionManager
@@ -52,54 +49,79 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService
     //
     // Service Methods
     //
-
     /**
-     * Adds a listener for types.
+     * Returns a publisher to publish with.
      *
-     * @param target The topic to listen to.
-     * @param listener The listener to add.
+     * @param meta Meta data for the publisher.
      */
-    @Override
-    void addMessageListener(String target, APSSimpleMessageService.MessageListener listener) {
-        APSRabbitMQMessageProvider messageProvider = this.instances.get(target)
-        if (messageProvider == null) {
-            throw new IllegalArgumentException("addMessageListener(): No such topic: '${target}'!")
+    APSPublisher<byte[]> publisher( Map<String, String> meta ) {
+        String topic = meta[ "topic" ]
+        APSRabbitMQMessageProvider messageProvider = this.instances.get( topic )
+        if ( messageProvider == null ) {
+            throw new IllegalArgumentException( "sendMessage(): No such topic: '${topic}'!" )
         }
-        messageProvider.addMessageListener(listener)
+        return new Publisher<>( meta: meta, messageProvider: messageProvider )
     }
 
     /**
-     * Removes a messaging listener.
+     * Returns a sender to send with. Depending on implementation the APSSender instance returned can possibly
+     * be an APSReplyableSender that allows for providing a subscriber for a reply to the sent message.
      *
-     * @param target The topic to stop listening to.
-     * @param listener The listener to remove.
+     * @param meta Meta data for the sender.
      */
-    @Override
-    void removeMessageListener(String target, APSSimpleMessageService.MessageListener listener) {
-        APSRabbitMQMessageProvider messageProvider = this.instances.get(target)
-        if (messageProvider == null) {
-            throw new IllegalArgumentException("removeMessageListener(): No such topic: '${target}'!")
-        }
-        messageProvider.removeMessageListener(listener)
+    APSSender<byte[]> sender( Map<String, String> meta ) {
+        throw new UnsupportedOperationException("This RabbitMQ implementation only provides a publisher!")
     }
 
     /**
-     * Sends a message.
+     * Adds a subscriber.
      *
-     * @param topic The topic of the message.
-     * @param message The message to send.
-     *
-     * @throws se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException on failure.
+     * @param subscriber The subscriber to add.
+     * @param meta Meta data. This depends on the implementation. Can possibly be null when not used. For example
+     *                   if there is a need for an address or topic put it in the meta data.
      */
-    @Override
-    void sendMessage(String topic, byte[] message) throws APSMessagingException{
-        APSRabbitMQMessageProvider messageProvider = this.instances.get(topic)
-        if (messageProvider == null) {
-            throw new IllegalArgumentException("sendMessage(): No such topic: '${topic}'!")
+    void subscribe( APSSubscriber<byte[]> subscriber, Map<String, String> meta ) {
+        String topic = meta[ "topic" ]
+        APSRabbitMQMessageProvider messageProvider = this.instances.get( topic )
+        if ( messageProvider == null ) {
+            throw new IllegalArgumentException( "addMessageListener(): No such topic: '${topic}'!" )
         }
-        messageProvider.sendMessage(message)
+        messageProvider.addMessageSubscriber( subscriber )
+
     }
 
+    /**
+     * Removes a subscriber.
+     *
+     * @param subscriber The consumer to remove.
+     * @param meta Meta data. Key "topic" provides the topic.
+     */
+    void unsubscribe( APSSubscriber<byte[]> subscriber, Map<String, String> meta ) {
+        String topic = meta[ "topic" ]
+        APSRabbitMQMessageProvider messageProvider = this.instances.get( topic )
+        if ( messageProvider == null ) {
+            throw new IllegalArgumentException( "removeMessageListener(): No such topic: '${topic}'!" )
+        }
+        messageProvider.removeMessageSubscriber( subscriber )
+    }
+
+    /**
+     * Provides a callback that gets called when service is ready to work.
+     *
+     * @param onReady The callback to call when service is ready to work.
+     */
+    @Override
+    void onReady( Runnable onReady ) {
+        onReady.run()
+    }
+
+    /**
+     * Provides a callback that gets called when service is no longer in a ready state.
+     *
+     * @param onNotReady The callback to call when service is no longer in ready state.
+     */
+    @Override
+    void onNotReady( Runnable onNotReady ) {}
 
     //
     // Startup / Shutdown Methods
@@ -112,8 +134,9 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService
      * will reconnect to the RabbitMQ message bus in case connection configold has changed, and then take down deleted
      * instances and start newly defined instances.
      */
+    @SuppressWarnings("GroovyUnusedDeclaration")
     @BundleStart(thread = true)
-    public void startup() {
+    void startup() {
         // Since this is called on bundle startup the whole startup process will halt until this returns,
         // so we do what we need to do in a thread instead and then return immediately. The catch is that
         // the bundle start will look successful even if it wasn't. Any failure are however logged so it
@@ -121,27 +144,12 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService
         try {
             this.rabbitMQConnectionManager = new PeskyWabbitConnectionManager()
 
-            this.logger.info(this.rabbitMQConnectionManager.ensureConnection())
-
-            this.configChangedListener = new APSConfigChangedListener() {
-                @Override
-                public synchronized void apsConfigChanged(APSConfigChangedEvent event) {
-                    try {
-                        APSRabbitMQSimpleMessageServiceProvider.this.rabbitMQConnectionManager.reconnect()
-                        refreshInstances()
-                    }
-                    catch (IOException ioe) {
-                        APSRabbitMQSimpleMessageServiceProvider.this.logger.error("Failed reconnecting to RabbitMQ!", ioe)
-                    }
-                }
-            }
-
-            RabbitMQMessageServiceConfig.managed.get().addConfigChangedListener(this.configChangedListener)
+            this.logger.info( this.rabbitMQConnectionManager.ensureConnection() )
 
             startAllInstances()
         }
-        catch (IOException ioe) {
-            this.logger.error("Failed to connect to RabbitMQ!", ioe)
+        catch ( IOException ioe ) {
+            this.logger.error( "Failed to connect to RabbitMQ!", ioe )
         }
     }
 
@@ -152,63 +160,56 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService
      */
     @SuppressWarnings("GroovyUnusedDeclaration")
     @BundleStop
-    public void shutdown() {
-        if (this.configChangedListener != null) {
-            RabbitMQMessageServiceConfig.managed.get().removeConfigChangedListener(this.configChangedListener)
-        }
-
+    void shutdown() {
         stopAllInstances()
 
         try {
-            this.logger.info(this.rabbitMQConnectionManager.ensureConnectionClosed())
+            this.logger.info( this.rabbitMQConnectionManager.ensureConnectionClosed() )
         }
-        catch (IOException ioe) {
-            this.logger.error("Failed to stop RabbitMQ connection!", ioe)
+        catch ( IOException ioe ) {
+            this.logger.error( "Failed to stop RabbitMQ connection!", ioe )
         }
     }
 
     private void startAllInstances() {
         try {
-            RabbitMQMessageServiceConfig.managed.get().instances.each { RabbitMQMessageServiceConfig.RMQInstance instance ->
-                startInstance(instance)
+            Config.config[ 'instances' ].each { String key, Map<String, Serializable> instance ->
+                startInstance( instance )
             }
         }
-        catch (Throwable t) {
-            this.logger.debug("Cluster setup failure: " + t.message, t)
+        catch ( Throwable t ) {
+            this.logger.debug( "Cluster setup failure: " + t.message, t )
         }
     }
 
     private void stopAllInstances() {
         this.instances.each { String name, APSRabbitMQMessageProvider msp ->
-            stopInstance(msp)
+            stopInstance( msp )
         }
     }
 
-    private void startInstance(RabbitMQMessageServiceConfig.RMQInstance instance) {
+    private void startInstance( Map<String, Serializable> instance ) {
 
         APSRabbitMQMessageProvider messageService = new APSRabbitMQMessageProvider(
                 logger: this.logger,
-                name: instance.name.string,
-                connectionProvider: { return rabbitMQConnectionManager.connection },
+                name: instance.name as String,
+                connectionProvider: { return this.rabbitMQConnectionManager.connection },
                 instanceConfig: instance
         )
         messageService.start()
 
-        this.instances.put(instance.name.string, messageService);
+        this.instances.put( instance.name as String, messageService )
     }
 
-    private void stopInstance(APSRabbitMQMessageProvider instance) {
+    private void stopInstance( APSRabbitMQMessageProvider instance ) {
         try {
             instance.stop()
         }
-        catch (IOException ioe) {
-            this.logger.error("Failed to stop APSCluster instance! [" + ioe.getMessage() + "]", ioe)
+        catch ( IOException ioe ) {
+            this.logger.error( "Failed to stop APSCluster instance! [" + ioe.getMessage() + "]", ioe )
         }
     }
 
-    /**
-     * This gets called on configuration change.
-     */
     private void refreshInstances() {
         closeRemovedInstances()
         startNewInstances()
@@ -216,27 +217,13 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSSimpleMessageService
 
     private void closeRemovedInstances() {
         this.instances.findAll { String name, APSRabbitMQMessageProvider instance ->
-            !RabbitMQMessageServiceConfig.managed.get().instances.any {
-                RabbitMQMessageServiceConfig.RMQInstance instanceConfig -> instanceConfig.name.string.equals(name)
-            }
-        }.each { String name, APSRabbitMQMessageProvider instance -> stopInstance(instance) }
+            !Config.config.instances.any { Map.Entry<String, LinkedHashMap<String, String>> entry -> entry.value.name == name }
+        }.each { String name, APSRabbitMQMessageProvider instance -> stopInstance( instance ) }
     }
 
-    @Issue(
-            id ="IDEA-134831",
-            description = [
-                    "reported version:14.0.2-2016.1, date reported:28 Dec 2014",
-                    "'Object instance ->' is incorrectly marked as an error!",
-                    "This has priority 'Major' and nothing has been done yet! (April 2016)"
-                    ],
-            url = "https://youtrack.jetbrains.com/issue/IDEA-134831"
-    )
     private void startNewInstances() {
-        RabbitMQMessageServiceConfig.managed.get().instances.findAll { RabbitMQMessageServiceConfig.RMQInstance instance ->
-            !this.instances.containsKey(instance.name.string)
-        }.each { Object instance ->
-            startInstance((RabbitMQMessageServiceConfig.RMQInstance)instance)
-        }
+        Config.config.instances.findAll { Map.Entry<String, LinkedHashMap<String, String>> entry ->
+            !this.instances.containsKey( entry.value.name )
+        }.each { Object e  -> startInstance(((Map.Entry<String, LinkedHashMap<String, String>>)e).value as Map<String, Serializable>) }
     }
-
 }

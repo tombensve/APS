@@ -99,7 +99,7 @@
         -->
 
         <!-- We register our configuration for auto registration and management. -->
-        <aps.config.classes>se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig</aps.config.classes>
+        <aps.config.classes>se.natusoft.osgi.aps.net.messaging.config.Config</aps.config.classes>
 
         <!--
             Other properties

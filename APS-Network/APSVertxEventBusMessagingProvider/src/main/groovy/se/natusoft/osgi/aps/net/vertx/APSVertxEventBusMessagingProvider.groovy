@@ -200,7 +200,7 @@ class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, 
      * @param subscriber The consumer to remove.
      */
     @Override
-    synchronized void unsubscribe( APSSubscriber subscriber ) {
+    synchronized void unsubscribe( APSSubscriber<Map<String, Object>> subscriber, Map<String, String> meta) {
         this.subscribers.each { String key, List<APSSubscriber> value ->
             value.remove( subscriber )
         }

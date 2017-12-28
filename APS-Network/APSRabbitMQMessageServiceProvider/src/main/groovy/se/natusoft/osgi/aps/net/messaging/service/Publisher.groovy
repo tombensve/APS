@@ -1,22 +1,19 @@
-package se.natusoft.osgi.aps.net.vertx
+package se.natusoft.osgi.aps.net.messaging.service
 
-import io.vertx.core.eventbus.EventBus
-import io.vertx.core.json.JsonObject
 import se.natusoft.osgi.aps.api.pubsub.APSPubSubException
-import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
 import se.natusoft.osgi.aps.api.pubsub.APSPublisher
 
-class Publisher implements APSPublisher<Map<String, Object>> {
+class Publisher implements APSPublisher<byte[]> {
 
     //
     // Properties
     //
 
-    /** Meta data for the publisher. */
+    /** Meta data */
     Map<String, String> meta
 
-    /** Access to the EventBus. */
-    Closure<EventBus> getEventBus
+    /** For sending messages. */
+    APSRabbitMQMessageProvider messageProvider
 
     //
     // Methods
@@ -30,11 +27,9 @@ class Publisher implements APSPublisher<Map<String, Object>> {
      * @throws APSPubSubException on any failure. Note that this is a RuntimeException!
      */
     @Override
-    APSPublisher publish( Map<String, Object> message ) throws APSPubSubException {
-        String address = this.meta[ APSPubSubService.ADDRESS ]
-        getEventBus().publish( address, new JsonObject( message ) )
-
-        this
+    APSPublisher<byte[]> publish( byte[] message ) throws APSPubSubException {
+        this.messageProvider.sendMessage( message )
+        return this
     }
 
     /**

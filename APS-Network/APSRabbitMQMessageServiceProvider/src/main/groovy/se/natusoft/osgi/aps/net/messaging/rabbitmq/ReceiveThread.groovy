@@ -6,13 +6,10 @@ import com.rabbitmq.client.QueueingConsumer
 import com.rabbitmq.client.ShutdownSignalException
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-
-import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
 import se.natusoft.osgi.aps.api.pubsub.APSSubscriber
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
-import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
+import se.natusoft.osgi.aps.net.messaging.config.Config
 import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.APSServiceTracker
 
 /**
  * Thread that receives queue types.
@@ -32,14 +29,11 @@ class ReceiveThread extends Thread {
     private Channel recvChannel = null
 
     /** The name of the receive queue. */
-    private String recvQueueName;
+    private String recvQueueName
 
     /** The listeners to notify of received messages. */
-    private List<APSSimpleMessageService.MessageListener> listeners =
-            Collections.synchronizedList(new LinkedList<APSSimpleMessageService.MessageListener>())
-
-    // BundleContext context, Class<Service> serviceClass, String additionalSearchCriteria, String timeout
-    private APSServiceTracker<APSSubscriber<byte[]>> conumers = new APSServiceTracker<>()
+    private List<APSSubscriber<byte[]>> subscribers =
+            Collections.synchronizedList( new LinkedList<APSSubscriber<byte[]>>() )
 
     //
     // Properties
@@ -54,11 +48,16 @@ class ReceiveThread extends Thread {
      */
     ConnectionProvider connectionProvider
 
-    /** The configold for this receiver. */
-    RabbitMQMessageServiceConfig.RMQInstance instanceConfig
-
     /** The topic this receiver is working for. */
     String topic
+
+    //
+    // Constructor
+    //
+
+    ReceiveThread() {
+        setName( "rabbit-mq-receiver-thread" )
+    }
 
     //
     // Methods
@@ -83,8 +82,8 @@ class ReceiveThread extends Thread {
      *
      * @param listener The listener to add.
      */
-    void addMessageListener(APSSimpleMessageService.MessageListener listener) {
-        this.listeners.add(listener)
+    void addMessageSubscriber( APSSubscriber<byte[]> subscriber ) {
+        this.subscribers += subscriber
     }
 
     /**
@@ -92,24 +91,24 @@ class ReceiveThread extends Thread {
      *
      * @param listener The listener to remove.
      */
-    void removeMessageListener(APSSimpleMessageService.MessageListener listener) {
-        this.listeners.remove(listener)
+    void removeMessageSubscriber( APSSubscriber<byte[]> subscriber ) {
+        this.subscribers -= subscriber
     }
 
     /**
      * Returns true if there are listeners available.
      */
     @SuppressWarnings("GroovyUnusedDeclaration")
-    boolean haveListeners() {
-        return !this.listeners.isEmpty()
+    boolean haveSubscribers() {
+        return !this.subscribers.isEmpty()
     }
 
     /**
      * Removes all listeners.
      */
     @SuppressWarnings("GroovyUnusedDeclaration")
-    void removeAllListeners() {
-        this.listeners.clear()
+    void removeAllSubscribers() {
+        this.subscribers.clear()
     }
 
     /**
@@ -118,15 +117,18 @@ class ReceiveThread extends Thread {
      * @throws Exception
      */
     private Channel getRecvChannel() throws IOException {
-        if (this.recvChannel == null || !this.recvChannel.isOpen()) {
+        if ( this.recvChannel == null || !this.recvChannel.isOpen() ) {
             this.recvChannel = this.connectionProvider.connection.createChannel()
-            this.recvChannel.exchangeDeclare(this.instanceConfig.exchange.string, this.instanceConfig.exchangeType.string)
+
+            Map<String, String> defaultInst = (Config.config.instances as Map<String, Serializable>).default as Map<String, String>
+            this.recvChannel.exchangeDeclare( defaultInst.exchange, defaultInst.exchangeType )
             this.recvQueueName = this.recvChannel.queueDeclare().getQueue()
-            String routingKey = this.instanceConfig.routingKey.string
-            if (routingKey != null && routingKey.isEmpty()) {
+
+            String routingKey = defaultInst.routingKey
+            if ( routingKey != null && routingKey.isEmpty() ) {
                 routingKey = null
             }
-            this.recvChannel.queueBind(this.recvQueueName, this.instanceConfig.exchange.string, routingKey)
+            this.recvChannel.queueBind( this.recvQueueName, defaultInst.exchange, routingKey )
         }
         return this.recvChannel
     }
@@ -135,8 +137,8 @@ class ReceiveThread extends Thread {
      * Sets up a new QueueingConsumer and returns it.
      */
     private QueueingConsumer setupConsumer() {
-        QueueingConsumer consumer = new QueueingConsumer(getRecvChannel())
-        getRecvChannel().basicConsume(this.recvQueueName, true, consumer)
+        QueueingConsumer consumer = new QueueingConsumer( getRecvChannel() )
+        getRecvChannel().basicConsume( this.recvQueueName, true, consumer )
         return consumer
     }
 
@@ -151,21 +153,21 @@ class ReceiveThread extends Thread {
 
             QueueingConsumer consumer = setupConsumer()
 
-            while (keepRunning()) {
-                if (!this.listeners.isEmpty()) {
+            while ( keepRunning() ) {
+                if ( !this.subscribers.isEmpty() ) {
                     try {
-                        QueueingConsumer.Delivery delivery = consumer.nextDelivery(5000)
+                        QueueingConsumer.Delivery delivery = consumer.nextDelivery( 5000 )
                         //noinspection StatementWithEmptyBody
-                        if (delivery != null) {
+                        if ( delivery != null ) {
                             //logger.debug("======== Received message of length " + body.length + " ==========")
                             //logger.debug("  Current no listeners: " + this.listeners.size())
 
-                            for (APSSimpleMessageService.MessageListener listener : this.listeners) {
+                            for ( APSSubscriber subscriber : this.subscribers ) {
                                 try {
-                                    listener.messageReceived(this.topic, delivery.body)
+                                    subscriber.apsSubscription( delivery.body, [ "topic": this.topic ] )
                                 }
-                                catch (RuntimeException re) {
-                                    this.logger.error("Failure during listener call: " + re.getMessage(), re)
+                                catch ( RuntimeException re ) {
+                                    this.logger.error( "Failure during listener call: " + re.getMessage(), re )
                                 }
                             }
                         } else {
@@ -173,47 +175,46 @@ class ReceiveThread extends Thread {
                         }
 
                     }
-                    catch (ShutdownSignalException | ConsumerCancelledException sse) {
+                    catch ( ShutdownSignalException | ConsumerCancelledException sse ) {
                         throw sse
                     }
                     // We don't want this thread to die on Exception!
-                    catch (Exception e) {
-                        this.logger.error("ReceiverThread got an Exception!", e)
-                        if (failureCount < 3) {
+                    catch ( Exception e ) {
+                        this.logger.error( "ReceiverThread got an Exception!", e )
+                        if ( failureCount < 3 ) {
                             ++failureCount
                             //noinspection UnnecessaryQualifiedReference
-                            Thread.sleep(2000);
+                            Thread.sleep( 2000 )
                             consumer = setupConsumer()
                         } else {
-                            this.logger.error("Sleeping for 15 seconds hoping for better times! If this keeps recurring " +
-                                    "there is a serious problem!")
+                            this.logger.error( "Sleeping for 15 seconds hoping for better times! If this keeps recurring " +
+                                    "there is a serious problem!" )
                             //noinspection UnnecessaryQualifiedReference
-                            Thread.sleep(15000)
+                            Thread.sleep( 15000 )
                             failureCount = 0
                         }
                     }
-                }
-                else {
+                } else {
                     // If we don't have any listeners, then we don't fetch any messages.
-                    sleep(5000)
+                    sleep( 5000 )
                 }
             }
 
             this.recvChannel.close()
             this.recvChannel = null
         }
-        catch (ShutdownSignalException sse) {
-            this.logger.error("RabbitMQ are being shutdown!", sse)
+        catch ( ShutdownSignalException sse ) {
+            this.logger.error( "RabbitMQ are being shutdown!", sse )
         }
-        catch (ConsumerCancelledException cce) {
-            this.logger.error("RabbitMQ ReceiverThread: The consumer has been cancelled!", cce)
+        catch ( ConsumerCancelledException cce ) {
+            this.logger.error( "RabbitMQ ReceiverThread: The consumer has been cancelled!", cce )
         }
-        catch (IOException ioe) {
-            this.logger.error("RabbitMQ ReceiverThread: Failed to create consumer! This thread will die and not " +
-                    "receive anything!", ioe)
+        catch ( IOException ioe ) {
+            this.logger.error( "RabbitMQ ReceiverThread: Failed to create consumer! This thread will die and not " +
+                    "receive anything!", ioe )
         }
-        catch (Exception e) {
-            this.logger.error(e.getMessage(), e)
+        catch ( Exception e ) {
+            this.logger.error( e.getMessage(), e )
         }
     }
 
