@@ -23,7 +23,6 @@ class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
     @Test
     void runTest() throws Exception {
 
-        deploy 'aps-vertx-provider' with new APSActivator() from 'se.natusoft.osgi.aps', 'aps-vertx-provider', '1.0.0'
 
         deploy 'aps-vertx-event-bus-messaging-provider' with new APSActivator() from 'APS-Network/APSVertxEventBusMessagingProvider/target/classes'
 
@@ -31,6 +30,7 @@ class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
 
         deploy 'msg-sender' with new APSActivator() using '/se/natusoft/osgi/aps/net/vertx/MsgSender.class'
 
+        deploy 'aps-vertx-provider' with new APSActivator() from 'se.natusoft.osgi.aps', 'aps-vertx-provider', '1.0.0'
 
         // Wait for and then validate result. Even if in this case a cluster of one member is created, it takes
         // some time.
@@ -58,7 +58,7 @@ class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
 @TypeChecked
 class MsgReceiver implements APSSubscriber<Map<String, Object>> {
 
-    @OSGiService( timeout = "15 sec" )
+    @OSGiService( timeout = "15 sec", nonBlocking = true )
     private APSPubSubService<Map<String, Object>> msgService
 
     @Managed( loggingFor = "msg-receiver" )

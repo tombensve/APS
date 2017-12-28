@@ -816,6 +816,18 @@ public class APSServiceTracker<Service>  implements ServiceListener {
         return APSTrackerWrapper.wrap(this);
     }
 
+    /**
+     * Returns a service implementation wrapping this tracker and using it to get the service to forward calls to.
+     *
+     * @param cacheCallsUntilServiceAvailable If true calls to service will be cached if service is not available and called when service
+     *                                        becomes available. This will of course only work for methods that do not return a value!!
+     *                                        This will however make the calls non blocking! APSServiceTracker.allocateService() which
+     *                                        is default behavior will block until service is available!
+     */
+    public Service getWrappedService(boolean cacheCallsUntilServiceAvailable) {
+        return APSTrackerWrapper.wrap(this, cacheCallsUntilServiceAvailable);
+    }
+
     //
     // Inner Classes
     //

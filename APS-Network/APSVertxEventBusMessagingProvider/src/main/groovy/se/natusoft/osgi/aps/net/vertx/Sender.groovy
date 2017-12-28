@@ -43,7 +43,7 @@ class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Obje
      */
     @Override
     APSSender<Map<String, Object>> send( Map<String, Object> message ) {
-        this.actions.addAction {
+//        this.actions.addAction {
             if ( message[ "meta" ] == null ) {
                 message[ "meta" ] = this.meta
             }
@@ -60,8 +60,8 @@ class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Obje
             } else {
                 getEventBus().send( address, message )
             }
-        }
-        if ( getEventBus() != null ) this.actions.run()
+//        }
+//        if ( getEventBus() != null ) this.actions.run()
 
         return this
     }

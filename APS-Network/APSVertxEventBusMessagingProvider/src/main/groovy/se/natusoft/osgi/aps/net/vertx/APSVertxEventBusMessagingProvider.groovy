@@ -42,7 +42,6 @@ import io.vertx.core.eventbus.EventBus
 import io.vertx.core.eventbus.Message
 import io.vertx.core.json.JsonObject
 import org.osgi.framework.BundleContext
-import org.osgi.framework.ServiceReference
 import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
 import se.natusoft.osgi.aps.api.pubsub.APSPublisher
 import se.natusoft.osgi.aps.api.pubsub.APSSender
@@ -50,7 +49,6 @@ import se.natusoft.osgi.aps.api.pubsub.APSSubscriber
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.Actions
 import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.APSServiceTracker
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 
 import java.util.concurrent.ExecutorService
@@ -62,8 +60,8 @@ import java.util.concurrent.ExecutorService
  * its way up or being restarted any publish or send calls will be added as Closure objects to a list and will be
  * executed as soon as Vertx/EventBus becomes available.
  */
-@SuppressWarnings([ "GroovyUnusedDeclaration", "PackageAccessibility" ])
 // This is never referenced directly, only through APSMessageService API.
+@SuppressWarnings([ "GroovyUnusedDeclaration", "PackageAccessibility" ])
 @OSGiServiceProvider(
         // Possible criteria for client lookups. ex: "(${APS.Messaging.Protocol.Name}=vertx-eventbus)" In most cases clients won't care.
         properties = [
@@ -94,17 +92,19 @@ class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, 
     @Managed(loggingFor = "aps-vertx-event-bus-messaging-provider")
     private APSLogger logger
 
-    @OSGiService(additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "30 sec")
-    private APSServiceTracker<EventBus> eventBusTracker
+    /**
+     * The event bus we will be using for sending messages.
+     *
+     * Note that we can set nonBlocking = true due to EventBus API d
+     */
+    @OSGiService(additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "30 sec", nonBlocking = true)
+    private EventBus eventBus
 
     /** All publishing run on this thread. */
     @Managed
     @ExecutorSvc(type = ExecutorSvc.ExecutorType.Single, name = "aps-vertx-eventbus-messaging-provider",
             parallelism = 1, unConfigurable = true)
     private ExecutorService publisher
-
-    /** The vertx event bus. */
-    private EventBus eventBus
 
     /** Keeps track of subscribers to messages. */
     private Map<String, List<APSSubscriber>> subscribers = [ : ]
@@ -132,9 +132,6 @@ class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, 
     @Initializer
     void init() {
         this.logger.connectToLogService( this.context )
-
-        this.eventBusTracker.onActiveServiceAvailable = this.&onEventBusAvailable
-        this.eventBusTracker.onServiceLeaving = this.&onEventBusNotAvailable
     }
 
     /**
@@ -142,33 +139,6 @@ class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, 
      */
     @BundleStop
     void stop() {
-    }
-
-    /**
-     * Called when the event bus becomes available.
-     *
-     * @param eventBus The newly available event bus.
-     * @param eventBusRef The service reference of the event bus.
-     */
-    private void onEventBusAvailable( EventBus eventBus, ServiceReference eventBusRef ) {
-        this.eventBus = eventBus
-        this.actions.run()
-        if ( this.onReady != null ) {
-            this.onReady.run()
-        }
-    }
-
-    /**
-     * Called if the event bus goes away.
-     *
-     * @param eventBus
-     * @param api
-     */
-    private void onEventBusNotAvailable( ServiceReference eventBus, Class api ) {
-        this.eventBus = null
-        if ( this.onNotReady != null ) {
-            this.onNotReady.run()
-        }
     }
 
     //
@@ -206,21 +176,19 @@ class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, 
     @Override
     synchronized void subscribe( APSSubscriber<Map<String, Object>> subscriber, Map<String, String> meta ) {
         String address = meta[ ADDRESS ]
-        if (this.subscribers[address] == null) {
+        if ( this.subscribers[ address ] == null ) {
             List<APSSubscriber<Map<String, Object>>> subs = [ subscriber ]
-            this.subscribers[address] = subs
+            this.subscribers[ address ] = subs
 
-            this.actions.addAction {
-                this.eventBus.consumer( address ) { Message<JsonObject> msg ->
-                    Map<String, Object> message = msg.body().map
-                    Map<String, String> rmeta = [ : ]
-                    if (message["meta"] != null) {
-                        rmeta = message["meta"] as Map<String, String>
-                    }
+            this.eventBus.consumer( address ) { Message<JsonObject> msg ->
+                Map<String, Object> message = msg.body().map
+                Map<String, String> rmeta = [ : ]
+                if ( message[ "meta" ] != null ) {
+                    rmeta = message[ "meta" ] as Map<String, String>
+                }
 
-                    this.subscribers[ address ].each {APSSubscriber<Map<String, Object>> sub ->
-                        sub.apsSubscription( msg.body().map, rmeta )
-                    }
+                this.subscribers[ address ].each { APSSubscriber<Map<String, Object>> sub ->
+                    sub.apsSubscription( msg.body().map, rmeta )
                 }
             }
         }

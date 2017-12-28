@@ -35,11 +35,8 @@ class Publisher implements APSPublisher<Map<String, Object>> {
      */
     @Override
     APSPublisher publish( Map<String, Object> message ) throws APSPubSubException {
-        this.actions.addAction {
-            String address = this.meta[ APSPubSubService.ADDRESS ]
-            getEventBus().publish( address, new JsonObject( message ) )
-        }
-        if (getEventBus() != null) this.actions.run()
+        String address = this.meta[ APSPubSubService.ADDRESS ]
+        getEventBus().publish( address, new JsonObject( message ) )
 
         this
     }

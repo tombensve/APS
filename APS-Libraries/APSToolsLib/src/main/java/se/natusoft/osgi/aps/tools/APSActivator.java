@@ -989,7 +989,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 if (field.getType().equals(APSServiceTracker.class)) {
                     injectObject(managedInstanceRep.instance, tracker, field);
                 } else {
-                    injectObject(managedInstanceRep.instance, tracker.getWrappedService(), field);
+                    injectObject(managedInstanceRep.instance, tracker.getWrappedService(service.nonBlocking()), field);
                 }
             }
 
