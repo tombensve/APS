@@ -10,6 +10,8 @@ Please note that this bundle has no dependencies! That is, it can be used as is 
 
 This does the same thing as the standard service tracker included with OSGi, but does it better with more options and flexibility. One of the differences between this tracker and the OSGi one is that this throws an _APSNoServiceAvailableException_ if the service is not available. Personally I think this is easier to work with than having to check for a null result. I also think that trying to keep bundles and services  up are better than pulling them down as soon as one depencency goes away for a short while, for example due to redeploy of newer version. This is why APSServiceTracker takes a timeout and waits for a service to come back before failing.
 
+__Note:__ that in previous version APSServiceTracker did all callbacks in a separate thread. This is no longer the case, and shouldn't have been from the beginning.
+
 There are several variants of constructors, but here is an example of one of the most used ones within the APS services:
 
     APSServiceTracker<Service> tracker =
@@ -48,8 +50,13 @@ When available the tracker will log to this.
 The tracker can be used as a wrapped service:
 
 	Service service = tracker.getWrappedService();
+	Service service = tracker.getWrappedService(boolean cacheCallsUntilServiceAvailable);
 
 This gives you a proxied _service_ instance that gets the real service, calls it, releases it and return the result. This handles transparently if a service has been restarted or one instance of the service has gone away and another came available. It will wait for the specified timeout for a service to become available and if that does not happen the _APSNoServiceAvailableException_ will be thrown. This is of course a runtime exception which makes the service wrapping possible without loosing the possibility to handle the case where the service is not available.
+
+The _cacheCallsUntilServiceAvailable_ parameter means just that. This makes the service non blocking.  Otherwise any call to a method when service is not available will result in a wait() on the thread until a service is available. When this parameter is `true` however any calls to the service before a service is available will be cached and executed later when a service is available. Do note that the tracker wrapper provides a java.lang.reflect.Proxy implementation of the service interface. Under the surface it will do an _invoke_ on the actual service object and this invoke can be saved for later in a lambda. There is however a big __warning__ with this: This feature will obviously only work for methods that don't provide a return value! Since method calls may possible be done in the future they cannot return any value. And no, _Future<?>_ cannot be used since it blocks, and we are trying to avoid blocking here!
+
+If you don't like this, don't use the _getWrappedService(true)_. The _.onActiveServiceAvailable(callback)_ method can be used to receive the service instance when it is available.
 
 ### Using the tracker in a similar way to the OSGi standard tracker
 
@@ -163,7 +170,7 @@ The APSLogger can be used by just creating an instance and then start using the 
 
 then the logger will try to get hold of the standard OSGi LogService and if that is available log to that. If the log service is not available it will fallback to the OutputStream.
 
-If you call the `setServiceRefrence(serviceRef);` method on the logger then information about that service will be provied with each log.
+If you call the _setServiceRefrence(serviceRef);_ method on the logger then information about that service will be provied with each log.
 
 ## APSActivator
 
@@ -246,11 +253,13 @@ The following annotations are available:
 
 Do note that for the _serviceSetupProvider()_ another solution is to use the _@BundleStart_ (see below) and just create instances of your service and register them with the BundleContext. But if you use _@OSGiServiceProvider_ to instantiate and register other "one instance" services, then using _serviceSetupProvider()_ would look a bit more consistent.
 
-**@APSExternalizabe**, **@APSRemoteService** - These 2 annotations are synonyms and have no properties. They should be used on a service implementation class. When either of these are specified the "aps-externalizable=true" property will be set when the service is registered with the OSGi container. The APSExternalProtocolExtender will react on this property and make the service externally accessible. 
+**@APSExternalizabe**, **@APSRemoteService** - These 2 annotations are synonyms and have no properties. They should be used on a service implementation class. When either of these are specified the "aps-externalizable=true" property will be set when the service is registered with the OSGi container. The APSExternalProtocolExtender will react on this property and make the service externally accessible.
 
 **@OSGiService** - This should be specified on a field having a type of a service interface to have a service of that type injected, and continuously tracked. Any call to the service will throw an APSNoServiceAvailableException (runtime) if no service has become available before the specified timeout. It is also possible to have APSServiceTracker as field type in which case the underlying configured tracker will be injected instead.
 
 If _required=true_ is specified and this field is in a class annotated with _@OSGiServiceProvider_ then the class will not be registered as a service until the service dependency is actually available, and will also be unregistered if the tracker for the service does a timeout waiting for a service to become available. It will then be reregistered again when the dependent service becomes available again. Please note that unlike iPOJO the bundle is never stopped on dependent service unavailability, only the actual service is unregistered as an OSGi service. A bundle might have more than one service registered and when a dependency that is only required by one service goes away the other service is still available.
+
+The non blocking variant of _APSServiceTracker.getWrappedService(true)_ as described above can also be achieved with this annotation by setting _nonBlocking = true_.
 
     public @interface OSGiService {
 
@@ -284,6 +293,22 @@ If _required=true_ is specified and this field is in a class annotated with _@OS
          * be registered until the service becomes available.
          */
         boolean required() default false;
+
+        /**
+         * If this is set to true and a proxied implementation of the service is injected rather than the tracker directly
+         * then any call made to the proxy will be cached if the service is not available and then later run when the
+         * service becomes available. This of course means that methods returning a value will always return null when
+         * service is not currently available since the real call will be made in the future. Returning a Future instead
+         * in this case does not work since 'Future's are blocking, and we try to avoid blocking here.
+         *
+         * __YOU HAVE TO BE VERY CAREFUL WHEN SETTING THIS TO TRUE! NO CALLS RETURNING A VALUE!__
+         *
+         * The point of this is to be non blocking. By default with a proxied implementation tracker.allocateService() will
+         * be called, and this blocks waiting for the service to become available if it is not.
+         *
+         * @return true or false (default).
+         */
+        boolean nonBlocking() default false;
     }
 
 **@Managed** - This will have an instance managed and injected. There will be a unique instance for each name specified with the default name of "default" being used if none is specified. There are 2 field types handled specially: BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger instance the 'loggingFor' annotation property can be specified. Please note that any other type must have a default constructor to be instantiated and injected!
@@ -309,7 +334,7 @@ If _required=true_ is specified and this field is in a class annotated with _@OS
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     public @interface ExecutorSvc {
-    
+
         enum ExecutorType {
             FixedSize,
             WorkStealing,
@@ -318,13 +343,13 @@ If _required=true_ is specified and this field is in a class annotated with _@OS
             Scheduled,
             SingleScheduled
         }
-    
+
         /** This is loosely the number of concurrent threads. */
         int parallelism() default 10;
-    
+
         /** The type of ExecutorService wanted. */
         ExecutorType type() default ExecutorType.FixedSize;
-    
+
         /** If true the created ExecutorService will be wrapped with a delegate that disallows configuration. */
         boolean unConfigurable() default false;
     }
@@ -334,22 +359,22 @@ If _required=true_ is specified and this field is in a class annotated with _@OS
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     public @interface Schedule {
-    
-        /** 
-         * The defined executor service to schedule this on. This should be the name of it. If left blank an internal  
-         * ScheduledExecutorService will be used. 
+
+        /**
+         * The defined executor service to schedule this on. This should be the name of it. If left blank an internal
+         * ScheduledExecutorService will be used.
          */
         String on() default "";
-    
+
         /** The amount of time to wait for the (first) execution. */
         long delay();
-    
+
         /** If specified how long to wait between runs. */
         long repeat();
-    
+
         /** The time unit used for the above values. Defaults to seconds. */
         TimeUnit timeUnit() default TimeUnit.SECONDS;
-    
+
         /** Possibility to affect the size of the thread pool when such is created internally for this (on="..." not provided!). */
         int poolSize() default 2;
     }
@@ -397,11 +422,11 @@ Any implementing classes of this interface can be specified in META-INF/services
 The APSActivatorPlugin API looks like this:
 
     public interface APSActivatorPlugin {
-    
+
         interface ActivatorInteraction {
             void addManagedInstance(Object instance, Class forClass);
         }
-    
+
         void analyseBundleClass(ActivatorInteraction activatorInteraction, Class bundleClass);
     }
 

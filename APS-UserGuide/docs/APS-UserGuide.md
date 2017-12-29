@@ -106,265 +106,6 @@ __Please note__ that the /apsadminweb by default require no login! This so that 
 
 The complete javadoc for all services can be found at [http://apidoc.natusoft.se/APS](http://apidoc.natusoft.se/APS).
 
-# APSConfigService
-
-This is not the simple standard OSGi service configurations, but more an application config that can also be used for services. It supports structured configurations including lists of items and lists of subconfigurations. Code that uses the configuration provide one or more configuration classes with config items. These are registered with the config service, which makes them editable/publishable though and admin web app. After registration an instance of the config can be gotten containing published or defaul values. Alternatively the config class is specified with a fully qualified name in the _APS-Configs:_ MANIFEST.MF entry. In this case the configuration service acts as an extender and automatically registers and provides an instance of the config for you, without having to call the config service.
-
-## Configuration Environments
-
-The APSConfigService supports different configuration environments. The idea is to define one config environment per installation. Configuration values can either be configuration environment specific or the same for all environments. See @ConfigItemDescription below for more information on specifying configuration environment specific values.
-
-## Making a config class
-
-Here is an example:
-
-        @APSConfigDescription(
-            version="1.0",
-            configId="se.natusoft.aps.exmple.myconfig",
-            group="examples",  
-            description="An example configuration model"
-        )
-        public class MyConfig extends APSConfig {
-            
-        @APSConfigItemDescription(
-            description="Example of simple value.",
-        )
-        public APSConfigValue simpleValue;
-            
-            @APSConfigItemDescription(
-                description="Example of list value."
-            )
-            public APSConfigValueList listValue;
-            
-            @APSConfigItemDescription(
-                description="One instance of MySubConfig model."
-            )
-            public MySubConfig mySubConfig;
-            
-            @APSConfigItemDescription(
-                description="Multiple instances of MySubConfig model."
-            )
-            public APSConfigList<MySubConfig> listOfMySubConfigs;
-            
-            @APSConfigDescription(
-                version="1.0",
-                configId="se.natusoft.aps.example.myconfig.mysubconfig",
-                description="Example of a subconfig model. Does not have to be inner class!"
-            )
-            public static class MySubConfig extends APSConfig {
-                
-             @APSConfigItemDescription(
-                    description="Description of values."
-                )
-                public APSConfigValueList listOfValues;
-                
-                @APSConfigItemDescription(
-                 description="Description of another value."
-                )
-                public APSConfigValue anotherValue;
-            }
-        }
-
-### The config values 
-
-Now you might be wondering, why not an interface, and why _public_ and why _APSConfigValue_, _APSConfigValueList_, and _APSConfigList_?
-
-The reason for not using an interface and provide a java.lang.reflect.Proxy implementation of it is that OSGi has separate class loaders for each bundle. This means a service cannot proxy an interface provided by another bundle. Well, there are ways to go around that, but I did not want to do that unless that was the only option available. In this case it wasn’t. Therefore I use the above listed APS*Value classes as value containers. They are public so that they can be accessed and set by the APSConfigService. When you get the main config class instance back from the service all values will have valid instances. Each APS*Value has an internal reference to its config value in the internal config store. So if the value is updated this will be immediately reflected since it is referencing the one and only instance of it in the config store.
-
-All config values are strings! All config values are stored as strings. The __APSConfigValue__ container however have _toBoolean()_, _toDate()_, _toDouble()_, _toFloat()_, _toInt()_, _toLong()_, _toByte()_, _toShort()_, and _toString()_ methods on it.
-
-The __APSConfigList<Type>__ container is an _java.lang.Iterable_ of <Type> type objects. The <Type> cannot however be anything. When used directly in a config model it must be <Type extends APSConfig>. That is, you can only specify other config models extending APSConfig. The only exception to that is __APSConfigValueList__ which is defined as:
-
-        public interface APSConfigValueList extends APSConfigList<APSConfigValue> {} 
-
-*  Use __APSConfigValue__ for plain values.
-
-*  Use __APSConfigValueList__ for a list of plain values.
-
-*  Use __* extends APSConfig__ for a subconfig model.
-
-*  Use __APSConfigList<* extends APSConfig>__ for a list of subconfig models.
-
-### The config annotations
-
-The following 3 annotations are available for use on configuration models.
-
-#### @APSConfigDescription
-
-        @APSConfigDescription(
-            version="1.0",
-            configId="se.natusoft.aps.exmple.myconfig",
-            group="docs.examples",
-            description="An example configuration model"
-        )
-
-This is an annotation for a configuration model.
-
-__version__ - The version of the config model. This is required.
-
-__configId__ - The unique id of the configuration model. Use same approch as for packages. This is required.
-
-__group__ - This specifies a group or rather a tree branch that the config belongs under. This is only used by the configuration admin web app to render a tree of configuration models. This is optional.
-
-__description__ - This describes the configuration model.
-
-#### @APSConfigItemDescription
-
-        @APSConfigItemDescription(
-            description="Example of simple value.",
-            datePattern="yyMMdd",  
-            environmentSpecific=true/false,  
-            isBoolean=true/false,  
-            validValues={"high", "medium", "low"}, 
-        )
-
-This is an annotation for a configuration item whithin a configuration model.
-
-__description__ - This describes the configuration value. The configuration admin web app uses this to explain the configuration value to the person editing the configuration. This is required.
-
-__datePattern__ - This is a date pattern that will be passed to SimpleDateFormat to convert the date in the string value to a java.util.Date object and is used by the _toDate()_ method of APSConfigValue. This date format will also be displayed in the configuration admin web app to hint at the date format to the person editing the configuration. The configuration admin web app will also use a calendar field if this is available. The calendar field has a complete calendar popup that lets you choose a date. This is optional.
-
-__environmentSpecific__ - This indicates that the config value can have different values depending on which config environment is active. This defaults to false in which case the value will apply to all config environments. This is optional.
-
-__isBoolean__ - This indicates that the config value is of boolean type. This is used by the configuration admin web app to turn this into a checkbox rather than a text field. This defaults to false and is this optional.
-
-__validValues__ - This is an array of strings ( {"...", ..., "..."} ) containing the only valid values for this config value. This is used by the configuration admin web app to provide a dropdown menu of the alternatives rather than a text field. This defaults to {} and is thus optional.
-
-__defaultValue__ - This is an array of @APSDefaultValue annotations. Se the description of this annotation below. This allows not only for providing a default value, but for providing a default value per config environment (which is why there is an array of @APSDefaultValue annotations!). Thus you can deliver pre configured configuration for all configuration environments. If a config environment is not specified for a default value then it applies for all configuration environments. Some configuration values are better off without default values, like hosts and ports for other remote services. The application/server maintenance people responsible for an installation in general knows this information better than the developers.
-
-#### @APSDefaultValue
-
-        @APSDefaultValue {
-            configEnv="production",
-            value="15"
-        }
-
-__configEnv__ - This specifies the configuration environment this default value applies to. "default" means all/any configuration environment and is the default value if not specified.
-
-__value__ - This is the default value of the configuration value for the configuration environment specified by configEnv.
-
-### Auto managed configurations
-
-It is possible to let the APSConfigService act as an extender and automatically register and setup config instances on bundle deploy by adding the __APS-Configs:__ MANIFEST.MF header and a comma separated list of fully qualified names of config models. There are two variants of how to define the auto managed instance.
-
-__Warning__: Auto managed configurations cannot ever be accessed during bundle activation in default activation thread! If the activation code starts a new thread then it is OK to access auto managed configuration in that thread, but only with variant 2! (the thread have to put itself to sleep until the configuration becomes managed. This is described below).
-
-#### Variant 1: A simple non instantiated static member of config model type
-
-Example:
-
-        @APSConfigDescription(
-            version="1.0",
-            configId="se.natusoft.aps.exmple.myconfig",
-            group="examples",
-            description="An example configuration model"
-        )
-        public class MyConfig extends APSConfig {
-            
-        -->  public static MyConfig myConfig;  <--
-            
-            @APSConfigItemDescription(
-                description="Example of simple value.",
-            )
-            public APSConfigValue simpleValue;
-            
-            @APSConfigItemDescription(
-                description="Example of list value."
-            )
-            public APSConfigValueList listValue;
-            ...
-            
-
-To access this variant of managed config do:
-
-        MyConfig.myConfig.simpleValue.toString()/toInt()/toDouble()/...
-        
-
-__A warning__: This variant does not provide any support for determining if the configuration has become managaged yet. If you access it to early it will be null. Therefore you should only use this variant if you know it will become managed before it is referenced. The other variant allows you to check and wait for a config to become managed.
-
-#### Variant 2: A static instantiated ManagedConfig&lt;ConfigModel&gt; member. 
-
-Example:
-
-        @APSConfigDescription(
-            version="1.0",
-            configId="se.natusoft.aps.exmple.myconfig",
-            group="examples",
-            description="An example configuration model"
-            )
-        public class MyConfig extends APSConfig {
-            
-        public static final ManagedConfig<MyConfig> managed = new ManagedConfig<MyConfig>();
-            
-            @APSConfigItemDescription(
-                description="Example of simple value.",
-            )
-            public APSConfigValue simpleValue;
-            
-            @APSConfigItemDescription(
-                description="Example of list value."
-            )
-            public APSConfigValueList listValue;
-            ...
-            
-
-There is a possibility that code started in a bundle, especially threads might start running before the config has become managed. In such cases the following will solve that:
-
-        if (!MyConfig.managed.isManaged()) {
-            MyConfig.managed.waitUntilManaged();
-        }
-
-Do not ever do this during start() of a Bundle activator! That would cause a never ending dead-lock!
-
-To access this variant of managed config do:
-
-        MyConfig.managed.get().simpleValue.toString()/toInt()/toDouble()/...
-        
-
-## API Usages
-
-### The configuration service usage
-
-The APSConfigService API looks like this:
-
-        public interface APSConfigService {
-            void registerConfiguration(Class<? extends APSConfig> configClass, boolean forService) throws APSConfigException;
-            void unregisterConfiguration(Class<? extends APSConfig> configClass);
-            <Config extends APSConfig> Config getConfiguration(Class<Config> configClass) throws APSConfigException;
-        }
-
-On bundle start you register the configuration. On bundle stop you unregister it. Inbetween you access it. It is a good idea to call getConfiguration(...) after register on bundle start and the pass this instance to your services, etc.
-
-If the _forServices_ flag is _true_ then this configuration will also be registered in the standard OSGi configuration service. Please be warned however that APSConfigService stores its configuration values in properties files, but with rather complex keys. For non structured, flat configurations it might make some sense to register it with the standard osgi service also, but in most cases there is no point in doing this. I'm not even sure why I have this option!
-
-_Please note_ that if you are using managed configs (see above) then you never need to call this service API, not even lookup/track the APSConfigService!
-
-### The configuration admin service usage
-
-The APSconfigAdminService only needs to be used if you implement a configuration editor. APSConfigAdminWeb uses this API for example. See the javadoc for the API.
-
-## The complete APS API
-
-The complete APS javadoc can be found at [http://apidoc.natusoft.se/APS/](http://apidoc.natusoft.se/APS/).
-
-## A word of advice
-
-It is quite possible to make config structures of great complexity. __DON'T!__ Even if it seems manageable from a code perspective it might not be that from a admin perspective. Keep it simple always apply!
-
-## Administration
-
-The configurations managed by the APS config service can be synchronized among a group of installations. To do this you need to enable synchronization in the _aps/config_ node in the config admin web, and also specify a group name that you want to synchronize with. All installations having the same group name will synch configuration with each other. The synchronization uses the APSSync service so an implementation of this must be deployed for synchronization to work. There are currently 2 implementations provided, one using APSGroups (multicast only) and one using RabbitMQ (which of course also requires a RabbitMQ installation).
-
-## APSConfigAdminWeb screenshots
-
-![Config environment screenshot](http://download.natusoft.se/Images/APS/APS-Core/APSConfigServiceProvider/docs/images/config-env.png)
-
-![Config environment help screenshot](http://download.natusoft.se/Images/APS/APS-Core/APSConfigServiceProvider/docs/images/config-env-help.png)
-
-![Config screenshot](http://download.natusoft.se/Images/APS/APS-Network/APSGroups/docs/images/groups-config-1.png)
-
-![Config list item screenshot](http://download.natusoft.se/Images/APS/APS-Core/APSConfigServiceProvider/docs/images/config-list.png)
-
 # APSFilesystemService
 
 This provides a filesystem for writing and reading files. This filesystem resides outside of the OSGi server and is for longterm storage, which differs from BundleContext.getDataFile() which resides within bundle deployment. The APSFilesystemService also does not return a File object! It priovides a file area for each unique owner name that is accessed through an API that cannot navigate nor access any files outside of this area. The ”owner” name should be either an application name or a bundle name if it is only used by one bundle.
@@ -853,101 +594,6 @@ Returns a description of the platform instance / installation.
 
     
 
-# MapJsonDocValidator
-
-This takes a schema (made up of a `Map<String,``Object>`, see below) and another `Map<String,``Object>` representing the JSON. So the catch here is that you need a JSON parser that allows you to get the content as a Map. The Vertx JSON parser does. This uses `Map` since it is generic, does not need to hardcode dependency on a specific parser, and maps are very easy to work with in Groovy.
-
-## Useage
-
-             private Map<String, Object> schema = [
-                    "meta/header": "meta",
-                    header_1: [
-                            type_1      : "service",   
-                            "meta/type" : "metadata", 
-                            address_1   : "?aps\\.admin\\..*",
-                            classifier_1: "?public|private"
-                    ],
-                    body_1  : [
-                            action_1: "get-webs"
-                    ],
-                    reply_0: [
-                            webs_1: [
-                                    [
-                                            name_1: "?.*",
-                                            url_1: "?^https?://.*",
-                                            no1_0: "#1-100",
-                                            no2_0: "#<=10",
-                                            no3_0: "#>100",
-                                            no4_0: "#1.2-3.4"
-                                    ]
-                            ]
-                    ]
-            ] as Map<String, Object>
-        
-            private MapJsonDocValidator verifier = new MapJsonDocValidator( validStructure: schema )
-        
-            ...
-        
-            verifier.validate(myJsonMap)
-
-This will throw a runtime exception on validation failure.
-
-# Schema
-
-## Keys
-
-<key>_0 - The key is optional.
-
-<key>_1 - The key is required.
-
-## Values
-
-### "?regexp"
-
-The '?' indicates that the rest of the value is a regular expression. This regular expression will be applied to each value.
-
-### "<hash><range>"
-
-This indicates that this is a number and defines the number range allowed. The following variants are available:
-
-__"#from-to"__ : This specifies a range of allowed values, from lowest to highest.
-
-__"#<=num"__ : This specifies that the numeric value must be less than or equal to the specified number.
-
-__"#>=num"__ : This specifies that the numeric value must be larger than or equal to the specified number.
-
-__"#<num"__ : This specifies that the numeric value must be less than the specified number.
-
-__"#>num"__ : This specifies that the numeric value must be larger than the specified number.
-
-Note: Both floating point numbers and integers are allowed.
-
-### "bla"
-
-This requires values to be exactly "bla".
-
-## Example
-
-         Map<String, Object> struct = [
-            header_1: [
-               type_1      : "service",
-               address_1   : "aps.admin.web",
-               classifier_0: "?public|private"
-            ],
-            body_1  : [
-               action_1: "get-webs"
-            ],
-            reply_0: [
-               webs_1: [
-                  [
-                     name_1: "?.*",
-                     url_0: "?^https?://.*",
-                     someNumber_0: "#0-100" // Also valid: ( ">0" "<100" ) ( ">=0" "<=100" )
-                  ]
-               ]
-            ]
-         ]
-
 # APSJSONLib
 
 This is a library (exports all its packages and provides no service) for reading and writing JSON. It can also write a JavaBean object as JSON and take a JSON value or inputstream containing JSON and produce a JavaBean.
@@ -986,7 +632,7 @@ _Throws_
 
 > _IOException_ - on any IO failures. 
 
-__public static void write(OutputStream jsonOut, JSONValue value) throws IOException__
+__public static void write(OutputStream jsonOut, JSONValue value) throws APSIOException__
 
 Writes a _JSONValue_ to an _OutputStream_. This will write compact output by default.
 
@@ -998,9 +644,9 @@ _Parameters_
 
 _Throws_
 
-> _IOException_ - on failure. 
+> _APSIOException_ - on failure. 
 
-__public static void write(OutputStream jsonOut, JSONValue value, boolean compact) throws IOException__
+__public static void write(OutputStream jsonOut, JSONValue value, boolean compact) throws APSIOException__
 
 Writes a _JSONValue_ to an _OutputStream_.
 
@@ -1014,7 +660,7 @@ _Parameters_
 
 _Throws_
 
-> _IOException_
+> _APSIOException_ - on IO problems. 
 
 }
 
@@ -1022,41 +668,27 @@ _Throws_
 
     
 
-public _class_ __JSONArray__ extends  JSONValue  [se.natusoft.osgi.aps.json] {
-
-This class is based on the structure defined on http://www.json.org/.
-
-This represents the "array" diagram on the above mentioned web page:
-
-                      _______________________
-                     /                       \
-                     |                       |
-        |_____ ([) __/_______ (value) _______\__ (]) _____|
-        |              /                   \              |
-                       |                   |
-                       \_______ (,) _______/
-
-@author Tommy Svensson
 
 
 
-__public JSONArray()__
+
+__public JSONArrayProvider()__
 
 Creates a new JSONArray for wrinting JSON output.
 
-__public JSONArray(JSONErrorHandler errorHandler)__
+__public JSONArrayProvider(JSONErrorHandler errorHandler)__
 
 Creates a new JSONArray for reading JSON input and writing JSON output.
 
 _Parameters_
 
-> _errorHandler_
+> _errorHandler_ - The error handler to use. 
 
 
 
 
 
-__public void addValue(JSONValue value)__
+__public void addValue(JSONValueProvider value)__
 
 Adds a value to the array.
 
@@ -1064,11 +696,13 @@ _Parameters_
 
 > _value_ - The value to add. 
 
-__public List<JSONValue> getAsList()__
+
+
+__public List<se.natusoft.osgi.aps.api.misc.json.model.JSONValue> getAsList()__
 
 Returns the array values as a List.
 
-__public <T extends JSONValue> List<T> getAsList(Class<T> type)__
+__public <T extends se.natusoft.osgi.aps.api.misc.json.model.JSONValue> List<T> getAsList(Class<T> type)__
 
 Returns the array values as a list of a specific type.
 
@@ -1092,15 +726,11 @@ _Parameters_
 
     
 
-public _class_ __JSONBoolean__ extends  JSONValue    [se.natusoft.osgi.aps.json] {
-
-This class is based on the structure defined on [http://www.json.org/](http://www.json.org/).
-
-@author Tommy Svensson
 
 
 
-__public JSONBoolean(boolean value)__
+
+__public JSONBooleanProvider(boolean value)__
 
 Creates a new JSONBoolean instance for writing JSON output.
 
@@ -1108,13 +738,13 @@ _Parameters_
 
 > _value_ - The value for this boolean. 
 
-__public JSONBoolean(JSONErrorHandler errorHandler)__
+__public JSONBooleanProvider(JSONErrorHandler errorHandler)__
 
 Creates a new JSONBoolean instance for reading JSON input or writing JSON output.
 
 _Parameters_
 
-> _errorHandler_
+> _errorHandler_ - The error handler to use. 
 
 
 
@@ -1138,15 +768,7 @@ Returns the value of this boolean as a String.
 
 
 
-}
 
-----
-
-    
-
-public _class_ __JSONEOFException__ extends  IOException  }  [se.natusoft.osgi.aps.json] {
-
-Thrown if a JSON structure is tried to be read from a stream that has no more data.
 
 }
 
@@ -1154,57 +776,19 @@ Thrown if a JSON structure is tried to be read from a stream that has no more da
 
     
 
-public _interface_ __JSONErrorHandler__   [se.natusoft.osgi.aps.json] {
 
-This is called on warnings or failures.
 
-@author Tommy Svensson
-
-__void warning(String message)__
-
-Warns about something.
-
-_Parameters_
-
-> _message_ - The warning message. 
-
-__void fail(String message, Throwable cause) throws RuntimeException__
-
-Indicate failure.
-
-_Parameters_
-
-> _message_ - The failure message. 
-
-> _cause_ - The cause of the failure. Can be null! 
-
-_Throws_
-
-> _RuntimeException_ - This method must throw a RuntimeException. 
-
-}
-
-----
-
-    
-
-public _class_ __JSONNull__ extends  JSONValue    [se.natusoft.osgi.aps.json] {
-
-This class is based on the structure defined on [http://www.json.org/](http://www.json.org/).
-
-@author Tommy Svensson
-
-__public JSONNull()__
+__public JSONNullProvider()__
 
 Creates a new JSONNull instance for writing JSON output.
 
-__public JSONNull(JSONErrorHandler errorHandler)__
+__public JSONNullProvider(JSONErrorHandler errorHandler)__
 
 Creates a new JSONNull instance for reading JSON input or writing JSON output.
 
 _Parameters_
 
-> _errorHandler_
+> _errorHandler_ - The error handler to use. 
 
 
 
@@ -1224,31 +808,11 @@ _Returns_
 
     
 
-public _class_ __JSONNumber__ extends  JSONValue    [se.natusoft.osgi.aps.json] {
-
-This class is based on the structure defined on http://www.json.org/.
-
-This represents the "number" diagram on the above mentioned web page:
-
-                                              ______________________
-                                             /                      \
-                                             |                      |
-        |_|______________ (0) _______________/__ (.) ___ (digit) ___\_________________________|_|
-        | | \       /  \                    /         /           \  \                      / | |
-            |       |  |                   /          \___________/  |                      |
-            \_ (-) _/  \_ (digit 1-9) ____/_______                   |                      |
-                                       /          \                  |                      |
-                                       \_ (digit) /           _ (e) _|                      |
-                                                             |_ (E) _|           ___________|
-                                                             |        _ (+) _   /           |
-                                                             \_______/_______\__\_ (digit) _/
-                                                                     \_ (-) _/
-
-@author Tommy Svesson
 
 
 
-__public JSONNumber(Number value)__
+
+__public JSONNumberProvider(Number value)__
 
 Creates a new JSONNumber instance for writing JSON output.
 
@@ -1256,7 +820,7 @@ _Parameters_
 
 > _value_ - The numeric value. 
 
-__public JSONNumber(JSONErrorHandler errorHandler)__
+__public JSONNumberProvider(JSONErrorHandler errorHandler)__
 
 Creates a new JSONNumber instance for reading JSON input or writing JSON output.
 
@@ -1270,9 +834,7 @@ __public Number toNumber()__
 
 Returns the number as a Number.
 
-__public double toDouble()__
 
-Returns the number as a double value.
 
 __public float toFloat()__
 
@@ -1318,33 +880,15 @@ _Parameters_
 
     
 
-public _class_ __JSONObject__ extends  JSONValue    [se.natusoft.osgi.aps.json] {
-
-This class is based on the structure defined on http://www.json.org/.
-
-It represents the "object" diagram on the above mentioned web page:
-
-                     ________________________________________
-                    /                                        \
-        |___ ({) __/_____ (string) ____ (:) ____ (value) _____\___ (}) ____|
-        |           /                                        \             |
-                    \__________________ (,) _________________/
-
-This is also the starting point.
-
-To write JSON, create a new _JSONObject_ (`new JSONObject()`) and call `addProperty(name,``value)` for children. Then do jsonObj.writeJSON(outputStream)`.`
-
-To read JSON, create a new _JSONObject_ (`new JSONObject(jsonErrorHandler)`) and then do `jsonObj.readJSON(inputStream)`. Then use `getProperty(name)` to extract children.
-
-@author Tommy Svensson
 
 
 
-__public JSONObject()__
+
+__public JSONObjectProvider()__
 
 Creates a JSONObject instance for writing JSON output.
 
-__public JSONObject(JSONErrorHandler errorHandler)__
+__public JSONObjectProvider(JSONErrorHandler errorHandler)__
 
 Creates a new JSONObject instance for reading JSON input or writing JSON output.
 
@@ -1356,27 +900,25 @@ _Parameters_
 
 
 
-__public Set<JSONString> getPropertyNames()__
 
-Returns the names of the available properties.
 
-__public JSONValue getProperty(JSONString name)__
 
-Returns the named property.
 
-_Parameters_
 
-> _name_ - The name of the property to get. 
 
-__public JSONValue getProperty(String name)__
 
-Returns the named property.
 
-_Parameters_
 
-> _name_ - The name of the property to get. 
 
-__public void addProperty(JSONString name, JSONValue value)__
+
+
+
+
+
+
+
+
+__public void addValue(se.natusoft.osgi.aps.api.misc.json.model.JSONString name, JSONValueProvider value)__
 
 Adds a property to this JSONObject instance.
 
@@ -1386,7 +928,7 @@ _Parameters_
 
 > _value_ - The property value. 
 
-__public void addProperty(String name, JSONValue value)__
+__public void addValue(String name, se.natusoft.osgi.aps.api.misc.json.model.JSONValue value)__
 
 Adds a property to this JSONObject instance.
 
@@ -1406,35 +948,11 @@ _Parameters_
 
     
 
-public _class_ __JSONString__ extends  JSONValue    [se.natusoft.osgi.aps.json] {
-
-This class is based on the structure defined on http://www.json.org/.
-
-This represents the "string" diagram on the above mentioned web page:
-
-                   ___________________________________________________________
-                  /    ____________________________________________________   \
-                  |   /                                                    \  |
-        |___ (") _|___|___ (*1)                                        ____|__|_ (") ___|
-        |           \                                                   /               |
-                     |                                                  |
-                     \__ (\) ___ (") (quotation mark) __________________|
-                             |__ (\) (reverse solidus) _________________|
-                             |__ (/) (solidus) _________________________|
-                             |__ (b) (backspace) _______________________|
-                             |__ (f) (formfeed) ________________________|
-                             |__ (n) (newline) _________________________|
-                             |__ (r) (carriage return) _________________|
-                             |__ (t) (orizontal tab) ___________________|
-                             \__ (u) (4 hexadecimal digits) ____________/
-        
-        *1: Any UNICODE character except " or \ or control character
-
-@author Tommy Svensson
 
 
 
-__public JSONString(String value)__
+
+__public JSONStringProvider(String value)__
 
 Creates a new JSONString for writing JSON output.
 
@@ -1442,13 +960,13 @@ _Parameters_
 
 > _value_ - The value of this JSONString. 
 
-__public JSONString(JSONErrorHandler errorHandler)__
+__public JSONStringProvider(JSONErrorHandler errorHandler)__
 
 Creates a new JSONString for reading JSON input and writing JSON output.
 
 _Parameters_
 
-> _errorHandler_
+> _errorHandler_ - The error handler to use. 
 
 
 
@@ -1470,43 +988,23 @@ _Parameters_
 
     
 
-public _abstract_ _class_ __JSONValue__   [se.natusoft.osgi.aps.json] {
-
-This class is based on the structure defined on http://www.json.org/.
-
-This is a base class for all other JSON* classes. It represents the "value" diagram on the above mentioned web page:
-
-                                                          Subclasses
-                                                          ----------
-        |________________ (STRING) ________________|      JSONString
-        |  |_____________ (NUMBER) _____________|  |      JSONNumber
-           |_____________ (OBJECT) _____________|         JSONObject
-           |_____________ (ARRAY)  _____________|         JSONArray
-           |_____________ (true)   _____________|     \__ JSONBoolean
-           |_____________ (false)  _____________|     /
-           \_____________ (null)   _____________/         JSONNull
-
-@author Tommy Svensson
 
 
 
 
 
-__protected JSONValue()__
+
+__protected JSONValueProvider()__
 
 Creates a new JSONValue.
 
-__protected JSONValue(JSONErrorHandler errorHandler)__
+__protected JSONValueProvider(JSONErrorHandler errorHandler)__
 
 Creates a new JSONValue
 
-__protected abstract void readJSON(char c, JSONReader reader) throws IOException__
+__protected abstract void readJSON(char c, JSONReader reader) throws APSIOException__
 
 This will read the vale from an input stream.
-
-_Returns_
-
-> the last character read.
 
 _Parameters_
 
@@ -1516,9 +1014,9 @@ _Parameters_
 
 _Throws_
 
-> _IOException_ - on IO failure. 
+> _APSIOException_ - on IO failure. 
 
-__protected abstract void writeJSON(JSONWriter writer, boolean compact) throws IOException__
+__protected abstract void writeJSON(JSONWriter writer, boolean compact) throws APSIOException__
 
 This will write the data held by this JSON value in JSON format on the specified stream.
 
@@ -1530,7 +1028,7 @@ _Parameters_
 
 _Throws_
 
-> _IOException_ - On IO failure. 
+> _APSIOException_ - On IO failure. 
 
 __protected JSONErrorHandler getErrorHandler()__
 
@@ -1538,19 +1036,31 @@ _Returns_
 
 > The user supplied error handler.
 
+__/*package*/__
 
+Reads and resolves what JSON type is the next in the input and returns it.
 
+_Returns_
 
-
-
-
-__protected void warn(String message)__
-
-Provide a warning.
+> The read JSONValue.
 
 _Parameters_
 
-> _message_ - The warning message. 
+> _c_ - The first already read character. 
+
+> _reader_ - The reader to read from. 
+
+> _errorHandler_ - The user supplied error handler. 
+
+_Throws_
+
+> _APSIOException_ - on IOFailure. 
+
+
+
+
+
+
 
 __protected void fail(String message, Throwable cause)__
 
@@ -1570,7 +1080,7 @@ _Parameters_
 
 > _message_ - The failure message. 
 
-__public void readJSON(InputStream is) throws IOException__
+__public void readJSON(InputStream is) throws APSIOException__
 
 This will read the value from an input stream.
 
@@ -1580,9 +1090,9 @@ _Parameters_
 
 _Throws_
 
-> _IOException_ - on IO failure. 
+> _APSIOException_ - on IO failure. 
 
-__public void writeJSON(OutputStream os) throws IOException__
+__public void writeJSON(OutputStream os) throws APSIOException__
 
 This writes JSON to the specified OutputStream.
 
@@ -1592,9 +1102,9 @@ _Parameters_
 
 _Throws_
 
-> _IOException_ - on IO failure. 
+> _APSIOException_ - on IO failure. 
 
-__public void writeJSON(OutputStream os, boolean compact) throws IOException__
+__public void writeJSON(OutputStream os, boolean compact) throws APSIOException__
 
 This writes JSON to the specified OutputStream.
 
@@ -1606,21 +1116,57 @@ _Parameters_
 
 _Throws_
 
-> _IOException_ - on IO failure. 
+> _APSIOException_ - on IO failure. 
 
 
 
+__/*package*/__
 
+Method for creating a JSONString instance.
 
+_Parameters_
 
+> _errorHandler_ - The user error handler. 
 
+__/*package*/__
 
+Method for creating a JSONNumber instance.
 
+_Parameters_
 
+> _errorHandler_ - The user error handler. 
 
+__/*package*/__
 
+Method for creating a JSONNull instance.
 
+_Parameters_
 
+> _errorHandler_ - The user error handler. 
+
+__/*package*/__
+
+Method for creating a JSONBoolean instance.
+
+_Parameters_
+
+> _errorHandler_ - The user error handler. 
+
+__/*package*/__
+
+Method for creating a JSONArray instance.
+
+_Parameters_
+
+> _errorHandler_ - The user error handler. 
+
+__/*package*/__
+
+Method for creating a JSONObject instance.
+
+_Parameters_
+
+> _errorHandler_ - The user error handler. 
 
 
 
@@ -1638,141 +1184,35 @@ _Parameters_
 
 > _errorHandler_ - The handler for errors. 
 
-__protected char getChar() throws IOException__
+__protected char getChar() throws APSIOException__
 
 Returns the next character on the specified input stream, setting EOF state checkable with isEOF().
 
 _Throws_
 
-> _IOException_ - on IO problems. 
+> _APSIOException_ - on IO problems. 
 
-__protected char getChar(boolean handleEscapes) throws IOException__
 
-Returns the next character on the specified input stream, setting EOF state checkable with isEOF().
 
-_Parameters_
 
-> _handleEscapes_ - If true then \* escape character are handled. 
 
-_Throws_
 
-> _IOException_ - on IO problems. 
 
-__protected void ungetChar(char c) throws IOException__
 
-Unreads the specified character so that the next call to getNextChar() will return it again.
 
-_Parameters_
 
-> _c_ - The character to unget. 
 
-__protected char skipWhitespace(char c) throws IOException__
 
-Skips whitespace returning the first non whitespace character. This also sets the EOF flag.
 
-_Parameters_
 
-> _c_ - The first char already read from the input stream. 
 
-_Throws_
 
-> _IOException_
 
-__protected char skipWhitespace() throws IOException__
 
-Skips whitespace returning the first non whitespace character. This also sets the EOF flag.
 
-_Throws_
 
-> _IOException_
 
 
-
-__protected char readUntil(String until, char c, StringBuilder sb, boolean handleEscapes) throws IOException__
-
-Reads until any of a specified set of characters occur.
-
-_Returns_
-
-> 
-
-_Parameters_
-
-> _until_ - The characters to stop reading at. The stopping character will be returned unless EOF. 
-
-> _c_ - The first preread character. 
-
-> _sb_ - If not null read characters are added to this. The stopping character will not be included. 
-
-> _handleEscapes_ - True if we are reading a string that should handle escape characters. 
-
-_Throws_
-
-> _IOException_
-
-__protected char readUntil(String until, StringBuilder sb, boolean string) throws IOException__
-
-Reads until any of a specified set of characters occur.
-
-_Parameters_
-
-> _until_ - The characters to stop reading at. The stopping character will be returned unless EOF. 
-
-> _sb_ - If not null read characters are added to this. The stopping character will not be included. 
-
-> _string_ - True if we are rading a string that should be escaped. 
-
-_Throws_
-
-> _IOException_
-
-__protected char readUntil(String until, StringBuilder sb) throws IOException__
-
-Reads until any of a specified set of characters occur.
-
-_Parameters_
-
-> _until_ - The characters to stop reading at. The stopping character will be returned unless EOF. 
-
-> _sb_ - If not null read characters are added to this. The stopping character will not be included. 
-
-_Throws_
-
-> _IOException_
-
-__protected boolean checkValidChar(char c, String validChars)__
-
-Returns true if c is one of the characters in validChars.
-
-_Parameters_
-
-> _c_ - The character to check. 
-
-> _validChars_ - The valid characters. 
-
-__protected void assertChar(char a, char e, String message)__
-
-Asserts that char a equals expected char c.
-
-_Parameters_
-
-> _a_ - The char to assert. 
-
-> _e_ - The expected value. 
-
-> _message_ - Failure message. 
-
-__protected void assertChar(char a, String expected, String message)__
-
-Asserts that char a equals expected char c.
-
-_Parameters_
-
-> _a_ - The char to assert. 
-
-> _expected_ - String of valid characters. 
-
-> _message_ - Failure message. 
 
 protected _static_ _class_ __JSONWriter__   [se.natusoft.osgi.aps.json] {
 
@@ -1788,7 +1228,7 @@ _Parameters_
 
 > _writer_ - The writer to write to. 
 
-__protected void write(String json) throws IOException__
+__protected void write(String json) throws APSIOException__
 
 Writes JSON output.
 
@@ -1798,19 +1238,9 @@ _Parameters_
 
 _Throws_
 
-> _IOException_ - on IO failure. 
+> _APSIOException_ - on IO failure. 
 
-__protected void writeln(String json) throws  IOException__
 
-Writes JSON output plus a newline.
-
-_Parameters_
-
-> _json_ - The JSON output to write. 
-
-_Throws_
-
-> _IOException_
 
 }
 
@@ -1818,9 +1248,7 @@ _Throws_
 
     
 
-public _class_ __BeanInstance__   [se.natusoft.osgi.aps.json.tools] {
 
-This wraps a Java Bean instance allowing it to be populated with data using _setProperty(String,__Object)_ methods handling all reflection calls.
 
 
 
@@ -1898,11 +1326,9 @@ _Throws_
 
     
 
-public _class_ __JavaToJSON__   [se.natusoft.osgi.aps.json.tools] {
 
-Takes a JavaBean and produces a JSONObject.
 
-__public static JSONObject convertObject(Object javaBean) throws JSONConvertionException__
+__public static JSONObjectProvider convertObject(Object javaBean) throws JSONConvertionException__
 
 Converts a JavaBean object into a _JSONObject_.
 
@@ -1918,7 +1344,7 @@ _Throws_
 
 > _JSONConvertionException_ - on converting failure. 
 
-__public static JSONObject convertObject(JSONObject jsonObject, Object javaBean) throws JSONConvertionException__
+__public static JSONObjectProvider convertObject(JSONObjectProvider jsonObject, Object javaBean) throws JSONConvertionException__
 
 Converts a JavaBean object into a _JSONObject_.
 
@@ -1936,7 +1362,7 @@ _Throws_
 
 > _JSONConvertionException_ - on converting failure. 
 
-__public static JSONValue convertValue(Object value)__
+__public static JSONValueProvider convertValue(Object value)__
 
 Converts a value from a java value to a _JSONValue_.
 
@@ -1988,7 +1414,7 @@ public _class_ __JSONMapConv__   [se.natusoft.osgi.aps.json.tools] {
 
 This converts between a Java Map and JSON. Do note that this of course uses this library to read and write JSON, but this specific public API only deals with Java and JSON as String or on/in a stream. [p/](p/) This class becomes more useful when used from Groovy since the latter provides much nicer usage of data in Maps. Yes, I know about JSONSlurper and JSONBuilder in Groovy. Those however does not work with @CompileStatic. Maps does.
 
-__public static Map<String, Object> jsonObjectToMap(String json) throws IOException__
+__public static Map<String, Object> jsonObjectToMap(String json) throws APSIOException__
 
 This takes a String containing a JSON object and returns it as a Map.
 
@@ -1998,19 +1424,23 @@ _Parameters_
 
 _Throws_
 
-> _IOException_
+> _APSIOException_ - on failure. 
 
-__public static Map<String, Object> jsonObjectToMap(InputStream is) throws IOException__
 
-This takes an InputStream containing a JSON object and returns it as a Map.
+
+
+
+__public static Map<String, Object> jsonObjectToMap(se.natusoft.osgi.aps.api.misc.json.model.JSONObject jsonObject)__
+
+This takes a JSONObject and returns a Map.
+
+_Returns_
+
+> The converted Map.
 
 _Parameters_
 
-> _is_ - The InputStream to read. 
-
-_Throws_
-
-> _IOException_
+> _jsonObject_ - The JSONObject to convert to a Map. 
 
 
 
@@ -2018,9 +1448,9 @@ _Throws_
 
 
 
-__public static String mapToJSONObject(Map<String, Object> map) throws IOException__
+__public static String mapToJSONObjectString(Map<String, Object> map) throws APSIOException__
 
-This takes a Map (as created by jsonObjectToMap(...)) and returns a JSON object.
+This takes a Map (as created by jsonObjectToMap(...)) and returns a JSON String.
 
 _Parameters_
 
@@ -2028,21 +1458,21 @@ _Parameters_
 
 _Throws_
 
-> _IOException_
+> _APSIOException_ - on I/O failures. 
 
-__public static void mapToJSONObject(Map<String, Object> map, OutputStream os) throws IOException__
+__public static se.natusoft.osgi.aps.api.misc.json.model.JSONObject mapToJSONObject(Map<String, Object> map)__
 
-This takes a Map (as created by jsonObjectToMap(...)) and writes it as JSON to the specified OutputStream.
+Converts a `Map<String,``Object>` to a JSONObject.
+
+_Returns_
+
+> A converted JSONObject.
 
 _Parameters_
 
-> _map_ - The Map to write as JSON. 
+> _map_ - The Map to convert. 
 
-> _os_ - The OutputStream to write to. 
 
-_Throws_
-
-> _IOException_
 
 
 
@@ -2068,7 +1498,7 @@ The following mappings are made in addition to the expected ones:
 
 *  Enum properties in bean are mapped from _JSONString_ which have to contain enum constant name.
 
-__public static <T> T convert(InputStream jsonStream, Class<T> javaClass) throws IOException, JSONConvertionException__
+__public static <T> T convert(InputStream jsonStream, Class<T> javaClass) throws APSIOException, JSONConvertionException__
 
 Returns an instance of a java class populated with data from a json object value read from a stream.
 
@@ -2084,11 +1514,11 @@ _Parameters_
 
 _Throws_
 
-> _IOException_ - on IO failures. 
+> _APSIOException_ - on IO failures. 
 
 > _JSONConvertionException_ - On JSON to Java failures. 
 
-__public static <T> T convert(String json, Class<T> javaClass) throws IOException, JSONConvertionException__
+__public static <T> T convert(String json, Class<T> javaClass) throws APSIOException, JSONConvertionException__
 
 Returns an instance of a java class populated with data from a json object value read from a String containing JSON.
 
@@ -2104,7 +1534,7 @@ _Parameters_
 
 _Throws_
 
-> _IOException_ - on IO failures. 
+> _APSIOException_ - on IO failures. 
 
 > _JSONConvertionException_ - On JSON to Java failures. 
 
@@ -2164,6 +1594,8 @@ Please note that this bundle has no dependencies! That is, it can be used as is 
 
 This does the same thing as the standard service tracker included with OSGi, but does it better with more options and flexibility. One of the differences between this tracker and the OSGi one is that this throws an _APSNoServiceAvailableException_ if the service is not available. Personally I think this is easier to work with than having to check for a null result. I also think that trying to keep bundles and services up are better than pulling them down as soon as one depencency goes away for a short while, for example due to redeploy of newer version. This is why APSServiceTracker takes a timeout and waits for a service to come back before failing.
 
+__Note:__ that in previous version APSServiceTracker did all callbacks in a separate thread. This is no longer the case, and shouldn't have been from the beginning.
+
 There are several variants of constructors, but here is an example of one of the most used ones within the APS services:
 
         APSServiceTracker<Service> tracker =
@@ -2202,8 +1634,13 @@ When available the tracker will log to this.
 The tracker can be used as a wrapped service:
 
         Service service = tracker.getWrappedService();
+        Service service = tracker.getWrappedService(boolean cacheCallsUntilServiceAvailable);
 
 This gives you a proxied _service_ instance that gets the real service, calls it, releases it and return the result. This handles transparently if a service has been restarted or one instance of the service has gone away and another came available. It will wait for the specified timeout for a service to become available and if that does not happen the _APSNoServiceAvailableException_ will be thrown. This is of course a runtime exception which makes the service wrapping possible without loosing the possibility to handle the case where the service is not available.
+
+The _cacheCallsUntilServiceAvailable_ parameter means just that. This makes the service non blocking. Otherwise any call to a method when service is not available will result in a wait() on the thread until a service is available. When this parameter is `true` however any calls to the service before a service is available will be cached and executed later when a service is available. Do note that the tracker wrapper provides a java.lang.reflect.Proxy implementation of the service interface. Under the surface it will do an _invoke_ on the actual service object and this invoke can be saved for later in a lambda. There is however a big __warning__ with this: This feature will obviously only work for methods that don't provide a return value! Since method calls may possible be done in the future they cannot return any value. And no, _Future<?>_ cannot be used since it blocks, and we are trying to avoid blocking here!
+
+If you don't like this, don't use the _getWrappedService(true)_. The _.onActiveServiceAvailable(callback)_ method can be used to receive the service instance when it is available.
 
 ### Using the tracker in a similar way to the OSGi standard tracker
 
@@ -2317,7 +1754,7 @@ The APSLogger can be used by just creating an instance and then start using the 
 
 then the logger will try to get hold of the standard OSGi LogService and if that is available log to that. If the log service is not available it will fallback to the OutputStream.
 
-If you call the `setServiceRefrence(serviceRef);` method on the logger then information about that service will be provied with each log.
+If you call the _setServiceRefrence(serviceRef);_ method on the logger then information about that service will be provied with each log.
 
 ## APSActivator
 
@@ -2406,6 +1843,8 @@ __@OSGiService__ - This should be specified on a field having a type of a servic
 
 If _required=true_ is specified and this field is in a class annotated with _@OSGiServiceProvider_ then the class will not be registered as a service until the service dependency is actually available, and will also be unregistered if the tracker for the service does a timeout waiting for a service to become available. It will then be reregistered again when the dependent service becomes available again. Please note that unlike iPOJO the bundle is never stopped on dependent service unavailability, only the actual service is unregistered as an OSGi service. A bundle might have more than one service registered and when a dependency that is only required by one service goes away the other service is still available.
 
+The non blocking variant of _APSServiceTracker.getWrappedService(true)_ as described above can also be achieved with this annotation by setting _nonBlocking = true_.
+
         public @interface OSGiService {
         
             /**
@@ -2438,6 +1877,22 @@ If _required=true_ is specified and this field is in a class annotated with _@OS
              * be registered until the service becomes available.
              */
             boolean required() default false;
+        
+            /**
+             * If this is set to true and a proxied implementation of the service is injected rather than the tracker directly
+             * then any call made to the proxy will be cached if the service is not available and then later run when the
+             * service becomes available. This of course means that methods returning a value will always return null when
+             * service is not currently available since the real call will be made in the future. Returning a Future instead
+             * in this case does not work since 'Future's are blocking, and we try to avoid blocking here.
+             *
+             * __YOU HAVE TO BE VERY CAREFUL WHEN SETTING THIS TO TRUE! NO CALLS RETURNING A VALUE!__
+             *
+             * The point of this is to be non blocking. By default with a proxied implementation tracker.allocateService() will
+             * be called, and this blocks waiting for the service to become available if it is not.
+             *
+             * @return true or false (default).
+             */
+            boolean nonBlocking() default false;
         }
 
 __@Managed__ - This will have an instance managed and injected. There will be a unique instance for each name specified with the default name of "default" being used if none is specified. There are 2 field types handled specially: BundleContext and APSLogger. A BundleContext field will get the bundles context injected. For an APSLogger instance the 'loggingFor' annotation property can be specified. Please note that any other type must have a default constructor to be instantiated and injected!
@@ -2489,9 +1944,9 @@ __@Schedule__ - Schedules a Runnable using a ScheduledExecutionService. Indiffer
         @Target(ElementType.FIELD)
         public @interface Schedule {
         
-            /** 
-             * The defined executor service to schedule this on. This should be the name of it. If left blank an internal  
-             * ScheduledExecutorService will be used. 
+            /**
+             * The defined executor service to schedule this on. This should be the name of it. If left blank an internal
+             * ScheduledExecutorService will be used.
              */
             String on() default "";
         
