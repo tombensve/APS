@@ -54,14 +54,9 @@ import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
 import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 
-// TODO: Make clustering optional.
-
-// @formatter:off
 /**
- *
+ * Provides Vertx by publishing Vertx and other Vertx related objects some by configuration as OSGi services.
  */
-// @formatter:on
-
 @SuppressWarnings([ "GroovyUnusedDeclaration", "PackageAccessibility" ])
 @CompileStatic
 @TypeChecked
@@ -86,7 +81,7 @@ class APSVertxProvider {
     private APSLogger logger
 
     /** The vertx instance. */
-    Vertx vertx
+    private Vertx vertx
 
     /** The vertx service registration. */
     private ServiceRegistration vertxSvcReg
@@ -141,8 +136,11 @@ class APSVertxProvider {
      * Starts the main Vertx service which in turn will start other Vertx services when up.
      */
     private void startVertx() {
+
         Vertx.clusteredVertx( [ : ] ) { AsyncResult<Vertx> res ->
+
             if ( res.succeeded() ) {
+
                 logger.info "Vert.x cluster started successfully!"
                 this.vertx = res.result()
 
@@ -164,7 +162,9 @@ class APSVertxProvider {
 
                 startVertxServices()
 
-            } else {
+            }
+            else {
+
                 logger.error "Vert.x cluster failed to start!", res.cause()
                 throw new APSStartFailureException( "Vert.x cluster failed to start!", res.cause() )
             }
@@ -175,8 +175,10 @@ class APSVertxProvider {
      * Stops the main Vertx service which first will stop other vertx services.
      */
     private void stopVertx() {
+
         this.vertxSvcReg.unregister()
         this.logger.info( "Unregistered Vertx as OSGi service!" )
+
         this.eventBusSvcReg.unregister()
         this.logger.info( "Unregistered EventBus as OSGi service!" )
 
@@ -184,8 +186,11 @@ class APSVertxProvider {
 
         this.vertx.close() { AsyncResult<Vertx> res ->
             if ( res.succeeded() ) {
+
                 logger.info "Vert.x cluster stopped successfully!"
-            } else {
+            }
+            else {
+
                 logger.error "Vert.x cluster failed to shutdown!: ${res.cause()}!"
             }
         }
@@ -210,6 +215,7 @@ class APSVertxProvider {
      */
     private void startHttpServices() {
         this.config.findAll { String key, Object value -> key.startsWith( HTTP_CONF_PREFIX ) }.each { String key, Object value ->
+
             startHttpService( key )
         }
     }
@@ -227,18 +233,22 @@ class APSVertxProvider {
             // We keep a server for each listened to port.
             HttpServer httpServer = httpServerByPort[ port ] // TODO: Currently single threaded server!!
             if ( httpServer == null ) {
+
                 httpServer = vertx.createHttpServer( /* TODO: Provide options. */ )
                 httpServerByPort[ port ] = httpServer
             }
 
             // Consumers don't get direct access to the HttpServer, only to its Router.
             Router router = httpServerRouterByPort[ port ]
+
             if ( router == null ) {
+
                 router = Router.router( vertx )
-                this.logger.info("Created router for config '${toRealHttpKey( key )}'!")
+                this.logger.info( "Created router for config '${toRealHttpKey( key )}'!" )
                 httpServerRouterByPort[ port ] = router
                 httpServer.requestHandler( router.&accept ).listen( port )
                 this.logger.info( "HTTP server for config '${toRealHttpKey( key )}' now listening on port ${port}!" )
+
                 this.routerRegByPort[ port ] = this.context.registerService( Router.class.name, router, [
                         "service-provider": "aps-vertx-provider",
                         "service-category": "network",
@@ -246,10 +256,13 @@ class APSVertxProvider {
                         "vertx-object"    : "Router",
                         "vertx-router"    : toRealHttpKey( key )
                 ] as Properties )
+
                 this.logger.info( "Registered HTTP service 'Router' for config '${toRealHttpKey( key )}' as OSGi service!" )
 
             }
-        } else {
+        }
+        else {
+
             this.logger.error( "No port for HTTP service '${key}'!" )
         }
 
@@ -259,7 +272,9 @@ class APSVertxProvider {
      * Stops all Http services and their routers.
      */
     private void stopHttpServices() {
+
         this.config.findAll { String key, Object value -> key.startsWith( HTTP_CONF_PREFIX ) }.each { String key, Object value ->
+
             stopHttpService( key )
         }
     }
@@ -279,9 +294,13 @@ class APSVertxProvider {
         this.logger.info( "Deleted 'Router' for config '${toRealHttpKey( key )}' as OSGi service!" )
 
         this.httpServerByPort.remove( port ).close() { AsyncResult<Vertx> res ->
+
             if ( res.succeeded() ) {
+
                 this.logger.info( "Http service '${toRealHttpKey( key )}' successfully stopped!" )
-            } else {
+            }
+            else {
+
                 this.logger.error( "Stopping http service '${key}' failed!", res.cause() )
             }
         }

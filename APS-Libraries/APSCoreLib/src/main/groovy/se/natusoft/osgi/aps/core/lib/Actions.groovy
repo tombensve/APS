@@ -16,7 +16,7 @@ class Actions implements Runnable {
      * @param action The action to execute.
      */
     synchronized void addAction( Closure action ) {
-        this.actions << action
+        this.actions += action
     }
 
     /**
@@ -29,21 +29,35 @@ class Actions implements Runnable {
     }
 
     /**
+     * Allows plus operator.
+     *
+     * @param action The action to add.
+     */
+    void plus( Closure action ) {
+        addAction( action )
+    }
+
+    /**
      * Execute all actions and clear the action list.
      */
     synchronized void run() {
+
         if ( !this.actions.isEmpty() ) {
+
             this.actions.each { Closure closure ->
+
                 try {
                     closure.call()
                 }
+
                 catch ( Exception e ) {
+
                     if ( this.errorHandler != null ) {
                         this.errorHandler.call( e )
                     }
-
                 }
             }
+
             this.actions.clear()
         }
     }

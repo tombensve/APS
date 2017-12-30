@@ -59,6 +59,10 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *
  * Note: Both floating point numbers and integers are allowed.
  *
+ * #### "/"
+ *
+ * This means the value is a boolean.
+ *
  * #### "bla"
  *
  * This requires values to be exactly "bla".
@@ -72,6 +76,7 @@ class MapJsonDocValidator {
      * Converts the original map into 2 maps that is easier to work against.
      */
     private static class MapObject {
+
         private Map<String, Object> schemaMap = [ : ]
         private Map<String, Boolean> required = [ : ]
 
@@ -80,13 +85,15 @@ class MapJsonDocValidator {
          *
          * @param schemaMap The Map to wrap.
          */
-        MapObject(Map<String, Object> schemaMap) {
-            schemaMap.each { String key, Object value ->
-                verifyKey( key , this.schemaMap )
-                String realKey = _key ( key )
+        MapObject( Map<String, Object> schemaMap ) {
 
-                this.schemaMap.put ( realKey ,  value )
-                this.required.put ( realKey , _required ( key ) ? Boolean.TRUE : Boolean.FALSE )
+            schemaMap.each { String key, Object value ->
+
+                verifyKey( key, this.schemaMap )
+                String realKey = _key( key )
+
+                this.schemaMap.put( realKey, value )
+                this.required.put( realKey, _required( key ) ? Boolean.TRUE : Boolean.FALSE )
             }
         }
 
@@ -94,6 +101,7 @@ class MapJsonDocValidator {
          * @return The internal key set for looking up in.
          */
         Set<String> keySet() {
+
             this.schemaMap.keySet()
         }
 
@@ -101,8 +109,9 @@ class MapJsonDocValidator {
          * Returns an object for a specific key.
          * @param key The key to get object for.
          */
-        Object get ( String key ) {
-            this.schemaMap [ key ]
+        Object get( String key ) {
+
+            this.schemaMap[ key ]
         }
 
         /**
@@ -110,19 +119,25 @@ class MapJsonDocValidator {
          *
          * @param key The key to check for required.
          */
-        boolean isRequired(String key ) {
-            this.required [ key ]
+        boolean isRequired( String key ) {
+
+            this.required[ key ]
         }
 
         /**
          * Verifies that the key is correctly formatted.
          *
          * @param mapKey The key to verify.
+         * @param source The source of the key. Used for exception message to make things clearer.
          */
-        private static verifyKey( String mapKey , Map<String, Object> source) {
+        private static verifyKey( String mapKey, Map<String, Object> source ) {
+
             String[] parts = mapKey.split( "_" )
-            if ( parts.length > 2 || ( parts.length == 2 && ( parts[1] != '0' && parts[1] != '1' ) ) )
+
+            if ( parts.length > 2 || ( parts.length == 2 && ( parts[ 1 ] != '0' && parts[ 1 ] != '1' ) ) ) {
+
                 throw new IllegalStateException( "Bad key format! [$mapKey] Should be 'name' or 'name_0' or 'name_1'. ${source}" )
+            }
         }
 
         /**
@@ -131,6 +146,7 @@ class MapJsonDocValidator {
          * @param mapKey The key to "plainify".
          */
         private static String _key( String mapKey ) {
+
             mapKey.split( "_" )[ 0 ]
         }
 
@@ -140,8 +156,11 @@ class MapJsonDocValidator {
          * @param mapKey The key to check for required object.
          */
         private static boolean _required( String mapKey ) {
+
             String[] parts = mapKey.split( "_" )
+
             if ( parts.length == 2 ) {
+
                 return parts[ 1 ] == "1"
             }
 
@@ -161,7 +180,7 @@ class MapJsonDocValidator {
     //
 
     /**
-     * This is for Java users which can't do a property constructor.
+     * This is for Java code which can't do a property constructor.
      *
      * Use:
      *
@@ -171,7 +190,9 @@ class MapJsonDocValidator {
      *
      * @return this.
      */
-    MapJsonDocValidator validStructure(Map<String, Object> schema) {
+    @SuppressWarnings("GroovyUnusedDeclaration")
+    MapJsonDocValidator validStructure( Map<String, Object> schema ) {
+
         this.validStructure = schema
         return this
     }
@@ -184,8 +205,25 @@ class MapJsonDocValidator {
      * @throws APSValidationException on validation failure.
      */
     void validate( Map<String, Object> toValidate ) throws APSValidationException {
-        if (toValidate == null) throw new APSValidationException("Input to validate is null!")
-        validateMap( this.validStructure , toValidate )
+
+        if ( toValidate == null ) {
+
+            throw new APSValidationException( "Input to validate is null!" )
+        }
+
+        validateMap( this.validStructure, toValidate )
+    }
+
+    /**
+     * Validates that a field is a boolean.
+     *
+     * @param sourceValue The value to validate.
+     * @param errorSource For error message.
+     */
+    private static void validateBoolean( Object sourceValue, Object errorSource) {
+        if (!Boolean.class.isAssignableFrom( sourceValue.class ) && !boolean.class.isAssignableFrom( sourceValue.class )) {
+            throw new IllegalStateException( "Value '${sourceValue}' must be a boolean! ${errorSource}" )
+        }
     }
 
     /**
@@ -193,17 +231,24 @@ class MapJsonDocValidator {
      *
      * @param validValue The valid value schema spec.
      * @param sourceValue The value to validate.
-     * @param errorSource For error messages.
+     * @param errorSource For error message.
      */
-    private static void validateString(String validValue, Object sourceValue, Object errorSource) {
-        if ( validValue.startsWith ("?") ) {
-            String regExp = validValue.substring ( 1 )
-            if ( !sourceValue.toString().matches(regExp) ) {
-                throw new IllegalStateException( "Value '$sourceValue' does not match regular expression '$regExp'! $errorSource" )
+    private static void validateString( String validValue, Object sourceValue, Object errorSource ) {
+
+        if ( validValue.startsWith( "?" ) ) {
+
+            String regExp = validValue.substring( 1 )
+
+            if ( !sourceValue.toString().matches( regExp ) ) {
+
+                throw new IllegalStateException( "Value '${sourceValue}' does not match regular expression '${regExp}'! ${errorSource}" )
             }
         }
+
         else {
+
             if ( sourceValue.toString() != validValue ) {
+
                 throw new IllegalStateException( "Found '$sourceValue'. Expected '$validValue'! $errorSource" )
             }
         }
@@ -217,45 +262,61 @@ class MapJsonDocValidator {
      * @param errorSource For error messages.
      * @return true if this was a number.
      */
-    private static boolean validateNumber ( String validValue , Object sourceValue , Object errorSource) {
+    private static boolean validateNumber( String validValue, Object sourceValue, Object errorSource ) {
+
         boolean result = false
-        if ( validValue.startsWith ( "#" ) ) {
+
+        if ( validValue.startsWith( "#" ) ) {
+
             result = true
 
-            validValue = validValue.substring ( 1 )
+            validValue = validValue.substring( 1 )
 
             String from = null, to = null
             boolean equals = false
 
-            if ( validValue.startsWith ( ">=" ) ) {
-                from = validValue.substring ( 2 )
+            if ( validValue.startsWith( ">=" ) ) {
+
+                from = validValue.substring( 2 )
                 equals = true
-            }
-            else if ( validValue.startsWith( ">" ) ) {
-                from = validValue.substring ( 1 ) .trim ()
-            }
-            else if ( validValue.startsWith ( "<=") ) {
-                to = validValue.substring ( 2 )
-                equals = true
-            }
-            else if ( validValue.startsWith( "<" ) ) {
-                to = validValue.substring ( 1 )
-            }
-            else if ( validValue.contains ( "-" ) ) {
-                String[] parts = validValue.split ( "-" )
-                from = parts [ 0 ]
-                to = parts [ 1 ]
             }
 
-            if ( Double.class.isAssignableFrom ( sourceValue.class ) || Float.class.isAssignableFrom ( sourceValue.class ) ) {
-                validateNumberAsJavaLangNumber ( sourceValue as Number , equals , from , to , errorSource ) { String val ->
-                    Double.valueOf ( val ) as Number
+            else if ( validValue.startsWith( ">" ) ) {
+
+                from = validValue.substring( 1 ).trim()
+            }
+
+            else if ( validValue.startsWith( "<=" ) ) {
+
+                to = validValue.substring( 2 )
+                equals = true
+            }
+
+            else if ( validValue.startsWith( "<" ) ) {
+
+                to = validValue.substring( 1 )
+            }
+
+            else if ( validValue.contains( "-" ) ) {
+
+                String[] parts = validValue.split( "-" )
+                from = parts[ 0 ]
+                to = parts[ 1 ]
+            }
+
+            if ( Double.class.isAssignableFrom( sourceValue.class ) || Float.class.isAssignableFrom( sourceValue.class ) ) {
+
+                validateNumberAsJavaLangNumber( sourceValue as Number, equals, from, to, errorSource ) { String val ->
+                    Double.valueOf( val ) as Number
                 }
             }
-            else if ( Long.class.isAssignableFrom ( sourceValue.class ) || Integer.class.isAssignableFrom ( sourceValue.class ) ||
-                    Short.class.isAssignableFrom ( sourceValue.class ) ) {
-                validateNumberAsJavaLangNumber ( sourceValue as Number , equals , from , to , errorSource ) { String val ->
-                    Long.valueOf ( val ) as Number
+
+            else if ( Long.class.isAssignableFrom( sourceValue.class ) || Integer.class.isAssignableFrom( sourceValue.class ) ||
+                    Short.class.isAssignableFrom( sourceValue.class ) ) {
+
+                validateNumberAsJavaLangNumber( sourceValue as Number, equals, from, to, errorSource ) { String val ->
+
+                    Long.valueOf( val ) as Number
                 }
             }
         }
@@ -275,44 +336,84 @@ class MapJsonDocValidator {
      * @param fromString A closure that converts a value from a String to a Number. Different conversions needed for floating point
      *                   numbers and integers.
      */
-    private static void validateNumberAsJavaLangNumber(Number sourceValue, boolean equals, @Nullable String from, String to,
-                                                       Object errorSource, Closure<Number> fromString ) {
+    private static void validateNumberAsJavaLangNumber( Number sourceValue, boolean equals,
+                                                        @Nullable String from, String to,
+                                                        Object errorSource, Closure<Number> fromString ) {
         Number value = sourceValue as Number
 
-        if (equals) {
+        if ( equals ) {
+
             if ( from != null && to == null ) {
+
                 Number fromD = fromString( from ) //Double.valueOf ( from )
-                if ( value >= fromD ) {/*ok*/} else throw new IllegalStateException ( "Value ($value) must be >= $fromD! $errorSource" )
+                if ( value >= fromD ) {
+                    /*ok*/
+                }
+                else {
+                    throw new IllegalStateException( "Value ($value) must be >= $fromD! $errorSource" )
+                }
             }
             else if ( from == null && to != null ) {
+
                 Number toD = fromString( to ) //Double.valueOf( to )
-                if ( value <= toD ) {/*ok*/} else throw new IllegalStateException ( "Value ($value) must be <= $toD! $errorSource" )
+                if ( value <= toD ) {
+                    /*ok*/
+                }
+                else {
+                    throw new IllegalStateException( "Value ($value) must be <= $toD! $errorSource" )
+                }
             }
             else {
-                Number fromD = fromString ( from ) //Double.valueOf ( from )
-                Number toD = fromString ( to ) //Double.valueOf ( to )
-                if ( value >= fromD && value <= toD ) {/*ok*/} else
-                    throw new IllegalStateException ( "Value ($value) must be >= $fromD && <= $toD $errorSource" )
+
+                Number fromD = fromString( from ) //Double.valueOf ( from )
+                Number toD = fromString( to ) //Double.valueOf ( to )
+
+                if ( value >= fromD && value <= toD ) {
+                    /*ok*/
+                }
+                else {
+                    throw new IllegalStateException( "Value ($value) must be >= $fromD && <= $toD $errorSource" )
+                }
             }
         }
         else {
+
             if ( from != null && to == null ) {
+
                 Number fromD = fromString( from ) //Double.valueOf ( from )
-                if ( value > fromD ) {/*ok*/} else throw new IllegalStateException ( "Value ($value) must be > $fromD! $errorSource" )
+
+                if ( value > fromD ) {
+                    /*ok*/
+                }
+                else {
+                    throw new IllegalStateException( "Value ($value) must be > $fromD! $errorSource" )
+                }
             }
             else if ( from == null && to != null ) {
-                Number toD = fromString ( to ) //Double.valueOf( to )
-                if ( value < toD ) {/*ok*/} else throw new IllegalStateException ( "Value ($value) must be < $toD! $errorSource" )
+
+                Number toD = fromString( to ) //Double.valueOf( to )
+
+                if ( value < toD ) {
+                    /*ok*/
+                }
+                else {
+                    throw new IllegalStateException( "Value ($value) must be < $toD! $errorSource" )
+                }
             }
             else {
-                Number fromD = fromString ( from ) //Double.valueOf ( from )
-                Number toD = fromString ( to ) //Double.valueOf ( to )
-                if ( value > fromD && value < toD ) {/*ok*/} else
-                    throw new IllegalStateException ( "Value ($value) must be >= $fromD && <= $toD $errorSource" )
+
+                Number fromD = fromString( from ) //Double.valueOf ( from )
+                Number toD = fromString( to ) //Double.valueOf ( to )
+
+                if ( value > fromD && value < toD ) {
+                    /*ok*/
+                }
+                else {
+                    throw new IllegalStateException( "Value ($value) must be >= $fromD && <= $toD $errorSource" )
+                }
             }
         }
     }
-
 
     /**
      * Validates the contents of a Map<Object, String> against the valid declaration Map<Object, String>
@@ -320,40 +421,59 @@ class MapJsonDocValidator {
      * @param _validStructure The valid structure to validate against.
      * @param toValidate The structure to validate.
      */
-    private void validateMap( Map<String , Object> validStructure , Map<String, Object> toValidate ) {
-        MapObject validMO = new MapObject ( validStructure )
+    private void validateMap( Map<String, Object> validStructure, Map<String, Object> toValidate ) {
+
+        MapObject validMO = new MapObject( validStructure )
 
         // validate children
         toValidate.keySet().each { String key ->
 
             if ( !validMO.keySet().contains( key ) ) {
-                throw new IllegalStateException ( "Entry '${key}' is not valid! $toValidate" )
+
+                throw new IllegalStateException( "Entry '${key}' is not valid! $toValidate" )
             }
 
-            Object sourceValue = toValidate [ key ]
-            if ( validMO.isRequired ( key ) && sourceValue == null )
-                throw new IllegalStateException ( "'${key}' is required! $toValidate" )
+            Object sourceValue = toValidate[ key ]
 
-            Object validStructureEntry = validMO.get ( key )
+            if ( validMO.isRequired( key ) && sourceValue == null ) {
+                throw new IllegalStateException( "'${key}' is required! $toValidate" )
+            }
+
+            Object validStructureEntry = validMO.get( key )
 
             if ( validStructureEntry instanceof String ) {
-                String validValue = validMO.get ( key ) as  String
-                if ( !validateNumber ( validValue , sourceValue , toValidate ) ) validateString ( validValue , sourceValue , toValidate )
+
+                String validValue = validMO.get( key ) as String
+
+                if (validValue.trim() == "/") {
+                    validateBoolean( sourceValue, toValidate )
+                }
+                else {
+                    if ( !validateNumber( validValue, sourceValue, toValidate ) ) {
+
+                        validateString( validValue, sourceValue, toValidate )
+                    }
+                }
+
             }
             else if ( validStructureEntry instanceof Map ) {
+
                 Map<String, Object> toValidateMap = sourceValue as Map<String, Object>
-                validateMap(validStructureEntry as Map<String, Object>, toValidateMap)
+                validateMap( validStructureEntry as Map<String, Object>, toValidateMap )
             }
             else if ( validStructureEntry instanceof List ) {
-                List<Object> toValidateList = toValidate [ key ] as List<Object>
-                validateList(validStructureEntry as List<Object>, toValidateList)
+
+                List<Object> toValidateList = toValidate[ key ] as List<Object>
+                validateList( validStructureEntry as List<Object>, toValidateList )
             }
 
         }
 
         validMO.keySet().each { String key ->
-            if ( validMO.isRequired ( key ) && !toValidate.keySet().contains( key ) ) {
-                throw new IllegalStateException("Missing entry for required '$key'! $toValidate")
+
+            if ( validMO.isRequired( key ) && !toValidate.keySet().contains( key ) ) {
+
+                throw new IllegalStateException( "Missing entry for required '$key'! $toValidate" )
             }
         }
 
@@ -365,19 +485,35 @@ class MapJsonDocValidator {
      * @param validList The valid list to validate against.
      * @param toValidate The list to validate.
      */
-    private void validateList( List<Object> validList , List<Object> toValidate ) {
-        Object validObject = validList [ 0 ]
+    private void validateList( List<Object> validList, List<Object> toValidate ) {
+
+        Object validObject = validList[ 0 ]
 
         toValidate.each { Object sourceValue ->
 
             if ( validObject instanceof String ) {
+
                 String validValue = validObject as String
-                if ( !validateNumber ( validValue , sourceValue , toValidate ) ) validateString( validValue , sourceValue , toValidate )
-            } else if ( validObject instanceof Map ) {
+
+                if (validValue.trim() == "/") {
+                    validateBoolean( sourceValue, toValidate )
+                }
+                else {
+                    if ( !validateNumber( validValue, sourceValue, toValidate ) ) {
+
+                        validateString( validValue, sourceValue, toValidate )
+                    }
+                }
+            }
+
+            else if ( validObject instanceof Map ) {
+
                 validateMap( validObject as Map<String, Object>, sourceValue as Map<String, Object> )
             }
+
             else if ( validObject instanceof List ) {
-                validateList(validObject as List<Object>, sourceValue as List<Object>)
+
+                validateList( validObject as List<Object>, sourceValue as List<Object> )
             }
         }
 

@@ -38,6 +38,7 @@ class MapJsonDocValidationServiceProvider implements APSMapJsonValidationService
      */
     @Override
     void validate(APSMapJson toValidate, APSMapJsonSchema schema) throws APSValidationException {
+
         new MapJsonDocValidator(validStructure: schema).validate(toValidate)
     }
 }
