@@ -63,7 +63,7 @@
         -->
 
         <!-- We register our configuration for auto registration and management. -->
-        <aps.config.classes></aps.config.classes>
+        <!--aps.config.classes></aps.config.classes-->
 
         <!--
              Trigger tiles.
@@ -81,7 +81,7 @@
         -->
 
         <!--
-            APSGroovyToolsLib dependencies
+            APSCoreLib dependencies
         -->
         <!-- Unfortunately needed since IDEA can't see the mixin and keep removing groovy if added manually in IDEA. -->
         <dependency>
@@ -99,7 +99,11 @@
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tools-lib</artifactId>
         </dependency>
-
+        <!--suppress NonOsgiMavenDependency -->
+        <dependency>
+            <groupId>se.natusoft.annotation</groupId>
+            <artifactId>docutations</artifactId>
+        </dependency>
 
     </dependencies>
 
