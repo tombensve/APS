@@ -12,6 +12,22 @@ import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
 import static se.natusoft.osgi.aps.api.core.config.model.APSConfig.*
 
+/**
+ * This listens to bundles and manages configurations.
+ *
+ * This  is how it works:
+ * - Bundles MANIFEST.MF is checked for 'APS-Config-Id:', 'APS-Config-Schema:' and 'APS-Config-Default-Resource:'.
+ *
+ * - 'APS-Config-Id' is a key used to identify the config.
+ *
+ * - The 'APS-Config-Defaut-Resource' is used the first time a config is seen to provide default values.
+ *   It is also checked for default values when managed config does not provide a value. This will happen
+ *   when a new value have been added to a config at a later time.
+ *
+ * - An APSConfig implementation will be published as an OSGi service for each configuration, also with
+ *   'APS-Config-Id=<id>' in the properties for the published service. This is used by config owner to
+ *   lookup the correct APSConfig instance to use.
+ */
 // Nothing other than APSActivator will be referencing this, and it does it via reflection. Thereby the IDE
 // cannot tell that this is actually used.
 @SuppressWarnings("GroovyUnusedDeclaration")
@@ -24,11 +40,11 @@ class BundleConfigHandler {
     @Managed(loggingFor = "bundle-config-handler")
     APSLogger logger
 
-    @Managed
-    private ConfigManager configManager
-
     @OSGiService
     private APSJSONService apsJsonService
+
+    @OSGiService
+    private APSFileSystemService
 
     //
     // Methods

@@ -1,8 +1,13 @@
 package se.natusoft.osgi.aps.core.lib
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+
 /**
  * Handles actions to perform.
  */
+@CompileStatic
+@TypeChecked
 class Actions implements Runnable {
     /** The list of actions. */
     private List<Closure> actions = [ ]
@@ -16,6 +21,7 @@ class Actions implements Runnable {
      * @param action The action to execute.
      */
     synchronized void addAction( Closure action ) {
+
         this.actions += action
     }
 
@@ -25,6 +31,7 @@ class Actions implements Runnable {
      * @param action The action to add.
      */
     void leftShift( Closure action ) {
+
         addAction( action )
     }
 
@@ -34,6 +41,7 @@ class Actions implements Runnable {
      * @param action The action to add.
      */
     void plus( Closure action ) {
+
         addAction( action )
     }
 
@@ -49,7 +57,6 @@ class Actions implements Runnable {
                 try {
                     closure.call()
                 }
-
                 catch ( Exception e ) {
 
                     if ( this.errorHandler != null ) {
@@ -66,6 +73,7 @@ class Actions implements Runnable {
      * Discards current actions.
      */
     synchronized void discardActions() {
+
         this.actions.clear()
     }
 }

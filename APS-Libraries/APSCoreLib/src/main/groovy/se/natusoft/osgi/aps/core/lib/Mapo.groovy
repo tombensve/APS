@@ -35,6 +35,7 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  * List entries. This number is the number of entries in the list. The MapPath class (used by this class)
  * can be used to provide array size of an array value.
  */
+@SuppressWarnings("SpellCheckingInspection")
 @CompileStatic
 @TypeChecked
 class Mapo {
@@ -53,6 +54,7 @@ class Mapo {
     /**
      * Default constructor.
      */
+    @SuppressWarnings("GroovyUnusedDeclaration")
     Mapo() {}
 
     /**
@@ -81,6 +83,7 @@ class Mapo {
     /**
      * Returns all keys as a List.
      */
+    @SuppressWarnings("GroovyUnusedDeclaration")
     List<String> getAllKeys() {
 
         List<String> allKeys = [ ]

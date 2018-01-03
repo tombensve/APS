@@ -1,5 +1,7 @@
 package se.natusoft.osgi.aps.core.lib
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
 import se.natusoft.docutations.Immutable
 
 /**
@@ -8,6 +10,8 @@ import se.natusoft.docutations.Immutable
  * The key format is: key.sub-key.sub-key. Each key that has a sub-key returns a Map and the sub-key
  * references a key in the returned map.
  */
+@CompileStatic
+@TypeChecked
 @Immutable
 class MapPath {
 
@@ -58,7 +62,7 @@ class MapPath {
      */
     MapPath down( String subPath ) {
 
-        new MapPath( this.path.empty ? subPath : "${this.path}.${subPath}" )
+        new MapPath( this.path.empty ? subPath as String : "${this.path}.${subPath}" as String )
     }
 
     /**
@@ -100,7 +104,7 @@ class MapPath {
      */
     int rightArraySize() {
         int size = -1
-        if (isRightArray) {
+        if (isRightArray()) {
             size = Integer.valueOf(getRight().replace("[", "").replace("]", ""))
         }
         return size
@@ -131,4 +135,5 @@ class MapPath {
 
         list
     }
+
 }

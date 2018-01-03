@@ -4,20 +4,22 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
 import se.natusoft.osgi.aps.core.lib.MapJsonDocValidator
+import se.natusoft.osgi.aps.core.lib.MapJsonEntryMeta
+import se.natusoft.osgi.aps.core.lib.MapJsonSchemaMeta
 
 @CompileStatic
 @TypeChecked
 class MapJsonDocValidatorTest {
 
     private Map<String, Object> schema = [
-            "meta/header": "meta", // Ignored ----+
-            header_1     : [                     //    |
-                                                 type_1      : "service",
+            "meta/header": "meta", // Ignored -----------------------------------+
+            header_1     : [                     //                              |
+                                                 type_1      : "service", //   V
                                                  "meta/type" : "metadata", // any schema key not ending with "_[01]" is ignored!
-                                                                           // Allows for adding own metadata.
+                                                 // Allows for adding own metadata.
                                                  address_1   : "?aps\\.admin\\..*",
                                                  classifier_1: "?public|private",
-                                                 enabled_0   : "/" // Boolean value required
+                                                 enabled_0   : "/"
             ],
             body_1       : [
                     action_1: "get-webs"
@@ -37,6 +39,14 @@ class MapJsonDocValidatorTest {
     ] as Map<String, Object>
 
     private MapJsonDocValidator verifier = new MapJsonDocValidator( validStructure: schema )
+
+    @Test
+    void testSchema() throws Exception {
+        MapJsonSchemaMeta mjs = new MapJsonSchemaMeta( schema )
+        mjs.mapJsonEntryMetas.each { MapJsonEntryMeta mjem ->
+            println "${mjem}"
+        }
+    }
 
     @Test
     void testFullyCorrect() throws Exception {

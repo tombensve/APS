@@ -1,8 +1,8 @@
-# MapJsonDocValidator
+## MapJsonDocValidator
 
 This takes a schema (made up of a ` Map<String, Object> `, see below) and another ` Map<String, Object> ` representing the JSON. So the catch here is that you need a JSON parser that allows you to get the content as a Map. The Vertx JSON parser does. This uses `Map` since it is generic, does not need to hardcode dependency on a specific parser, and maps are very easy to work with in Groovy.
 
-## Useage
+### Useage
 
          private Map<String, Object> schema = [
                 "meta/header": "meta",
@@ -37,21 +37,21 @@ This takes a schema (made up of a ` Map<String, Object> `, see below) and anothe
 
 This will throw a runtime exception on validation failure.
 
-## Schema
+### Schema
 
-### Keys
+#### Keys
 
 &lt;key&gt;\_0 - The key is optional.
 
 &lt;key&gt;\_1 - The key is required.
 
-### Values
+#### Values
 
-#### "?regexp"
+##### "?regexp"
 
 The '?' indicates that the rest of the value is a regular expression. This regular expression will be applied to each value.
 
-#### "<hash><range>"
+##### "<hash><range>"
 
 This indicates that this is a number and defines the number range allowed. The following variants are available:
 
@@ -67,11 +67,11 @@ __"#>num"__ : This specifies that the numeric value must be larger than the spec
 
 Note: Both floating point numbers and integers are allowed.
 
-#### "bla"
+##### "bla"
 
 This requires values to be exactly "bla".
 
-### Example
+#### Example
 
      Map<String, Object> struct = [
         header_1: [

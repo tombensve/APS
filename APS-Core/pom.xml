@@ -60,11 +60,9 @@
     </properties>
 
     <modules>
-        <module>APSConfigServiceProvider</module>
-        <!--module>APSLogServiceProvider</module-->
+        <module>APSConfigProvider</module>
         <module>APSFilesystemServiceProvider</module>
         <module>APSPlatformServiceProvider</module>
         <module>APSMetaDataServiceProvider</module>
-        <module>APSConfigServiceProvider</module>
     </modules>
 </project>

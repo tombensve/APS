@@ -11,7 +11,7 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>APSConfigServiceProvider</artifactId>
+    <artifactId>aps-config-provider</artifactId>
     <packaging>bundle</packaging>
 
     <name>APSConfigServiceProvider</name>

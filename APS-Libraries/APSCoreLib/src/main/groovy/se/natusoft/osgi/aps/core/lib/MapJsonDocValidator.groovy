@@ -26,7 +26,7 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *             [
  *                name_1: "?.*",
  *                url_0: "?^https?://.*",
- *                someNumber_0: "#0-100" // Also valid: ( ">0" "<100" ) ( ">=0" "<=100" )
+ *                someNumber_0: "#0-100" // Also valid:  ">0" "<100" ">=0" "<=100"
  *             ]
  *          ]
  *       ]
@@ -134,7 +134,7 @@ class MapJsonDocValidator {
 
             String[] parts = mapKey.split( "_" )
 
-            if ( parts.length > 2 || ( parts.length == 2 && ( parts[ 1 ] != '0' && parts[ 1 ] != '1' ) ) ) {
+            if ( parts.length >= 2 && ( parts[ 1 ] != '0' && parts[ 1 ] != '1' ) ) {
 
                 throw new IllegalStateException( "Bad key format! [$mapKey] Should be 'name' or 'name_0' or 'name_1'. ${source}" )
             }
@@ -159,7 +159,7 @@ class MapJsonDocValidator {
 
             String[] parts = mapKey.split( "_" )
 
-            if ( parts.length == 2 ) {
+            if ( parts.length >= 2 ) {
 
                 return parts[ 1 ] == "1"
             }
