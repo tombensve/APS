@@ -4,7 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
 import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
-import se.natusoft.osgi.aps.api.pubsub.APSSubscriber
+import se.natusoft.osgi.aps.api.reactive.APSAsyncValue
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -56,7 +56,7 @@ class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
 @SuppressWarnings("GroovyUnusedDeclaration")
 @CompileStatic
 @TypeChecked
-class MsgReceiver implements APSSubscriber<Map<String, Object>> {
+class MsgReceiver {
 
     @OSGiService( timeout = "15 sec", nonBlocking = true )
     private APSPubSubService<Map<String, Object>> msgService
@@ -66,23 +66,14 @@ class MsgReceiver implements APSSubscriber<Map<String, Object>> {
 
     @Initializer
     void init() {
-        this.msgService.subscribe( this, [ "address": "testaddr" ] )
-        this.logger.info("Subscribed to 'testaddr'")
-    }
-
-    /**
-     * Consumes data.
-     *
-     * @param message The message subscribed to.
-     * @param meta Meta data about the message data. What this contains depends on the implementation.
-     */
-    @Override
-    void apsSubscription( Map<String, Object> message, Map<String, String> meta ) {
-        this.logger.info("Received message!")
-        if (message["goat"] == APSVertXEventBusMessagingTest.GOAT) {
-            this.logger.info("Got '${APSVertXEventBusMessagingTest.GOAT}' from goat!")
-            APSVertXEventBusMessagingTest.messageReceived = true
+        this.msgService.subscribe( [ "address": "testaddr" ] ) { APSAsyncValue<Map<String, Object>> message ->
+            this.logger.info("Received message!")
+            if (message.value(  )["goat"] == APSVertXEventBusMessagingTest.GOAT) {
+                this.logger.info("Got '${APSVertXEventBusMessagingTest.GOAT}' from goat!")
+                APSVertXEventBusMessagingTest.messageReceived = true
+            }
         }
+        this.logger.info("Subscribed to 'testaddr'")
     }
 }
 

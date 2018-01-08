@@ -9,9 +9,6 @@ class Publisher implements APSPublisher<byte[]> {
     // Properties
     //
 
-    /** Meta data */
-    Map<String, String> meta
-
     /** For sending messages. */
     APSRabbitMQMessageProvider messageProvider
 
@@ -32,11 +29,4 @@ class Publisher implements APSPublisher<byte[]> {
         return this
     }
 
-    /**
-     * Returns a read only view of the meta data.
-     */
-    @Override
-    Map<String, String> getMetaView() {
-        return Collections.unmodifiableMap( this.meta )
-    }
 }

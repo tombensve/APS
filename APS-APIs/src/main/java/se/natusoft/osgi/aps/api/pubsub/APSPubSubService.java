@@ -1,5 +1,7 @@
 package se.natusoft.osgi.aps.api.pubsub;
 
+import se.natusoft.osgi.aps.api.reactive.APSAsyncValue;
+import se.natusoft.osgi.aps.api.reactive.APSHandler;
 import se.natusoft.osgi.aps.api.util.OnReady;
 
 import java.util.Map;
@@ -9,7 +11,7 @@ import java.util.Map;
  *
  * @param <Message> The data type published or subscribed to.
  */
-public interface APSPubSubService<Message> extends OnReady {
+public interface APSPubSubService<Message> {
 
     //
     // Constants
@@ -29,34 +31,34 @@ public interface APSPubSubService<Message> extends OnReady {
     /**
      * Returns a publisher to publish with.
      *
-     * @param meta Meta data for the publisher.
+     * @param params Parameters for the publisher. These are implementation specific.
      */
-    APSPublisher<Message> publisher(Map<String, String> meta);
+    APSPublisher<Message> publisher(Map<String, String> params);
 
     /**
      * Returns a sender to send with. Depending on implementation the APSSender instance returned can possibly
      * be an APSReplyableSender that allows for providing a subscriber for a reply to the sent message.
      *
-     * @param meta Meta data for the sender.
+     * @param params Parameters for the sender. These are implementation specific.
      */
-    APSSender<Message> sender(Map<String, String> meta);
+    APSSender<Message> sender(Map<String, String> params);
 
     /**
      * Adds a subscriber.
      *
-     * @param subscriber The subscriber to add.
-     * @param meta       Meta data. This depends on the implementation. Can possibly be null when not used. For example
-     *                   if there is a need for an address or topic put it in the meta data.
+     * @param params     Parameters. This depends on the implementation. Can possibly be null when not used. For example
+     *                   if there is a need for an address or topic put it in the params.
+     * @param handler    The subscription handler.
+     *
+     * @return A unique key object representing the subscription. Should be used to cancel the subscription.
      */
-    void subscribe(APSSubscriber<Message> subscriber, Map<String, String> meta);
+    Object subscribe(Map<String, String> params, APSHandler<APSAsyncValue<Message>> handler);
 
     /**
-     * Removes a subscriber.
+     * Cancels a subscription.
      *
-     * @param subscriber The consumer to remove.
-     * @param meta Meta data. This depends on the implementation. Can possibly be null when not used. For example
-     *                  if there is a need for an address or topic put it in the meta data.
+     * @param id The id received from subscribe(...).
      */
-    void unsubscribe(APSSubscriber<Message> subscriber, Map<String, String> meta);
+    void unsubscribe(Object id);
 
 }

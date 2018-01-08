@@ -5,7 +5,8 @@ import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
 import se.natusoft.osgi.aps.api.pubsub.APSPublisher
 import se.natusoft.osgi.aps.api.pubsub.APSSender
-import se.natusoft.osgi.aps.api.pubsub.APSSubscriber
+import se.natusoft.osgi.aps.api.reactive.APSAsyncValue
+import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.messaging.config.Config
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.PeskyWabbitConnectionManager
@@ -14,9 +15,6 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 
 /**
  * Provides and manages this service.
- *
- * __NOTE:__ This implementation does not support "TypedData.contentType"! It will ignore what is passed and
- * always deliver "UNKNOWN".
  */
 @SuppressWarnings("GroovyUnusedDeclaration")
 @CompileStatic
@@ -44,33 +42,44 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSPubSubService<byte[]
     private PeskyWabbitConnectionManager rabbitMQConnectionManager
 
     /** The defined instances. */
-    private Map<String, APSRabbitMQMessageProvider> instances = new HashMap<>()
+    private Map<String, APSRabbitMQMessageProvider> instances = [ : ]
+
+    /** Maps subscriber id to topic. */
+    private Map<UUID, String> idToTopic = [ : ]
 
     //
     // Service Methods
     //
+
     /**
      * Returns a publisher to publish with.
      *
-     * @param meta Meta data for the publisher.
+     * @param params Meta data for the publisher.
      */
-    APSPublisher<byte[]> publisher( Map<String, String> meta ) {
-        String topic = meta[ "topic" ]
+    @Override
+    APSPublisher<byte[]> publisher( Map<String, String> params ) {
+
+        String topic = params[ "topic" ]
         APSRabbitMQMessageProvider messageProvider = this.instances.get( topic )
+
         if ( messageProvider == null ) {
+
             throw new IllegalArgumentException( "sendMessage(): No such topic: '${topic}'!" )
         }
-        return new Publisher<>( meta: meta, messageProvider: messageProvider )
+
+        return new Publisher<>(  messageProvider: messageProvider )
     }
 
     /**
      * Returns a sender to send with. Depending on implementation the APSSender instance returned can possibly
      * be an APSReplyableSender that allows for providing a subscriber for a reply to the sent message.
      *
-     * @param meta Meta data for the sender.
+     * @param params Meta data for the sender.
      */
-    APSSender<byte[]> sender( Map<String, String> meta ) {
-        throw new UnsupportedOperationException("This RabbitMQ implementation only provides a publisher!")
+    @Override
+    APSSender<byte[]> sender( Map<String, String> params ) {
+
+        throw new UnsupportedOperationException( "This RabbitMQ implementation only provides a publisher!" )
     }
 
     /**
@@ -80,48 +89,39 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSPubSubService<byte[]
      * @param meta Meta data. This depends on the implementation. Can possibly be null when not used. For example
      *                   if there is a need for an address or topic put it in the meta data.
      */
-    void subscribe( APSSubscriber<byte[]> subscriber, Map<String, String> meta ) {
+    @Override
+    Object subscribe( Map<String, String> meta, APSHandler<APSAsyncValue<byte[]>> subscriber ) {
+
         String topic = meta[ "topic" ]
         APSRabbitMQMessageProvider messageProvider = this.instances.get( topic )
+
         if ( messageProvider == null ) {
             throw new IllegalArgumentException( "addMessageListener(): No such topic: '${topic}'!" )
         }
-        messageProvider.addMessageSubscriber( subscriber )
 
+        UUID subscriberId = messageProvider.addMessageSubscriber( subscriber )
+        this.idToTopic[subscriberId] = topic
+
+        subscriberId
     }
 
     /**
      * Removes a subscriber.
      *
-     * @param subscriber The consumer to remove.
-     * @param meta Meta data. Key "topic" provides the topic.
+     * @param subscriberId The id returned by subscribe(...).
      */
-    void unsubscribe( APSSubscriber<byte[]> subscriber, Map<String, String> meta ) {
-        String topic = meta[ "topic" ]
+    @Override
+    void unsubscribe( Object subscriberId ) {
+
+        String topic = this.idToTopic[ (UUID) subscriberId ]
         APSRabbitMQMessageProvider messageProvider = this.instances.get( topic )
+
         if ( messageProvider == null ) {
             throw new IllegalArgumentException( "removeMessageListener(): No such topic: '${topic}'!" )
         }
-        messageProvider.removeMessageSubscriber( subscriber )
-    }
 
-    /**
-     * Provides a callback that gets called when service is ready to work.
-     *
-     * @param onReady The callback to call when service is ready to work.
-     */
-    @Override
-    void onReady( Runnable onReady ) {
-        onReady.run()
+        messageProvider.removeMessageSubscriber( (UUID) subscriberId )
     }
-
-    /**
-     * Provides a callback that gets called when service is no longer in a ready state.
-     *
-     * @param onNotReady The callback to call when service is no longer in ready state.
-     */
-    @Override
-    void onNotReady( Runnable onNotReady ) {}
 
     //
     // Startup / Shutdown Methods
@@ -149,6 +149,7 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSPubSubService<byte[]
             startAllInstances()
         }
         catch ( IOException ioe ) {
+
             this.logger.error( "Failed to connect to RabbitMQ!", ioe )
         }
     }
@@ -167,15 +168,14 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSPubSubService<byte[]
             this.logger.info( this.rabbitMQConnectionManager.ensureConnectionClosed() )
         }
         catch ( IOException ioe ) {
+
             this.logger.error( "Failed to stop RabbitMQ connection!", ioe )
         }
     }
 
     private void startAllInstances() {
         try {
-            Config.config[ 'instances' ].each { String key, Map<String, Serializable> instance ->
-                startInstance( instance )
-            }
+            Config.config[ 'instances' ].each { String key, Map<String, Serializable> instance -> startInstance( instance ) }
         }
         catch ( Throwable t ) {
             this.logger.debug( "Cluster setup failure: " + t.message, t )
@@ -183,9 +183,7 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSPubSubService<byte[]
     }
 
     private void stopAllInstances() {
-        this.instances.each { String name, APSRabbitMQMessageProvider msp ->
-            stopInstance( msp )
-        }
+        this.instances.each { String name, APSRabbitMQMessageProvider msp -> stopInstance( msp ) }
     }
 
     private void startInstance( Map<String, Serializable> instance ) {
@@ -202,28 +200,42 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSPubSubService<byte[]
     }
 
     private void stopInstance( APSRabbitMQMessageProvider instance ) {
+
         try {
+
             instance.stop()
         }
         catch ( IOException ioe ) {
+
             this.logger.error( "Failed to stop APSCluster instance! [" + ioe.getMessage() + "]", ioe )
         }
     }
 
     private void refreshInstances() {
+
         closeRemovedInstances()
         startNewInstances()
     }
 
     private void closeRemovedInstances() {
         this.instances.findAll { String name, APSRabbitMQMessageProvider instance ->
-            !Config.config.instances.any { Map.Entry<String, LinkedHashMap<String, String>> entry -> entry.value.name == name }
-        }.each { String name, APSRabbitMQMessageProvider instance -> stopInstance( instance ) }
+
+            !Config.config.instances.any { Map.Entry<String, LinkedHashMap<String, String>> entry ->
+                entry.value.name == name
+            }
+        }.each { String name, APSRabbitMQMessageProvider instance ->
+
+            stopInstance( instance )
+        }
     }
 
     private void startNewInstances() {
         Config.config.instances.findAll { Map.Entry<String, LinkedHashMap<String, String>> entry ->
+
             !this.instances.containsKey( entry.value.name )
-        }.each { Object e  -> startInstance(((Map.Entry<String, LinkedHashMap<String, String>>)e).value as Map<String, Serializable>) }
+        }.each { Object e ->
+
+            startInstance( ( (Map.Entry<String, LinkedHashMap<String, String>>) e ).value as Map<String, Serializable> )
+        }
     }
 }

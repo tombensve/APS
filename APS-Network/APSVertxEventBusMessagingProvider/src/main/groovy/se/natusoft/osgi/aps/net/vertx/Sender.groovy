@@ -7,8 +7,8 @@ import io.vertx.core.json.JsonObject
 import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
 import se.natusoft.osgi.aps.api.pubsub.APSReplyableSender
 import se.natusoft.osgi.aps.api.pubsub.APSSender
-import se.natusoft.osgi.aps.api.pubsub.APSSubscriber
-import se.natusoft.osgi.aps.core.lib.Actions
+import se.natusoft.osgi.aps.api.reactive.APSAsyncValue
+import se.natusoft.osgi.aps.api.reactive.APSHandler
 
 class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Object>> {
 
@@ -22,15 +22,12 @@ class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Obje
     /** Access to the EventBus. */
     Closure<EventBus> getEventBus
 
-    /** The current action list. */
-    Actions actions
-
     //
     // Private Members
     //
 
     /** The current subscriber. */
-    private APSSubscriber<Map<String, Object>> reply
+    private APSHandler<APSAsyncValue<Map<String, Object>>> reply
 
     //
     // Methods
@@ -48,15 +45,14 @@ class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Obje
         }
         String address = this.meta[ APSPubSubService.ADDRESS ]
         if ( reply != null ) {
-            getEventBus().send( address, message, { AsyncResult<Message> res ->
+            getEventBus().send( address, message) { AsyncResult<Message> res ->
                 if ( res.succeeded() ) {
                     Map<String, Object> msg = ( res.result().body() as JsonObject ).map
-                    Map<String, String> meta = msg[ "meta" ] as Map<String, String>
-                    if ( meta == null ) meta = [ : ]
-                    this.reply.apsSubscription( msg, meta )
+                    this.reply.handle( new APSAsyncValue.Provider( msg ) )
                 }
-            } )
-        } else {
+            }
+        }
+        else {
             getEventBus().send( address, message )
         }
 
@@ -69,17 +65,9 @@ class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Obje
      * @param reply the subscriber to receive reply.
      */
     @Override
-    APSSender<Map<String, Object>> replyTo( APSSubscriber<Map<String, Object>> reply ) {
+    APSSender<Map<String, Object>> replyTo( APSHandler<APSAsyncValue<Map<String, Object>>> reply ) {
         this.reply = reply
         return this
-    }
-
-    /**
-     * Returns a read only view of the meta data.
-     */
-    @Override
-    Map<String, String> getMetaView() {
-        return Collections.unmodifiableMap( this.meta )
     }
 
 }

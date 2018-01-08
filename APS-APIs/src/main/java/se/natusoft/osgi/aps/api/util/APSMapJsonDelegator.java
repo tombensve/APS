@@ -1,6 +1,5 @@
 package se.natusoft.osgi.aps.api.util;
 
-import se.natusoft.osgi.aps.api.core.config.APSConfig;
 import se.natusoft.osgi.aps.api.misc.json.model.APSMapJson;
 import se.natusoft.osgi.aps.api.misc.json.model.APSMapJsonSchema;
 
@@ -18,7 +17,7 @@ import java.util.function.Function;
  *
  * Note that this class can be extended to implement more Map\<String,Object\> subinterfaces.
  */
-public class APSMapJsonDelegator implements Map<String, Object>, APSConfig, APSMapJsonSchema, APSMapJson {
+public class APSMapJsonDelegator implements Map<String, Object>, APSMapJsonSchema, APSMapJson {
 
     private Map<String, Object> content;
 
@@ -845,15 +844,5 @@ public class APSMapJsonDelegator implements Map<String, Object>, APSConfig, APSM
     @Override
     public Object merge(String key, Object value, BiFunction<? super Object, ? super Object, ?> remappingFunction) {
         return content.merge(key, value, remappingFunction);
-    }
-
-    /**
-     * This gets called when the configuration is available.
-     *
-     * @param handler The handler to call when there is actual config data in the map.
-     */
-    @Override
-    public void onConfigReady(Runnable handler) {
-
     }
 }

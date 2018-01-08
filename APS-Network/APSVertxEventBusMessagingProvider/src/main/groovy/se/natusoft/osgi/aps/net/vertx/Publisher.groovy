@@ -5,7 +5,11 @@ import io.vertx.core.json.JsonObject
 import se.natusoft.osgi.aps.api.pubsub.APSPubSubException
 import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
 import se.natusoft.osgi.aps.api.pubsub.APSPublisher
+import se.natusoft.osgi.aps.api.reactive.APSAsyncValue
 
+/**
+ * Handles publishing. This to publish multiple messages using same meta.
+ */
 class Publisher implements APSPublisher<Map<String, Object>> {
 
     //
@@ -35,13 +39,5 @@ class Publisher implements APSPublisher<Map<String, Object>> {
         getEventBus().publish( address, new JsonObject( message ) )
 
         this
-    }
-
-    /**
-     * Returns a read only view of the meta data.
-     */
-    @Override
-    Map<String, String> getMetaView() {
-        return Collections.unmodifiableMap( this.meta )
     }
 }

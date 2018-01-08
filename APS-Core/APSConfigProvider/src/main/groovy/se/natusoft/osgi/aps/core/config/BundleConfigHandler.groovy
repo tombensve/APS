@@ -6,10 +6,13 @@ import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler
 import se.natusoft.osgi.aps.api.misc.json.model.JSONObject
 import se.natusoft.osgi.aps.api.misc.json.model.JSONValue
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService
+import se.natusoft.osgi.aps.core.lib.MapJsonDocValidator
+import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleListener
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
+
 import static se.natusoft.osgi.aps.api.core.config.model.APSConfig.*
 
 /**
@@ -20,7 +23,7 @@ import static se.natusoft.osgi.aps.api.core.config.model.APSConfig.*
  *
  * - 'APS-Config-Id' is a key used to identify the config.
  *
- * - The 'APS-Config-Defaut-Resource' is used the first time a config is seen to provide default values.
+ * - The 'APS-Config-Default-Resource' is used the first time a config is seen to provide default values.
  *   It is also checked for default values when managed config does not provide a value. This will happen
  *   when a new value have been added to a config at a later time.
  *
@@ -37,14 +40,23 @@ class BundleConfigHandler {
     // Private Members
     //
 
-    @Managed(loggingFor = "bundle-config-handler")
+    @Managed(loggingFor = "aps-config-provider:bundle-config-handler")
     APSLogger logger
 
     @OSGiService
     private APSJSONService apsJsonService
 
-    @OSGiService
-    private APSFileSystemService
+    @Managed
+    private ConfigManager configManager
+
+    private jsonErrorHandler = new JSONErrorHandler() {
+
+        @Override
+        void warning( String message ) { logger.warn( message ) }
+
+        @Override
+        void fail( String message, Throwable cause ) throws RuntimeException { logger.error( message, cause ) }
+    }
 
     //
     // Methods
@@ -56,12 +68,12 @@ class BundleConfigHandler {
      * @param event A received bundle event.
      */
     @BundleListener
-    void handleEvent(BundleEvent event) {
-        if (event.type == BundleEvent.STARTED) {
-            handleNewBundle(event.bundle)
+    void handleEvent( BundleEvent event ) {
+        if ( event.type == BundleEvent.STARTED ) {
+            handleNewBundle( event.bundle )
         }
-        else if (event.type == BundleEvent.STOPPED) {
-            handleLeavingBundle(event.bundle)
+        else if ( event.type == BundleEvent.STOPPED ) {
+            handleLeavingBundle( event.bundle )
         }
     }
 
@@ -70,46 +82,76 @@ class BundleConfigHandler {
      *
      * @param bundle The new bundle to manage config for.
      */
-    private void handleNewBundle(Bundle bundle) {
-        String configId = bundle.getHeaders().get(APS_CONFIG_ID)
-        if (configId != null) {
-            this.logger.info("Found bundle with configuration id: " + configId)
+    private void handleNewBundle( Bundle bundle ) {
+        String configId = bundle.getHeaders().get( "APS-Config-Id" )
+        if ( configId != null ) {
+            this.logger.info( "Found bundle with configuration id: " + configId )
 
-            String schemaResourcePath = bundle.headers.get(APS_CONFIG_SCHEMA)
-            if (schemaResourcePath != null) {
+            String schemaResourcePath = bundle.headers.get( "APS-Config-Schema" )
+
+            if ( schemaResourcePath != null ) {
                 try {
-                    BufferedInputStream configStream = new BufferedInputStream(System.getResourceAsStream(schemaResourcePath))
-                    JSONValue jsonValue = this.apsJsonService.readJSON(configStream, new JSONErrorHandler() {
-                        @Override
-                        void warning(String message) {
-                            logger.warn(message)
-                        }
-                        @Override
-                        void fail(String message, Throwable cause) throws RuntimeException {
-                            logger.error(message, cause)
-                        }
-                    })
 
-                    if (JSONObject.class.isAssignableFrom(jsonValue.class)) {
+                    BufferedInputStream schemaStream = new BufferedInputStream( System.getResourceAsStream( schemaResourcePath ) )
+                    JSONValue jsonValue = this.apsJsonService.readJSON( schemaStream, this.jsonErrorHandler )
 
+                    if ( JSONObject.class.isAssignableFrom( jsonValue.class ) ) {
+
+                        Map<String, Object> schema = ( jsonValue as JSONObject ).toMap()
+
+
+                        String defaultResourcePath = bundle.headers.get( "APS-Config-Default-Resource" )
+
+                        if ( defaultResourcePath != null ) {
+
+                            BufferedInputStream configStream = new BufferedInputStream( System.getResourceAsStream( defaultResourcePath ) )
+                            jsonValue = this.apsJsonService.readJSON( configStream, this.jsonErrorHandler )
+
+                            if ( JSONObject.class.isAssignableFrom( jsonValue.class ) ) {
+
+                                this.configManager.publishConfig( configId, schema, ( jsonValue as JSONObject ).toMap() )
+                            }
+                            else {
+                                this.logger.error(
+                                        "Got bad config JSON in the form of: '${jsonValue.toString()}' from bundle '${bundle.symbolicName}'!"
+                                )
+                            }
+                        }
+                        else {
+                            this.logger.error( "No APS-Config-Default-Resource have been provided by bundle '${bundle.symbolicName}'!" )
+                        }
                     }
                     else {
-                        this.logger.error("Got bad JSON in the form of: ${jsonValue.toString()}")
+                        this.logger.error( "Got bad schema JSON in the form of: '${jsonValue.toString()}' from bundle '${bundle.symbolicName}'!" )
                     }
 
                 }
-                catch (IOException ioe) {
-                    this.logger.error("Failed to read config from: " + schemaResourcePath, ioe)
+                catch ( IOException ioe ) {
+                    this.logger.error( "Failed to read config from: ${schemaResourcePath} for bundle '${bundle.symbolicName}'!", ioe )
                 }
             }
             else {
-                this.logger.error("Bad bundle! APS-ConfigId is available, but no APS-ConfigSchema found!")
+                this.logger.error( "Bad bundle ('${bundle.symbolicName}')! APS-ConfigId is available, but no APS-Config-Schema found!" )
             }
         }
 
     }
 
-    private void handleLeavingBundle(Bundle bundle) {
+    private Map<String, Object> upgradeConfig( Map<String, Object> config ) {
+
+    }
+
+    /**
+     * Handles a valid configuration.
+     *
+     * @param schema
+     * @param config
+     */
+    private void handleConfiguration( Map<String, Object> schema, Map<String, Object> config ) {
+
+    }
+
+    private void handleLeavingBundle( Bundle bundle ) {
 
     }
 }

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="generated-by" content="MarkdownDoc"/>
+    <link href="docs.css" type="text/css" rel="stylesheet"/>
+  </head>
+  <body>
+    <H1>aps-core-lib</H1>
+    <H2>MapJsonDocValidator</H2>
+    <p>
+      This takes a schema (made up of a <code> Map&lt;String,</code><code> Object&gt; </code>, see below) and another <code> Map&lt;String,</code><code> Object&gt; </code> representing the JSON. So the catch here is that you need a JSON parser that allows you to get the content as a Map. The Vertx JSON parser does. This uses <code>Map</code> since it is generic, does not need to hardcode dependency on a specific parser, and maps are very easy to work with in Groovy.      
+    </p>
+    <H3>Useage</H3>
+    <pre>
+      <code>
+         private Map&lt;String, Object&gt; schema = [
+                "meta/header": "meta",
+                header_1: [
+                        type_1      : "service",
+                        "meta/type" : "metadata",
+                        address_1   : "?aps\\.admin\\..*",
+                        classifier_1: "?public|private"
+                ],
+                body_1  : [
+                        action_1: "get-webs"
+                ],
+                reply_0: [
+                        webs_1: [
+                                [
+                                        name_1: "?.*",
+                                        url_1: "?^https?://.*",
+                                        no1_0: "#1-100",
+                                        no2_0: "#&lt;=10",
+                                        no3_0: "#&gt;100",
+                                        no4_0: "#1.2-3.4"
+                                ]
+                        ]
+                ]
+        ] as Map&lt;String, Object&gt;
+    
+        private MapJsonDocValidator verifier = new MapJsonDocValidator( validStructure: schema )
+    
+        ...
+    
+        verifier.validate(myJsonMap)
+      </code>
+    </pre>
+    <p>
+      This will throw a runtime exception on validation failure.      
+    </p>
+    <H3>Schema</H3>
+    <H4>Keys</H4>
+    <p>
+      &lt;key&gt;_0 - The key is optional.      
+    </p>
+    <p>
+      &lt;key&gt;_1 - The key is required.      
+    </p>
+    <H4>Values</H4>
+    <H5>"?regexp"</H5>
+    <p>
+      The '?' indicates that the rest of the value is a regular expression. This regular expression will be applied to each value.      
+    </p>
+    <H5>"&lt;hash&gt;&lt;range&gt;"</H5>
+    <p>
+      This indicates that this is a number and defines the number range allowed. The following variants are available:      
+    </p>
+    <p>
+      <strong>"#from-to"</strong> : This specifies a range of allowed values, from lowest to highest.      
+    </p>
+    <p>
+      <strong>"#&lt;=num"</strong> : This specifies that the numeric value must be less than or equal to the specified number.      
+    </p>
+    <p>
+      <strong>"#&gt;=num"</strong> : This specifies that the numeric value must be larger than or equal to the specified number.      
+    </p>
+    <p>
+      <strong>"#&lt;num"</strong> : This specifies that the numeric value must be less than the specified number.      
+    </p>
+    <p>
+      <strong>"#&gt;num"</strong> : This specifies that the numeric value must be larger than the specified number.      
+    </p>
+    <p>
+      Note: Both floating point numbers and integers are allowed.      
+    </p>
+    <H5>"bla"</H5>
+    <p>
+      This requires values to be exactly "bla".      
+    </p>
+    <H4>Example</H4>
+    <pre>
+      <code>
+     Map&lt;String, Object&gt; struct = [
+        header_1: [
+           type_1      : "service",
+           address_1   : "aps.admin.web",
+           classifier_0: "?public|private"
+        ],
+        body_1  : [
+           action_1: "get-webs"
+        ],
+        reply_0: [
+           webs_1: [
+              [
+                 name_1: "?.*",
+                 url_0: "?^https?://.*",
+                 someNumber_0: "#0-100" // Also valid: ( "&gt;0" "&lt;100" ) ( "&gt;=0" "&lt;=100" )
+              ]
+           ]
+        ]
+     ]
+      </code>
+    </pre>
+    <H2>MapJsonSchemaMeta</H2>
+    <p>
+      This class scans a MapJson schema as defined by MapJsonDocValidator and extracts a list of MapJsonEntryMeta instances for each value in a MapJson structure living up to the schema.      
+    </p>
+    <p>
+      From these the following can be resolved:      
+    </p>
+    <ul>
+      <li>
+        <p>
+           The name of a value.          
+        </p>
+      </li>
+      <li>
+        <p>
+           The type of a value.          
+        </p>
+      </li>
+      <li>
+        <p>
+           Is the value required ?          
+        </p>
+      </li>
+      <li>
+        <p>
+           The constraints of the value. If this starts with '?' then the rest is a regular expression.  If not the value is a constant, that is, the value has to be exactly as the constraint string.          
+        </p>
+      </li>
+    </ul>
+    <p>
+      This is not used by the MapJsonDocValidator when validating! This is intended for GUI configuration editors to use to build a configuration GUI producing valid configurations.      
+    </p>
+    <p>
+      Usage:      
+    </p>
+    <pre>
+      <code>
+    Map&lt;String, Object&gt; schema
+    ...
+    new MapJsonSchemaMeta(schema).mapJsonEntryMetas.each { MapJsonEntryMeta mjem -&gt; ... }
+      </code>
+    </pre>
+    <H2>Mapo</H2>
+    <p>
+      Yes, I had a problem coming up with a good name for this!      
+    </p>
+    <p>
+      This wraps a structured Map that looks like a JSON document, containing Map, List, and other 'Object's as values.      
+    </p>
+    <p>
+      A key is a String containing branches separated by '.' characters for each sub structure.      
+    </p>
+    <p>
+      It provides a method to collect all value referencing keys in the map structure with full key paths.      
+    </p>
+    <p>
+      It provides a lookup method that takes a full value key path and returns a value.      
+    </p>
+    <p>
+      Note that since this delegates to the wrapped Map the class is also a Map when compiled!      
+    </p>
+    <p>
+      Here is an example (in Groovy) that shows how to lookup and how to use the keys:      
+    </p>
+    <pre>
+      <code>
+    Mapo mapo = new Mapo&lt;&gt;(
+            [
+                    header: [
+                            type      : "service",
+                            address   : "aps.admin.web",
+                            classifier: "public",
+                            enabled   : true
+                    ],
+                    body  : [
+                            action: "get-webs"
+                    ],
+                    reply : [
+                            webs: [
+                                    [
+                                            name: "ConfigAdmin",
+                                            url : "http://localhost:8080/aps/ConfigAdminWeb",
+                                    ],
+                                    [
+                                            name: "RemoteServicesAdmin",
+                                            url : "https://localhost:8080/aps/RemoteSvcAdmin"
+                                    ]
+                            ]
+                    ]
+            ] as Map&lt;String, Object&gt;
+    ) as Mapo
+    
+    assert mapo.lookup( "header.type" ).toString() == "service"
+    assert mapo.lookup( "header.address" ).toString() == "aps.admin.web"
+    assert mapo.lookup( "header.classifier" ).toString() == "public"
+    assert mapo.lookup( "body.action" ).toString() == "get-webs"
+    assert mapo.lookup( "reply.webs.[0].name") == "ConfigAdmin"
+    assert mapo.lookup( "reply.webs.[1].name") == "RemoteServicesAdmin"
+    assert mapo.lookup( "reply.webs.[1].url") == "https://localhost:8080/aps/RemoteSvcAdmin"
+    
+    mapo.withAllKeys { String key -&gt;
+        println "${key}"
+    }
+    
+    // will produce:
+    header.type
+    header.address
+    header.classifier
+    header.enabled
+    body.action
+    reply.webs.[2].name
+    reply.webs.[2].url
+      </code>
+    </pre>
+    <p>
+      Note that the values are API-wise of type Object! This is because it can be anything, like a String, Map, List, Number (if you stick to JSON formats) or any other type of value you put in there.      
+    </p>
+    <p>
+      Also note the indexes in the keys in the example. It is not "webs[0]" but "webs.[0]"! The index is a reference name in itself. The keys returned by getAllKeys() have a number between the '[' and the ']' for List entries. This number is the number of entries in the list. The MapPath class (used by this class) can be used to provide array size of an array value.      
+    </p>
+  </body>
+</html>

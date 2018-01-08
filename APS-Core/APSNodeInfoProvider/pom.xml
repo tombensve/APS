@@ -11,10 +11,10 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>aps-config-provider</artifactId>
+    <artifactId>aps-nodeinfo-provider</artifactId>
     <packaging>bundle</packaging>
 
-    <name>APSConfigServiceProvider</name>
+    <name>APS NodeInfo Provider</name>
 
     <description>
     </description>
@@ -39,7 +39,7 @@
 
         <!-- The private packages. -->
         <osgi.private.package>
-            se.natusoft.osgi.aps
+            se.natusoft.osgi.aps.nodeinfo
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->
@@ -85,7 +85,6 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-core-lib</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
@@ -99,6 +98,10 @@
         </dependency>
 
         <!--
+            APSNodeInfoProvider dependencies
+        -->
+
+        <!--
             For IDEA to understand that this project is using Groovy since it does not figure out
             the included code in the mixin below.
         -->
@@ -109,10 +112,6 @@
             <classifier>indy</classifier>
             <version>${groovy.version}</version>
         </dependency>
-
-        <!--
-            APSConfigServiceProvider dependencies
-        -->
 
     </dependencies>
 

@@ -45,7 +45,8 @@ import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
 import se.natusoft.osgi.aps.api.pubsub.APSPublisher
 import se.natusoft.osgi.aps.api.pubsub.APSSender
-import se.natusoft.osgi.aps.api.pubsub.APSSubscriber
+import se.natusoft.osgi.aps.api.reactive.APSAsyncValue
+import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.Actions
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -106,20 +107,14 @@ class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, 
             parallelism = 1, unConfigurable = true)
     private ExecutorService publisher
 
-    /** Keeps track of subscribers to messages. */
-    private Map<String, List<APSSubscriber>> subscribers = [ : ]
+    /** Keeps track of subscribers to messages by address. */
+    private Map<String, List<UUID>> subscribers = [ : ]
 
-    /**
-     * This is used to cache operations when Vertx/EventBus is not available. The actions will be performed
-     * as soon as the EventBus shows up.
-     */
-    private Actions actions = new Actions()
+    /** Saves handlers by their unique id. */
+    private Map<UUID, APSHandler<APSAsyncValue<Map<String, Object>>>> idToHandler = [ : ]
 
-    /** If provided this will be called when EventBus becomes available and we are ready to send and receive. */
-    private Runnable onReady
-
-    /** If provided this will be called when EventBus goes away. Until new one becomes available all operations will be cached. */
-    private Runnable onNotReady
+    /** Maps id to address to make things easier ... */
+    private Map<UUID, String> idToAddress = [ : ]
 
     //
     // Initializer
@@ -148,84 +143,72 @@ class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, 
     /**
      * Returns a publisher to publish with.
      *
-     * @param meta Meta data for the publisher.
+     * @param params Meta data for the publisher.
      */
     @Override
-    APSPublisher publisher( Map meta ) {
-        return new Publisher( meta: meta, actions: this.actions, getEventBus: { this.eventBus } )
+    APSPublisher publisher( Map params ) {
+        return new Publisher( meta: params, getEventBus: { this.eventBus } )
     }
 
     /**
      * Returns a sender to send with. Depending on implementation the APSSender instance returned can possibly
      * be an APSReplyableSender that allows for providing a subscriber for a reply to the sent message.
      *
-     * @param meta Meta data for the sender.
+     * @param params Meta data for the sender.
      */
     @Override
-    APSSender sender( Map meta ) {
-        return new Sender( meta: meta, actions: this.actions, getEventBus: { this.eventBus } )
+    APSSender sender( Map params ) {
+        return new Sender( meta: params, getEventBus: { this.eventBus } )
     }
 
     /**
      * Adds a subscriber.
      *
      * @param subscriber The subscriber to add.
-     * @param meta Meta data. This depends on the implementation. Can possibly be null when not used. For example
+     * @param params Meta data. This depends on the implementation. Can possibly be null when not used. For example
      *                   if there is a need for an address or topic put it in the meta data.
      */
     @Override
-    synchronized void subscribe( APSSubscriber<Map<String, Object>> subscriber, Map<String, String> meta ) {
-        String address = meta[ ADDRESS ]
+    Object subscribe( Map<String, String> params, APSHandler<APSAsyncValue<Map<String, Object>>> handler ) {
+        UUID subId = UUID.randomUUID()
+        String address = params[ ADDRESS ]
         if ( this.subscribers[ address ] == null ) {
-            List<APSSubscriber<Map<String, Object>>> subs = [ subscriber ]
-            this.subscribers[ address ] = subs
+            List<UUID> subIds = [ subId ]
+            this.subscribers[ address ] = subIds
+
+            this.idToHandler[ subId ] = handler
+            this.idToAddress[ subId ] = address
 
             this.eventBus.consumer( address ) { Message<JsonObject> msg ->
                 Map<String, Object> message = msg.body().map
-                Map<String, String> rmeta = [ : ]
-                if ( message[ "meta" ] != null ) {
-                    rmeta = message[ "meta" ] as Map<String, String>
-                }
 
-                this.subscribers[ address ].each { APSSubscriber<Map<String, Object>> sub ->
-                    sub.apsSubscription( msg.body().map, rmeta )
+                this.subscribers[ address ].each { UUID subHandlerId ->
+                    APSHandler<APSAsyncValue<Map<String, Object>>> callSubHandler = this.idToHandler[ subHandlerId ]
+                    callSubHandler.handle( new APSAsyncValue.Provider( message ) )
                 }
             }
         }
+
+        subId
     }
 
     /**
      * Removes a subscriber.
      *
-     * @param subscriber The consumer to remove.
+     * @param subscriptionId The id of the subscriber to remove.
      */
     @Override
-    synchronized void unsubscribe( APSSubscriber<Map<String, Object>> subscriber, Map<String, String> meta) {
-        this.subscribers.each { String key, List<APSSubscriber> value ->
-            value.remove( subscriber )
+    synchronized void unsubscribe( Object subscriptionId ) {
+        UUID id = (UUID) subscriptionId
+
+        String address = this.idToAddress[ id ]
+        List<UUID> subIds = this.subscribers[ address ]
+        if ( subIds != null ) {
+            subIds.remove( id )
         }
-    }
+        this.idToHandler.remove( id )
+        this.idToAddress.remove( id )
 
-    /**
-     * For services that support it, the passed Runnable will be called when this service is ready to work.
-     *
-     * This to provide a non blocking API.
-     *
-     * @param onReady The callback to call when service is ready to work.
-     */
-    @Override
-    void onReady( Runnable onReady ) {
-        this.onReady = onReady
-    }
-
-    /**
-     * Provides a callback that gets called when service is no longer in a ready state.
-     *
-     * @param onNotReady The callback to call when service is no longer in ready state.
-     */
-    @Override
-    void onNotReady( Runnable onNotReady ) {
-        this.onNotReady = onNotReady
     }
 }
 

@@ -41,7 +41,8 @@ import com.rabbitmq.client.Channel
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.pubsub.APSMessagingException
-import se.natusoft.osgi.aps.api.pubsub.APSSubscriber
+import se.natusoft.osgi.aps.api.reactive.APSAsyncValue
+import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.ReceiveThread
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -202,7 +203,7 @@ class APSRabbitMQMessageProvider {
      *
      * @param listener The listener to add.
      */
-    void addMessageSubscriber( APSSubscriber subscriber ) {
+    UUID addMessageSubscriber( APSHandler<APSAsyncValue<byte[]>> subscriber ) {
         this.instanceReceiveThread.addMessageSubscriber(subscriber)
     }
 
@@ -211,8 +212,8 @@ class APSRabbitMQMessageProvider {
      *
      * @param listener The listener to remove.
      */
-    void removeMessageSubscriber( APSSubscriber subscriber) {
-        this.instanceReceiveThread.removeMessageSubscriber(subscriber)
+    void removeMessageSubscriber( UUID subscriberId) {
+        this.instanceReceiveThread.removeMessageSubscriber(subscriberId)
     }
 }
 

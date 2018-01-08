@@ -187,9 +187,6 @@ public class APSServiceTracker<Service> implements ServiceListener {
      */
     private boolean started = false;
 
-//    /** A pool of executors for handling event driven callbacks. */
-//    private ExecutorService executorService = Executors.newWorkStealingPool();
-
     //
     // Constructors
     //

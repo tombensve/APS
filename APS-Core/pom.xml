@@ -62,7 +62,7 @@
     <modules>
         <module>APSConfigProvider</module>
         <module>APSFilesystemServiceProvider</module>
-        <module>APSPlatformServiceProvider</module>
         <module>APSMetaDataServiceProvider</module>
+        <module>APSNodeInfoProvider</module>
     </modules>
 </project>

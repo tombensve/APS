@@ -98,6 +98,9 @@ class APSVertxProvider {
     /** Service registrations for routers. */
     private Map<Integer, ServiceRegistration> routerRegByPort = [ : ]
 
+    /**  */
+    private List<Runnable> shutdownNotification = [ ]
+
     /**
      * Temporary config handling until the APS config overhaul.
      */
