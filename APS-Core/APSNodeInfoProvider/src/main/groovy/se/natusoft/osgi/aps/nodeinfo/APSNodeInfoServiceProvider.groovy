@@ -20,15 +20,6 @@ import se.natusoft.osgi.aps.tools.APSServiceTracker
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 import se.natusoft.osgi.aps.tools.models.UUID
 
-// This is only for internal use! Due to the issue I'm currently declaring it here.
-@Issue(id = "IDEA-184624", url = "https://youtrack.jetbrains.com/issue/IDEA-184624")
-enum Actions {
-
-    PublishNodeInfo,
-    GetNodeInfo,
-    GoodbyeNodeInfo
-}
-
 /**
  * Provides an implementation of the APSPlatformService.
  */
@@ -37,6 +28,14 @@ enum Actions {
 @TypeChecked
 @OSGiServiceProvider
 class APSNodeInfoServiceProvider implements APSNodeInfoService {
+
+    @Issue(id = "IDEA-184624", url = "https://youtrack.jetbrains.com/issue/IDEA-184624")
+    enum Actions {
+
+        PublishNodeInfo,
+        GetNodeInfo,
+        GoodbyeNodeInfo
+    }
 
     private static final String THRONE_ADDRESS = "aps-node-info-throne"
     private static final String COMMON_ADDRESS = "aps-node-info-common"
