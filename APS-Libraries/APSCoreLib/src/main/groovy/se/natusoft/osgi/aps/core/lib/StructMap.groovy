@@ -2,9 +2,8 @@ package se.natusoft.osgi.aps.core.lib
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.exceptions.APSValidationException
-
-import java.util.function.Consumer
 
 /**
  * ## Structured Map
@@ -77,30 +76,11 @@ class StructMap implements Map<String, Object> {
     /**
      * Calls the provided handler for each value key in the map.
      *
-     * Yes, it is possible to pass a Groovy closure here. I'm using the java8 Consumer as type
-     * to be compatible with java. APSConfig interface in APS-APIs which are java do provide method apis
-     * that not coincidentally happen to be exactly what this method provides implementation of ...
-     *
      * @param keyHandler The handler to call with value keys.
      */
-    void withStructPath( Consumer<String> keyHandler ) {
+    void withStructPath( APSHandler<String> keyHandler ) {
 
         findPaths( this.map, new StructPath(), keyHandler )
-    }
-
-    /**
-     * Returns all deep keys as a List.
-     */
-    @SuppressWarnings("GroovyUnusedDeclaration")
-    List<String> getStructPaths() {
-
-        List<String> allKeys = [ ]
-        findPaths( this.map, new StructPath() ) { String key ->
-
-            allKeys += key
-        }
-
-        allKeys
     }
 
     /**
@@ -110,7 +90,7 @@ class StructMap implements Map<String, Object> {
      * @param path The current path in the map.
      * @param pathHandler The handler to call with paths.
      */
-    private void findPaths( Object searchable, StructPath path, Consumer<String> pathHandler ) {
+    private void findPaths( Object searchable, StructPath path, APSHandler<String> pathHandler ) {
 
         if ( searchable instanceof Map ) {
 
@@ -125,7 +105,7 @@ class StructMap implements Map<String, Object> {
                 }
                 else {
 
-                    pathHandler.accept( subKey.toString() )
+                    pathHandler.handle( subKey.toString() )
                 }
             }
         }
@@ -143,7 +123,7 @@ class StructMap implements Map<String, Object> {
                 }
                 else {
 
-                    pathHandler.accept( subKey.toString() )
+                    pathHandler.handle( subKey.toString() )
                 }
             }
         }
@@ -153,23 +133,11 @@ class StructMap implements Map<String, Object> {
      * Looks up the value of a specified structPath.
      *
      * @param structPath The structPath to lookup.
-     *
-     * @return The value or null.
+     * @oaramn result Called with result.
      */
-    Object lookup( String structPath ) {
+    void lookup( String structPath, APSHandler<Object> result ) {
 
         Object current = this.map
-
-        // I've used Groovy closures over and over and over and over, many many times. I've had no problems what
-        // so ever. This code here however had me fighting for many, many hours. I did the following:
-        //
-        //     mpath.toParts().each { String part -> ... and the rest exactly the same.
-        //
-        // This threw a NullPointerException! Finally giving up and just changing the .each {...} closure to a
-        // for loop instead, it worked perfectly as expected directly!! I wondered if it could be the the @Delegate
-        // code generation on compile that interfered in some way. But no, that was not it! Yes, that was a bit
-        // far fetched. But so is this incomprehensible problem!! There should be no difference between the .each
-        // and a for loop! This smells like a Groovy bug.
 
         for ( String part : structPath.split( "\\." ) ) {
 
@@ -189,7 +157,7 @@ class StructMap implements Map<String, Object> {
 
         }
 
-        current
+        result.handle( current )
     }
 
     /**
@@ -242,8 +210,8 @@ class StructMap implements Map<String, Object> {
                     }
 
                     int index = Integer.valueOf( part.replace( "[", "" ).replace( "]", "" ) )
-                    while ( (current as List).size(  ) < (index + 1)) {
-                        (current as List).add([ : ])
+                    while ( ( current as List ).size() < ( index + 1 ) ) {
+                        ( current as List ).add( [ : ] )
                     }
                     current = ( current as List ).get( index )
                 }

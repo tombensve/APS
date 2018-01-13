@@ -7,7 +7,7 @@ package se.natusoft.osgi.aps.core.lib
  */
 class DelayedExecutionHandler<T> extends LinkedList<T> {
 
-    void execute( Closure<Void> executor ) {
+    void execute( Closure executor ) {
         while ( !this.isEmpty() ) {
             executor( this.removeFirst() )
         }

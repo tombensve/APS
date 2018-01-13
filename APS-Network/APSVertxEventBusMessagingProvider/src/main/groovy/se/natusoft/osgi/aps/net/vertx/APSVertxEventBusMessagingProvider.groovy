@@ -45,14 +45,11 @@ import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
 import se.natusoft.osgi.aps.api.pubsub.APSPublisher
 import se.natusoft.osgi.aps.api.pubsub.APSSender
-import se.natusoft.osgi.aps.api.reactive.APSAsyncValue
 import se.natusoft.osgi.aps.api.reactive.APSHandler
+import se.natusoft.osgi.aps.api.reactive.APSValue
 import se.natusoft.osgi.aps.constants.APS
-import se.natusoft.osgi.aps.core.lib.Actions
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
-
-import java.util.concurrent.ExecutorService
 
 /**
  * Provides messaging using vertx event bus.
@@ -61,7 +58,7 @@ import java.util.concurrent.ExecutorService
  * its way up or being restarted any publish or send calls will be added as Closure objects to a list and will be
  * executed as soon as Vertx/EventBus becomes available.
  */
-// This is never referenced directly, only through APSMessageService API.
+// This is never referenced directly, only through APSPubSubService API.
 @SuppressWarnings([ "GroovyUnusedDeclaration", "PackageAccessibility" ])
 @OSGiServiceProvider(
         // Possible criteria for client lookups. ex: "(${APS.Messaging.Protocol.Name}=vertx-eventbus)" In most cases clients won't care.
@@ -93,25 +90,14 @@ class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, 
     @Managed(loggingFor = "aps-vertx-event-bus-messaging-provider")
     private APSLogger logger
 
-    /**
-     * The event bus we will be using for sending messages.
-     *
-     * Note that we can set nonBlocking = true due to EventBus API d
-     */
     @OSGiService(additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "30 sec", nonBlocking = true)
     private EventBus eventBus
-
-    /** All publishing run on this thread. */
-    @Managed
-    @ExecutorSvc(type = ExecutorSvc.ExecutorType.Single, name = "aps-vertx-eventbus-messaging-provider",
-            parallelism = 1, unConfigurable = true)
-    private ExecutorService publisher
 
     /** Keeps track of subscribers to messages by address. */
     private Map<String, List<UUID>> subscribers = [ : ]
 
     /** Saves handlers by their unique id. */
-    private Map<UUID, APSHandler<APSAsyncValue<Map<String, Object>>>> idToHandler = [ : ]
+    private Map<UUID, APSHandler<APSValue<Map<String, Object>>>> idToHandler = [ : ]
 
     /** Maps id to address to make things easier ... */
     private Map<UUID, String> idToAddress = [ : ]
@@ -126,6 +112,7 @@ class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, 
     @SuppressWarnings("PackageAccessibility")
     @Initializer
     void init() {
+
         this.logger.connectToLogService( this.context )
     }
 
@@ -144,10 +131,12 @@ class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, 
      * Returns a publisher to publish with.
      *
      * @param params Meta data for the publisher.
+     * @param handler Will be called with the APSPublisher to use for publishing messages.
      */
     @Override
-    APSPublisher publisher( Map params ) {
-        return new Publisher( meta: params, getEventBus: { this.eventBus } )
+    void publisher( Map<String, String> params, APSHandler<APSPublisher<Map<String, Object>>> handler ) {
+
+        handler.handle( new Publisher( params: params, getEventBus: { this.eventBus }, logger: this.logger ) )
     }
 
     /**
@@ -155,10 +144,12 @@ class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, 
      * be an APSReplyableSender that allows for providing a subscriber for a reply to the sent message.
      *
      * @param params Meta data for the sender.
+     * @param handler will be called with the APSSender to use for sending messages.
      */
     @Override
-    APSSender sender( Map params ) {
-        return new Sender( meta: params, getEventBus: { this.eventBus } )
+    void sender( Map<String, String> params, APSHandler<APSSender<Map<String, Object>>> handler ) {
+
+        handler.handle( new Sender( params: params, getEventBus: { this.eventBus }, logger: this.logger ) )
     }
 
     /**
@@ -169,10 +160,13 @@ class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, 
      *                   if there is a need for an address or topic put it in the meta data.
      */
     @Override
-    Object subscribe( Map<String, String> params, APSHandler<APSAsyncValue<Map<String, Object>>> handler ) {
+    void subscribe( Map<String, String> params, APSHandler<APSValue<Map<String, Object>>> handler ) {
+
         UUID subId = UUID.randomUUID()
         String address = params[ ADDRESS ]
+
         if ( this.subscribers[ address ] == null ) {
+
             List<UUID> subIds = [ subId ]
             this.subscribers[ address ] = subIds
 
@@ -183,13 +177,13 @@ class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, 
                 Map<String, Object> message = msg.body().map
 
                 this.subscribers[ address ].each { UUID subHandlerId ->
-                    APSHandler<APSAsyncValue<Map<String, Object>>> callSubHandler = this.idToHandler[ subHandlerId ]
-                    callSubHandler.handle( new APSAsyncValue.Provider( message ) )
+                    APSHandler<APSValue<Map<String, Object>>> callSubHandler = this.idToHandler[ subHandlerId ]
+                    callSubHandler.handle( new APSValue.Provider( message ) )
                 }
             }
         }
 
-        subId
+        params['sub-id'] = subId.toString(  )
     }
 
     /**
@@ -198,16 +192,23 @@ class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, 
      * @param subscriptionId The id of the subscriber to remove.
      */
     @Override
-    synchronized void unsubscribe( Object subscriptionId ) {
-        UUID id = (UUID) subscriptionId
+    synchronized void unsubscribe( Map<String, String> params ) {
 
-        String address = this.idToAddress[ id ]
-        List<UUID> subIds = this.subscribers[ address ]
-        if ( subIds != null ) {
-            subIds.remove( id )
+        String subIdStr = params['sub-id']
+
+        if (subIdStr != null) {
+            UUID id = UUID.fromString( subIdStr )
+
+            String address = this.idToAddress[ id ]
+            List<UUID> subIds = this.subscribers[ address ]
+
+            if ( subIds != null ) {
+                subIds.remove( id )
+            }
+
+            this.idToHandler.remove( id )
+            this.idToAddress.remove( id )
         }
-        this.idToHandler.remove( id )
-        this.idToAddress.remove( id )
 
     }
 }

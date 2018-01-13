@@ -1,13 +1,12 @@
 package se.natusoft.osgi.aps.api.pubsub;
 
-import se.natusoft.osgi.aps.api.reactive.APSAsyncValue;
+import se.natusoft.osgi.aps.api.reactive.APSValue;
 import se.natusoft.osgi.aps.api.reactive.APSHandler;
-import se.natusoft.osgi.aps.api.util.OnReady;
 
 import java.util.Map;
 
 /**
- * This API is influenced by Vertx :-)
+ * This API is influenced by Vertx.
  *
  * @param <Message> The data type published or subscribed to.
  */
@@ -31,17 +30,25 @@ public interface APSPubSubService<Message> {
     /**
      * Returns a publisher to publish with.
      *
+     * The handler will receive an implementation of APSPublisher from which several publishings
+     * can be done using the same params.
+     *
      * @param params Parameters for the publisher. These are implementation specific.
+     * @param handler Will be called with the APSPublisher to use for publishing messages.
      */
-    APSPublisher<Message> publisher(Map<String, String> params);
+    void publisher(Map<String, String> params, APSHandler<APSPublisher<Message>> handler);
 
     /**
      * Returns a sender to send with. Depending on implementation the APSSender instance returned can possibly
      * be an APSReplyableSender that allows for providing a subscriber for a reply to the sent message.
      *
+     * The handler will receive an implementation of APSSender from which several messages can be sent
+     * using the same params.
+     *
      * @param params Parameters for the sender. These are implementation specific.
+     * @param handler will be called with the APSSender to use for sending messages.
      */
-    APSSender<Message> sender(Map<String, String> params);
+    void sender(Map<String, String> params, APSHandler<APSSender<Message>> handler);
 
     /**
      * Adds a subscriber.
@@ -49,16 +56,14 @@ public interface APSPubSubService<Message> {
      * @param params     Parameters. This depends on the implementation. Can possibly be null when not used. For example
      *                   if there is a need for an address or topic put it in the params.
      * @param handler    The subscription handler.
-     *
-     * @return A unique key object representing the subscription. Should be used to cancel the subscription.
      */
-    Object subscribe(Map<String, String> params, APSHandler<APSAsyncValue<Message>> handler);
+    void subscribe(Map<String, String> params, APSHandler<APSValue<Message>> handler);
 
     /**
      * Cancels a subscription.
      *
-     * @param id The id received from subscribe(...).
+     * @param params The same instance as passed to subscribe!
      */
-    void unsubscribe(Object id);
+    void unsubscribe(Map<String, String> params);
 
 }

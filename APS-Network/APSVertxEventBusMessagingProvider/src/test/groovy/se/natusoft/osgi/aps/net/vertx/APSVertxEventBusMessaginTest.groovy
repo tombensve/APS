@@ -4,7 +4,8 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
 import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
-import se.natusoft.osgi.aps.api.reactive.APSAsyncValue
+import se.natusoft.osgi.aps.api.pubsub.APSSender
+import se.natusoft.osgi.aps.api.reactive.APSValue
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -66,7 +67,7 @@ class MsgReceiver {
 
     @Initializer
     void init() {
-        this.msgService.subscribe( [ "address": "testaddr" ] ) { APSAsyncValue<Map<String, Object>> message ->
+        this.msgService.subscribe( [ "address": "testaddr" ] ) { APSValue<Map<String, Object>> message ->
             this.logger.info("Received message!")
             if (message.value(  )["goat"] == APSVertXEventBusMessagingTest.GOAT) {
                 this.logger.info("Got '${APSVertXEventBusMessagingTest.GOAT}' from goat!")
@@ -89,7 +90,9 @@ class MsgSender {
     @Initializer
     void init() {
 
-        this.msgService.sender( [ "address": "testaddr" ] ).send( [ "goat": APSVertXEventBusMessagingTest.GOAT ] as Map<String, Object>)
+        this.msgService.sender( [ "address": "testaddr"] ) { APSSender<Map<String, Object>> sender ->
+            sender.send( [ "goat": APSVertXEventBusMessagingTest.GOAT ] as Map<String, Object>)
+        }
     }
 }
 

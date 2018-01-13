@@ -12,7 +12,7 @@ import se.natusoft.docutations.Issue
 import se.natusoft.docutations.NotUsed
 import se.natusoft.osgi.aps.api.core.platform.model.NodeInfo
 import se.natusoft.osgi.aps.api.core.platform.service.APSNodeInfoService
-import se.natusoft.osgi.aps.api.reactive.APSAsyncValue
+import se.natusoft.osgi.aps.api.reactive.APSValue
 import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.core.lib.DelayedExecutionHandler
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -102,7 +102,7 @@ class APSNodeInfoServiceProvider implements APSNodeInfoService {
      * Returns a description of the platform instance / installation.
      */
     @Override
-    void nodeDescriptions( APSHandler<APSAsyncValue<List<NodeInfo>>> handler ) {
+    void nodeDescriptions( APSHandler<APSValue<List<NodeInfo>>> handler ) {
 
         List<NodeInfo> nodeList = [ ]
         nodes.each { String key, NodeInfo node ->
@@ -118,7 +118,7 @@ class APSNodeInfoServiceProvider implements APSNodeInfoService {
         //    But this is not Java ...
 
         Closure handle = {
-            handler.handle( new APSAsyncValue.Provider( nodeList ) )
+            handler.handle( new APSValue.Provider( nodeList ) )
         }
 
         if ( this.vertx != null ) {
@@ -133,10 +133,10 @@ class APSNodeInfoServiceProvider implements APSNodeInfoService {
      * @return Info about the local node.
      */
     @Override
-    void localNode( APSHandler<APSAsyncValue<NodeInfo>> handler ) {
+    void localNode( APSHandler<APSValue<NodeInfo>> handler ) {
 
         Closure handle = {
-            handler.handle( new APSAsyncValue.Provider<NodeInfo>( this.localNode ) )
+            handler.handle( new APSValue.Provider<NodeInfo>( this.localNode ) )
         }
 
         if ( this.vertx != null ) {
@@ -151,11 +151,11 @@ class APSNodeInfoServiceProvider implements APSNodeInfoService {
      * @return The master node.
      */
     @Override
-    void masterNode( APSHandler<APSAsyncValue<NodeInfo>> handler ) {
+    void masterNode( APSHandler<APSValue<NodeInfo>> handler ) {
 
         Closure handle = {
             handler.handle(
-                    new APSAsyncValue.Provider<NodeInfo>(
+                    new APSValue.Provider<NodeInfo>(
                             this.nodes.find { Map.Entry<String, NodeInfo> entry -> entry.value.master }.value
                     )
             )

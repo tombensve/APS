@@ -55,28 +55,30 @@ class StructMapTest {
 
     @Test
     void testValues() throws Exception {
-        assert structMap.lookup( "header.type" ).toString() == "service"
-        assert structMap.lookup( "header.address" ).toString() == "aps.admin.web"
-        assert structMap.lookup( "header.classifier" ).toString() == "public"
-        assert structMap.lookup( "body.action" ).toString() == "get-webs"
-        assert structMap.lookup( "reply.webs.[0].name") == "ConfigAdmin"
-        assert structMap.lookup( "reply.webs.[1].name") == "RemoteServicesAdmin"
-        assert structMap.lookup( "reply.webs.[1].url") == "https://localhost:8080/aps/RemoteSvcAdmin"
+
+        structMap.lookup( "header.type" ) { Object r -> assert r.toString() == "service" }
+        structMap.lookup( "header.address" ) { Object r -> assert r.toString() == "aps.admin.web" }
+        structMap.lookup( "header.classifier" ) { Object r -> assert r.toString() == "public" }
+        structMap.lookup( "body.action" ) { Object r -> assert r.toString() == "get-webs" }
+        structMap.lookup( "reply.webs.[0].name" ) { Object r -> assert r.toString() == "ConfigAdmin" }
+        structMap.lookup( "reply.webs.[1].name" ) { Object r -> assert r.toString() == "RemoteServicesAdmin" }
+        structMap.lookup( "reply.webs.[1].url" ) { Object r -> assert r.toString() == "https://localhost:8080/aps/RemoteSvcAdmin" }
+
     }
 
     @Test
     void testSetValue() throws Exception {
         structMap.provide( "body.name.general", "qwerty" )
-        assert structMap.lookup( "body.name.general" ) == "qwerty"
+        structMap.lookup("body.name.general" ) { Object r -> assert r.toString() == "qwerty" }
 
         structMap.provide( "header.type", "qaz")
-        assert structMap.lookup("header.type") == "qaz"
+        structMap.lookup("header.type" ) { Object r -> assert r.toString() == "qaz" }
 
         structMap.provide( "reply.webs.[1].url", "http://www.google.com/")
-        assert structMap.lookup( "reply.webs.[1].url") == "http://www.google.com/"
+        structMap.lookup("reply.webs.[1].url" ) { Object r -> assert r.toString() == "http://www.google.com/" }
 
         structMap.provide("tommy.test.arr.[1].val", "qwerty")
-        assert structMap.lookup("tommy.test.arr.[1].val") == "qwerty"
+        structMap.lookup("tommy.test.arr.[1].val" ) { Object r -> assert r.toString() == "qwerty" }
 
         structMap.withStructPath { String path ->
             println "${path}"

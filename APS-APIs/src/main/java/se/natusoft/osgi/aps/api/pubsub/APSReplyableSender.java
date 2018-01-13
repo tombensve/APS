@@ -1,6 +1,6 @@
 package se.natusoft.osgi.aps.api.pubsub;
 
-import se.natusoft.osgi.aps.api.reactive.APSAsyncValue;
+import se.natusoft.osgi.aps.api.reactive.APSValue;
 import se.natusoft.osgi.aps.api.reactive.APSHandler;
 
 /**
@@ -28,6 +28,6 @@ public interface APSReplyableSender<Message, ReplyMessage> extends APSSender<Mes
      * @param handler the handler of the reply.
      */
     @SuppressWarnings("unused")
-    APSSender<Message> replyTo(APSHandler<APSAsyncValue<ReplyMessage>> handler);
+    APSSender<Message> replyTo(APSHandler<APSValue<ReplyMessage>> handler);
 
 }

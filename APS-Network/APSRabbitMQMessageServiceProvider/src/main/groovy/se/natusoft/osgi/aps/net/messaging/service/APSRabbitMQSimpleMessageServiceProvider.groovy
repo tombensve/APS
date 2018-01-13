@@ -5,7 +5,7 @@ import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
 import se.natusoft.osgi.aps.api.pubsub.APSPublisher
 import se.natusoft.osgi.aps.api.pubsub.APSSender
-import se.natusoft.osgi.aps.api.reactive.APSAsyncValue
+import se.natusoft.osgi.aps.api.reactive.APSValue
 import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.messaging.config.Config
@@ -90,7 +90,7 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSPubSubService<byte[]
      *                   if there is a need for an address or topic put it in the meta data.
      */
     @Override
-    Object subscribe( Map<String, String> meta, APSHandler<APSAsyncValue<byte[]>> subscriber ) {
+    Object subscribe( Map<String, String> meta, APSHandler<APSValue<byte[]>> subscriber ) {
 
         String topic = meta[ "topic" ]
         APSRabbitMQMessageProvider messageProvider = this.instances.get( topic )

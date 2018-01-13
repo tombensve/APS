@@ -41,7 +41,7 @@ import com.rabbitmq.client.Channel
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.pubsub.APSMessagingException
-import se.natusoft.osgi.aps.api.reactive.APSAsyncValue
+import se.natusoft.osgi.aps.api.reactive.APSValue
 import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.ReceiveThread
@@ -203,7 +203,7 @@ class APSRabbitMQMessageProvider {
      *
      * @param listener The listener to add.
      */
-    UUID addMessageSubscriber( APSHandler<APSAsyncValue<byte[]>> subscriber ) {
+    UUID addMessageSubscriber( APSHandler<APSValue<byte[]>> subscriber ) {
         this.instanceReceiveThread.addMessageSubscriber(subscriber)
     }
 

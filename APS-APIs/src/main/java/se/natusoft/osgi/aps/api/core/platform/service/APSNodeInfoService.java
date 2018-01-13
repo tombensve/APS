@@ -37,7 +37,7 @@
 package se.natusoft.osgi.aps.api.core.platform.service;
 
 import se.natusoft.osgi.aps.api.core.platform.model.NodeInfo;
-import se.natusoft.osgi.aps.api.reactive.APSAsyncValue;
+import se.natusoft.osgi.aps.api.reactive.APSValue;
 import se.natusoft.osgi.aps.api.reactive.APSHandler;
 
 import java.util.List;
@@ -52,20 +52,20 @@ public interface APSNodeInfoService {
      *
      * @param handler The handler to receive the node descriptions.
      */
-    void nodeDescriptions(APSHandler<APSAsyncValue<List<NodeInfo>>> handler);
+    void nodeDescriptions(APSHandler<APSValue<List<NodeInfo>>> handler);
 
     /**
      * Delivers info about the local node.
      *
      * @param handler The handler to receive the local node info.
      */
-    void localNode(APSHandler<APSAsyncValue<NodeInfo>> handler);
+    void localNode(APSHandler<APSValue<NodeInfo>> handler);
 
     /**
      * Delivers info about the master node.
      *
      * @param handler The handler to receive the master node info.
      */
-    void masterNode(APSHandler<APSAsyncValue<NodeInfo>> handler);
+    void masterNode(APSHandler<APSValue<NodeInfo>> handler);
 
 }

@@ -6,7 +6,7 @@ import com.rabbitmq.client.QueueingConsumer
 import com.rabbitmq.client.ShutdownSignalException
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.reactive.APSAsyncValue
+import se.natusoft.osgi.aps.api.reactive.APSValue
 import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.config.Config
@@ -33,11 +33,11 @@ class ReceiveThread extends Thread {
     private String recvQueueName
 
     /** The listeners to notify of received messages. */
-    private List<APSHandler<APSAsyncValue<byte[]>>> subscribers =
-            Collections.synchronizedList( new LinkedList<APSHandler<APSAsyncValue<byte[]>>>() )
+    private List<APSHandler<APSValue<byte[]>>> subscribers =
+            Collections.synchronizedList( new LinkedList<APSHandler<APSValue<byte[]>>>() )
 
     /** To handle removing handlers. */
-    private Map<UUID, APSHandler<APSAsyncValue<byte[]>>> idToSubscriber = [ : ]
+    private Map<UUID, APSHandler<APSValue<byte[]>>> idToSubscriber = [ : ]
 
     //
     // Properties
@@ -86,7 +86,7 @@ class ReceiveThread extends Thread {
      *
      * @param listener The listener to add.
      */
-    UUID addMessageSubscriber( APSHandler<APSAsyncValue<byte[]>> subscriber ) {
+    UUID addMessageSubscriber( APSHandler<APSValue<byte[]>> subscriber ) {
         this.subscribers += subscriber
         UUID id = UUID.randomUUID(  )
         this.idToSubscriber[id] = subscriber
@@ -100,7 +100,7 @@ class ReceiveThread extends Thread {
      * @param listener The listener to remove.
      */
     void removeMessageSubscriber( UUID id ) {
-        APSHandler<APSAsyncValue<byte[]>> subscriber = this.idToSubscriber[id]
+        APSHandler<APSValue<byte[]>> subscriber = this.idToSubscriber[ id]
         this.subscribers -= subscriber
         this.idToSubscriber.remove( id )
     }
@@ -172,9 +172,9 @@ class ReceiveThread extends Thread {
                             //logger.debug("======== Received message of length " + body.length + " ==========")
                             //logger.debug("  Current no listeners: " + this.listeners.size())
 
-                            for ( APSHandler<APSAsyncValue<byte[]>> subscriber : this.subscribers ) {
+                            for ( APSHandler<APSValue<byte[]>> subscriber : this.subscribers ) {
                                 try {
-                                    subscriber.handle( new APSAsyncValue.Provider( delivery.body ) )
+                                    subscriber.handle( new APSValue.Provider( delivery.body ) )
                                 }
                                 catch ( RuntimeException re ) {
                                     this.logger.error( "Failure during listener call: " + re.getMessage(), re )

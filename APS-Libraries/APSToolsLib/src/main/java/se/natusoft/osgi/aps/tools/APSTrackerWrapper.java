@@ -81,7 +81,6 @@ public class APSTrackerWrapper {
      *                                       becomes available. This will of course only work for methods that do not return a value!!
      *                                       This will however make the calls non blocking! APSServiceTracker.allocateService() which
      *                                       is default behavior will block until service is available!
-     *
      * @return A facade object implementing the service interface passed to the specified tracker.
      */
     public static <Service> Service wrap(APSServiceTracker<Service> tracker, boolean cacheCallsOnNoServiceAvailable) {
@@ -154,37 +153,57 @@ public class APSTrackerWrapper {
         /**
          * Main handler method.
          *
-         * @param proxy The object method was invoked on.
+         * @param proxy  The object method was invoked on.
          * @param method The method to invoke.
-         * @param args The method arguments.
+         * @param args   The method arguments.
          * @return Any eventual return value.
-         *
          * @throws Throwable on failure.
          */
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             try {
                 if (this.tracker.hasTrackedService() || !cacheCalls) {
+
                     return method.invoke(this.tracker.allocateService(), args);
-                }
-                else {
+
+                } else {
                     this.callCache.add(() -> {
+
+                        //noinspection TryWithIdenticalCatches
                         try {
                             method.invoke(this.tracker.allocateService(), args);
-                        }
-                        catch (Exception e) {
+
+                        } catch (InvocationTargetException e) {
+
+                            this.logger.error(e.getCause().getMessage(), e.getCause());
+
+                        } catch (IllegalAccessException e) {
+
                             this.logger.error(e.getMessage(), e);
+
+                        } finally {
+
+                            this.tracker.releaseService();
                         }
                     });
-                    return proxy; // Support fluent APIs. If proxy method returns something else than "this",
-                                  // then this will fail! That is OK! Real return values are not supported in
-                                  // this case since the actual method call will be done in the future. So only
-                                  // methods returning "this" or nothing at all can be used with this feature.
+
+                    // This must be null since only null can be cast to anything! Or rather a null value
+                    // is legal for any type of object. Since the actual method.invoke(...) call will be
+                    // done later, we cannot return the result of that.
+                    return null;
                 }
             } catch (InvocationTargetException ite) {
-                System.out.println(">>>>>>" + ite.getCause().getMessage());
+
+                this.logger.error(ite.getCause().getMessage(), ite.getCause());
                 throw ite.getCause();
+
+            } catch (IllegalAccessException iae) {
+
+                this.logger.error(iae.getMessage(), iae);
+                throw iae;
+
             } finally {
+
                 this.tracker.releaseService();
             }
         }
