@@ -119,16 +119,16 @@ public class Tests {
     @Test
     public void writeJSON() throws Exception {
         JSONObjectProvider obj = new JSONObjectProvider();
-        obj.addValue("string", new JSONStringProvider("bla"));
-        obj.addValue("number", new JSONNumberProvider(1234));
-        obj.addValue("null", new JSONNullProvider());
-        obj.addValue("boolean", new JSONBooleanProvider(true));
+        obj.setValue("string", new JSONStringProvider("bla"));
+        obj.setValue("number", new JSONNumberProvider(1234));
+        obj.setValue("null", new JSONNullProvider());
+        obj.setValue("boolean", new JSONBooleanProvider(true));
         JSONArrayProvider array = new JSONArrayProvider();
         array.addValue(new JSONNumberProvider(1));
         array.addValue(new JSONNumberProvider(2));
         array.addValue(new JSONNumberProvider(3));
         array.addValue(new JSONNumberProvider(4));
-        obj.addValue("array", array);
+        obj.setValue("array", array);
 
         System.out.println("Readable format:");
         obj.writeJSON(System.out, false);
@@ -152,19 +152,19 @@ public class Tests {
     @Test
     public void conversions() throws Exception {
         JSONObjectProvider obj = new JSONObjectProvider(new SystemOutErrorHandler());
-        obj.addValue("string", new JSONStringProvider("bla"));
-        obj.addValue("number", new JSONNumberProvider(1234));
-        obj.addValue("boolean", new JSONBooleanProvider(true));
+        obj.setValue("string", new JSONStringProvider("bla"));
+        obj.setValue("number", new JSONNumberProvider(1234));
+        obj.setValue("boolean", new JSONBooleanProvider(true));
         JSONArrayProvider array = new JSONArrayProvider();
         array.addValue(new JSONNumberProvider(1));
         array.addValue(new JSONNumberProvider(2));
         array.addValue(new JSONNumberProvider(3));
         array.addValue(new JSONNumberProvider(4));
-        obj.addValue("array", array);
+        obj.setValue("array", array);
         JSONObjectProvider name = new JSONObjectProvider();
-        name.addValue("firstName", new JSONStringProvider("Tommy"));
-        name.addValue("lastName", new JSONStringProvider("Svensson"));
-        obj.addValue("name", name);
+        name.setValue("firstName", new JSONStringProvider("Tommy"));
+        name.setValue("lastName", new JSONStringProvider("Svensson"));
+        obj.setValue("name", name);
 
         obj.writeJSON(System.out, true);
         System.out.println();

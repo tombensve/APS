@@ -18,8 +18,8 @@ class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Obje
     // Properties
     //
 
-    /** Params for the publisher. */
-    Map<String, String> params
+    /** Properties for the publisher. */
+    Map<String, String> properties
 
     /** Access to the EventBus. */
     Closure<EventBus> getEventBus
@@ -46,10 +46,10 @@ class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Obje
     @Override
     APSSender<Map<String, Object>> send( Map<String, Object> message ) {
         if ( message[ "_meta_" ] == null ) {
-            message[ "_meta_" ] = this.params
+            message[ "_meta_" ] = this.properties
         }
 
-        String address = this.params[ APSPubSubService.ADDRESS ]
+        String address = this.properties[ APSPubSubService.ADDRESS ]
 
         if ( reply != null ) {
 

@@ -203,7 +203,7 @@ public class JSONMapConv {
     private static JSONObjectProvider mapToObject(Map<String, Object> map) {
         JSONObjectProvider jsonObject = new JSONObjectProvider();
 
-        map.forEach((key, value) -> jsonObject.addValue(key, toJSON(value)));
+        map.forEach((key, value) -> jsonObject.setValue(key, toJSON(value)));
 
         return jsonObject;
     }

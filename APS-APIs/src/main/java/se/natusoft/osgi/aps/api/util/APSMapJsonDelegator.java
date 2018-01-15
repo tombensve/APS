@@ -308,6 +308,7 @@ public class APSMapJsonDelegator implements Map<String, Object>, APSMapJsonSchem
      * @param o object to be compared for equality with this map
      * @return <tt>true</tt> if the specified object is equal to this map
      */
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
     @Override
     public boolean equals(Object o) {
         return content.equals(o);

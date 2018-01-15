@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Streamed JSONRPC Protocol Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides JSONRPC implementations for version 1.0 and 2.0.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2012-01-08: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.jsonrpc.protocols;
 
@@ -73,10 +73,10 @@ public class JSONRPC20 implements StreamedRPCProtocol {
 
     /** The logger to log to. */
     private APSLogger logger = null;
-    
+
     /** An APSServiceTracker wrapping of the APSJSONService. */
     private APSJSONExtendedService jsonService = null;
-    
+
 
     //
     // Constructors
@@ -247,9 +247,9 @@ public class JSONRPC20 implements StreamedRPCProtocol {
     @Override
     public void writeResponse(Object result, RPCRequest request, OutputStream responseStream) throws IOException {
         JSONObject resp = this.jsonService.createJSONObject();
-        resp.addValue("jsonrpc", this.jsonService.createJSONString("2.0"));
-        resp.addValue("result", this.jsonService.javaToJSON(result));
-        resp.addValue("id", (JSONValue)request.getCallId());
+        resp.setValue("jsonrpc", this.jsonService.createJSONString("2.0"));
+        resp.setValue("result", this.jsonService.javaToJSON(result));
+        resp.setValue("id", (JSONValue)request.getCallId());
         this.jsonService.writeJSON(responseStream, resp, !debug);
     }
 
@@ -269,7 +269,7 @@ public class JSONRPC20 implements StreamedRPCProtocol {
         }
 
         JSONObject resp = this.jsonService.createJSONObject();
-        resp.addValue("jsonrpc", this.jsonService.createJSONString("2.0"));
+        resp.setValue("jsonrpc", this.jsonService.createJSONString("2.0"));
 
         int errorCode = -1;
         switch (error.getErrorType()) {
@@ -294,13 +294,13 @@ public class JSONRPC20 implements StreamedRPCProtocol {
         }
 
         JSONObject errObj = this.jsonService.createJSONObject();
-        errObj.addValue("message", this.jsonService.createJSONString(error.getMessage()));
-        errObj.addValue("code", this.jsonService.createJSONNumber(errorCode));
+        errObj.setValue("message", this.jsonService.createJSONString(error.getMessage()));
+        errObj.setValue("code", this.jsonService.createJSONNumber(errorCode));
         if (error.hasOptionalData()) {
-            errObj.addValue("data", this.jsonService.createJSONString(error.getOptionalData()));
+            errObj.setValue("data", this.jsonService.createJSONString(error.getOptionalData()));
         }
-        resp.addValue("error", errObj);
-        resp.addValue("id", id);
+        resp.setValue("error", errObj);
+        resp.setValue("id", id);
 
         this.jsonService.writeJSON(responseStream, resp, !debug);
 
@@ -377,7 +377,7 @@ public class JSONRPC20 implements StreamedRPCProtocol {
     //
     // Inner Classes
     //
-    
+
     /**
      * This is thrown by the ReqSJONErrorHandler on failure.
      */

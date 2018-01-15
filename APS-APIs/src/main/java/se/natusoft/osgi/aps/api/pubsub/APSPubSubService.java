@@ -33,10 +33,10 @@ public interface APSPubSubService<Message> {
      * The handler will receive an implementation of APSPublisher from which several publishings
      * can be done using the same params.
      *
-     * @param params Parameters for the publisher. These are implementation specific.
+     * @param properties Properties for the publisher. These are implementation specific.
      * @param handler Will be called with the APSPublisher to use for publishing messages.
      */
-    void publisher(Map<String, String> params, APSHandler<APSPublisher<Message>> handler);
+    void publisher(Map<String, String> properties, APSHandler<APSPublisher<Message>> handler);
 
     /**
      * Returns a sender to send with. Depending on implementation the APSSender instance returned can possibly
@@ -45,25 +45,27 @@ public interface APSPubSubService<Message> {
      * The handler will receive an implementation of APSSender from which several messages can be sent
      * using the same params.
      *
-     * @param params Parameters for the sender. These are implementation specific.
+     * @param properties Properties for the sender. These are implementation specific.
      * @param handler will be called with the APSSender to use for sending messages.
      */
-    void sender(Map<String, String> params, APSHandler<APSSender<Message>> handler);
+    void sender(Map<String, String> properties, APSHandler<APSSender<Message>> handler);
 
     /**
      * Adds a subscriber.
      *
-     * @param params     Parameters. This depends on the implementation. Can possibly be null when not used. For example
-     *                   if there is a need for an address or topic put it in the params.
+     * @param properties Properties. This depends on the implementation. Can possibly be null when not used. For example
+     *                   if there is a need for an address or topic put it in the properties. This is also unique for
+     *                   each call to subscribe(...)! Don't reuse. The call might add information to this, which is
+     *                   later needed by unsubscribe(...).
      * @param handler    The subscription handler.
      */
-    void subscribe(Map<String, String> params, APSHandler<APSValue<Message>> handler);
+    void subscribe(Map<String, String> properties, APSHandler<APSValue<Message>> handler);
 
     /**
      * Cancels a subscription.
      *
-     * @param params The same instance as passed to subscribe!
+     * @param properties The same instance as passed to subscribe!
      */
-    void unsubscribe(Map<String, String> params);
+    void unsubscribe(Map<String, String> properties);
 
 }

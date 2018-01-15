@@ -45,6 +45,7 @@ import io.vertx.core.AsyncResult
 import io.vertx.core.Vertx
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.http.HttpServer
+import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceRegistration

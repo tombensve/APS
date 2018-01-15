@@ -18,8 +18,8 @@ class Publisher implements APSPublisher<Map<String, Object>> {
     // Properties
     //
 
-    /** Params data for the publisher. */
-    Map<String, String> params
+    /** Properties for the publisher. */
+    Map<String, String> properties
 
     /** Access to the EventBus. */
     Closure<EventBus> getEventBus
@@ -40,7 +40,7 @@ class Publisher implements APSPublisher<Map<String, Object>> {
      */
     @Override
     APSPublisher<Map<String, Object>> publish( Map<String, Object> message ) throws APSPubSubException {
-        String address = this.params[ APSPubSubService.ADDRESS ]
+        String address = this.properties[ APSPubSubService.ADDRESS ]
         getEventBus().publish( address, new JsonObject( message ) )
 
         this
@@ -60,7 +60,7 @@ class Publisher implements APSPublisher<Map<String, Object>> {
      */
     @Override
     APSPublisher<Map<String, Object>> publish( Map<String, Object> message, APSHandler<APSResult<Map<String, Object>>> result ) {
-        String address = this.params[ APSPubSubService.ADDRESS ]
+        String address = this.properties[ APSPubSubService.ADDRESS ]
         try {
 
             getEventBus().publish( address, new JsonObject( message ) )

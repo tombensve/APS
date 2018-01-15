@@ -1,6 +1,7 @@
 package se.natusoft.osgi.aps.api.reactive;
 
 import se.natusoft.docutations.NotNull;
+import se.natusoft.osgi.aps.api.util.APSObject;
 
 /**
  * This represents a possibly asynchronously delivered value. Inspired by Vertx even though I changed name format.
@@ -15,6 +16,10 @@ public interface APSValue<T> {
     @NotNull
     T value();
 
+    default APSObject<T> toAPSObject() {
+        return new APSObject<>(value());
+    }
+
     /**
      * Factory method to provide an APSValue wrapped value.
      *
@@ -24,7 +29,7 @@ public interface APSValue<T> {
      * @return An APSValue wrapped value.
      */
     static <T> APSValue<T> value(T value ) {
-        return new Provider<T>( value );
+        return new Provider<>( value );
     }
 
     /**

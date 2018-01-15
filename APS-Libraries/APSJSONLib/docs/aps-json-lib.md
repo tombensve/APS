@@ -322,7 +322,7 @@ _Parameters_
 
 
 
-__public void addValue(se.natusoft.osgi.aps.api.misc.json.model.JSONString name, JSONValueProvider value)__
+__public void setValue(se.natusoft.osgi.aps.api.misc.json.model.JSONString name, JSONValueProvider value)__
 
 Adds a property to this JSONObject instance.
 
@@ -332,7 +332,7 @@ _Parameters_
 
 > _value_ - The property value. 
 
-__public void addValue(String name, se.natusoft.osgi.aps.api.misc.json.model.JSONValue value)__
+__public void setValue(String name, se.natusoft.osgi.aps.api.misc.json.model.JSONValue value)__
 
 Adds a property to this JSONObject instance.
 

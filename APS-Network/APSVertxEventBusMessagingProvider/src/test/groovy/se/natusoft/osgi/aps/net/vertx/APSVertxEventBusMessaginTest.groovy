@@ -4,8 +4,9 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
 import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
-import se.natusoft.osgi.aps.api.pubsub.APSSender
+import se.natusoft.osgi.aps.api.pubsub.APSPublisher
 import se.natusoft.osgi.aps.api.reactive.APSValue
+import se.natusoft.osgi.aps.core.lib.StructMap
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -17,7 +18,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
 @TypeChecked
 class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
 
-    static final String GOAT = "baeaeae"
+    static final String UNIQUE_MESSAGE = UUID.randomUUID().toString()
 
     static boolean messageReceived = false
 
@@ -25,13 +26,13 @@ class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
     void runTest() throws Exception {
 
 
-        deploy 'aps-vertx-event-bus-messaging-provider' with new APSActivator() from 'APS-Network/APSVertxEventBusMessagingProvider/target/classes'
-
         deploy 'msg-receiver' with new APSActivator() using '/se/natusoft/osgi/aps/net/vertx/MsgReceiver.class'
 
         deploy 'msg-sender' with new APSActivator() using '/se/natusoft/osgi/aps/net/vertx/MsgSender.class'
 
         deploy 'aps-vertx-provider' with new APSActivator() from 'se.natusoft.osgi.aps', 'aps-vertx-provider', '1.0.0'
+
+        deploy 'aps-vertx-event-bus-messaging-provider' with new APSActivator() from 'APS-Network/APSVertxEventBusMessagingProvider/target/classes'
 
         // Wait for and then validate result. Even if in this case a cluster of one member is created, it takes
         // some time.
@@ -42,16 +43,17 @@ class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
                     wait( 200 )
                 }
                 ++count
-                if ( count > 30 ) break // If build on a really slow machine this might not be enough!
+                if ( count > 30 ) {
+                    break
+                } // If built on a really slow machine this might not be enough!
             }
             assert messageReceived
         }
         finally {
             shutdown()
-            Thread.sleep(500) // Give Vertx time to shut down.
+            Thread.sleep( 500 ) // Give Vertx time to shut down.
         }
     }
-
 }
 
 @SuppressWarnings("GroovyUnusedDeclaration")
@@ -59,22 +61,35 @@ class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
 @TypeChecked
 class MsgReceiver {
 
-    @OSGiService( timeout = "15 sec", nonBlocking = true )
+    @OSGiService(timeout = "15 sec", nonBlocking = true)
     private APSPubSubService<Map<String, Object>> msgService
 
-    @Managed( loggingFor = "msg-receiver" )
+    @Managed(loggingFor = "msg-receiver")
     private APSLogger logger
 
     @Initializer
     void init() {
-        this.msgService.subscribe( [ "address": "testaddr" ] ) { APSValue<Map<String, Object>> message ->
-            this.logger.info("Received message!")
-            if (message.value(  )["goat"] == APSVertXEventBusMessagingTest.GOAT) {
-                this.logger.info("Got '${APSVertXEventBusMessagingTest.GOAT}' from goat!")
-                APSVertXEventBusMessagingTest.messageReceived = true
+        this.msgService.subscribe( [ "address": "testaddr" ] ) { APSValue<Map<String, Object>> messageValue ->
+            this.logger.info( "Received message!" )
+
+            StructMap message = new StructMap( messageValue.value() )
+            message.lookupObject( "meta.test-message" ).onTrue() { boolean tm ->
+                if ( message[ 'id' ] == APSVertXEventBusMessagingTest.UNIQUE_MESSAGE ) {
+                    this.logger.info( "Got '${message[ "id" ]}'!" )
+                    APSVertXEventBusMessagingTest.messageReceived = true
+                }
             }
+
+//            message.lookup("meta.test-message") { Object res ->
+//                if ( ( res as boolean ) ) {
+//                    if (message['id'] == APSVertXEventBusMessagingTest.UNIQUE_MESSAGE) {
+//                        this.logger.info( "Got '${message[ "id" ]}'!" )
+//                        APSVertXEventBusMessagingTest.messageReceived = true
+//                    }
+//                }
+//            }
         }
-        this.logger.info("Subscribed to 'testaddr'")
+        this.logger.info( "Subscribed to 'testaddr'" )
     }
 }
 
@@ -84,14 +99,34 @@ class MsgReceiver {
 @TypeChecked
 class MsgSender {
 
-    @OSGiService( timeout = "15 sec" )
+    // This variant should result in a wait and then APSNoServiceAvailableException.
+    //@OSGiService(timeout = "15 sec")
+    // This manages since on nonBlocking = true, the call to msgService is cached by the proxy until
+    // the service is available, and then executed.
+    @OSGiService(timeout = "15 sec", nonBlocking = true)
     private APSPubSubService<Map<String, Object>> msgService
+
+    @Managed(loggingFor = "msg-sender")
+    private APSLogger logger
 
     @Initializer
     void init() {
-
-        this.msgService.sender( [ "address": "testaddr"] ) { APSSender<Map<String, Object>> sender ->
-            sender.send( [ "goat": APSVertXEventBusMessagingTest.GOAT ] as Map<String, Object>)
+        // Note that we must do publish, not send here! send sends to one listening target member. If there
+        // are more it does a round robin, but it only goes to one in each case. Publish however always goes
+        // to everybody. Since the clustered version of vertx is used, this means that any cluster on the same
+        // subnet will receive the message, including other builds running at the same time. This is why we are
+        // sending an UUID and publish to everyone. The receiver will only react on the correct UUID and ignore
+        // the rest.
+        this.msgService.publisher( [ "address": "testaddr" ] ) { APSPublisher<Map<String, Object>> publisher ->
+            publisher.publish(
+                    [
+                            "meta": [
+                                    "test-message": true
+                            ],
+                            "id"  : APSVertXEventBusMessagingTest.UNIQUE_MESSAGE
+                    ] as Map<String, Object>
+            )
+            logger.info( "Published '${APSVertXEventBusMessagingTest.UNIQUE_MESSAGE}'!" )
         }
     }
 }

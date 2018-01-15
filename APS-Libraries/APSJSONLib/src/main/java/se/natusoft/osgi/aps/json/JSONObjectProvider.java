@@ -161,7 +161,7 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
      * @param value The value.
      */
     @Override
-    public void addValue(se.natusoft.osgi.aps.api.misc.json.model.JSONString name, se.natusoft.osgi.aps.api.misc.json.model.JSONValue value) {
+    public void setValue(se.natusoft.osgi.aps.api.misc.json.model.JSONString name, se.natusoft.osgi.aps.api.misc.json.model.JSONValue value) {
         this.values.put((JSONStringProvider)name, (JSONValueProvider)value);
     }
 
@@ -172,7 +172,7 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
      * @param value The value.
      */
     @Override
-    public void addValue(String name, String value) {
+    public void setValue(String name, String value) {
         this.values.put(new JSONStringProvider(name), new JSONStringProvider(value));
     }
 
@@ -183,7 +183,7 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
      * @param value The value.
      */
     @Override
-    public void addValue(String name, Number value) {
+    public void setValue(String name, Number value) {
         this.values.put(new JSONStringProvider(name), new JSONNumberProvider(value));
     }
 
@@ -194,7 +194,7 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
      * @param value The value.
      */
     @Override
-    public void addValue(String name, boolean value) {
+    public void setValue(String name, boolean value) {
         this.values.put(new JSONStringProvider(name), new JSONBooleanProvider(value));
     }
 
@@ -223,7 +223,7 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
      * @param name The name of the property.
      * @param value The property value.
      */
-    public void addValue(se.natusoft.osgi.aps.api.misc.json.model.JSONString name, JSONValueProvider value) {
+    public void setValue(se.natusoft.osgi.aps.api.misc.json.model.JSONString name, JSONValueProvider value) {
         this.values.put((JSONStringProvider)name, value);
     }
 
@@ -233,7 +233,7 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
      * @param name The name of the property.
      * @param value The property value.
      */
-    public void addValue(String name, se.natusoft.osgi.aps.api.misc.json.model.JSONValue value) {
+    public void setValue(String name, se.natusoft.osgi.aps.api.misc.json.model.JSONValue value) {
         this.values.put(new JSONStringProvider(name), (JSONValueProvider)value);
     }
 

@@ -36,25 +36,22 @@
  */
 package se.natusoft.osgi.aps.api.misc.json.model;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * This class is based on the structure defined on http://www.json.org/.
- *
+ * <p>
  * It represents the "object" diagram on the above mentioned web page:
- *
- *                  ________________________________________
- *                 /                                        \
- *     |___ ({) __/_____ (string) ____ (:) ____ (value) _____\___ (}) ____|
- *     |           /                                        \             |
- *                 \__________________ (,) _________________/
- *
- *
- * @see JSONValue
+ * <p>
+ * ________________________________________
+ * /                                        \
+ * |___ ({) __/_____ (string) ____ (:) ____ (value) _____\___ (}) ____|
+ * |           /                                        \             |
+ * \__________________ (,) _________________/
  *
  * @author Tommy Svensson
+ * @see JSONValue
  */
 public interface JSONObject extends JSONValue {
     /**
@@ -79,42 +76,42 @@ public interface JSONObject extends JSONValue {
     /**
      * Adds a value to this JSONObject instance.
      *
-     * @param name The name of the value.
+     * @param name  The name of the value.
      * @param value The value.
      */
-    void addValue(JSONString name, JSONValue value);
+    void setValue(JSONString name, JSONValue value);
 
     /**
      * Adds a value to this JSONObject instance.
      *
-     * @param name The name of the value.
+     * @param name  The name of the value.
      * @param value The value.
      */
-    void addValue(String name, JSONValue value);
+    void setValue(String name, JSONValue value);
 
     /**
      * Adds a string value.
      *
-     * @param name The name of the value.
+     * @param name  The name of the value.
      * @param value The value.
      */
-    void addValue(String name, String value);
+    void setValue(String name, String value);
 
     /**
      * Adds a numeric value.
      *
-     * @param name The name of the value.
+     * @param name  The name of the value.
      * @param value The value.
      */
-    void addValue(String name, Number value);
+    void setValue(String name, Number value);
 
     /**
      * Adds a boolean vlaue.
      *
-     * @param name The name of the value.
+     * @param name  The name of the value.
      * @param value The value.
      */
-    void addValue(String name, boolean value);
+    void setValue(String name, boolean value);
 
     /**
      * populates this JSONObject from the specified Map.

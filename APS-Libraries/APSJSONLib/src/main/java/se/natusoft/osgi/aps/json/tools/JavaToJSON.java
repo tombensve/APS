@@ -88,12 +88,12 @@ public class JavaToJSON {
                 while (dictEnum.hasMoreElements()) {
                     Object key = dictEnum.nextElement();
                     String value = ((Dictionary) javaBean).get(key).toString();
-                    obj.addValue(key.toString(), new JSONStringProvider(value));
+                    obj.setValue(key.toString(), new JSONStringProvider(value));
                 }
             } else if (Map.class.isAssignableFrom(javaBean.getClass())) {
                 for (Object key : ((Map) javaBean).keySet()) {
                     Object value = ((Map) javaBean).get(key);
-                    obj.addValue(key.toString(), convertValue(value));
+                    obj.setValue(key.toString(), convertValue(value));
                 }
             } else {
                 for (Method method : javaBean.getClass().getMethods()) {
@@ -127,7 +127,7 @@ public class JavaToJSON {
                             value = e.getMessage();
                         }
 
-                        obj.addValue(prop, convertValue(value));
+                        obj.setValue(prop, convertValue(value));
                     }
                 }
             }

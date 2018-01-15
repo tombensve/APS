@@ -40,14 +40,19 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
 
 /**
  * This is a tool that takes a service interface, creates a tracker for it and
  * provides a proxied implementation looking up and calling real service.
  */
 public class APSTrackerWrapper {
+    //
+    // Static
+    //
+
 
     //
     // Methods
@@ -112,9 +117,11 @@ public class APSTrackerWrapper {
 
         private boolean cacheCalls = false;
 
-        private Queue<Runnable> callCache = new LinkedList<>();
+        private List<Runnable> callCache = Collections.synchronizedList(new LinkedList<>());
 
         private APSLogger logger = new APSLogger();
+
+        private int cacheSizeLimit = 100;
 
         //
         // Constructors
@@ -133,16 +140,23 @@ public class APSTrackerWrapper {
                 this.callCache.clear();
             });
             this.logger.setLoggingFor("APSTrackerWrapper");
+
+            String cacheLimitValue = System.getProperty("aps-service-tracker-cache-limit");
+            if (cacheLimitValue != null) {
+                this.cacheSizeLimit = Integer.valueOf(cacheLimitValue);
+            }
         }
 
         /**
          * Creates a new FacadeHandler instance.
          *
-         * @param tracker The tracker of the service to facade.
+         * @param tracker                        The tracker of the service to facade.
+         * @param cacheCallsOnNoServiceAvailable Set to true to have calls to the service cached until service is available.
          */
         @SuppressWarnings("WeakerAccess")
         public FacadeHandler(APSServiceTracker tracker, boolean cacheCallsOnNoServiceAvailable) {
             this(tracker);
+
             this.cacheCalls = cacheCallsOnNoServiceAvailable;
         }
 
@@ -167,25 +181,41 @@ public class APSTrackerWrapper {
                     return method.invoke(this.tracker.allocateService(), args);
 
                 } else {
-                    this.callCache.add(() -> {
+                    if (this.callCache.size() <= this.cacheSizeLimit) {
+                        this.callCache.add(() -> {
+                            // We only log here on failure, not because a List.forEach(...) call higher up
+                            // swallows exceptions, because that can be replaced with a for loop, but because
+                            // when this is executed the code that triggered the call is long gone, no longer
+                            // waiting for anything to be returned nor thrown. The use of this feature required
+                            // reactive APIs where any eventual result is handled by calling a supplied callback.
 
-                        //noinspection TryWithIdenticalCatches
-                        try {
-                            method.invoke(this.tracker.allocateService(), args);
+                            //noinspection TryWithIdenticalCatches
+                            try {
+                                method.invoke(this.tracker.allocateService(), args);
 
-                        } catch (InvocationTargetException e) {
+                            } catch (InvocationTargetException e) {
 
-                            this.logger.error(e.getCause().getMessage(), e.getCause());
+                                this.logger.error(e.getCause().getMessage(), e.getCause());
 
-                        } catch (IllegalAccessException e) {
+                            } catch (IllegalAccessException e) {
 
-                            this.logger.error(e.getMessage(), e);
+                                this.logger.error(e.getMessage(), e);
 
-                        } finally {
+                            } finally {
 
-                            this.tracker.releaseService();
-                        }
-                    });
+                                this.tracker.releaseService();
+                            }
+                        });
+                    } else {
+                        // This to inhibit that calls get cached until no memory is left due to bundle providing waited
+                        // for service not being deployed.
+                        throw new IllegalStateException(
+                                "Cached call rejected! Too many cached calls waiting! Max limit is " + this.cacheSizeLimit +
+                                        ". Something is wrong somewhere when this happens! It is possible to change this " +
+                                        "limit by setting the 'aps-service-tracker-cache-limit' system property, but it is " +
+                                        "not recommended to make it higher, possibly lower! Default is 100."
+                        );
+                    }
 
                     // This must be null since only null can be cast to anything! Or rather a null value
                     // is legal for any type of object. Since the actual method.invoke(...) call will be

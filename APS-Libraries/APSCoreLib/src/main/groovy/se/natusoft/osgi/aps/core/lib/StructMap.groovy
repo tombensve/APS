@@ -3,6 +3,7 @@ package se.natusoft.osgi.aps.core.lib
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.reactive.APSHandler
+import se.natusoft.osgi.aps.api.util.APSObject
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 
 /**
@@ -133,15 +134,39 @@ class StructMap implements Map<String, Object> {
      * Looks up the value of a specified structPath.
      *
      * @param structPath The structPath to lookup.
-     * @oaramn result Called with result.
+     * @oaramn result Called with value found at path.
      */
     void lookup( String structPath, APSHandler<Object> result ) {
 
+        result.handle( lookup( structPath ) )
+    }
+
+    /**
+     * Looks up the value of a specified stuctured path.
+     *
+     * @param structPath The structured path to lookup.
+     *
+     * @return The value found at the path.
+     */
+    Object lookup( String structPath ) {
         Object current = this.map
 
         for ( String part : structPath.split( "\\." ) ) {
 
-            if ( Map.class.isAssignableFrom( current.class ) ) {
+            // Vertx delivers a JsonObject implementing Iterable<Map.Entry<String, Object>>.
+            if ( current instanceof Iterable<Map.Entry<String, Object>> ) {
+
+                for ( Map.Entry<String, Object> entry : (Iterable<Map.Entry<String, Object>>) current ) {
+
+                    if ( part == entry.key ) {
+
+                        current = entry.value
+
+                        break
+                    }
+                }
+            }
+            else if ( Map.class.isAssignableFrom( current.class ) ) {
 
                 current = ( current as Map ).get( part )
             }
@@ -154,10 +179,20 @@ class StructMap implements Map<String, Object> {
                 int index = Integer.valueOf( part.replace( "[", "" ).replace( "]", "" ) )
                 current = ( current as List ).get( index )
             }
-
         }
 
-        result.handle( current )
+        current
+    }
+
+    /**
+     * Calls lookup but wraps the result in an APSObject.
+     *
+     * @param structPath The path to lookup.
+     *
+     * @return An APSObject wrapped value.
+     */
+    APSObject lookupObject( String structPath ) {
+        return new APSObject( lookup( structPath ) )
     }
 
     /**

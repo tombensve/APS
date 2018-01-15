@@ -5,8 +5,8 @@ import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
 import se.natusoft.osgi.aps.api.pubsub.APSPublisher
 import se.natusoft.osgi.aps.api.pubsub.APSSender
-import se.natusoft.osgi.aps.api.reactive.APSValue
 import se.natusoft.osgi.aps.api.reactive.APSHandler
+import se.natusoft.osgi.aps.api.reactive.APSValue
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.messaging.config.Config
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.PeskyWabbitConnectionManager
@@ -54,12 +54,12 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSPubSubService<byte[]
     /**
      * Returns a publisher to publish with.
      *
-     * @param params Meta data for the publisher.
+     * @param properties Meta data for the publisher.
      */
     @Override
-    APSPublisher<byte[]> publisher( Map<String, String> params ) {
+    void publisher( Map<String, String> properties, APSHandler<APSPublisher<byte[]>> handler ) {
 
-        String topic = params[ "topic" ]
+        String topic = properties[ "topic" ]
         APSRabbitMQMessageProvider messageProvider = this.instances.get( topic )
 
         if ( messageProvider == null ) {
@@ -67,17 +67,17 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSPubSubService<byte[]
             throw new IllegalArgumentException( "sendMessage(): No such topic: '${topic}'!" )
         }
 
-        return new Publisher<>(  messageProvider: messageProvider )
+        handler.handle( new Publisher<>( messageProvider: messageProvider ) )
     }
 
     /**
      * Returns a sender to send with. Depending on implementation the APSSender instance returned can possibly
      * be an APSReplyableSender that allows for providing a subscriber for a reply to the sent message.
      *
-     * @param params Meta data for the sender.
+     * @param properties Meta data for the sender.
      */
     @Override
-    APSSender<byte[]> sender( Map<String, String> params ) {
+    void sender( Map<String, String> properties, APSHandler<APSSender<byte[]>> handler ) {
 
         throw new UnsupportedOperationException( "This RabbitMQ implementation only provides a publisher!" )
     }
@@ -86,13 +86,13 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSPubSubService<byte[]
      * Adds a subscriber.
      *
      * @param subscriber The subscriber to add.
-     * @param meta Meta data. This depends on the implementation. Can possibly be null when not used. For example
-     *                   if there is a need for an address or topic put it in the meta data.
+     * @param properties Should contain "topic" with the topic to subscribe to. This gets updated by this call and
+     *               should be passed back to unsubscribe(...) when done.
      */
     @Override
-    Object subscribe( Map<String, String> meta, APSHandler<APSValue<byte[]>> subscriber ) {
+    void subscribe( Map<String, String> properties, APSHandler<APSValue<byte[]>> subscriber ) {
 
-        String topic = meta[ "topic" ]
+        String topic = properties[ 'topic' ]
         APSRabbitMQMessageProvider messageProvider = this.instances.get( topic )
 
         if ( messageProvider == null ) {
@@ -100,20 +100,22 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSPubSubService<byte[]
         }
 
         UUID subscriberId = messageProvider.addMessageSubscriber( subscriber )
-        this.idToTopic[subscriberId] = topic
+        this.idToTopic[ subscriberId ] = topic
 
-        subscriberId
+        properties[ 'subscriber-id' ] = subscriberId.toString()
     }
 
     /**
      * Removes a subscriber.
      *
-     * @param subscriberId The id returned by subscribe(...).
+     * @param properties The **same** params as passed to subscribe(...).
      */
     @Override
-    void unsubscribe( Object subscriberId ) {
+    void unsubscribe( Map<String, String> properties ) {
 
-        String topic = this.idToTopic[ (UUID) subscriberId ]
+        UUID subscriberId = UUID.fromString( properties[ 'subscriber-id' ] )
+        String topic = properties[ 'topic' ]
+
         APSRabbitMQMessageProvider messageProvider = this.instances.get( topic )
 
         if ( messageProvider == null ) {

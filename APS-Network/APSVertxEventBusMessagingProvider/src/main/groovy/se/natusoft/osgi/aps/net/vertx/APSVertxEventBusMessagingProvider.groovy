@@ -130,40 +130,40 @@ class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, 
     /**
      * Returns a publisher to publish with.
      *
-     * @param params Meta data for the publisher.
+     * @param properties Properties for the publisher.
      * @param handler Will be called with the APSPublisher to use for publishing messages.
      */
     @Override
-    void publisher( Map<String, String> params, APSHandler<APSPublisher<Map<String, Object>>> handler ) {
+    void publisher( Map<String, String> properties, APSHandler<APSPublisher<Map<String, Object>>> handler ) {
 
-        handler.handle( new Publisher( params: params, getEventBus: { this.eventBus }, logger: this.logger ) )
+        handler.handle( new Publisher( properties: properties, getEventBus: { this.eventBus }, logger: this.logger ) )
     }
 
     /**
      * Returns a sender to send with. Depending on implementation the APSSender instance returned can possibly
      * be an APSReplyableSender that allows for providing a subscriber for a reply to the sent message.
      *
-     * @param params Meta data for the sender.
+     * @param properties Meta data for the sender.
      * @param handler will be called with the APSSender to use for sending messages.
      */
     @Override
-    void sender( Map<String, String> params, APSHandler<APSSender<Map<String, Object>>> handler ) {
+    void sender( Map<String, String> properties, APSHandler<APSSender<Map<String, Object>>> handler ) {
 
-        handler.handle( new Sender( params: params, getEventBus: { this.eventBus }, logger: this.logger ) )
+        handler.handle( new Sender( properties: properties, getEventBus: { this.eventBus }, logger: this.logger ) )
     }
 
     /**
      * Adds a subscriber.
      *
      * @param subscriber The subscriber to add.
-     * @param params Meta data. This depends on the implementation. Can possibly be null when not used. For example
+     * @param properties Meta data. This depends on the implementation. Can possibly be null when not used. For example
      *                   if there is a need for an address or topic put it in the meta data.
      */
     @Override
-    void subscribe( Map<String, String> params, APSHandler<APSValue<Map<String, Object>>> handler ) {
+    void subscribe( Map<String, String> properties, APSHandler<APSValue<Map<String, Object>>> handler ) {
 
         UUID subId = UUID.randomUUID()
-        String address = params[ ADDRESS ]
+        String address = properties[ ADDRESS ]
 
         if ( this.subscribers[ address ] == null ) {
 
@@ -183,7 +183,7 @@ class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, 
             }
         }
 
-        params['sub-id'] = subId.toString(  )
+        properties[ 'sub-id'] = subId.toString(  )
     }
 
     /**
@@ -192,9 +192,9 @@ class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, 
      * @param subscriptionId The id of the subscriber to remove.
      */
     @Override
-    synchronized void unsubscribe( Map<String, String> params ) {
+    synchronized void unsubscribe( Map<String, String> properties ) {
 
-        String subIdStr = params['sub-id']
+        String subIdStr = properties[ 'sub-id']
 
         if (subIdStr != null) {
             UUID id = UUID.fromString( subIdStr )
