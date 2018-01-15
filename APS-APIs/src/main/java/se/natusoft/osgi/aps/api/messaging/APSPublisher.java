@@ -1,4 +1,4 @@
-package se.natusoft.osgi.aps.api.pubsub;
+package se.natusoft.osgi.aps.api.messaging;
 
 import se.natusoft.docutations.Optional;
 import se.natusoft.osgi.aps.api.reactive.APSHandler;
@@ -11,9 +11,9 @@ public interface APSPublisher<Message> {
      *
      * @param message The message to publish.
      *
-     * @throws APSPubSubException on any failure. Note that this is a RuntimeException!
+     * @throws APSMessagingException on any failure. Note that this is a RuntimeException!
      */
-    APSPublisher<Message> publish(Message message) throws APSPubSubException;
+    APSPublisher<Message> publish(Message message) throws APSMessagingException;
 
     /**
      * Publishes a message receiving a result of success or failure. On Success there

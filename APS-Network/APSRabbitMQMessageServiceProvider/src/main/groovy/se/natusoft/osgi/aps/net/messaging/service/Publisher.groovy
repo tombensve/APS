@@ -1,8 +1,8 @@
 package se.natusoft.osgi.aps.net.messaging.service
 
 import se.natusoft.docutations.Implements
-import se.natusoft.osgi.aps.api.pubsub.APSPubSubException
-import se.natusoft.osgi.aps.api.pubsub.APSPublisher
+import se.natusoft.osgi.aps.api.messaging.APSMessagingException
+import se.natusoft.osgi.aps.api.messaging.APSPublisher
 import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.api.reactive.APSResult
 
@@ -24,11 +24,11 @@ class Publisher implements APSPublisher<byte[]> {
      *
      * @param message The message to publish.
      *
-     * @throws APSPubSubException on any failure. Note that this is a RuntimeException!
+     * @throws APSMessagingException on any failure. Note that this is a RuntimeException!
      */
     @Override
     @Implements(APSPublisher.class)
-    APSPublisher<byte[]> publish( byte[] message ) throws APSPubSubException {
+    APSPublisher<byte[]> publish( byte[] message ) throws APSMessagingException {
         this.messageProvider.sendMessage( message )
 
         this

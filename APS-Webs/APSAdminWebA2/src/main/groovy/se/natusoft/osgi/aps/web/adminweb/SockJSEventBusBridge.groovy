@@ -7,7 +7,7 @@ import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.sockjs.BridgeEvent
 import io.vertx.ext.web.handler.sockjs.SockJSHandler
 import org.osgi.framework.BundleContext
-import se.natusoft.osgi.aps.api.pubsub.APSSubscriber
+import se.natusoft.osgi.aps.api.messaging.APSSubscriber
 import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
 import se.natusoft.osgi.aps.net.vertx.api.VertxSubscriber
 import se.natusoft.osgi.aps.tools.APSLogger

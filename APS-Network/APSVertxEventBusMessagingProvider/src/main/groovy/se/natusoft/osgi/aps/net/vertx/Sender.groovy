@@ -4,9 +4,9 @@ import io.vertx.core.AsyncResult
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.eventbus.Message
 import io.vertx.core.json.JsonObject
-import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
-import se.natusoft.osgi.aps.api.pubsub.APSReplyableSender
-import se.natusoft.osgi.aps.api.pubsub.APSSender
+import se.natusoft.osgi.aps.api.messaging.APSMessageService
+import se.natusoft.osgi.aps.api.messaging.APSReplyableSender
+import se.natusoft.osgi.aps.api.messaging.APSSender
 import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.api.reactive.APSResult
 import se.natusoft.osgi.aps.api.reactive.APSValue
@@ -49,7 +49,7 @@ class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Obje
             message[ "_meta_" ] = this.properties
         }
 
-        String address = this.properties[ APSPubSubService.ADDRESS ]
+        String address = this.properties[ APSMessageService.TARGET ]
 
         if ( reply != null ) {
 

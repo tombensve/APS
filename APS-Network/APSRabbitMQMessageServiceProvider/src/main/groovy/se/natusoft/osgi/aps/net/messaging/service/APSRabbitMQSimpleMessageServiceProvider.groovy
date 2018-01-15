@@ -2,9 +2,9 @@ package se.natusoft.osgi.aps.net.messaging.service
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
-import se.natusoft.osgi.aps.api.pubsub.APSPublisher
-import se.natusoft.osgi.aps.api.pubsub.APSSender
+import se.natusoft.osgi.aps.api.messaging.APSMessageService
+import se.natusoft.osgi.aps.api.messaging.APSPublisher
+import se.natusoft.osgi.aps.api.messaging.APSSender
 import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.api.reactive.APSValue
 import se.natusoft.osgi.aps.constants.APS
@@ -28,7 +28,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
                 @OSGiProperty(name = APS.Messaging.MultipleReceivers, value = APS.TRUE)
         ]
 )
-class APSRabbitMQSimpleMessageServiceProvider implements APSPubSubService<byte[]> {
+class APSRabbitMQSimpleMessageServiceProvider implements APSMessageService<byte[]> {
 
     //
     // Private Members

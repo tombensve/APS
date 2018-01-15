@@ -42,9 +42,9 @@ import io.vertx.core.eventbus.EventBus
 import io.vertx.core.eventbus.Message
 import io.vertx.core.json.JsonObject
 import org.osgi.framework.BundleContext
-import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
-import se.natusoft.osgi.aps.api.pubsub.APSPublisher
-import se.natusoft.osgi.aps.api.pubsub.APSSender
+import se.natusoft.osgi.aps.api.messaging.APSMessageService
+import se.natusoft.osgi.aps.api.messaging.APSPublisher
+import se.natusoft.osgi.aps.api.messaging.APSSender
 import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.api.reactive.APSValue
 import se.natusoft.osgi.aps.constants.APS
@@ -72,7 +72,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 )
 @CompileStatic
 @TypeChecked
-class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, Object>> {
+class APSVertxEventBusMessagingProvider implements APSMessageService<Map<String, Object>> {
 
     //
     // Constants
@@ -163,7 +163,7 @@ class APSVertxEventBusMessagingProvider implements APSPubSubService<Map<String, 
     void subscribe( Map<String, String> properties, APSHandler<APSValue<Map<String, Object>>> handler ) {
 
         UUID subId = UUID.randomUUID()
-        String address = properties[ ADDRESS ]
+        String address = properties[ TARGET ]
 
         if ( this.subscribers[ address ] == null ) {
 

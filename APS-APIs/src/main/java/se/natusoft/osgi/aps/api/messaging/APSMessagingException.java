@@ -34,20 +34,20 @@
  *         2017-10-29: Created!
  *
  */
-package se.natusoft.osgi.aps.api.pubsub;
+package se.natusoft.osgi.aps.api.messaging;
 
 /**
  * Indicates a problem sending or receiving a message.
  */
 @SuppressWarnings("WeakerAccess")
-public class APSPubSubException extends RuntimeException {
+public class APSMessagingException extends RuntimeException {
 
     /**
      * Creates a new APSPubSubException.
      *
      * @param message The exception message.
      */
-    public APSPubSubException(String message) {
+    public APSMessagingException(String message) {
         super(message);
     }
 
@@ -57,7 +57,7 @@ public class APSPubSubException extends RuntimeException {
      *  @param message The exception message.
      * @param cause The cause of this exception.
      */
-    public APSPubSubException(String message, Throwable cause) {
+    public APSMessagingException(String message, Throwable cause) {
         super(message, cause);
     }
 }

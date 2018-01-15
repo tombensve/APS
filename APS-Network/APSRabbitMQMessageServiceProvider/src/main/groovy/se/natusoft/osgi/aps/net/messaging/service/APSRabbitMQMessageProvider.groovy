@@ -40,7 +40,7 @@ import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.Channel
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.pubsub.APSMessagingException
+import se.natusoft.osgi.aps.api.messaging.APSMessagingException
 import se.natusoft.osgi.aps.api.reactive.APSValue
 import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider

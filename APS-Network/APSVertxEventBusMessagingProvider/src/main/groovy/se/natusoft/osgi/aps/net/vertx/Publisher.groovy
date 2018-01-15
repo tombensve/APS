@@ -2,9 +2,9 @@ package se.natusoft.osgi.aps.net.vertx
 
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.json.JsonObject
-import se.natusoft.osgi.aps.api.pubsub.APSPubSubException
-import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
-import se.natusoft.osgi.aps.api.pubsub.APSPublisher
+import se.natusoft.osgi.aps.api.messaging.APSMessagingException
+import se.natusoft.osgi.aps.api.messaging.APSMessageService
+import se.natusoft.osgi.aps.api.messaging.APSPublisher
 import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.api.reactive.APSResult
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -36,11 +36,11 @@ class Publisher implements APSPublisher<Map<String, Object>> {
      *
      * @param message The message to publish.
      *
-     * @throws APSPubSubException on any failure. Note that this is a RuntimeException!
+     * @throws APSMessagingException on any failure. Note that this is a RuntimeException!
      */
     @Override
-    APSPublisher<Map<String, Object>> publish( Map<String, Object> message ) throws APSPubSubException {
-        String address = this.properties[ APSPubSubService.ADDRESS ]
+    APSPublisher<Map<String, Object>> publish( Map<String, Object> message ) throws APSMessagingException {
+        String address = this.properties[ APSMessageService.TARGET ]
         getEventBus().publish( address, new JsonObject( message ) )
 
         this
@@ -60,7 +60,7 @@ class Publisher implements APSPublisher<Map<String, Object>> {
      */
     @Override
     APSPublisher<Map<String, Object>> publish( Map<String, Object> message, APSHandler<APSResult<Map<String, Object>>> result ) {
-        String address = this.properties[ APSPubSubService.ADDRESS ]
+        String address = this.properties[ APSMessageService.TARGET ]
         try {
 
             getEventBus().publish( address, new JsonObject( message ) )

@@ -10,7 +10,7 @@ import org.osgi.framework.BundleContext
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Note
 import se.natusoft.docutations.Nullable
-import se.natusoft.osgi.aps.api.pubsub.APSSubscriber
+import se.natusoft.osgi.aps.api.messaging.APSSubscriber
 import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
 import se.natusoft.osgi.aps.net.vertx.api.VertxSubscriber
 import se.natusoft.osgi.aps.tools.APSLogger

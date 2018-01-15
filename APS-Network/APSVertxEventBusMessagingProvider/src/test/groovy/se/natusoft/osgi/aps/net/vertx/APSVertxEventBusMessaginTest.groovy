@@ -3,9 +3,10 @@ package se.natusoft.osgi.aps.net.vertx
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
-import se.natusoft.osgi.aps.api.pubsub.APSPubSubService
-import se.natusoft.osgi.aps.api.pubsub.APSPublisher
+import se.natusoft.osgi.aps.api.messaging.APSMessageService
+import se.natusoft.osgi.aps.api.messaging.APSPublisher
 import se.natusoft.osgi.aps.api.reactive.APSValue
+import se.natusoft.osgi.aps.api.util.APSProperties
 import se.natusoft.osgi.aps.core.lib.StructMap
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator
@@ -13,6 +14,7 @@ import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
+import static se.natusoft.osgi.aps.api.util.APSProperties.*
 
 @CompileStatic
 @TypeChecked
@@ -62,14 +64,21 @@ class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
 class MsgReceiver {
 
     @OSGiService(timeout = "15 sec", nonBlocking = true)
-    private APSPubSubService<Map<String, Object>> msgService
+    private APSMessageService<Map<String, Object>> msgService
 
     @Managed(loggingFor = "msg-receiver")
     private APSLogger logger
 
     @Initializer
     void init() {
-        this.msgService.subscribe( [ "address": "testaddr" ] ) { APSValue<Map<String, Object>> messageValue ->
+        this.msgService.subscribe(
+
+                // This is a workaround to that in the [ : ] format, only [ "aps-msg-target": "testaddr" ] is legal.
+                // The following are not legal: [ APSMessageService.TARGET: "testaddr" ] nor [ "${APSMessageService.TARGET}": "testaddr" ]
+                props() + APSMessageService.TARGET >> "testaddr"
+
+        ) { APSValue<Map<String, Object>> messageValue ->
+
             this.logger.info( "Received message!" )
 
             StructMap message = new StructMap( messageValue.value() )
@@ -79,15 +88,6 @@ class MsgReceiver {
                     APSVertXEventBusMessagingTest.messageReceived = true
                 }
             }
-
-//            message.lookup("meta.test-message") { Object res ->
-//                if ( ( res as boolean ) ) {
-//                    if (message['id'] == APSVertXEventBusMessagingTest.UNIQUE_MESSAGE) {
-//                        this.logger.info( "Got '${message[ "id" ]}'!" )
-//                        APSVertXEventBusMessagingTest.messageReceived = true
-//                    }
-//                }
-//            }
         }
         this.logger.info( "Subscribed to 'testaddr'" )
     }
@@ -104,7 +104,7 @@ class MsgSender {
     // This manages since on nonBlocking = true, the call to msgService is cached by the proxy until
     // the service is available, and then executed.
     @OSGiService(timeout = "15 sec", nonBlocking = true)
-    private APSPubSubService<Map<String, Object>> msgService
+    private APSMessageService<Map<String, Object>> msgService
 
     @Managed(loggingFor = "msg-sender")
     private APSLogger logger
@@ -117,7 +117,8 @@ class MsgSender {
         // subnet will receive the message, including other builds running at the same time. This is why we are
         // sending an UUID and publish to everyone. The receiver will only react on the correct UUID and ignore
         // the rest.
-        this.msgService.publisher( [ "address": "testaddr" ] ) { APSPublisher<Map<String, Object>> publisher ->
+        this.msgService.publisher( props() + APSMessageService.TARGET >> "testaddr" ) { APSPublisher<Map<String, Object>> publisher ->
+
             publisher.publish(
                     [
                             "meta": [

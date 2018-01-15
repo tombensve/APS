@@ -1,4 +1,4 @@
-package se.natusoft.osgi.aps.api.pubsub;
+package se.natusoft.osgi.aps.api.messaging;
 
 import se.natusoft.docutations.Optional;
 import se.natusoft.osgi.aps.api.reactive.APSHandler;
