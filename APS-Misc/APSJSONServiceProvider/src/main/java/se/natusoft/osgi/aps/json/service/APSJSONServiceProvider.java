@@ -38,22 +38,28 @@
 package se.natusoft.osgi.aps.json.service;
 
 import org.osgi.framework.Constants;
+import se.natusoft.docutations.NotNull;
+import se.natusoft.docutations.Nullable;
 import se.natusoft.osgi.aps.api.misc.json.JSONEOFException;
 import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
 import se.natusoft.osgi.aps.api.misc.json.model.*;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService;
+import se.natusoft.osgi.aps.api.reactive.APSHandler;
+import se.natusoft.osgi.aps.api.reactive.APSResult;
+import se.natusoft.osgi.aps.api.reactive.APSValue;
 import se.natusoft.osgi.aps.constants.APS;
 import se.natusoft.osgi.aps.exceptions.APSIOException;
 import se.natusoft.osgi.aps.json.*;
 import se.natusoft.osgi.aps.json.tools.JSONMapConv;
 import se.natusoft.osgi.aps.json.tools.JSONToJava;
 import se.natusoft.osgi.aps.json.tools.JavaToJSON;
+import se.natusoft.osgi.aps.tools.APSLogger;
+import se.natusoft.osgi.aps.tools.annotation.activator.Managed;
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty;
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceInstance;
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
@@ -61,25 +67,25 @@ import java.util.Map;
 /**
  * Provides an implementation of APSJSONService & APSJSONExtendedService.
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "unused"}) // This class is instantiated and manged by APSActivator.
 @OSGiServiceProvider(
         instances = {
                 @OSGiServiceInstance(
                         serviceAPIs = APSJSONService.class,
                         properties = {
-                                @OSGiProperty( name = Constants.SERVICE_PID, value = "APSJSONService"),
-                                @OSGiProperty( name = APS.Service.Provider, value = "aps-json-service-provider" ),
-                                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Misc ),
-                                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.JSON )
+                                @OSGiProperty(name = Constants.SERVICE_PID, value = "APSJSONService"),
+                                @OSGiProperty(name = APS.Service.Provider, value = "aps-json-service-provider"),
+                                @OSGiProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Misc),
+                                @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.JSON)
                         }
                 ),
                 @OSGiServiceInstance(
                         serviceAPIs = APSJSONExtendedService.class,
                         properties = {
-                                @OSGiProperty( name = Constants.SERVICE_PID, value = "APSJSONExtendedService"),
-                                @OSGiProperty( name = APS.Service.Provider, value = "aps-json-service-provider" ),
-                                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Misc ),
-                                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.JSON )
+                                @OSGiProperty(name = Constants.SERVICE_PID, value = "APSJSONExtendedService"),
+                                @OSGiProperty(name = APS.Service.Provider, value = "aps-json-service-provider"),
+                                @OSGiProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Misc),
+                                @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.JSON)
                         }
                 )
         }
@@ -89,6 +95,11 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
     // Private Members
     //
 
+    @Managed(loggingFor = "aps-json-service-provider")
+    private APSLogger logger = null; // IDEA complains 'field logger is never assigned' if not set to null!
+                                     // This is not true since this field gets injected. In this specific
+                                     // case however IDEA does not let me ignore the warning!
+
     //
     // Constructors
     //
@@ -96,7 +107,8 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
     /**
      * Creates a new JSONService instance.
      */
-    public APSJSONServiceProvider() {}
+    public APSJSONServiceProvider() {
+    }
 
     //
     // JSONService Implementation
@@ -112,7 +124,6 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
 
     /**
      * @param value The value of the created JSONString.
-     *
      * @return a JSONString.
      */
     @Override
@@ -122,7 +133,6 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
 
     /**
      * @param value The numeric value of the created JSONNumber.
-     *
      * @return a JSONNumber
      */
     @Override
@@ -140,7 +150,6 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
 
     /**
      * @param value The boolean value of the created JSONBoolean.
-     *
      * @return a JSONBoolean.
      */
     @Override
@@ -159,76 +168,84 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
     /**
      * Reads JSON from an InputStream producing most probably a JSONObject.
      *
-     * @param in           The stream to read from.
-     * @param errorHandler An optional error handler. This can be null in which case all errors are ignored.
-     *
-     * @return A JSONObject.
-     *
-     * @throws APSIOException on IO Failure.
+     * @param in            The stream to read from.
+     * @param resultHandler This will be called with the result.
      */
     @Override
-    public JSONValue readJSON(InputStream in, JSONErrorHandler errorHandler) throws APSIOException {
-        try {
-            return JSON.read(in, errorHandler);
-        }
-        catch (JSONEOFException eofe) {
-            throw new se.natusoft.osgi.aps.api.misc.json.JSONEOFException();
-        }
-        catch (IOException ioe) {
-            throw new APSIOException(ioe.getMessage(), ioe);
-        }
+    public void readJSON(@NotNull InputStream in, @NotNull APSHandler<APSResult<JSONValue>> resultHandler) {
+        JSON.read(in, resultHandler);
     }
 
     /**
      * Reads JSON from an InputStream producing a `Map<String, Object>`.
      *
-     * @param in           The stream to read from. *Must* be a JSON object! Does not support a sub JSON structure.
-     * @param errorHandler An optional error handler for parsing errors. This can be null in which case all parsing errors are ignored.
-     * @return A Map of read JSON data.
-     * @throws APSIOException on IO failure.
+     * @param in            The stream to read from. *Must* be a JSON object! Does not support a sub JSON structure.
+     * @param resultHandler This will be called with the result.
      */
     @Override
-    public Map<String, Object> readJSONObject(InputStream in, JSONErrorHandler errorHandler) throws APSIOException {
-        return JSONMapConv.jsonObjectToMap(in, errorHandler);
+    public void readJSONObject(@NotNull InputStream in, @NotNull APSHandler<APSResult<Map<String, Object>>> resultHandler) {
+
+        Map<String, Object> map = null;
+        try {
+            map = JSONMapConv.jsonObjectToMap(in, new JSONErrorHandler() {
+                public void warning(String message) {
+                    logger.warn(message);
+                }
+
+                public void fail(String message, Throwable cause) throws RuntimeException {
+                    throw new APSIOException(message, cause);
+                }
+            });
+        }
+        catch (APSIOException ioe) {
+            resultHandler.handle(APSResult.failure(ioe));
+        }
+
+        resultHandler.handle(APSResult.successj(new APSValue.Provider(map)));
     }
 
     /**
      * Writes a JSONValue to an OutputStream in compact format.
      *
-     * @param out       The stream to write to.
-     * @param jsonValue The value to write.
-     *
-     * @throws APSIOException on IO failure.
+     * @param out           The stream to write to.
+     * @param jsonValue     The value to write.
+     * @param resultHandler This wil be called with the result. Only success() and failure() are relevant here!
      */
     @Override
-    public void writeJSON(OutputStream out, JSONValue jsonValue) throws APSIOException {
-        JSON.write(out, jsonValue);
+    public void writeJSON(@NotNull OutputStream out, @NotNull JSONValue jsonValue, @Nullable APSHandler<APSResult<Void>> resultHandler) {
+
+        JSON.write(out, jsonValue, resultHandler);
     }
 
     /**
      * Writes a JSONValue to an OutputStream.
      *
-     * @param out       The stream to write to.
-     * @param jsonValue The value to write.
-     * @param compact   If true then the output is compact and hard to read, if false then the output is easy to read and larger with indents.
-     *
-     * @throws APSIOException on IO failure.
+     * @param out           The stream to write to.
+     * @param jsonValue     The value to write.
+     * @param compact       If true then the output is compact and hard to read, if false then the output is easy to read and larger
+     *                      with indents.
+     * @param resultHandler This wil be called with the result. Only success() and failure() are relevant here!
      */
     @Override
-    public void writeJSON(OutputStream out, JSONValue jsonValue, boolean compact) throws APSIOException {
-        JSON.write(out, jsonValue, compact);
+    public void writeJSON(@NotNull OutputStream out, @NotNull JSONValue jsonValue, boolean compact,
+                          @Nullable APSHandler<APSResult<Void>> resultHandler)
+            throws APSIOException {
+
+        JSON.write(out, jsonValue, compact, resultHandler);
     }
 
     /**
      * Writes a JSON _Map_ to an _OutputStream_.
      *
-     * @param out The output stream to write to.
+     * @param out     The output stream to write to.
      * @param jsonMap The Map to write.
-     *
      * @throws APSIOException on IO failure.
      */
-    public void writeJSONObject(OutputStream out, Map<String, Object> jsonMap) throws APSIOException {
-        JSONMapConv.mapToJSONObject(jsonMap, out);
+    @Override
+    public void writeJSONObject(@NotNull OutputStream out, @NotNull Map<String, Object> jsonMap,
+                                @Nullable APSHandler<APSResult<Void>> resultHandler) throws APSIOException {
+
+        writeJSON(out, JSONMapConv.mapToJSONObject(jsonMap), resultHandler);
     }
 
     /**
@@ -266,19 +283,20 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      * @param errorHandler An optional error handler. This can be null in which case all errors are ignored.
      * @param beanType     The type of the JavaBean to create, populate and return.
      * @param <T>          Autoresolved JavaBean type from passed class (beanType).
-     *
      * @return An instance of the specified bean type.
-     *
      * @throws APSIOException on IO failure.
      */
     @Override
     public <T> T readJSONToBean(InputStream in, JSONErrorHandler errorHandler, Class<T> beanType) throws APSIOException {
         try {
+
             JSONObjectProvider obj = new JSONObjectProvider(errorHandler);
             obj.readJSON(in);
+
             return JSONToJava.convert(obj, beanType);
-        }
-        catch (JSONEOFException eofe) {
+
+        } catch (JSONEOFException eofe) {
+
             throw new se.natusoft.osgi.aps.api.misc.json.JSONEOFException();
         }
     }
@@ -286,9 +304,8 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
     /**
      * Writes JSON from a JavaBean instance.
      *
-     * @param out          The OutputStream to write to.
-     * @param bean         The JavaBean to write.
-     *
+     * @param out  The OutputStream to write to.
+     * @param bean The JavaBean to write.
      * @throws APSIOException on IO failure.
      */
     @Override
@@ -301,8 +318,7 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      * depending on the JSONValue subclass passed.
      *
      * @param jsonValue The JSONObject whose information should be transferred to the JavaBean.
-     * @param javaType The class of the Java type to return a converted instance of.
-     *
+     * @param javaType  The class of the Java type to return a converted instance of.
      * @return A populated JavaBean instance.
      */
     @Override
@@ -314,7 +330,6 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      * Takes a Java object and converts it to a JSONValue subclass.
      *
      * @param java The Java value to convert to a JSONValue. It can be one of String, Number, Boolean, null, JavaBean, or an array of those.
-     *
      * @return A JSONValue subclass.
      */
     @Override

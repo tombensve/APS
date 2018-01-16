@@ -18,7 +18,17 @@ public _class_ __JSON__   [se.natusoft.osgi.aps.json] {
 
 This is the official API for reading and writing JSON values.
 
-__public static JSONValue read(InputStream jsonIn, JSONErrorHandler errorHandler) throws IOException__
+__public static void read(InputStream jsonIn, APSHandler<APSResult<JSONValue>> resultHandler)__
+
+Reads any JSON object from the specified _InputStream_.
+
+_Parameters_
+
+> _jsonIn_ - The InputStream to read from. 
+
+> _resultHandler_ - The handler to call with result. 
+
+__public static JSONValue read(InputStream jsonIn, JSONErrorHandler errorHandler)__
 
 Reads any JSON object from the specified _InputStream_.
 
@@ -34,7 +44,9 @@ _Parameters_
 
 _Throws_
 
-> _IOException_ - on any IO failures. 
+> _APSIOException_ - on any IO failures. 
+
+
 
 __public static void write(OutputStream jsonOut, JSONValue value) throws APSIOException__
 
@@ -49,6 +61,18 @@ _Parameters_
 _Throws_
 
 > _APSIOException_ - on failure. 
+
+__public static void write(OutputStream jsonOut, JSONValue value, boolean compact, APSHandler<APSResult<Void>> resultHandler)__
+
+Writes a _JSONValue_ to an _OutputStream_. This will write compact output by default.
+
+_Parameters_
+
+> _jsonOut_ - The OutputStream to write to. 
+
+> _value_ - The value to write. 
+
+> _resultHandler_ - handler for result. only success() or failure() is relevant. 
 
 __public static void write(OutputStream jsonOut, JSONValue value, boolean compact) throws APSIOException__
 
@@ -723,6 +747,38 @@ _Parameters_
 _Throws_
 
 > _JSONConvertionException_ - if property does not exist. 
+
+}
+
+----
+
+    
+
+public _class_ __CollectingErrorHandler__ implements  JSONErrorHandler    [se.natusoft.osgi.aps.json.tools] {
+
+Utility implementation of JSONErrorHandler.
+
+__public CollectingErrorHandler(boolean printWarnings)__
+
+_Parameters_
+
+> _printWarnings_ - If true warnings will be printed to stderr. 
+
+
+
+
+
+__public boolean hasMessages()__
+
+_Returns_
+
+> true if there are any messages.
+
+__public String toString()__
+
+_Returns_
+
+> All messages as one string.
 
 }
 

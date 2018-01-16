@@ -29,7 +29,26 @@
       This is the official API for reading and writing JSON values.      
     </p>
     <p>
-      <strong>public static JSONValue read(InputStream jsonIn, JSONErrorHandler errorHandler) throws IOException</strong>      
+      <strong>public static void read(InputStream jsonIn, APSHandler&lt;APSResult&lt;JSONValue&gt;&gt; resultHandler)</strong>      
+    </p>
+    <p>
+      Reads any JSON object from the specified <em>InputStream</em>.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>jsonIn</em> - The InputStream to read from.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>resultHandler</em> - The handler to call with result.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static JSONValue read(InputStream jsonIn, JSONErrorHandler errorHandler)</strong>      
     </p>
     <p>
       Reads any JSON object from the specified <em>InputStream</em>.      
@@ -60,9 +79,12 @@
     </p>
     <blockquote>
       <p>
-        <em>IOException</em> - on any IO failures.         
+        <em>APSIOException</em> - on any IO failures.         
       </p>
     </blockquote>
+    <p>
+            
+    </p>
     <p>
       <strong>public static void write(OutputStream jsonOut, JSONValue value) throws APSIOException</strong>      
     </p>
@@ -88,6 +110,30 @@
     <blockquote>
       <p>
         <em>APSIOException</em> - on failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static void write(OutputStream jsonOut, JSONValue value, boolean compact, APSHandler&lt;APSResult&lt;Void&gt;&gt; resultHandler)</strong>      
+    </p>
+    <p>
+      Writes a <em>JSONValue</em> to an <em>OutputStream</em>. This will write compact output by default.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>jsonOut</em> - The OutputStream to write to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>value</em> - The value to write.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>resultHandler</em> - handler for result. only success() or failure() is relevant.         
       </p>
     </blockquote>
     <p>
@@ -1213,6 +1259,57 @@
     <blockquote>
       <p>
         <em>JSONConvertionException</em> - if property does not exist.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>CollectingErrorHandler </strong> implements  JSONErrorHandler    [se.natusoft.osgi.aps.json.tools] {      
+    </p>
+    <p>
+      Utility implementation of JSONErrorHandler.      
+    </p>
+    <p>
+      <strong>public CollectingErrorHandler(boolean printWarnings)</strong>      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>printWarnings</em> - If true warnings will be printed to stderr.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public boolean hasMessages()</strong>      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if there are any messages.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String toString()</strong>      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        All messages as one string.        
       </p>
     </blockquote>
     <p>

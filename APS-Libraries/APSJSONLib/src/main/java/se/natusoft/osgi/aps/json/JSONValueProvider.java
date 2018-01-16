@@ -368,12 +368,12 @@ public abstract class JSONValueProvider implements JSONValue {
         /**
          * The reader to read from.
          */
-        private PushbackReader reader = null;
+        private PushbackReader reader;
 
         /**
          * The error handles for the JSON parsing
          */
-        private JSONErrorHandler errorHandler = null;
+        private JSONErrorHandler errorHandler;
 
         //
         // Constructors
@@ -646,7 +646,7 @@ public abstract class JSONValueProvider implements JSONValue {
         /**
          * The writer to write to.
          */
-        private Writer writer = null;
+        private Writer writer;
 
         //
         // Constructors

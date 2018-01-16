@@ -18,12 +18,23 @@ public interface APSResult<T> {
     Exception failure();
 
     /**
+     * This is called on success with the result.
+     */
+    void onSuccess(APSHandler<APSValue<T>> handler);
+
+    /**
+     * This is called on failure with the cause exception.
+     */
+    void onFailure(APSHandler<Exception> handler);
+
+    /**
      * @return The result if success() returns true, null otherwise.
      */
     APSValue<T> result();
-    
+
     /**
-     * A success result factory method.
+     * A success result factory method. Java have great problems calling this due to not being able to figure out T.
+     * Use successj(...) instead for Java. Groovy handles this one fine.
      *
      * @param value The result value.
      * @param <T> The result type.
@@ -31,7 +42,20 @@ public interface APSResult<T> {
      * @return An APSResult instance holding a success status and the provided value.
      */
     static <T> APSResult<T> success(T value) {
-        return new Provider<T>().success(new APSValue.Provider<>(value));
+        return new Provider<>(new APSValue.Provider<>(value));
+    }
+
+    /**
+     * A success result factory method for Java. The above one works fine for Groovy.
+     *
+     * @param value The result value.
+     * @param <T> The result type.
+     *
+     * @return An APSResult instance holding a success status and the provided value.
+     */
+    static <T> APSResult<T> successj(Object value) {
+        //noinspection unchecked
+        return new Provider<>(new APSValue.Provider<>((T)value));
     }
 
     /**
@@ -43,7 +67,7 @@ public interface APSResult<T> {
      * @return An APSResult instance holding a failure status and the provided Exception.
      */
     static <T> APSResult<T> failure(Exception e) {
-        return new Provider<T>().failure(e);
+        return new Provider<>(e);
     }
 
     /**
@@ -61,9 +85,8 @@ public interface APSResult<T> {
          *
          * @param result The success result value.
          */
-        public APSResult<T> success(APSValue<T> result) {
+        public Provider(APSValue<T> result) {
             this.result = result;
-            return this;
         }
 
         /**
@@ -71,9 +94,8 @@ public interface APSResult<T> {
          *
          * @param exception The Exception that caused the failure.
          */
-        public APSResult<T> failure(Exception exception) {
+        public Provider(Exception exception) {
             this.exception = exception;
-            return this;
         }
 
         /**
@@ -98,6 +120,28 @@ public interface APSResult<T> {
         @Override
         public APSValue<T> result() {
             return this.result;
+        }
+
+        /**
+         * If the result was a success the provided handler will be executed with the result.
+         *
+         * @param handler The handler to execute on success.
+         */
+        public void onSuccess(APSHandler<APSValue<T>> handler) {
+            if (this.result != null) {
+                handler.handle(this.result);
+            }
+        }
+
+        /**
+         * If the result was a failure the provided handler will be executed with the exception.
+         *
+         * @param handler The handler to execute on failure.
+         */
+        public void onFailure(APSHandler<Exception> handler) {
+            if (this.exception != null) {
+                handler.handle(this.exception);
+            }
         }
     }
 }
