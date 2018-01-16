@@ -40,10 +40,10 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.*;
 import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigAdmin;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEditModel;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigValueEditModel;
+import se.natusoft.osgi.aps.api.core.configold.model.admin.APSConfigAdmin;
+import se.natusoft.osgi.aps.api.core.configold.model.admin.APSConfigEditModel;
+import se.natusoft.osgi.aps.api.core.configold.model.admin.APSConfigReference;
+import se.natusoft.osgi.aps.api.core.configold.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.css.CSS;
 import se.natusoft.osgi.aps.tools.models.ID;
 import se.natusoft.osgi.aps.tools.models.IntID;
@@ -53,7 +53,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * This renders a three of config nodes and config node instances that can be selected.
+ * This renders a three of configold nodes and configold node instances that can be selected.
  * It will trigger an event for each selection.
  */
 @SuppressWarnings("UnusedAssignment")
@@ -62,7 +62,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
     // Private Members
     //
 
-    /** The config admin for the config handled by the NodeSelector. */
+    /** The configold admin for the configold handled by the NodeSelector. */
     private APSConfigAdmin configAdmin = null; // TODO: See todo in constructor.
 
     /** An extended model also mapping a data object to each item. */
@@ -91,7 +91,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
 
     //----- GUI Components -----//
 
-    /** The config node tree. */
+    /** The configold node tree. */
     private Tree configNodeTree = null;
 
     /** Listens to item selections. */
@@ -104,7 +104,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
     /**
      * Creates a new NodeSelector.
      *
-     * @param configAdmin The config admin for the config handled by the NodeSelector.
+     * @param configAdmin The configold admin for the configold handled by the NodeSelector.
      */
     public NodeSelector(APSConfigAdmin configAdmin) {
         this.configAdmin = configAdmin; // TODO: This is actually not used anymore!
@@ -146,7 +146,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
     public static interface DataSource {
 
         /**
-         * Returns the reference to the root node of the config model.
+         * Returns the reference to the root node of the configold model.
          */
         APSConfigReference getRootReference();
 
@@ -183,7 +183,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
          * Constructs a new event with the specified source component.
          *
          * @param source the source component of the event.
-         * @param selectedRef The reference to the selected config node.
+         * @param selectedRef The reference to the selected configold node.
          */
         public NodeSelectedEvent(Component source, APSConfigReference selectedRef, boolean indexed) {
             super(source);
@@ -196,7 +196,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
         //
 
         /**
-         * @return The config reference of the selected node.
+         * @return The configold reference of the selected node.
          */
         public APSConfigReference getSelectedReference() {
             return this.selectedRef;
@@ -223,7 +223,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
     public static interface NodeSelectionListener {
 
         /**
-         * Called when a new config node gets selected.
+         * Called when a new configold node gets selected.
          *
          * @param event The event received.
          */
@@ -308,7 +308,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
     }
 
     /**
-     * Recursively builds the model from the config node structure.
+     * Recursively builds the model from the configold node structure.
      *
      * @param hmodel The HierarchicalModel to build.
      * @param parentID The id of the parent or null if root.
@@ -400,9 +400,9 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
     }
 
     /**
-     * Returns the last part of the config id.
+     * Returns the last part of the configold id.
      *
-     * @param configId The full config id.
+     * @param configId The full configold id.
      */
     private String getSimpleConfigId(String configId) {
         int ix = configId.lastIndexOf('.');
@@ -427,7 +427,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
     /**
      * Fires a NodeSelectedEvent.
      *
-     * @param selectedRef The selected config reference.
+     * @param selectedRef The selected configold reference.
      * @param indexed True if this node is indexed.
      */
     private void fireNodeSelectedEvent(APSConfigReference selectedRef, boolean indexed) {
@@ -453,7 +453,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
         /** The tooltip text. */
         private String toolTipText = null;
 
-        /** The reference to the config value represented by this node data. */
+        /** The reference to the configold value represented by this node data. */
         private APSConfigReference configRef = null;
 
         /**
@@ -480,7 +480,7 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
         /**
          * Creates a new NodeData.
          *
-         * @param configRef The config reference of this node.
+         * @param configRef The configold reference of this node.
          * @param indexed If this node is indexed or not.
          */
         public NodeData(APSConfigReference configRef, boolean indexed) {
@@ -510,23 +510,23 @@ public class NodeSelector extends Panel implements ItemDescriptionGenerator {
         }
 
         /**
-         * Returns the reference to the config value represented by this NodeData.
+         * Returns the reference to the configold value represented by this NodeData.
          */
         public APSConfigReference getConfigReference() {
             return this.configRef;
         }
 
         /**
-         * Sets the reference to the config value represented by this NodeData.
+         * Sets the reference to the configold value represented by this NodeData.
          *
-         * @param configRef The config reference to set.
+         * @param configRef The configold reference to set.
          */
         public void setConfigReference(APSConfigReference configRef) {
             this.configRef = configRef;
         }
 
         /**
-         * @return The model representing the config node.
+         * @return The model representing the configold node.
          */
         public APSConfigEditModel getConfigNodeModel() {
             APSConfigEditModel nodeModel = null;

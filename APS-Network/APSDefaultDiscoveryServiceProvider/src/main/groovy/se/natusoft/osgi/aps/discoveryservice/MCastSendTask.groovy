@@ -21,7 +21,7 @@ class MCastSendTask implements Runnable {
     /** The service to use for sending. */
     APSTCPIPService tcpipService
 
-    /** A named config in the APSTCPIPService to use. */
+    /** A named configold in the APSTCPIPService to use. */
     URI mcastConnectionPoint
 
     /** For logging failures. */

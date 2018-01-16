@@ -43,7 +43,7 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 /**
- * Used to provide config for a service instance.
+ * Used to provide configold for a service instance.
  */
 @SuppressWarnings("PackageAccessibility")
 @Bean(value = {

@@ -42,7 +42,7 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigReference;
+import se.natusoft.osgi.aps.api.core.configold.model.admin.APSConfigReference;
 import se.natusoft.osgi.aps.apsconfigadminweb.config.CAWConfig;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.event.ValueChangedEvent;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor.event.ValueChangedListener;
@@ -118,21 +118,21 @@ public class ValueComponentListEditor extends VerticalLayout {
         /**
          * Returns the number of values.
          *
-         * @param valueRef The config reference representing the value edited by this component instance.
+         * @param valueRef The configold reference representing the value edited by this component instance.
          */
         int getSize(APSConfigReference valueRef);
 
         /**
          * Returns the value edited by this component instance.
          *
-         * @param valueRef The config reference representing the value edited by this component instance.
+         * @param valueRef The configold reference representing the value edited by this component instance.
          */
         String getValue(APSConfigReference valueRef);
 
         /**
          * Adds the specified value to the set of values.
          *
-         * @param valueRef The config reference representing the value edited by this component instance.
+         * @param valueRef The configold reference representing the value edited by this component instance.
          * @param value The value to add.
          */
         void addValue(APSConfigReference valueRef, String value);
@@ -140,14 +140,14 @@ public class ValueComponentListEditor extends VerticalLayout {
         /**
          * Removes a value from the set of values.
          *
-         * @param valueRef The config reference representing the value edited by this component instance.
+         * @param valueRef The configold reference representing the value edited by this component instance.
          */
         void removeValue(APSConfigReference valueRef);
 
         /**
          * Updates a value.
          *
-         * @param valueRef The config reference representing the value edited by this component instance.
+         * @param valueRef The configold reference representing the value edited by this component instance.
          * @param value The value to update with.
          */
         void updateValue(APSConfigReference valueRef, String value);
@@ -160,7 +160,7 @@ public class ValueComponentListEditor extends VerticalLayout {
     /**
      * Creates a new ValueListEditor.
      *
-     * @param valueRef The config value reference representing a specific config value.
+     * @param valueRef The configold value reference representing a specific configold value.
      * @param valueComponent The component to edit a list of.
      */
     public ValueComponentListEditor(APSConfigReference valueRef, ValueComponent valueComponent) {

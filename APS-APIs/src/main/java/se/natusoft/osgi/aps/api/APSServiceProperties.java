@@ -1,5 +1,5 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS APIs
@@ -32,7 +32,7 @@
  *     tommy ()
  *         Changes:
  *         2016-02-27: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.api;
 
@@ -41,7 +41,7 @@ import java.util.Properties;
 /**
  * These are "properties" for use in service registrations.
  */
-public interface APSServiceProperties { // This interface is just a container. Put no functionality directly in it!
+public interface APSServiceProperties {
 
     abstract class Security {
 

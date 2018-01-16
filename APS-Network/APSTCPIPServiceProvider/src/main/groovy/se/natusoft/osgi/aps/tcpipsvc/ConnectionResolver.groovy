@@ -40,7 +40,6 @@ package se.natusoft.osgi.aps.tcpipsvc
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.docutations.Issue
 import se.natusoft.docutations.NotNull
 import se.natusoft.osgi.aps.exceptions.APSConfigException
 import se.natusoft.osgi.aps.tcpipsvc.config.NamedDestinationsConfig
@@ -78,9 +77,9 @@ class ConnectionResolver {
      *
      * @param name The name of the configuration to get a ConnectionProvider for.
      * @param direction The required direction of the provider to return.
-     * @param expectedType A config validation. If config entry is not of this type an exception is thrown.
+     * @param expectedType A configold validation. If configold entry is not of this type an exception is thrown.
      *
-     * @throws APSConfigException on missing or miss-matching config.
+     * @throws APSConfigException on missing or miss-matching configold.
      */
     public synchronized ConnectionProvider resolve(@NotNull URI connectionPoint, @NotNull ConnectionProvider.Direction direction)
             throws IOException {
@@ -124,7 +123,7 @@ class ConnectionResolver {
                             securityHandler: udpSecurityHandler
                     )
                 }
-                connectionProvider.start() // <-- Usage of connectionProvider.
+                connectionProvider.start()
                 break
 
             case "multicast":
@@ -142,7 +141,7 @@ class ConnectionResolver {
                             securityHandler: udpSecurityHandler
                     )
                 }
-                connectionProvider.start() // <-- Usage of connectionProvider.
+                connectionProvider.start()
                 break
             case "named":
                 String resolvedURIStr = lookupNamed(connectionPoint.host)

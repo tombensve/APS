@@ -64,6 +64,9 @@ public @interface OSGiServiceProvider {
     OSGiServiceInstance[] instances() default {};
 
     /**
+     * WARNING: If you use a managed configuration instance to provide the instances then you will have a chicken-egg
+     * situation! == Deadlock.
+     *
      * An alternative to providing static information. This class will be instantiated if specified and
      * provideServiceInstancesSetup() will be called to provide implemented service APIs, service
      * properties, and a service instance. In this last, it differs from instanceFactoryClass() since
@@ -72,6 +75,9 @@ public @interface OSGiServiceProvider {
     Class<? extends APSActivatorServiceSetupProvider> serviceSetupProvider() default APSActivatorServiceSetupProvider.class;
 
     /**
+     * WARNING: If you use a managed configuration instance to provide the instances then you will have a chicken-egg
+     * situation! == Deadlock.
+     *
      * This can be used as an alternative and will instantiate the specified factory class which will deliver
      * one set of Properties per instance.
      *
@@ -92,7 +98,7 @@ public @interface OSGiServiceProvider {
      * will continue in parallel and that any failures in startup will be logged, but will
      * not stop the bundle from being started. If this is true it wins over required service
      * dependencies of the service class. Specifying this as true allows you to do things that
-     * cannot be done in a bunde activator start method, like calling a service tracked by
+     * cannot be done in a bundle activator start method, like calling a service tracked by
      * APSServiceTracker, without causing a deadlock.
      */
     boolean threadStart() default false;

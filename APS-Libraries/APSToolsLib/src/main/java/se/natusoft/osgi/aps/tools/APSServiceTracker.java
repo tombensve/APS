@@ -45,105 +45,146 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- *  Provides an alternative service tracker.
- *
- *  This makes services available in three ways.
- *
- *  1. With the _OnServiceAvailable_, _OnServiceLeaving_, _OnActiveServiceAvailable_, _OnActiveServiceLeaving_,
- *  and _WithService_ interfaces. These are all callbacks and implementations must be passed to the
- *  appropriate method to register the callback.
- *
- *  2. With _allocateService()_ and _releaseService()_, which always have to match like open and close.
- *  **Do not** call allocateService() more than once without having called releaseService() in between!
- *
- *  3. with getWrappedService() which will provide a proxied implementation of the service interface that
- *  will use the tracker to get a service instance and forward the call to this service. It handles
- *  services coming and going and waits for the specified timeout if no service is available before
- *  throwing an APSNoServiceAvailableException (which is a runtime exception!). This is the easiest
- *  usage of the tracker and you don't need to handle allocateService() and releaseService() since
- *  that is done automatically for you.
- *
- *  Independent on how many services are tracked there is only one considered active and
- *  it is the active service that gets used in all cases where one/any service provider is needed.
- *  The first tracked service is set to the active service. If the active service goes away and there
- *  are other tracked services the first in the list becomes the new active service. If there
- *  are no other services in the list of tracked services then there will be no active
- *  service either.
- *
- *  All ways of getting a service throws APSNoServiceAvailableException if the service is not available.
- *  Thereby you will never get a null service!
- *
- *  When the tracker is created a timeout can optionally be provided. When this is provided this amount
- *  of time will be waited for a service to become available before APSNoServiceAvailableException is
- *  thrown.
- *
- *  **Please note** that when a timeout is provided and the tracker is used to get a service instance
- *  in the activator the startup for that bundle will hang waiting for the service to become available.
- *  Bundle starts taking too much time is in general a bad thing.
+ * Provides an alternative service tracker.
+ * <p>
+ * This makes services available in three ways.
+ * <p>
+ * 1. With the _OnServiceAvailable_, _OnServiceLeaving_, _OnActiveServiceAvailable_, _OnActiveServiceLeaving_,
+ * and _WithService_ interfaces. These are all callbacks and implementations must be passed to the
+ * appropriate method to register the callback.
+ * <p>
+ * 2. With _allocateService()_ and _releaseService()_, which always have to match like open and close.
+ * **Do not** call allocateService() more than once without having called releaseService() in between!
+ * <p>
+ * 3. with getWrappedService() which will provide a proxied implementation of the service interface that
+ * will use the tracker to get a service instance and forward the call to this service. It handles
+ * services coming and going and waits for the specified timeout if no service is available before
+ * throwing an APSNoServiceAvailableException (which is a runtime exception!). This is the easiest
+ * usage of the tracker and you don't need to handle allocateService() and releaseService() since
+ * that is done automatically for you.
+ * <p>
+ * Independent on how many services are tracked there is only one considered active and
+ * it is the active service that gets used in all cases where one/any service provider is needed.
+ * The first tracked service is set to the active service. If the active service goes away and there
+ * are other tracked services the first in the list becomes the new active service. If there
+ * are no other services in the list of tracked services then there will be no active
+ * service either.
+ * <p>
+ * All ways of getting a service throws APSNoServiceAvailableException if the service is not available.
+ * Thereby you will never get a null service!
+ * <p>
+ * When the tracker is created a timeout can optionally be provided. When this is provided this amount
+ * of time will be waited for a service to become available before APSNoServiceAvailableException is
+ * thrown.
+ * <p>
+ * **Please note** that when a timeout is provided and the tracker is used to get a service instance
+ * in the activator the startup for that bundle will hang waiting for the service to become available.
+ * Bundle starts taking too much time is in general a bad thing.
  */
-public class APSServiceTracker<Service>  implements ServiceListener{
+@SuppressWarnings({"unused", "UnusedReturnValue"}) // This is a library class with functionality that might not have been used
+// by any clients yet. That does not mean that those methods should not be
+// there.
+public class APSServiceTracker<Service> implements ServiceListener {
     //
     // Constants
     //
 
-    /** Can be used for String timeout value. */
+    /**
+     * Can be used for String timeout value.
+     */
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static final String SHORT_TIMEOUT = "3 seconds";
 
-    /** Can be used for String timeout value. */
+    /**
+     * Can be used for String timeout value.
+     */
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static final String MEDIUM_TIMEOUT = "30 seconds";
 
-    /** Can be used for String timeout value. */
+    /**
+     * Can be used for String timeout value.
+     */
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static final String LARGE_TIMEOUT = "2 minutes";
 
-    /** Can be used for String timeout value. */
+    /**
+     * Can be used for String timeout value.
+     */
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static final String VERY_LARGE_TIMEOUT = "5 minutes";
 
-    /** Can be used for String timeout value. */
+    /**
+     * Can be used for String timeout value.
+     */
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static final String HUGE_LARGE_TIMEOUT = "10 minutes";
 
-    /** Can be used for String timeout value. */
+    /**
+     * Can be used for String timeout value.
+     */
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static final String NO_TIMEOUT = "forever";
 
+    @SuppressWarnings({"unused", "WeakerAccess"})
     public static final String DEFAULT_TIMEOUT = MEDIUM_TIMEOUT;
 
     //
     // Private Members
     //
 
-    /** The timeout when waiting for service to become available. */
+    /**
+     * The timeout when waiting for service to become available. Default value is fail immediately if service is not available!
+     */
     private int timeout = -1;
 
-    /** If set to true timeout will be ignored if used from a BundleActivator! */
-    private boolean smartTimeout = false; // TODO: Remove this!
-
-    /** The service class to track. */
+    /**
+     * The service class to track.
+     */
     private Class<Service> serviceClass = null;
 
-    /** A copy of the bundle context. */
+    /**
+     * A copy of the bundle context.
+     */
     private BundleContext context = null;
 
-    /** Our tracked services. */
+    /**
+     * Our tracked services.
+     */
     private TrackedServices trackedServices = new TrackedServices();
 
-    /** Our currently active service */
+    /**
+     * Our currently active service
+     */
     private ActiveService active = new ActiveService();
 
-    /** An optional logger. */
+    /**
+     * An optional logger.
+     */
     private APSLogger logger = null;
 
-    /** An optional debug logger. */
+    /**
+     * An optional debug logger.
+     */
     private APSLogger debugLogger = null;
 
-    /** If true the active service instance is fetched and cached until it goes away. */
+    /**
+     * If true the active service instance is fetched and cached until it goes away.
+     */
     private boolean cacheActiveService = false;
 
-    /** Any additional search criteria supplied by the tracker user. */
+    /**
+     * Any additional search criteria supplied by the tracker user.
+     */
     private String additionalSearchCriteria = null;
 
-    /** If this is provided it will be called before APSNoServiceAvailableException is thrown. */
+    /**
+     * If this is provided it will be called before APSNoServiceAvailableException is thrown.
+     */
     private OnTimeout onTimeout = null;
 
-    /** Handle start() being called more than once. */
+    /**
+     * Handle start() being called more than once.
+     */
     private boolean started = false;
 
     //
@@ -153,28 +194,34 @@ public class APSServiceTracker<Service>  implements ServiceListener{
 
     /**
      * Creates a new _APSServiceTracker_ instance.
+     * <p>
+     * __Note:__ This instance will fail immediately if tracked service is not available!
      *
-     * @param context The bundles context.
+     * @param context      The bundles context.
      * @param serviceClass The class of the service to track.
      */
     public APSServiceTracker(BundleContext context, Class<Service> serviceClass) {
+
         this.context = context;
         this.serviceClass = serviceClass;
     }
 
     /**
      * Creates a new _APSServiceTracker_ instance.
+     * <p>
+     * __Note:__ This instance will fail immediately if tracked service is not available!
      *
-     * @param context The bundles context.
+     * @param context      The bundles context.
      * @param serviceClass The class of the service to track.
-     * @param cacheActive If true then the active service instance will be fetched and kept until the service goes away instead
-     *                    of fetching it for every call. This is not a recommended thing to do since I'm not sure of the side effects
-     *                    of sitting on service instances for as long as the client is running or the service goes away. There is a
-     *                    reason for the ServiceReference! But if you insist in ignoring my warning you can set this to true. It does
-     *                    have the side effect of a missed releaseService() not being as bad as when this is false.
+     * @param cacheActive  If true then the active service instance will be fetched and kept until the service goes away instead
+     *                     of fetching it for every call. This is not a recommended thing to do since I'm not sure of the side effects
+     *                     of sitting on service instances for as long as the client is running or the service goes away. There is a
+     *                     reason for the ServiceReference! But if you insist in ignoring my warning you can set this to true. It does
+     *                     have the side effect of a missed releaseService() not being as bad as when this is false.
      */
     @Deprecated
     public APSServiceTracker(BundleContext context, Class<Service> serviceClass, boolean cacheActive) {
+
         this(context, serviceClass);
         this.cacheActiveService = cacheActive;
     }
@@ -182,41 +229,48 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     /**
      * Creates a new _APSServiceTracker_ instance.
      *
-     * @param context The bundles context.
+     * @param context      The bundles context.
      * @param serviceClass The class of the service to track.
-     * @param timeout The time in seconds to wait for a service to become available.
+     * @param timeout      The time in seconds to wait for a service to become available. Setting timeout to 0 (or lower) will have
+     *                     the effect of not waiting at all, and will fail immediately if tracked service is not available. But you
+     *                     should consider using a constructor that does not supply a timeout instead in that case.
      */
     public APSServiceTracker(BundleContext context, Class<Service> serviceClass, int timeout) {
+
         this(context, serviceClass);
-        this.timeout = (int)TimeUnit.SECONDS.toMillis(timeout);
+        this.timeout = (int) TimeUnit.SECONDS.toMillis(timeout);
     }
 
     /**
      * Creates a new _APSServiceTracker_ instance.
      *
-     * @param context The bundles context.
+     * @param context      The bundles context.
      * @param serviceClass The class of the service to track.
-     * @param timeout The time to wait for a service to become available.
-     * @param timeUnit The unit of time in timeout.
+     * @param timeout      The time to wait for a service to become available. Setting timeout to 0 (or lower) will have
+     *                     the effect of not waiting at all, and will fail immediately if tracked service is not available.
+     *                     But you should consider using a constructor that does not supply a timeout instead in that case.
+     * @param timeUnit     The unit of time in timeout.
      */
     public APSServiceTracker(BundleContext context, Class<Service> serviceClass, long timeout, TimeUnit timeUnit) {
-        this(context, serviceClass, (int)timeUnit.toSeconds(timeout));
+
+        this(context, serviceClass, (int) timeUnit.toSeconds(timeout));
     }
 
     /**
      * Creates a new _APSServiceTracker_ instance.
      *
-     * @param context The bundles context.
+     * @param context      The bundles context.
      * @param serviceClass The class of the service to track.
-     * @param timeout The time in seconds to wait for a service to become available.
-     * @param cacheActive If true then the active service instance will be fetched and kept until the service goes away instead
-     *                    of fetching it for every call. This is not a recommended thing to do since I'm not sure of the side effects
-     *                    of sitting on service instances for as long as the client is running or the service goes away. There is a
-     *                    reason for the ServiceReference! But if you insist in ignoring my warning you can set this to true. It does
-     *                    have the side effect of a missed releaseService() not being as bad as when this is false.
+     * @param timeout      The time in seconds to wait for a service to become available.
+     * @param cacheActive  If true then the active service instance will be fetched and kept until the service goes away instead
+     *                     of fetching it for every call. This is not a recommended thing to do since I'm not sure of the side effects
+     *                     of sitting on service instances for as long as the client is running or the service goes away. There is a
+     *                     reason for the ServiceReference! But if you insist in ignoring my warning you can set this to true. It does
+     *                     have the side effect of a missed releaseService() not being as bad as when this is false.
      */
     @Deprecated
     public APSServiceTracker(BundleContext context, Class<Service> serviceClass, int timeout, boolean cacheActive) {
+
         this(context, serviceClass, timeout);
         this.cacheActiveService = cacheActive;
     }
@@ -224,11 +278,15 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     /**
      * Creates a new _APSServiceTracker_ instance.
      *
-     * @param context The bundles context.
+     * @param context      The bundles context.
      * @param serviceClass The class of the service to track.
-     * @param timeout The time to wait for a service to become available. Formats: "5 min[utes]" / "300 sec[onds]" / "300000 mili[seconds]" / "forever".
+     * @param timeout      The time to wait for a service to become available. Formats: "5 min[utes]" / "300 sec[onds]" /
+     *                     "300000 mili[seconds]" / "forever". Setting timeout value to 0 (or lower) will have the effect
+     *                     of not waiting at all, and will fail immediately if tracked service is not available. But you
+     *                     should consider using a constructor that does not supply a timeout instead in that case.
      */
     public APSServiceTracker(BundleContext context, Class<Service> serviceClass, String timeout) {
+
         this(context, serviceClass);
         setTimeout(timeout);
     }
@@ -236,15 +294,18 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     /**
      * Creates a new _APSServiceTracker_ instance.
      *
-     * @param context The bundles context.
-     * @param serviceClass The class of the service to track.
+     * @param context                  The bundles context.
+     * @param serviceClass             The class of the service to track.
      * @param additionalSearchCriteria An LDAP search string not including the service! The final search string will
      *                                 be "(&(objectClass=service)additionalSearchCriteria)". This parameter should
      *                                 thereby always start with an '(' and end with an ')'!
-     * @param timeout The time to wait for a service to become available. Formats: "5 min[utes]" / "300 sec[onds]" /
-     *                "300000 mili[seconds]" / "forever".
+     * @param timeout                  The time to wait for a service to become available. Formats: "5 min[utes]" / "300 sec[onds]" /
+     *                                 "300000 mili[seconds]" / "forever". Setting timeout value to 0 (or lower) will have the effect
+     *                                 of not waiting at all, and will fail immediately if tracked service is not available. But you
+     *                                 should consider using a constructor that does not supply a timeout instead in that case.
      */
     public APSServiceTracker(BundleContext context, Class<Service> serviceClass, String additionalSearchCriteria, String timeout) {
+
         this(context, serviceClass);
         this.additionalSearchCriteria = additionalSearchCriteria;
         setTimeout(timeout);
@@ -253,35 +314,39 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     /**
      * Creates a new _APSServiceTracker_ instance.
      *
-     * @param context The bundles context.
-     * @param serviceClass The class of the service to track.
+     * @param context                  The bundles context.
+     * @param serviceClass             The class of the service to track.
      * @param additionalSearchCriteria An LDAP search string not including the service! The final search string will
      *                                 be "(&(objectClass=service)additionalSearchCriteria)". This parameter should
      *                                 thereby always start with an '(' and end with an ')'!
-     * @param timeout The time to wait for a service to become available.
-     * @param timeUnit The unit of time in timeout.
+     * @param timeout                  The time to wait for a service to become available. Setting timeout to 0 (or lower) will have
+     *                                 the effect of not waiting at all, and will fail immediately if tracked service is not available.
+     *                                 But you should consider using a constructor that does not supply a timeout instead in that case.
+     * @param timeUnit                 The unit of time in timeout.
      */
     public APSServiceTracker(BundleContext context, Class<Service> serviceClass, String additionalSearchCriteria, long timeout,
                              TimeUnit timeUnit) {
+
         this(context, serviceClass);
         this.additionalSearchCriteria = additionalSearchCriteria;
-        this.timeout = (int)timeUnit.toMillis(timeout);
+        this.timeout = (int) timeUnit.toMillis(timeout);
     }
 
     /**
      * Creates a new _APSServiceTracker_ instance.
      *
-     * @param context The bundles context.
+     * @param context      The bundles context.
      * @param serviceClass The class of the service to track.
-     * @param timeout The time to wait for a service to become available. Formats: "5 min[utes]" / "300 sec[onds]" / "300000 mili[seconds]" / "forever".
-     * @param cacheActive If true then the active service instance will be fetched and kept until the service goes away instead
-     *                    of fetching it for every call. This is not a recommended thing to do since I'm not sure of the side effects
-     *                    of sitting on service instances for as long as the client is running or the service goes away. There is a
-     *                    reason for the ServiceReference! But if you insist in ignoring my warning you can set this to true. It does
-     *                    have the side effect of a missed releaseService() not being as bad as when this is false.
+     * @param timeout      The time to wait for a service to become available. Formats: "5 min[utes]" / "300 sec[onds]" / "300000 mili[seconds]" / "forever".
+     * @param cacheActive  If true then the active service instance will be fetched and kept until the service goes away instead
+     *                     of fetching it for every call. This is not a recommended thing to do since I'm not sure of the side effects
+     *                     of sitting on service instances for as long as the client is running or the service goes away. There is a
+     *                     reason for the ServiceReference! But if you insist in ignoring my warning you can set this to true. It does
+     *                     have the side effect of a missed releaseService() not being as bad as when this is false.
      */
     @Deprecated
     public APSServiceTracker(BundleContext context, Class<Service> serviceClass, String timeout, boolean cacheActive) {
+
         this(context, serviceClass, timeout);
         this.cacheActiveService = cacheActive;
     }
@@ -295,8 +360,9 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      *
      * @param timeout The timeout to set.
      */
-    public void setTimeout(int timeout) {
+    public APSServiceTracker setTimeout(int timeout) {
         this.timeout = timeout;
+        return this;
     }
 
     /**
@@ -304,27 +370,31 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      *
      * @param timeout The time to wait for a service to become available. Formats: "5 min[utes]" / "300 sec[onds]" / "300000 mili[seconds]" / "forever".
      */
-    public final void setTimeout(String timeout) {
+    public final APSServiceTracker setTimeout(String timeout) {
+
         String[] toParts = timeout.split(" ");
+
         if (toParts[0].toLowerCase().equals("forever")) {
             this.timeout = 0;
-        }
-        else {
+        } else {
             this.timeout = Integer.valueOf(toParts[0]);
         }
+
         if (toParts.length == 2) {
             String timeSpec = toParts[1].toLowerCase();
+
             if (timeSpec.startsWith("min")) {
                 this.timeout = this.timeout * 1000 * 60;
-            }
-            else if (timeSpec.startsWith("sec")) {
+            } else if (timeSpec.startsWith("sec")) {
                 this.timeout = this.timeout * 1000;
             }
+
             // we treat anything else as "mili" and leave the timeout value as is.
-        }
-        else {
+        } else {
             this.timeout = this.timeout * 1000;
         }
+
+        return this;
     }
 
     /**
@@ -332,49 +402,69 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      *
      * @param onTimeout The timeout handler to set.
      */
-    public void setOnTimeout(OnTimeout onTimeout) {
+    public APSServiceTracker setOnTimeout(OnTimeout onTimeout) {
+
         this.onTimeout = onTimeout;
+        return this;
     }
 
     /**
      * Starts tracking services.
      */
-    public synchronized void start() {
+    public synchronized APSServiceTracker start() {
+
         if (!this.started) {
+
             // A note to yourself: The reason we don't specify versions here is that they are already specified
             // in bundle manifest import.
             String filter = "(" + Constants.OBJECTCLASS + "=" + this.serviceClass.getName() + ")";
+
             if (this.additionalSearchCriteria != null) {
                 filter = "(&" + filter + this.additionalSearchCriteria + ")";
             }
+
             try {
                 ServiceReference[] svcRefs = this.context.getServiceReferences(this.serviceClass.getName(), filter);
+
                 if (svcRefs != null) {
+
                     for (ServiceReference sref : svcRefs) {
+
                         this.trackedServices.addService(sref);
+
                         if (!this.active.hasActiveService()) {
                             this.active.setActive(sref);
                         }
                     }
                 }
             } catch (InvalidSyntaxException e) {
+
                 throw new RuntimeException("Failed to start APSServiceTracker!", e);
             }
+
             try {
+
                 this.context.addServiceListener(this, filter);
+
             } catch (InvalidSyntaxException e) {
+
                 throw new RuntimeException("Failed to start APSServiceTracker!", e);
             }
 
             this.started = true;
         }
+
+        return this;
     }
 
     /**
      * Stops tracking services and clears all tracked services.
      */
-    public void stop() {
+    public APSServiceTracker stop() {
+
         stop(null);
+
+        return this;
     }
 
     /**
@@ -382,13 +472,19 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      *
      * @param context The stop context.
      */
-    public synchronized void stop(BundleContext context) {
-        if (context == null) context = this.context;
+    public synchronized APSServiceTracker stop(BundleContext context) {
+
+        if (context == null) {
+            context = this.context;
+        }
+
         context.removeServiceListener(this);
         this.trackedServices.clear();
         this.active.wakeAllWaiting();
         this.active.closeActiveService();
         this.started = false;
+
+        return this;
     }
 
     /**
@@ -398,34 +494,50 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      */
     @Override
     public void serviceChanged(ServiceEvent event) {
+
         switch (event.getType()) {
+
             case ServiceEvent.REGISTERED:
+
                 this.trackedServices.addService(event.getServiceReference());
+
                 if (!this.active.hasActiveService()) {
                     this.active.setActive(event.getServiceReference());
                 }
                 break;
+
             case ServiceEvent.MODIFIED:
+
                 if (this.trackedServices.hasService(event.getServiceReference())) {
+
                     this.trackedServices.removeService(event.getServiceReference());
+
                     // If it is the active service that is modified we want to force it to be updated.
-                    if (!this.trackedServices.hasServices() || (this.active.hasActiveService() && this.active.getActive().equals(event.getServiceReference()))) {
+                    if (!this.trackedServices.hasServices() || (this.active.hasActiveService() &&
+                            this.active.getActive().equals(event.getServiceReference()))) {
+
                         this.active.setActive(null); // Will trigger "leaving" event!
                     }
                 }
+
                 this.trackedServices.addService(event.getServiceReference());
+
                 if (!this.active.hasActiveService()) {
                     this.active.setActive(event.getServiceReference()); // Will trigger "available" event.
                 }
                 break;
+
+
             case ServiceEvent.MODIFIED_ENDMATCH:
             case ServiceEvent.UNREGISTERING:
+
                 this.trackedServices.removeService(event.getServiceReference());
+
                 if (this.active.hasActiveService() && event.getServiceReference().equals(this.active.getActive())) {
+
                     if (!this.trackedServices.hasServices()) {
                         this.active.setActive(null);
-                    }
-                    else {
+                    } else {
                         this.active.setActive(this.trackedServices.getFirstService());
                     }
                 }
@@ -436,13 +548,16 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * @return The service class of the tracked service.
      */
     public Class<Service> getServiceClass() {
+
         return this.serviceClass;
     }
 
     /**
      * @return The timeout for waiting for a service, 0 for waiting forever, -1 for not waiting at all.
      */
+    @SuppressWarnings("unused")
     public int getServiceAvailabilityTimeout() {
+
         return this.timeout;
     }
 
@@ -450,6 +565,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * @return true if a service available timeout have been set on this tracker.
      */
     private boolean hasServiceAvailabilityTimeout() {
+
         return this.timeout >= 0;
     }
 
@@ -457,6 +573,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * @return true if there is at least one tracked service.
      */
     public boolean hasTrackedService() {
+
         return this.active.hasActiveService();
     }
 
@@ -464,13 +581,16 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * @return The bundle context passed to this class on construction.
      */
     public BundleContext getContext() {
+
         return this.context;
     }
 
     /**
      * @return The number of tracked services.
      */
+    @SuppressWarnings("unused")
     public synchronized int getTrackedServiceCount() {
+
         return this.trackedServices.size();
     }
 
@@ -480,6 +600,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * @param logger The logger to provide.
      */
     public void setLogger(APSLogger logger) {
+
         this.logger = logger;
     }
 
@@ -487,6 +608,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * @return The current logger or null if none.
      */
     public APSLogger getLogger() {
+
         return this.logger;
     }
 
@@ -495,8 +617,12 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      *
      * @param debugLogger The debug logger to set.
      */
-    public void setDebugLogger(APSLogger debugLogger) {
+    @SuppressWarnings("unused")
+    public APSServiceTracker setDebugLogger(APSLogger debugLogger) {
+
         this.debugLogger = debugLogger;
+
+        return this;
     }
 
     /**
@@ -506,8 +632,23 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      *
      * @param onServiceAvailable The callback to set.
      */
-    public void onServiceAvailable(OnServiceAvailable onServiceAvailable) {
+    public APSServiceTracker onServiceAvailable(OnServiceAvailable onServiceAvailable) {
+
         this.trackedServices.setOnServiceAvailable(onServiceAvailable);
+
+        return this;
+    }
+
+    /**
+     * Property API for Groovy use.
+     *
+     * @param onServiceAvailable The on service available callback.
+     */
+    public APSServiceTracker setOnServiceAvailable(OnServiceAvailable onServiceAvailable) {
+
+        this.trackedServices.setOnServiceAvailable(onServiceAvailable);
+
+        return this;
     }
 
     /**
@@ -517,78 +658,129 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      *
      * @param onServiceLeaving The callback to set.
      */
-    public void onServiceLeaving(OnServiceLeaving onServiceLeaving) {
+    public APSServiceTracker onServiceLeaving(OnServiceLeaving onServiceLeaving) {
+
         this.trackedServices.setOnServiceLeaving(onServiceLeaving);
+
+        return this;
+    }
+
+    /**
+     * Property API for Groovy use.
+     *
+     * @param onServiceLeaving The on service leaving callback.
+     */
+    public APSServiceTracker setOnServiceLeaving(OnServiceLeaving onServiceLeaving) {
+
+        this.trackedServices.setOnServiceLeaving(onServiceLeaving);
+
+        return this;
     }
 
     /**
      * Sets the callback to call when there is a new active service available. This is
      * the most failsafe way of getting hold of a service.
-     *
+     * <p>
      * Please note that this will also be called when the active service changes, that
      * is the previous active service has gone away, and a new has replaced it.
-     *
+     * <p>
      * Also note that this callback can be called at any time possibly by another
      * thread! It differs considerably from the withService*() methods who all execute
      * immediately and can thereby also throw exceptions. If this callback throws an
      * exception it will be logged as an error, nothing more!
      *
      * @param onActiveServiceAvailable The callback to set.
-     *
      * @see #onActiveServiceLeaving(se.natusoft.osgi.aps.tools.tracker.OnServiceLeaving)
      */
-    public void onActiveServiceAvailable(OnServiceAvailable onActiveServiceAvailable) {
+    public APSServiceTracker onActiveServiceAvailable(OnServiceAvailable onActiveServiceAvailable) {
+
         this.active.setOnActiveServiceAvailable(onActiveServiceAvailable);
+
+        return this;
+    }
+
+    /**
+     * Property API for Groovy use.
+     *
+     * @param onActiveServiceAvailable The on active service available callback.
+     */
+    public APSServiceTracker setOnActiveServiceAvailable(OnServiceAvailable onActiveServiceAvailable) {
+
+        this.active.setOnActiveServiceAvailable(onActiveServiceAvailable);
+
+        return this;
     }
 
     /**
      * Sets the callback to call when the active service is leaving.
      *
-     * @param onActiveServiceLeaving
-     *
+     * @param onActiveServiceLeaving The callback to call when active service is leaving.
      * @see #onActiveServiceAvailable(se.natusoft.osgi.aps.tools.tracker.OnServiceAvailable)
      */
-    public void onActiveServiceLeaving(OnServiceLeaving onActiveServiceLeaving) {
+    public APSServiceTracker onActiveServiceLeaving(OnServiceLeaving onActiveServiceLeaving) {
+
         this.active.setOnActiveServiceLeaving(onActiveServiceLeaving);
+
+        return this;
+    }
+
+    /**
+     * Property API for Groovy use.
+     *
+     * @param onActiveServiceLeaving The on active service leaving callback.
+     */
+    public APSServiceTracker setOnActiveServiceLeaving(OnServiceLeaving onActiveServiceLeaving) {
+
+        this.active.setOnActiveServiceLeaving(onActiveServiceLeaving);
+
+        return this;
     }
 
     /**
      * Runs the specified callback providing it with a service to use.
-     *
+     * <p>
      * This will wait for a service to become available if a timeout has been provided for
      * the tracker.
-     *
+     * <p>
      * Don't use this in an activator start() method! onActiveServiceAvailable() and onActiveServiceLeaving()
      * are safe in a start() method, this is not!
      *
      * @param withService The callback to run and provide service to.
-     * @param args Optional arguments to pass to the callback.
-     *
-     * @throws se.natusoft.osgi.aps.tools.tracker.WithServiceException Wraps any exception thrown by the callback.
+     * @param args        Optional arguments to pass to the callback.
+     * @throws se.natusoft.osgi.aps.tools.tracker.WithServiceException              Wraps any exception thrown by the callback.
      * @throws se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException thrown if there are no services available.
      */
-    public void withService(WithService withService, Object... args) throws WithServiceException, APSNoServiceAvailableException {
+    public APSServiceTracker withService(WithService<Service> withService, Object... args) throws WithServiceException, APSNoServiceAvailableException {
 
         if (!this.active.hasActiveService()) {
+
             if (hasServiceAvailabilityTimeout()) {
+
                 waitForService(this.timeout);
             }
+
             if (!hasTrackedService()) {
+
                 throw new APSNoServiceAvailableException("Service '" + this.serviceClass.getName() + "' is not available!");
             }
         }
 
-        Object service = this.active.allocateActiveService();
+        Service service = this.active.allocateActiveService();
+
         try {
+            //noinspection unchecked
             withService.withService(service, args);
-            withService.withService(service);
-        }
-        catch (Exception e) {
-            throw new WithServiceException(e.getMessage() , e);
-        }
-        finally {
+
+        } catch (Exception e) {
+
+            throw new WithServiceException(e.getMessage(), e);
+
+        } finally {
+
             this.active.releaseActiveService();
         }
+
+        return this;
     }
 
     /**
@@ -596,60 +788,104 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      * If the service is not available nothing happens and you will not be notified of the failure! This is
      * for "if it works, it works and if it doesn't it doesn't" cases. This is basically a convenience for
      * _withService()_ and ignoring _APSNoServiceAvailableException_.
-     *
+     * <p>
      * Don't use this in an activator _start()_ method! _onActiveServiceAvailable()_ and _onActiveServiceLeaving()_
      * are safe in a _start()_ method, this is not!
      *
      * @param withService The callback to run and provide service to.
-     * @param args Optional arguments to pass to the callback.
-     *
+     * @param args        Optional arguments to pass to the callback.
      * @throws se.natusoft.osgi.aps.tools.tracker.WithServiceException Wraps any exception thrown by the callback.
      */
-    public void withServiceIfAvailable(WithService withService, Object... args) throws WithServiceException {
-        Object service = this.active.allocateActiveService();
+    @SuppressWarnings({"unchecked", "unused"})
+    public APSServiceTracker withServiceIfAvailable(WithService<Service> withService, Object... args) throws WithServiceException {
+
+        Service service = this.active.allocateActiveService();
+
         if (service != null) {
+
             try {
+
                 withService.withService(service, args);
-                withService.withService(service);
-            }
-            catch (Exception e) {
-                throw new WithServiceException(e.getMessage() , e);
-            }
-            finally {
+
+            } catch (Exception e) {
+
+                throw new WithServiceException(e.getMessage(), e);
+
+            } finally {
+
                 this.active.releaseActiveService();
             }
         }
+
+        return this;
     }
 
     /**
      * Runs the specified callback for all **currently** available services.
-     *
+     * <p>
      * Don't use this in an activator _start()_ method! _onActiveServiceAvailable()_ and _onActiveServiceLeaving()_
      * are safe in a _start()_ method, this is not!
      *
      * @param withService The callback to run and provide service to.
-     * @param args Optional arguments to pass to the callback.
-     *
+     * @param args        Optional arguments to pass to the callback.
      * @throws se.natusoft.osgi.aps.tools.tracker.WithServiceException Wraps any exception thrown by the callback.
      */
-    public void withAllAvailableServices(WithService withService, Object... args) throws WithServiceException {
+    @SuppressWarnings("unchecked")
+    public APSServiceTracker withAllAvailableServices(WithService<Service> withService, Object... args) throws WithServiceException {
+
         for (ServiceReference svc : this.trackedServices.getServices()) {
-            Object service = this.context.getService(svc);
+
+            Service service = (Service) this.context.getService(svc);
+
             try {
-                if (args.length > 0) {
-                    withService.withService(service, args);
-                }
-                else {
-                    withService.withService(service);
-                }
-            }
-            catch (Exception e) {
-                throw new WithServiceException("withService() threw exception. Get original exception with getCause()!", e);
-            }
-            finally {
+
+                withService.withService(service, args);
+
+            } catch (Exception e) {
+
+                throw new WithServiceException("withService() threw exception. [" + e.getMessage() + "]", e);
+
+            } finally {
+
                 this.context.ungetService(svc);
             }
         }
+
+        return this;
+    }
+
+    /**
+     * Runs the specified callback for all **currently** available services.
+     * <p>
+     * Don't use this in an activator _start()_ method! _onActiveServiceAvailable()_ and _onActiveServiceLeaving()_
+     * are safe in a _start()_ method, this is not!
+     *
+     * @param withService The callback to run and provide service to.
+     * @param args        Optional arguments to pass to the callback.
+     * @throws se.natusoft.osgi.aps.tools.tracker.WithServiceException Wraps any exception thrown by the callback.
+     */
+    @SuppressWarnings({"unchecked", "unused"})
+    public APSServiceTracker withAllAvailableServicesIncRef(WithServiceIncRef<Service> withService, Object... args) throws WithServiceException {
+
+        for (ServiceReference svc : this.trackedServices.getServices()) {
+
+            Service service = (Service) this.context.getService(svc);
+
+            try {
+
+                withService.withService(service, svc, args);
+
+            } catch (Exception e) {
+
+                throw new WithServiceException("withService() threw exception. Get original exception with getCause()!", e);
+
+            } finally {
+
+                this.context.ungetService(svc);
+            }
+        }
+
+        return this;
     }
 
     /**
@@ -657,51 +893,76 @@ public class APSServiceTracker<Service>  implements ServiceListener{
      *
      * @param timeout The timeout in milliseconds. 0 == forever.
      */
-    public void waitForService(long timeout) {
+    public APSServiceTracker waitForService(long timeout) {
+
         if (this.active.hasActiveService()) {
-            return;
+
+            return this;
         }
 
         this.active.waitForActiveService(timeout);
+
+        return this;
     }
 
     /**
      * Returns the active service possibly waiting for one to become available if a timeout has been specified when
      * tracker were created.
-     *
+     * <p>
      * Please always call _releaseTrackedService()_ when you are done with the service!
      *
      * @return The active service.
-     *
      * @throws se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException if no service is available.
      */
     public Service allocateService() throws APSNoServiceAvailableException {
+
         if (!this.active.hasActiveService()) {
-            if (hasServiceAvailabilityTimeout()) {
-                waitForService(this.timeout);
-            }
+
+            waitForService(this.timeout);
+
             if (!this.active.hasActiveService()) {
+
                 if (this.onTimeout != null) {
+
                     onTimeout.onTimeout();
                 }
+
                 throw new APSNoServiceAvailableException("Service '" + this.serviceClass.getName() + "' is not available!");
             }
         }
+
         return this.active.allocateActiveService();
     }
 
     /**
      * Releases the previously allocated service.
      */
-    public void releaseService() {
+    public APSServiceTracker releaseService() {
+
         this.active.releaseActiveService();
+
+        return this;
     }
 
     /**
      * Returns a service implementation wrapping this tracker and using it to get the service to forward calls to.
      */
     public Service getWrappedService() {
+
         return APSTrackerWrapper.wrap(this);
+    }
+
+    /**
+     * Returns a service implementation wrapping this tracker and using it to get the service to forward calls to.
+     *
+     * @param cacheCallsUntilServiceAvailable If true calls to service will be cached if service is not available and called when service
+     *                                        becomes available. This will of course only work for methods that do not return a value!!
+     *                                        This will however make the calls non blocking! APSServiceTracker.allocateService() which
+     *                                        is default behavior will block until service is available!
+     */
+    public Service getWrappedService(boolean cacheCallsUntilServiceAvailable) {
+
+        return APSTrackerWrapper.wrap(this, cacheCallsUntilServiceAvailable);
     }
 
     //
@@ -716,13 +977,19 @@ public class APSServiceTracker<Service>  implements ServiceListener{
         // Private Members
         //
 
-        /** Our tracked services. */
+        /**
+         * Our tracked services.
+         */
         private List<ServiceReference> serviceRefs = new ArrayList<>();
 
-        /** When set it gets called when a new service becomes available. */
+        /**
+         * When set it gets called when a new service becomes available.
+         */
         private OnServiceAvailable onServiceAvailable = null;
 
-        /** When set it gets called when a service becomes unavailable. */
+        /**
+         * When set it gets called when a service becomes unavailable.
+         */
         private OnServiceLeaving onServiceLeaving = null;
 
         //
@@ -732,7 +999,8 @@ public class APSServiceTracker<Service>  implements ServiceListener{
         /**
          * Creates a new TrackedServices.
          */
-        public TrackedServices() {}
+        TrackedServices() {
+        }
 
         //
         // Methods
@@ -744,12 +1012,17 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          * @param onServiceAvailable The callback to set.
          */
         public synchronized void setOnServiceAvailable(OnServiceAvailable onServiceAvailable) {
+
             this.onServiceAvailable = onServiceAvailable;
+
             for (ServiceReference serviceRef : this.serviceRefs) {
+
                 // Please note that the active service is set after this call, so if this happens to be the
                 // same as the active service we cannot reuse its service instance.
-                OnServiceRunnerThread osrt = new OnServiceRunnerThread(serviceRef, this.onServiceAvailable);
-                osrt.start();
+                OnServiceRunner osrt = new OnServiceRunner(serviceRef, this.onServiceAvailable);
+
+                //APSServiceTracker.this.executorService.submit(osrt);
+                osrt.run();
             }
         }
 
@@ -758,7 +1031,8 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          *
          * @param onServiceLeaving The callback to set.
          */
-        public void setOnServiceLeaving(OnServiceLeaving onServiceLeaving) {
+        void setOnServiceLeaving(OnServiceLeaving onServiceLeaving) {
+
             this.onServiceLeaving = onServiceLeaving;
         }
 
@@ -767,16 +1041,24 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          *
          * @param reference The service to add.
          */
-        public synchronized void addService(ServiceReference reference) {
+        synchronized void addService(ServiceReference reference) {
+
             if (!this.serviceRefs.contains(reference)) {
+
                 this.serviceRefs.add(reference);
+
                 if (this.onServiceAvailable != null) {
+
                     // Please note that the active service is set after this call, so if this happens to be the
                     // same as the active service we cannot reuse its service instance.
-                    OnServiceRunnerThread osrt = new OnServiceRunnerThread(reference, this.onServiceAvailable);
-                    osrt.start();
+                    OnServiceRunner osrt = new OnServiceRunner(reference, this.onServiceAvailable);
+
+                    //APSServiceTracker.this.executorService.submit(osrt);
+                    osrt.run();
                 }
+
                 if (APSServiceTracker.this.debugLogger != null) {
+
                     APSServiceTracker.this.debugLogger.debug("Added service: " + reference.toString());
                 }
             }
@@ -785,14 +1067,17 @@ public class APSServiceTracker<Service>  implements ServiceListener{
         /**
          * @return The first tracked service in the list.
          */
-        public synchronized ServiceReference getFirstService() {
+        synchronized ServiceReference getFirstService() {
+
             return this.serviceRefs.get(0);
         }
 
         /**
          * @return true if there are tracked services available.
          */
-        public synchronized boolean hasServices() {
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+        synchronized boolean hasServices() {
+
             return !this.serviceRefs.isEmpty();
         }
 
@@ -800,9 +1085,8 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          * @return A copy of the tracked services.
          */
         public synchronized List<ServiceReference> getServices() {
-            List<ServiceReference> refs = new ArrayList<>();
-            refs.addAll(this.serviceRefs);
-            return refs;
+
+            return new ArrayList<>(this.serviceRefs);
         }
 
         /**
@@ -811,11 +1095,14 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          * @param ref The service refrerence to check.
          * @return true or false.
          */
-        public synchronized boolean hasService(ServiceReference ref) {
+        synchronized boolean hasService(ServiceReference ref) {
+
             boolean result = false;
 
             for (ServiceReference sref : this.serviceRefs) {
+
                 if (sref.compareTo(ref) == 0) {
+
                     result = true;
                     break;
                 }
@@ -829,21 +1116,33 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          *
          * @param ref The service reference to remove.
          */
-        public synchronized void removeService(ServiceReference ref) {
+        synchronized void removeService(ServiceReference ref) {
+
             ServiceReference found = null;
+
             for (ServiceReference sref : this.serviceRefs) {
+
                 if (sref.compareTo(ref) == 0) {
+
                     found = sref;
                     break;
                 }
             }
+
             if (found != null) {
+
                 this.serviceRefs.remove(found);
+
                 if (this.onServiceLeaving != null) {
-                    OnServiceRunnerThread osrt = new OnServiceRunnerThread(found, this.onServiceLeaving);
-                    osrt.start();
+
+                    OnServiceRunner osrt = new OnServiceRunner(found, this.onServiceLeaving);
+
+//                    APSServiceTracker.this.executorService.submit(osrt);
+                    osrt.run();
                 }
+
                 if (APSServiceTracker.this.debugLogger != null) {
+
                     APSServiceTracker.this.debugLogger.debug("Removed service: " + found.toString());
                 }
             }
@@ -853,9 +1152,11 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          * Clears all tracked services.
          */
         public synchronized void clear() {
-            List<ServiceReference> toRemove = new ArrayList<>();
-            toRemove.addAll(this.serviceRefs);
+
+            List<ServiceReference> toRemove = new ArrayList<>(this.serviceRefs);
+
             for (ServiceReference sref : toRemove) {
+
                 removeService(sref);
             }
         }
@@ -864,6 +1165,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          * @return The number of tracked services.
          */
         public synchronized int size() {
+
             return this.serviceRefs.size();
         }
     }
@@ -876,13 +1178,19 @@ public class APSServiceTracker<Service>  implements ServiceListener{
         // Private Members
         //
 
-        /** The active service reference. */
+        /**
+         * The active service reference.
+         */
         private ServiceReference active = null;
 
-        /** The active service. */
+        /**
+         * The active service.
+         */
         private Service activeService = null;
 
-        /** Lock for synchronizing active. */
+        /**
+         * Lock for synchronizing active.
+         */
         private final Object activeLock = new Object();
 
         /**
@@ -891,7 +1199,9 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          */
         private OnServiceAvailable onActiveServiceAvailable = null;
 
-        /** This gets called when the activly used service by withService*() calls leaves. */
+        /**
+         * This gets called when the activly used service by withService*() calls leaves.
+         */
         private OnServiceLeaving onActiveServiceLeaving = null;
 
         //
@@ -901,7 +1211,8 @@ public class APSServiceTracker<Service>  implements ServiceListener{
         /**
          * Creates a new ActiveService.
          */
-        public ActiveService() {}
+        ActiveService() {
+        }
 
         //
         // Methods
@@ -912,13 +1223,20 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          *
          * @param onActiveServiceAvailable The callback to set.
          */
-        public void setOnActiveServiceAvailable(OnServiceAvailable onActiveServiceAvailable) {
+        void setOnActiveServiceAvailable(OnServiceAvailable onActiveServiceAvailable) {
+
             this.onActiveServiceAvailable = onActiveServiceAvailable;
+
             if (this.active != null) {
-                OnServiceRunnerThread osrt = (APSServiceTracker.this.cacheActiveService && this.activeService != null) ?
-                        new OnServiceRunnerThread(this.activeService, this.onActiveServiceAvailable) :
-                        new OnServiceRunnerThread(this.active, this.onActiveServiceAvailable);
-                osrt.start();
+
+                OnServiceRunner osrt = (APSServiceTracker.this.cacheActiveService && this.activeService != null)
+                        ?
+                        new OnServiceRunner(this.activeService, this.onActiveServiceAvailable)
+                        :
+                        new OnServiceRunner(this.active, this.onActiveServiceAvailable);
+
+//                APSServiceTracker.this.executorService.submit(osrt);
+                osrt.run();
             }
         }
 
@@ -927,7 +1245,7 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          *
          * @param onActiveServiceLeaving callback to set.
          */
-        public void setOnActiveServiceLeaving(OnServiceLeaving onActiveServiceLeaving) {
+        void setOnActiveServiceLeaving(OnServiceLeaving onActiveServiceLeaving) {
             this.onActiveServiceLeaving = onActiveServiceLeaving;
         }
 
@@ -938,48 +1256,71 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          */
         @SuppressWarnings("unchecked")
         public void setActive(ServiceReference active) {
+
             ServiceReference oldActive = this.active;
 
             synchronized (this.activeLock) {
+
                 this.active = active;
+
                 if (this.active != null && APSServiceTracker.this.cacheActiveService) {
-                    this.activeService = (Service)APSServiceTracker.this.context.getService(this.active);
+
+                    this.activeService = (Service) APSServiceTracker.this.context.getService(this.active);
+
                     if (this.activeService == null) {
+
                         throw new RuntimeException("Failed to get service from service reference: " + this.active);
                     }
-                }
-                else {
+                } else {
+
                     this.activeService = null;
                 }
             }
 
             if (oldActive != null) {
+
                 if (APSServiceTracker.this.cacheActiveService) {
+
                     try {
+
                         APSServiceTracker.this.context.ungetService(oldActive); // It might be too late for this, but what the heck.
+
+                    } catch (IllegalArgumentException | IllegalStateException ignore) {
                     }
-                    catch (IllegalArgumentException iae) {}
-                    catch ( IllegalStateException ise) {}
                 }
+
                 if (this.onActiveServiceLeaving != null) {
-                    OnServiceRunnerThread osrt = new OnServiceRunnerThread(oldActive, this.onActiveServiceLeaving);
-                    osrt.start();
+
+                    OnServiceRunner osrt = new OnServiceRunner(oldActive, this.onActiveServiceLeaving);
+
+//                    APSServiceTracker.this.executorService.submit(osrt);
+                    osrt.run();
                 }
+
                 if (APSServiceTracker.this.debugLogger != null) {
+
                     APSServiceTracker.this.debugLogger.debug("Removed active!");
                 }
             }
 
             if (this.active != null) {
+
                 wakeAllWaiting();
 
                 if (this.onActiveServiceAvailable != null) {
-                    OnServiceRunnerThread osrt = (APSServiceTracker.this.cacheActiveService && this.activeService != null) ?
-                            new OnServiceRunnerThread(this.activeService, this.onActiveServiceAvailable) :
-                            new OnServiceRunnerThread(this.active, this.onActiveServiceAvailable);
-                    osrt.start();
+
+                    OnServiceRunner osrt = (APSServiceTracker.this.cacheActiveService && this.activeService != null)
+                            ?
+                            new OnServiceRunner(this.activeService, this.onActiveServiceAvailable)
+                            :
+                            new OnServiceRunner(this.active, this.onActiveServiceAvailable);
+
+//                    APSServiceTracker.this.executorService.submit(osrt);
+                    osrt.run();
                 }
+
                 if (APSServiceTracker.this.debugLogger != null) {
+
                     APSServiceTracker.this.debugLogger.debug("Set active: " + this.active.toString());
                 }
             }
@@ -989,7 +1330,9 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          * @return The active service reference.
          */
         public ServiceReference getActive() {
+
             synchronized (this.activeLock) {
+
                 return this.active;
             }
         }
@@ -1000,15 +1343,22 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          * @return The allocated active service instance.
          */
         @SuppressWarnings("unchecked")
-        public Service allocateActiveService() {
-            return APSServiceTracker.this.cacheActiveService ? this.activeService : (Service)APSServiceTracker.this.context.getService(this.active);
+        Service allocateActiveService() {
+
+            return APSServiceTracker.this.cacheActiveService
+                    ?
+                    this.activeService
+                    :
+                    (Service) APSServiceTracker.this.context.getService(this.active);
         }
 
         /**
          * Releases the active service.
          */
-        public void releaseActiveService() {
+        void releaseActiveService() {
+
             if (!APSServiceTracker.this.cacheActiveService && this.active != null) {
+
                 APSServiceTracker.this.context.ungetService(this.active);
             }
         }
@@ -1016,8 +1366,10 @@ public class APSServiceTracker<Service>  implements ServiceListener{
         /**
          * @return true if there is an active service reference set.
          */
-        public boolean hasActiveService() {
+        boolean hasActiveService() {
+
             synchronized (this.activeLock) {
+
                 return this.active != null;
             }
         }
@@ -1027,25 +1379,16 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          *
          * @param timeout Wait at most this long (in milliseconds). 0 == wait forever.
          */
-        public synchronized void waitForActiveService(long timeout) {
-            boolean doWait = true;
-            if (APSServiceTracker.this.smartTimeout) {
-                StackTraceElement[] trace = new Exception().getStackTrace();
-                int loops = 0;
-                for (StackTraceElement ste : trace) {
-                    if (ste.getMethodName().equals("start") || ste.getMethodName().equals("stop")) {
-                        doWait = false;
-                        break;
-                    }
-                    if (++loops > 5) {
-                        break;
-                    }
-                }
-            }
-            if (doWait) {
+        synchronized void waitForActiveService(long timeout) {
+
+            if (hasServiceAvailabilityTimeout()) {
+
                 try {
+
                     this.wait(timeout);
-                } catch (InterruptedException e) {
+
+                } catch (InterruptedException ignore) {
+
                     // A new service becoming available will trigger a notify which will interrupt this wait.
                 }
             }
@@ -1054,11 +1397,14 @@ public class APSServiceTracker<Service>  implements ServiceListener{
         /**
          * Wakes all waitForActiveService() calls.
          */
-        public synchronized void wakeAllWaiting() {
+        synchronized void wakeAllWaiting() {
+
             try {
+
                 this.notifyAll();
-            }
-            catch (IllegalMonitorStateException imse) {
+
+            } catch (IllegalMonitorStateException ignore) {
+
                 // This is not an error! If there are none waiting this will happen!
             }
         }
@@ -1067,14 +1413,19 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          * Closes the active service.
          */
         /*package*/ void closeActiveService() {
+
             synchronized (this.activeLock) {
+
                 if (this.active != null) {
+
                     try {
+
                         APSServiceTracker.this.context.ungetService(this.active);
+
+                    } catch (IllegalStateException | IllegalArgumentException ignore) {
                     }
-                    catch (IllegalStateException ise) {}
-                    catch (IllegalArgumentException iae) {}
                 }
+
                 this.active = null;
                 this.activeService = null;
             }
@@ -1084,21 +1435,29 @@ public class APSServiceTracker<Service>  implements ServiceListener{
     /**
      * Runs an _OnServiceAvailable_ or an _OnServiceLeaving_ in another thread.
      */
-    private class OnServiceRunnerThread extends Thread {
+    private class OnServiceRunner implements Runnable {
         //
         // Private Members
         //
 
-        /** Callback for when service becomes available. */
-        private OnServiceAvailable onServicsAvailable = null;
+        /**
+         * Callback for when service becomes available.
+         */
+        private OnServiceAvailable onServiceAvailable = null;
 
-        /** Callback for when servcie is leaving. */
+        /**
+         * Callback for when service is leaving.
+         */
         private OnServiceLeaving onServiceLeaving = null;
 
-        /** The servcie reference to act on. */
+        /**
+         * The servcie reference to act on.
+         */
         private ServiceReference reference;
 
-        /** The service to act on. */
+        /**
+         * The service to act on.
+         */
         private Service service;
 
         //
@@ -1108,41 +1467,50 @@ public class APSServiceTracker<Service>  implements ServiceListener{
         /**
          * Creates a new OnServiceRunnerThread.
          *
-         * @param service The service to act on.
+         * @param service            The service to act on.
          * @param onServiceAvailable The callback to run.
          */
-        public OnServiceRunnerThread(Service service, OnServiceAvailable onServiceAvailable) {
+        private OnServiceRunner(Service service, OnServiceAvailable onServiceAvailable) {
+
             if (service == null) {
+
                 throw new IllegalArgumentException("service argument cannot be null!");
             }
+
             this.service = service;
-            this.onServicsAvailable = onServiceAvailable;
+            this.onServiceAvailable = onServiceAvailable;
         }
 
         /**
          * Creates a new OnServiceRunnerThread.
          *
-         * @param reference The service reference to act on.
+         * @param reference          The service reference to act on.
          * @param onServiceAvailable The callback to run.
          */
-        public OnServiceRunnerThread(ServiceReference reference, OnServiceAvailable onServiceAvailable) {
+        private OnServiceRunner(ServiceReference reference, OnServiceAvailable onServiceAvailable) {
+
             if (reference == null) {
+
                 throw new IllegalArgumentException("reference argument cannot be null!");
             }
+
             this.reference = reference;
-            this.onServicsAvailable = onServiceAvailable;
+            this.onServiceAvailable = onServiceAvailable;
         }
 
         /**
          * Creates a new OnServiceRunnerThread.
          *
-         * @param reference The service reference to act on.
+         * @param reference        The service reference to act on.
          * @param onServiceLeaving The callback to run.
          */
-        public OnServiceRunnerThread(ServiceReference reference, OnServiceLeaving onServiceLeaving) {
+        private OnServiceRunner(ServiceReference reference, OnServiceLeaving onServiceLeaving) {
+
             if (reference == null) {
+
                 throw new IllegalArgumentException("reference argument cannot be null!");
             }
+
             this.reference = reference;
             this.onServiceLeaving = onServiceLeaving;
         }
@@ -1156,44 +1524,62 @@ public class APSServiceTracker<Service>  implements ServiceListener{
          */
         @Override
         public void run() {
-            if (this.onServicsAvailable != null) {
-                Service svc = null;
+            if (this.onServiceAvailable != null) {
+
+                Service svc;
+
                 if (this.service != null) {
+
                     svc = this.service;
-                }
-                else {
-                    svc = (Service)APSServiceTracker.this.context.getService(this.reference);
+
+                } else {
+
+                    //noinspection unchecked
+                    svc = (Service) APSServiceTracker.this.context.getService(this.reference);
                 }
 
                 try {
-                    this.onServicsAvailable.onServiceAvailable(svc, this.reference);
+                    //noinspection unchecked
+                    this.onServiceAvailable.onServiceAvailable(svc, this.reference);
+
                 } catch (Exception e) {
+
                     if (APSServiceTracker.this.logger != null) {
-                        APSServiceTracker.this.logger.error("Failed to run an OnServiceAvailable callback for active service!", e);
-                    }
-                    else {
+
+                        APSServiceTracker.this.logger
+                                .error("Failed to run an OnServiceAvailable callback for active service!", e);
+
+                    } else {
+
                         System.out.println("___________________________________________________________________________________");
                         System.out.println("APSServiceTracker: Failed to run an OnServiceAvailable callback for active service!");
                         e.printStackTrace();
                         System.out.println("___________________________________________________________________________________");
                     }
-                }
-                finally {
+
+                } finally {
+
                     if (this.reference != null) {
+
                         APSServiceTracker.this.context.ungetService(this.reference);
                     }
                 }
             }
 
             if (this.onServiceLeaving != null) {
+
                 try {
+
                     this.onServiceLeaving.onServiceLeaving(this.reference, APSServiceTracker.this.serviceClass);
-                }
-                catch (Exception e) {
+
+                } catch (Exception e) {
+
                     if (APSServiceTracker.this.logger != null) {
-                        APSServiceTracker.this.logger.error("Failed to run an OnServiceLeaving callback for active service!", e);
-                    }
-                    else {
+
+                        APSServiceTracker.this.logger
+                                .error("Failed to run an OnServiceLeaving callback for active service!", e);
+                    } else {
+
                         System.out.println("___________________________________________________________________________________");
                         System.out.println("APSServiceTracker: Failed to run an OnServiceLeaving callback for active service!");
                         e.printStackTrace();

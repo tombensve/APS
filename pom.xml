@@ -79,14 +79,24 @@
         <!--
             Dependency versions
         -->
-        <maven.bundle.plugin.version>3.0.1</maven.bundle.plugin.version>
+        <maven.bundle.plugin.version>3.5.0-aps</maven.bundle.plugin.version>
         <vaadin.version>7.1.14</vaadin.version>
         <osgi.version>4.2.0</osgi.version>
-        <mixin.plugin.version>0.1-alpha-34</mixin.plugin.version>
-        <clm.version>2.1.6</clm.version>
+        <mixin.plugin.version>0.1-alpha-39</mixin.plugin.version>
+        <clm.version>2.2.1</clm.version>
         <ftpPlugin.version>1.0.1</ftpPlugin.version>
-        <markdownDoc.version>1.4.2</markdownDoc.version>
-        <groovy.version>2.4.6</groovy.version>
+        <markdownDoc.version>2.1.0</markdownDoc.version>
+        <groovy.version>2.4.13</groovy.version>
+        <vertx.version>3.4.2</vertx.version>
+        <!--
+            NOTE: Vertx 3.3.3 requires netty 4.1.6, fails with 4.1.9!! This is nettys fault since they
+            have changed APIs!! That should never be done when only the third digit of the version number
+            have been bumped!!
+        -->
+        <netty.version>4.1.6.Final</netty.version>
+        <hazelcast.version>3.6.3</hazelcast.version>
+        <jackson.annotations.version>2.7.0</jackson.annotations.version>
+        <jackson.core.version>2.7.4</jackson.core.version>
     </properties>
 
     <!--
@@ -98,7 +108,7 @@
 
     <organization>
         <name>Natusoft AB</name>
-        <url>http://www.natusoft.se/</url>
+        <url>https://github.com/tombensve/APS</url>
     </organization>
     <inceptionYear>2012</inceptionYear>
     <licenses>
@@ -138,6 +148,12 @@
             </dependency>
             <dependency>
                 <groupId>se.natusoft.osgi.aps</groupId>
+                <artifactId>aps-core-lib</artifactId>
+                <version>${project.version}</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>se.natusoft.osgi.aps</groupId>
                 <artifactId>aps-json-lib</artifactId>
                 <version>${project.version}</version>
                 <scope>compile</scope>
@@ -166,6 +182,11 @@
                 <artifactId>javax.persistence</artifactId>
                 <version>2.0.0</version>
                 <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>se.natusoft.annotation</groupId>
+                <artifactId>docutations</artifactId>
+                <version>2.2</version>
             </dependency>
 
             <!--
@@ -212,7 +233,7 @@
             -->
             <groupId>se.natusoft.annotation</groupId>
             <artifactId>docutations</artifactId>
-            <version>1.2</version>
+            <version>2.2</version>
             <scope>provided</scope>
         </dependency>
 
@@ -437,6 +458,40 @@
                 </executions>
             </plugin>
 
+            <!--
+                This plugin was one of the answers for the problem of referring to paths relative to the top pom
+                no mather at what pom you start the build.
+
+                See: https://stackoverflow.com/questions/3084629/finding-the-root-directory-of-a-multi-module-maven-reactor-project
+
+                I I hadn't found this I would have made such a plugin myself! This is a constant problem with maven. Without
+                a feature like this it is very difficult to have common resources used in multiple modules. In this specific
+                case the markdown-doc plugin is run by the top pom, and is inherited by all other modules. It needs an
+                mss file with a full path passed to the plugin. This will differ depending if you build from top or a specific
+                submodule. So either I have to make every single submodule have its own copy of the mss file or a solution like
+                this to fine the one and same mss file no matter if you build from top or only builds a submodule.
+
+                Another option also in the page above suggested defining a property in every pom, like "projectTopDir" or
+                something and then set it to the top path relative to itself. That would probably work. But you have to
+                modify all poms. And if you restructure it can break. This plugin solution seems much easier.
+            -->
+            <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+                <version>0.1</version>
+                <executions>
+                    <execution>
+                        <id>directories</id>
+                        <goals>
+                            <goal>highest-basedir</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <property>main.basedir</property>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
 
     </build>
@@ -527,7 +582,6 @@
 
                                     <pdfGeneratorOptions>
                                         <resultFile>${project.basedir}/docs/${project.artifactId}.pdf</resultFile>
-                                        <pageSize>A4</pageSize>
                                         <title>${project.name}</title>
                                         <subject>User Guide</subject>
                                         <version>${project.version}</version>
@@ -535,6 +589,9 @@
                                         <copyright>Copyright © ${project.inceptionYear} ${project.organization.name}</copyright>
                                         <generateTitlePage>true</generateTitlePage>
                                         <generateTOC>true</generateTOC>
+                                        <!-- The main.basedir is set above in directory-maven-plugin -->
+                                        <!--suppress MavenModelInspection -->
+                                        <mss>${main.basedir}/APS-UserGuide/docs/docs-A4.mss</mss>
                                     </pdfGeneratorOptions>
 
                                 </configuration>
@@ -763,7 +820,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.9</version>
+                        <version>2.10.4</version>
                         <configuration>
                             <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>
                         </configuration>

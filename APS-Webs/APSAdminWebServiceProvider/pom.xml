@@ -64,8 +64,8 @@
 
         <!-- The bundle packages to export. -->
         <osgi.export.package>
-            se.natusoft.osgi.aps.apsadminweb.service.model,
-            se.natusoft.osgi.aps.apsadminweb.service
+            se.natusoft.osgi.aps.apsadminweb.service.model;version="${project.version}",
+            se.natusoft.osgi.aps.apsadminweb.service;version="${project.version}"
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->

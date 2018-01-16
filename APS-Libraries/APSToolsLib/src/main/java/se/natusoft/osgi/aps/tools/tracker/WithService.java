@@ -39,7 +39,7 @@ package se.natusoft.osgi.aps.tools.tracker;
 /**
  * This interface is used in conjunction with _APSServiceTracker_ and provides callback code to run with a service.
  */
-public abstract class WithService<Service> {
+public interface WithService<Service> {
 
     /**
      * Receives a service to do something with.
@@ -50,15 +50,5 @@ public abstract class WithService<Service> {
      * @throws Exception Implementation can throw any exception. How it is handled depends on the APSServiceTracker method this
      *                   gets passed to.
      */
-    public void withService(Service service, Object... args) throws Exception {}
-
-    /**
-     * Receives a service to do something with.
-     *
-     * @param service The received service.
-     *
-     * @throws Exception Implementation can throw any exception. How it is handled depends on the APSServiceTracker method this
-     *                   gets passed to.
-     */
-    public void withService(Service service) throws Exception {}
+    void withService(Service service, Object... args) throws Exception;
 }

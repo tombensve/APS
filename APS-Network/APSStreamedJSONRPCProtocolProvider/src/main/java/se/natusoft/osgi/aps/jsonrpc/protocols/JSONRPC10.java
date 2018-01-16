@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Streamed JSONRPC Protocol Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides JSONRPC implementations for version 1.0 and 2.0.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2012-01-08: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.jsonrpc.protocols;
 
@@ -226,9 +226,9 @@ public class JSONRPC10 implements StreamedRPCProtocol {
     @Override
     public void writeResponse(Object result, RPCRequest request, OutputStream responseStream) throws IOException {
         JSONObject resp = this.jsonService.createJSONObject();
-        resp.addValue("result", this.jsonService.javaToJSON(result));
-        resp.addValue("error", this.jsonService.createJSONNull());
-        resp.addValue("id", (JSONValue)request.getCallId());
+        resp.setValue("result", this.jsonService.javaToJSON(result));
+        resp.setValue("error", this.jsonService.createJSONNull());
+        resp.setValue("id", (JSONValue)request.getCallId());
         this.jsonService.writeJSON(responseStream, resp, !debug);
     }
 
@@ -248,10 +248,10 @@ public class JSONRPC10 implements StreamedRPCProtocol {
         }
 
         JSONObject resp = this.jsonService.createJSONObject();
-        resp.addValue("result", this.jsonService.createJSONNull());
+        resp.setValue("result", this.jsonService.createJSONNull());
         // Since the 1.0 specification does not specify what an error object is we just pass an error message as a string.
-        resp.addValue("error", this.jsonService.createJSONString(error.getMessage()));
-        resp.addValue("id", id);
+        resp.setValue("error", this.jsonService.createJSONString(error.getMessage()));
+        resp.setValue("id", id);
 
         this.jsonService.writeJSON(responseStream, resp, !debug);
 
@@ -330,7 +330,7 @@ public class JSONRPC10 implements StreamedRPCProtocol {
     //
     // Inner Classes
     //
-    
+
     /**
      * This is thrown by the ReqSJONErrorHandler on failure.
      */

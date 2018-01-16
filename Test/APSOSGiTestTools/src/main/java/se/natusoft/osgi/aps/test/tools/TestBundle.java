@@ -2,7 +2,7 @@
  *
  * PROJECT
  *     Name
- *         APSOSGiTestTools
+ *         APS OSGi Test Tools
  *
  *     Code Version
  *         1.0.0
@@ -64,6 +64,7 @@ public class TestBundle implements Bundle {
     private Version version = new Version(1,2,3);
     private String symbolicName;
     private List<String> entryPaths = new LinkedList<>();
+    private ClassLoader bundleClassLoader;
 
     //
     // Constructors
@@ -100,6 +101,10 @@ public class TestBundle implements Bundle {
         Properties properties = new Properties();
         properties.setProperty(Constants.OBJECTCLASS, service.getClass().getInterfaces()[0].getName());
         this.serviceRegistry.registerService(new TestServiceRegistration(service.getClass().getName(), new TestServiceReference(this.bundleContext, properties), this), service, service.getClass().getInterfaces()[0]);
+    }
+
+    public void setBundleClassLoader(ClassLoader bundleClassLoader) {
+        this.bundleClassLoader = bundleClassLoader;
     }
 
     /**
@@ -331,7 +336,14 @@ public class TestBundle implements Bundle {
      */
     @Override
     public URL getResource(String name) {
-        return getClass().getClassLoader().getResource(name);
+        if (name.startsWith("/")) {
+            name = name.substring(1);
+        }
+        ClassLoader loader = getClass().getClassLoader();
+        if (this.bundleClassLoader != null) {
+            loader = this.bundleClassLoader;
+        }
+        return loader.getResource(name);
     }
 
     /**
@@ -375,7 +387,14 @@ public class TestBundle implements Bundle {
      */
     @Override
     public Enumeration getResources(String name) throws IOException {
-        return getClass().getClassLoader().getResources(name);
+        if (name.startsWith("/")) {
+            name = name.substring(1);
+        }
+        ClassLoader loader = getClass().getClassLoader();
+        if (this.bundleClassLoader != null) {
+            loader = this.bundleClassLoader;
+        }
+        return loader.getResources(name);
     }
 
     /**

@@ -1,42 +1,42 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS JSON Library
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides a JSON parser and creator. Please note that this bundle has no dependencies to any
  *         other APS bundle! It can be used as is without APS in any Java application and OSGi container.
  *         The reason for this is that I do use it elsewhere and don't want to keep 2 different copies of
  *         the code. OSGi wise this is a library. All packages are exported and no activator nor services
  *         are provided.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2012-01-06: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.json.tools;
 
@@ -52,6 +52,7 @@ import java.util.List;
  * This wraps a Java Bean instance allowing it to be populated with data using _setProperty(String, Object)_ methods
  * handling all reflection calls.
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class BeanInstance {
     //
     // Private Members
@@ -140,22 +141,25 @@ public class BeanInstance {
             setter.invoke(this.modelInstance, setValue);
         }
         catch (Exception e) {
-            throw new JSONConvertionException("Failed to set property '" + property + "[" + propertyType.getSimpleName() + "]' with object '" + value + "[" + value.getClass().getSimpleName() + "]' in model '" + this.modelInstance.getClass().getName() + "! Cause: " + e.getMessage(), e);
+            String propTypeName = propertyType != null ? propertyType.getSimpleName() : "?";
+            throw new JSONConvertionException("Failed to set property '" + property + "[" + propTypeName + "]' with object '" +
+                    value + "[" + value.getClass().getSimpleName() + "]' in model '" + this.modelInstance.getClass().getName() +
+                    "! Cause: " + e.getMessage(), e);
         }
     }
 
     /**
      * Returns the value of the specified property.
-     * 
+     *
      * @param property The property to return value of.
-     *                 
+     *
      * @return The property value.
-     * 
+     *
      * @throws JSONConvertionException on failure (probably bad property name!).
      */
     public Object getProperty(String property) throws JSONConvertionException {
         try {
-            String methodName = null;
+            String methodName;
             Class propertyType = getPropertyType(property);
             if (Boolean.class.isAssignableFrom(propertyType) || boolean.class.isAssignableFrom(propertyType)) {
                 methodName = "is";
@@ -165,14 +169,14 @@ public class BeanInstance {
             }
             methodName += property.substring(0,1).toUpperCase() + property.substring(1);
             Method getter = this.modelInstance.getClass().getMethod(methodName);
-            
+
             return getter.invoke(this.modelInstance);
         }
         catch (Exception e) {
             throw new JSONConvertionException("Failed to get property '" + property + "' due to '" + e.getMessage() + "'!", e);
         }
     }
-    
+
     /**
      * Converts a property value to the correct type for the property.
      *
@@ -208,7 +212,7 @@ public class BeanInstance {
                 setValue = Boolean.valueOf(strValue);
             }
             else if (char.class.isAssignableFrom(propType) || Character.class.isAssignableFrom(propType)) {
-                setValue = Character.valueOf(((String)strValue).charAt(0));
+                setValue = strValue.charAt(0);
             }
             else if (Date.class.isAssignableFrom(propType)) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -286,7 +290,7 @@ public class BeanInstance {
 
         return setValue;
     }
-    
+
     /**
      * Returns the type of the specified property.
      *

@@ -4,6 +4,7 @@ import org.junit.Test;
 import se.natusoft.osgi.aps.api.misc.json.model.JSONObject;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools;
+import se.natusoft.osgi.aps.tools.APSActivator;
 import se.natusoft.osgi.aps.tools.APSServiceTracker;
 
 import java.io.Serializable;
@@ -19,7 +20,7 @@ public class JSONMapTest extends OSGIServiceTestTools {
     @Test
     public void mapTest() throws Throwable {
 
-        deploy("json-service-bundle").with(new APSJSONServiceActivator()).from("APS-Misc/APSJSONServiceProvider/target/classes");
+        deploy("json-service-bundle").with(new APSActivator()).from("APS-Misc/APSJSONServiceProvider/target/classes");
 
         try {
             with_new_bundle("map-test-bundle", bundleContext -> {
@@ -35,7 +36,7 @@ public class JSONMapTest extends OSGIServiceTestTools {
                 props.setProperty("desc", "For testing Map and properties to JSONObject.");
                 props.setProperty("qaz", "wsx");
 
-                Map<String, Serializable> inMap = new HashMap<>();
+                Map<String, Object> inMap = new HashMap<>();
                 inMap.put("action", "Test");
                 inMap.put("data", props);
 
@@ -48,7 +49,7 @@ public class JSONMapTest extends OSGIServiceTestTools {
                 assertEquals("For testing Map and properties to JSONObject.", propsObject.getValue("desc").toString());
                 assertEquals("wsx", propsObject.getValue("qaz").toString());
 
-                jsonSvc.writeJSON(System.out, jsonObject);
+                jsonSvc.writeJSON(System.out, jsonObject, (res) -> { if (!res.success()) throw new RuntimeException("failed"); });
                 System.out.println();
 
                 Map<String, Object> asMap = jsonObject.toMap();

@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
@@ -36,25 +36,22 @@
  */
 package se.natusoft.osgi.aps.api.misc.json.model;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * This class is based on the structure defined on http://www.json.org/.
- *
+ * <p>
  * It represents the "object" diagram on the above mentioned web page:
- *
- *                  ________________________________________
- *                 /                                        \
- *     |___ ({) __/_____ (string) ____ (:) ____ (value) _____\___ (}) ____|
- *     |           /                                        \             |
- *                 \__________________ (,) _________________/
- *
- *
- * @see JSONValue
+ * <p>
+ * ________________________________________
+ * /                                        \
+ * |___ ({) __/_____ (string) ____ (:) ____ (value) _____\___ (}) ____|
+ * |           /                                        \             |
+ * \__________________ (,) _________________/
  *
  * @author Tommy Svensson
+ * @see JSONValue
  */
 public interface JSONObject extends JSONValue {
     /**
@@ -79,49 +76,49 @@ public interface JSONObject extends JSONValue {
     /**
      * Adds a value to this JSONObject instance.
      *
-     * @param name The name of the value.
+     * @param name  The name of the value.
      * @param value The value.
      */
-    void addValue(JSONString name, JSONValue value);
+    void setValue(JSONString name, JSONValue value);
 
     /**
      * Adds a value to this JSONObject instance.
      *
-     * @param name The name of the value.
+     * @param name  The name of the value.
      * @param value The value.
      */
-    void addValue(String name, JSONValue value);
+    void setValue(String name, JSONValue value);
 
     /**
      * Adds a string value.
      *
-     * @param name The name of the value.
+     * @param name  The name of the value.
      * @param value The value.
      */
-    void addValue(String name, String value);
+    void setValue(String name, String value);
 
     /**
      * Adds a numeric value.
      *
-     * @param name The name of the value.
+     * @param name  The name of the value.
      * @param value The value.
      */
-    void addValue(String name, Number value);
+    void setValue(String name, Number value);
 
     /**
      * Adds a boolean vlaue.
      *
-     * @param name The name of the value.
+     * @param name  The name of the value.
      * @param value The value.
      */
-    void addValue(String name, boolean value);
+    void setValue(String name, boolean value);
 
     /**
      * populates this JSONObject from the specified Map.
      *
      * @param map The Map to import.
      */
-    void fromMap(Map<String, Serializable> map);
+    void fromMap(Map<String, Object> map);
 
     /**
      * Returns the JSONObject as a Map.

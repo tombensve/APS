@@ -43,6 +43,11 @@ public class APSResourceNotFoundException extends APSIOException {
 
     /**
      * Creates a new _APSResourceNotFoundException_.
+     */
+    public APSResourceNotFoundException() {}
+
+    /**
+     * Creates a new _APSResourceNotFoundException_.
      *
      * @param resource The name of the unavailable resource.
      */
@@ -79,5 +84,14 @@ public class APSResourceNotFoundException extends APSIOException {
      */
     public APSResourceNotFoundException(String resource, String message, Throwable cause) {
         super("Resource '" + resource + "' was not found! [" + message + "]", cause);
+    }
+
+    /**
+     * Sets the resource that was not found.
+     *
+     * @param resource The resource to set.
+     */
+    public void setResource(String resource) {
+        appendMessage("Resource '" + resource + "' was not found!");
     }
 }

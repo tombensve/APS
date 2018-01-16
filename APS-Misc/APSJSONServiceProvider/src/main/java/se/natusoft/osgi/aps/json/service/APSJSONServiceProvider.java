@@ -37,27 +37,68 @@
  */
 package se.natusoft.osgi.aps.json.service;
 
+import org.osgi.framework.Constants;
+import se.natusoft.docutations.NotNull;
+import se.natusoft.docutations.Nullable;
+import se.natusoft.osgi.aps.api.misc.json.JSONEOFException;
 import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
 import se.natusoft.osgi.aps.api.misc.json.model.*;
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONExtendedService;
-import se.natusoft.osgi.aps.json.JSON;
-import se.natusoft.osgi.aps.json.JSONEOFException;
-import se.natusoft.osgi.aps.json.model.*;
+import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService;
+import se.natusoft.osgi.aps.api.reactive.APSHandler;
+import se.natusoft.osgi.aps.api.reactive.APSResult;
+import se.natusoft.osgi.aps.api.reactive.APSValue;
+import se.natusoft.osgi.aps.constants.APS;
+import se.natusoft.osgi.aps.exceptions.APSIOException;
+import se.natusoft.osgi.aps.json.*;
+import se.natusoft.osgi.aps.json.tools.JSONMapConv;
 import se.natusoft.osgi.aps.json.tools.JSONToJava;
 import se.natusoft.osgi.aps.json.tools.JavaToJSON;
+import se.natusoft.osgi.aps.tools.APSLogger;
+import se.natusoft.osgi.aps.tools.annotation.activator.Managed;
+import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty;
+import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceInstance;
+import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 /**
- * Provides an implementation of JSONExtendedService.
+ * Provides an implementation of APSJSONService & APSJSONExtendedService.
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "unused"}) // This class is instantiated and manged by APSActivator.
+@OSGiServiceProvider(
+        instances = {
+                @OSGiServiceInstance(
+                        serviceAPIs = APSJSONService.class,
+                        properties = {
+                                @OSGiProperty(name = Constants.SERVICE_PID, value = "APSJSONService"),
+                                @OSGiProperty(name = APS.Service.Provider, value = "aps-json-service-provider"),
+                                @OSGiProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Misc),
+                                @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.JSON)
+                        }
+                ),
+                @OSGiServiceInstance(
+                        serviceAPIs = APSJSONExtendedService.class,
+                        properties = {
+                                @OSGiProperty(name = Constants.SERVICE_PID, value = "APSJSONExtendedService"),
+                                @OSGiProperty(name = APS.Service.Provider, value = "aps-json-service-provider"),
+                                @OSGiProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Misc),
+                                @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.JSON)
+                        }
+                )
+        }
+)
 public class APSJSONServiceProvider implements APSJSONExtendedService {
     //
     // Private Members
     //
+
+    @Managed(loggingFor = "aps-json-service-provider")
+    private APSLogger logger = null; // IDEA complains 'field logger is never assigned' if not set to null!
+                                     // This is not true since this field gets injected. In this specific
+                                     // case however IDEA does not let me ignore the warning!
 
     //
     // Constructors
@@ -66,7 +107,8 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
     /**
      * Creates a new JSONService instance.
      */
-    public APSJSONServiceProvider() {}
+    public APSJSONServiceProvider() {
+    }
 
     //
     // JSONService Implementation
@@ -77,27 +119,25 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      */
     @Override
     public JSONObject createJSONObject() {
-        return new JSONObjectModel();
+        return new JSONObjectProvider();
     }
 
     /**
      * @param value The value of the created JSONString.
-     *
      * @return a JSONString.
      */
     @Override
     public JSONString createJSONString(String value) {
-        return new JSONStringModel(value);
+        return new JSONStringProvider(value);
     }
 
     /**
      * @param value The numeric value of the created JSONNumber.
-     *
      * @return a JSONNumber
      */
     @Override
     public JSONNumber createJSONNumber(Number value) {
-        return new JSONNumberModel(value);
+        return new JSONNumberProvider(value);
     }
 
     /**
@@ -105,17 +145,16 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      */
     @Override
     public JSONNull createJSONNull() {
-        return new JSONNullModel();
+        return new JSONNullProvider();
     }
 
     /**
      * @param value The boolean value of the created JSONBoolean.
-     *
      * @return a JSONBoolean.
      */
     @Override
     public JSONBoolean createJSONBoolean(Boolean value) {
-        return new JSONBooleanModel(value);
+        return new JSONBooleanProvider(value);
     }
 
     /**
@@ -123,78 +162,114 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      */
     @Override
     public JSONArray createJSONArray() {
-        return new JSONArrayModel();
+        return new JSONArrayProvider();
     }
 
     /**
      * Reads JSON from an InputStream producing most probably a JSONObject.
      *
-     * @param in           The stream to read from.
-     * @param errorHandler An optional error handler. This can be null in which case all errors are ignored.
-     *
-     * @return A JSONObject.
-     *
-     * @throws IOException on IO Failure.
+     * @param in            The stream to read from.
+     * @param resultHandler This will be called with the result.
      */
     @Override
-    public JSONValue readJSON(InputStream in, JSONErrorHandler errorHandler) throws IOException {
-        JSONErrorHandlerProxy errorHandlerProxy = new JSONErrorHandlerProxy(errorHandler);
+    public void readJSON(@NotNull InputStream in, @NotNull APSHandler<APSResult<JSONValue>> resultHandler) {
+        JSON.read(in, resultHandler);
+    }
+
+    /**
+     * Reads JSON from an InputStream producing a `Map<String, Object>`.
+     *
+     * @param in            The stream to read from. *Must* be a JSON object! Does not support a sub JSON structure.
+     * @param resultHandler This will be called with the result.
+     */
+    @Override
+    public void readJSONObject(@NotNull InputStream in, @NotNull APSHandler<APSResult<Map<String, Object>>> resultHandler) {
+
+        Map<String, Object> map = null;
         try {
-            se.natusoft.osgi.aps.json.JSONValue jv = JSON.read(in, errorHandlerProxy);
+            map = JSONMapConv.jsonObjectToMap(in, new JSONErrorHandler() {
+                public void warning(String message) {
+                    logger.warn(message);
+                }
 
-            JSONValue value = null;
-
-            if (jv instanceof se.natusoft.osgi.aps.json.JSONArray) {
-                value = new JSONArrayModel((se.natusoft.osgi.aps.json.JSONArray)jv);
-            }
-            else if (jv instanceof se.natusoft.osgi.aps.json.JSONObject) {
-                value = new JSONObjectModel((se.natusoft.osgi.aps.json.JSONObject)jv);
-            }
-            else if (jv instanceof se.natusoft.osgi.aps.json.JSONBoolean) {
-                value = new JSONBooleanModel((se.natusoft.osgi.aps.json.JSONBoolean)jv);
-            }
-            else if (jv instanceof se.natusoft.osgi.aps.json.JSONNull) {
-                value = new JSONNullModel((se.natusoft.osgi.aps.json.JSONNull)jv);
-            }
-            else if (jv instanceof se.natusoft.osgi.aps.json.JSONNumber) {
-                value = new JSONNumberModel((se.natusoft.osgi.aps.json.JSONNumber)jv);
-            }
-            else if (jv instanceof se.natusoft.osgi.aps.json.JSONString) {
-                value = new JSONStringModel((se.natusoft.osgi.aps.json.JSONString)jv);
-            }
-
-            return value;
+                public void fail(String message, Throwable cause) throws RuntimeException {
+                    throw new APSIOException(message, cause);
+                }
+            });
         }
-        catch (JSONEOFException eofe) {
-            throw new se.natusoft.osgi.aps.api.misc.json.JSONEOFException();
+        catch (APSIOException ioe) {
+            resultHandler.handle(APSResult.failure(ioe));
         }
+
+        resultHandler.handle(APSResult.successj(new APSValue.Provider(map)));
     }
 
     /**
      * Writes a JSONValue to an OutputStream in compact format.
      *
-     * @param out       The stream to write to.
-     * @param jsonValue The value to write.
-     *
-     * @throws java.io.IOException on IO failure.
+     * @param out           The stream to write to.
+     * @param jsonValue     The value to write.
+     * @param resultHandler This wil be called with the result. Only success() and failure() are relevant here!
      */
     @Override
-    public void writeJSON(OutputStream out, JSONValue jsonValue) throws IOException {
-        JSON.write(out, ((JSONModel<se.natusoft.osgi.aps.json.JSONValue>)jsonValue).getAggregated());
+    public void writeJSON(@NotNull OutputStream out, @NotNull JSONValue jsonValue, @Nullable APSHandler<APSResult<Void>> resultHandler) {
+
+        JSON.write(out, jsonValue, resultHandler);
     }
 
     /**
      * Writes a JSONValue to an OutputStream.
      *
-     * @param out       The stream to write to.
-     * @param jsonValue The value to write.
-     * @param compact   If true then the output is compact and hard to read, if false then the output is easy to read and larger with indents.
-     *
-     * @throws java.io.IOException on IO failure.
+     * @param out           The stream to write to.
+     * @param jsonValue     The value to write.
+     * @param compact       If true then the output is compact and hard to read, if false then the output is easy to read and larger
+     *                      with indents.
+     * @param resultHandler This wil be called with the result. Only success() and failure() are relevant here!
      */
     @Override
-    public void writeJSON(OutputStream out, JSONValue jsonValue, boolean compact) throws IOException {
-        JSON.write(out, ((JSONModel<se.natusoft.osgi.aps.json.JSONValue>)jsonValue).getAggregated(), compact);
+    public void writeJSON(@NotNull OutputStream out, @NotNull JSONValue jsonValue, boolean compact,
+                          @Nullable APSHandler<APSResult<Void>> resultHandler)
+            throws APSIOException {
+
+        JSON.write(out, jsonValue, compact, resultHandler);
+    }
+
+    /**
+     * Writes a JSON _Map_ to an _OutputStream_.
+     *
+     * @param out     The output stream to write to.
+     * @param jsonMap The Map to write.
+     * @throws APSIOException on IO failure.
+     */
+    @Override
+    public void writeJSONObject(@NotNull OutputStream out, @NotNull Map<String, Object> jsonMap,
+                                @Nullable APSHandler<APSResult<Void>> resultHandler) throws APSIOException {
+
+        writeJSON(out, JSONMapConv.mapToJSONObject(jsonMap), resultHandler);
+    }
+
+    /**
+     * Converts a JSONObject into a `Map<String, Object>`. This supports working with a JSON structure using a standard
+     * java.util.Map. This works well in languages like Groovy.
+     *
+     * @param jsonObject The JSONObject to convert.
+     * @return A Map containing the same structure as the JSONObject.
+     */
+    @Override
+    public Map<String, Object> toMap(JSONObject jsonObject) {
+        return JSONMapConv.jsonObjectToMap(jsonObject);
+    }
+
+    /**
+     * Converts a `Map<String, Object>` into a JSONObject. This supports working with a JSON structure using a standard
+     * java.util.Map. This works well in languages like Groovy.
+     *
+     * @param jsonMap The map to convert. Expects a JSON compatible structure!
+     * @return The converted to JSONObject.
+     */
+    @Override
+    public JSONObject toJSONObject(Map<String, Object> jsonMap) {
+        return JSONMapConv.mapToJSONObject(jsonMap);
     }
 
     //
@@ -208,20 +283,20 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      * @param errorHandler An optional error handler. This can be null in which case all errors are ignored.
      * @param beanType     The type of the JavaBean to create, populate and return.
      * @param <T>          Autoresolved JavaBean type from passed class (beanType).
-     *
      * @return An instance of the specified bean type.
-     *
-     * @throws IOException on IO failure.
+     * @throws APSIOException on IO failure.
      */
     @Override
-    public <T> T readJSONToBean(InputStream in, JSONErrorHandler errorHandler, Class<T> beanType) throws IOException {
+    public <T> T readJSONToBean(InputStream in, JSONErrorHandler errorHandler, Class<T> beanType) throws APSIOException {
         try {
-            JSONErrorHandlerProxy errorHandlerProxy = new JSONErrorHandlerProxy(errorHandler);
-            se.natusoft.osgi.aps.json.JSONObject obj = new se.natusoft.osgi.aps.json.JSONObject(errorHandlerProxy);
+
+            JSONObjectProvider obj = new JSONObjectProvider(errorHandler);
             obj.readJSON(in);
+
             return JSONToJava.convert(obj, beanType);
-        }
-        catch (JSONEOFException eofe) {
+
+        } catch (JSONEOFException eofe) {
+
             throw new se.natusoft.osgi.aps.api.misc.json.JSONEOFException();
         }
     }
@@ -229,13 +304,12 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
     /**
      * Writes JSON from a JavaBean instance.
      *
-     * @param out          The OutputStream to write to.
-     * @param bean         The JavaBean to write.
-     *
-     * @throws IOException on IO failure.
+     * @param out  The OutputStream to write to.
+     * @param bean The JavaBean to write.
+     * @throws APSIOException on IO failure.
      */
     @Override
-    public void writeJSONFromBean(OutputStream out, Object bean) throws IOException {
+    public void writeJSONFromBean(OutputStream out, Object bean) throws APSIOException {
         JavaToJSON.convertObject(bean).writeJSON(out);
     }
 
@@ -244,25 +318,23 @@ public class APSJSONServiceProvider implements APSJSONExtendedService {
      * depending on the JSONValue subclass passed.
      *
      * @param jsonValue The JSONObject whose information should be transferred to the JavaBean.
-     * @param javaType The class of the Java type to return a converted instance of.
-     *
+     * @param javaType  The class of the Java type to return a converted instance of.
      * @return A populated JavaBean instance.
      */
     @Override
     public <T> T jsonToJava(JSONValue jsonValue, Class<T> javaType) {
-        return JSONToJava.convert(((JSONModel<se.natusoft.osgi.aps.json.JSONValue>)jsonValue).getAggregated(), javaType);
+        return JSONToJava.convert(jsonValue, javaType);
     }
 
     /**
      * Takes a Java object and converts it to a JSONValue subclass.
      *
      * @param java The Java value to convert to a JSONValue. It can be one of String, Number, Boolean, null, JavaBean, or an array of those.
-     *
      * @return A JSONValue subclass.
      */
     @Override
     public JSONValue javaToJSON(Object java) {
-        return JSONModel.convertLibValue(JavaToJSON.convertValue(java));
+        return JavaToJSON.convertValue(java);
     }
 
 }

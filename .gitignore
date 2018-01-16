@@ -6,4 +6,13 @@
 .idea/
 target/
 vagrant/deploy
+!vagrant/deploy/git.anchor
+.vertx
 
+.vagrant/
+lics/Apache License-2.0.md
+lics/Apache Software License-2.0.md
+lics/GPL-v2.md
+lics/EPL-1.0.md
+lics/Eclipse Public License-v1.0.md
+vagrant/filesystems/node2/

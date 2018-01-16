@@ -4,7 +4,6 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
 import org.osgi.framework.BundleContext
-import se.natusoft.osgi.aps.api.core.config.model.APSConfigList
 import se.natusoft.osgi.aps.api.net.tcpip.APSTCPIPService
 import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequest
 import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequestListener
@@ -13,11 +12,9 @@ import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
 import se.natusoft.osgi.aps.tcpipsvc.config.ExpertConfig
 import se.natusoft.osgi.aps.tcpipsvc.config.NamedDestinationsConfig
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
-import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.test.tools.TestBundle
 import se.natusoft.osgi.aps.tools.APSActivator
-import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.APSServiceTracker
 
 import static org.junit.Assert.assertTrue

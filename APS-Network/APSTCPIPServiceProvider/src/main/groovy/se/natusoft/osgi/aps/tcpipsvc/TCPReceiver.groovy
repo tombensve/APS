@@ -281,7 +281,7 @@ public class TCPReceiverThread extends Thread {
             maxExceptions = TCPIPConfig.managed.get().expert.exceptionGuardMaxExceptions.int
         }
         catch (NumberFormatException nfe) {
-            logger.error("Bad non numeric values for 'exceptionGuardReactLimit' or 'exceptionGuardMaxExceptions' config! " +
+            logger.error("Bad non numeric values for 'exceptionGuardReactLimit' or 'exceptionGuardMaxExceptions' configold! " +
                     "Using default values.", nfe)
             intensity = 500
             maxExceptions = 10

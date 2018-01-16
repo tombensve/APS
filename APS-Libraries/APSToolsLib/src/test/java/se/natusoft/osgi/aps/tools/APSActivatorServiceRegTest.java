@@ -37,17 +37,15 @@
 package se.natusoft.osgi.aps.tools;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.osgi.framework.ServiceReference;
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools;
 import se.natusoft.osgi.aps.test.tools.TestBundle;
-import se.natusoft.osgi.aps.tools.services.SearchCriteriaProviderTestService;
 import se.natusoft.osgi.aps.tools.services.SimpleService;
 import se.natusoft.osgi.aps.tools.services.TestService;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 @SuppressWarnings("PackageAccessibility")
 public class APSActivatorServiceRegTest {

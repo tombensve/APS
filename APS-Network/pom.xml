@@ -65,7 +65,10 @@
         <module>APSRabbitMQMessageServiceProvider</module>
         <module>APSTCPIPServiceProvider</module>
         <module>APSDefaultDiscoveryServiceProvider</module>
-        <module>APSTCPSimpleMessageServiceProvider</module>
+        <module>APSSSHTunnelProvider</module>
+        <module>APSVertxEventBusMessagingProvider</module>
+        <module>APSVertXProvider</module>
+        <module>APSVertxTCPMessagingProvider</module>
     </modules>
 
 </project>

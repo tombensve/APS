@@ -5,7 +5,7 @@ import groovy.transform.TypeChecked
 import org.osgi.framework.Filter
 import org.osgi.framework.FrameworkUtil
 import se.natusoft.docutations.Implements
-import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue
+import se.natusoft.osgi.aps.api.core.configold.model.APSConfigValue
 import se.natusoft.osgi.aps.api.net.discovery.exception.APSDiscoveryException
 import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService
 import se.natusoft.osgi.aps.constants.APS
@@ -16,15 +16,13 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 import java.util.concurrent.TimeUnit
 
 /**
- * Provides an implementation of APSSimpleDiscoveryService that uses Multicast, TCP, and manual config entries
+ * Provides an implementation of APSSimpleDiscoveryService that uses Multicast, TCP, and manual configold entries
  * to receive and announce services. What is in the end supported depends on how it is configured.
  */
 @OSGiServiceProvider(properties = [
         @OSGiProperty(name = APS.Service.Provider, value = "aps-default-discovery-service-provider"),
         @OSGiProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Network),
-        @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Discovery),
-        @OSGiProperty(name = APS.Uses.Network, value = APS.TRUE),
-        @OSGiProperty(name = APS.Provides.Discovery, value = APS.TRUE),
+        @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Discovery)
 ])
 @CompileStatic
 @TypeChecked
@@ -115,15 +113,15 @@ class APSSimpleDiscoveryServiceProvider implements APSSimpleDiscoveryService {
     @Override
     Set<Properties> getServices(String propertyQuery) {
         Filter sdPropsFilter = FrameworkUtil.createFilter(propertyQuery)
-        Set<Properties> remoteSvcs = this.discoverer.remoteServices.findAll { Properties serviceDescription ->
+        Set<Properties> svcs = this.discoverer.remoteServices.findAll { Properties serviceDescription ->
             sdPropsFilter.match(serviceDescription)
         }
         Set<Properties> localSvcs = this.discoverer.localServices.findAll { Properties serviceDescription ->
             sdPropsFilter.match(serviceDescription)
         }
-        remoteSvcs.addAll(localSvcs)
+        svcs.addAll(localSvcs)
 
-        return remoteSvcs
+        return svcs
     }
 
     /**

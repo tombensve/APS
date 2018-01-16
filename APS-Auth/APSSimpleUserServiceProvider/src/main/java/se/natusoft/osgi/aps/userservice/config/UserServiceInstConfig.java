@@ -36,12 +36,12 @@
  */
 package se.natusoft.osgi.aps.userservice.config;
 
-import se.natusoft.osgi.aps.api.core.config.APSConfig;
-import se.natusoft.osgi.aps.api.core.config.ManagedConfig;
-import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigDescription;
-import se.natusoft.osgi.aps.api.core.config.annotation.APSConfigItemDescription;
-import se.natusoft.osgi.aps.api.core.config.model.APSConfigList;
-import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
+import se.natusoft.osgi.aps.api.core.configold.APSConfig;
+import se.natusoft.osgi.aps.api.core.configold.ManagedConfig;
+import se.natusoft.osgi.aps.api.core.configold.annotation.APSConfigDescription;
+import se.natusoft.osgi.aps.api.core.configold.annotation.APSConfigItemDescription;
+import se.natusoft.osgi.aps.api.core.configold.model.APSConfigList;
+import se.natusoft.osgi.aps.api.core.configold.model.APSConfigValue;
 
 @APSConfigDescription(
         configId = "se.natusoft.osgi.aps.userservice.user-service",

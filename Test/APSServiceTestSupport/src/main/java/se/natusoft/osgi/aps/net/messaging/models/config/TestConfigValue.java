@@ -33,14 +33,14 @@
  */
 package se.natusoft.osgi.aps.net.messaging.models.config;
 
-import se.natusoft.osgi.aps.api.core.config.model.APSConfigValue;
+import se.natusoft.osgi.aps.api.core.configold.model.APSConfigValue;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * An implementation of APSConfigValue to use for faking config in tests.
+ * An implementation of APSConfigValue to use for faking configold in tests.
  */
 @SuppressWarnings("UnusedDeclaration")
 public class TestConfigValue implements APSConfigValue {
@@ -143,7 +143,7 @@ public class TestConfigValue implements APSConfigValue {
     /**
      * Returns the value as a String.
      *
-     * @param configEnvironment The config environment to get config value for.
+     * @param configEnvironment The configold environment to get configold value for.
      */
     @Override
     public String getString(String configEnvironment) {
@@ -153,7 +153,7 @@ public class TestConfigValue implements APSConfigValue {
     /**
      * Returns the value as a boolean.
      *
-     * @param configEnvironment The config environment to get config value for.
+     * @param configEnvironment The configold environment to get configold value for.
      */
     @Override
     public boolean getBoolean(String configEnvironment) {
@@ -163,7 +163,7 @@ public class TestConfigValue implements APSConfigValue {
     /**
      * Returns the value as a double.
      *
-     * @param configEnvironment The config environment to get config value for.
+     * @param configEnvironment The configold environment to get configold value for.
      */
     @Override
     public double getDouble(String configEnvironment) {
@@ -173,7 +173,7 @@ public class TestConfigValue implements APSConfigValue {
     /**
      * Returns the value as a float.
      *
-     * @param configEnvironment The config environment to get config value for.
+     * @param configEnvironment The configold environment to get configold value for.
      */
     @Override
     public float getFloat(String configEnvironment) {
@@ -183,7 +183,7 @@ public class TestConfigValue implements APSConfigValue {
     /**
      * Returns the value as an int.
      *
-     * @param configEnvironment The config environment to get config value for.
+     * @param configEnvironment The configold environment to get configold value for.
      */
     @Override
     public int getInt(String configEnvironment) {
@@ -193,7 +193,7 @@ public class TestConfigValue implements APSConfigValue {
     /**
      * Returns the value as a long.
      *
-     * @param configEnvironment The config environment to get config value for.
+     * @param configEnvironment The configold environment to get configold value for.
      */
     @Override
     public long getLong(String configEnvironment) {
@@ -203,7 +203,7 @@ public class TestConfigValue implements APSConfigValue {
     /**
      * Returns the value is a byte.
      *
-     * @param configEnvironment The config environment to get config value for.
+     * @param configEnvironment The configold environment to get configold value for.
      */
     @Override
     public byte getByte(String configEnvironment) {
@@ -213,7 +213,7 @@ public class TestConfigValue implements APSConfigValue {
     /**
      * Returns the value as a short.
      *
-     * @param configEnvironment The config environment to get config value for.
+     * @param configEnvironment The configold environment to get configold value for.
      */
     @Override
     public short getShort(String configEnvironment) {
@@ -223,7 +223,7 @@ public class TestConfigValue implements APSConfigValue {
     /**
      * Returns the value as a Date.
      *
-     * @param configEnvironment The config environment to get config value for.
+     * @param configEnvironment The configold environment to get configold value for.
      */
     @Override
     public Date getDate(String configEnvironment) {
@@ -321,7 +321,7 @@ public class TestConfigValue implements APSConfigValue {
     /**
      * Returns the value as a String.
      *
-     * @param configEnvironment The config environment to get config value for.
+     * @param configEnvironment The configold environment to get configold value for.
      */
     @Override
     public String toString(String configEnvironment) {
@@ -331,7 +331,7 @@ public class TestConfigValue implements APSConfigValue {
     /**
      * Returns the value as a boolean.
      *
-     * @param configEnvironment The config environment to get config value for.
+     * @param configEnvironment The configold environment to get configold value for.
      */
     @Override
     public boolean toBoolean(String configEnvironment) {
@@ -341,7 +341,7 @@ public class TestConfigValue implements APSConfigValue {
     /**
      * Returns the value as a double.
      *
-     * @param configEnvironment The config environment to get config value for.
+     * @param configEnvironment The configold environment to get configold value for.
      */
     @Override
     public double toDouble(String configEnvironment) {
@@ -351,7 +351,7 @@ public class TestConfigValue implements APSConfigValue {
     /**
      * Returns the value as a float.
      *
-     * @param configEnvironment The config environment to get config value for.
+     * @param configEnvironment The configold environment to get configold value for.
      */
     @Override
     public float toFloat(String configEnvironment) {
@@ -361,7 +361,7 @@ public class TestConfigValue implements APSConfigValue {
     /**
      * Returns the value as an int.
      *
-     * @param configEnvironment The config environment to get config value for.
+     * @param configEnvironment The configold environment to get configold value for.
      */
     @Override
     public int toInt(String configEnvironment) {
@@ -371,7 +371,7 @@ public class TestConfigValue implements APSConfigValue {
     /**
      * Returns the value as a long.
      *
-     * @param configEnvironment The config environment to get config value for.
+     * @param configEnvironment The configold environment to get configold value for.
      */
     @Override
     public long toLong(String configEnvironment) {
@@ -381,7 +381,7 @@ public class TestConfigValue implements APSConfigValue {
     /**
      * Returns the value is a byte.
      *
-     * @param configEnvironment The config environment to get config value for.
+     * @param configEnvironment The configold environment to get configold value for.
      */
     @Override
     public byte toByte(String configEnvironment) {
@@ -391,7 +391,7 @@ public class TestConfigValue implements APSConfigValue {
     /**
      * Returns the value as a short.
      *
-     * @param configEnvironment The config environment to get config value for.
+     * @param configEnvironment The configold environment to get configold value for.
      */
     @Override
     public short toShort(String configEnvironment) {
@@ -401,7 +401,7 @@ public class TestConfigValue implements APSConfigValue {
     /**
      * Returns the value as a Date.
      *
-     * @param configEnvironment The config environment to get config value for.
+     * @param configEnvironment The configold environment to get configold value for.
      */
     @Override
     public Date toDate(String configEnvironment) {

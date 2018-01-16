@@ -99,7 +99,7 @@
         -->
 
         <!-- We register our configuration for auto registration and management. -->
-        <aps.config.classes>se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig</aps.config.classes>
+        <aps.config.classes>se.natusoft.osgi.aps.net.messaging.config.Config</aps.config.classes>
 
         <!--
             Other properties
@@ -120,6 +120,13 @@
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tools-lib</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <scope>provided</scope>
+            <classifier>indy</classifier>
+            <version>${groovy.version}</version>
         </dependency>
 
         <!--

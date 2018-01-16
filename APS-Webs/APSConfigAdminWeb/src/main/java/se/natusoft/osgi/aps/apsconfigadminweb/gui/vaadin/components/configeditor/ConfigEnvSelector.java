@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Configuration Admin Web
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Edits configurations registered with the APSConfigurationService.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy.svensson@biltmore.se)
  *         Changes:
  *         2012-04-15: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.configeditor;
 
@@ -41,8 +41,8 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
-import se.natusoft.osgi.aps.api.core.config.model.admin.APSConfigEnvironment;
-import se.natusoft.osgi.aps.api.core.config.service.APSConfigAdminService.APSConfigEnvAdmin;
+import se.natusoft.osgi.aps.api.core.configold.model.admin.APSConfigEnvironment;
+import se.natusoft.osgi.aps.api.core.configold.service.APSConfigAdminService.APSConfigEnvAdmin;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -58,18 +58,18 @@ public class ConfigEnvSelector extends VerticalLayout {
     /** Holds information about available configuration environments. */
     private APSConfigEnvAdmin configEnvAdmin = null;
 
-    /** The currently selected config environment. */
+    /** The currently selected configold environment. */
     private APSConfigEnvironment selectedConfigEnv = null;
-    
+
     /** The listeners of this component. */
     private List<ConfigEnvChangeListener> listeners = new LinkedList<>();
-    
+
     //----- GUI Components -----//
 
-    /** Selection of config env. */
+    /** Selection of configold env. */
     private ComboBox editForConfigEnvSelect = null;
-    
-    /** Listener for config env selection. */
+
+    /** Listener for configold env selection. */
     private ValueChangeListener configEnvSelectListener = null;
 
     //
@@ -84,7 +84,7 @@ public class ConfigEnvSelector extends VerticalLayout {
         // Private Members
         //
 
-        /** The selected config environment that triggered the event. */
+        /** The selected configold environment that triggered the event. */
         private APSConfigEnvironment selectedConfigEnvironment = null;
 
         //
@@ -95,7 +95,7 @@ public class ConfigEnvSelector extends VerticalLayout {
          * Constructs a new event with the specified source component.
          *
          * @param source the source component of the event
-         * @param selectedConfigEnvironment The selected config environment that triggered the event.
+         * @param selectedConfigEnvironment The selected configold environment that triggered the event.
          */
         public ConfigEnvChangeEvent(Component source, APSConfigEnvironment selectedConfigEnvironment) {
             super(source);
@@ -107,7 +107,7 @@ public class ConfigEnvSelector extends VerticalLayout {
         //
 
         /**
-         * @return The selected config environment that triggered the event.
+         * @return The selected configold environment that triggered the event.
          */
         public APSConfigEnvironment getSelectedConfigEnvironment() {
             return this.selectedConfigEnvironment;
@@ -120,7 +120,7 @@ public class ConfigEnvSelector extends VerticalLayout {
     public static interface ConfigEnvChangeListener {
 
         /**
-         * Receives config environment change events.
+         * Receives configold environment change events.
          *
          * @param event The received event.
          */
@@ -140,7 +140,7 @@ public class ConfigEnvSelector extends VerticalLayout {
         this.editForConfigEnvSelect.setInvalidAllowed(false);
         this.editForConfigEnvSelect.setNullSelectionAllowed(false);
         addComponent(this.editForConfigEnvSelect);
-        
+
         this.configEnvSelectListener = new ValueChangeListener() {
             @Override
             public void valueChange(ValueChangeEvent event) {
@@ -186,14 +186,14 @@ public class ConfigEnvSelector extends VerticalLayout {
     }
 
     /**
-     * @return The currently selected config environment.
+     * @return The currently selected configold environment.
      */
     public APSConfigEnvironment getSelectedConfigEnvironment() {
         return this.selectedConfigEnv;
     }
 
     /**
-     * Adds a listener to this component for change of config environment.
+     * Adds a listener to this component for change of configold environment.
      *
      * @param listener The listener to add.
      */
@@ -206,9 +206,9 @@ public class ConfigEnvSelector extends VerticalLayout {
     //
 
     /**
-     * Handles config env select event.
+     * Handles configold env select event.
      *
-     * @param selectedConfigEnv The newly selected config environment.
+     * @param selectedConfigEnv The newly selected configold environment.
      */
     private void selectEditedConfigEnv(String selectedConfigEnv) {
         for (APSConfigEnvironment configEnv : this.configEnvAdmin.getAvailableConfigEnvironments()) {
@@ -222,9 +222,9 @@ public class ConfigEnvSelector extends VerticalLayout {
     }
 
     /**
-     * Fires a change of selected config environment event.
+     * Fires a change of selected configold environment event.
      *
-     * @param selectedConfigEnv The config environment that was selected.
+     * @param selectedConfigEnv The configold environment that was selected.
      */
     private void fireConfigEnvChangedEvent(APSConfigEnvironment selectedConfigEnv) {
         ConfigEnvChangeEvent event = new ConfigEnvChangeEvent(this, selectedConfigEnv);

@@ -40,12 +40,14 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
+import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException;
 import se.natusoft.osgi.aps.tools.tuples.Tuple3;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -59,6 +61,7 @@ public class APSLogger implements LogService {
     //
 
     /** For property constructor. The value is an OutputStream to log to. */
+    @SuppressWarnings("WeakerAccess")
     public static final String PROP_OUTPUT_STREAM = "out-stream";
 
     /**
@@ -66,6 +69,11 @@ public class APSLogger implements LogService {
      * the log service when started if such is available.
      */
     public static final String PROP_CACHE_AND_DELAY = "cache-and-delay";
+
+    /** For setting then name of the logger. */
+    public static final String PROP_LOGGING_FOR = "loggingFor";
+
+    private static final SimpleDateFormat YYMMDD_HHMMSS = new SimpleDateFormat("yy-MM-dd hh:mm:ss");
 
     //
     // Private Members
@@ -121,6 +129,9 @@ public class APSLogger implements LogService {
         else if (props.containsKey(PROP_CACHE_AND_DELAY)) {
             this.delayedLogEntries = Collections.synchronizedList(new LinkedList<>());
         }
+        else if (props.containsKey(PROP_LOGGING_FOR)) {
+            setLoggingFor((String)props.get(PROP_LOGGING_FOR));
+        }
     }
 
     /**
@@ -166,10 +177,23 @@ public class APSLogger implements LogService {
      *
      * @param context The bundle context.
      */
+    @Deprecated
     public void start(BundleContext context) {
+        connectToLogService(context);
+    }
+
+    /**
+     * This will start tracking a LogService to use for logging. When available logs will be sent to
+     * the LogService instead of the backup stream.
+     *
+     * @param context The bundle context.
+     */
+    public void connectToLogService(BundleContext context) {
+        // This has no timeout and will thus fail immediately if no service is available to avoid longer blocking when logger
+        // is used from bundle activator start() method.
         this.logServiceTracker = new APSServiceTracker<>(context, LogService.class);
         this.logServiceTracker.start();
-        this.logService = this.logServiceTracker.getWrappedService();
+        this.logService = this.logServiceTracker.getWrappedService(); // This is what is used from now on to log to LogService.
         if (this.delayedLogEntries != null) {
             this.delayedLogEntries.forEach(entry -> {
                 try {
@@ -186,7 +210,17 @@ public class APSLogger implements LogService {
      *
      * @param context The bundle context.
      */
+    @Deprecated
     public void stop(BundleContext context) {
+        disconnectFromLogService(context);
+    }
+
+    /**
+     * Stops tracking a LogService to log to.
+     *
+     * @param context The bundle context.
+     */
+    public void disconnectFromLogService(BundleContext context) {
         this.logService = null;
         if (this.logServiceTracker != null) {
             this.logServiceTracker.stop(context);
@@ -231,8 +265,12 @@ public class APSLogger implements LogService {
             try {
                     logToService(this.logService, level, message, cause);
             }
+            catch (APSNoServiceAvailableException nsae) {
+                logToOutStream(level, message, cause);
+            }
             catch (Exception e) {
                 logToOutStream(level, message, cause);
+                logToOutStream(LogService.LOG_ERROR, "APSLogger had an unexpected problem when trying to use LogService!", e);
             }
         }
         else {
@@ -330,7 +368,8 @@ public class APSLogger implements LogService {
      * @param message The log message.
      * @param cause An optional Throwable that is the cause of the log.
      */
-    protected void logToService(LogService logService, int level, String message, Throwable cause) throws Exception {
+    @SuppressWarnings("WeakerAccess")
+    protected void logToService(LogService logService, int level, String message, Throwable cause) {
         if (svcRef != null) {
             if (cause != null) {
                 logService.log(this.svcRef, level, this.loggingFor + message, cause);
@@ -356,6 +395,7 @@ public class APSLogger implements LogService {
      * @param message The log message.
      * @param cause An optional Throwable that is the cause of the log.
      */
+    @SuppressWarnings("WeakerAccess")
     protected void logToOutStream(int level, String message, Throwable cause) {
         if (this.outStream != null) {
             StringBuilder log = new StringBuilder();
@@ -372,13 +412,24 @@ public class APSLogger implements LogService {
                 case LogService.LOG_WARNING:
                     log.append("WARNING: ");
             }
+
+            log.append(YYMMDD_HHMMSS.format(new Date()));
+            log.append(" ");
+
             if (svcRef != null) {
                 Object bundleNameObj = svcRef.getProperty(Constants.BUNDLE_NAME);
                 if (bundleNameObj != null) {
                     log.append("[").append(bundleNameObj).append("] ");
                 }
             }
+
+            log.append("[");
+            log.append(Thread.currentThread().getName());
+            log.append("] ");
+
             log.append(this.loggingFor);
+            log.append(" ");
+
             log.append(message);
             if (cause != null) {
                 log.append('\n');

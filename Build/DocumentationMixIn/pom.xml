@@ -74,10 +74,6 @@
 
     <name>Documentation MixIn</name>
 
-    <properties>
-        <markdownDoc.version>1.4</markdownDoc.version>
-    </properties>
-
     <build>
         <plugins>
             <!--
@@ -113,7 +109,6 @@
 
                             <pdfGeneratorOptions>
                                 <resultFile>${project.basedir}/docs/${project.artifactId}.pdf</resultFile>
-                                <pageSize>A4</pageSize>
                                 <title>${project.name}</title>
                                 <subject>User Guide</subject>
                                 <version>${project.version}</version>
@@ -121,6 +116,7 @@
                                 <copyright>Copyright © ${project.inceptionYear} ${project.organization.name}</copyright>
                                 <generateTitlePage>true</generateTitlePage>
                                 <generateTOC>true</generateTOC>
+                                <mss>${project.basedir}/docs/docs.mss</mss>
                             </pdfGeneratorOptions>
 
                         </configuration>

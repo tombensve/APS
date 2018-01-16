@@ -2,7 +2,7 @@
  *
  * PROJECT
  *     Name
- *         APSOSGiTestTools
+ *         APS OSGi Test Tools
  *
  *     Code Version
  *         1.0.0
@@ -39,20 +39,17 @@ package se.natusoft.osgi.aps.test.tools;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import se.natusoft.osgi.aps.api.core.config.APSConfig;
-import se.natusoft.osgi.aps.api.core.config.ManagedConfig;
 import se.natusoft.osgi.aps.test.tools.internal.ServiceRegistry;
 
 import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This is the entry point to using the OSGi service test tools.
  */
+@SuppressWarnings("WeakerAccess")
 public class OSGIServiceTestTools {
     //
     // Private Members
@@ -103,8 +100,9 @@ public class OSGIServiceTestTools {
      *
      * @param bundleContext The context of the bundle to remove.
      */
+    @SuppressWarnings("unused")
     public void removeBundle(TestBundleContext bundleContext) {
-        removeBundle((TestBundle)bundleContext.getBundle());
+        removeBundle((TestBundle) bundleContext.getBundle());
     }
 
     /**
@@ -119,6 +117,7 @@ public class OSGIServiceTestTools {
      *
      * @param name The name of the bundle to get.
      */
+    @SuppressWarnings("unused")
     public TestBundle getBundleBySymbolicName(String name) {
         return this.bundleByName.get(name);
     }
@@ -128,6 +127,7 @@ public class OSGIServiceTestTools {
      *
      * @param id The id of the bundle to get.
      */
+    @SuppressWarnings("unused")
     public TestBundle getBundleById(long id) {
         return this.bundleById.get(id);
     }
@@ -143,24 +143,35 @@ public class OSGIServiceTestTools {
 
     /**
      * Test deploys a bundle using a BundleActivator.
-     *
+     * <p>
      * Usage:
-     *
-     *     BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from("proj root relative bundle root path.");
-     *     BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from(new File("proj root relative bundle root path."));
-     *     BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from("group", "artifact", "version");
-     *     BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from("bundle content path", ...);
+     * <p>
+     * BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from("proj root relative bundle root path.");
+     * BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from(new File("proj root relative bundle root path."));
+     * BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from("group", "artifact", "version");
+     * BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from("bundle content path", ...);
      *
      * @param name The name of the bundle to create and deploy.
-     *
      * @return An intermediate BundleManager that handles the with() and from() giving you a BundleContext in the end.
-     *
-     * @throws IOException
      */
-    public BundleBuilder deploy(String name) throws IOException {
+    public BundleBuilder deploy(String name) {
         BundleBuilder bm = new BundleBuilder(name);
         this.bundleBuilders.add(bm);
         return bm;
+    }
+
+    /**
+     * Undeploys a bundle.
+     *
+     * @param name The name of the bundle to undeploy.
+     */
+    @SuppressWarnings("unused")
+    public void undeploy(String name) {
+        BundleBuilder bb = this.bundleBuilders.stream().filter(b -> b.getName().equals(name)).findFirst().orElse(null);
+        if (bb != null) {
+            this.bundleBuilders.remove(bb);
+            bb.shutdown();
+        }
     }
 
     /**
@@ -173,10 +184,9 @@ public class OSGIServiceTestTools {
     /**
      * Runs a piece of code as part of a temporary bundle.
      *
-     * @param name The name of the bundle.
+     * @param name       The name of the bundle.
      * @param withBundle The code to run.
-     *
-     * @throws Exception
+     * @throws Throwable Any exception is forwarded.
      */
     public void with_new_bundle(String name, WithBundle withBundle) throws Throwable {
         TestBundle bundle = createBundle(name);
@@ -190,8 +200,7 @@ public class OSGIServiceTestTools {
      * Provides a delay so that concurrent things can finish before checking results.
      *
      * @param milliseconds The number of milliseconds to wait.
-     *
-     * @throws InterruptedException
+     * @throws InterruptedException If interrupted.
      */
     public void delay(int milliseconds) throws InterruptedException {
         Thread.sleep(milliseconds);
@@ -201,18 +210,77 @@ public class OSGIServiceTestTools {
      * Provides a delay so that concurrent things can finish before checking results.
      *
      * @param delay A string. 'long' ==> 10000ms, 'very small' ==> 500ms, anything else ==> 1000ms.
-     *
-     * @throws InterruptedException
+     * @throws InterruptedException if interrupted.
      */
     public void delay(String delay) throws InterruptedException {
         int ms = 1000;
         if (delay.startsWith("long")) {
             ms = 10000;
-        }
-        else if (delay.startsWith("very small")) {
+        } else if (delay.startsWith("very small")) {
             ms = 500;
         }
         delay(ms);
+    }
+
+    /**
+     * Waits for a condition with a timeout using creative synonyms to reserved words ...
+     * <p>
+     * Assuming: static import java.util.concurrent.TimeUnit.*;
+     * <p>
+     * Usage Java (Java 8+: A lambda could possible be used as Callable):
+     * * hold().whilst(new Callable&lt;Boolean&gt;(){...}).maxTime(30L).unit(SECONDS).go();
+     * * hold().until(new Callable&lt;Boolean&gt;(){...}).maxTime(30L).unit(SECONDS).go();
+     * <p>
+     * Usage Groovy:
+     * * hold().whilst { this.something == null } maxTime 30L unit SECONDS go()
+     * * hold().until { this.something != null } macTime 10L unit SECONDS go()
+     */
+    public Wait hold() {
+        return new Wait();
+    }
+
+    public class Wait {
+        private long maxTime = 5;
+        private TimeUnit timeUnit = TimeUnit.SECONDS;
+        private Callable<Boolean> condition;
+
+        public Wait whilst(Callable<Boolean> condition) {
+            this.condition = condition;
+            return this;
+        }
+
+        public Wait until(Callable<Boolean> condition) {
+            this.condition = () -> !condition.call();
+            return this;
+        }
+
+        public Wait maxTime(long time) {
+            this.maxTime = time;
+            return this;
+        }
+
+        public Wait unit(TimeUnit timeUnit) {
+            this.timeUnit = timeUnit;
+            return this;
+        }
+
+        public void go() {
+            try {
+                if (this.condition != null) {
+                    int maxCount = (int) (TimeUnit.MILLISECONDS.convert(this.maxTime, this.timeUnit) / 200);
+                    int count = 0;
+                    while (this.condition.call()) {
+                        synchronized (this) {
+                            wait(200);
+                        }
+                        ++count;
+                        if (count > maxCount) break;
+                    }
+                } else {
+                    Thread.sleep(TimeUnit.MILLISECONDS.convert(this.maxTime, this.timeUnit));
+                }
+            } catch (Exception ignore) {}
+        }
     }
 
     /**
@@ -220,9 +288,10 @@ public class OSGIServiceTestTools {
      */
     public class BundleBuilder {
 
-        private TestBundle bundle = null;
+        private TestBundle bundle;
         private BundleActivator activator = null;
-        private boolean started = false;
+//        private boolean started = false;
+        private String name;
 
         /**
          * Creates the BundleManager instance.
@@ -230,21 +299,28 @@ public class OSGIServiceTestTools {
          * @param name The name of the bundle managed.
          */
         public BundleBuilder(String name) {
+            this.name = name;
             this.bundle = createBundle(name);
+        }
+
+        /**
+         * Returns the name of the Bundle this BundleBuilder represents.
+         */
+        private String getName() {
+            return this.name;
         }
 
         /**
          * Private support method that actually starts the bundle using its BundleActivator.
          *
          * @return itself.
-         * @throws Exception
+         * @throws Exception Any exceptions are forwarded.
          */
         private BundleBuilder start() throws Exception {
             if (this.activator == null) {
-                throw new Exception("Activator has not been provided! Add an 'with new MyActivator()'");
+                throw new IllegalStateException("Activator has not been provided! Add an 'with new MyActivator()'");
             }
             this.activator.start(this.bundle.getBundleContext());
-            this.started = true;
             return this;
         }
 
@@ -252,8 +328,13 @@ public class OSGIServiceTestTools {
             return with_activator(bundleActivator);
         }
 
-        public BundleBuilder with(Callable<APSConfig> config) throws Exception {
-            return with_APSConfig(config);
+//        public BundleBuilder with(Callable<APSConfig> config) throws Exception {
+//            return with_APSConfig(config);
+//        }
+
+        public BundleBuilder with(ClassLoader bundleClassLoader) {
+            this.bundle.setBundleClassLoader(bundleClassLoader);
+            return this;
         }
 
         /**
@@ -268,41 +349,41 @@ public class OSGIServiceTestTools {
             return this;
         }
 
-        /**
-         * Supplies a Callable that creates and returns a subclass of APSConfig. If a static ManagedConfig instance
-         * is found in the returned config object then it is setup.
-         *
-         * @param config A Callable that should setup configuration and return it.
-         * @return itself
-         * @throws Exception
-         */
-        public BundleBuilder with_APSConfig(Callable<APSConfig> config) throws Exception {
-            if (this.started) throw new Exception("Config must be provided earlier in command line!");
-            APSConfig apsConfig = config.call();
-            for (Field field : apsConfig.getClass().getDeclaredFields()) {
-                if (Modifier.isStatic(field.getModifiers())) {
-                    field.setAccessible(true); // This should not be needed!
-                    Object managed = field.get(apsConfig);
-                    if (managed != null && ManagedConfig.class.isAssignableFrom(managed.getClass())) {
-                        ManagedConfig managedConfig = (ManagedConfig)managed;
-                        //noinspection unchecked
-                        managedConfig.serviceProviderAPI.setConfigInstance(apsConfig);
-                        managedConfig.serviceProviderAPI.setManaged();
-                    }
-                }
-            }
-
-            return this;
-        }
+//        /**
+//         * Supplies a Callable that creates and returns a subclass of APSConfig. If a static ManagedConfig instance
+//         * is found in the returned config object then it is setup.
+//         *
+//         * @param config A Callable that should setup configuration and return it.
+//         * @return itself
+//         * @throws Exception
+//         */
+//        public BundleBuilder with_APSConfig(Callable<APSConfig> config) throws Exception {
+//            if (this.started) throw new Exception("Config must be provided earlier in command line!");
+//            APSConfig apsConfig = config.call();
+//            for (Field field : apsConfig.getClass().getDeclaredFields()) {
+//                if (Modifier.isStatic(field.getModifiers())) {
+//                    field.setAccessible(true); // This should not be needed!
+//                    Object managed = field.get(apsConfig);
+//                    if (managed != null && ManagedConfig.class.isAssignableFrom(managed.getClass())) {
+//                        ManagedConfig managedConfig = (ManagedConfig) managed;
+//                        //noinspection unchecked
+//                        managedConfig.serviceProviderAPI.setConfigInstance(apsConfig);
+//                        managedConfig.serviceProviderAPI.setManaged();
+//                    }
+//                }
+//            }
+//
+//            return this;
+//        }
 
         /**
          * Provides bundle content by reading maven artifact.
          *
-         * @param group The artifact group
+         * @param group    The artifact group
          * @param artifact The artifact.
-         * @param version The artifact version
+         * @param version  The artifact version
          * @return itself
-         * @throws Exception
+         * @throws Exception Forwards exceptions
          */
         public BundleBuilder from(String group, String artifact, String version) throws Exception {
             this.bundle.loadEntryPathsFromMaven(group, artifact, version);
@@ -314,7 +395,7 @@ public class OSGIServiceTestTools {
          *
          * @param dirScan The root diretory to scan.
          * @return itself
-         * @throws Exception
+         * @throws Exception Forwards exceptions
          */
         public BundleBuilder from(String dirScan) throws Exception {
             this.bundle.loadEntryPathsFromDirScan(dirScan);
@@ -326,7 +407,7 @@ public class OSGIServiceTestTools {
          *
          * @param dirScan The root to start scanning at.
          * @return itself
-         * @throws Exception
+         * @throws Exception Forwards exceptions
          */
         public BundleBuilder from(File dirScan) throws Exception {
             this.bundle.loadEntryPathsFromDirScan(dirScan);
@@ -338,7 +419,7 @@ public class OSGIServiceTestTools {
          *
          * @param paths The paths to provide.
          * @return itself
-         * @throws Exception
+         * @throws Exception Forwards exceptions
          */
         public BundleBuilder using(String[] paths) throws Exception {
             this.bundle.addEntryPaths(paths);
@@ -348,6 +429,7 @@ public class OSGIServiceTestTools {
         /**
          * Terminates this builder and returns a BundleContext representing the result.
          */
+        @SuppressWarnings("unused")
         public BundleContext as_context() {
             return this.bundle.getBundleContext();
         }
@@ -355,6 +437,7 @@ public class OSGIServiceTestTools {
         /**
          * Terminates this builder and returns a Bundle representing the result.
          */
+        @SuppressWarnings("unused")
         public Bundle as_bundle() {
             return this.bundle;
         }
@@ -365,12 +448,10 @@ public class OSGIServiceTestTools {
         public void shutdown() {
             try {
                 this.activator.stop(this.bundle.getBundleContext());
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace(System.err);
             }
             removeBundle(this.bundle);
-            this.started = false;
         }
     }
 }

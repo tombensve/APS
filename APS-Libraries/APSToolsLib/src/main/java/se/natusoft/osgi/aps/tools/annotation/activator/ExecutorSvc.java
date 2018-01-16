@@ -70,4 +70,7 @@ public @interface ExecutorSvc {
 
     /** If true the created ExecutorService will be wrapped with a delegate that disallows configuration. */
     boolean unConfigurable() default false;
+
+    /** Provides base name for threads. */
+    String name() default "-";
 }

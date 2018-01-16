@@ -29,7 +29,26 @@
       This is the official API for reading and writing JSON values.      
     </p>
     <p>
-      <strong>public static JSONValue read(InputStream jsonIn, JSONErrorHandler errorHandler) throws IOException</strong>      
+      <strong>public static void read(InputStream jsonIn, APSHandler&lt;APSResult&lt;JSONValue&gt;&gt; resultHandler)</strong>      
+    </p>
+    <p>
+      Reads any JSON object from the specified <em>InputStream</em>.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>jsonIn</em> - The InputStream to read from.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>resultHandler</em> - The handler to call with result.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static JSONValue read(InputStream jsonIn, JSONErrorHandler errorHandler)</strong>      
     </p>
     <p>
       Reads any JSON object from the specified <em>InputStream</em>.      
@@ -60,11 +79,14 @@
     </p>
     <blockquote>
       <p>
-        <em>IOException</em> - on any IO failures.         
+        <em>APSIOException</em> - on any IO failures.         
       </p>
     </blockquote>
     <p>
-      <strong>public static void write(OutputStream jsonOut, JSONValue value) throws IOException</strong>      
+            
+    </p>
+    <p>
+      <strong>public static void write(OutputStream jsonOut, JSONValue value) throws APSIOException</strong>      
     </p>
     <p>
       Writes a <em>JSONValue</em> to an <em>OutputStream</em>. This will write compact output by default.      
@@ -87,11 +109,35 @@
     </p>
     <blockquote>
       <p>
-        <em>IOException</em> - on failure.         
+        <em>APSIOException</em> - on failure.         
       </p>
     </blockquote>
     <p>
-      <strong>public static void write(OutputStream jsonOut, JSONValue value, boolean compact) throws IOException</strong>      
+      <strong>public static void write(OutputStream jsonOut, JSONValue value, boolean compact, APSHandler&lt;APSResult&lt;Void&gt;&gt; resultHandler)</strong>      
+    </p>
+    <p>
+      Writes a <em>JSONValue</em> to an <em>OutputStream</em>. This will write compact output by default.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>jsonOut</em> - The OutputStream to write to.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>value</em> - The value to write.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>resultHandler</em> - handler for result. only success() or failure() is relevant.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static void write(OutputStream jsonOut, JSONValue value, boolean compact) throws APSIOException</strong>      
     </p>
     <p>
       Writes a <em>JSONValue</em> to an <em>OutputStream</em>.      
@@ -119,7 +165,7 @@
     </p>
     <blockquote>
       <p>
-        <em>IOException</em>        
+        <em>APSIOException</em> - on IO problems.         
       </p>
     </blockquote>
     <p>
@@ -129,39 +175,19 @@
                 
     </p>
     <p>
-      public <em>class</em> <strong>JSONArray </strong> extends  JSONValue  [se.natusoft.osgi.aps.json] {      
-    </p>
-    <p>
-      This class is based on the structure defined on http://www.json.org/.      
-    </p>
-    <p>
-      This represents the "array" diagram on the above mentioned web page:      
-    </p>
-    <pre>
-      <code>
-                  _______________________
-                 /                       \
-                 |                       |
-    |_____ ([) __/_______ (value) _______\__ (]) _____|
-    |              /                   \              |
-                   |                   |
-                   \_______ (,) _______/
-      </code>
-    </pre>
-    <p>
-      @author Tommy Svensson      
+            
     </p>
     <p>
             
     </p>
     <p>
-      <strong>public JSONArray()</strong>      
+      <strong>public JSONArrayProvider()</strong>      
     </p>
     <p>
       Creates a new JSONArray for wrinting JSON output.      
     </p>
     <p>
-      <strong>public JSONArray(JSONErrorHandler errorHandler)</strong>      
+      <strong>public JSONArrayProvider(JSONErrorHandler errorHandler)</strong>      
     </p>
     <p>
       Creates a new JSONArray for reading JSON input and writing JSON output.      
@@ -171,7 +197,7 @@
     </p>
     <blockquote>
       <p>
-        <em>errorHandler</em>        
+        <em>errorHandler</em> - The error handler to use.         
       </p>
     </blockquote>
     <p>
@@ -181,7 +207,7 @@
             
     </p>
     <p>
-      <strong>public void addValue(JSONValue value)</strong>      
+      <strong>public void addValue(JSONValueProvider value)</strong>      
     </p>
     <p>
       Adds a value to the array.      
@@ -195,13 +221,16 @@
       </p>
     </blockquote>
     <p>
-      <strong>public List&lt;JSONValue&gt; getAsList()</strong>      
+            
+    </p>
+    <p>
+      <strong>public List&lt;se.natusoft.osgi.aps.api.misc.json.model.JSONValue&gt; getAsList()</strong>      
     </p>
     <p>
       Returns the array values as a List.      
     </p>
     <p>
-      <strong>public &lt;T extends JSONValue&gt; List&lt;T&gt; getAsList(Class&lt;T&gt; type)</strong>      
+      <strong>public &lt;T extends se.natusoft.osgi.aps.api.misc.json.model.JSONValue&gt; List&lt;T&gt; getAsList(Class&lt;T&gt; type)</strong>      
     </p>
     <p>
       Returns the array values as a list of a specific type.      
@@ -240,19 +269,13 @@
                 
     </p>
     <p>
-      public <em>class</em> <strong>JSONBoolean </strong> extends  JSONValue    [se.natusoft.osgi.aps.json] {      
-    </p>
-    <p>
-      This class is based on the structure defined on <a href='http://www.json.org/' title=''>http://www.json.org/</a>.      
-    </p>
-    <p>
-      @author Tommy Svensson      
+            
     </p>
     <p>
             
     </p>
     <p>
-      <strong>public JSONBoolean(boolean value)</strong>      
+      <strong>public JSONBooleanProvider(boolean value)</strong>      
     </p>
     <p>
       Creates a new JSONBoolean instance for writing JSON output.      
@@ -266,7 +289,7 @@
       </p>
     </blockquote>
     <p>
-      <strong>public JSONBoolean(JSONErrorHandler errorHandler)</strong>      
+      <strong>public JSONBooleanProvider(JSONErrorHandler errorHandler)</strong>      
     </p>
     <p>
       Creates a new JSONBoolean instance for reading JSON input or writing JSON output.      
@@ -276,7 +299,7 @@
     </p>
     <blockquote>
       <p>
-        <em>errorHandler</em>        
+        <em>errorHandler</em> - The error handler to use.         
       </p>
     </blockquote>
     <p>
@@ -315,16 +338,7 @@
             
     </p>
     <p>
-      }      
-    </p>
-    <hr/>    <p>
-                
-    </p>
-    <p>
-      public <em>class</em> <strong>JSONEOFException </strong> extends  IOException  }  [se.natusoft.osgi.aps.json] {      
-    </p>
-    <p>
-      Thrown if a JSON structure is tried to be read from a stream that has no more data.      
+            
     </p>
     <p>
       }      
@@ -333,78 +347,16 @@
                 
     </p>
     <p>
-      public <em>interface</em> <strong>JSONErrorHandler </strong>   [se.natusoft.osgi.aps.json] {      
+            
     </p>
     <p>
-      This is called on warnings or failures.      
-    </p>
-    <p>
-      @author Tommy Svensson      
-    </p>
-    <p>
-      <strong>void warning(String message)</strong>      
-    </p>
-    <p>
-      Warns about something.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>message</em> - The warning message.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>void fail(String message, Throwable cause) throws RuntimeException</strong>      
-    </p>
-    <p>
-      Indicate failure.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>message</em> - The failure message.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>cause</em> - The cause of the failure. Can be null!         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>RuntimeException</em> - This method must throw a RuntimeException.         
-      </p>
-    </blockquote>
-    <p>
-      }      
-    </p>
-    <hr/>    <p>
-                
-    </p>
-    <p>
-      public <em>class</em> <strong>JSONNull </strong> extends  JSONValue    [se.natusoft.osgi.aps.json] {      
-    </p>
-    <p>
-      This class is based on the structure defined on <a href='http://www.json.org/' title=''>http://www.json.org/</a>.      
-    </p>
-    <p>
-      @author Tommy Svensson      
-    </p>
-    <p>
-      <strong>public JSONNull()</strong>      
+      <strong>public JSONNullProvider()</strong>      
     </p>
     <p>
       Creates a new JSONNull instance for writing JSON output.      
     </p>
     <p>
-      <strong>public JSONNull(JSONErrorHandler errorHandler)</strong>      
+      <strong>public JSONNullProvider(JSONErrorHandler errorHandler)</strong>      
     </p>
     <p>
       Creates a new JSONNull instance for reading JSON input or writing JSON output.      
@@ -414,7 +366,7 @@
     </p>
     <blockquote>
       <p>
-        <em>errorHandler</em>        
+        <em>errorHandler</em> - The error handler to use.         
       </p>
     </blockquote>
     <p>
@@ -444,39 +396,13 @@
                 
     </p>
     <p>
-      public <em>class</em> <strong>JSONNumber </strong> extends  JSONValue    [se.natusoft.osgi.aps.json] {      
-    </p>
-    <p>
-      This class is based on the structure defined on http://www.json.org/.      
-    </p>
-    <p>
-      This represents the "number" diagram on the above mentioned web page:      
-    </p>
-    <pre>
-      <code>
-                                          ______________________
-                                         /                      \
-                                         |                      |
-    |_|______________ (0) _______________/__ (.) ___ (digit) ___\_________________________|_|
-    | | \       /  \                    /         /           \  \                      / | |
-        |       |  |                   /          \___________/  |                      |
-        \_ (-) _/  \_ (digit 1-9) ____/_______                   |                      |
-                                   /          \                  |                      |
-                                   \_ (digit) /           _ (e) _|                      |
-                                                         |_ (E) _|           ___________|
-                                                         |        _ (+) _   /           |
-                                                         \_______/_______\__\_ (digit) _/
-                                                                 \_ (-) _/
-      </code>
-    </pre>
-    <p>
-      @author Tommy Svesson      
+            
     </p>
     <p>
             
     </p>
     <p>
-      <strong>public JSONNumber(Number value)</strong>      
+      <strong>public JSONNumberProvider(Number value)</strong>      
     </p>
     <p>
       Creates a new JSONNumber instance for writing JSON output.      
@@ -490,7 +416,7 @@
       </p>
     </blockquote>
     <p>
-      <strong>public JSONNumber(JSONErrorHandler errorHandler)</strong>      
+      <strong>public JSONNumberProvider(JSONErrorHandler errorHandler)</strong>      
     </p>
     <p>
       Creates a new JSONNumber instance for reading JSON input or writing JSON output.      
@@ -513,10 +439,7 @@
       Returns the number as a Number.      
     </p>
     <p>
-      <strong>public double toDouble()</strong>      
-    </p>
-    <p>
-      Returns the number as a double value.      
+            
     </p>
     <p>
       <strong>public float toFloat()</strong>      
@@ -586,46 +509,19 @@
                 
     </p>
     <p>
-      public <em>class</em> <strong>JSONObject </strong> extends  JSONValue    [se.natusoft.osgi.aps.json] {      
-    </p>
-    <p>
-      This class is based on the structure defined on http://www.json.org/.      
-    </p>
-    <p>
-      It represents the "object" diagram on the above mentioned web page:      
-    </p>
-    <pre>
-      <code>
-                 ________________________________________
-                /                                        \
-    |___ ({) __/_____ (string) ____ (:) ____ (value) _____\___ (}) ____|
-    |           /                                        \             |
-                \__________________ (,) _________________/
-      </code>
-    </pre>
-    <p>
-      This is also the starting point.      
-    </p>
-    <p>
-      To write JSON, create a new <em>JSONObject</em> (<code>new JSONObject()</code>) and call <code>addProperty(name</code>,<code> value)</code> for children. Then do jsonObj.writeJSON(outputStream)<code>.</code>      
-    </p>
-    <p>
-      To read JSON, create a new <em>JSONObject</em> (<code>new JSONObject(jsonErrorHandler)</code>) and then do <code>jsonObj.readJSON(inputStream)</code>. Then use <code>getProperty(name)</code> to extract children.      
-    </p>
-    <p>
-      @author Tommy Svensson      
+            
     </p>
     <p>
             
     </p>
     <p>
-      <strong>public JSONObject()</strong>      
+      <strong>public JSONObjectProvider()</strong>      
     </p>
     <p>
       Creates a JSONObject instance for writing JSON output.      
     </p>
     <p>
-      <strong>public JSONObject(JSONErrorHandler errorHandler)</strong>      
+      <strong>public JSONObjectProvider(JSONErrorHandler errorHandler)</strong>      
     </p>
     <p>
       Creates a new JSONObject instance for reading JSON input or writing JSON output.      
@@ -645,41 +541,34 @@
             
     </p>
     <p>
-      <strong>public Set&lt;JSONString&gt; getPropertyNames()</strong>      
+            
     </p>
     <p>
-      Returns the names of the available properties.      
+            
     </p>
     <p>
-      <strong>public JSONValue getProperty(JSONString name)</strong>      
+            
     </p>
     <p>
-      Returns the named property.      
+            
     </p>
     <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>name</em> - The name of the property to get.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>public JSONValue getProperty(String name)</strong>      
+            
     </p>
     <p>
-      Returns the named property.      
+            
     </p>
     <p>
-      <em>Parameters</em>      
+            
     </p>
-    <blockquote>
-      <p>
-        <em>name</em> - The name of the property to get.         
-      </p>
-    </blockquote>
     <p>
-      <strong>public void addProperty(JSONString name, JSONValue value)</strong>      
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public void setValue(se.natusoft.osgi.aps.api.misc.json.model.JSONString name, JSONValueProvider value)</strong>      
     </p>
     <p>
       Adds a property to this JSONObject instance.      
@@ -698,7 +587,7 @@
       </p>
     </blockquote>
     <p>
-      <strong>public void addProperty(String name, JSONValue value)</strong>      
+      <strong>public void setValue(String name, se.natusoft.osgi.aps.api.misc.json.model.JSONValue value)</strong>      
     </p>
     <p>
       Adds a property to this JSONObject instance.      
@@ -729,43 +618,13 @@
                 
     </p>
     <p>
-      public <em>class</em> <strong>JSONString </strong> extends  JSONValue    [se.natusoft.osgi.aps.json] {      
-    </p>
-    <p>
-      This class is based on the structure defined on http://www.json.org/.      
-    </p>
-    <p>
-      This represents the "string" diagram on the above mentioned web page:      
-    </p>
-    <pre>
-      <code>
-               ___________________________________________________________
-              /    ____________________________________________________   \
-              |   /                                                    \  |
-    |___ (") _|___|___ (*1)                                        ____|__|_ (") ___|
-    |           \                                                   /               |
-                 |                                                  |
-                 \__ (\) ___ (") (quotation mark) __________________|
-                         |__ (\) (reverse solidus) _________________|
-                         |__ (/) (solidus) _________________________|
-                         |__ (b) (backspace) _______________________|
-                         |__ (f) (formfeed) ________________________|
-                         |__ (n) (newline) _________________________|
-                         |__ (r) (carriage return) _________________|
-                         |__ (t) (orizontal tab) ___________________|
-                         \__ (u) (4 hexadecimal digits) ____________/
-    
-    *1: Any UNICODE character except " or \ or control character
-      </code>
-    </pre>
-    <p>
-      @author Tommy Svensson      
+            
     </p>
     <p>
             
     </p>
     <p>
-      <strong>public JSONString(String value)</strong>      
+      <strong>public JSONStringProvider(String value)</strong>      
     </p>
     <p>
       Creates a new JSONString for writing JSON output.      
@@ -779,7 +638,7 @@
       </p>
     </blockquote>
     <p>
-      <strong>public JSONString(JSONErrorHandler errorHandler)</strong>      
+      <strong>public JSONStringProvider(JSONErrorHandler errorHandler)</strong>      
     </p>
     <p>
       Creates a new JSONString for reading JSON input and writing JSON output.      
@@ -789,7 +648,7 @@
     </p>
     <blockquote>
       <p>
-        <em>errorHandler</em>        
+        <em>errorHandler</em> - The error handler to use.         
       </p>
     </blockquote>
     <p>
@@ -820,29 +679,7 @@
                 
     </p>
     <p>
-      public <em>abstract</em> <em>class</em> <strong>JSONValue </strong>   [se.natusoft.osgi.aps.json] {      
-    </p>
-    <p>
-      This class is based on the structure defined on http://www.json.org/.      
-    </p>
-    <p>
-      This is a base class for all other JSON* classes. It represents the "value" diagram on the above mentioned web page:      
-    </p>
-    <pre>
-      <code>
-                                                      Subclasses
-                                                      ----------
-    |________________ (STRING) ________________|      JSONString
-    |  |_____________ (NUMBER) _____________|  |      JSONNumber
-       |_____________ (OBJECT) _____________|         JSONObject
-       |_____________ (ARRAY)  _____________|         JSONArray
-       |_____________ (true)   _____________|     \__ JSONBoolean
-       |_____________ (false)  _____________|     /
-       \_____________ (null)   _____________/         JSONNull
-      </code>
-    </pre>
-    <p>
-      @author Tommy Svensson      
+            
     </p>
     <p>
             
@@ -851,31 +688,23 @@
             
     </p>
     <p>
-      <strong>protected JSONValue()</strong>      
+      <strong>protected JSONValueProvider()</strong>      
     </p>
     <p>
       Creates a new JSONValue.      
     </p>
     <p>
-      <strong>protected JSONValue(JSONErrorHandler errorHandler)</strong>      
+      <strong>protected JSONValueProvider(JSONErrorHandler errorHandler)</strong>      
     </p>
     <p>
       Creates a new JSONValue      
     </p>
     <p>
-      <strong>protected abstract void readJSON(char c, JSONReader reader) throws IOException</strong>      
+      <strong>protected abstract void readJSON(char c, JSONReader reader) throws APSIOException</strong>      
     </p>
     <p>
       This will read the vale from an input stream.      
     </p>
-    <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-        the last character read.        
-      </p>
-    </blockquote>
     <p>
       <em>Parameters</em>      
     </p>
@@ -894,11 +723,11 @@
     </p>
     <blockquote>
       <p>
-        <em>IOException</em> - on IO failure.         
+        <em>APSIOException</em> - on IO failure.         
       </p>
     </blockquote>
     <p>
-      <strong>protected abstract void writeJSON(JSONWriter writer, boolean compact) throws IOException</strong>      
+      <strong>protected abstract void writeJSON(JSONWriter writer, boolean compact) throws APSIOException</strong>      
     </p>
     <p>
       This will write the data held by this JSON value in JSON format on the specified stream.      
@@ -921,7 +750,7 @@
     </p>
     <blockquote>
       <p>
-        <em>IOException</em> - On IO failure.         
+        <em>APSIOException</em> - On IO failure.         
       </p>
     </blockquote>
     <p>
@@ -936,28 +765,54 @@
       </p>
     </blockquote>
     <p>
-            
+      <strong>/*package*/</strong>      
     </p>
     <p>
-            
+      Reads and resolves what JSON type is the next in the input and returns it.      
     </p>
     <p>
-            
+      <em>Returns</em>      
     </p>
-    <p>
-      <strong>protected void warn(String message)</strong>      
-    </p>
-    <p>
-      Provide a warning.      
-    </p>
+    <blockquote>
+      <p>
+        The read JSONValue.        
+      </p>
+    </blockquote>
     <p>
       <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>message</em> - The warning message.         
+        <em>c</em> - The first already read character.         
       </p>
     </blockquote>
+    <blockquote>
+      <p>
+        <em>reader</em> - The reader to read from.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>errorHandler</em> - The user supplied error handler.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>APSIOException</em> - on IOFailure.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
     <p>
       <strong>protected void fail(String message, Throwable cause)</strong>      
     </p>
@@ -992,7 +847,7 @@
       </p>
     </blockquote>
     <p>
-      <strong>public void readJSON(InputStream is) throws IOException</strong>      
+      <strong>public void readJSON(InputStream is) throws APSIOException</strong>      
     </p>
     <p>
       This will read the value from an input stream.      
@@ -1010,11 +865,11 @@
     </p>
     <blockquote>
       <p>
-        <em>IOException</em> - on IO failure.         
+        <em>APSIOException</em> - on IO failure.         
       </p>
     </blockquote>
     <p>
-      <strong>public void writeJSON(OutputStream os) throws IOException</strong>      
+      <strong>public void writeJSON(OutputStream os) throws APSIOException</strong>      
     </p>
     <p>
       This writes JSON to the specified OutputStream.      
@@ -1032,11 +887,11 @@
     </p>
     <blockquote>
       <p>
-        <em>IOException</em> - on IO failure.         
+        <em>APSIOException</em> - on IO failure.         
       </p>
     </blockquote>
     <p>
-      <strong>public void writeJSON(OutputStream os, boolean compact) throws IOException</strong>      
+      <strong>public void writeJSON(OutputStream os, boolean compact) throws APSIOException</strong>      
     </p>
     <p>
       This writes JSON to the specified OutputStream.      
@@ -1059,30 +914,96 @@
     </p>
     <blockquote>
       <p>
-        <em>IOException</em> - on IO failure.         
+        <em>APSIOException</em> - on IO failure.         
       </p>
     </blockquote>
     <p>
             
     </p>
     <p>
-            
+      <strong>/*package*/</strong>      
     </p>
     <p>
-            
+      Method for creating a JSONString instance.      
     </p>
     <p>
-            
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>errorHandler</em> - The user error handler.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>/*package*/</strong>      
     </p>
     <p>
-            
+      Method for creating a JSONNumber instance.      
     </p>
     <p>
-            
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>errorHandler</em> - The user error handler.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>/*package*/</strong>      
     </p>
     <p>
-            
+      Method for creating a JSONNull instance.      
     </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>errorHandler</em> - The user error handler.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>/*package*/</strong>      
+    </p>
+    <p>
+      Method for creating a JSONBoolean instance.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>errorHandler</em> - The user error handler.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>/*package*/</strong>      
+    </p>
+    <p>
+      Method for creating a JSONArray instance.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>errorHandler</em> - The user error handler.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>/*package*/</strong>      
+    </p>
+    <p>
+      Method for creating a JSONObject instance.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>errorHandler</em> - The user error handler.         
+      </p>
+    </blockquote>
     <p>
             
     </p>
@@ -1112,7 +1033,7 @@
       </p>
     </blockquote>
     <p>
-      <strong>protected char getChar() throws IOException</strong>      
+      <strong>protected char getChar() throws APSIOException</strong>      
     </p>
     <p>
       Returns the next character on the specified input stream, setting EOF state checkable with isEOF().      
@@ -1122,255 +1043,42 @@
     </p>
     <blockquote>
       <p>
-        <em>IOException</em> - on IO problems.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>protected char getChar(boolean handleEscapes) throws IOException</strong>      
-    </p>
-    <p>
-      Returns the next character on the specified input stream, setting EOF state checkable with isEOF().      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>handleEscapes</em> - If true then \* escape character are handled.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>IOException</em> - on IO problems.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>protected void ungetChar(char c) throws IOException</strong>      
-    </p>
-    <p>
-      Unreads the specified character so that the next call to getNextChar() will return it again.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>c</em> - The character to unget.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>protected char skipWhitespace(char c) throws IOException</strong>      
-    </p>
-    <p>
-      Skips whitespace returning the first non whitespace character. This also sets the EOF flag.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>c</em> - The first char already read from the input stream.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>IOException</em>        
-      </p>
-    </blockquote>
-    <p>
-      <strong>protected char skipWhitespace() throws IOException</strong>      
-    </p>
-    <p>
-      Skips whitespace returning the first non whitespace character. This also sets the EOF flag.      
-    </p>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>IOException</em>        
+        <em>APSIOException</em> - on IO problems.         
       </p>
     </blockquote>
     <p>
             
     </p>
     <p>
-      <strong>protected char readUntil(String until, char c, StringBuilder sb, boolean handleEscapes) throws IOException</strong>      
+            
     </p>
     <p>
-      Reads until any of a specified set of characters occur.      
+            
     </p>
     <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-                
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>until</em> - The characters to stop reading at. The stopping character will be returned unless EOF.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>c</em> - The first preread character.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>sb</em> - If not null read characters are added to this. The stopping character will not be included.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>handleEscapes</em> - True if we are reading a string that should handle escape characters.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>IOException</em>        
-      </p>
-    </blockquote>
-    <p>
-      <strong>protected char readUntil(String until, StringBuilder sb, boolean string) throws IOException</strong>      
+            
     </p>
     <p>
-      Reads until any of a specified set of characters occur.      
+            
     </p>
     <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>until</em> - The characters to stop reading at. The stopping character will be returned unless EOF.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>sb</em> - If not null read characters are added to this. The stopping character will not be included.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>string</em> - True if we are rading a string that should be escaped.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>IOException</em>        
-      </p>
-    </blockquote>
-    <p>
-      <strong>protected char readUntil(String until, StringBuilder sb) throws IOException</strong>      
+            
     </p>
     <p>
-      Reads until any of a specified set of characters occur.      
+            
     </p>
     <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>until</em> - The characters to stop reading at. The stopping character will be returned unless EOF.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>sb</em> - If not null read characters are added to this. The stopping character will not be included.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>IOException</em>        
-      </p>
-    </blockquote>
-    <p>
-      <strong>protected boolean checkValidChar(char c, String validChars)</strong>      
+            
     </p>
     <p>
-      Returns true if c is one of the characters in validChars.      
+            
     </p>
     <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>c</em> - The character to check.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>validChars</em> - The valid characters.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>protected void assertChar(char a, char e, String message)</strong>      
+            
     </p>
     <p>
-      Asserts that char a equals expected char c.      
+            
     </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>a</em> - The char to assert.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>e</em> - The expected value.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>message</em> - Failure message.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>protected void assertChar(char a, String expected, String message)</strong>      
-    </p>
-    <p>
-      Asserts that char a equals expected char c.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>a</em> - The char to assert.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>expected</em> - String of valid characters.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>message</em> - Failure message.         
-      </p>
-    </blockquote>
     <p>
       protected <em>static</em> <em>class</em> <strong>JSONWriter </strong>   [se.natusoft.osgi.aps.json] {      
     </p>
@@ -1395,7 +1103,7 @@
       </p>
     </blockquote>
     <p>
-      <strong>protected void write(String json) throws IOException</strong>      
+      <strong>protected void write(String json) throws APSIOException</strong>      
     </p>
     <p>
       Writes JSON output.      
@@ -1413,31 +1121,12 @@
     </p>
     <blockquote>
       <p>
-        <em>IOException</em> - on IO failure.         
+        <em>APSIOException</em> - on IO failure.         
       </p>
     </blockquote>
     <p>
-      <strong>protected void writeln(String json) throws  IOException</strong>      
+            
     </p>
-    <p>
-      Writes JSON output plus a newline.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>json</em> - The JSON output to write.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>IOException</em>        
-      </p>
-    </blockquote>
     <p>
       }      
     </p>
@@ -1445,10 +1134,7 @@
                 
     </p>
     <p>
-      public <em>class</em> <strong>BeanInstance </strong>   [se.natusoft.osgi.aps.json.tools] {      
-    </p>
-    <p>
-      This wraps a Java Bean instance allowing it to be populated with data using <em>setProperty(String</em>,<em> Object)</em> methods handling all reflection calls.      
+            
     </p>
     <p>
             
@@ -1582,13 +1268,61 @@
                 
     </p>
     <p>
-      public <em>class</em> <strong>JavaToJSON </strong>   [se.natusoft.osgi.aps.json.tools] {      
+      public <em>class</em> <strong>CollectingErrorHandler </strong> implements  JSONErrorHandler    [se.natusoft.osgi.aps.json.tools] {      
     </p>
     <p>
-      Takes a JavaBean and produces a JSONObject.      
+      Utility implementation of JSONErrorHandler.      
     </p>
     <p>
-      <strong>public static JSONObject convertObject(Object javaBean) throws JSONConvertionException</strong>      
+      <strong>public CollectingErrorHandler(boolean printWarnings)</strong>      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>printWarnings</em> - If true warnings will be printed to stderr.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public boolean hasMessages()</strong>      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if there are any messages.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String toString()</strong>      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        All messages as one string.        
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public static JSONObjectProvider convertObject(Object javaBean) throws JSONConvertionException</strong>      
     </p>
     <p>
       Converts a JavaBean object into a <em>JSONObject</em>.      
@@ -1618,7 +1352,7 @@
       </p>
     </blockquote>
     <p>
-      <strong>public static JSONObject convertObject(JSONObject jsonObject, Object javaBean) throws JSONConvertionException</strong>      
+      <strong>public static JSONObjectProvider convertObject(JSONObjectProvider jsonObject, Object javaBean) throws JSONConvertionException</strong>      
     </p>
     <p>
       Converts a JavaBean object into a <em>JSONObject</em>.      
@@ -1653,7 +1387,7 @@
       </p>
     </blockquote>
     <p>
-      <strong>public static JSONValue convertValue(Object value)</strong>      
+      <strong>public static JSONValueProvider convertValue(Object value)</strong>      
     </p>
     <p>
       Converts a value from a java value to a <em>JSONValue</em>.      
@@ -1735,7 +1469,7 @@
       This converts between a Java Map and JSON. Do note that this of course uses this library to read and write JSON, but this specific public API only deals with Java and JSON as String or on/in a stream. <a href='p/' title=''>p/</a> This class becomes more useful when used from Groovy since the latter provides much nicer usage of data in Maps. Yes, I know about JSONSlurper and JSONBuilder in Groovy. Those however does not work with @CompileStatic. Maps does.      
     </p>
     <p>
-      <strong>public static Map&lt;String, Object&gt; jsonObjectToMap(String json) throws IOException</strong>      
+      <strong>public static Map&lt;String, Object&gt; jsonObjectToMap(String json) throws APSIOException</strong>      
     </p>
     <p>
       This takes a String containing a JSON object and returns it as a Map.      
@@ -1753,29 +1487,35 @@
     </p>
     <blockquote>
       <p>
-        <em>IOException</em>        
+        <em>APSIOException</em> - on failure.         
       </p>
     </blockquote>
     <p>
-      <strong>public static Map&lt;String, Object&gt; jsonObjectToMap(InputStream is) throws IOException</strong>      
+            
     </p>
     <p>
-      This takes an InputStream containing a JSON object and returns it as a Map.      
+            
     </p>
+    <p>
+      <strong>public static Map&lt;String, Object&gt; jsonObjectToMap(se.natusoft.osgi.aps.api.misc.json.model.JSONObject jsonObject)</strong>      
+    </p>
+    <p>
+      This takes a JSONObject and returns a Map.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The converted Map.        
+      </p>
+    </blockquote>
     <p>
       <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>is</em> - The InputStream to read.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>IOException</em>        
+        <em>jsonObject</em> - The JSONObject to convert to a Map.         
       </p>
     </blockquote>
     <p>
@@ -1788,10 +1528,10 @@
             
     </p>
     <p>
-      <strong>public static String mapToJSONObject(Map&lt;String, Object&gt; map) throws IOException</strong>      
+      <strong>public static String mapToJSONObjectString(Map&lt;String, Object&gt; map) throws APSIOException</strong>      
     </p>
     <p>
-      This takes a Map (as created by jsonObjectToMap(...)) and returns a JSON object.      
+      This takes a Map (as created by jsonObjectToMap(...)) and returns a JSON String.      
     </p>
     <p>
       <em>Parameters</em>      
@@ -1806,36 +1546,34 @@
     </p>
     <blockquote>
       <p>
-        <em>IOException</em>        
+        <em>APSIOException</em> - on I/O failures.         
       </p>
     </blockquote>
     <p>
-      <strong>public static void mapToJSONObject(Map&lt;String, Object&gt; map, OutputStream os) throws IOException</strong>      
+      <strong>public static se.natusoft.osgi.aps.api.misc.json.model.JSONObject mapToJSONObject(Map&lt;String, Object&gt; map)</strong>      
     </p>
     <p>
-      This takes a Map (as created by jsonObjectToMap(...)) and writes it as JSON to the specified OutputStream.      
+      Converts a <code>Map&lt;String,</code><code> Object&gt;</code> to a JSONObject.      
     </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A converted JSONObject.        
+      </p>
+    </blockquote>
     <p>
       <em>Parameters</em>      
     </p>
     <blockquote>
       <p>
-        <em>map</em> - The Map to write as JSON.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>os</em> - The OutputStream to write to.         
+        <em>map</em> - The Map to convert.         
       </p>
     </blockquote>
     <p>
-      <em>Throws</em>      
+            
     </p>
-    <blockquote>
-      <p>
-        <em>IOException</em>        
-      </p>
-    </blockquote>
     <p>
             
     </p>
@@ -1863,22 +1601,22 @@
     <ul>
       <li>
         <p>
-          <em>JSONArray</em> only maps to an array property.          
+           <em>JSONArray</em> only maps to an array property.          
         </p>
       </li>
       <li>
         <p>
-          Date properties in bean are mapped from <em>JSONString</em> "yyyy-MM-dd HH:mm:ss".          
+           Date properties in bean are mapped from <em>JSONString</em> "yyyy-MM-dd HH:mm:ss".          
         </p>
       </li>
       <li>
         <p>
-          Enum properties in bean are mapped from <em>JSONString</em> which have to contain enum constant name.          
+           Enum properties in bean are mapped from <em>JSONString</em> which have to contain enum constant name.          
         </p>
       </li>
     </ul>
     <p>
-      <strong>public static &lt;T&gt; T convert(InputStream jsonStream, Class&lt;T&gt; javaClass) throws IOException, JSONConvertionException</strong>      
+      <strong>public static &lt;T&gt; T convert(InputStream jsonStream, Class&lt;T&gt; javaClass) throws APSIOException, JSONConvertionException</strong>      
     </p>
     <p>
       Returns an instance of a java class populated with data from a json object value read from a stream.      
@@ -1909,7 +1647,7 @@
     </p>
     <blockquote>
       <p>
-        <em>IOException</em> - on IO failures.         
+        <em>APSIOException</em> - on IO failures.         
       </p>
     </blockquote>
     <blockquote>
@@ -1918,7 +1656,7 @@
       </p>
     </blockquote>
     <p>
-      <strong>public static &lt;T&gt; T convert(String json, Class&lt;T&gt; javaClass) throws IOException, JSONConvertionException</strong>      
+      <strong>public static &lt;T&gt; T convert(String json, Class&lt;T&gt; javaClass) throws APSIOException, JSONConvertionException</strong>      
     </p>
     <p>
       Returns an instance of a java class populated with data from a json object value read from a String containing JSON.      
@@ -1949,7 +1687,7 @@
     </p>
     <blockquote>
       <p>
-        <em>IOException</em> - on IO failures.         
+        <em>APSIOException</em> - on IO failures.         
       </p>
     </blockquote>
     <blockquote>

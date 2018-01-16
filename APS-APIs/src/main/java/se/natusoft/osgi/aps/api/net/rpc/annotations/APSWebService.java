@@ -36,8 +36,6 @@
  */
 package se.natusoft.osgi.aps.api.net.rpc.annotations;
 
-import se.natusoft.osgi.aps.api.external.extprotocolsvc.model.APSRESTCallable;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -40,11 +40,10 @@ import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.Channel
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
-
-import se.natusoft.osgi.aps.api.net.messaging.service.APSSimpleMessageService
+import se.natusoft.osgi.aps.api.messaging.APSMessagingException
+import se.natusoft.osgi.aps.api.reactive.APSValue
+import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
-import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.ReceiveThread
 import se.natusoft.osgi.aps.tools.APSLogger
 
@@ -60,19 +59,19 @@ import se.natusoft.osgi.aps.tools.APSLogger
  */
 @CompileStatic
 @TypeChecked
-public class APSRabbitMQMessageProvider {
+class APSRabbitMQMessageProvider {
 
     //
     // Private Members
     //
 
-    /** Basic RabbitMQ config for sending messages. */
+    /** Basic RabbitMQ configold for sending messages. */
     private AMQP.BasicProperties basicProperties
 
     /** Our cluster channel. */
     private Channel instanceChannel
 
-    /** This receives messages from the cluster. */
+    /** This receives messages. */
     private ReceiveThread instanceReceiveThread
 
     //
@@ -92,7 +91,7 @@ public class APSRabbitMQMessageProvider {
     ConnectionProvider connectionProvider
 
     /** A configuration for this specific cluster provider instance. */
-    RabbitMQMessageServiceConfig.RMQInstance instanceConfig
+    Map<String, Serializable> instanceConfig
 
     //
     // Constructors
@@ -101,7 +100,7 @@ public class APSRabbitMQMessageProvider {
     /**
      * Creates a new APSRabbitMQClusterServiceProvider.
      */
-    public APSRabbitMQMessageProvider() {
+    APSRabbitMQMessageProvider() {
         AMQP.BasicProperties.Builder bob = new AMQP.BasicProperties.Builder()
         this.basicProperties = bob.contentType("application/octet-stream").build()
     }
@@ -133,13 +132,13 @@ public class APSRabbitMQMessageProvider {
 
         if (this.instanceChannel == null || !this.instanceChannel.isOpen()) {
             this.instanceChannel = this.connectionProvider.connection.createChannel()
-            this.instanceChannel.exchangeDeclare(this.instanceConfig.exchange.string, this.instanceConfig.exchangeType.string)
-            this.instanceChannel.queueDeclare(this.instanceConfig.queue.string, true, false, false, null)
-            String routingKey = this.instanceConfig.routingKey.string
+            this.instanceChannel.exchangeDeclare(this.instanceConfig.exchange as String, this.instanceConfig.exchangeType as String)
+            this.instanceChannel.queueDeclare(this.instanceConfig.queue as String, true, false, false, null)
+            String routingKey = this.instanceConfig.routingKey as String
             if (routingKey != null && routingKey.isEmpty()) {
                 routingKey = null
             }
-            this.instanceChannel.queueBind(this.instanceConfig.queue.string, this.instanceConfig.exchange.string, routingKey)
+            this.instanceChannel.queueBind(this.instanceConfig.queue as String, this.instanceConfig.exchange as String, routingKey)
         }
 
         return this.instanceChannel
@@ -153,12 +152,12 @@ public class APSRabbitMQMessageProvider {
 
         if (this.instanceReceiveThread == null) {
             this.instanceReceiveThread = new ReceiveThread(
-                    name: "cluster-receive-thread-" + getName(),
+                    name: "rabbitmq-receive-thread-" + this.name,
                     connectionProvider: this.connectionProvider,
-                    instanceConfig: this.instanceConfig,
                     logger: this.logger,
-                    topic: getName()
+                    topic: this.name
             )
+
             this.instanceReceiveThread.start()
         }
     }
@@ -175,11 +174,11 @@ public class APSRabbitMQMessageProvider {
         }
     }
 
-    public void start() {
+    void start() {
         startReceiveThread()
     }
 
-    public void stop() {
+    void stop() {
         stopReceiveThread()
     }
 
@@ -191,12 +190,12 @@ public class APSRabbitMQMessageProvider {
      * @throws APSMessagingException on failure.
      */
     void sendMessage(byte[] message) throws APSMessagingException {
-        String routingKey = this.instanceConfig.routingKey.string
+        String routingKey = this.instanceConfig.routingKey as String
         if (routingKey.isEmpty()) {
             routingKey = null
         }
 
-        ensureInstanceChannel().basicPublish(this.instanceConfig.exchange.string, routingKey, this.basicProperties, message)
+        ensureInstanceChannel().basicPublish(this.instanceConfig.exchange as String, routingKey, this.basicProperties, message)
     }
 
     /**
@@ -204,8 +203,8 @@ public class APSRabbitMQMessageProvider {
      *
      * @param listener The listener to add.
      */
-    void addMessageListener(APSSimpleMessageService.MessageListener listener) {
-        this.instanceReceiveThread.addMessageListener(listener)
+    UUID addMessageSubscriber( APSHandler<APSValue<byte[]>> subscriber ) {
+        this.instanceReceiveThread.addMessageSubscriber(subscriber)
     }
 
     /**
@@ -213,8 +212,8 @@ public class APSRabbitMQMessageProvider {
      *
      * @param listener The listener to remove.
      */
-    void removeMessageListener(APSSimpleMessageService.MessageListener listener) {
-        this.instanceReceiveThread.removeMessageListener(listener)
+    void removeMessageSubscriber( UUID subscriberId) {
+        this.instanceReceiveThread.removeMessageSubscriber(subscriberId)
     }
 }
 

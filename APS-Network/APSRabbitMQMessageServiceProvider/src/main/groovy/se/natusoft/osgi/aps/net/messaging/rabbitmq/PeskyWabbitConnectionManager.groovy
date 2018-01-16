@@ -4,14 +4,14 @@ import com.rabbitmq.client.Connection
 import com.rabbitmq.client.ConnectionFactory
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.net.messaging.config.RabbitMQMessageServiceConfig
+import se.natusoft.osgi.aps.net.messaging.config.Config
 
 /**
  * Manages the RabbitMQ connection.
  */
 @CompileStatic
 @TypeChecked
-public class PeskyWabbitConnectionManager {
+class PeskyWabbitConnectionManager {
     //
     // Private Members
     //
@@ -31,73 +31,74 @@ public class PeskyWabbitConnectionManager {
      *
      * @throws IOException on failure to setup a connection.
      */
-    public synchronized String ensureConnection() throws IOException {
-        if (this.connectionFactory == null) {
+    synchronized String ensureConnection() throws IOException {
+
+        if ( this.connectionFactory == null ) {
             this.connectionFactory = new ConnectionFactory()
-            connectionFactory.setHost(RabbitMQMessageServiceConfig.managed.get().host.string)
-            connectionFactory.setPort(RabbitMQMessageServiceConfig.managed.get().port.int)
+            connectionFactory.host = Config.config.host as String
+            connectionFactory.port = Config.config.port as int
 
-            if (RabbitMQMessageServiceConfig.managed.get().user.string.length() > 0) {
-                connectionFactory.setUsername(RabbitMQMessageServiceConfig.managed.get().user.string)
+            if ( !( Config.config.user as String ).isEmpty() ) {
+                connectionFactory.username = Config.config.user as String
             }
 
-            if (RabbitMQMessageServiceConfig.managed.get().password.string.length() > 0) {
-                connectionFactory.setPassword(RabbitMQMessageServiceConfig.managed.get().password.string)
+            if ( !( Config.config.password as String ).isEmpty() ) {
+                connectionFactory.password = Config.config.password as String
             }
 
-            if (RabbitMQMessageServiceConfig.managed.get().virtualHost.string.length() > 0) {
-                connectionFactory.setVirtualHost(RabbitMQMessageServiceConfig.managed.get().virtualHost.string)
+            if ( !( Config.config.virtualHost as String ).isEmpty() ) {
+                connectionFactory.virtualHost = Config.config.virtualHost as String
             }
 
-            if (RabbitMQMessageServiceConfig.managed.get().timeout.int > 0) {
-                connectionFactory.setConnectionTimeout(RabbitMQMessageServiceConfig.managed.get().timeout.int)
+            if ( (Config.config.timeout as int) > 0 ) {
+                connectionFactory.connectionTimeout = Config.config.timeout as int
             }
         }
 
-        if (this.connection == null || !this.connection.isOpen()) {
+        if ( this.connection == null || !this.connection.isOpen() ) {
             try {
                 this.connection = connectionFactory.newConnection()
             }
-            catch (IOException ioe) {
-                if (this.connection != null) {
+            catch ( IOException ioe ) {
+                if ( this.connection != null ) {
                     try {
                         this.connection.close()
                     }
-                    catch (IOException ignored) { /* It has already failed and that failure is handled below. */ }
+                    catch ( IOException ignored ) { /* It has already failed and that failure is handled below. */
+                    }
                 }
-                throw new IOException("Failed to ensure connection to RabbitMQ due to instanceChannel create failure!", ioe)
+                throw new IOException( "Failed to ensure connection to RabbitMQ due to instanceChannel create failure!", ioe )
             }
         }
 
-        return "Connected to RabbitMQ server at " + RabbitMQMessageServiceConfig.managed.get().host + ":" +
-                RabbitMQMessageServiceConfig.managed.get().port + "!"
+        return "Connected to RabbitMQ server at ${Config.config.host} : ${Config.config.port}!"
     }
 
     /**
      * Closes the connection if not closed already.
      */
-    public  synchronized String ensureConnectionClosed() throws IOException {
+    synchronized String ensureConnectionClosed() throws IOException {
 
-        if (this.connection != null) {
+        if ( this.connection != null ) {
             try {
                 this.connection.close()
                 this.connection = null
             }
-            catch (IOException ioe) {
-                throw new IOException("Failed to disconnect from RabbitMQ!", ioe)
+            catch ( IOException ioe ) {
+                throw new IOException( "Failed to disconnect from RabbitMQ!", ioe )
             }
         }
 
         this.connectionFactory = null
 
-        return "Disconnected from RabbitMQ server at " + RabbitMQMessageServiceConfig.managed.get().host +
-                ":" + RabbitMQMessageServiceConfig.managed.get().port + "!"
+        return "Disconnected from RabbitMQ server at  ${Config.config.host} : ${Config.config.port}!"
     }
 
     /**
      * Closes connection and then creates a new again.
      */
-    public synchronized void reconnect() throws IOException {
+    @SuppressWarnings("GroovyUnusedDeclaration")
+    synchronized void reconnect() throws IOException {
         ensureConnectionClosed()
         ensureConnection()
     }
@@ -105,7 +106,7 @@ public class PeskyWabbitConnectionManager {
     /**
      * @return The current connection.
      */
-    public Connection getConnection() throws IOException {
+    Connection getConnection() throws IOException {
         ensureConnection()
 
         return this.connection
