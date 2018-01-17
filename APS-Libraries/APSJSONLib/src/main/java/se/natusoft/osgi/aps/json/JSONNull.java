@@ -40,8 +40,6 @@
  */
 package se.natusoft.osgi.aps.json;
 
-import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
-import se.natusoft.osgi.aps.api.misc.json.model.JSONNull;
 import se.natusoft.osgi.aps.exceptions.APSIOException;
 
 /**
@@ -50,7 +48,7 @@ import se.natusoft.osgi.aps.exceptions.APSIOException;
  * @author Tommy Svensson
  */
 @SuppressWarnings("WeakerAccess")
-public class JSONNullProvider extends JSONValueProvider implements JSONNull {
+public class JSONNull extends JSONValue {
     //
     // Constructors
     //
@@ -58,7 +56,7 @@ public class JSONNullProvider extends JSONValueProvider implements JSONNull {
     /**
      * Creates a new JSONNull instance for writing JSON output.
      */
-    public JSONNullProvider() {
+    public JSONNull() {
         super();
     }
 
@@ -67,7 +65,7 @@ public class JSONNullProvider extends JSONValueProvider implements JSONNull {
      *
      * @param errorHandler The error handler to use.
      */
-    public JSONNullProvider(JSONErrorHandler errorHandler) {
+    public JSONNull(JSONErrorHandler errorHandler) {
         super(errorHandler);
     }
 

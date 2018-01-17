@@ -40,8 +40,6 @@
  */
 package se.natusoft.osgi.aps.json;
 
-import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
-import se.natusoft.osgi.aps.api.misc.json.model.JSONBoolean;
 import se.natusoft.osgi.aps.exceptions.APSIOException;
 
 /**
@@ -50,7 +48,7 @@ import se.natusoft.osgi.aps.exceptions.APSIOException;
  * @author Tommy Svensson
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
-public class JSONBooleanProvider extends JSONValueProvider implements JSONBoolean {
+public class JSONBoolean extends JSONValue {
     //
     // private Members
     //
@@ -67,7 +65,7 @@ public class JSONBooleanProvider extends JSONValueProvider implements JSONBoolea
      *
      * @param value The value for this boolean.
      */
-    public JSONBooleanProvider(boolean value) {
+    public JSONBoolean(boolean value) {
         super();
         this.value = value;
     }
@@ -77,7 +75,7 @@ public class JSONBooleanProvider extends JSONValueProvider implements JSONBoolea
      *
      * @param errorHandler The error handler to use.
      */
-    public JSONBooleanProvider(JSONErrorHandler errorHandler) {
+    public JSONBoolean(JSONErrorHandler errorHandler) {
         super(errorHandler);
     }
 
@@ -169,7 +167,6 @@ public class JSONBooleanProvider extends JSONValueProvider implements JSONBoolea
     /**
      * @return this JSONBoolean as a Java boolean.
      */
-    @Override
     public Boolean toBoolean() {
         return getAsBoolean();
     }

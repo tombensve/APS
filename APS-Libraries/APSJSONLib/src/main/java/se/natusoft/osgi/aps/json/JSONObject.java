@@ -40,10 +40,7 @@
  */
 package se.natusoft.osgi.aps.json;
 
-import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
-import se.natusoft.osgi.aps.api.misc.json.model.JSONObject;
 import se.natusoft.osgi.aps.exceptions.APSIOException;
-import se.natusoft.osgi.aps.json.tools.JSONMapConv;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -69,18 +66,18 @@ import java.util.Set;
  * To read JSON, create a new _JSONObject_ (`new JSONObject(jsonErrorHandler)`) and then do `jsonObj.readJSON(inputStream)`.
  * Then use `getProperty(name)` to extract children.
  *
- * @see JSONValueProvider
+ * @see JSONValue
  *
  * @author Tommy Svensson
  */
 @SuppressWarnings("unused")
-public class JSONObjectProvider extends JSONValueProvider implements JSONObject {
+public class JSONObject extends JSONValue {
     //
     // Private Members
     //
 
     /** The object values. */
-    private Map<JSONStringProvider, JSONValueProvider> values = new HashMap<>();
+    private Map<JSONString, JSONValue> values = new HashMap<>();
 
     //
     // Constructors
@@ -89,14 +86,14 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
     /**
      * Creates a JSONObject instance for writing JSON output.
      */
-    public JSONObjectProvider() {}
+    public JSONObject() {}
 
     /**
      * Creates a new JSONObject instance for reading JSON input or writing JSON output.
      *
      * @param errorHandler The error handler to use.
      */
-    public JSONObjectProvider(JSONErrorHandler errorHandler) {
+    public JSONObject(JSONErrorHandler errorHandler) {
         super(errorHandler);
     }
 
@@ -127,10 +124,9 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
     /**
      * Returns the names of the available properties.
      */
-    @Override
-    public Set<se.natusoft.osgi.aps.api.misc.json.model.JSONString> getValueNames() {
+    public Set<JSONString> getValueNames() {
         //noinspection unchecked
-        return (Set)this.values.keySet();
+        return this.values.keySet();
     }
 
     /**
@@ -138,8 +134,7 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
      *
      * @param name The name of the property to get.
      */
-    @Override
-    public JSONValueProvider getValue(se.natusoft.osgi.aps.api.misc.json.model.JSONString name) {
+    public JSONValue getValue(JSONString name) {
         //noinspection SuspiciousMethodCalls
         return this.values.get(name);
     }
@@ -149,9 +144,8 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
      *
      * @param name The name of the property to get.
      */
-    @Override
-    public JSONValueProvider getValue(String name) {
-        return this.values.get(new JSONStringProvider(name));
+    public JSONValue getValue(String name) {
+        return this.values.get(new JSONString(name));
     }
 
     /**
@@ -160,9 +154,8 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
      * @param name  The name of the value.
      * @param value The value.
      */
-    @Override
-    public void setValue(se.natusoft.osgi.aps.api.misc.json.model.JSONString name, se.natusoft.osgi.aps.api.misc.json.model.JSONValue value) {
-        this.values.put((JSONStringProvider)name, (JSONValueProvider)value);
+    public void setValue(JSONString name, JSONValue value) {
+        this.values.put(name, value);
     }
 
     /**
@@ -171,9 +164,8 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
      * @param name  The name of the value.
      * @param value The value.
      */
-    @Override
     public void setValue(String name, String value) {
-        this.values.put(new JSONStringProvider(name), new JSONStringProvider(value));
+        this.values.put(new JSONString(name), new JSONString(value));
     }
 
     /**
@@ -182,9 +174,8 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
      * @param name  The name of the value.
      * @param value The value.
      */
-    @Override
     public void setValue(String name, Number value) {
-        this.values.put(new JSONStringProvider(name), new JSONNumberProvider(value));
+        this.values.put(new JSONString(name), new JSONNumber(value));
     }
 
     /**
@@ -193,9 +184,8 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
      * @param name  The name of the value.
      * @param value The value.
      */
-    @Override
     public void setValue(String name, boolean value) {
-        this.values.put(new JSONStringProvider(name), new JSONBooleanProvider(value));
+        this.values.put(new JSONString(name), new JSONBoolean(value));
     }
 
     /**
@@ -203,18 +193,16 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
      *
      * @param map The Map to import.
      */
-    @Override
     public void fromMap(Map<String, Object> map) {
-        JSONObjectProvider obj = (JSONObjectProvider)JSONMapConv.mapToJSONObject(map);
+        JSONObject obj = JSON.mapToJSONObject(map);
         this.values = obj.values;
     }
 
     /**
      * Returns the JSONObject as a Map.
      */
-    @Override
     public Map<String, Object> toMap() {
-        return JSONMapConv.jsonObjectToMap(this);
+        return JSON.jsonObjectToMap(this);
     }
 
     /**
@@ -223,18 +211,8 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
      * @param name The name of the property.
      * @param value The property value.
      */
-    public void setValue(se.natusoft.osgi.aps.api.misc.json.model.JSONString name, JSONValueProvider value) {
-        this.values.put((JSONStringProvider)name, value);
-    }
-
-    /**
-     * Adds a property to this JSONObject instance.
-     *
-     * @param name The name of the property.
-     * @param value The property value.
-     */
-    public void setValue(String name, se.natusoft.osgi.aps.api.misc.json.model.JSONValue value) {
-        this.values.put(new JSONStringProvider(name), (JSONValueProvider)value);
+    public void setValue(String name, JSONValue value) {
+        this.values.put(new JSONString(name), value);
     }
 
     /**
@@ -255,8 +233,8 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
         while (!done) {
             c = reader.skipWhitespace(c);
             // Allow for an empty object!
-            if (!JSONObjectProvider.isObjectEnd(c)) {
-                JSONStringProvider property = createString(getErrorHandler());
+            if (!JSONObject.isObjectEnd(c)) {
+                JSONString property = createString(getErrorHandler());
                 property.readJSON(c, reader);
 
                 c = reader.getChar();
@@ -266,7 +244,7 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
                 c = reader.getChar();
                 c = reader.skipWhitespace(c);
 
-                JSONValueProvider value = JSONValueProvider.resolveAndParseJSONValue(c, reader, getErrorHandler());
+                JSONValue value = JSONValue.resolveAndParseJSONValue(c, reader, getErrorHandler());
 
                 this.values.put(property, value);
 
@@ -274,7 +252,7 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
                 c = reader.skipWhitespace(c);
             }
 
-            if (JSONObjectProvider.isObjectEnd(c)) {
+            if (JSONObject.isObjectEnd(c)) {
                 done = true;
             }
             else {
@@ -307,9 +285,9 @@ public class JSONObjectProvider extends JSONValueProvider implements JSONObject 
         int max = this.values.size();
 
         //noinspection unchecked
-        Set<JSONStringProvider> propNames = (Set) getValueNames();
-        for (JSONStringProvider property : propNames) {
-            JSONValueProvider value = this.values.get(property);
+        Set<JSONString> propNames = getValueNames();
+        for (JSONString property : propNames) {
+            JSONValue value = this.values.get(property);
             value.setIndent(getIndent() + "    ");
 
             if (!compact) {

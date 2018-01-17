@@ -40,8 +40,6 @@
  */
 package se.natusoft.osgi.aps.json;
 
-import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
-import se.natusoft.osgi.aps.api.misc.json.model.JSONNumber;
 import se.natusoft.osgi.aps.exceptions.APSIOException;
 
 /**
@@ -66,7 +64,7 @@ import se.natusoft.osgi.aps.exceptions.APSIOException;
  * @author Tommy Svesson
  */
 @SuppressWarnings("WeakerAccess")
-public class JSONNumberProvider extends JSONValueProvider implements JSONNumber {
+public class JSONNumber extends JSONValue {
     //
     // Private Members
     //
@@ -83,7 +81,7 @@ public class JSONNumberProvider extends JSONValueProvider implements JSONNumber 
      *
      * @param value The numeric value.
      */
-    public JSONNumberProvider(Number value) {
+    public JSONNumber(Number value) {
         super();
         this.value = value;
     }
@@ -93,7 +91,7 @@ public class JSONNumberProvider extends JSONValueProvider implements JSONNumber 
      *
      * @param errorHandler The error handle to use.
      */
-    public JSONNumberProvider(JSONErrorHandler errorHandler) {
+    public JSONNumber(JSONErrorHandler errorHandler) {
         super(errorHandler);
     }
 

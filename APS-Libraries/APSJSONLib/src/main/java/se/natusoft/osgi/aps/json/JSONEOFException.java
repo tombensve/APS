@@ -34,7 +34,7 @@
  *         2014-03-08: Created!
  *
  */
-package se.natusoft.osgi.aps.api.misc.json;
+package se.natusoft.osgi.aps.json;
 
 import se.natusoft.osgi.aps.exceptions.APSIOException;
 

@@ -40,12 +40,9 @@
  */
 package se.natusoft.osgi.aps.json;
 
-import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
-import se.natusoft.osgi.aps.api.misc.json.model.JSONArray;
 import se.natusoft.osgi.aps.exceptions.APSIOException;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -64,13 +61,13 @@ import java.util.List;
  * @author Tommy Svensson
  */
 @SuppressWarnings("WeakerAccess")
-public class JSONArrayProvider extends JSONValueProvider implements JSONArray {
+public class JSONArray extends JSONValue {
     //
     // Private Members
     //
 
     /** The array values. */
-    private List<JSONValueProvider> values = new ArrayList<>();
+    private List<JSONValue> values = new ArrayList<>();
 
     //
     // Constructors
@@ -79,7 +76,7 @@ public class JSONArrayProvider extends JSONValueProvider implements JSONArray {
     /**
      * Creates a new JSONArray for wrinting JSON output.
      */
-    public JSONArrayProvider() {
+    public JSONArray() {
         super();
     }
 
@@ -88,7 +85,7 @@ public class JSONArrayProvider extends JSONValueProvider implements JSONArray {
      *
      * @param errorHandler The error handler to use.
      */
-    public JSONArrayProvider(JSONErrorHandler errorHandler) {
+    public JSONArray(JSONErrorHandler errorHandler) {
         super(errorHandler);
     }
 
@@ -120,50 +117,27 @@ public class JSONArrayProvider extends JSONValueProvider implements JSONArray {
      *
      * @param value The value to add.
      */
-    public void addValue(JSONValueProvider value) {
+    public void addValue(JSONValue value) {
+        // Mistrust users ...
+        if (!this.values.isEmpty()) {
+            if (this.values.get(0).getClass() != value.getClass()) {
+                throw new ClassCastException("This JSON array contains values of type '" + this.values.get(0).getClass().getName() +
+                "' while the type added is of type '" + value.getClass().getName() + "'!");
+            }
+        }
         this.values.add(value);
-    }
-
-    /**
-     * Adds a value to the array.
-     *
-     * @param value The value to add.
-     */
-    @Override
-    public void addValue(se.natusoft.osgi.aps.api.misc.json.model.JSONValue value) {
-
-    }
-
-    /**
-     * Returns the array values as a List.
-     */
-    public List<se.natusoft.osgi.aps.api.misc.json.model.JSONValue> getAsList() {
-        // Yes, this is ridiculous!
-        // I can add a complete List of implementations of JSONValue into a list of the implemented interface,
-        // but there is no way in hell that I can cast one to the other even though the end result would be
-        // identical!! "List<? extends JSONValue> values" failed also. Then it was suddenly impossible to add
-        // new implementations to the list. No matter what you do, there is some place where you have to
-        // write crazy, ridiculous code like this!
-        List<se.natusoft.osgi.aps.api.misc.json.model.JSONValue> list = new LinkedList<>();
-        list.addAll(this.values);
-        return list;
     }
 
     /**
      * Returns the array values as a list of a specific type.
      *
-     * @param type The class of the type to return values as a list of.
      * @param <T> One of the JSONValue subclasses.
+     *
      * @return A list of specified type if type is the same as in the list.
      */
-    public <T extends se.natusoft.osgi.aps.api.misc.json.model.JSONValue> List<T> getAsList(Class<T> type) {
-        List<T> list = new LinkedList<>();
-        for (se.natusoft.osgi.aps.api.misc.json.model.JSONValue value : this.values) {
-            //noinspection unchecked
-            list.add((T)value);
-        }
-
-        return list;
+    @SuppressWarnings("unchecked") // Yes, I'm sure!
+    public <T extends JSONValue> List<T> getAsList() {
+        return (List<T>)this.values;
     }
 
     /**
@@ -184,9 +158,9 @@ public class JSONArrayProvider extends JSONValueProvider implements JSONArray {
         while (!done) {
             c = reader.skipWhitespace(c);
 
-            JSONValueProvider value = null;
-            if (!JSONArrayProvider.isArrayEnd(c)) {
-                value = JSONValueProvider.resolveAndParseJSONValue(c, reader, getErrorHandler());
+            JSONValue value = null;
+            if (!JSONArray.isArrayEnd(c)) {
+                value = JSONValue.resolveAndParseJSONValue(c, reader, getErrorHandler());
             }
 
             if (value != null) {
@@ -194,7 +168,7 @@ public class JSONArrayProvider extends JSONValueProvider implements JSONArray {
 
                 c = reader.getChar();
                 c = reader.skipWhitespace(c);
-                if (JSONArrayProvider.isArrayEnd(c)) {
+                if (JSONArray.isArrayEnd(c)) {
                     done = true;
                 }
                 else {
@@ -229,7 +203,7 @@ public class JSONArrayProvider extends JSONValueProvider implements JSONArray {
 
         int current = 0;
         int max = this.values.size();
-        for (JSONValueProvider value : this.values) {
+        for (JSONValue value : this.values) {
 
             value.setIndent(getIndent() + "    ");
 

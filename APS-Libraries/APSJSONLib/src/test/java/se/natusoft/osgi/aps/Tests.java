@@ -40,9 +40,8 @@
  */
 package se.natusoft.osgi.aps;
 
-import org.junit.*;
+import org.junit.Test;
 import se.natusoft.osgi.aps.json.*;
-import se.natusoft.osgi.aps.json.tools.JSONMapConv;
 import se.natusoft.osgi.aps.json.tools.JSONToJava;
 import se.natusoft.osgi.aps.json.tools.JavaToJSON;
 import se.natusoft.osgi.aps.json.tools.SystemOutErrorHandler;
@@ -52,30 +51,9 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class Tests {
-
-    public Tests() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
-    }
 
     @Test
     public void readJSON() throws Exception {
@@ -89,16 +67,16 @@ public class Tests {
                 "\"array3\": [ ]" +
                 "}";
         ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
-        JSONObjectProvider obj = new JSONObjectProvider(new SystemOutErrorHandler());
+        JSONObject obj = new JSONObject(new SystemOutErrorHandler());
         obj.readJSON(bais);
         bais.close();
 
         assertEquals("bla", obj.getValue("string").toString());
-        assertEquals(1234, ((JSONNumberProvider)obj.getValue("number")).toInt());
+        assertEquals(1234, ((JSONNumber)obj.getValue("number")).toInt());
         assertEquals("null", obj.getValue("null").toString());
-        assertEquals(true, ((JSONBooleanProvider)obj.getValue("boolean")).getAsBoolean());
-        assertEquals(4, ((JSONArrayProvider)obj.getValue("array")).getAsList().size());
-        List<JSONNumberProvider> arrayValues = ((JSONArrayProvider)obj.getValue("array")).getAsList(JSONNumberProvider.class);
+        assertEquals(true, ((JSONBoolean)obj.getValue("boolean")).getAsBoolean());
+        assertEquals(4, ((JSONArray)obj.getValue("array")).getAsList().size());
+        List<JSONNumber> arrayValues = ((JSONArray)obj.getValue("array")).getAsList();
         assertEquals(1, arrayValues.get(0).toInt());
         assertEquals(2, arrayValues.get(1).toInt());
         assertEquals(3, arrayValues.get(2).toInt());
@@ -109,7 +87,7 @@ public class Tests {
     public void readEmptyObject() throws Exception {
         String json = "{\n}";
         ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
-        JSONObjectProvider obj = new JSONObjectProvider(new SystemOutErrorHandler());
+        JSONObject obj = new JSONObject(new SystemOutErrorHandler());
         obj.readJSON(bais);
         bais.close();
 
@@ -118,16 +96,16 @@ public class Tests {
 
     @Test
     public void writeJSON() throws Exception {
-        JSONObjectProvider obj = new JSONObjectProvider();
-        obj.setValue("string", new JSONStringProvider("bla"));
-        obj.setValue("number", new JSONNumberProvider(1234));
-        obj.setValue("null", new JSONNullProvider());
-        obj.setValue("boolean", new JSONBooleanProvider(true));
-        JSONArrayProvider array = new JSONArrayProvider();
-        array.addValue(new JSONNumberProvider(1));
-        array.addValue(new JSONNumberProvider(2));
-        array.addValue(new JSONNumberProvider(3));
-        array.addValue(new JSONNumberProvider(4));
+        JSONObject obj = new JSONObject();
+        obj.setValue("string", new JSONString("bla"));
+        obj.setValue("number", new JSONNumber(1234));
+        obj.setValue("null", new JSONNull());
+        obj.setValue("boolean", new JSONBoolean(true));
+        JSONArray array = new JSONArray();
+        array.addValue(new JSONNumber(1));
+        array.addValue(new JSONNumber(2));
+        array.addValue(new JSONNumber(3));
+        array.addValue(new JSONNumber(4));
         obj.setValue("array", array);
 
         System.out.println("Readable format:");
@@ -150,20 +128,20 @@ public class Tests {
     }
 
     @Test
-    public void conversions() throws Exception {
-        JSONObjectProvider obj = new JSONObjectProvider(new SystemOutErrorHandler());
-        obj.setValue("string", new JSONStringProvider("bla"));
-        obj.setValue("number", new JSONNumberProvider(1234));
-        obj.setValue("boolean", new JSONBooleanProvider(true));
-        JSONArrayProvider array = new JSONArrayProvider();
-        array.addValue(new JSONNumberProvider(1));
-        array.addValue(new JSONNumberProvider(2));
-        array.addValue(new JSONNumberProvider(3));
-        array.addValue(new JSONNumberProvider(4));
+    public void conversions() {
+        JSONObject obj = new JSONObject(new SystemOutErrorHandler());
+        obj.setValue("string", new JSONString("bla"));
+        obj.setValue("number", new JSONNumber(1234));
+        obj.setValue("boolean", new JSONBoolean(true));
+        JSONArray array = new JSONArray();
+        array.addValue(new JSONNumber(1));
+        array.addValue(new JSONNumber(2));
+        array.addValue(new JSONNumber(3));
+        array.addValue(new JSONNumber(4));
         obj.setValue("array", array);
-        JSONObjectProvider name = new JSONObjectProvider();
-        name.setValue("firstName", new JSONStringProvider("Tommy"));
-        name.setValue("lastName", new JSONStringProvider("Svensson"));
+        JSONObject name = new JSONObject();
+        name.setValue("firstName", new JSONString("Tommy"));
+        name.setValue("lastName", new JSONString("Svensson"));
         obj.setValue("name", name);
 
         obj.writeJSON(System.out, true);
@@ -184,20 +162,20 @@ public class Tests {
 
         System.out.println("Success in converting to Java!");
 
-        JSONObjectProvider convertedObj = JavaToJSON.convertObject(testBean);
+        JSONObject convertedObj = JavaToJSON.convertObject(testBean);
         convertedObj.writeJSON(System.out, true);
         System.out.println();
 
         assertEquals("bla", convertedObj.getValue("string").toString());
-        assertEquals(1234, ((JSONNumberProvider)convertedObj.getValue("number")).toInt());
-        assertEquals(true, ((JSONBooleanProvider)convertedObj.getValue("boolean")).getAsBoolean());
-        assertEquals(4, ((JSONArrayProvider)convertedObj.getValue("array")).getAsList().size());
-        List<JSONNumberProvider> arrayValues = ((JSONArrayProvider)convertedObj.getValue("array")).getAsList(JSONNumberProvider.class);
+        assertEquals(1234, ((JSONNumber)convertedObj.getValue("number")).toInt());
+        assertEquals(true, ((JSONBoolean)convertedObj.getValue("boolean")).getAsBoolean());
+        assertEquals(4, ((JSONArray)convertedObj.getValue("array")).getAsList().size());
+        List<JSONNumber> arrayValues = ((JSONArray)convertedObj.getValue("array")).getAsList();
         assertEquals(1, arrayValues.get(0).toInt());
         assertEquals(2, arrayValues.get(1).toInt());
         assertEquals(3, arrayValues.get(2).toInt());
         assertEquals(4, arrayValues.get(3).toInt());
-        JSONObjectProvider convertedName = (JSONObjectProvider)convertedObj.getValue("name");
+        JSONObject convertedName = (JSONObject)convertedObj.getValue("name");
         assertNotNull(convertedName);
         assertEquals("Tommy", convertedName.getValue("firstName").toString());
         assertEquals("Svensson", convertedName.getValue("lastName").toString());
@@ -215,7 +193,7 @@ public class Tests {
                         "\"subObject\": {\"content\": 12345}" +
                         "}";
 
-        Map<String, Object> values = JSONMapConv.jsonObjectToMap(json);
+        Map<String, Object> values = JSON.stringToMap(json);
 
         assertEquals("Bad value for 'Developer'!", "tommy", values.get("Developer"));
         assertEquals("Bad value for 'Likes Groovy'!", true, values.get("Likes Groovy"));
@@ -230,7 +208,7 @@ public class Tests {
 
         System.out.println("Success in converting JSON to a Map!");
 
-        String json2 = JSONMapConv.mapToJSONObjectString(values);
+        String json2 = JSON.mapToString(values);
 
         assertTrue(json2.contains("\"Developer\": \"tommy\""));
         assertTrue(json2.contains("Tommy"));

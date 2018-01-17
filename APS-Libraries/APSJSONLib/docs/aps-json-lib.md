@@ -14,9 +14,7 @@ _readJSON(...)_ in the __JSONValue__ base class now throws JSONEOFException (ext
 
 Complete javadocs can be found at [http://apidoc.natusoft.se/APSJSONLib/](http://apidoc.natusoft.se/APSJSONLib/).
 
-public _class_ __JSON__   [se.natusoft.osgi.aps.json] {
 
-This is the official API for reading and writing JSON values.
 
 __public static void read(InputStream jsonIn, APSHandler<APSResult<JSONValue>> resultHandler)__
 
@@ -90,6 +88,128 @@ _Throws_
 
 > _APSIOException_ - on IO problems. 
 
+__public static byte[] jsonToBytes(JSONValue jsonValue) throws APSIOException__
+
+Converts a JSONValue into bytes.
+
+_Returns_
+
+> A byte array.
+
+_Parameters_
+
+> _jsonValue_ - The JSONValue to convert. 
+
+_Throws_
+
+> _APSIOException_ - on any IO failure. 
+
+__public static JSONValue bytesToJson(byte[] bytes)__
+
+Converts a byte array into a JSONValue object. For this to work the byte array of course must contain valid JSON!
+
+_Parameters_
+
+> _bytes_ - The bytes to conve rt. 
+
+__public static String jsonToString(JSONValue jsonValue) throws APSIOException__
+
+Converts a JSONValue to a String of JSON.
+
+_Returns_
+
+> A String of JSON.
+
+_Parameters_
+
+> _jsonValue_ - The json value to convert. 
+
+_Throws_
+
+> _APSIOException_ - on failure. Since the JSON is valid and we are writing to memory this is unlikely ... 
+
+__public static JSONValue stringToJson(String jsonString) throws APSIOException__
+
+Converts a String with JSON into a JSONValue.
+
+_Returns_
+
+> Whatever JSON object the string contained, as a base JSONValue.
+
+_Parameters_
+
+> _jsonString_ - The JSON String to convert. 
+
+_Throws_
+
+> _APSIOException_ - on failure, like bad JSON in string. 
+
+
+
+
+
+__public static Map<String, Object> jsonObjectToMap(JSONObject jsonObject)__
+
+This takes a JSONObject and returns a Map.
+
+_Returns_
+
+> The converted Map.
+
+_Parameters_
+
+> _jsonObject_ - The JSONObject to convert to a Map. 
+
+__public static JSONObject mapToJSONObject(Map<String, Object> map)__
+
+Converts a `Map<String,``Object>` to a JSONObject.
+
+_Returns_
+
+> A converted JSONObject.
+
+_Parameters_
+
+> _map_ - The Map to convert. 
+
+
+
+__public static Map<String, Object> stringToMap(String json)__
+
+Converts from String to JSON to Map.
+
+_Returns_
+
+> A Map representation of the JSON.
+
+_Parameters_
+
+> _json_ - The JSON String to convert. 
+
+__public static String mapToString(Map<String, Object> map)__
+
+Converts from Map to JSONObject to String.
+
+_Returns_
+
+> A String containing JSON.
+
+_Parameters_
+
+> _map_ - The Map to convert. 
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 ----
@@ -100,11 +220,11 @@ _Throws_
 
 
 
-__public JSONArrayProvider()__
+__public JSONArray()__
 
 Creates a new JSONArray for wrinting JSON output.
 
-__public JSONArrayProvider(JSONErrorHandler errorHandler)__
+__public JSONArray(JSONErrorHandler errorHandler)__
 
 Creates a new JSONArray for reading JSON input and writing JSON output.
 
@@ -116,7 +236,7 @@ _Parameters_
 
 
 
-__public void addValue(JSONValueProvider value)__
+__public void addValue(JSONValue value)__
 
 Adds a value to the array.
 
@@ -125,24 +245,6 @@ _Parameters_
 > _value_ - The value to add. 
 
 
-
-__public List<se.natusoft.osgi.aps.api.misc.json.model.JSONValue> getAsList()__
-
-Returns the array values as a List.
-
-__public <T extends se.natusoft.osgi.aps.api.misc.json.model.JSONValue> List<T> getAsList(Class<T> type)__
-
-Returns the array values as a list of a specific type.
-
-_Returns_
-
-> A list of specified type if type is the same as in the list.
-
-_Parameters_
-
-> _type_ - The class of the type to return values as a list of. 
-
-> _<T>_ - One of the JSONValue subclasses. 
 
 
 
@@ -158,7 +260,7 @@ _Parameters_
 
 
 
-__public JSONBooleanProvider(boolean value)__
+__public JSONBoolean(boolean value)__
 
 Creates a new JSONBoolean instance for writing JSON output.
 
@@ -166,7 +268,7 @@ _Parameters_
 
 > _value_ - The value for this boolean. 
 
-__public JSONBooleanProvider(JSONErrorHandler errorHandler)__
+__public JSONBoolean(JSONErrorHandler errorHandler)__
 
 Creates a new JSONBoolean instance for reading JSON input or writing JSON output.
 
@@ -196,7 +298,55 @@ Returns the value of this boolean as a String.
 
 
 
+__public Boolean toBoolean()__
 
+_Returns_
+
+> this JSONBoolean as a Java boolean.
+
+}
+
+----
+
+    
+
+public _class_ __JSONEOFException__ extends  APSIOException  }  [se.natusoft.osgi.aps.json] {
+
+Thrown if a JSON structure is tried to be read from a stream that has no more data.
+
+}
+
+----
+
+    
+
+public _interface_ __JSONErrorHandler__   [se.natusoft.osgi.aps.json] {
+
+This is called on warnings or failures.
+
+@author Tommy Svensson
+
+__void warning(String message)__
+
+Warns about something.
+
+_Parameters_
+
+> _message_ - The warning message. 
+
+__void fail(String message, Throwable cause) throws RuntimeException__
+
+Indicate failure.
+
+_Parameters_
+
+> _message_ - The failure message. 
+
+> _cause_ - The cause of the failure. Can be null! 
+
+_Throws_
+
+> _RuntimeException_ - This method must throw a RuntimeException. 
 
 }
 
@@ -206,11 +356,11 @@ Returns the value of this boolean as a String.
 
 
 
-__public JSONNullProvider()__
+__public JSONNull()__
 
 Creates a new JSONNull instance for writing JSON output.
 
-__public JSONNullProvider(JSONErrorHandler errorHandler)__
+__public JSONNull(JSONErrorHandler errorHandler)__
 
 Creates a new JSONNull instance for reading JSON input or writing JSON output.
 
@@ -240,7 +390,7 @@ _Returns_
 
 
 
-__public JSONNumberProvider(Number value)__
+__public JSONNumber(Number value)__
 
 Creates a new JSONNumber instance for writing JSON output.
 
@@ -248,7 +398,7 @@ _Parameters_
 
 > _value_ - The numeric value. 
 
-__public JSONNumberProvider(JSONErrorHandler errorHandler)__
+__public JSONNumber(JSONErrorHandler errorHandler)__
 
 Creates a new JSONNumber instance for reading JSON input or writing JSON output.
 
@@ -312,11 +462,11 @@ _Parameters_
 
 
 
-__public JSONObjectProvider()__
+__public JSONObject()__
 
 Creates a JSONObject instance for writing JSON output.
 
-__public JSONObjectProvider(JSONErrorHandler errorHandler)__
+__public JSONObject(JSONErrorHandler errorHandler)__
 
 Creates a new JSONObject instance for reading JSON input or writing JSON output.
 
@@ -328,35 +478,79 @@ _Parameters_
 
 
 
+__public Set<JSONString> getValueNames()__
 
+Returns the names of the available properties.
 
+__public JSONValue getValue(JSONString name)__
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-__public void setValue(se.natusoft.osgi.aps.api.misc.json.model.JSONString name, JSONValueProvider value)__
-
-Adds a property to this JSONObject instance.
+Returns the named property.
 
 _Parameters_
 
-> _name_ - The name of the property. 
+> _name_ - The name of the property to get. 
 
-> _value_ - The property value. 
+__public JSONValue getValue(String name)__
 
-__public void setValue(String name, se.natusoft.osgi.aps.api.misc.json.model.JSONValue value)__
+Returns the named property.
+
+_Parameters_
+
+> _name_ - The name of the property to get. 
+
+__public void setValue(JSONString name, JSONValue value)__
+
+Adds a value to this JSONObject instance.
+
+_Parameters_
+
+> _name_ - The name of the value. 
+
+> _value_ - The value. 
+
+__public void setValue(String name, String value)__
+
+Adds a string value.
+
+_Parameters_
+
+> _name_ - The name of the value. 
+
+> _value_ - The value. 
+
+__public void setValue(String name, Number value)__
+
+Adds a numeric value.
+
+_Parameters_
+
+> _name_ - The name of the value. 
+
+> _value_ - The value. 
+
+__public void setValue(String name, boolean value)__
+
+Adds a boolean vlaue.
+
+_Parameters_
+
+> _name_ - The name of the value. 
+
+> _value_ - The value. 
+
+__public void fromMap(Map<String, Object> map)__
+
+populates this JSONObject from the specified Map.
+
+_Parameters_
+
+> _map_ - The Map to import. 
+
+__public Map<String, Object> toMap()__
+
+Returns the JSONObject as a Map.
+
+__public void setValue(String name, JSONValue value)__
 
 Adds a property to this JSONObject instance.
 
@@ -380,7 +574,7 @@ _Parameters_
 
 
 
-__public JSONStringProvider(String value)__
+__public JSONString(String value)__
 
 Creates a new JSONString for writing JSON output.
 
@@ -388,7 +582,7 @@ _Parameters_
 
 > _value_ - The value of this JSONString. 
 
-__public JSONStringProvider(JSONErrorHandler errorHandler)__
+__public JSONString(JSONErrorHandler errorHandler)__
 
 Creates a new JSONString for reading JSON input and writing JSON output.
 
@@ -422,11 +616,11 @@ _Parameters_
 
 
 
-__protected JSONValueProvider()__
+__protected JSONValue()__
 
 Creates a new JSONValue.
 
-__protected JSONValueProvider(JSONErrorHandler errorHandler)__
+__protected JSONValue(JSONErrorHandler errorHandler)__
 
 Creates a new JSONValue
 
@@ -788,7 +982,7 @@ _Returns_
 
 
 
-__public static JSONObjectProvider convertObject(Object javaBean) throws JSONConvertionException__
+__public static JSONObject convertObject(Object javaBean) throws JSONConvertionException__
 
 Converts a JavaBean object into a _JSONObject_.
 
@@ -804,7 +998,7 @@ _Throws_
 
 > _JSONConvertionException_ - on converting failure. 
 
-__public static JSONObjectProvider convertObject(JSONObjectProvider jsonObject, Object javaBean) throws JSONConvertionException__
+__public static JSONObject convertObject(JSONObject jsonObject, Object javaBean) throws JSONConvertionException__
 
 Converts a JavaBean object into a _JSONObject_.
 
@@ -822,7 +1016,7 @@ _Throws_
 
 > _JSONConvertionException_ - on converting failure. 
 
-__public static JSONValueProvider convertValue(Object value)__
+__public static JSONValue convertValue(Object value)__
 
 Converts a value from a java value to a _JSONValue_.
 
@@ -863,82 +1057,6 @@ _Parameters_
 > _message_ - The exception message 
 
 > _cause_ - The cause of this exception. 
-
-}
-
-----
-
-    
-
-public _class_ __JSONMapConv__   [se.natusoft.osgi.aps.json.tools] {
-
-This converts between a Java Map and JSON. Do note that this of course uses this library to read and write JSON, but this specific public API only deals with Java and JSON as String or on/in a stream. [p/](p/) This class becomes more useful when used from Groovy since the latter provides much nicer usage of data in Maps. Yes, I know about JSONSlurper and JSONBuilder in Groovy. Those however does not work with @CompileStatic. Maps does.
-
-__public static Map<String, Object> jsonObjectToMap(String json) throws APSIOException__
-
-This takes a String containing a JSON object and returns it as a Map.
-
-_Parameters_
-
-> _json_ - The JSON content to convert to a Map. 
-
-_Throws_
-
-> _APSIOException_ - on failure. 
-
-
-
-
-
-__public static Map<String, Object> jsonObjectToMap(se.natusoft.osgi.aps.api.misc.json.model.JSONObject jsonObject)__
-
-This takes a JSONObject and returns a Map.
-
-_Returns_
-
-> The converted Map.
-
-_Parameters_
-
-> _jsonObject_ - The JSONObject to convert to a Map. 
-
-
-
-
-
-
-
-__public static String mapToJSONObjectString(Map<String, Object> map) throws APSIOException__
-
-This takes a Map (as created by jsonObjectToMap(...)) and returns a JSON String.
-
-_Parameters_
-
-> _map_ - The Map to convert to JSON. 
-
-_Throws_
-
-> _APSIOException_ - on I/O failures. 
-
-__public static se.natusoft.osgi.aps.api.misc.json.model.JSONObject mapToJSONObject(Map<String, Object> map)__
-
-Converts a `Map<String,``Object>` to a JSONObject.
-
-_Returns_
-
-> A converted JSONObject.
-
-_Parameters_
-
-> _map_ - The Map to convert. 
-
-
-
-
-
-
-
-
 
 }
 

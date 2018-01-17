@@ -2,7 +2,7 @@ package se.natusoft.osgi.aps.core.config
 
 import org.osgi.framework.Bundle
 import org.osgi.framework.BundleEvent
-import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler
+import JSONErrorHandler
 import se.natusoft.osgi.aps.api.misc.json.model.JSONObject
 import se.natusoft.osgi.aps.api.misc.json.model.JSONValue
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService

@@ -40,9 +40,6 @@
  */
 package se.natusoft.osgi.aps.json;
 
-import se.natusoft.osgi.aps.api.misc.json.JSONEOFException;
-import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
-import se.natusoft.osgi.aps.api.misc.json.model.JSONValue;
 import se.natusoft.osgi.aps.exceptions.APSIOException;
 
 import java.io.*;
@@ -63,10 +60,10 @@ import java.io.*;
  * \_____________ (null)   _____________/         JSONNull
  *
  * @author Tommy Svensson
- * @see JSONObjectProvider
+ * @see JSONObject
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class JSONValueProvider implements JSONValue {
+public abstract class JSONValue {
     //
     // Private Members
     //
@@ -88,13 +85,13 @@ public abstract class JSONValueProvider implements JSONValue {
     /**
      * Creates a new JSONValue.
      */
-    protected JSONValueProvider() {
+    protected JSONValue() {
     }
 
     /**
      * Creates a new JSONValue
      */
-    protected JSONValueProvider(JSONErrorHandler errorHandler) {
+    protected JSONValue(JSONErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
     }
 
@@ -141,26 +138,26 @@ public abstract class JSONValueProvider implements JSONValue {
      * @throws APSIOException on IOFailure.
      */
     /*package*/
-    static JSONValueProvider resolveAndParseJSONValue(char c, JSONReader reader, JSONErrorHandler errorHandler) throws APSIOException {
+    static JSONValue resolveAndParseJSONValue(char c, JSONReader reader, JSONErrorHandler errorHandler) throws APSIOException {
         c = reader.skipWhitespace(c);
 
-        JSONValueProvider value = null;
-        if (JSONObjectProvider.isObjectStart(c)) {
+        JSONValue value = null;
+        if (JSONObject.isObjectStart(c)) {
             value = createObject(errorHandler);
             value.readJSON(c, reader);
-        } else if (JSONStringProvider.isStringStart(c)) {
+        } else if (JSONString.isStringStart(c)) {
             value = createString(errorHandler);
             value.readJSON(c, reader);
-        } else if (JSONNumberProvider.isNumberStart(c)) {
+        } else if (JSONNumber.isNumberStart(c)) {
             value = createNumber(errorHandler);
             value.readJSON(c, reader);
-        } else if (JSONBooleanProvider.isBooleanStart(c)) {
+        } else if (JSONBoolean.isBooleanStart(c)) {
             value = createBoolean(errorHandler);
             value.readJSON(c, reader);
-        } else if (JSONNullProvider.isNullStart(c)) {
+        } else if (JSONNull.isNullStart(c)) {
             value = createNull(errorHandler);
             value.readJSON(c, reader);
-        } else if (JSONArrayProvider.isArrayStart(c)) {
+        } else if (JSONArray.isArrayStart(c)) {
             value = createArray(errorHandler);
             value.readJSON(c, reader);
         } else {
@@ -291,8 +288,8 @@ public abstract class JSONValueProvider implements JSONValue {
      * @param errorHandler The user error handler.
      */
     /*package*/
-    static JSONStringProvider createString(JSONErrorHandler errorHandler) {
-        return createFilter(new JSONStringProvider(errorHandler));
+    static JSONString createString(JSONErrorHandler errorHandler) {
+        return createFilter(new JSONString(errorHandler));
     }
 
     /**
@@ -302,8 +299,8 @@ public abstract class JSONValueProvider implements JSONValue {
      */
     /*package*/
     @SuppressWarnings("WeakerAccess")
-    static JSONNumberProvider createNumber(JSONErrorHandler errorHandler) {
-        return createFilter(new JSONNumberProvider(errorHandler));
+    static JSONNumber createNumber(JSONErrorHandler errorHandler) {
+        return createFilter(new JSONNumber(errorHandler));
     }
 
     /**
@@ -313,8 +310,8 @@ public abstract class JSONValueProvider implements JSONValue {
      */
     /*package*/
     @SuppressWarnings("WeakerAccess")
-    static JSONNullProvider createNull(JSONErrorHandler errorHandler) {
-        return createFilter(new JSONNullProvider(errorHandler));
+    static JSONNull createNull(JSONErrorHandler errorHandler) {
+        return createFilter(new JSONNull(errorHandler));
     }
 
     /**
@@ -324,8 +321,8 @@ public abstract class JSONValueProvider implements JSONValue {
      */
     /*package*/
     @SuppressWarnings("WeakerAccess")
-    static JSONBooleanProvider createBoolean(JSONErrorHandler errorHandler) {
-        return createFilter(new JSONBooleanProvider(errorHandler));
+    static JSONBoolean createBoolean(JSONErrorHandler errorHandler) {
+        return createFilter(new JSONBoolean(errorHandler));
     }
 
     /**
@@ -335,8 +332,8 @@ public abstract class JSONValueProvider implements JSONValue {
      */
     /*package*/
     @SuppressWarnings("WeakerAccess")
-    static JSONArrayProvider createArray(JSONErrorHandler errorHandler) {
-        return createFilter(new JSONArrayProvider(errorHandler));
+    static JSONArray createArray(JSONErrorHandler errorHandler) {
+        return createFilter(new JSONArray(errorHandler));
     }
 
     /**
@@ -346,8 +343,8 @@ public abstract class JSONValueProvider implements JSONValue {
      */
     /*package*/
     @SuppressWarnings("WeakerAccess")
-    static JSONObjectProvider createObject(JSONErrorHandler errorHandler) {
-        return createFilter(new JSONObjectProvider(errorHandler));
+    static JSONObject createObject(JSONErrorHandler errorHandler) {
+        return createFilter(new JSONObject(errorHandler));
     }
 
     //

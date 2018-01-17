@@ -34,7 +34,7 @@
  *         2011-01-30: Created!
  *
  */
-package se.natusoft.osgi.aps.api.misc.json;
+package se.natusoft.osgi.aps.json;
 
 /**
  * This is called on warnings or failures.

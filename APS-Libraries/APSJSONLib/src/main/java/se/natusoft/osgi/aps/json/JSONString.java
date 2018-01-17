@@ -40,8 +40,6 @@
  */
 package se.natusoft.osgi.aps.json;
 
-import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
-import se.natusoft.osgi.aps.api.misc.json.model.JSONString;
 import se.natusoft.osgi.aps.exceptions.APSIOException;
 
 /**
@@ -70,7 +68,7 @@ import se.natusoft.osgi.aps.exceptions.APSIOException;
  * @author Tommy Svensson
  */
 @SuppressWarnings("WeakerAccess")
-public class JSONStringProvider extends JSONValueProvider implements JSONString {
+public class JSONString extends JSONValue {
     //
     // Private Members
     //
@@ -87,7 +85,7 @@ public class JSONStringProvider extends JSONValueProvider implements JSONString 
      *
      * @param value The value of this JSONString.
      */
-    public JSONStringProvider(String value) {
+    public JSONString(String value) {
         super();
         this.value = value;
     }
@@ -97,7 +95,7 @@ public class JSONStringProvider extends JSONValueProvider implements JSONString 
      *
      * @param errorHandler The error handler to use.
      */
-    public JSONStringProvider(JSONErrorHandler errorHandler) {
+    public JSONString(JSONErrorHandler errorHandler) {
         super(errorHandler);
     }
 
@@ -188,7 +186,7 @@ public class JSONStringProvider extends JSONValueProvider implements JSONString 
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final JSONStringProvider other = (JSONStringProvider) obj;
+        final JSONString other = (JSONString) obj;
         return (this.value == null) ? (other.value == null) : this.value.equals(other.value);
     }
 }

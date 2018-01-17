@@ -40,8 +40,7 @@
  */
 package se.natusoft.osgi.aps.json.tools;
 
-import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
-import se.natusoft.osgi.aps.api.misc.json.model.*;
+import se.natusoft.osgi.aps.json.JSONErrorHandler;
 import se.natusoft.osgi.aps.exceptions.APSIOException;
 import se.natusoft.osgi.aps.json.*;
 
@@ -85,7 +84,7 @@ public class JSONToJava {
                 throw new JSONConvertionException(message, cause);
             }
         };
-        JSONObjectProvider obj = new JSONObjectProvider(jsonErrHandler);
+        JSONObject obj = new JSONObject(jsonErrHandler);
         obj.readJSON(jsonStream);
 
         return convert(obj, javaClass);
@@ -196,10 +195,10 @@ public class JSONToJava {
             resVal = (T)value.toString();
         }
         else if (value instanceof JSONBoolean) {
-            resVal = (T)((JSONBooleanProvider)value).toBoolean();
+            resVal = (T)((JSONBoolean)value).toBoolean();
         }
         else if (value instanceof JSONNumber) {
-            resVal = (T)((JSONNumberProvider)value).to(modelType);
+            resVal = (T)((JSONNumber)value).to(modelType);
         }
         else if (value instanceof JSONArray) {
             JSONArray array = (JSONArray)value;
@@ -249,10 +248,10 @@ public class JSONToJava {
                 map.put(name.toString(), jsonValue.toString());
             }
             else if (jsonValue instanceof JSONBoolean) {
-                map.put(name.toString(), ((JSONBooleanProvider)jsonValue).toBoolean());
+                map.put(name.toString(), ((JSONBoolean)jsonValue).toBoolean());
             }
             else if (jsonValue instanceof JSONNumber) {
-                map.put(name.toString(), ((JSONNumberProvider)jsonValue).toNumber());
+                map.put(name.toString(), ((JSONNumber)jsonValue).toNumber());
             }
             else if (jsonValue instanceof JSONObject) {
                 // This is the best we can do since we don't have a type for this object!
@@ -275,17 +274,17 @@ public class JSONToJava {
                 list.add(jsonValue.toString());
             }
             else if (jsonValue instanceof JSONBoolean) {
-                list.add(((JSONBooleanProvider)jsonValue).toBoolean());
+                list.add(((JSONBoolean)jsonValue).toBoolean());
             }
             else if (jsonValue instanceof JSONNumber) {
-                list.add(((JSONNumberProvider)jsonValue).toNumber());
+                list.add(((JSONNumber)jsonValue).toNumber());
             }
             else if (jsonValue instanceof JSONObject) {
                 // This is the best we can do since we don't have a type for the object!
                 list.add(jsonObjectToMap((JSONObject)jsonValue));
             }
             else if (jsonValue instanceof JSONArray) {
-                list.add(jsonArrayToList((JSONArrayProvider)jsonValue));
+                list.add(jsonArrayToList((JSONArray)jsonValue));
             }
         }
 
