@@ -1,12 +1,12 @@
 package se.natusoft.osgi.aps.net.vertx
 
 import io.vertx.core.eventbus.EventBus
-import io.vertx.core.json.JsonObject
-import se.natusoft.osgi.aps.api.messaging.APSMessagingException
 import se.natusoft.osgi.aps.api.messaging.APSMessageService
+import se.natusoft.osgi.aps.api.messaging.APSMessagingException
 import se.natusoft.osgi.aps.api.messaging.APSPublisher
 import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.api.reactive.APSResult
+import se.natusoft.osgi.aps.json.JSON
 import se.natusoft.osgi.aps.tools.APSLogger
 
 /**
@@ -41,7 +41,9 @@ class Publisher implements APSPublisher<Map<String, Object>> {
     @Override
     APSPublisher<Map<String, Object>> publish( Map<String, Object> message ) throws APSMessagingException {
         String address = this.properties[ APSMessageService.TARGET ]
-        getEventBus().publish( address, new JsonObject( message ) )
+
+        // See comment when handling received message in APSVertxEventBusMessagingProvider.subscribe(...).
+        getEventBus().publish( address, JSON.mapToString( message ) )
 
         this
     }
@@ -63,22 +65,22 @@ class Publisher implements APSPublisher<Map<String, Object>> {
         String address = this.properties[ APSMessageService.TARGET ]
         try {
 
-            getEventBus().publish( address, new JsonObject( message ) )
+            getEventBus().publish( address, JSON.mapToString( message ) )
 
-            if (result != null) {
+            if ( result != null ) {
                 result.handle( APSResult.success( null ) )
             }
             else {
-                this.logger.warn("Call made to publish(message, resultHandler) without a result handler!")
+                this.logger.warn( "Call made to publish(message, resultHandler) without a result handler!" )
             }
         }
         catch ( Exception e ) {
 
-            if (result != null) {
+            if ( result != null ) {
                 result.handle( APSResult.failure( e ) )
             }
             else {
-                this.logger.error(e.message, e)
+                this.logger.error( e.message, e )
             }
         }
         this

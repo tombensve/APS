@@ -153,20 +153,7 @@ class StructMap implements Map<String, Object> {
 
         for ( String part : structPath.split( "\\." ) ) {
 
-            // Vertx delivers a JsonObject implementing Iterable<Map.Entry<String, Object>>.
-            if ( current instanceof Iterable<Map.Entry<String, Object>> ) {
-
-//                for ( Map.Entry<String, Object> entry : (Iterable<Map.Entry<String, Object>>) current ) {
-//
-//                    if ( part == entry.key ) {
-//
-//                        current = entry.value
-//
-//                        break
-//                    }
-//                }
-            }
-            else if ( Map.class.isAssignableFrom( current.class ) ) {
+            if ( Map.class.isAssignableFrom( current.class ) ) {
 
                 current = ( current as Map ).get( part )
             }

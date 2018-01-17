@@ -48,6 +48,7 @@ import se.natusoft.osgi.aps.api.messaging.APSSender
 import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.api.reactive.APSValue
 import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.osgi.aps.json.JSON
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 
@@ -173,8 +174,19 @@ class APSVertxEventBusMessagingProvider implements APSMessageService<Map<String,
             this.idToHandler[ subId ] = handler
             this.idToAddress[ subId ] = address
 
-            this.eventBus.consumer( address ) { Message<JsonObject> msg ->
-                Map<String, Object> message = msg.body().map
+            this.eventBus.consumer( address ) { Message<String> msg ->
+
+                // The JsonObject that Vertx provides for the event bus can be created from a Map,
+                // but when such is received and .getMap() is called on it, it only produces a Map
+                // for that top level instance! If you get a key that returns another object it will
+                // be a JsonObject and not a Map. So .getMap() has to be called on och sub object.
+                // That does not make the Map a true JSON-ish representation. You don't get back
+                // what was used to create it in the first place. Passing this Map to StructMap
+                // (aps-core-lib) of course fails. Therefore I decided to use the APS JSON handling
+                // instead and just convert the Map to JSON in a String when sending, and then
+                // parsing the String as JSON and converting to a Map<String, Object> structure
+                // when receiving. This results in an identical object to what was sent.
+                Map<String, Object> message = JSON.stringToMap( msg.body() )
 
                 this.subscribers[ address ].each { UUID subHandlerId ->
                     APSHandler<APSValue<Map<String, Object>>> callSubHandler = this.idToHandler[ subHandlerId ]
@@ -183,7 +195,7 @@ class APSVertxEventBusMessagingProvider implements APSMessageService<Map<String,
             }
         }
 
-        properties[ 'sub-id'] = subId.toString(  )
+        properties[ 'sub-id' ] = subId.toString()
     }
 
     /**
@@ -194,9 +206,9 @@ class APSVertxEventBusMessagingProvider implements APSMessageService<Map<String,
     @Override
     synchronized void unsubscribe( Map<String, String> properties ) {
 
-        String subIdStr = properties[ 'sub-id']
+        String subIdStr = properties[ 'sub-id' ]
 
-        if (subIdStr != null) {
+        if ( subIdStr != null ) {
             UUID id = UUID.fromString( subIdStr )
 
             String address = this.idToAddress[ id ]

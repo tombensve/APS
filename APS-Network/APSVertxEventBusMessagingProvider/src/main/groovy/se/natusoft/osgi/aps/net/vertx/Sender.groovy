@@ -3,13 +3,13 @@ package se.natusoft.osgi.aps.net.vertx
 import io.vertx.core.AsyncResult
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.eventbus.Message
-import io.vertx.core.json.JsonObject
 import se.natusoft.osgi.aps.api.messaging.APSMessageService
 import se.natusoft.osgi.aps.api.messaging.APSReplyableSender
 import se.natusoft.osgi.aps.api.messaging.APSSender
 import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.api.reactive.APSResult
 import se.natusoft.osgi.aps.api.reactive.APSValue
+import se.natusoft.osgi.aps.json.JSON
 import se.natusoft.osgi.aps.tools.APSLogger
 
 class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Object>> {
@@ -45,26 +45,28 @@ class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Obje
      */
     @Override
     APSSender<Map<String, Object>> send( Map<String, Object> message ) {
-        if ( message[ "_meta_" ] == null ) {
-            message[ "_meta_" ] = this.properties
+        if ( message[ "_properties_" ] == null ) {
+            message[ "_properties_" ] = this.properties
         }
 
         String address = this.properties[ APSMessageService.TARGET ]
 
-        if ( reply != null ) {
+        if ( this.reply != null ) {
 
-            getEventBus().send( address, message ) { AsyncResult<Message> reply ->
+            // See comment when handling received message in APSVertxEventBusMessagingProvider.subscribe(...).
+            getEventBus().send( address, JSON.mapToString( message ) ) { AsyncResult<Message<String>> reply ->
 
                 if ( reply.succeeded() ) {
 
-                    Map<String, Object> msg = ( reply.result().body() as JsonObject ).map
+                    Map<String, Object> msg = JSON.stringToMap( reply.result().body() )
                     this.reply.handle( new APSValue.Provider<Map<String, Object>>( msg ) )
                 }
             }
         }
         else {
 
-            getEventBus().send( address, message )
+            // See comment when handling received message in APSVertxEventBusMessagingProvider.subscribe(...).
+            getEventBus().send( address, JSON.mapToString( message ) )
         }
 
         this
@@ -91,15 +93,15 @@ class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Obje
                 result.handle( APSResult.success( null ) )
             }
             else {
-                this.logger.warn("Call to send(message, resultHandler) was made without a result handler!")
+                this.logger.warn( "Call to send(message, resultHandler) was made without a result handler!" )
             }
         }
         catch ( Exception e ) {
-            if (result != null) {
+            if ( result != null ) {
                 result.handle( APSResult.failure( e ) )
             }
             else {
-                this.logger.error(e.message, e)
+                this.logger.error( e.message, e )
             }
         }
 

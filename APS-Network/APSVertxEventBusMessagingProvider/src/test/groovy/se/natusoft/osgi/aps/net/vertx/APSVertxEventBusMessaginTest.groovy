@@ -6,7 +6,6 @@ import org.junit.Test
 import se.natusoft.osgi.aps.api.messaging.APSMessageService
 import se.natusoft.osgi.aps.api.messaging.APSPublisher
 import se.natusoft.osgi.aps.api.reactive.APSValue
-import se.natusoft.osgi.aps.api.util.APSProperties
 import se.natusoft.osgi.aps.core.lib.StructMap
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator
@@ -14,7 +13,8 @@ import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
-import static se.natusoft.osgi.aps.api.util.APSProperties.*
+
+import static se.natusoft.osgi.aps.api.util.APSProperties.props
 
 @CompileStatic
 @TypeChecked

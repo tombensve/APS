@@ -130,6 +130,11 @@
             <artifactId>aps-tools-lib</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-json-lib</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- Unfortunately needed since IDEA can't see the mixin and keep removing groovy if added manually in IDEA. -->
         <dependency>
