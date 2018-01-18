@@ -1,5 +1,6 @@
 package se.natusoft.osgi.aps.api.util;
 
+import se.natusoft.osgi.aps.api.reactive.APSHandler;
 import se.natusoft.osgi.aps.api.reactive.APSValue;
 
 import java.util.function.Consumer;
@@ -125,65 +126,81 @@ public class APSObject<T> implements APSValue<T> {
         return value();
     }
 
-    public APSObject onBoolean(Consumer<Boolean> consumer) {
+    public APSObject onBoolean(APSHandler<Boolean> handler) {
         if(isBoolean()) {
-            consumer.accept(getBoolean());
+            handler.handle(getBoolean());
         }
 
         return this;
     }
 
-    public APSObject onTrue(Consumer<Boolean> consumer) {
+    public APSObject onTrue(APSHandler<Boolean> handler) {
         if (isBoolean() && getBoolean()) {
-            consumer.accept(getBoolean());
+            handler.handle(getBoolean());
         }
 
         return this;
     }
 
-    public APSObject onFalse(Consumer<Boolean> consumer) {
+    public APSObject onFalse(APSHandler<Boolean> handler) {
         if (isBoolean() && !getBoolean()) {
-            consumer.accept(getBoolean());
+            handler.handle(getBoolean());
         }
 
         return this;
     }
 
-    public APSObject onString(Consumer<String> consumer) {
+    public APSObject onString(APSHandler<String> handler) {
         if (isString()) {
-            consumer.accept(getString());
+            handler.handle(getString());
         }
 
         return this;
     }
 
-    public APSObject onNumber(Consumer<Number> consumer) {
+    public APSObject onNumber(APSHandler<Number> handler) {
         if (isNumber()) {
-            consumer.accept(getNumber());
+            handler.handle(getNumber());
         }
 
         return this;
     }
 
-    public APSObject onDecimals(Consumer<Double> consumer) {
+    public APSObject onDecimals(APSHandler<Double> handler) {
         if (isDouble() || isFloat()) {
-            consumer.accept((Double)this.object);
+            handler.handle((Double)this.object);
         }
 
         return this;
     }
 
-    public APSObject onIntegers(Consumer<Long> consumer) {
+    public APSObject onIntegers(APSHandler<Long> handler) {
         if (isInt() || isLong()) {
-            consumer.accept((Long)this.object);
+            handler.handle((Long)this.object);
         }
 
         return this;
     }
 
-    public APSObject onUnknownObject(Consumer<Object> consumer) {
+    public APSObject onUnknownObject(APSHandler<Object> handler) {
         if (isUnknownObject()) {
-            consumer.accept(this.object);
+            handler.handle(this.object);
+        }
+
+        return this;
+    }
+
+    public APSObject onAvailable(APSHandler<T> handler) {
+        if (this.object != null) {
+            handler.handle(this.object);
+        }
+
+        return this;
+    }
+
+    public APSObject onNull(APSHandler<T> handler) {
+        if (this.object == null) {
+            handler.handle(null);
         }
 
         return this;

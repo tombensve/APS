@@ -2,7 +2,6 @@ package se.natusoft.osgi.aps.tools.groovy.lib
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import org.junit.Ignore
 import org.junit.Test
 import se.natusoft.osgi.aps.core.lib.StructMap
 
@@ -55,7 +54,6 @@ class StructMapTest {
     }
 
     @Test
-    @Ignore
     void testValues() throws Exception {
 
         structMap.lookup( "header.type" ) { Object r -> assert r.toString() == "service" }
@@ -65,23 +63,34 @@ class StructMapTest {
         structMap.lookup( "reply.webs.[0].name" ) { Object r -> assert r.toString() == "ConfigAdmin" }
         structMap.lookup( "reply.webs.[1].name" ) { Object r -> assert r.toString() == "RemoteServicesAdmin" }
         structMap.lookup( "reply.webs.[1].url" ) { Object r -> assert r.toString() == "https://localhost:8080/aps/RemoteSvcAdmin" }
+        structMap.lookup( "reply.webs.[*]" ) { int size -> assert size == 2 }
+
+        // This works when it is a Map being returned. It will however not work for a List.
+        structMap.lookup( "header" ) { Map<String, Object> map ->
+            StructMap smap = new StructMap( map )
+
+            smap.lookup( "address" ) { Object r -> assert r.toString() == "aps.admin.web" }
+        }
+
+        for ( int i = 0; i < (int) structMap.lookup( "reply.webs.[*]" ); i++ ) {
+            println "${structMap.lookup("reply.webs.[$i].name")}"
+        }
 
     }
 
     @Test
-    @Ignore
     void testSetValue() throws Exception {
         structMap.provide( "body.name.general", "qwerty" )
-        structMap.lookup("body.name.general" ) { Object r -> assert r.toString() == "qwerty" }
+        structMap.lookup( "body.name.general" ) { Object r -> assert r.toString() == "qwerty" }
 
-        structMap.provide( "header.type", "qaz")
-        structMap.lookup("header.type" ) { Object r -> assert r.toString() == "qaz" }
+        structMap.provide( "header.type", "qaz" )
+        structMap.lookup( "header.type" ) { Object r -> assert r.toString() == "qaz" }
 
-        structMap.provide( "reply.webs.[1].url", "http://www.google.com/")
-        structMap.lookup("reply.webs.[1].url" ) { Object r -> assert r.toString() == "http://www.google.com/" }
+        structMap.provide( "reply.webs.[1].url", "http://www.google.com/" )
+        structMap.lookup( "reply.webs.[1].url" ) { Object r -> assert r.toString() == "http://www.google.com/" }
 
-        structMap.provide("tommy.test.arr.[1].val", "qwerty")
-        structMap.lookup("tommy.test.arr.[1].val" ) { Object r -> assert r.toString() == "qwerty" }
+        structMap.provide( "tommy.test.arr.[1].val", "qwerty" )
+        structMap.lookup( "tommy.test.arr.[1].val" ) { Object r -> assert r.toString() == "qwerty" }
 
         structMap.withStructPath { String path ->
             println "${path}"

@@ -83,7 +83,9 @@ class MsgReceiver {
 
             StructMap message = new StructMap( messageValue.value() )
             message.lookupObject( "meta.test-message" ).onTrue() { boolean tm ->
+
                 if ( message[ 'id' ] == APSVertXEventBusMessagingTest.UNIQUE_MESSAGE ) {
+
                     this.logger.info( "Got '${message[ "id" ]}'!" )
                     APSVertXEventBusMessagingTest.messageReceived = true
                 }

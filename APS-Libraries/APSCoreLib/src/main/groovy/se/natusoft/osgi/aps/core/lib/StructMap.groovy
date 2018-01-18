@@ -30,14 +30,15 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *         assert structMap.lookup( "reply.webs.[0].name") == "ConfigAdmin"
  *         assert structMap.lookup( "reply.webs.[1].name") == "RemoteServicesAdmin"
  *         assert structMap.lookup( "reply.webs.[1].url") == "https://localhost:8080/aps/RemoteSvcAdmin"
+ *         assert structMap.lookup( "reply.webs.[*]" ) == 2
  *
  * Note that the values are API-wise of type Object! This is because it can be anything, like a String, Map,
  * List, Number (if you stick to JSON formats) or any other type of value you put in there.
  *
  * Also note the indexes in the paths in the example. It is not "webs[0]" but "webs.[0]"! The index is a
  * reference name in itself. The paths returned by getStructPaths() have a number between the '[' and the ']' for
- * List entries. This number is the number of entries in the list. The StructPath class (used by this class)
- * can be used to provide array size of an array value.
+ * List entries. An index of [*] and nothing more after that will return the number of entries in that list
+ * as an int.
  */
 @SuppressWarnings("SpellCheckingInspection")
 @CompileStatic
@@ -144,6 +145,8 @@ class StructMap implements Map<String, Object> {
     /**
      * Looks up the value of a specified stuctured path.
      *
+     * A path ending in [*] will return the number of entries in the array.
+     *
      * @param structPath The structured path to lookup.
      *
      * @return The value found at the path.
@@ -163,8 +166,17 @@ class StructMap implements Map<String, Object> {
                     throw new APSValidationException( "Expected a list index here, got: '${part}'" )
                 }
 
-                int index = Integer.valueOf( part.replace( "[", "" ).replace( "]", "" ) )
-                current = ( current as List ).get( index )
+                String ixStr = part.replace( "[", "" ).replace( "]", "" )
+
+                // Index '*' means number of entries in the list. In this case anything below this is
+                // ignored, so we return with the size immediately.
+                if ( ixStr == "*" ) {
+                    return ( current as List ).size()
+                }
+                else {
+                    int index = Integer.valueOf( ixStr )
+                    current = ( current as List ).get( index )
+                }
             }
         }
 
@@ -189,6 +201,9 @@ class StructMap implements Map<String, Object> {
      * @param value The value.
      */
     void provide( String structPath, Object value ) {
+        if ( value instanceof APSObject ) {
+            value = value.value()
+        }
 
         // Yeah, I know. This is not a wonder of clarity!!
 
