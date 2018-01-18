@@ -40,7 +40,6 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.eventbus.Message
-import io.vertx.core.json.JsonObject
 import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.api.messaging.APSMessageService
 import se.natusoft.osgi.aps.api.messaging.APSPublisher
@@ -48,7 +47,6 @@ import se.natusoft.osgi.aps.api.messaging.APSSender
 import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.api.reactive.APSValue
 import se.natusoft.osgi.aps.constants.APS
-import se.natusoft.osgi.aps.json.JSON
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 
@@ -73,7 +71,9 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 )
 @CompileStatic
 @TypeChecked
-class APSVertxEventBusMessagingProvider implements APSMessageService<Map<String, Object>> {
+// Yes, I'm abusing generics here! I'm using 'MessageType' here to represent Object. This makes it slightly more readable IMHO.
+// This will never be used with a generic type, so MessageType wil be Object.
+class APSVertxEventBusMessagingProvider<MessageType> implements APSMessageService<MessageType> {
 
     //
     // Constants
@@ -98,7 +98,7 @@ class APSVertxEventBusMessagingProvider implements APSMessageService<Map<String,
     private Map<String, List<UUID>> subscribers = [ : ]
 
     /** Saves handlers by their unique id. */
-    private Map<UUID, APSHandler<APSValue<Map<String, Object>>>> idToHandler = [ : ]
+    private Map<UUID, APSHandler<APSValue<MessageType>>> idToHandler = [ : ]
 
     /** Maps id to address to make things easier ... */
     private Map<UUID, String> idToAddress = [ : ]
@@ -135,7 +135,7 @@ class APSVertxEventBusMessagingProvider implements APSMessageService<Map<String,
      * @param handler Will be called with the APSPublisher to use for publishing messages.
      */
     @Override
-    void publisher( Map<String, String> properties, APSHandler<APSPublisher<Map<String, Object>>> handler ) {
+    void publisher( Map<String, String> properties, APSHandler<APSPublisher<MessageType>> handler ) {
 
         handler.handle( new Publisher( properties: properties, getEventBus: { this.eventBus }, logger: this.logger ) )
     }
@@ -148,7 +148,7 @@ class APSVertxEventBusMessagingProvider implements APSMessageService<Map<String,
      * @param handler will be called with the APSSender to use for sending messages.
      */
     @Override
-    void sender( Map<String, String> properties, APSHandler<APSSender<Map<String, Object>>> handler ) {
+    void sender( Map<String, String> properties, APSHandler<APSSender<MessageType>> handler ) {
 
         handler.handle( new Sender( properties: properties, getEventBus: { this.eventBus }, logger: this.logger ) )
     }
@@ -161,7 +161,7 @@ class APSVertxEventBusMessagingProvider implements APSMessageService<Map<String,
      *                   if there is a need for an address or topic put it in the meta data.
      */
     @Override
-    void subscribe( Map<String, String> properties, APSHandler<APSValue<Map<String, Object>>> handler ) {
+    void subscribe( Map<String, String> properties, APSHandler<APSValue<MessageType>> handler ) {
 
         UUID subId = UUID.randomUUID()
         String address = properties[ TARGET ]
@@ -185,12 +185,17 @@ class APSVertxEventBusMessagingProvider implements APSMessageService<Map<String,
                 // (aps-core-lib) of course fails. Therefore I decided to use the APS JSON handling
                 // instead and just convert the Map to JSON in a String when sending, and then
                 // parsing the String as JSON and converting to a Map<String, Object> structure
-                // when receiving. This results in an identical object to what was sent.
-                Map<String, Object> message = JSON.stringToMap( msg.body() )
+                // when receiving. This results in an identical object to what was sent. This is
+                // now handled by TypeConv which actually supports several formats.
+
+                Object message = TypeConv.vertxToAps( msg.body() )
 
                 this.subscribers[ address ].each { UUID subHandlerId ->
-                    APSHandler<APSValue<Map<String, Object>>> callSubHandler = this.idToHandler[ subHandlerId ]
-                    callSubHandler.handle( new APSValue.Provider( message ) )
+                    // IDEA  want to cast 'this.idToHandler' to 'APSHandler<APSValue<MessageType>>' using the as keyword.
+                    // The compiler is happy with the code as is, but refuses to compile if you let IDEA do the cast!
+                    // The compiler wins ...
+                    APSHandler<APSValue<MessageType>> callSubHandler = this.idToHandler[ subHandlerId ]
+                    callSubHandler.handle( new APSValue<MessageType>.Provider( message ) )
                 }
             }
         }

@@ -5,6 +5,8 @@ import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.core.lib.StructMap
 
+import java.util.function.Consumer
+
 /**
  * This class represents one individual configuration.
  */
@@ -58,6 +60,24 @@ class APSConfigProvider extends StructMap implements APSConfig {
      *
      * @return The value or null.
      */
+    /**
+     * Calls the provided handler for each value path in the map.
+     *
+     * @param pathHandler The handler to call with value paths.
+     */
+    @Override
+    void withStructPath( Consumer<String> pathHandler ) {
+
+    }
+
+    /**
+     * Returns all struct paths as a List.
+     */
+    @Override
+    List<String> getStructPaths() {
+        return null
+    }
+
     @Override
     Object lookup( String structPath ) {
         Object value = super.lookup( structPath )

@@ -12,7 +12,7 @@ import se.natusoft.osgi.aps.api.reactive.APSValue
 import se.natusoft.osgi.aps.json.JSON
 import se.natusoft.osgi.aps.tools.APSLogger
 
-class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Object>> {
+class Sender<MessageType> implements APSReplyableSender<MessageType, MessageType> {
 
     //
     // Properties
@@ -44,7 +44,7 @@ class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Obje
      * @param message The message to send.
      */
     @Override
-    APSSender<Map<String, Object>> send( Map<String, Object> message ) {
+    APSSender<Map<String, Object>> send( MessageType message ) {
         if ( message[ "_properties_" ] == null ) {
             message[ "_properties_" ] = this.properties
         }
@@ -54,7 +54,7 @@ class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Obje
         if ( this.reply != null ) {
 
             // See comment when handling received message in APSVertxEventBusMessagingProvider.subscribe(...).
-            getEventBus().send( address, JSON.mapToString( message ) ) { AsyncResult<Message<String>> reply ->
+            getEventBus().send( address, TypeConv.apsToVertx( message ) ) { AsyncResult<Message<String>> reply ->
 
                 if ( reply.succeeded() ) {
 
@@ -66,7 +66,7 @@ class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Obje
         else {
 
             // See comment when handling received message in APSVertxEventBusMessagingProvider.subscribe(...).
-            getEventBus().send( address, JSON.mapToString( message ) )
+            getEventBus().send( address, TypeConv.apsToVertx( message ) )
         }
 
         this
@@ -85,7 +85,7 @@ class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Obje
      * @param message The message to send.
      */
     @Override
-    APSSender<Map<String, Object>> send( Map<String, Object> message, APSHandler<APSResult<Map<String, Object>>> result ) {
+    APSSender<MessageType> send( MessageType message, APSHandler<APSResult<MessageType>> result ) {
         try {
             send( message )
 
@@ -114,7 +114,7 @@ class Sender implements APSReplyableSender<Map<String, Object>, Map<String, Obje
      * @param reply the subscriber to receive reply.
      */
     @Override
-    APSSender<Map<String, Object>> replyTo( APSHandler<APSValue<Map<String, Object>>> reply ) {
+    APSSender<MessageType> replyTo( APSHandler<APSValue<MessageType>> reply ) {
         this.reply = reply
 
         this

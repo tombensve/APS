@@ -7,12 +7,14 @@ import se.natusoft.osgi.aps.api.messaging.APSPublisher
 import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.api.reactive.APSResult
 import se.natusoft.osgi.aps.json.JSON
+import se.natusoft.osgi.aps.json.JSONObject
 import se.natusoft.osgi.aps.tools.APSLogger
 
 /**
  * Handles publishing. This to publish multiple messages using same meta.
  */
-class Publisher implements APSPublisher<Map<String, Object>> {
+// MessageType will always be Object!
+class Publisher<MessageType> implements APSPublisher<MessageType> {
 
     //
     // Properties
@@ -39,11 +41,10 @@ class Publisher implements APSPublisher<Map<String, Object>> {
      * @throws APSMessagingException on any failure. Note that this is a RuntimeException!
      */
     @Override
-    APSPublisher<Map<String, Object>> publish( Map<String, Object> message ) throws APSMessagingException {
+    APSPublisher<MessageType> publish( MessageType message ) throws APSMessagingException {
         String address = this.properties[ APSMessageService.TARGET ]
 
-        // See comment when handling received message in APSVertxEventBusMessagingProvider.subscribe(...).
-        getEventBus().publish( address, JSON.mapToString( message ) )
+        getEventBus().publish( address, TypeConv.apsToVertx( message ) )
 
         this
     }
@@ -61,11 +62,11 @@ class Publisher implements APSPublisher<Map<String, Object>> {
      * @param message The message to publish.
      */
     @Override
-    APSPublisher<Map<String, Object>> publish( Map<String, Object> message, APSHandler<APSResult<Map<String, Object>>> result ) {
+    APSPublisher<MessageType> publish( MessageType message, APSHandler<APSResult<MessageType>> result ) {
         String address = this.properties[ APSMessageService.TARGET ]
         try {
 
-            getEventBus().publish( address, JSON.mapToString( message ) )
+            getEventBus().publish( address, TypeConv.apsToVertx( message ) )
 
             if ( result != null ) {
                 result.handle( APSResult.success( null ) )
