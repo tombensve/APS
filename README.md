@@ -2,47 +2,38 @@
 
 Copyright © 2013 Natusoft AB
 
-__Version:__ 0.10.0
+__Version:__ 1.0.0
 
-__Author:__ Tommy Svensson (tommy@natusoft.se)
+This repo is used for development. __This repo is thereby work in progress and cannot be expected to be stable nor build completely!!__ Releases will be done to _APS_ repo. Why do development in a separate repo ? Well, not sure, but it felt like a good idea at the time :-). I however see no problems with it either.
 
----
-
-_A "smorgasbord" of OSGi services that focuses on ease of use and good enough functionality for many but wont fit all._
-
-It can be seen as osgi-ee-ish that is easy to use. The services are of platform type: configuration, database, JPA, etc.
-
-Please note that APS uses Java 7 code! It will not run in any J2ME environment! My intention with APS is a platform for writing modular web applications with easy administration.
-
-Short feature list:
-
-* Uses only basic OSGi functionallity, no SCR or blueprint.
-
-* Provides a far more flexible and usable service tracker than the standard one, that allows you to set a timeout and throws an exception on timeout. The tracker can also provide a Proxied implementation of the service interface using the tracker to make calls. 
-
-* Provides an authenticationable and pluggable administration web which different administration applications can plug into participating in a common login (SSO). APSConfigAdminWeb and APSUserAdminWeb are two such plugin admin applications.
-
-* Provides a high level configuration service where annotated configuration models are automatically registered and populated using the extender pattern. 
-   * Advanced structured config models with config values and submodels and lists of values and submodels.
-   * Supports multiple configuration environments.
-   * A web application (WAB) for editing/publishing configurations.
-   * Can synchronize configuration between installations.
-
-* Provides easy to use authentication and user services. These are easier and more comprehensable than the UserAdmin service!
-   * Provides an easy to use admin web for administration of users and roles.
-
-* Provides a JPA service (using OpenJPA) that is more flexible and easier to use than the EntityManagerFactoryBuilder.
-
-* Provides remote calls via aps-external-protocol-extender that exposes services specified in MANIFEST.MF or in configuration to be remotely available using pluggable transports and protocols. 
-   * Provides an HTTP transport.
-   * Provides a JSONRPC 1.0, 2.0, and a very simplistic JSON protocol.
-   * Protocols are just OSGi services.
-
-* More useful utilities and services ...
+Work is slow, whenever time permits.
 
 ---
 
-Documentation ([Markdown](https://github.com/tombensve/APS/blob/master/APS-UserGuide/docs/APS-UserGuide.md) | [PDF](https://github.com/tombensve/APS/blob/master/APS-UserGuide/docs/APS-UserGuide.pdf))
+To be very clear: This is currently, and probably for a long time comming, a playground where I'm having fun. The original (and still active) goal with this is to make a very easy to use web platform based on OSGi. APS is however only using the basic 4 OSGi APIs, and currently java8 & Groovy code so it will probably not run in most embedded OSGi containers.
 
-[Licenses](https://github.com/tombensve/APS/blob/master/lics/licenses.md)
+I have decided to base this project on Vertx rather than traditional EE APIs.
 
+Almost all of what is in this version will be replaced, some things just removed. As I said, this is currently a playground, that I play with when I have the time.
+
+There is however one thing that is currenlty useful and does not depend on any other bundle: APSToolsLib. This contains a nicer service tracker and something the maven-bundle-plugin people never considered, and might consider me completely crazy: APSActivator. It is a generic bundle activator that makes use of annotations to publish services, etc. It will inject into classes and instantiate annotated classes. It goes through all classes in the bundle and checks them for annotations. maven-bundle-plugin warns about seeing an external activator and suggests that it is probably an error, but it isn't! Note that it is the maven-bundle-plugin that complains. All OSGi containers I've tested (Karaf, Glassfish, Virgo, KnopplerFish) have no problem what so ever with this.
+
+Yes, I know that the OSGi APIs contains annotations for injecting and publishing services, etc. These produce XML files that are then used by the OSGi container. This so that they are compatible with J2ME java not supporting annotations. These are features supported by the container. APSActivator is a plain OSGi activator and will work with any OSGi container, but requires Java SE.
+
+APSActivator also interacts with APSServiceTracker allowing annotations based configuration of the tracker. It also allows injecting a tracker as a proxied service that uses the tracker, allocates the service, calls it, releases the service and returns any eventual return value.   
+
+The APSServiceTracker is also a bit different in that it does not like to tear services down, it and APSActivator both work to keep services up. The tracker provides a timeout and throws an APSNoServiceAvailableException on timeout. The side effect of this is that you (currently) sometimes need to start a thread in Bundle.start(...) to avoid a deadlock. This also means that later failures cannot stop the bundle on failed start! But it is soo much nicer to keep things up IMHO!
+
+There is also OSGIServiceTestTools that can be extended by tests and provide Groovy DSL, and is very small and easy implementing only the basic 4 APIs minus deployment which is handled by the DSL API instead. It does not do classloading (yet)! This makes it trivially easy to run bundles in tests and provide test client bundles. OSGIServiceTestTools can be called from Java also though with more parentesis and dots. It is actually written in Java.
+
+Note that the branch names are YouTrack issues. I'm using YouTrack as a service from JetBrains.
+
+Here is a read only access of the YouTrack board:
+
+https://natusoft.myjetbrains.com/youtrack/agiles/90-4/94-6
+
+ytguest / salamiPizza
+
+Do note that all ideas i throw in there does not get implemented for different reasons. That is why I have a "Cancelled" column in the board.
+
+/Tommy
