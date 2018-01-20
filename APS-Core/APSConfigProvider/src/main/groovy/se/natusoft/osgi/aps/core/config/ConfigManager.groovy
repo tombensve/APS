@@ -12,6 +12,7 @@ import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSDirectory
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
+import se.natusoft.osgi.aps.api.core.platform.service.APSExecutionService
 import se.natusoft.osgi.aps.api.core.platform.service.APSNodeInfoService
 import se.natusoft.osgi.aps.api.messaging.APSMessageService
 import se.natusoft.osgi.aps.core.lib.MapJsonDocValidator
@@ -38,7 +39,7 @@ class ConfigManager {
     @Managed
     private BundleContext context
 
-    @OSGiService(timeout = "6 seconds")
+    @OSGiService(timeout = "15 sec")
     private APSFilesystemService fsService
 
     @OSGiService(additionalSearchCriteria = "(aps-messaging-protocol=vertx-eventbus)", timeout = "15 sec", nonBlocking = true)
@@ -49,6 +50,9 @@ class ConfigManager {
 
     @OSGiService(additionalSearchCriteria = "(service-persistence-scope=clustered)", nonBlocking = true)
     private APSDataStoreService
+
+    @OSGiService(timeout = "15 sec", nonBlocking = true)
+    private APSExecutionService execService
 
     private Map<String, ServiceRegistration> regs = [ : ]
 

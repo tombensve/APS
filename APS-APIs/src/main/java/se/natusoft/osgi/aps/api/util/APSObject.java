@@ -46,6 +46,16 @@ public class APSObject<T> implements APSValue<T> {
         return this.object;
     }
 
+    /**
+     * Updates the value.
+     *
+     * @param val The new value to set.
+     */
+    @Override
+    public void value(T val) {
+        this.object = val;
+    }
+
     public boolean isNull() {
         return this.object == null;
     }

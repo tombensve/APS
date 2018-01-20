@@ -16,6 +16,8 @@ public interface APSValue<T> {
     @NotNull
     T value();
 
+    default void value(@NotNull T val) { throw new UnsupportedOperationException("value(T val) Is not supported by this implementation!"); }
+
     default APSObject<T> toAPSObject() {
         return new APSObject<>(value());
     }
@@ -28,7 +30,7 @@ public interface APSValue<T> {
      *
      * @return An APSValue wrapped value.
      */
-    static <T> APSValue<T> value(T value ) {
+    static <T> APSValue<T> newValue(T value ) {
         return new Provider<>( value );
     }
 
@@ -55,6 +57,15 @@ public interface APSValue<T> {
         @NotNull
         public T value() {
             return this.value;
+        }
+
+        /**
+         * Updates the value.
+         *
+         * @param val The value to set.
+         */
+        public void value(T val) {
+            this.value = val;
         }
     }
 }
