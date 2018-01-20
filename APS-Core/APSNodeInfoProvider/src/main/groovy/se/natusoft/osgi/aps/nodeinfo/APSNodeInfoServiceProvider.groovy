@@ -48,6 +48,7 @@ class APSNodeInfoServiceProvider implements APSNodeInfoService {
     @Managed(loggingFor = "aps-node-info:provider")
     private APSLogger logger
 
+    // TODO: I strongly suspect that this will work as a wrapped servcie and nonBlocking = true.
     @OSGiService(additionalSearchCriteria = "(vertx-object=Vertx)", timeout = "forever")
     private APSServiceTracker<Vertx> vertxTracker
 
@@ -285,9 +286,9 @@ class APSNodeInfoServiceProvider implements APSNodeInfoService {
     }
 
     private void fightForThrone() {
-        vertx.sharedData().getLock( "aps-node-mgr" ) { AsyncResult<Lock> lres ->
+        vertx.sharedData().getLock( "aps-node-info-service" ) { AsyncResult<Lock> lres ->
 
-            vertx.sharedData().getClusterWideMap( "aps-node-mgr" ) { AsyncResult<AsyncMap<String, Object>> mres ->
+            vertx.sharedData().getClusterWideMap( "aps-node-info-service" ) { AsyncResult<AsyncMap<String, Object>> mres ->
 
                 mres.result().get( "master" ) { AsyncResult<Object> gres ->
 

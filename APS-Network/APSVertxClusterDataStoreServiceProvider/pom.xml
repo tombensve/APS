@@ -6,15 +6,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>APS-Core</artifactId>
+        <artifactId>APS-Network</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>aps-config-provider</artifactId>
+    <artifactId>aps-vertx-cluster-datastore-service-provider</artifactId>
     <packaging>bundle</packaging>
 
-    <name>APSConfigServiceProvider</name>
+    <name>APS Vertx Cluster DataStore Service Provider</name>
 
     <description>
     </description>
@@ -39,7 +39,7 @@
 
         <!-- The private packages. -->
         <osgi.private.package>
-            se.natusoft.osgi.aps
+            se.natusoft.osgi.aps.datastore
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->
@@ -84,28 +84,18 @@
         </dependency>
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-core-lib</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-tools-lib</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-json-lib</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-json-lib</artifactId>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
             <version>3.4.2</version>
         </dependency>
+
+        <!--
+            APSVertxClusterDataStoreServiceProvider dependencies
+        -->
 
         <!--
             For IDEA to understand that this project is using Groovy since it does not figure out
@@ -120,8 +110,43 @@
         </dependency>
 
         <!--
-            APSConfigServiceProvider dependencies
+            Test
         -->
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-osgi-test-tools</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-service-test-support</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-vertx-provider</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web</artifactId>
+            <version>${vertx.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-lang-groovy</artifactId>
+            <version>${vertx.version}</version>
+            <scope>test</scope>
+            <!-- This pulls in an older version of groovy causing problems when running tests. -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.codehaus.groovy</groupId>
+                    <artifactId>groovy-all</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
     </dependencies>
 

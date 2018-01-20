@@ -93,6 +93,7 @@
             se.natusoft.osgi.aps.api.data.jdbc.model;version="${project.version}",
             se.natusoft.osgi.aps.api.data.jdbc.service;version="${project.version}",
             se.natusoft.osgi.aps.api.data.jpa.service;version="${project.version}",
+            se.natusoft.osgi.aps.api.data.store;version="${project.version}",
             se.natusoft.osgi.aps.api.external.extprotocolsvc;version="${project.version}",
             se.natusoft.osgi.aps.api.external.extprotocolsvc.model;version="${project.version}",
             se.natusoft.osgi.aps.api.external.model.type;version="${project.version}",
@@ -135,18 +136,6 @@
 
         <!-- The packages to export from dependent & embeded jars -->
         <osgi.export.dependency.package>
-            <!--
-            javax.jcr,
-            javax.jcr.lock,
-            javax.jcr.nodetype,
-            javax.jcr.observation,
-            javax.jcr.query,
-            javax.jcr.query.qom,
-            javax.jcr.retention,
-            javax.jcr.security,
-            javax.jcr.util,
-            javax.jcr.version
-            -->
         </osgi.export.dependency.package>
 
         <!-- Resources to include -->
@@ -173,9 +162,6 @@
     </properties>
 
     <dependencies>
-        <!--
-            Became increasingly difficult to avoid ...
-        -->
         <dependency>
             <artifactId>aps-tools-lib</artifactId>
             <groupId>se.natusoft.osgi.aps</groupId>
@@ -187,11 +173,6 @@
             <scope>compile</scope>
         </dependency>
 
-        <!--dependency>
-            <groupId>javax.jcr</groupId>
-            <artifactId>jcr</artifactId>
-            <version>2.0</version>
-        </dependency-->
     </dependencies>
 
     <build>

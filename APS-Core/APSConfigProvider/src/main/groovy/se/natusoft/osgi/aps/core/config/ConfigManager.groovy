@@ -12,12 +12,13 @@ import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSDirectory
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
-import JSONErrorHandler
-import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService
+import se.natusoft.osgi.aps.api.core.platform.service.APSNodeInfoService
+import se.natusoft.osgi.aps.api.messaging.APSMessageService
 import se.natusoft.osgi.aps.core.lib.MapJsonDocValidator
 import se.natusoft.osgi.aps.core.lib.StructMap
 import se.natusoft.osgi.aps.exceptions.APSConfigException
 import se.natusoft.osgi.aps.exceptions.APSValidationException
+import se.natusoft.osgi.aps.json.JSONErrorHandler
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.APSServiceTracker
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
@@ -37,16 +38,17 @@ class ConfigManager {
     @Managed
     private BundleContext context
 
-    @OSGiService
-    private APSJSONService apsJsonService
-
     @OSGiService(timeout = "6 seconds")
     private APSFilesystemService fsService
 
-    @OSGiService(additionalSearchCriteria = "(vertx-object=Vertx)", timeout = "forever")
-    private APSServiceTracker<Vertx> vertxTracker
+    @OSGiService(additionalSearchCriteria = "(aps-messaging-protocol=vertx-eventbus)", timeout = "15 sec", nonBlocking = true)
+    private APSMessageService messageService
 
-    private SharedData _sharedData = null
+    @OSGiService(timeout="15 sec")
+    private APSNodeInfoService nodeInfoService
+
+    @OSGiService(additionalSearchCriteria = "(service-persistence-scope=clustered)", nonBlocking = true)
+    private APSDataStoreService
 
     private Map<String, ServiceRegistration> regs = [ : ]
 

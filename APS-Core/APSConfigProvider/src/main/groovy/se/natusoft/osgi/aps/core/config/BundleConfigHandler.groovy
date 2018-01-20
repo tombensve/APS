@@ -2,18 +2,12 @@ package se.natusoft.osgi.aps.core.config
 
 import org.osgi.framework.Bundle
 import org.osgi.framework.BundleEvent
-import JSONErrorHandler
-import se.natusoft.osgi.aps.api.misc.json.model.JSONObject
-import se.natusoft.osgi.aps.api.misc.json.model.JSONValue
-import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService
-import se.natusoft.osgi.aps.core.lib.MapJsonDocValidator
-import se.natusoft.osgi.aps.exceptions.APSValidationException
+import se.natusoft.osgi.aps.json.JSONErrorHandler
+import se.natusoft.osgi.aps.json.JSONObject
+import se.natusoft.osgi.aps.json.JSONValue
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleListener
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
-
-import static se.natusoft.osgi.aps.api.core.config.model.APSConfig.*
 
 /**
  * This listens to bundles and manages configurations.
@@ -42,9 +36,6 @@ class BundleConfigHandler {
 
     @Managed(loggingFor = "aps-config-provider:bundle-config-handler")
     APSLogger logger
-
-    @OSGiService
-    private APSJSONService apsJsonService
 
     @Managed
     private ConfigManager configManager

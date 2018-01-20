@@ -3,6 +3,7 @@ package se.natusoft.osgi.aps.core.config
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.core.config.APSConfig
+import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.core.lib.StructMap
 
 import java.util.function.Consumer
@@ -32,28 +33,6 @@ class APSConfigProvider extends StructMap implements APSConfig {
     //
 
     /**
-     * This gets called when the configuration is available. This only works if APSServiceTracker wrapping as a
-     * service functionality is used, and that 'nonBlocking' is set to true.
-     *
-     * Example:
-     *
-     *     @OSGiService ( additionalSearchCriteria = "(APS-Config-Id=myconf)" nonBlocking=true )
-     *     private APSConfig config
-     *
-     * In this case any call made before the service actually been published will be cached by the underlaying
-     * APSServiceTracker, and when the service becomes available all the cached calls will be performed on the
-     * service. This will semi-work if nonBlocking=true but then the onConfigReady(...) call will block until
-     * the service is available. That would also happen if you just try to get a configuration value. So there
-     * would be no point in using onConfigReady(...) in that case.
-     *
-     * @param handler The handler to call when there is actual config data in the map.
-     */
-    @Override
-    void onConfigReady( Runnable handler ) {
-        handler.run()
-    }
-
-    /**
      * Looks up the value of a specified struct Path.
      *
      * @param structPath The structPath to lookup.
@@ -66,20 +45,12 @@ class APSConfigProvider extends StructMap implements APSConfig {
      * @param pathHandler The handler to call with value paths.
      */
     @Override
-    void withStructPath( Consumer<String> pathHandler ) {
+    void withStructPath( APSHandler<String> pathHandler ) {
 
     }
 
-    /**
-     * Returns all struct paths as a List.
-     */
     @Override
-    List<String> getStructPaths() {
-        return null
-    }
-
-    @Override
-    Object lookup( String structPath ) {
+    void lookup( String structPath, APSHandler<Object> valueHandler ) {
         Object value = super.lookup( structPath )
         if ( value == null ) {
             value = this.defaultConfig.lookup( structPath )
@@ -89,7 +60,7 @@ class APSConfigProvider extends StructMap implements APSConfig {
             }
         }
 
-        value
+        valueHandler.handle( value )
     }
 
     /**

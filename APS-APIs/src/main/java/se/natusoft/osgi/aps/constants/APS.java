@@ -51,6 +51,7 @@ public interface APS {
         String Provider = "service-provider";
         String Category = "service-category";
         String Function = "service-function";
+        String PersistenceScope = "service-persistence-scope";
 
         interface Production {
             String Ready = "service-production-ready";
@@ -108,7 +109,17 @@ public interface APS {
                 String Filesystem = "filesystem";
                 String Time = "time";
                 String Messaging = "messaging";
+                String Storage = "storage";
             }
+
+            interface PersistenceScope {
+                String None = "none";
+                String Session = "session";
+                String Clustered = "clustered";
+                String ClusteredSession = "clustered-session";
+                String Permanent = "permanent";
+            }
+
         }
 
         interface Messaging {
