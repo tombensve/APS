@@ -1,12 +1,8 @@
 package se.natusoft.osgi.aps.core.config
 
 import io.vertx.core.AsyncResult
-import io.vertx.core.Vertx
 import io.vertx.core.shareddata.AsyncMap
 import io.vertx.core.shareddata.Lock
-import io.vertx.core.shareddata.SharedData
-import org.osgi.framework.BundleContext
-import org.osgi.framework.ServiceReference
 import org.osgi.framework.ServiceRegistration
 import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSDirectory
@@ -14,6 +10,7 @@ import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
 import se.natusoft.osgi.aps.api.core.platform.service.APSExecutionService
 import se.natusoft.osgi.aps.api.core.platform.service.APSNodeInfoService
+import se.natusoft.osgi.aps.api.core.store.APSDataStoreService
 import se.natusoft.osgi.aps.api.messaging.APSMessageService
 import se.natusoft.osgi.aps.core.lib.MapJsonDocValidator
 import se.natusoft.osgi.aps.core.lib.StructMap
@@ -21,7 +18,6 @@ import se.natusoft.osgi.aps.exceptions.APSConfigException
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.json.JSONErrorHandler
 import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.APSServiceTracker
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
 import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
@@ -36,22 +32,19 @@ class ConfigManager {
     @Managed(loggingFor = "aps-config-provider:config-manager")
     private APSLogger logger
 
-    @Managed
-    private BundleContext context
-
     @OSGiService(timeout = "15 sec")
     private APSFilesystemService fsService
 
-    @OSGiService(additionalSearchCriteria = "(aps-messaging-protocol=vertx-eventbus)", timeout = "15 sec", nonBlocking = true)
+    @OSGiService(additionalSearchCriteria = "(aps-messaging-protocol=vertx-eventbus)", nonBlocking = true)
     private APSMessageService messageService
 
-    @OSGiService(timeout="15 sec")
+    @OSGiService(nonBlocking = true)
     private APSNodeInfoService nodeInfoService
 
     @OSGiService(additionalSearchCriteria = "(service-persistence-scope=clustered)", nonBlocking = true)
-    private APSDataStoreService
+    private APSDataStoreService dataStoreService
 
-    @OSGiService(timeout = "15 sec", nonBlocking = true)
+    @OSGiService(nonBlocking = true)
     private APSExecutionService execService
 
     private Map<String, ServiceRegistration> regs = [ : ]
@@ -70,7 +63,7 @@ class ConfigManager {
     }
 
     //
-    // Initializer
+    // Initializer / Shutdown
     //
 
     @Initializer
@@ -78,45 +71,14 @@ class ConfigManager {
 
     }
 
+    @BundleStop
+    private void shutDown() {
+
+    }
+
     //
     // Methods
     //
-
-    /**
-     * Gets called if adn when Vertx is available.
-     *
-     * @param vertx The Vertx instance.
-     * @param vertxRef The Vertx service reference. (not used)
-     */
-    private void onVertxAvailable( Vertx vertx, ServiceReference vertxRef ) {
-        sharedData = vertx.sharedData()
-    }
-
-    /**
-     * Gets called if Vertx have been available and is leaving.
-     *
-     * @param vertxRef The Vertx service reference. (not used)
-     * @param vertxAPIClass The API class. (not used)
-     */
-    private void onVertxLeaving( ServiceReference vertxRef, Class vertxAPIClass ) {
-        sharedData = null
-    }
-
-    /**
-     * This is to provide thread synchronization when accessing sharedData.
-     *
-     * @param sharedData The SharedData instance.
-     */
-    private synchronized void setSharedData( SharedData sharedData ) {
-        this._sharedData = sharedData
-    }
-
-    /**
-     * @return The SharedData instance or null if not available.
-     */
-    private synchronized SharedData getSharedData() {
-        this._sharedData
-    }
 
     void publishConfig( String configId, Map<String, Object> schema, StructMap defaultConfig ) {
 
@@ -209,8 +171,4 @@ class ConfigManager {
 
     }
 
-    @BundleStop
-    private void shutDown() {
-
-    }
 }
