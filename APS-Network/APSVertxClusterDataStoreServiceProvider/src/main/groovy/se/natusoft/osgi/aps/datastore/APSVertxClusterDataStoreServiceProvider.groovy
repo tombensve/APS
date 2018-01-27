@@ -6,7 +6,7 @@ import io.vertx.core.AsyncResult
 import io.vertx.core.shareddata.AsyncMap
 import io.vertx.core.shareddata.Lock
 import io.vertx.core.shareddata.SharedData
-import se.natusoft.osgi.aps.api.data.store.APSDataStoreService
+import se.natusoft.osgi.aps.api.core.store.APSDataStoreService
 import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.api.reactive.APSResult
 import se.natusoft.osgi.aps.constants.APS

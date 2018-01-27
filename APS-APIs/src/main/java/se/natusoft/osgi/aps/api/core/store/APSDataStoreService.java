@@ -1,4 +1,4 @@
-package se.natusoft.osgi.aps.api.data.store;
+package se.natusoft.osgi.aps.api.core.store;
 
 import se.natusoft.osgi.aps.api.reactive.APSHandler;
 import se.natusoft.osgi.aps.api.reactive.APSResult;

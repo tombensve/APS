@@ -174,6 +174,20 @@ _Parameters_
 
 
 
+__public static Map<String, Object> readJSONAsMap(InputStream jsonIn, JSONErrorHandler errorHandler)__
+
+For consitency. The same as doing JSON.jsonObjectToMap(InputStream, JSONErrorHandler).
+
+_Returns_
+
+> A Map\<String, Object\> of JSON data.
+
+_Parameters_
+
+> _jsonIn_ - The input stream to read. 
+
+> _errorHandler_ - The error handler to use. 
+
 __public static Map<String, Object> stringToMap(String json)__
 
 Converts from String to JSON to Map.

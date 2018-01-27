@@ -3,7 +3,7 @@ package se.natusoft.osgi.aps.datastore
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
-import se.natusoft.osgi.aps.api.data.store.APSDataStoreService
+import se.natusoft.osgi.aps.api.core.store.APSDataStoreService
 import se.natusoft.osgi.aps.api.reactive.APSResult
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator

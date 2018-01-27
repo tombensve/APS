@@ -46,6 +46,7 @@ import se.natusoft.osgi.aps.api.reactive.APSHandler;
 import se.natusoft.osgi.aps.api.reactive.APSResult;
 import se.natusoft.osgi.aps.api.reactive.APSValue;
 import se.natusoft.osgi.aps.exceptions.APSIOException;
+import se.natusoft.osgi.aps.exceptions.APSValidationException;
 import se.natusoft.osgi.aps.json.tools.CollectingErrorHandler;
 
 import java.io.*;
@@ -327,6 +328,19 @@ public class JSON {
         JSONObject jsonObject = mapToObject(map);
         jsonObject.writeJSON(os, true);
     }
+
+    /**
+     * For consitency. The same as doing JSON.jsonObjectToMap(InputStream, JSONErrorHandler).
+     *
+     * @param jsonIn The input stream to read.
+     * @param errorHandler The error handler to use.
+     *
+     * @return A Map\<String, Object\> of JSON data.
+     */
+    public static Map<String, Object> readJSONAsMap(@NotNull InputStream jsonIn, @NotNull JSONErrorHandler errorHandler) {
+        return JSON.jsonObjectToMap(jsonIn, errorHandler);
+    }
+
 
     //
     // String -> Map

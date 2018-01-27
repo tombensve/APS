@@ -40,4 +40,11 @@ public interface APSConfig extends Map<String, Object> {
      */
     void lookup(String structPath, APSHandler<Object> valueHandler);
 
+    /**
+     * provides a new value.
+     *
+     * @param structPath The value path.
+     * @param value The value.
+     */
+    void provide( String structPath, Object value );
 }

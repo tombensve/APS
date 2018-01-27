@@ -2,6 +2,7 @@ package se.natusoft.osgi.aps.core.config
 
 import org.osgi.framework.Bundle
 import org.osgi.framework.BundleEvent
+import se.natusoft.osgi.aps.json.JSON
 import se.natusoft.osgi.aps.json.JSONErrorHandler
 import se.natusoft.osgi.aps.json.JSONObject
 import se.natusoft.osgi.aps.json.JSONValue
@@ -80,23 +81,26 @@ class BundleConfigHandler {
 
             String schemaResourcePath = bundle.headers.get( "APS-Config-Schema" )
 
+            String defaultResourcePath = bundle.headers.get( "APS-Config-Default-Resource" )
+
+//            this.configManager.loadConfig( configId, schemaResourcePath, defaultResourcePath )
+
             if ( schemaResourcePath != null ) {
                 try {
 
                     BufferedInputStream schemaStream = new BufferedInputStream( System.getResourceAsStream( schemaResourcePath ) )
-                    JSONValue jsonValue = this.apsJsonService.readJSON( schemaStream, this.jsonErrorHandler )
+                    JSONValue jsonValue = JSON.read( schemaStream, this.jsonErrorHandler )
 
                     if ( JSONObject.class.isAssignableFrom( jsonValue.class ) ) {
 
                         Map<String, Object> schema = ( jsonValue as JSONObject ).toMap()
 
 
-                        String defaultResourcePath = bundle.headers.get( "APS-Config-Default-Resource" )
 
                         if ( defaultResourcePath != null ) {
 
                             BufferedInputStream configStream = new BufferedInputStream( System.getResourceAsStream( defaultResourcePath ) )
-                            jsonValue = this.apsJsonService.readJSON( configStream, this.jsonErrorHandler )
+                            jsonValue = JSON.read( configStream, this.jsonErrorHandler )
 
                             if ( JSONObject.class.isAssignableFrom( jsonValue.class ) ) {
 
