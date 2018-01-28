@@ -1,5 +1,7 @@
 package se.natusoft.osgi.aps.api.reactive;
 
+import se.natusoft.osgi.aps.exceptions.APSException;
+
 /**
  * This represents a result, and will not be made available until there is a result or a failure.
  *
@@ -66,7 +68,7 @@ public interface APSResult<T> {
      *
      * @return An APSResult instance holding a failure status and the provided Exception.
      */
-    static <T> APSResult<T> failure(Exception e) {
+    static <T> APSResult<T> failure(Throwable e) {
         return new Provider<>(e);
     }
 
@@ -94,8 +96,13 @@ public interface APSResult<T> {
          *
          * @param exception The Exception that caused the failure.
          */
-        public Provider(Exception exception) {
-            this.exception = exception;
+        public Provider(Throwable exception) {
+            if (Exception.class.isAssignableFrom(this.exception.getClass())) {
+                this.exception = (Exception)this.exception;
+            }
+            else {
+                this.exception = new APSException(this.exception.getMessage(), this.exception);
+            }
         }
 
         /**
