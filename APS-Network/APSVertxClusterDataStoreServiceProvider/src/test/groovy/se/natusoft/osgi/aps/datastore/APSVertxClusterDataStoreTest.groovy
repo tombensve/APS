@@ -3,7 +3,8 @@ package se.natusoft.osgi.aps.datastore
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
-import se.natusoft.osgi.aps.api.core.store.APSDataStoreService
+import se.natusoft.osgi.aps.api.core.APSLockable
+import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
 import se.natusoft.osgi.aps.api.reactive.APSResult
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator
@@ -72,30 +73,46 @@ class ClusterStoreTestClient {
 
     @OSGiService(additionalSearchCriteria = "(service-persistence-scope=clustered)",
             nonBlocking = true)
-    private APSDataStoreService dataStoreService
+    private APSLockableDataStoreService dataStoreService
 
     @Managed(loggingFor = "ClusterStoreTestClient")
     APSLogger logger
 
     @Initializer
     void init() {
-        this.dataStoreService.store( "test.someId", APSVertxClusterDataStoreTest.id ) { APSResult<Void> result ->
-            APSVertxClusterDataStoreTest.stored = result.success()
-            this.logger.info( "Stored value with result: ${result.success()}" )
+        this.dataStoreService.lock( "test.someId" ) { APSResult<APSLockable.APSLock> lockRes ->
+
+            if ( lockRes.success() ) {
+
+                this.dataStoreService.store( "test.someId", APSVertxClusterDataStoreTest.id ) { APSResult<Void> storeRes ->
+
+                    APSVertxClusterDataStoreTest.stored = storeRes.success()
+                    this.logger.info( "Stored value with result: ${storeRes.success()}" )
+
+                    this.logger.info( "Current lock: ${lockRes.result().value()}" )
+                }
+            }
         }
 
         // Note that this retrieval directly after the store which is done in a callback on a Vertx event loop thread
         // works due to that the service always performs a lock on the value stored or fetched.
 
-        this.dataStoreService.retrieve( "test.someId" ) { APSResult<UUID> result ->
-            if ( result.success() ) {
-                APSVertxClusterDataStoreTest.retrieved = result.result().value()
-                this.logger.info( "Retrieved stored value: ${result.result().value()}" )
-            }
-            else {
-                this.logger.error( "Retrieval failed!", result.failure() )
+        this.dataStoreService.lock( "test.someId" ) { APSResult<APSLockable.APSLock> lockRes ->
+
+            this.dataStoreService.retrieve( "test.someId" ) { APSResult<UUID> result ->
+
+                if ( result.success() ) {
+
+                    APSVertxClusterDataStoreTest.retrieved = result.result().value()
+                    this.logger.info( "Retrieved stored value: ${result.result().value()}" )
+                }
+                else {
+
+                    this.logger.error( "Retrieval failed!", result.failure() )
+                }
             }
         }
+
 
     }
 

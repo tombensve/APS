@@ -6,7 +6,8 @@ import io.vertx.core.AsyncResult
 import io.vertx.core.shareddata.AsyncMap
 import io.vertx.core.shareddata.Lock
 import io.vertx.core.shareddata.SharedData
-import se.natusoft.osgi.aps.api.core.store.APSDataStoreService
+import se.natusoft.osgi.aps.api.core.APSLockable
+import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
 import se.natusoft.osgi.aps.api.reactive.APSHandler
 import se.natusoft.osgi.aps.api.reactive.APSResult
 import se.natusoft.osgi.aps.constants.APS
@@ -28,7 +29,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
 )
 @CompileStatic
 @TypeChecked
-class APSVertxClusterDataStoreServiceProvider implements APSDataStoreService {
+class APSVertxClusterDataStoreServiceProvider implements APSLockableDataStoreService {
 
     //
     // Private Members
@@ -65,29 +66,22 @@ class APSVertxClusterDataStoreServiceProvider implements APSDataStoreService {
             throw new APSValidationException( "Bad key value! Must be in store-client-key.map-key format!" )
         }
 
-        this.sharedData.getLock( keyParts[ 0 ] ) { AsyncResult<Lock> lres ->
-            this.sharedData.getClusterWideMap( keyParts[ 0 ] ) { AsyncResult<AsyncMap<String, Object>> mres ->
-                mres.result().put( keyParts[ 1 ], value ) { AsyncResult pres ->
+        this.sharedData.getClusterWideMap( keyParts[ 0 ] ) { AsyncResult<AsyncMap<String, Object>> mres ->
+            mres.result().put( keyParts[ 1 ], value ) { AsyncResult pres ->
+                if ( pres.failed() ) {
                     try {
-                        if ( pres.failed() ) {
-                            try {
-                                result.handle( APSResult.failure( pres.cause() as Exception ) )
-                            }
-                            finally {
-                                this.logger.error( "Store of value with key '${key}' failed!", pres.cause() )
-                            }
-                        }
-
-                        else if ( pres.succeeded() ) {
-                            result.handle( APSResult.success( null ) )
-                        }
-                        else {
-                            this.logger.error( "Apparently Vertx SharedData operation can neither fail nor succeed!" )
-                        }
+                        result.handle( APSResult.failure( pres.cause() as Exception ) )
                     }
                     finally {
-                        lres.result().release()
+                        this.logger.error( "Store of value with key '${key}' failed!", pres.cause() )
                     }
+                }
+
+                else if ( pres.succeeded() ) {
+                    result.handle( APSResult.success( null ) )
+                }
+                else {
+                    this.logger.error( "Apparently Vertx SharedData operation can neither fail nor succeed!" )
                 }
             }
         }
@@ -106,11 +100,9 @@ class APSVertxClusterDataStoreServiceProvider implements APSDataStoreService {
             throw new APSValidationException( "Bad key value! Must be in store-client-key.map-key format!" )
         }
 
-        this.sharedData.getLock( keyParts[ 0 ] ) { AsyncResult<Lock> mapLock ->
-            this.sharedData.getClusterWideMap( keyParts[ 0 ] ) { AsyncResult<AsyncMap<String, Object>> mres ->
-                mres.result().get( keyParts[ 1 ] ) { AsyncResult<Object> valueRes ->
-                    handleValueResult( key, valueRes, result, mapLock )
-                }
+        this.sharedData.getClusterWideMap( keyParts[ 0 ] ) { AsyncResult<AsyncMap<String, Object>> mres ->
+            mres.result().get( keyParts[ 1 ] ) { AsyncResult<Object> valueRes ->
+                handleValueResult( key, valueRes, result )
             }
         }
     }
@@ -124,15 +116,16 @@ class APSVertxClusterDataStoreServiceProvider implements APSDataStoreService {
     @Override
     void remove( String key, APSHandler<APSResult<Object>> result ) {
         String[] keyParts = key.split( "\\." )
+
         if ( keyParts.length < 2 ) {
             throw new APSValidationException( "Bad key value! Must be in store-client-key.map-key format!" )
         }
 
-        this.sharedData.getLock( keyParts[ 0 ] ) { AsyncResult<Lock> mapLock ->
-            this.sharedData.getClusterWideMap( keyParts[ 0 ] ) { AsyncResult<AsyncMap<String, Object>> mres ->
-                mres.result().remove( keyParts[ 1 ] ) { AsyncResult<Object> valueRes ->
-                    handleValueResult( key, valueRes, result, mapLock )
-                }
+        this.sharedData.getClusterWideMap( keyParts[ 0 ] ) { AsyncResult<AsyncMap<String, Object>> mres ->
+
+            mres.result().remove( keyParts[ 1 ] ) { AsyncResult<Object> valueRes ->
+
+                handleValueResult( key, valueRes, result )
             }
         }
     }
@@ -143,29 +136,95 @@ class APSVertxClusterDataStoreServiceProvider implements APSDataStoreService {
      * @param key The original key passed.
      * @param valueRes The value result.
      * @param result The final result handler to call with result.
-     * @param mapLock The map lock.
      */
-    private void handleValueResult( String key, AsyncResult<Object> valueRes, APSHandler<APSResult<Object>> result,
-                                    AsyncResult<Lock> mapLock ) {
-        try {
-            if ( valueRes.failed() ) {
+    private void handleValueResult( String key, AsyncResult<Object> valueRes, APSHandler<APSResult<Object>> result ) {
+        if ( valueRes.failed() ) {
+
+            try {
+                result.handle( APSResult.failure( valueRes.cause() as Exception ) )
+            }
+            finally {
+                this.logger.error( "Failed to fetch value for key '${key}'!", valueRes.cause() )
+            }
+        }
+
+        else if ( valueRes.succeeded() ) {
+
+            result.handle( APSResult.success( valueRes.result() ) )
+        }
+        else {
+            this.logger.error( "Apparently Vertx SharedData operation can neither fail nor succeed!" )
+        }
+    }
+
+    /**
+     * @return true if locking is supported, false otherwise.
+     */
+    @Override
+    boolean supportsLocking() {
+        true
+    }
+
+    /**
+     * Acquires a lock, and on success also provides an APSLock instance. Do note that even if the APSLock instance
+     * is not used to release the lock, the lock should be released before the return of this method call!
+     *
+     * @param lockId Something that identifies what to be locked.
+     * @param resultHandler A handler in which whatever is locked can be used if result indicates success.
+     */
+    @Override
+    void lock( Object lockId, APSHandler<APSResult<APSLockable.APSLock>> resultHandler ) {
+        String[] keyParts = lockId.toString().split( "\\." )
+
+        if ( keyParts.length < 2 ) {
+            throw new APSValidationException( "Bad key value! Must be in store-client-key.map-key format!" )
+        }
+
+        this.sharedData.getLock( keyParts[ 0 ] ) { AsyncResult<Lock> mapLock ->
+
+            if ( mapLock.succeeded() ) {
+
+                Lock lock = mapLock.result()
+
                 try {
-                    result.handle( APSResult.failure( valueRes.cause() as Exception ) )
+
+                    resultHandler.handle( APSResult.success( (APSLockable.APSLock) new VxLock( lock: lock ) ) )
                 }
                 finally {
-                    this.logger.error( "Failed to fetch value for key '${key}'!", valueRes.cause() )
+
+                    // Note that there is no way to check if this has already been released! I'm assuming
+                    // that the release() call can be made multiple times without throwing an exception, or
+                    // otherwise failing.
+                    lock.release()
                 }
+
             }
 
-            else if ( valueRes.succeeded() ) {
-                result.handle( APSResult.success( valueRes.result() ) )
-            }
             else {
-                this.logger.error( "Apparently Vertx SharedData operation can neither fail nor succeed!" )
+                resultHandler.handle( APSResult.failure( mapLock.cause(  ) ))
             }
         }
-        finally {
-            mapLock.result().release()
+
+    }
+
+}
+
+/**
+ * Provides an implementation of APSLock.
+ */
+class VxLock implements APSLockable.APSLock {
+
+    Lock lock
+
+    @Override
+    void release( APSHandler<APSResult> resultHandler ) {
+        this.lock.release()
+        if ( resultHandler != null ) {
+            resultHandler.handle( APSResult.success( null ) )
         }
+    }
+
+    String toString() {
+        "{ lock: ${this.lock} }"
     }
 }
