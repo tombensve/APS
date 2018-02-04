@@ -36,10 +36,12 @@
  */
 package se.natusoft.osgi.aps.tools;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
+import se.natusoft.osgi.aps.tools.apis.APSAlarmService;
 import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException;
 import se.natusoft.osgi.aps.tools.tuples.Tuple3;
 
@@ -88,14 +90,23 @@ public class APSLogger implements LogService {
     /** A LogService tracker. */
     private APSServiceTracker<LogService> logServiceTracker = null;
 
+    /** A APSAlarmService tracker. */
+    private APSServiceTracker<APSAlarmService> alarmServiceTracker = null;
+
     /** The tracked service instance. */
     private LogService logService = null;
+
+    /** The tracked alarm service instance. */
+    private APSAlarmService alarmService = null;
 
     /** The stream to write to when log service is not available. */
     private PrintStream outStream = System.out;
 
     /** List of delayed log entries. */
     private List<Tuple3<Integer, String, Exception>> delayedLogEntries = null;
+
+    /** The logging bundle. */
+    private Bundle bundle;
 
     //
     // Constructors
@@ -189,11 +200,18 @@ public class APSLogger implements LogService {
      * @param context The bundle context.
      */
     public void connectToLogService(BundleContext context) {
+        this.bundle = context.getBundle();
+
         // This has no timeout and will thus fail immediately if no service is available to avoid longer blocking when logger
         // is used from bundle activator start() method.
         this.logServiceTracker = new APSServiceTracker<>(context, LogService.class);
         this.logServiceTracker.start();
         this.logService = this.logServiceTracker.getWrappedService(); // This is what is used from now on to log to LogService.
+
+        this.alarmServiceTracker = new APSServiceTracker<>(context, APSAlarmService.class);
+        this.alarmServiceTracker.start();
+        this.alarmService = this.alarmServiceTracker.getWrappedService();
+
         if (this.delayedLogEntries != null) {
             this.delayedLogEntries.forEach(entry -> {
                 try {
@@ -203,6 +221,7 @@ public class APSLogger implements LogService {
             });
             this.delayedLogEntries = null;
         }
+
     }
 
     /**
@@ -225,6 +244,10 @@ public class APSLogger implements LogService {
         if (this.logServiceTracker != null) {
             this.logServiceTracker.stop(context);
         }
+        if (this.alarmServiceTracker != null) {
+            this.alarmServiceTracker.stop(context);
+        }
+        this.bundle = null;
     }
 
     /**
@@ -517,5 +540,28 @@ public class APSLogger implements LogService {
      */
     public void warn(String message, Throwable cause) {
         log(LogService.LOG_WARNING, message, cause);
+    }
+
+    /**
+     * Does an error log, and then calls alarm service if available.
+     *
+     * @param message The alarm message.
+     * @param cause The cause of the alarm.
+     */
+    public void alarm(String message, Throwable cause) {
+        error(message, cause);
+
+         this.alarmService.alarm(this.bundle, message, cause);
+    }
+
+    /**
+     * Does an error log, and then calls alarm service if available.
+     *
+     * @param message The alarm message.
+     */
+    public void alarm(String message) {
+        error(message);
+
+        this.alarmService.alarm(this.bundle, message, null);
     }
 }

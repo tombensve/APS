@@ -2,10 +2,7 @@ package se.natusoft.osgi.aps.core.config
 
 import org.osgi.framework.Bundle
 import org.osgi.framework.BundleEvent
-import se.natusoft.osgi.aps.json.JSON
 import se.natusoft.osgi.aps.json.JSONErrorHandler
-import se.natusoft.osgi.aps.json.JSONObject
-import se.natusoft.osgi.aps.json.JSONValue
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleListener
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
@@ -29,7 +26,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 // Nothing other than APSActivator will be referencing this, and it does it via reflection. Thereby the IDE
 // cannot tell that this is actually used.
 @SuppressWarnings("GroovyUnusedDeclaration")
-class BundleConfigHandler {
+class BundlesConfigHandler {
 
     //
     // Private Members
@@ -83,70 +80,28 @@ class BundleConfigHandler {
 
             String defaultResourcePath = bundle.headers.get( "APS-Config-Default-Resource" )
 
-//            this.configManager.loadConfig( configId, schemaResourcePath, defaultResourcePath )
-
             if ( schemaResourcePath != null ) {
                 try {
-
-                    BufferedInputStream schemaStream = new BufferedInputStream( System.getResourceAsStream( schemaResourcePath ) )
-                    JSONValue jsonValue = JSON.read( schemaStream, this.jsonErrorHandler )
-
-                    if ( JSONObject.class.isAssignableFrom( jsonValue.class ) ) {
-
-                        Map<String, Object> schema = ( jsonValue as JSONObject ).toMap()
-
-
-
-                        if ( defaultResourcePath != null ) {
-
-                            BufferedInputStream configStream = new BufferedInputStream( System.getResourceAsStream( defaultResourcePath ) )
-                            jsonValue = JSON.read( configStream, this.jsonErrorHandler )
-
-                            if ( JSONObject.class.isAssignableFrom( jsonValue.class ) ) {
-
-                                this.configManager.publishConfig( configId, schema, ( jsonValue as JSONObject ).toMap() )
-                            }
-                            else {
-                                this.logger.error(
-                                        "Got bad config JSON in the form of: '${jsonValue.toString()}' from bundle '${bundle.symbolicName}'!"
-                                )
-                            }
-                        }
-                        else {
-                            this.logger.error( "No APS-Config-Default-Resource have been provided by bundle '${bundle.symbolicName}'!" )
-                        }
-                    }
-                    else {
-                        this.logger.error( "Got bad schema JSON in the form of: '${jsonValue.toString()}' from bundle '${bundle.symbolicName}'!" )
-                    }
-
+                    this.configManager.addManagedConfig( configId, bundle, schemaResourcePath, defaultResourcePath )
                 }
-                catch ( IOException ioe ) {
-                    this.logger.error( "Failed to read config from: ${schemaResourcePath} for bundle '${bundle.symbolicName}'!", ioe )
+                catch ( Exception e ) {
+                    this.logger.error( "Failed to load config from: ${schemaResourcePath} / ${defaultResourcePath} for bundle '${bundle.symbolicName}'!", e )
                 }
             }
             else {
-                this.logger.error( "Bad bundle ('${bundle.symbolicName}')! APS-ConfigId is available, but no APS-Config-Schema found!" )
+                this.logger.error( "Bad bundle ('${bundle.symbolicName}')! Configuration with id '${configId}' is available, but no APS-Config-Schema found!" )
             }
         }
 
     }
 
-    private Map<String, Object> upgradeConfig( Map<String, Object> config ) {
-
-    }
-
     /**
-     * Handles a valid configuration.
+     * Handles a bundle leaving.
      *
-     * @param schema
-     * @param config
+     * @param bundle The leaving bundle.
      */
-    private void handleConfiguration( Map<String, Object> schema, Map<String, Object> config ) {
-
-    }
-
     private void handleLeavingBundle( Bundle bundle ) {
-
+        String configId = bundle.getHeaders().get( "APS-Config-Id" )
+        this.configManager.removeManagedConfig( configId )
     }
 }

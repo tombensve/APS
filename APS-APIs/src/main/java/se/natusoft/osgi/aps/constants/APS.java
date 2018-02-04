@@ -77,6 +77,7 @@ public interface APS {
 
         String Persistent = "messaging-persistent";
         String MultipleReceivers = "messaging-multiple-receivers";
+        String Clustered = "messaging-clustered";
 
         interface Protocol {
             /** This is for router implementations of APSMessageService to be able to delegate to provider of correct protocol. */

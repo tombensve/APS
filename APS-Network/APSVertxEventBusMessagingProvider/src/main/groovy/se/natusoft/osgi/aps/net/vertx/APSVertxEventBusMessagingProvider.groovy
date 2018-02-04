@@ -67,6 +67,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
                 @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Messaging),
                 @OSGiProperty(name = APS.Messaging.Protocol.Name, value = "vertx-eventbus"),
                 @OSGiProperty(name = APS.Messaging.Persistent, value = APS.FALSE),
+                @OSGiProperty(name = APS.Messaging.Clustered, value = APS.TRUE)
         ]
 )
 @CompileStatic
@@ -131,7 +132,7 @@ class APSVertxEventBusMessagingProvider<MessageType> implements APSMessageServic
     /**
      * Returns a publisher to publish with.
      *
-     * @param properties Properties for the publisher.
+     * @param properties Properties for the publisher. [ APSMessageService.TARGET : "target address" ] must be provided.
      * @param handler Will be called with the APSPublisher to use for publishing messages.
      */
     @Override
@@ -156,9 +157,8 @@ class APSVertxEventBusMessagingProvider<MessageType> implements APSMessageServic
     /**
      * Adds a subscriber.
      *
-     * @param subscriber The subscriber to add.
-     * @param properties Meta data. This depends on the implementation. Can possibly be null when not used. For example
-     *                   if there is a need for an address or topic put it in the meta data.
+     * @param properties Subscription properties.
+     * @param handler Subscription handler.
      */
     @Override
     void subscribe( Map<String, String> properties, APSHandler<APSValue<MessageType>> handler ) {
@@ -206,7 +206,7 @@ class APSVertxEventBusMessagingProvider<MessageType> implements APSMessageServic
     /**
      * Removes a subscriber.
      *
-     * @param subscriptionId The id of the subscriber to remove.
+     * @param properties The same properties **instance** as passed to subscribe!
      */
     @Override
     synchronized void unsubscribe( Map<String, String> properties ) {

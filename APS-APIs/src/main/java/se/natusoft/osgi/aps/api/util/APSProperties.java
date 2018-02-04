@@ -85,12 +85,14 @@ public interface APSProperties extends Map<String, String> {
 
         private String key = null;
 
+        @SuppressWarnings("WeakerAccess")
         public APSProperties.Provider rightShift(String keyOrValue) {
             if (this.key == null) {
                 this.key = keyOrValue;
             }
             else {
                 put(this.key, keyOrValue);
+                this.key = null;
             }
 
             return this;
@@ -119,8 +121,8 @@ public interface APSProperties extends Map<String, String> {
             return this;
         }
 
-        public APSProperties.Provider plus(String keyColonValue) {
-            return rightShift(keyColonValue);
+        public APSProperties.Provider plus(String keyOrValue) {
+            return rightShift(keyOrValue);
         }
 
         /**

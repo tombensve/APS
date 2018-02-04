@@ -14,8 +14,6 @@ import se.natusoft.osgi.aps.exceptions.APSConfigException
 import se.natusoft.osgi.aps.json.JSON
 import se.natusoft.osgi.aps.json.JSONErrorHandler
 import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
 
 /**
  * This class represents one individual configuration.
@@ -28,22 +26,20 @@ class APSConfigProvider extends StructMap implements APSConfig {
     // Properties
     //
 
+    APSLogger logger
+
     /** The Id of this config. */
     String apsConfigId
 
-    /** For notifying about updates. This instance should always be passed as argument! */
-    Closure updatedNotifier
+    /** For notifying about sync request. */
+    Closure syncNotifier
+
+    /** Filesystem access that won't go away on redeploy. */
+    APSFilesystemService fsService
 
     //
     // Private Members
     //
-
-    @Managed(loggingFor = "aps-config-provider")
-    private APSLogger logger
-
-    /** Filesystem access that won't go away on redeploy. */
-    @OSGiService(timeout = "15 sec")
-    private APSFilesystemService fsService
 
     /** Save of config dir for when saving. */
     private APSDirectory configDir
@@ -96,23 +92,28 @@ class APSConfigProvider extends StructMap implements APSConfig {
      */
     @Override
     void provide( String structPath, Object value ) {
+
         super.provide( structPath, value )
 
-        saveConfig(  )
+        saveConfig()
+    }
 
-        this.updatedNotifier( this )
+    /**
+     * Synchronize with cluster.
+     */
+    @Override
+    void sync() {
+        this.syncNotifier( this )
     }
 
     /**
      * Loads a configuration.
      *
-     * @param configId The unique id of the config.
+     * @param ownerBundle The bundle that provides config schema and default config values.
      * @param schemaPath The path to the configuration schema.
      * @param defaultConfigPath The path to the default configuration values.
      */
-    void loadConfig( String configId, Bundle ownerBundle, String schemaPath, String defaultConfigPath ) {
-
-        APSConfigProvider config = null
+    void loadConfig( Bundle ownerBundle, String schemaPath, String defaultConfigPath ) {
 
         APSFilesystem fs = this.fsService.getFilesystem( "aps-config-provider" )
         if ( fs == null ) {
@@ -127,7 +128,10 @@ class APSConfigProvider extends StructMap implements APSConfig {
         }
 
         this.configDir = fs.getDirectory( "configs" )
-        if ( this.configDir.exists( "${configId}.json" ) ) {
+        if ( this.configDir.exists( "${this.apsConfigId}.json" ) ) {
+
+            InputStream schemaStream = ownerBundle.getResource( schemaPath ).openStream()
+            InputStream defaultConfigStream = ownerBundle.getResource( defaultConfigPath ).openStream()
 
             try {
 
@@ -135,41 +139,39 @@ class APSConfigProvider extends StructMap implements APSConfig {
                         JSON.readJSONAsMap( schemaStream, this.jsonErrorHandler )
 
                 StructMap loaded = new StructMap(
-                        JSON.readJSONAsMap( this.configDir.getFile( "${configId}.json" ).createInputStream(), this.jsonErrorHandler )
+                        JSON.readJSONAsMap( this.configDir.getFile( "${this.apsConfigId}.json" ).createInputStream(), this.jsonErrorHandler )
                 )
 
                 MapJsonDocValidator validator = new MapJsonDocValidator( validStructure: configSchema )
                 validator.validate( loaded )
 
-                StructMap defaultConfig = new StructMap( JSON.readJSONAsMap( defaultConfigStream, this.jsonErrorHandler ) )
+                StructMap defConfig = new StructMap( JSON.readJSONAsMap( defaultConfigStream, this.jsonErrorHandler ) )
 
-                config = createConfig( configId, defaultConfig )
-                config.putAll( loaded )
-
+                clear()
+                putAll( loaded )
+                this.defaultConfig = defConfig
             }
-            catch ( APSConfigException ce ) {
-                this.logger.error( "Failed to load config with id '${configId}'!", ce )
-                return
+            finally {
+                try {
+                    schemaStream.close()
+                }
+                finally {
+                    defaultConfigStream.close()
+                }
             }
         }
         else {
             // Create from default
-            config = createConfig( configId, defaultConfig )
-            config.putAll( defaultConfig )
-            saveConfig( )
+            clear()
+            putAll( defaultConfig )
+            this.defaultConfig = defaultConfig
+            saveConfig()
         }
-
-        config
     }
 
-    // Consider moving this to ConfigManager!
-    private static APSConfigProvider createConfig( String configId, StructMap defaultConfig ) {
-        new APSConfigProvider(
-                apsConfigId: configId,
-                defaultConfig: defaultConfig
-        )
-    }
-
+    /**
+     * Saves current configuration.
+     */
     void saveConfig() {
         OutputStream os = this.configDir.getFile( "${apsConfigId}.json" ).createOutputStream()
         try {

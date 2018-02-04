@@ -47,4 +47,9 @@ public interface APSConfig extends Map<String, Object> {
      * @param value The value.
      */
     void provide( String structPath, Object value );
+
+    /**
+     * If supported, synchronize config with other nodes in a cluster.
+     */
+    void sync();
 }
