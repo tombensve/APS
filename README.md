@@ -26,14 +26,4 @@ The APSServiceTracker is also a bit different in that it does not like to tear s
 
 There is also OSGIServiceTestTools that can be extended by tests and provide Groovy DSL, and is very small and easy implementing only the basic 4 APIs minus deployment which is handled by the DSL API instead. It does not do classloading (yet)! This makes it trivially easy to run bundles in tests and provide test client bundles. OSGIServiceTestTools can be called from Java also though with more parentesis and dots. It is actually written in Java.
 
-Note that the branch names are YouTrack issues. I'm using YouTrack as a service from JetBrains.
-
-Here is a read only access of the YouTrack board:
-
-https://natusoft.myjetbrains.com/youtrack/agiles/90-4/94-6
-
-ytguest / salamiPizza
-
-Do note that all ideas i throw in there does not get implemented for different reasons. That is why I have a "Cancelled" column in the board.
-
 /Tommy
