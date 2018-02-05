@@ -114,9 +114,8 @@ class APSExecutionServiceProvider implements APSExecutionService {
     void submit( @NotNull APSHandler job, @NotNull APSHandler<APSResult> jobDoneHandler ) {
         this.executor.submit {
             try {
-                APSValue value = new APSValue.Provider( null )
-                job.handle( value )
-                jobDoneHandler.handle( APSResult.success( value ) )
+                job.handle( null )
+                jobDoneHandler.handle( APSResult.success( null ) )
             }
             catch ( Exception e ) {
                 jobDoneHandler.handle( APSResult.failure( e ) )
