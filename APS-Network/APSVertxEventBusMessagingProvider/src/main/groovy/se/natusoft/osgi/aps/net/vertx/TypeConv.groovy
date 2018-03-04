@@ -1,5 +1,7 @@
 package se.natusoft.osgi.aps.net.vertx
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
 import io.vertx.core.json.JsonObject
 import se.natusoft.osgi.aps.json.JSON
 import se.natusoft.osgi.aps.json.JSONArray
@@ -19,6 +21,8 @@ import se.natusoft.osgi.aps.json.JSONObject
  *
  * Any other type will have toString() done on it in any direction!
  */
+@CompileStatic
+@TypeChecked
 class TypeConv {
 
     /**
