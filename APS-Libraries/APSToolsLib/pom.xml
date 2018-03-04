@@ -70,7 +70,6 @@
         <osgi.export.package>
             se.natusoft.osgi.aps.tools;version="${project.version}",
             se.natusoft.osgi.aps.tools.tracker;version="${project.version}",
-            se.natusoft.osgi.aps.tools.models;version="${project.version}",
             se.natusoft.osgi.aps.tools.data;version="${project.version}",
             se.natusoft.osgi.aps.tools.annotation;version="${project.version}",
             se.natusoft.osgi.aps.tools.annotation.activator;version="${project.version}",

@@ -41,6 +41,7 @@ import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException;
 import se.natusoft.osgi.aps.tools.tracker.*;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -634,7 +635,7 @@ public class APSServiceTracker<Service> implements ServiceListener {
      */
     public APSServiceTracker onServiceAvailable(OnServiceAvailable onServiceAvailable) {
 
-        this.trackedServices.setOnServiceAvailable(onServiceAvailable);
+        this.trackedServices.addOnServiceAvailable(onServiceAvailable);
 
         return this;
     }
@@ -646,7 +647,7 @@ public class APSServiceTracker<Service> implements ServiceListener {
      */
     public APSServiceTracker setOnServiceAvailable(OnServiceAvailable onServiceAvailable) {
 
-        this.trackedServices.setOnServiceAvailable(onServiceAvailable);
+        this.trackedServices.addOnServiceAvailable(onServiceAvailable);
 
         return this;
     }
@@ -660,7 +661,7 @@ public class APSServiceTracker<Service> implements ServiceListener {
      */
     public APSServiceTracker onServiceLeaving(OnServiceLeaving onServiceLeaving) {
 
-        this.trackedServices.setOnServiceLeaving(onServiceLeaving);
+        this.trackedServices.addOnServiceLeaving(onServiceLeaving);
 
         return this;
     }
@@ -672,7 +673,7 @@ public class APSServiceTracker<Service> implements ServiceListener {
      */
     public APSServiceTracker setOnServiceLeaving(OnServiceLeaving onServiceLeaving) {
 
-        this.trackedServices.setOnServiceLeaving(onServiceLeaving);
+        this.trackedServices.addOnServiceLeaving(onServiceLeaving);
 
         return this;
     }
@@ -694,7 +695,7 @@ public class APSServiceTracker<Service> implements ServiceListener {
      */
     public APSServiceTracker onActiveServiceAvailable(OnServiceAvailable onActiveServiceAvailable) {
 
-        this.active.setOnActiveServiceAvailable(onActiveServiceAvailable);
+        this.active.addOnActiveServiceAvailable(onActiveServiceAvailable);
 
         return this;
     }
@@ -706,7 +707,7 @@ public class APSServiceTracker<Service> implements ServiceListener {
      */
     public APSServiceTracker setOnActiveServiceAvailable(OnServiceAvailable onActiveServiceAvailable) {
 
-        this.active.setOnActiveServiceAvailable(onActiveServiceAvailable);
+        this.active.addOnActiveServiceAvailable(onActiveServiceAvailable);
 
         return this;
     }
@@ -719,7 +720,7 @@ public class APSServiceTracker<Service> implements ServiceListener {
      */
     public APSServiceTracker onActiveServiceLeaving(OnServiceLeaving onActiveServiceLeaving) {
 
-        this.active.setOnActiveServiceLeaving(onActiveServiceLeaving);
+        this.active.addOnActiveServiceLeaving(onActiveServiceLeaving);
 
         return this;
     }
@@ -731,7 +732,7 @@ public class APSServiceTracker<Service> implements ServiceListener {
      */
     public APSServiceTracker setOnActiveServiceLeaving(OnServiceLeaving onActiveServiceLeaving) {
 
-        this.active.setOnActiveServiceLeaving(onActiveServiceLeaving);
+        this.active.addOnActiveServiceLeaving(onActiveServiceLeaving);
 
         return this;
     }
@@ -977,20 +978,14 @@ public class APSServiceTracker<Service> implements ServiceListener {
         // Private Members
         //
 
-        /**
-         * Our tracked services.
-         */
+        /** Our tracked services. */
         private List<ServiceReference> serviceRefs = new ArrayList<>();
 
-        /**
-         * When set it gets called when a new service becomes available.
-         */
-        private OnServiceAvailable onServiceAvailable = null;
+        /** When set it gets called when a new service becomes available. */
+        private List<OnServiceAvailable> onServiceAvailable = new LinkedList<>();
 
-        /**
-         * When set it gets called when a service becomes unavailable.
-         */
-        private OnServiceLeaving onServiceLeaving = null;
+        /** When set it gets called when a service becomes unavailable. */
+        private List<OnServiceLeaving> onServiceLeaving = new LinkedList<>();
 
         //
         // Constructors
@@ -1007,22 +1002,45 @@ public class APSServiceTracker<Service> implements ServiceListener {
         //
 
         /**
+         * Executes callbacks for service becoming available.
+         */
+        private void callbackOnServiceAvailable(ServiceReference serviceRef) {
+
+            this.onServiceAvailable.forEach((osa) -> new OnServiceRunner(serviceRef, osa));
+
+        }
+
+        /**
+         * Executes callbacks for service becoming unavailable.
+         */
+        private void callbackOnServiceLeaving(ServiceReference leavingRef) {
+
+            this.onServiceLeaving.forEach((osl) -> new OnServiceRunner(leavingRef, osl).run());
+
+        }
+
+        /**
          * Sets the on new service available callback.
          *
          * @param onServiceAvailable The callback to set.
          */
-        public synchronized void setOnServiceAvailable(OnServiceAvailable onServiceAvailable) {
+        @Deprecated
+        public void setOnServiceAvailable(OnServiceAvailable onServiceAvailable) {
+            addOnServiceAvailable(onServiceAvailable);
+        }
 
-            this.onServiceAvailable = onServiceAvailable;
+        /**
+         * Sets the on new service available callback.
+         *
+         * @param onServiceAvailable The callback to set.
+         */
+        public synchronized void addOnServiceAvailable(OnServiceAvailable onServiceAvailable) {
+
+            this.onServiceAvailable.add(onServiceAvailable);
 
             for (ServiceReference serviceRef : this.serviceRefs) {
 
-                // Please note that the active service is set after this call, so if this happens to be the
-                // same as the active service we cannot reuse its service instance.
-                OnServiceRunner osrt = new OnServiceRunner(serviceRef, this.onServiceAvailable);
-
-                //APSServiceTracker.this.executorService.submit(osrt);
-                osrt.run();
+                callbackOnServiceAvailable(serviceRef);
             }
         }
 
@@ -1031,9 +1049,19 @@ public class APSServiceTracker<Service> implements ServiceListener {
          *
          * @param onServiceLeaving The callback to set.
          */
-        void setOnServiceLeaving(OnServiceLeaving onServiceLeaving) {
+        @Deprecated
+        public void setOnServiceLeaving(OnServiceLeaving onServiceLeaving) {
+            addOnServiceLeaving(onServiceLeaving);
+        }
 
-            this.onServiceLeaving = onServiceLeaving;
+        /**
+         * Adds an on old service leaving callback.
+         *
+         * @param onServiceLeaving The callback to set.
+         */
+        public void addOnServiceLeaving(OnServiceLeaving onServiceLeaving) {
+
+            this.onServiceLeaving.add(onServiceLeaving);
         }
 
         /**
@@ -1047,14 +1075,9 @@ public class APSServiceTracker<Service> implements ServiceListener {
 
                 this.serviceRefs.add(reference);
 
-                if (this.onServiceAvailable != null) {
+                if (!this.onServiceAvailable.isEmpty()) {
 
-                    // Please note that the active service is set after this call, so if this happens to be the
-                    // same as the active service we cannot reuse its service instance.
-                    OnServiceRunner osrt = new OnServiceRunner(reference, this.onServiceAvailable);
-
-                    //APSServiceTracker.this.executorService.submit(osrt);
-                    osrt.run();
+                    callbackOnServiceAvailable(reference);
                 }
 
                 if (APSServiceTracker.this.debugLogger != null) {
@@ -1135,10 +1158,7 @@ public class APSServiceTracker<Service> implements ServiceListener {
 
                 if (this.onServiceLeaving != null) {
 
-                    OnServiceRunner osrt = new OnServiceRunner(found, this.onServiceLeaving);
-
-//                    APSServiceTracker.this.executorService.submit(osrt);
-                    osrt.run();
+                    callbackOnServiceLeaving(found);
                 }
 
                 if (APSServiceTracker.this.debugLogger != null) {
@@ -1197,12 +1217,12 @@ public class APSServiceTracker<Service> implements ServiceListener {
          * This gets called when the first service becomes available and when the activly used
          * service by withSerive*() calls changes.
          */
-        private OnServiceAvailable onActiveServiceAvailable = null;
+        private List<OnServiceAvailable> onActiveServiceAvailable = new LinkedList<>();
 
         /**
          * This gets called when the activly used service by withService*() calls leaves.
          */
-        private OnServiceLeaving onActiveServiceLeaving = null;
+        private List<OnServiceLeaving> onActiveServiceLeaving = new LinkedList<>();
 
         //
         // Constructors
@@ -1219,24 +1239,50 @@ public class APSServiceTracker<Service> implements ServiceListener {
         //
 
         /**
+         * Executes callbacks for service becoming available.
+         */
+        private void callbackOnActiveServiceAvailable() {
+
+            this.onActiveServiceAvailable.forEach((osa) ->
+                    ((APSServiceTracker.this.cacheActiveService && this.activeService != null)
+                            ?
+                            new OnServiceRunner(this.activeService, osa)
+                            :
+                            new OnServiceRunner(this.active, osa)
+            ).run());
+
+        }
+
+        /**
+         * Executes callbacks for service becoming unavailable.
+         */
+        private void callbackOnActiveServiceLeaving(ServiceReference oldActive) {
+
+            this.onActiveServiceLeaving.forEach((osl) -> new OnServiceRunner(oldActive, osl).run());
+
+        }
+
+        /**
          * Sets on active service availability callback.
          *
          * @param onActiveServiceAvailable The callback to set.
          */
+        @Deprecated
         void setOnActiveServiceAvailable(OnServiceAvailable onActiveServiceAvailable) {
+            addOnActiveServiceAvailable(onActiveServiceAvailable);
+        }
 
-            this.onActiveServiceAvailable = onActiveServiceAvailable;
+        /**
+         * Sets on active service availability callback.
+         *
+         * @param onActiveServiceAvailable The callback to set.
+         */
+        void addOnActiveServiceAvailable(OnServiceAvailable onActiveServiceAvailable) {
+
+            this.onActiveServiceAvailable.add(onActiveServiceAvailable);
 
             if (this.active != null) {
-
-                OnServiceRunner osrt = (APSServiceTracker.this.cacheActiveService && this.activeService != null)
-                        ?
-                        new OnServiceRunner(this.activeService, this.onActiveServiceAvailable)
-                        :
-                        new OnServiceRunner(this.active, this.onActiveServiceAvailable);
-
-//                APSServiceTracker.this.executorService.submit(osrt);
-                osrt.run();
+                callbackOnActiveServiceAvailable();
             }
         }
 
@@ -1245,8 +1291,18 @@ public class APSServiceTracker<Service> implements ServiceListener {
          *
          * @param onActiveServiceLeaving callback to set.
          */
+        @Deprecated
         void setOnActiveServiceLeaving(OnServiceLeaving onActiveServiceLeaving) {
-            this.onActiveServiceLeaving = onActiveServiceLeaving;
+            addOnActiveServiceLeaving(onActiveServiceLeaving);
+        }
+
+        /**
+         * Sets on active service availability leaving.
+         *
+         * @param onActiveServiceLeaving callback to set.
+         */
+        void addOnActiveServiceLeaving(OnServiceLeaving onActiveServiceLeaving) {
+            this.onActiveServiceLeaving.add(onActiveServiceLeaving);
         }
 
         /**
@@ -1291,10 +1347,8 @@ public class APSServiceTracker<Service> implements ServiceListener {
 
                 if (this.onActiveServiceLeaving != null) {
 
-                    OnServiceRunner osrt = new OnServiceRunner(oldActive, this.onActiveServiceLeaving);
+                    callbackOnActiveServiceLeaving(oldActive);
 
-//                    APSServiceTracker.this.executorService.submit(osrt);
-                    osrt.run();
                 }
 
                 if (APSServiceTracker.this.debugLogger != null) {
@@ -1309,14 +1363,7 @@ public class APSServiceTracker<Service> implements ServiceListener {
 
                 if (this.onActiveServiceAvailable != null) {
 
-                    OnServiceRunner osrt = (APSServiceTracker.this.cacheActiveService && this.activeService != null)
-                            ?
-                            new OnServiceRunner(this.activeService, this.onActiveServiceAvailable)
-                            :
-                            new OnServiceRunner(this.active, this.onActiveServiceAvailable);
-
-//                    APSServiceTracker.this.executorService.submit(osrt);
-                    osrt.run();
+                    callbackOnActiveServiceAvailable();
                 }
 
                 if (APSServiceTracker.this.debugLogger != null) {
@@ -1433,7 +1480,10 @@ public class APSServiceTracker<Service> implements ServiceListener {
     }
 
     /**
-     * Runs an _OnServiceAvailable_ or an _OnServiceLeaving_ in another thread.
+     * Runs an _OnServiceAvailable_ or an _OnServiceLeaving_.
+     *
+     * **Do Note** that this is not a thread and does not create a thread within! It is a Runnable and can be
+     * passed to a thread if wanted. Currently that is not done.
      */
     private class OnServiceRunner implements Runnable {
         //
