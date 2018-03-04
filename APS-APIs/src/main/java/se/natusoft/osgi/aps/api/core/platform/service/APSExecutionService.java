@@ -1,8 +1,8 @@
 package se.natusoft.osgi.aps.api.core.platform.service;
 
 import se.natusoft.docutations.NotNull;
-import se.natusoft.osgi.aps.api.reactive.APSHandler;
-import se.natusoft.osgi.aps.api.reactive.APSResult;
+import se.natusoft.osgi.aps.model.APSHandler;
+import se.natusoft.osgi.aps.model.APSResult;
 
 /**
  * This provides a thread pool for executing jobs as a service.

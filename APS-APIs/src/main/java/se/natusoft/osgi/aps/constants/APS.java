@@ -47,6 +47,8 @@ public interface APS {
 
     String DEFAULT = "default";
 
+    String CLUSTERED = "clustered";
+
     interface Service {
         String Provider = "service-provider";
         String Category = "service-category";

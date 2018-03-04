@@ -1,10 +1,8 @@
 package se.natusoft.osgi.aps.api.core.config;
 
-import se.natusoft.osgi.aps.api.reactive.APSHandler;
+import se.natusoft.osgi.aps.model.APSHandler;
 
-import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * This represents a JSON configuration using Map & List to represent a JSON Object and JSON Array.
@@ -21,7 +19,14 @@ import java.util.function.Consumer;
  * then this result can be wrapped with a StructMap and from there be accessed just like the
  * lookup path, but relative to this map.
  */
+@SuppressWarnings("unused")
 public interface APSConfig extends Map<String, Object> {
+
+    /** Start of message service target address to subscribe to for configuration. Actual config id is added to this. */
+    String APS_CONFIG_AVAILABLE_ADDRESS_START = "aps.config.available.";
+
+    /** Messages on this address informs that cluster conf have been updated.  */
+    String CLUSTER_CONFIG_REFRESH_ADDRESS = "aps.config.refresh";
 
     /**
      * Calls the provided handler for each value path in the map.
@@ -33,7 +38,7 @@ public interface APSConfig extends Map<String, Object> {
     void withStructPath(APSHandler<String> pathHandler);
 
     /**
-     * Looks up the value of a specified struct Path.
+     * Looks up the value of a specified struct Path. Null or blank will return the whole root config Map.
      *
      * @param structPath The structPath to lookup.
      * @param valueHandler The handler receiving the looked up value.
@@ -47,9 +52,4 @@ public interface APSConfig extends Map<String, Object> {
      * @param value The value.
      */
     void provide( String structPath, Object value );
-
-    /**
-     * If supported, synchronize config with other nodes in a cluster.
-     */
-    void sync();
 }

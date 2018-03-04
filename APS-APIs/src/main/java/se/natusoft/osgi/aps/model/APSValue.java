@@ -1,7 +1,6 @@
-package se.natusoft.osgi.aps.api.reactive;
+package se.natusoft.osgi.aps.model;
 
 import se.natusoft.docutations.NotNull;
-import se.natusoft.osgi.aps.api.util.APSObject;
 
 /**
  * This represents a possibly asynchronously delivered value. Inspired by Vertx even though I changed name format.
@@ -14,12 +13,12 @@ public interface APSValue<T> {
      * @return The held value.
      */
     @NotNull
-    T value();
+    T content();
 
-    default void value(@NotNull T val) { throw new UnsupportedOperationException("value(T val) Is not supported by this implementation!"); }
+    default void content(@NotNull T val) { throw new UnsupportedOperationException("content(T val) Is not supported by this implementation!"); }
 
     default APSObject<T> toAPSObject() {
-        return new APSObject<>(value());
+        return new APSObject<>(content());
     }
 
     /**
@@ -55,7 +54,7 @@ public interface APSValue<T> {
          * @return The held value.
          */
         @NotNull
-        public T value() {
+        public T content() {
             return this.value;
         }
 
@@ -64,7 +63,7 @@ public interface APSValue<T> {
          *
          * @param val The value to set.
          */
-        public void value(T val) {
+        public void content(T val) {
             this.value = val;
         }
     }

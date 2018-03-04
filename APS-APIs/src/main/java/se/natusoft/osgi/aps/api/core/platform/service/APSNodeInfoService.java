@@ -37,8 +37,8 @@
 package se.natusoft.osgi.aps.api.core.platform.service;
 
 import se.natusoft.osgi.aps.api.core.platform.model.NodeInfo;
-import se.natusoft.osgi.aps.api.reactive.APSValue;
-import se.natusoft.osgi.aps.api.reactive.APSHandler;
+import se.natusoft.osgi.aps.model.APSValue;
+import se.natusoft.osgi.aps.model.APSHandler;
 
 import java.util.List;
 

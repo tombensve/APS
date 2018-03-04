@@ -1,4 +1,4 @@
-package se.natusoft.osgi.aps.api.util;
+package se.natusoft.osgi.aps.model;
 
 import se.natusoft.osgi.aps.exceptions.APSValidationException;
 
@@ -11,6 +11,12 @@ import java.util.Map;
  * Note that the defined constants are only utilities! They are not required in any way. Whatever is put in an APSProperties
  * instance is up to the user. This whole class is just a utility to put a clearer name on a specific usage of
  * Map&lt;String, String&gt;.
+ *
+ * Also note that there is a "Provider" inner class that provides a default implementation. It provides utility methods
+ * for adding data to the map in a fluent way. Many of them are Groovy operators that can only be used from Groovy in
+ * operator form.
+ *
+ * The APIs are in Java, and some libraries are in Java, but most of the services are done in Groovy.
  */
 @SuppressWarnings("unused")
 public interface APSProperties extends Map<String, String> {
@@ -85,6 +91,11 @@ public interface APSProperties extends Map<String, String> {
 
         private String key = null;
 
+        /**
+         * Adds a key or a value depending on if a key has been provided previously or not on >> operator.
+         *
+         * @param keyOrValue The key or value content.
+         */
         @SuppressWarnings("WeakerAccess")
         public APSProperties.Provider rightShift(String keyOrValue) {
             if (this.key == null) {
@@ -121,8 +132,31 @@ public interface APSProperties extends Map<String, String> {
             return this;
         }
 
+        /**
+         * Lets + operator do the same as right shift. If some thinks that is clearer than right shift.
+         *
+         * @param keyOrValue The key or value. Must be called first with key, then with value.
+         */
         public APSProperties.Provider plus(String keyOrValue) {
             return rightShift(keyOrValue);
+        }
+
+        /**
+         * For Java.
+         *
+         * @param key The key to set. This must be called before value(...).
+         */
+        public APSProperties.Provider key(String key) {
+            return rightShift(key);
+        }
+
+        /**
+         * For Java.
+         *
+         * @param value The value to set. key(...) must have been called before this.
+         */
+        public APSProperties.Provider value(String value) {
+            return rightShift(value);
         }
 
         /**
@@ -137,6 +171,11 @@ public interface APSProperties extends Map<String, String> {
             return this;
         }
 
+        /**
+         * Adds a whole Map to existing Map.
+         *
+         * @param map The Map to add.
+         */
         public APSProperties.Provider plus(Map<String, String> map) {
             return leftShift(map);
         }

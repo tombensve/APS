@@ -1,9 +1,4 @@
-package se.natusoft.osgi.aps.api.util;
-
-import se.natusoft.osgi.aps.api.reactive.APSHandler;
-import se.natusoft.osgi.aps.api.reactive.APSValue;
-
-import java.util.function.Consumer;
+package se.natusoft.osgi.aps.model;
 
 /**
  * This is a utility to wrap an object and easily check for what it is among String, number, boolean, or object.
@@ -42,7 +37,7 @@ public class APSObject<T> implements APSValue<T> {
      * @return The held value.
      */
     @Override
-    public T value() {
+    public T content() {
         return this.object;
     }
 
@@ -52,7 +47,7 @@ public class APSObject<T> implements APSValue<T> {
      * @param val The new value to set.
      */
     @Override
-    public void value(T val) {
+    public void content(T val) {
         this.object = val;
     }
 
@@ -133,7 +128,7 @@ public class APSObject<T> implements APSValue<T> {
     }
 
     public Object getUnknownObject() {
-        return value();
+        return content();
     }
 
     public APSObject onBoolean(APSHandler<Boolean> handler) {

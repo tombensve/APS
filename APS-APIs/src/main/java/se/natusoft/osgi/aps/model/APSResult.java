@@ -1,4 +1,4 @@
-package se.natusoft.osgi.aps.api.reactive;
+package se.natusoft.osgi.aps.model;
 
 import se.natusoft.osgi.aps.exceptions.APSException;
 

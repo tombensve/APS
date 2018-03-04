@@ -104,7 +104,6 @@
             se.natusoft.osgi.aps.api.misc.queue;version="${project.version}",
             se.natusoft.osgi.aps.api.misc.session;version="${project.version}",
             se.natusoft.osgi.aps.api.misc.time;version="${project.version}",
-            se.natusoft.osgi.aps.model;version="${project.version}",
             se.natusoft.osgi.aps.api.model.json;version="${project.version}",
             se.natusoft.osgi.aps.api.net;version="${project.version}",
             se.natusoft.osgi.aps.api.net.communication;version="${project.version}",
@@ -120,10 +119,10 @@
             se.natusoft.osgi.aps.api.net.tcpip;version="${project.version}",
             se.natusoft.osgi.aps.api.net.util;version="${project.version}",
             se.natusoft.osgi.aps.api.messaging;version="${project.version}",
-            se.natusoft.osgi.aps.api.reactive;version="${project.version}",
             se.natusoft.osgi.aps.api.util;version="${project.version}",
             se.natusoft.osgi.aps.api.web.config;version="${project.version}",
             se.natusoft.osgi.aps.constants;version="${project.version}",
+            se.natusoft.osgi.aps.model;version="${project.version}",
             se.natusoft.osgi.aps.util;version="${project.version}"
         </osgi.export.package>
 

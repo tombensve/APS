@@ -1,7 +1,7 @@
 package se.natusoft.osgi.aps.api.core;
 
-import se.natusoft.osgi.aps.api.reactive.APSHandler;
-import se.natusoft.osgi.aps.api.reactive.APSResult;
+import se.natusoft.osgi.aps.model.APSHandler;
+import se.natusoft.osgi.aps.model.APSResult;
 
 /**
  * This API can be implemented by services also supporting locking.

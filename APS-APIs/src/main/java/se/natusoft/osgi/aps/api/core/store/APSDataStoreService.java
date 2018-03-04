@@ -1,7 +1,7 @@
 package se.natusoft.osgi.aps.api.core.store;
 
-import se.natusoft.osgi.aps.api.reactive.APSHandler;
-import se.natusoft.osgi.aps.api.reactive.APSResult;
+import se.natusoft.osgi.aps.model.APSHandler;
+import se.natusoft.osgi.aps.model.APSResult;
 
 /**
  * This defines a data storage service. It says nothing about persistence nor about networking / cluster.

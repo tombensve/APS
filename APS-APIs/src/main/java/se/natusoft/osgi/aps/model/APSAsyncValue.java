@@ -1,4 +1,4 @@
-package se.natusoft.osgi.aps.api.reactive;
+package se.natusoft.osgi.aps.model;
 
 /**
  * For those that prefer to have an "Async" part in the name ...
