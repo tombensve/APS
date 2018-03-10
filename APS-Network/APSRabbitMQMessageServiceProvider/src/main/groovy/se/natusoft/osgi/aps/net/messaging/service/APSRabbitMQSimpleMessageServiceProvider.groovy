@@ -2,12 +2,16 @@ package se.natusoft.osgi.aps.net.messaging.service
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.messaging.APSMessageService
-import se.natusoft.osgi.aps.api.messaging.APSPublisher
-import se.natusoft.osgi.aps.api.messaging.APSSender
-import se.natusoft.osgi.aps.api.reactive.APSHandler
-import se.natusoft.osgi.aps.api.reactive.APSValue
+import se.natusoft.docutations.NotNull
+import se.natusoft.docutations.Nullable
+import se.natusoft.osgi.aps.api.messaging.APSMessage
+import se.natusoft.osgi.aps.api.messaging.APSMessagePublisher
+import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
+import se.natusoft.osgi.aps.api.messaging.APSMessagingException
 import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.osgi.aps.model.APSHandler
+import se.natusoft.osgi.aps.model.APSResult
+import se.natusoft.osgi.aps.model.ID
 import se.natusoft.osgi.aps.net.messaging.config.Config
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.PeskyWabbitConnectionManager
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -20,15 +24,16 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 @CompileStatic
 @TypeChecked
 @OSGiServiceProvider(
+        serviceAPIs = [APSMessagePublisher.class, APSMessageSubscriber.class],
         properties = [
-                @OSGiProperty(name = APS.Service.Provider, value = "aps-rabbitmq-simple-message-provider"),
+                @OSGiProperty(name = APS.Service.Provider, value = "aps-rabbitmq-message-provider"),
                 @OSGiProperty(name = APS.Service.Category, value = APS.Value.Messaging.Service.Category),
                 @OSGiProperty(name = APS.Service.Function, value = APS.Value.Messaging.Service.Function),
                 @OSGiProperty(name = APS.Messaging.Persistent, value = APS.TRUE),
                 @OSGiProperty(name = APS.Messaging.MultipleReceivers, value = APS.TRUE)
         ]
 )
-class APSRabbitMQSimpleMessageServiceProvider implements APSMessageService<byte[]> {
+class APSRabbitMQSimpleMessageServiceProvider implements APSMessagePublisher<byte[]>, APSMessageSubscriber<byte[]> {
 
     //
     // Private Members
@@ -45,85 +50,7 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSMessageService<byte[
     private Map<String, APSRabbitMQMessageProvider> instances = [ : ]
 
     /** Maps subscriber id to topic. */
-    private Map<UUID, String> idToTopic = [ : ]
-
-    //
-    // Service Methods
-    //
-
-    /**
-     * Returns a publisher to publish with.
-     *
-     * @param properties Meta data for the publisher.
-     */
-    @Override
-    void publisher( Map<String, String> properties, APSHandler<APSPublisher<byte[]>> handler ) {
-
-        String topic = properties[ "topic" ]
-        APSRabbitMQMessageProvider messageProvider = this.instances.get( topic )
-
-        if ( messageProvider == null ) {
-
-            throw new IllegalArgumentException( "sendMessage(): No such topic: '${topic}'!" )
-        }
-
-        handler.handle( new Publisher<>( messageProvider: messageProvider ) )
-    }
-
-    /**
-     * Returns a sender to send with. Depending on implementation the APSSender instance returned can possibly
-     * be an APSReplyableSender that allows for providing a subscriber for a reply to the sent message.
-     *
-     * @param properties Meta data for the sender.
-     */
-    @Override
-    void sender( Map<String, String> properties, APSHandler<APSSender<byte[]>> handler ) {
-
-        throw new UnsupportedOperationException( "This RabbitMQ implementation only provides a publisher!" )
-    }
-
-    /**
-     * Adds a subscriber.
-     *
-     * @param subscriber The subscriber to add.
-     * @param properties Should contain "topic" with the topic to subscribe to. This gets updated by this call and
-     *               should be passed back to unsubscribe(...) when done.
-     */
-    @Override
-    void subscribe( Map<String, String> properties, APSHandler<APSValue<byte[]>> subscriber ) {
-
-        String topic = properties[ 'topic' ]
-        APSRabbitMQMessageProvider messageProvider = this.instances.get( topic )
-
-        if ( messageProvider == null ) {
-            throw new IllegalArgumentException( "addMessageListener(): No such topic: '${topic}'!" )
-        }
-
-        UUID subscriberId = messageProvider.addMessageSubscriber( subscriber )
-        this.idToTopic[ subscriberId ] = topic
-
-        properties[ 'subscriber-id' ] = subscriberId.toString()
-    }
-
-    /**
-     * Removes a subscriber.
-     *
-     * @param properties The **same** params as passed to subscribe(...).
-     */
-    @Override
-    void unsubscribe( Map<String, String> properties ) {
-
-        UUID subscriberId = UUID.fromString( properties[ 'subscriber-id' ] )
-        String topic = properties[ 'topic' ]
-
-        APSRabbitMQMessageProvider messageProvider = this.instances.get( topic )
-
-        if ( messageProvider == null ) {
-            throw new IllegalArgumentException( "removeMessageListener(): No such topic: '${topic}'!" )
-        }
-
-        messageProvider.removeMessageSubscriber( (UUID) subscriberId )
-    }
+    private Map<ID, String> idToTopic = [ : ]
 
     //
     // Startup / Shutdown Methods
@@ -239,5 +166,105 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSMessageService<byte[
 
             startInstance( ( (Map.Entry<String, LinkedHashMap<String, String>>) e ).value as Map<String, Serializable> )
         }
+    }
+
+    //
+    // Service Methods
+    //
+
+    /**
+     * Publishes a message.
+     *
+     * @param destination The destination of the message. Preferably this is something that the
+     *                    service looks up to get a real destination, rather than an absolute
+     *                    destination.
+     * @param message The message to publish.
+     *
+     * @throws APSMessagingException on any failure. Note that this is a RuntimeException!
+     */
+    @Override
+    void publish( String destination, byte[] message ) throws APSMessagingException {
+
+        APSRabbitMQMessageProvider messageProvider = this.instances.get( destination )
+
+        if ( messageProvider == null ) {
+
+            throw new IllegalArgumentException( "sendMessage(): No such topic: '${destination}'!" )
+        }
+
+        messageProvider.sendMessage( message )
+    }
+
+    /**
+     * Publishes a message receiving a result of success or failure. On Success there
+     * can be a result value and on failure there is an Exception describing the failure
+     * available. This variant never throws an Exception.
+     *
+     * @param destination The destination of the message. Preferably this is something that the
+     *                    service looks up to get a real destination, rather than an absolute
+     *                    destination.
+     * @param message The message to publish.
+     * @param result Callback providing the success or failure of the call.
+     */
+    @Override
+    void publish( String destination, byte[] message, APSHandler result ) {
+
+        try {
+            publish( destination, message )
+
+            result.handle( APSResult.success( null ) )
+        }
+        catch (APSMessagingException me) {
+
+            result.handle( APSResult.failure( me ))
+        }
+
+    }
+
+    /**
+     * Adds a subscriber.
+     *
+     * @param destination The destination to subscribe to.
+     *                       This is up to the implementation, but it is strongly recommended that
+     *                       this is a name that will be looked up in some configuration for the real
+     *                       destination, by the service rather than have the client pass a value from
+     *                       its configuration.
+     * @param subscriptionId A unique ID used to later cancel the subscription. Use UUID or some other ID
+     *                       implementation that is always unique.
+     * @param handler The subscription handler.
+     */
+    @Override
+    void subscribe( @NotNull String destination, @NotNull ID subscriptionId,
+                    @NotNull APSHandler<APSMessage<byte[]>> handler ) {
+
+        APSRabbitMQMessageProvider messageProvider = this.instances.get( destination )
+
+        if ( messageProvider == null ) {
+            throw new IllegalArgumentException( "addMessageListener(): No such topic: '${destination}'!" )
+        }
+
+        messageProvider.addMessageSubscriber( subscriptionId, handler )
+        this.idToTopic[ subscriptionId ] = destination
+
+    }
+
+    /**
+     * Cancel a subscription.
+     *
+     * @param subscriptionId The same id as passed to subscribe.
+     */
+    @Override
+    void unsubscribe( @NotNull ID subscriptionId, @Nullable APSHandler result ) {
+
+        String topic = this.idToTopic[ subscriptionId ]
+
+        APSRabbitMQMessageProvider messageProvider = this.instances.get( topic )
+
+        if ( messageProvider == null ) {
+            throw new IllegalArgumentException( "removeMessageListener(): No such topic: '${topic}'!" )
+        }
+
+        messageProvider.removeMessageSubscriber( subscriptionId )
+
     }
 }

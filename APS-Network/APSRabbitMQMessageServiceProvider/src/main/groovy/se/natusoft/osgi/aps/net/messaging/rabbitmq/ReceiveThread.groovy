@@ -6,9 +6,9 @@ import com.rabbitmq.client.QueueingConsumer
 import com.rabbitmq.client.ShutdownSignalException
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.reactive.APSValue
-import se.natusoft.osgi.aps.api.reactive.APSHandler
-import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
+import se.natusoft.osgi.aps.api.messaging.APSMessage
+import se.natusoft.osgi.aps.model.APSHandler
+import se.natusoft.osgi.aps.model.ID
 import se.natusoft.osgi.aps.net.messaging.config.Config
 import se.natusoft.osgi.aps.tools.APSLogger
 
@@ -33,11 +33,11 @@ class ReceiveThread extends Thread {
     private String recvQueueName
 
     /** The listeners to notify of received messages. */
-    private List<APSHandler<APSValue<byte[]>>> subscribers =
-            Collections.synchronizedList( new LinkedList<APSHandler<APSValue<byte[]>>>() )
+    private List<APSHandler<APSMessage<byte[]>>> subscribers =
+            Collections.synchronizedList( new LinkedList<APSHandler<APSMessage<byte[]>>>() )
 
     /** To handle removing handlers. */
-    private Map<UUID, APSHandler<APSValue<byte[]>>> idToSubscriber = [ : ]
+    private Map<ID, APSHandler<APSMessage<byte[]>>> idToSubscriber = [ : ]
 
     //
     // Properties
@@ -86,12 +86,9 @@ class ReceiveThread extends Thread {
      *
      * @param listener The listener to add.
      */
-    UUID addMessageSubscriber( APSHandler<APSValue<byte[]>> subscriber ) {
+    void addMessageSubscriber( ID id, APSHandler<APSMessage<byte[]>> subscriber ) {
         this.subscribers += subscriber
-        UUID id = UUID.randomUUID(  )
-        this.idToSubscriber[id] = subscriber
-
-        id
+        this.idToSubscriber[ id ] = subscriber
     }
 
     /**
@@ -99,8 +96,8 @@ class ReceiveThread extends Thread {
      *
      * @param listener The listener to remove.
      */
-    void removeMessageSubscriber( UUID id ) {
-        APSHandler<APSValue<byte[]>> subscriber = this.idToSubscriber[ id]
+    void removeMessageSubscriber( ID id ) {
+        APSHandler<APSMessage<byte[]>> subscriber = this.idToSubscriber[ id ]
         this.subscribers -= subscriber
         this.idToSubscriber.remove( id )
     }
@@ -172,9 +169,9 @@ class ReceiveThread extends Thread {
                             //logger.debug("======== Received message of length " + body.length + " ==========")
                             //logger.debug("  Current no listeners: " + this.listeners.size())
 
-                            for ( APSHandler<APSValue<byte[]>> subscriber : this.subscribers ) {
+                            for ( APSHandler<APSMessage<byte[]>> subscriber : this.subscribers ) {
                                 try {
-                                    subscriber.handle( new APSValue.Provider( delivery.body ) )
+                                    subscriber.handle( new APSMessage.Provider<byte[]>( delivery.body ) )
                                 }
                                 catch ( RuntimeException re ) {
                                     this.logger.error( "Failure during listener call: " + re.getMessage(), re )

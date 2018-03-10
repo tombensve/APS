@@ -75,7 +75,6 @@
         <osgi.private.package>
             se.natusoft.osgi.aps.net.messaging,
             se.natusoft.osgi.aps.net.messaging.config,
-            se.natusoft.osgi.aps.net.messaging.apis,
             se.natusoft.osgi.aps.net.messaging.rabbitmq,
             se.natusoft.osgi.aps.net.messaging.service
         </osgi.private.package>

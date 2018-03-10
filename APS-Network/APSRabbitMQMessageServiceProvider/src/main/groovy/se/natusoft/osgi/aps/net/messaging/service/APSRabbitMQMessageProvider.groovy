@@ -40,10 +40,11 @@ import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.Channel
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import se.natusoft.osgi.aps.api.messaging.APSMessage
 import se.natusoft.osgi.aps.api.messaging.APSMessagingException
-import se.natusoft.osgi.aps.api.reactive.APSValue
-import se.natusoft.osgi.aps.api.reactive.APSHandler
-import se.natusoft.osgi.aps.net.messaging.apis.ConnectionProvider
+import se.natusoft.osgi.aps.model.APSHandler
+import se.natusoft.osgi.aps.model.ID
+import se.natusoft.osgi.aps.net.messaging.rabbitmq.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.ReceiveThread
 import se.natusoft.osgi.aps.tools.APSLogger
 
@@ -90,7 +91,7 @@ class APSRabbitMQMessageProvider {
      */
     ConnectionProvider connectionProvider
 
-    /** A configuration for this specific cluster provider instance. */
+    /** A configuration for this specific instance. */
     Map<String, Serializable> instanceConfig
 
     //
@@ -98,11 +99,11 @@ class APSRabbitMQMessageProvider {
     //
 
     /**
-     * Creates a new APSRabbitMQClusterServiceProvider.
+     * Creates a new APSRabbitMQMessageProvider.
      */
     APSRabbitMQMessageProvider() {
         AMQP.BasicProperties.Builder bob = new AMQP.BasicProperties.Builder()
-        this.basicProperties = bob.contentType("application/octet-stream").build()
+        this.basicProperties = bob.contentType( "application/octet-stream" ).build()
     }
 
     //
@@ -111,13 +112,15 @@ class APSRabbitMQMessageProvider {
 
     // ----- Side effects of using Groovy properties constructor ...
 
-    private static validate(Object what, String message) {
-        if (what == null) throw new IllegalArgumentException(message)
+    private static validate( Object what, String message ) {
+        if ( what == null ) {
+            throw new IllegalArgumentException( message )
+        }
     }
 
     private void validate() {
-        validate(this.connectionProvider, "Missing required 'connectionProvider'!")
-        validate(this.instanceConfig, "Missing required 'instanceConfig'!")
+        validate( this.connectionProvider, "Missing required 'connectionProvider'!" )
+        validate( this.instanceConfig, "Missing required 'instanceConfig'!" )
     }
 
     // -----
@@ -130,15 +133,15 @@ class APSRabbitMQMessageProvider {
     private Channel ensureInstanceChannel() throws IOException {
         validate()
 
-        if (this.instanceChannel == null || !this.instanceChannel.isOpen()) {
+        if ( this.instanceChannel == null || !this.instanceChannel.isOpen() ) {
             this.instanceChannel = this.connectionProvider.connection.createChannel()
-            this.instanceChannel.exchangeDeclare(this.instanceConfig.exchange as String, this.instanceConfig.exchangeType as String)
-            this.instanceChannel.queueDeclare(this.instanceConfig.queue as String, true, false, false, null)
+            this.instanceChannel.exchangeDeclare( this.instanceConfig.exchange as String, this.instanceConfig.exchangeType as String )
+            this.instanceChannel.queueDeclare( this.instanceConfig.queue as String, true, false, false, null )
             String routingKey = this.instanceConfig.routingKey as String
-            if (routingKey != null && routingKey.isEmpty()) {
+            if ( routingKey != null && routingKey.isEmpty() ) {
                 routingKey = null
             }
-            this.instanceChannel.queueBind(this.instanceConfig.queue as String, this.instanceConfig.exchange as String, routingKey)
+            this.instanceChannel.queueBind( this.instanceConfig.queue as String, this.instanceConfig.exchange as String, routingKey )
         }
 
         return this.instanceChannel
@@ -150,7 +153,7 @@ class APSRabbitMQMessageProvider {
     private void startReceiveThread() {
         validate()
 
-        if (this.instanceReceiveThread == null) {
+        if ( this.instanceReceiveThread == null ) {
             this.instanceReceiveThread = new ReceiveThread(
                     name: "rabbitmq-receive-thread-" + this.name,
                     connectionProvider: this.connectionProvider,
@@ -164,13 +167,13 @@ class APSRabbitMQMessageProvider {
 
     private void stopReceiveThread() {
         try {
-            if (this.instanceReceiveThread != null) {
+            if ( this.instanceReceiveThread != null ) {
                 this.instanceReceiveThread.stopThread()
-                this.instanceReceiveThread.wait(20000)
+                this.instanceReceiveThread.wait( 20000 )
             }
         }
-        catch (InterruptedException ie) {
-            throw new APSMessagingException("[${this.name}]:Failed to stop receive thread!", ie)
+        catch ( InterruptedException ie ) {
+            throw new APSMessagingException( "[${this.name}]:Failed to stop receive thread!", ie )
         }
     }
 
@@ -189,13 +192,13 @@ class APSRabbitMQMessageProvider {
      *
      * @throws APSMessagingException on failure.
      */
-    void sendMessage(byte[] message) throws APSMessagingException {
+    void sendMessage( byte[] message ) throws APSMessagingException {
         String routingKey = this.instanceConfig.routingKey as String
-        if (routingKey.isEmpty()) {
+        if ( routingKey.isEmpty() ) {
             routingKey = null
         }
 
-        ensureInstanceChannel().basicPublish(this.instanceConfig.exchange as String, routingKey, this.basicProperties, message)
+        ensureInstanceChannel().basicPublish( this.instanceConfig.exchange as String, routingKey, this.basicProperties, message )
     }
 
     /**
@@ -203,8 +206,8 @@ class APSRabbitMQMessageProvider {
      *
      * @param listener The listener to add.
      */
-    UUID addMessageSubscriber( APSHandler<APSValue<byte[]>> subscriber ) {
-        this.instanceReceiveThread.addMessageSubscriber(subscriber)
+    void addMessageSubscriber( ID id, APSHandler<APSMessage<byte[]>> subscriber ) {
+        this.instanceReceiveThread.addMessageSubscriber( id, subscriber )
     }
 
     /**
@@ -212,8 +215,8 @@ class APSRabbitMQMessageProvider {
      *
      * @param listener The listener to remove.
      */
-    void removeMessageSubscriber( UUID subscriberId) {
-        this.instanceReceiveThread.removeMessageSubscriber(subscriberId)
+    void removeMessageSubscriber( ID subscriberId ) {
+        this.instanceReceiveThread.removeMessageSubscriber( subscriberId )
     }
 }
 
