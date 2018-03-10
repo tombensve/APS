@@ -5,7 +5,7 @@ import groovy.transform.TypeChecked
 import org.junit.Test
 import se.natusoft.osgi.aps.api.core.APSLockable
 import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
-import se.natusoft.osgi.aps.api.reactive.APSResult
+import se.natusoft.osgi.aps.model.APSResult
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -89,7 +89,7 @@ class ClusterStoreTestClient {
                     APSVertxClusterDataStoreTest.stored = storeRes.success()
                     this.logger.info( "Stored value with result: ${storeRes.success()}" )
 
-                    this.logger.info( "Current lock: ${lockRes.result().value()}" )
+                    this.logger.info( "Current lock: ${lockRes.result().content()}" )
                 }
             }
         }
@@ -103,8 +103,8 @@ class ClusterStoreTestClient {
 
                 if ( result.success() ) {
 
-                    APSVertxClusterDataStoreTest.retrieved = result.result().value()
-                    this.logger.info( "Retrieved stored value: ${result.result().value()}" )
+                    APSVertxClusterDataStoreTest.retrieved = result.result().content()
+                    this.logger.info( "Retrieved stored value: ${result.result().content()}" )
                 }
                 else {
 

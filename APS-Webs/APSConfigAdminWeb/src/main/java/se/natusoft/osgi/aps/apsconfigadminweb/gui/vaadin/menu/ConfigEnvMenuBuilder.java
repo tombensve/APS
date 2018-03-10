@@ -44,7 +44,7 @@ import se.natusoft.osgi.aps.api.core.configold.model.admin.APSConfigEnvironment;
 import se.natusoft.osgi.aps.api.core.configold.service.APSConfigAdminService.APSConfigEnvAdmin;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.components.ConfigEnvEditor;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.css.CSS;
-import se.natusoft.osgi.aps.tools.models.ID;
+import se.natusoft.osgi.aps.model.ID;
 import se.natusoft.osgi.aps.tools.web.UserNotifier;
 import se.natusoft.osgi.aps.tools.web.vaadin.APSTheme;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.HTMLFileLabel;

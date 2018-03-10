@@ -1,5 +1,7 @@
 package se.natusoft.osgi.aps.core.config
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
 import org.osgi.framework.Bundle
 import org.osgi.framework.BundleEvent
 import se.natusoft.osgi.aps.json.JSONErrorHandler
@@ -26,6 +28,8 @@ import se.natusoft.osgi.aps.tools.annotation.activator.Managed
 // Nothing other than APSActivator will be referencing this, and it does it via reflection. Thereby the IDE
 // cannot tell that this is actually used.
 @SuppressWarnings("GroovyUnusedDeclaration")
+@CompileStatic
+@TypeChecked
 class BundlesConfigHandler {
 
     //
@@ -82,7 +86,12 @@ class BundlesConfigHandler {
 
             if ( schemaResourcePath != null ) {
                 try {
-                    this.configManager.addManagedConfig( configId, bundle, schemaResourcePath, defaultResourcePath )
+                    // IDEA thinks that:
+                    //   configId is an Object, but it is a String.
+                    //   schemaResourcePath is an Object, but it is a String.
+                    //   defaultResourcePath is an Object, but it is a String.
+                    // Thereby the crazy casts.
+                    this.configManager.addManagedConfig( (String)configId, bundle, (String)schemaResourcePath, (String)defaultResourcePath )
                 }
                 catch ( Exception e ) {
                     this.logger.error( "Failed to load config from: ${schemaResourcePath} / ${defaultResourcePath} for bundle '${bundle.symbolicName}'!", e )

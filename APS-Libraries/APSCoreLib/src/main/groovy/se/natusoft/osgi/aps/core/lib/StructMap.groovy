@@ -2,8 +2,8 @@ package se.natusoft.osgi.aps.core.lib
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.reactive.APSHandler
-import se.natusoft.osgi.aps.api.util.APSObject
+import se.natusoft.osgi.aps.model.APSHandler
+import se.natusoft.osgi.aps.model.APSObject
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 
 /**
@@ -202,7 +202,7 @@ class StructMap implements Map<String, Object> {
      */
     void provide( String structPath, Object value ) {
         if ( value instanceof APSObject ) {
-            value = value.value()
+            value = value.content()
         }
 
         // Yeah, I know. This is not a wonder of clarity!!

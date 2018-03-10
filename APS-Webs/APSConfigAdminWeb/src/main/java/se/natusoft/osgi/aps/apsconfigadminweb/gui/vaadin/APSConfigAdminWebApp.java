@@ -52,7 +52,7 @@ import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.menu.ConfigEnvMenuBuild
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.menu.ConfigMenuBuilder;
 import se.natusoft.osgi.aps.tools.APSLogger;
 import se.natusoft.osgi.aps.tools.APSServiceTracker;
-import se.natusoft.osgi.aps.tools.models.IntID;
+import se.natusoft.osgi.aps.model.IntID;
 import se.natusoft.osgi.aps.tools.web.WebClientContext;
 import se.natusoft.osgi.aps.tools.web.vaadin.APSVaadinOSGiApplication;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.SidesAndCenterLayout;

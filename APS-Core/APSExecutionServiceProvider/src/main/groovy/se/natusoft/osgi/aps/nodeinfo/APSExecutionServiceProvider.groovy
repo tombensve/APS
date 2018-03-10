@@ -4,9 +4,8 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.docutations.NotNull
 import se.natusoft.osgi.aps.api.core.platform.service.APSExecutionService
-import se.natusoft.osgi.aps.api.reactive.APSHandler
-import se.natusoft.osgi.aps.api.reactive.APSResult
-import se.natusoft.osgi.aps.api.reactive.APSValue
+import se.natusoft.osgi.aps.model.APSHandler
+import se.natusoft.osgi.aps.model.APSResult
 import se.natusoft.osgi.aps.api.util.APSThreadFactory
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.tools.APSLogger

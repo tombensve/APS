@@ -8,8 +8,8 @@ import io.vertx.core.shareddata.Lock
 import io.vertx.core.shareddata.SharedData
 import se.natusoft.osgi.aps.api.core.APSLockable
 import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
-import se.natusoft.osgi.aps.api.reactive.APSHandler
-import se.natusoft.osgi.aps.api.reactive.APSResult
+import se.natusoft.osgi.aps.model.APSHandler
+import se.natusoft.osgi.aps.model.APSResult
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.tools.APSLogger

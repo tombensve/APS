@@ -7,10 +7,11 @@ import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSDirectory
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
-import se.natusoft.osgi.aps.api.reactive.APSHandler
+import se.natusoft.osgi.aps.model.APSHandler
 import se.natusoft.osgi.aps.core.lib.MapJsonDocValidator
 import se.natusoft.osgi.aps.core.lib.StructMap
 import se.natusoft.osgi.aps.exceptions.APSConfigException
+import se.natusoft.osgi.aps.exceptions.APSIOException
 import se.natusoft.osgi.aps.json.JSON
 import se.natusoft.osgi.aps.json.JSONErrorHandler
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -26,6 +27,7 @@ class APSConfigProvider extends StructMap implements APSConfig {
     // Properties
     //
 
+    /** The logger to use. */
     APSLogger logger
 
     /** The Id of this config. */
@@ -36,6 +38,15 @@ class APSConfigProvider extends StructMap implements APSConfig {
 
     /** Filesystem access that won't go away on redeploy. */
     APSFilesystemService fsService
+
+    /** Bundle owning this configuration. */
+    Bundle owner
+
+    /** The bundle path to the config schema. */
+    String schemaPath
+
+    /** The bundle path to the default configuration. */
+    String defaultConfigPath
 
     //
     // Private Members
@@ -68,20 +79,26 @@ class APSConfigProvider extends StructMap implements APSConfig {
     /**
      * Looks up the value of a specified struct Path.
      *
-     * @param structPath The structPath to lookup.
-     * @param valueHandler The handler receiving the looked up value.
+     * @param structPath The structPath to lookup. Null or blank will return the whole root config Map, which is also a StructMap.
+     * @param valueHandler The handler receiving the looked up value. Do not make any assumptions on what thread will call the handler.
      */
     @Override
     void lookup( String structPath, APSHandler<Object> valueHandler ) {
-        Object value = super.lookup( structPath )
-        if ( value == null ) {
-            value = this.defaultConfig.lookup( structPath )
-            if ( value != null ) {
-                super.provide( structPath, value )
-            }
+        if ( structPath == null || structPath.isEmpty() ) {
+            valueHandler.handle( this )
         }
+        else {
+            Object value = super.lookup( structPath )
+            if ( value == null ) {
+                value = this.defaultConfig.lookup( structPath )
+                if ( value != null ) {
+                    provide( structPath, value )
+                    // No, we should not notify on this!
+                }
+            }
 
-        valueHandler.handle( value )
+            valueHandler.handle( value )
+        }
     }
 
     /**
@@ -99,73 +116,105 @@ class APSConfigProvider extends StructMap implements APSConfig {
     }
 
     /**
-     * Synchronize with cluster.
+     * Triggers a notification of config being updated on cluster bus.
      */
-    @Override
-    void sync() {
-        this.syncNotifier( this )
+    @SuppressWarnings("GroovyUnusedDeclaration")
+    void notifyUpdate() {
+        this.syncNotifier()
+    }
+
+    /**
+     * Make sure we have a config dir in our filesystem. If not create it. this.configDir will be updated.
+     */
+    private void setupConfigDir() {
+        if (this.configDir == null) {
+            APSFilesystem fs = this.fsService.getFilesystem( "aps-config-provider" )
+            if ( fs == null ) {
+
+                fs = this.fsService.createFilesystem( "aps-config-provider" )
+            }
+
+            APSDirectory root = fs.getRootDirectory()
+            if ( !root.exists( "configs" ) ) {
+
+                root.createDir( "configs" )
+            }
+
+            this.configDir = fs.getDirectory( "configs" )
+        }
     }
 
     /**
      * Loads a configuration.
-     *
-     * @param ownerBundle The bundle that provides config schema and default config values.
-     * @param schemaPath The path to the configuration schema.
-     * @param defaultConfigPath The path to the default configuration values.
      */
-    void loadConfig( Bundle ownerBundle, String schemaPath, String defaultConfigPath ) {
+    void loadConfig() {
 
-        APSFilesystem fs = this.fsService.getFilesystem( "aps-config-provider" )
-        if ( fs == null ) {
+        setupConfigDir(  )
 
-            fs = this.fsService.createFilesystem( "aps-config-provider" )
+        // Load default config from bundle.
+
+        InputStream defaultConfigStream = null
+        try {
+            defaultConfigStream = this.owner.getResource( this.defaultConfigPath ).openStream()
+            this.defaultConfig = new StructMap( JSON.readJSONAsMap( defaultConfigStream, this.jsonErrorHandler ) )
+        }
+        catch ( IOException ioe ) {
+            this.logger.error( "Failed to load default configuration from bundle: ${this.owner.symbolicName}!", ioe )
+            this.defaultConfig = null
+        }
+        finally {
+            if ( defaultConfigStream != null ) {
+                defaultConfigStream.close()
+            }
         }
 
-        APSDirectory root = fs.getRootDirectory()
-        if ( !root.exists( "configs" ) ) {
+        // Load config schema from bundle.
 
-            root.createDir( "configs" )
+        InputStream schemaStream = this.owner.getResource( this.schemaPath ).openStream()
+        Map<String, Object> configSchema = null
+        try {
+            configSchema = JSON.readJSONAsMap( schemaStream, this.jsonErrorHandler )
+        }
+        catch ( IOException ioe ) {
+            this.logger.error( "Failed to load configuration schema! Config will not be verified!", ioe )
+        }
+        finally {
+            schemaStream.close()
         }
 
-        this.configDir = fs.getDirectory( "configs" )
+        // Try load local config.
+
         if ( this.configDir.exists( "${this.apsConfigId}.json" ) ) {
-
-            InputStream schemaStream = ownerBundle.getResource( schemaPath ).openStream()
-            InputStream defaultConfigStream = ownerBundle.getResource( defaultConfigPath ).openStream()
 
             try {
 
-                Map<String, Object> configSchema =
-                        JSON.readJSONAsMap( schemaStream, this.jsonErrorHandler )
-
                 StructMap loaded = new StructMap(
-                        JSON.readJSONAsMap( this.configDir.getFile( "${this.apsConfigId}.json" ).createInputStream(), this.jsonErrorHandler )
+                        JSON.readJSONAsMap( this.configDir.getFile( "${this.apsConfigId}.json" ).createInputStream(),
+                                            this.jsonErrorHandler )
                 )
 
-                MapJsonDocValidator validator = new MapJsonDocValidator( validStructure: configSchema )
-                validator.validate( loaded )
-
-                StructMap defConfig = new StructMap( JSON.readJSONAsMap( defaultConfigStream, this.jsonErrorHandler ) )
+                if ( configSchema != null ) {
+                    MapJsonDocValidator validator = new MapJsonDocValidator( validStructure: configSchema )
+                    validator.validate( loaded )
+                }
 
                 clear()
                 putAll( loaded )
-                this.defaultConfig = defConfig
+            }
+            catch ( IOException ioe ) {
+                throw new APSIOException( "Failed to load configuration for bundle ${this.owner.symbolicName}!", ioe )
             }
             finally {
-                try {
-                    schemaStream.close()
-                }
-                finally {
-                    defaultConfigStream.close()
-                }
+                schemaStream.close()
             }
         }
         else {
             // Create from default
             clear()
-            putAll( defaultConfig )
-            this.defaultConfig = defaultConfig
-            saveConfig()
+            if ( this.defaultConfig != null ) {
+                putAll( this.defaultConfig )
+                saveConfig()
+            }
         }
     }
 
@@ -173,9 +222,15 @@ class APSConfigProvider extends StructMap implements APSConfig {
      * Saves current configuration.
      */
     void saveConfig() {
+
+        setupConfigDir(  )
+
         OutputStream os = this.configDir.getFile( "${apsConfigId}.json" ).createOutputStream()
         try {
             JSON.writeMapAsJSON( this, os )
+        }
+        catch ( IOException ioe ) {
+            throw new APSIOException( "Failed to save configuration for bundle ${this.owner.symbolicName}!", ioe )
         }
         finally {
             os.close()

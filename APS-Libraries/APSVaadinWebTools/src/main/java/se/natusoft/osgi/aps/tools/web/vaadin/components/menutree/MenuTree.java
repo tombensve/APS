@@ -41,7 +41,7 @@ import com.vaadin.event.Action;
 import com.vaadin.ui.AbstractSelect.ItemDescriptionGenerator;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Tree;
-import se.natusoft.osgi.aps.tools.models.IntID;
+import se.natusoft.osgi.aps.model.IntID;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.builderapi.MenuBuilder;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.builderapi.MenuItemData;
 import se.natusoft.osgi.aps.tools.web.vaadin.models.HierarchicalModel;
