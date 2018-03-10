@@ -54,9 +54,20 @@ public class APSUUID implements ID, Serializable {
     //
 
     /**
-     * Creates a new UUID.
+     * Creates a new APSUUID.
      */
     public APSUUID() {}
+
+    /**
+     * Creates a new APSUUID from a string formatted UUID. This allows to create an APSUUID
+     * instance for an already existing UUID. This is useful because it implements ID which
+     * is the general ID type used in APS.
+     *
+     * @param uuid The UUID to hold in string format.
+     */
+    public APSUUID(String uuid) {
+        this.uuid = java.util.UUID.fromString(uuid);
+    }
 
     //
     // Methods

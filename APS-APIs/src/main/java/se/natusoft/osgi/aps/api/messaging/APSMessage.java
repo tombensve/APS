@@ -45,11 +45,11 @@ public interface APSMessage<Message> extends APSValue<Message> {
         private Message content;
         private boolean replyable = false;
 
-        Provider(Message content) {
+        public Provider(Message content) {
             this.content = content;
         }
 
-        Provider(Message content, boolean replyable) {
+        public Provider(Message content, boolean replyable) {
             this.content = content;
             this.replyable = replyable;
         }

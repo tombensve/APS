@@ -1,5 +1,6 @@
 package se.natusoft.osgi.aps.api.messaging;
 
+import se.natusoft.docutations.NotNull;
 import se.natusoft.osgi.aps.model.APSHandler;
 import se.natusoft.osgi.aps.model.APSResult;
 
@@ -22,7 +23,7 @@ public interface APSMessageSender<Message> {
      *                    destination.
      * @param message The message to send.
      */
-    void send(String destination, Message message);
+    void send(@NotNull String destination, @NotNull Message message);
 
     /**
      * Sends a message receiving a result of success or failure. On Success there
@@ -34,6 +35,6 @@ public interface APSMessageSender<Message> {
      *                    destination.
      * @param message The message to send.
      */
-    void send(String destination, Message message, APSHandler<APSResult<Message>> result);
+    void send(@NotNull String destination, @NotNull Message message, @NotNull APSHandler<APSResult<Message>> result);
 
 }

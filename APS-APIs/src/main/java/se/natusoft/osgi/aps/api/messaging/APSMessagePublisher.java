@@ -1,5 +1,6 @@
 package se.natusoft.osgi.aps.api.messaging;
 
+import se.natusoft.docutations.NotNull;
 import se.natusoft.osgi.aps.model.APSHandler;
 import se.natusoft.osgi.aps.model.APSResult;
 
@@ -21,7 +22,7 @@ public interface APSMessagePublisher<Message> {
      *
      * @throws APSMessagingException on any failure. Note that this is a RuntimeException!
      */
-    void publish(String destination, Message message) throws APSMessagingException;
+    void publish(@NotNull String destination, @NotNull Message message) throws APSMessagingException;
 
     /**
      * Publishes a message receiving a result of success or failure. On Success there
@@ -34,5 +35,5 @@ public interface APSMessagePublisher<Message> {
      * @param message The message to publish.
      * @param result Callback providing the success or failure of the call.
      */
-    void publish(String destination, Message message, APSHandler<APSResult<Message>> result);
+    void publish(@NotNull String destination, @NotNull Message message, @NotNull APSHandler<APSResult<Message>> result);
 }
