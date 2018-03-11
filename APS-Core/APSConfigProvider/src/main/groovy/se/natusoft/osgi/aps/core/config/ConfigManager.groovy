@@ -13,7 +13,10 @@ import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
 import se.natusoft.osgi.aps.api.messaging.APSMessage
 import se.natusoft.osgi.aps.api.messaging.APSMessageService
 import se.natusoft.osgi.aps.api.messaging.APSMessagePublisher
+import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
 import se.natusoft.osgi.aps.model.APSResult
+import se.natusoft.osgi.aps.model.APSUUID
+import se.natusoft.osgi.aps.model.ID
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
 import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
@@ -41,7 +44,10 @@ class ConfigManager {
     private APSLogger logger
 
     @OSGiService(additionalSearchCriteria = "(messaging-clustered=true)", nonBlocking = true)
-    private APSMessageService<Map<String, Object>> messageService
+    private APSMessagePublisher<Map<String, Object>> messagePublisher
+
+    @OSGiService(additionalSearchCriteria = "(messaging-clustered=true)", nonBlocking = true)
+    private APSMessageSubscriber<Map<String, Object>> messageSubscriber
 
     /** Filesystem access that won't go away on redeploy. */
     @OSGiService(timeout = "15 sec")
@@ -62,6 +68,8 @@ class ConfigManager {
     /** A unique id for this manager. This is passed along in bus publishings, so that we can ignore messages from self. */
     private String confMgrId = UUID.randomUUID().toString()
 
+    private static final ID SUBSCRIBER_ID = new APSUUID()
+
     //
     // Initializer / Shutdown
     //
@@ -70,7 +78,7 @@ class ConfigManager {
     @Note("Called through reflection by APSActivator.")
     @Initializer
     void init() {
-        this.messageService.subscribe( APSConfig.CLUSTER_CONFIG_REFRESH_ADDRESS ) { APSMessage<Map<String, Object>> apsMsg ->
+        this.messageSubscriber.subscribe( APSConfig.CLUSTER_CONFIG_REFRESH_ADDRESS , SUBSCRIBER_ID) { APSMessage<Map<String, Object>> apsMsg ->
 
             Map<String, Object> message = apsMsg.content()
 
@@ -89,7 +97,7 @@ class ConfigManager {
             }
         }
 
-        this.messageService.subscribe( APSConfig.CLUSTER_CONFIG_REQUEST_ADDRESS ) { APSMessage<Map<String, Object>> apsMsg ->
+        this.messageSubscriber.subscribe( APSConfig.CLUSTER_CONFIG_REQUEST_ADDRESS , SUBSCRIBER_ID) { APSMessage<Map<String, Object>> apsMsg ->
 
             Map<String, Object> message = apsMsg.content()
 
@@ -103,7 +111,11 @@ class ConfigManager {
     @Note("Called through reflection by APSActivator.")
     @BundleStop
     void shutDown() {
-        this.messageService.unsubscribe( APSConfig.CLUSTER_CONFIG_REFRESH_ADDRESS )
+        this.messageSubscriber.unsubscribe( SUBSCRIBER_ID ) { APSResult res ->
+            if (!res.success(  )) {
+                this.logger.error("Failed to unsubscribe!", res.failure(  ))
+            }
+        }
 
         this.regs.each { String key, ServiceRegistration svcReg ->
             svcReg.unregister()
@@ -140,12 +152,16 @@ class ConfigManager {
                     defaultConfigPath: defaultConfigPath,
                     syncNotifier: { APSConfigProvider configProvider ->
 
-                        this.messageService.publisher( APSConfig.CLUSTER_CONFIG_REFRESH_ADDRESS ) { APSMessagePublisher<Map<String, Object>> publisher ->
-
-                            publisher.publish( [
-                                    apsConfigId: configProvider.apsConfigId,
-                                    confMgrId  : this.confMgrId
-                            ] )
+                        this.messagePublisher.publish(
+                                APSConfig.CLUSTER_CONFIG_REFRESH_ADDRESS,
+                                [
+                                        apsConfigId: configProvider.apsConfigId,
+                                        confMgrId  : this.confMgrId
+                                ]
+                        ) { APSResult res ->
+                            if (!res.success(  )) {
+                                logger.error("Failed to publish new configuration!", res.failure(  ))
+                            }
                         }
                     }
             )
@@ -189,7 +205,7 @@ class ConfigManager {
         APSConfigProvider provider = this.providers[ configId ]
 
         if ( provider != null ) {
-            this.messageService.publisher(
+            this.messagePublisher.publisher(
 
                     props() >> APSMessageService.TARGET >> ( APSConfig.APS_CONFIG_AVAILABLE_ADDRESS_START + configId )
 
