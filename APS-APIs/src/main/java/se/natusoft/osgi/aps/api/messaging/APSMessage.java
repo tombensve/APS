@@ -29,7 +29,7 @@ public interface APSMessage<Message> extends APSValue<Message> {
     boolean isReplyable();
 
     /**
-     * Replies to message.
+     * Replies to message. Will throw APSUnsupportedException if isReplyable() returns false.
      *
      * @param reply The message to reply with.
      */
