@@ -5,11 +5,11 @@ import groovy.transform.TypeChecked
 import io.vertx.core.json.JsonObject
 import se.natusoft.docutations.NotNull
 import se.natusoft.osgi.aps.api.misc.json.model.JSONObject
-import se.natusoft.osgi.aps.core.lib.MapJsonDocValidator
+import se.natusoft.osgi.aps.core.lib.MapJsonDocSchemaValidator
 
 /**
  * This class defines a generic event structure in JSONish Map structure as can be defined and validated
- * by MapJsonDocValidator.
+ * by MapJsonDocSchemaValidator.
  */
 @CompileStatic
 @TypeChecked
@@ -39,7 +39,7 @@ class EventDefs {
     public static final String ORIG_EVENT = "origMessage"
 
     /** Validates an event structure. */
-    public static final MapJsonDocValidator EVENT_VALIDATOR = new MapJsonDocValidator( validStructure: EVENT_SCHEMA )
+    public static final MapJsonDocSchemaValidator EVENT_VALIDATOR = new MapJsonDocSchemaValidator( validStructure: EVENT_SCHEMA )
 
     //
     // Event Schemas
