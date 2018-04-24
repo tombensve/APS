@@ -4,7 +4,9 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
 /**
- * Handles actions to perform.
+ * Simple utility to collect a set of actions and then later execute them in order.
+ *
+ * Supports Groovy << and += operators for adding tasks.
  */
 @CompileStatic
 @TypeChecked

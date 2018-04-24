@@ -3,23 +3,20 @@ package se.natusoft.osgi.aps.tools.groovy.lib
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
-import se.natusoft.osgi.aps.core.lib.MapJsonDocValidator
-import se.natusoft.osgi.aps.core.lib.MapJsonEntryMeta
+import se.natusoft.osgi.aps.core.lib.MapJsonDocSchemaValidator
+import se.natusoft.osgi.aps.core.lib.MapJsonSchemaEntry
 import se.natusoft.osgi.aps.core.lib.MapJsonSchemaMeta
 
 @CompileStatic
 @TypeChecked
-class MapJsonDocValidatorTest {
+class MapJsonDocSchemaValidatorTest {
 
     private Map<String, Object> schema = [
-            "meta/header": "meta", // Ignored -----------------------------------+
-            header_1     : [                     //                              |
-                                                 type_1      : "service", //   V
-                                                 "meta/type" : "metadata", // any schema key not ending with "_[01]" is ignored!
-                                                 // Allows for adding own metadata.
+            header_1     : [
+                                                 type_1      : "service",
                                                  address_1   : "?aps\\.admin\\..*",
-                                                 classifier_1: "?public|private",
-                                                 enabled_0   : "/"
+                                                 classifier_1: "|?public|private", // Always use this for enum values.
+                                                 enabled_0   : "!"
             ],
             body_1       : [
                     action_1: "get-webs"
@@ -38,12 +35,12 @@ class MapJsonDocValidatorTest {
             ]
     ] as Map<String, Object>
 
-    private MapJsonDocValidator verifier = new MapJsonDocValidator( validStructure: schema )
+    private MapJsonDocSchemaValidator verifier = new MapJsonDocSchemaValidator( validStructure: schema )
 
     @Test
     void testSchema() throws Exception {
         MapJsonSchemaMeta mjs = new MapJsonSchemaMeta( schema )
-        mjs.mapJsonEntryMetas.each { MapJsonEntryMeta mjem ->
+        mjs.mapJsonSchemaEntries.each { MapJsonSchemaEntry mjem ->
             println "${mjem}"
         }
     }

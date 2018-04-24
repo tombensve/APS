@@ -8,7 +8,7 @@ import se.natusoft.osgi.aps.api.core.filesystem.model.APSDirectory
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
 import se.natusoft.osgi.aps.model.APSHandler
-import se.natusoft.osgi.aps.core.lib.MapJsonDocValidator
+import se.natusoft.osgi.aps.core.lib.MapJsonDocSchemaValidator
 import se.natusoft.osgi.aps.core.lib.StructMap
 import se.natusoft.osgi.aps.exceptions.APSConfigException
 import se.natusoft.osgi.aps.exceptions.APSIOException
@@ -194,7 +194,7 @@ class APSConfigProvider extends StructMap implements APSConfig {
                 )
 
                 if ( configSchema != null ) {
-                    MapJsonDocValidator validator = new MapJsonDocValidator( validStructure: configSchema )
+                    MapJsonDocSchemaValidator validator = new MapJsonDocSchemaValidator( validStructure: configSchema )
                     validator.validate( loaded )
                 }
 

@@ -2,17 +2,16 @@
 
 ## MapJsonDocValidator
 
-This takes a schema (made up of a `Map<String,``Object>`, see below) and another `Map<String,``Object>` representing the JSON. So the catch here is that you need a JSON parser that allows you to get the content as a Map. The Vertx JSON parser does. This uses `Map` since it is generic, does not need to hardcode dependency on a specific parser, and maps are very easy to work with in Groovy.
+This takes a schema (made up of a `Map<String, Object>`, see below) and another `Map<String, Object>` representing the JSON. So the catch here is that you need a JSON parser that allows you to get the content as a Map. The Vertx JSON parser does. This uses `Map` since it is generic, does not need to hardcode dependency on a specific parser, and maps are very easy to work with in Groovy.
 
-### Useage
+### Usage
 
              private Map<String, Object> schema = [
-                    "meta/header": "meta",
                     header_1: [
                             type_1      : "service",
                             "meta/type" : "metadata",
                             address_1   : "?aps\\.admin\\..*",
-                            classifier_1: "?public|private"
+                            classifier_1: "|?public|private"
                     ],
                     body_1  : [
                             action_1: "get-webs"
@@ -43,9 +42,9 @@ This will throw a runtime exception on validation failure.
 
 #### Keys
 
-<key>_0 - The key is optional.
+\<key\>_0 - The key is optional.
 
-<key>_1 - The key is required.
+\<key\>_1 - The key is required.
 
 #### Values
 
@@ -53,7 +52,14 @@ This will throw a runtime exception on validation failure.
 
 The '?' indicates that the rest of the value is a regular expression. This regular expression will be applied to each value.
 
-##### "<hash><range>"
+##### "|?value1|value2|..."
+
+The '|' indicates that this is an enumeration of valid values. The rest of the string is still a regular expression,
+indicated by the following '?'. This should however in this case always be "value1|value2|value3|..." which is valid
+regular expression. The `MapJsonSchemaMeta` class expects this format so that it can extract the valid values. See more
+about this class below.
+
+##### "#_range_"
 
 This indicates that this is a number and defines the number range allowed. The following variants are available:
 
@@ -79,7 +85,7 @@ This requires values to be exactly "bla".
             header_1: [
                type_1      : "service",
                address_1   : "aps.admin.web",
-               classifier_0: "?public|private"
+               classifier_0: "|?public|private"
             ],
             body_1  : [
                action_1: "get-webs"
@@ -97,17 +103,17 @@ This requires values to be exactly "bla".
 
 ## MapJsonSchemaMeta
 
-This class scans a MapJson schema as defined by MapJsonDocValidator and extracts a list of MapJsonEntryMeta instances for each value in a MapJson structure living up to the schema.
+This class scans a MapJson schema as defined by MapJsonDocValidator and extracts a list of MapJsonSchemaEntry instances for each value in a MapJson structure living up to the schema.
 
 From these the following can be resolved:
 
 *  The name of a value.
 
-*  The type of a value.
+*  The type of a value (STRING, NUMBER, BOOLEAN, ENUMERATION).
 
 *  Is the value required ?
 
-*  The constraints of the value. If this starts with '?' then the rest is a regular expression.  If not the value is a constant, that is, the value has to be exactly as the constraint string.
+*  The constraints of the value. If this starts with '?' then the rest is a regular expression. If this starts with '|?' then it is also a regular expression, but specifically in the format of _value1|value2|..._. This results in a type of ENUMERATION. If none of the above, the value is a constant, that is, the value has to be exactly as the constraint string.
 
 This is not used by the MapJsonDocValidator when validating! This is intended for GUI configuration editors to use to build a configuration GUI producing valid configurations.
 
@@ -115,11 +121,11 @@ Usage:
 
         Map<String, Object> schema
         ...
-        new MapJsonSchemaMeta(schema).mapJsonEntryMetas.each { MapJsonEntryMeta mjem -> ... }
+        new MapJsonSchemaMeta(schema).mapJsonSchemaEntries.each { MapJsonSchemaEntry mjse -> ... }
 
-## Mapo
+There are also a `.toMapJson()` method on this object that returns a MapJson structure that can be converted to JSON and passed to a client for use by a configuration editor web app for example.
 
-Yes, I had a problem coming up with a good name for this!
+## StructMap
 
 This wraps a structured Map that looks like a JSON document, containing Map, List, and other 'Object's as values.
 
@@ -133,7 +139,7 @@ Note that since this delegates to the wrapped Map the class is also a Map when c
 
 Here is an example (in Groovy) that shows how to lookup and how to use the keys:
 
-        Mapo mapo = new Mapo<>(
+        StructMap smap = new StructMap<>(
                 [
                         header: [
                                 type      : "service",
@@ -157,17 +163,17 @@ Here is an example (in Groovy) that shows how to lookup and how to use the keys:
                                 ]
                         ]
                 ] as Map<String, Object>
-        ) as Mapo
+        ) as StructMap
         
-        assert mapo.lookup( "header.type" ).toString() == "service"
-        assert mapo.lookup( "header.address" ).toString() == "aps.admin.web"
-        assert mapo.lookup( "header.classifier" ).toString() == "public"
-        assert mapo.lookup( "body.action" ).toString() == "get-webs"
-        assert mapo.lookup( "reply.webs.[0].name") == "ConfigAdmin"
-        assert mapo.lookup( "reply.webs.[1].name") == "RemoteServicesAdmin"
-        assert mapo.lookup( "reply.webs.[1].url") == "https://localhost:8080/aps/RemoteSvcAdmin"
+        assert smap.lookup( "header.type" ).toString() == "service"
+        assert smap.lookup( "header.address" ).toString() == "aps.admin.web"
+        assert smap.lookup( "header.classifier" ).toString() == "public"
+        assert smap.lookup( "body.action" ).toString() == "get-webs"
+        assert smap.lookup( "reply.webs.[0].name") == "ConfigAdmin"
+        assert smap.lookup( "reply.webs.[1].name") == "RemoteServicesAdmin"
+        assert smap.lookup( "reply.webs.[1].url") == "https://localhost:8080/aps/RemoteSvcAdmin"
         
-        mapo.withAllKeys { String key ->
+        smap.withAllKeys { String key ->
             println "${key}"
         }
         
