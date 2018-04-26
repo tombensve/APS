@@ -173,7 +173,7 @@ class APSVertxClusterDataStoreServiceProvider implements APSLockableDataStoreSer
      * @param resultHandler A handler in which whatever is locked can be used if result indicates success.
      */
     @Override
-    void lock( Object lockId, APSHandler<APSResult<APSLockable.APSLock>> resultHandler ) {
+    void lock( Object lockId, APSHandler<APSResult<APSLock>> resultHandler ) {
         String[] keyParts = lockId.toString().split( "\\." )
 
         if ( keyParts.length < 2 ) {
@@ -188,7 +188,7 @@ class APSVertxClusterDataStoreServiceProvider implements APSLockableDataStoreSer
 
                 try {
 
-                    resultHandler.handle( APSResult.success( (APSLockable.APSLock) new VxLock( lock: lock ) ) )
+                    resultHandler.handle( APSResult.success( (APSLock) new VxLock( lock: lock ) ) )
                 }
                 finally {
 
