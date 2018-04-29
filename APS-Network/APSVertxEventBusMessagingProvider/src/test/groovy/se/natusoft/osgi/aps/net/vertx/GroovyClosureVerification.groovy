@@ -11,23 +11,23 @@ class GroovyClosureVerification {
      * and by the time the closure executes the method have been called 3 times with 3 different arguments and
      * returned from each method call. Each invocation of the closure however produces the correct a & b. So the
      * referenced variables must be attached to the closure at instance at creation.
-     */
+     **/
     @Test
     void closureVerification() {
-        doClosure("qwerty", 45)
-        doClosure("asdf", 32)
-        doClosure("zxcv", 98)
+        doClosure( "qwerty", 45 )
+        doClosure( "asdf", 32 )
+        doClosure( "zxcv", 98 )
 
-        Thread.sleep(1500)
+        Thread.sleep( 1500 )
     }
 
-    static void doClosure(String a, int b) {
+    static void doClosure( String a, int b ) {
         def testClosure = {
             println "a='${a}', b='${b}'"
         }
 
         Thread.start {
-            Thread.sleep(1000)
+            Thread.sleep( 1000 )
             testClosure()
         }
     }

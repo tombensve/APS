@@ -188,5 +188,5 @@ Here is an example (in Groovy) that shows how to lookup and how to use the keys:
 
 Note that the values are API-wise of type Object! This is because it can be anything, like a String, Map, List, Number (if you stick to JSON formats) or any other type of value you put in there.
 
-Also note the indexes in the keys in the example. It is not "webs[0]" but "webs.[0]"! The index is a reference name in itself. The keys returned by getAllKeys() have a number between the '[' and the ']' for List entries. This number is the number of entries in the list. The MapPath class (used by this class) can be used to provide array size of an array value.
+Also note the indexes in the keys in the example. It is not "webs\[0\]" but "webs.\[0\]"! The index is a reference name in itself. The keys returned by getAllKeys() have a number between the '\[' and the '\]' for List entries. This number is the number of entries in the list. The MapPath class (used by this class) can be used to provide array size of an array value.
 

@@ -4,6 +4,7 @@ import se.natusoft.docutations.NotNull;
 import se.natusoft.docutations.Nullable;
 import se.natusoft.osgi.aps.model.APSHandler;
 import se.natusoft.osgi.aps.model.APSResult;
+import se.natusoft.osgi.aps.model.APSValue;
 import se.natusoft.osgi.aps.model.ID;
 
 /**
@@ -23,14 +24,17 @@ public interface APSMessageSubscriber<Message> {
      *                       its configuration.
      * @param subscriptionId A unique ID used to later cancel the subscription. Use UUID or some other ID
      *                       implementation that is always unique.
+     * @param result         The result of the call. Will throw an APSMessagingException on failure if value is null.
      * @param handler        The subscription handler.
      */
-    void subscribe(@NotNull String destination, @NotNull ID subscriptionId, @NotNull APSHandler<APSMessage<Message>> handler);
+    void subscribe(@NotNull String destination, @NotNull ID subscriptionId, @Nullable APSHandler<APSResult> result,
+                   @NotNull APSHandler<APSMessage<Message>> handler);
 
     /**
      * Cancel a subscription.
      *
      * @param subscriptionId The same id as passed to subscribe.
+     * @param result The result of the unsubscribe. Will throw an APSMessagingException on failure if value is null.
      */
     void unsubscribe(@NotNull ID subscriptionId, @Nullable APSHandler<APSResult> result);
 

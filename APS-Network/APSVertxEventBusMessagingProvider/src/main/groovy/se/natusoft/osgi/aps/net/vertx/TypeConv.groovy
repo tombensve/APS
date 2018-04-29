@@ -20,7 +20,7 @@ import se.natusoft.osgi.aps.json.JSONObject
  * - JsonObject (Vertx).
  *
  * Any other type will have toString() done on it in any direction!
- */
+ **/
 @CompileStatic
 @TypeChecked
 class TypeConv {
@@ -33,7 +33,7 @@ class TypeConv {
      * @return Vertx compatible message.
      */
     static Object apsToVertx( Object message ) {
-        Object msg = null
+        Object msg
 
         if ( message instanceof Map<String, Object> ) {
             // See comment when handling received message in APSVertxEventBusMessagingProvider.subscribe(...).

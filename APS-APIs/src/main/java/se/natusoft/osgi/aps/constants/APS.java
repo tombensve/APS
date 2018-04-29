@@ -36,6 +36,9 @@
  */
 package se.natusoft.osgi.aps.constants;
 
+import se.natusoft.osgi.aps.model.APSHandler;
+import se.natusoft.osgi.aps.model.APSResult;
+
 /**
  * Hierarchy of constants.
  */
@@ -48,6 +51,9 @@ public interface APS {
     String DEFAULT = "default";
 
     String CLUSTERED = "clustered";
+
+    APSHandler<APSResult> MSG_PREFER_EXCEPTION_RESULT = null;
+    APSHandler<APSResult> MSG_NO_RESULT = null;
 
     interface Service {
         String Provider = "service-provider";

@@ -8,11 +8,9 @@ import io.vertx.core.eventbus.Message
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceReference
 import org.osgi.framework.ServiceRegistration
-import se.natusoft.docutations.IDEAFail
-import se.natusoft.docutations.JustIgnore
 import se.natusoft.osgi.aps.api.messaging.APSMessage
-import se.natusoft.osgi.aps.api.messaging.APSReplyableMessageMessageSender
 import se.natusoft.osgi.aps.api.messaging.APSMessageSender
+import se.natusoft.osgi.aps.api.messaging.APSReplyableMessageSender
 import se.natusoft.osgi.aps.api.util.APSExecutor
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.json.JSON
@@ -21,27 +19,24 @@ import se.natusoft.osgi.aps.model.APSResult
 import se.natusoft.osgi.aps.tools.APSActivatorInteraction
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.APSServiceTracker
-import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+import se.natusoft.osgi.aps.tools.annotation.activator.*
 
-@SuppressWarnings("GroovyUnusedDeclaration")
+@SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
 @TypeChecked
+// @formatter:off
 @OSGiServiceProvider(
-        // Possible criteria for client lookups. ex: "(aps-messaging-protocol=vertx-eventbus)" In most cases clients won't care.
         properties = [
-                @OSGiProperty(name = APS.Service.Provider, value = "aps-vertx-event-bus-messaging-provider:sender"),
-                @OSGiProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Network),
-                @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Messaging),
-                @OSGiProperty(name = APS.Messaging.Protocol.Name, value = "vertx-eventbus"),
-                @OSGiProperty(name = APS.Messaging.Persistent, value = APS.FALSE),
-                @OSGiProperty(name = APS.Messaging.Clustered, value = APS.TRUE)
+                @OSGiProperty( name = APS.Service.Provider, value = "aps-vertx-event-bus-messaging-provider:sender" ),
+                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Network ),
+                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
+                @OSGiProperty( name = APS.Messaging.Protocol.Name, value = "vertx-eventbus" ),
+                @OSGiProperty( name = APS.Messaging.Persistent, value = APS.FALSE ),
+                @OSGiProperty( name = APS.Messaging.Clustered, value = APS.TRUE )
         ]
 )
-class MessageSenderProvider<MessageType> extends AddressResolver implements APSReplyableMessageMessageSender<MessageType, MessageType> {
+// @formatter:on
+class MessageSenderProvider<MessageType> extends AddressResolver implements APSReplyableMessageSender<MessageType, MessageType> {
 
     //
     // Private Members
@@ -68,11 +63,11 @@ class MessageSenderProvider<MessageType> extends AddressResolver implements APSR
      *
      * All this of course assumes that a service goes away only because it is being restarted / upgraded, and
      * will rather quickly be available again.
-     */
+     **/
     private List<ServiceRegistration> svcRegs = [ ]
 
     /** For logging. */
-    @Managed(name="sender", loggingFor = "aps-vertx-event-bus-messaging-provider:sender")
+    @Managed( name = "sender", loggingFor = "aps-vertx-event-bus-messaging-provider:sender" )
     private APSLogger logger
 
     /** Our bundles context. */
@@ -81,14 +76,13 @@ class MessageSenderProvider<MessageType> extends AddressResolver implements APSR
 
     /**
      * This tracks the EventBus. init() will setup an onActiveServiceAvailable callback handler which
-     * will provide the eventBus instance.
-     */
-    @OSGiService(additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "30 sec")
+     * will provide the eventBus instance.*/
+    @OSGiService( additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "30 sec" )
     private APSServiceTracker<EventBus> eventBusTracker
     private EventBus eventBus
 
     /** Used to delay service registration. */
-    @Managed(name="senderAI")
+    @Managed( name = "senderAI" )
     private APSActivatorInteraction activatorInteraction
 
     //
@@ -103,8 +97,7 @@ class MessageSenderProvider<MessageType> extends AddressResolver implements APSR
     //
 
     /**
-     * This is run by APSActivator when all @Managed & @OSGiService annotated fields have been injected.
-     */
+     * This is run by APSActivator when all @Managed & @OSGiService annotated fields have been injected.*/
     @Initializer
     void init() {
         // Yes, what these handlers do could be done directly below in onActiveServiceAvailable {...} instead
@@ -113,8 +106,8 @@ class MessageSenderProvider<MessageType> extends AddressResolver implements APSR
             this.activatorInteraction.registerService( MessageSenderProvider.class, this.context, this.svcRegs )
         }
         this.activatorInteraction.setStateHandler( APSActivatorInteraction.State.TEMP_UNAVAILABLE ) {
-            this.svcRegs.first( ).unregister(  )
-            this.svcRegs.clear(  )
+            this.svcRegs.first().unregister()
+            this.svcRegs.clear()
         }
 
         this.eventBusTracker.onActiveServiceAvailable { EventBus service, ServiceReference serviceReference ->
@@ -174,7 +167,7 @@ class MessageSenderProvider<MessageType> extends AddressResolver implements APSR
      * @param message The message to send.
      */
     @Override
-    void send( String destination, MessageType message, APSHandler<APSResult<MessageType>> result ) {
+    void send( String destination, MessageType message, APSHandler<APSResult> result ) {
         APSExecutor.submit {
             try {
                 send( destination, message )
@@ -203,8 +196,6 @@ class MessageSenderProvider<MessageType> extends AddressResolver implements APSR
      * @param reply the subscriber to receive reply.
      */
     @Override
-    @IDEAFail("If you see a red underline under \"this.reply\" below, you are using IDEA, which fails to see the <MessageType> part of APSMessage declaration. Both sides of the '=' are identical type wise.")
-    @JustIgnore
     APSMessageSender<MessageType> replyTo( APSHandler<APSMessage<MessageType>> _reply ) {
         this.reply = _reply
 

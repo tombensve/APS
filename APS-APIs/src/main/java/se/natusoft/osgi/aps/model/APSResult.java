@@ -1,5 +1,7 @@
 package se.natusoft.osgi.aps.model;
 
+import se.natusoft.docutations.NotNull;
+import se.natusoft.docutations.Nullable;
 import se.natusoft.osgi.aps.exceptions.APSException;
 
 /**
@@ -22,12 +24,14 @@ public interface APSResult<T> {
     /**
      * This is called on success with the result.
      */
-    void onSuccess(APSHandler<APSValue<T>> handler);
+    @SuppressWarnings("unused")
+    void onSuccess( APSHandler<APSValue<T>> handler );
 
     /**
      * This is called on failure with the cause exception.
      */
-    void onFailure(APSHandler<Exception> handler);
+    @SuppressWarnings("unused")
+    void onFailure( APSHandler<Exception> handler );
 
     /**
      * @return The result if success() returns true, null otherwise.
@@ -39,37 +43,54 @@ public interface APSResult<T> {
      * Use successj(...) instead for Java. Groovy handles this one fine.
      *
      * @param value The result value.
-     * @param <T> The result type.
+     * @param <T>   The result type.
      *
      * @return An APSResult instance holding a success status and the provided value.
      */
-    static <T> APSResult<T> success(T value) {
-        return new Provider<>(new APSValue.Provider<>(value));
+    static <T> APSResult<T> success( T value ) {
+        return new Provider<>( new APSValue.Provider<>( value ) );
     }
 
     /**
      * A success result factory method for Java. The above one works fine for Groovy.
      *
      * @param value The result value.
-     * @param <T> The result type.
+     * @param <T>   The result type.
      *
      * @return An APSResult instance holding a success status and the provided value.
      */
-    static <T> APSResult<T> successj(Object value) {
+    @SuppressWarnings("unused")
+    static <T> APSResult<T> successj( Object value ) {
         //noinspection unchecked
-        return new Provider<>(new APSValue.Provider<>((T)value));
+        return new Provider<>( new APSValue.Provider<>( (T) value ) );
     }
 
     /**
      * A failure result factory method.
      *
-     * @param e The Exception that caused the failure.
+     * @param e   The Exception that caused the failure.
      * @param <T> The result type.
      *
      * @return An APSResult instance holding a failure status and the provided Exception.
      */
-    static <T> APSResult<T> failure(Throwable e) {
-        return new Provider<>(e);
+    static <T> APSResult<T> failure( Throwable e ) {
+        return new Provider<>( e );
+    }
+
+    /**
+     * A failure result handling method. This will call the handler with exception in result
+     * if handler is non null. If handler is null the exception will be throws instead.
+     *
+     * @param handler The handler to call with exception result or null.
+     * @param e       The exception that is the result.
+     * @param <T>     The type of the result value, which in this case in not provided (null) due to failure.
+     */
+    static <T> void failureResult( @Nullable APSHandler<APSResult<T>> handler, @NotNull APSException e ) {
+        if ( handler != null ) {
+            handler.handle( APSResult.failure( e ) );
+        } else {
+            throw e;
+        }
     }
 
     /**
@@ -87,7 +108,7 @@ public interface APSResult<T> {
          *
          * @param result The success result value.
          */
-        public Provider(APSValue<T> result) {
+        public Provider( APSValue<T> result ) {
             this.result = result;
         }
 
@@ -96,12 +117,11 @@ public interface APSResult<T> {
          *
          * @param exception The Exception that caused the failure.
          */
-        public Provider(Throwable exception) {
-            if (Exception.class.isAssignableFrom(this.exception.getClass())) {
-                this.exception = (Exception)this.exception;
-            }
-            else {
-                this.exception = new APSException(this.exception.getMessage(), this.exception);
+        public Provider( Throwable exception ) {
+            if ( Exception.class.isAssignableFrom( exception.getClass() ) ) {
+                this.exception = (Exception) exception;
+            } else {
+                this.exception = new APSException( exception.getMessage(), exception );
             }
         }
 
@@ -134,9 +154,9 @@ public interface APSResult<T> {
          *
          * @param handler The handler to execute on success.
          */
-        public void onSuccess(APSHandler<APSValue<T>> handler) {
-            if (this.result != null) {
-                handler.handle(this.result);
+        public void onSuccess( APSHandler<APSValue<T>> handler ) {
+            if ( this.result != null ) {
+                handler.handle( this.result );
             }
         }
 
@@ -145,9 +165,9 @@ public interface APSResult<T> {
          *
          * @param handler The handler to execute on failure.
          */
-        public void onFailure(APSHandler<Exception> handler) {
-            if (this.exception != null) {
-                handler.handle(this.exception);
+        public void onFailure( APSHandler<Exception> handler ) {
+            if ( this.exception != null ) {
+                handler.handle( this.exception );
             }
         }
     }

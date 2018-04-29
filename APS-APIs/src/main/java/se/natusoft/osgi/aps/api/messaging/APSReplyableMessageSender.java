@@ -19,7 +19,7 @@ import se.natusoft.osgi.aps.model.APSHandler;
  * @param <Message> The message type to send.
  * @param <ReplyMessage> The expected typeof reply message.
  */
-public interface APSReplyableMessageMessageSender<Message, ReplyMessage> extends APSMessageSender<Message> {
+public interface APSReplyableMessageSender<Message, ReplyMessage> extends APSMessageSender<Message> {
 
     /**
      * This must be called before send(...). send will use the last supplied reply subscriber.

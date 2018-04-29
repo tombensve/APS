@@ -14,7 +14,7 @@ import se.natusoft.osgi.aps.tools.APSLogger
 
 /**
  * Thread that receives queue types.
- */
+ **/
 @CompileStatic
 @TypeChecked
 class ReceiveThread extends Thread {
@@ -36,7 +36,7 @@ class ReceiveThread extends Thread {
     private List<APSHandler<APSMessage<byte[]>>> subscribers =
             Collections.synchronizedList( new LinkedList<APSHandler<APSMessage<byte[]>>>() )
 
-    /** To handle removing handlers. */
+    /** To failure removing handlers. */
     private Map<ID, APSHandler<APSMessage<byte[]>>> idToSubscriber = [ : ]
 
     //
@@ -49,7 +49,7 @@ class ReceiveThread extends Thread {
     /**
      * Provides a RabbitMQ Connection. Rather than taking a Connection directly, this can
      * always provide a fresh connection.
-     */
+     **/
     ConnectionProvider connectionProvider
 
     /** The topic this receiver is working for. */
@@ -69,14 +69,14 @@ class ReceiveThread extends Thread {
 
     /**
      * Stops this thread.
-     */
+     **/
     synchronized void stopThread() {
         this.running = false
     }
 
     /**
      * Returns true for as long as the thread has not been stopped.
-     */
+     **/
     private synchronized boolean keepRunning() {
         return this.running
     }
@@ -104,16 +104,16 @@ class ReceiveThread extends Thread {
 
     /**
      * Returns true if there are listeners available.
-     */
-    @SuppressWarnings("GroovyUnusedDeclaration")
+     **/
+    @SuppressWarnings( "GroovyUnusedDeclaration" )
     boolean haveSubscribers() {
         return !this.subscribers.isEmpty()
     }
 
     /**
      * Removes all listeners.
-     */
-    @SuppressWarnings("GroovyUnusedDeclaration")
+     **/
+    @SuppressWarnings( "GroovyUnusedDeclaration" )
     void removeAllSubscribers() {
         this.subscribers.clear()
     }
@@ -142,7 +142,7 @@ class ReceiveThread extends Thread {
 
     /**
      * Sets up a new QueueingConsumer and returns it.
-     */
+     **/
     private QueueingConsumer setupConsumer() {
         QueueingConsumer consumer = new QueueingConsumer( getRecvChannel() )
         getRecvChannel().basicConsume( this.recvQueueName, true, consumer )
@@ -151,7 +151,7 @@ class ReceiveThread extends Thread {
 
     /**
      * Thread entry and exit point.
-     */
+     **/
     void run() {
 
         int failureCount = 0
@@ -196,8 +196,7 @@ class ReceiveThread extends Thread {
                             consumer = setupConsumer()
                         }
                         else {
-                            this.logger.error( "Sleeping for 15 seconds hoping for better times! If this keeps recurring " +
-                                                       "there is a serious problem!" )
+                            this.logger.error( "Sleeping for 15 seconds hoping for better times! If this keeps recurring " + "there is a serious problem!" )
                             //noinspection UnnecessaryQualifiedReference
                             Thread.sleep( 15000 )
                             failureCount = 0
@@ -220,8 +219,7 @@ class ReceiveThread extends Thread {
             this.logger.error( "RabbitMQ ReceiverThread: The consumer has been cancelled!", cce )
         }
         catch ( IOException ioe ) {
-            this.logger.error( "RabbitMQ ReceiverThread: Failed to create consumer! This thread will die and not " +
-                                       "receive anything!", ioe )
+            this.logger.error( "RabbitMQ ReceiverThread: Failed to create consumer! This thread will die and not " + "receive anything!", ioe )
         }
         catch ( Exception e ) {
             this.logger.error( e.getMessage(), e )

@@ -14,7 +14,7 @@ import java.util.Map;
  * Maps are used to represent JSON structure and the "Struct path"s are just a way to provide a
  * reference to values within the structure.
  *
- * There is a "StructMap" class in aps-core-lib that can be used to handle these "struct path"s
+ * There is a "StructMap" class in aps-core-lib that can be used to failure these "struct path"s
  * in implementations. Also if you make a "struct path" reference to a Map and not a end value
  * then this result can be wrapped with a StructMap and from there be accessed just like the
  * lookup path, but relative to this map.
@@ -22,11 +22,8 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public interface APSConfig extends Map<String, Object> {
 
-    /** Start of message service target address to subscribe to for configuration. Actual config id is added to this. */
-    String APS_CONFIG_AVAILABLE_ADDRESS_START = "aps.config.available.";
-
-    /** Messages on this address informs that cluster conf have been updated.  */
-    String CLUSTER_CONFIG_REFRESH_ADDRESS = "aps.config.refresh";
+    /** Cluster event address to use for config events. */
+    String CONFIG_EVENT_ADDRESS = "aps.config.events";
 
     /**
      * Calls the provided handler for each value path in the map.

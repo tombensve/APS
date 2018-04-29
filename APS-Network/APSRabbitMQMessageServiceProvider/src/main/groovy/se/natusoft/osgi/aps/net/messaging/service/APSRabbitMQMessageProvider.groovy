@@ -57,7 +57,7 @@ import se.natusoft.osgi.aps.tools.APSLogger
  * thread. My first attempt was to reuse channels as much as possible, but that did not work
  * very well, but I'm rather new to RabbitMQ and have to admit I haven't yet fully understood
  * all its features. It was however rather easy to install and get upp and running.
- */
+ **/
 @CompileStatic
 @TypeChecked
 class APSRabbitMQMessageProvider {
@@ -87,8 +87,7 @@ class APSRabbitMQMessageProvider {
 
     /**
      * Provides a RabbitMQ Connection. Rather than taking a Connection directly, this can
-     * always provide a fresh connection.
-     */
+     * always provide a fresh connection.*/
     ConnectionProvider connectionProvider
 
     /** A configuration for this specific instance. */
@@ -99,8 +98,7 @@ class APSRabbitMQMessageProvider {
     //
 
     /**
-     * Creates a new APSRabbitMQMessageProvider.
-     */
+     * Creates a new APSRabbitMQMessageProvider.*/
     APSRabbitMQMessageProvider() {
         AMQP.BasicProperties.Builder bob = new AMQP.BasicProperties.Builder()
         this.basicProperties = bob.contentType( "application/octet-stream" ).build()
@@ -148,18 +146,15 @@ class APSRabbitMQMessageProvider {
     }
 
     /**
-     * Ensures a cluster receive thread and returns it.
-     */
+     * Ensures a cluster receive thread and returns it.*/
     private void startReceiveThread() {
         validate()
 
         if ( this.instanceReceiveThread == null ) {
-            this.instanceReceiveThread = new ReceiveThread(
-                    name: "rabbitmq-receive-thread-" + this.name,
+            this.instanceReceiveThread = new ReceiveThread( name: "rabbitmq-receive-thread-" + this.name,
                     connectionProvider: this.connectionProvider,
                     logger: this.logger,
-                    topic: this.name
-            )
+                    topic: this.name )
 
             this.instanceReceiveThread.start()
         }

@@ -3,9 +3,10 @@ package se.natusoft.osgi.aps.net.vertx
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
-import se.natusoft.osgi.aps.api.messaging.APSMessage
 import se.natusoft.osgi.aps.api.messaging.APSMessagePublisher
 import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
+import se.natusoft.osgi.aps.api.messaging.APSMessage
+import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.StructMap
 import se.natusoft.osgi.aps.model.APSResult
 import se.natusoft.osgi.aps.model.ID
@@ -53,24 +54,25 @@ class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
     }
 }
 
-@SuppressWarnings("GroovyUnusedDeclaration")
+@SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
 @TypeChecked
 class MsgReceiver {
 
-    @OSGiService(timeout = "15 sec", nonBlocking = true)
+    @OSGiService( timeout = "15 sec", nonBlocking = true )
     private APSMessageSubscriber<Map<String, Object>> msgSubscriber
 
-    @Managed(loggingFor = "msg-receiver")
+    @Managed( loggingFor = "msg-receiver" )
     private APSLogger logger
 
     @Initializer
     void init() {
-        this.logger.info("<<<<<< MsgReceiver >>>>>")
+        this.logger.info( "<<<<<< MsgReceiver >>>>>" )
 
         ID subscriptionId = new APSUUID()
 
-        this.msgSubscriber.subscribe( "testaddr", subscriptionId ) { APSMessage<Map<String, Object>> messageValue ->
+        this.msgSubscriber.subscribe( "testaddr", subscriptionId, APS.MSG_NO_RESULT ) {
+            APSMessage<Map<String, Object>> messageValue ->
 
             this.logger.info( ">>>>>> Received message!" )
 
@@ -85,8 +87,8 @@ class MsgReceiver {
             }
 
             this.msgSubscriber.unsubscribe( subscriptionId ) { APSResult res ->
-                if (!res.success(  )) {
-                    this.logger.error("Failed to unsubscribe!")
+                if ( !res.success() ) {
+                    this.logger.error( "Failed to unsubscribe!" )
                 }
             }
         }
@@ -95,22 +97,22 @@ class MsgReceiver {
 }
 
 
-@SuppressWarnings("GroovyUnusedDeclaration")
+@SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
 @TypeChecked
 class MsgSender {
 
     // This manages since on nonBlocking = true, the call to msgService is cached by the proxy until
     // the service is available, and then executed.
-    @OSGiService(timeout = "15 sec", nonBlocking = true)
+    @OSGiService( timeout = "15 sec", nonBlocking = true )
     private APSMessagePublisher<Map<String, Object>> msgPublisher
 
-    @Managed(loggingFor = "msg-sender")
+    @Managed( loggingFor = "msg-sender" )
     private APSLogger logger
 
     @Initializer
     void init() {
-        this.logger.info("<<<<<< MsgSender >>>>>")
+        this.logger.info( "<<<<<< MsgSender >>>>>" )
 
         // Note that we must do publish, not send here! send sends to one listening target member. If there
         // are more it does a round robin, but it only goes to one in each case. Publish however always goes
@@ -120,15 +122,10 @@ class MsgSender {
         // the rest.
 
         this.msgPublisher.publish( "testaddr",
-                                   [
-                                           "meta": [
-                                                   "test-message": true
-                                           ],
-                                           "id"  : APSVertXEventBusMessagingTest.UNIQUE_MESSAGE
-                                   ] as Map<String, Object>
-        ) { APSResult res ->
-            if (!res.success(  )) {
-                throw res.failure(  )
+                [ "meta": [ "test-message": true ],
+                  "id"  : APSVertXEventBusMessagingTest.UNIQUE_MESSAGE ] as Map<String, Object> ) { APSResult res ->
+            if ( !res.success() ) {
+                throw res.failure()
             }
             else {
                 logger.info( "Published '${APSVertXEventBusMessagingTest.UNIQUE_MESSAGE}'!" )

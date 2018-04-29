@@ -39,6 +39,8 @@ package se.natusoft.osgi.aps.net.messaging.config
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
+// @formatter:off due to IDEA 2018.1 formatting horrors.
+
 /**
  * Configuration for RabbitMQ connections.
  */

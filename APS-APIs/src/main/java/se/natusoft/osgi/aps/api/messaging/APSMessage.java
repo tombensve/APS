@@ -1,15 +1,13 @@
 package se.natusoft.osgi.aps.api.messaging;
 
 import se.natusoft.docutations.NotNull;
-import se.natusoft.docutations.Nullable;
 import se.natusoft.osgi.aps.model.APSValue;
-
-import java.util.Map;
+import se.natusoft.osgi.aps.model.ID;
 
 /**
- * This is a message container to wrap actual messages, which makes it easier to be compatible
- * with different messaging solutions. Only received messages are wrapped with this rather than
- * APSValue.
+ * This is a message container that wrap actual received messages. This to support reply-ability
+ * per message. This in turn is due to that is how the Vert.x eventbus works. This supports that
+ * and other. To support miscellaneous messaging apis the received messages must be wrapped.
  *
  * @param <Message> The type of the content.
  */
@@ -17,67 +15,29 @@ import java.util.Map;
 public interface APSMessage<Message> extends APSValue<Message> {
 
     /**
-     * @return the message content.
-     */
-    @NotNull
-    @Override
-    Message content();
-
-    /**
-     * @return true if the message is replyable.
-     */
-    boolean isReplyable();
-
-    /**
-     * Replies to message. Will throw APSUnsupportedException if isReplyable() returns false.
+     * Replies to message.
      *
      * @param reply The message to reply with.
      */
-    void reply(@NotNull Message reply);
+    default void reply(@NotNull Message reply) {
+        throw new APSMessagingException( "This message cannot be replied to!" );
+    }
 
     /**
      * Provides a simple default implementation. This should probably be extended.
      *
      * @param <Message> The type of the content.
      */
-    class Provider<Message> implements APSMessage<Message> {
-
-        private Message content;
-        private boolean replyable = false;
-
-        public Provider(Message content) {
-            this.content = content;
-        }
-
-        public Provider(Message content, boolean replyable) {
-            this.content = content;
-            this.replyable = replyable;
-        }
+    class Provider<Message> extends APSValue.Provider<Message> implements APSMessage<Message> {
 
         /**
-         * @return the message content.
-         */
-        @Override
-        public Message content() {
-            return this.content;
-        }
-
-        /**
-         * @return true if the message is replyable.
-         */
-        @Override
-        public boolean isReplyable() {
-            return this.replyable;
-        }
-
-        /**
-         * Replies to message. This must be overridden to use.
+         * Creates a new Provider instance.
          *
-         * @param reply The message to reply with.
+         * @param content The message content.
          */
-        @Override
-        public void reply(Message reply) {
-            throw new UnsupportedOperationException("reply(Message reply) is not implemented by this provider!");
+        public Provider(Message content) {
+            super(content);
         }
+
     }
 }

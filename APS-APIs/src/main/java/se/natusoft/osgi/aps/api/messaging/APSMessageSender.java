@@ -1,6 +1,7 @@
 package se.natusoft.osgi.aps.api.messaging;
 
 import se.natusoft.docutations.NotNull;
+import se.natusoft.docutations.Nullable;
 import se.natusoft.osgi.aps.model.APSHandler;
 import se.natusoft.osgi.aps.model.APSResult;
 
@@ -9,7 +10,7 @@ import se.natusoft.osgi.aps.model.APSResult;
  * to the destination then it is up to the implementation who gets the message.
  *
  * For a Vertx eventbus based implementation it would do a round robin when there are more than one
- * subscriber for example. But this is entirely up to an implementation to handle.
+ * subscriber for example. But this is entirely up to an implementation to failure.
  *
  * @param <Message> The type of the message being sent.
  */
@@ -34,7 +35,8 @@ public interface APSMessageSender<Message> {
      *                    service looks up to get a real destination, rather than an absolute
      *                    destination.
      * @param message The message to send.
+     * @param result  The result of the send. If null an APSMessagingException will be thrown on failure.
      */
-    void send(@NotNull String destination, @NotNull Message message, @NotNull APSHandler<APSResult<Message>> result);
+    void send(@NotNull String destination, @NotNull Message message, @Nullable APSHandler<APSResult> result);
 
 }

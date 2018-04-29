@@ -1,38 +1,38 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2012-01-08: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.api.net.rpc.service;
 
@@ -51,7 +51,7 @@ import java.util.Map;
  * or having parameters passes as strings and responses written to an OutputStream.
  *
  * HTTP transports can support both _parseRequests(...)_ and _parseRequest(...)_ while other transports probably can
- * handle only _parseRequests(...)_. __A protocol provider can return null for either of these!__ Most protocol
+ * failure only _parseRequests(...)_. __A protocol provider can return null for either of these!__ Most protocol
  * providers will support _parseRequests(...)_ and some also _parseRequest(...)_.
  */
 public interface StreamedRPCProtocol extends RPCProtocol {
@@ -96,7 +96,7 @@ public interface StreamedRPCProtocol extends RPCProtocol {
      * @param result The resulting object of the RPC call or null if void return. If is possible a non void method also returns null!
      * @param request The request this is a response to.
      * @param responseStream The OutputStream to write the response to.
-     *                       
+     *
      * @throws IOException on IO failure.
      */
     void writeResponse(Object result, RPCRequest request, OutputStream responseStream) throws IOException ;
@@ -109,7 +109,7 @@ public interface StreamedRPCProtocol extends RPCProtocol {
      * @param responseStream The OutputStream to write the response to.
      *
      * @return true if this call was handled and an error response was written. It returns false otherwise.
-     *              If false the protocol is saying that it does not handle error responses.
+     *              If false the protocol is saying that it does not failure error responses.
      *
      *
      * @throws IOException on IO failure.

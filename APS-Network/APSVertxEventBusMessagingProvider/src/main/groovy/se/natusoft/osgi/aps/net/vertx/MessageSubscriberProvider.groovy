@@ -10,6 +10,7 @@ import org.osgi.framework.ServiceReference
 import org.osgi.framework.ServiceRegistration
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
+import se.natusoft.osgi.aps.api.messaging.APSMessage
 import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.exceptions.APSValidationException
@@ -21,21 +22,23 @@ import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.APSServiceTracker
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 
-@SuppressWarnings("GroovyUnusedDeclaration")
+@SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
 @TypeChecked
+// @formatter:off
 @OSGiServiceProvider(
         // Possible criteria for client lookups. ex: "(aps-messaging-protocol=vertx-eventbus)" In most cases clients won't care.
         properties = [
-                @OSGiProperty(name = APS.Service.Provider, value = "aps-vertx-event-bus-messaging-provider:subscriber"),
-                @OSGiProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Network),
-                @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Messaging),
-                @OSGiProperty(name = APS.Messaging.Protocol.Name, value = "vertx-eventbus"),
-                @OSGiProperty(name = APS.Messaging.Persistent, value = APS.FALSE),
-                @OSGiProperty(name = APS.Messaging.Clustered, value = APS.TRUE)
+                @OSGiProperty( name = APS.Service.Provider, value = "aps-vertx-event-bus-messaging-provider:subscriber" ),
+                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Network ),
+                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
+                @OSGiProperty( name = APS.Messaging.Protocol.Name, value = "vertx-eventbus" ),
+                @OSGiProperty( name = APS.Messaging.Persistent, value = APS.FALSE ),
+                @OSGiProperty( name = APS.Messaging.Clustered, value = APS.TRUE )
         ]
 )
-class MessageSubscriberProvider extends AddressResolver implements APSMessageSubscriber {
+// @formatter:on
+class MessageSubscriberProvider extends AddressResolver implements APSMessageSubscriber<Message> {
 
     //
     // Private members
@@ -62,11 +65,11 @@ class MessageSubscriberProvider extends AddressResolver implements APSMessageSub
      *
      * All this of course assumes that a service goes away only because it is being restarted / upgraded, and
      * will rather quickly be available again.
-     */
+     **/
     private List<ServiceRegistration> svcRegs = [ ]
 
     /** The logger for this class. */
-    @Managed(name="subscriber", loggingFor = "aps-vertx-eventbus-messaging:subscriber")
+    @Managed( name = "subscriber", loggingFor = "aps-vertx-eventbus-messaging:subscriber" )
     private APSLogger logger
 
     /** Our bundles context. */
@@ -76,13 +79,13 @@ class MessageSubscriberProvider extends AddressResolver implements APSMessageSub
     /**
      * This tracks the EventBus. init() will setup an onActiveServiceAvailable callback handler which
      * will provide the eventBus instance.
-     */
-    @OSGiService(additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "30 sec")
+     **/
+    @OSGiService( additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "30 sec" )
     private APSServiceTracker<EventBus> eventBusTracker
     private EventBus eventBus
 
     /** Used to delay service registration. */
-    @Managed(name="subscriberAI")
+    @Managed( name = "subscriberAI" )
     private APSActivatorInteraction activatorInteraction
 
     /** Active subscribers are stored here. */
@@ -94,7 +97,7 @@ class MessageSubscriberProvider extends AddressResolver implements APSMessageSub
 
     /**
      * This is run by APSActivator when all @Managed & @OSGiService annotated fields have been injected.
-     */
+     **/
     @Initializer
     void init() {
         // Yes, what these handlers do could be done directly below in onActiveServiceAvailable {...} instead
@@ -103,8 +106,8 @@ class MessageSubscriberProvider extends AddressResolver implements APSMessageSub
             this.activatorInteraction.registerService( MessageSubscriberProvider.class, this.context, this.svcRegs )
         }
         this.activatorInteraction.setStateHandler( APSActivatorInteraction.State.TEMP_UNAVAILABLE ) {
-            this.svcRegs.first( ).unregister(  )
-            this.svcRegs.clear(  )
+            this.svcRegs.first().unregister()
+            this.svcRegs.clear()
         }
 
         this.eventBusTracker.onActiveServiceAvailable { EventBus service, ServiceReference serviceReference ->
@@ -131,9 +134,14 @@ class MessageSubscriberProvider extends AddressResolver implements APSMessageSub
      *                    this is a name that will be looked up in some configuration for the real
      *                    destination, by the service rather than have the client pass a value from
      *                    its configuration.
+     * @param subscriptionId A unique id for this subscription. Use the same to unsubscribe.
+     * @param result The result of the call callback. Will always return success. Can be null.
      * @param handler The subscription handler.
      */
-    void subscribe( @NotNull String destination, @NotNull ID subscriptionId, @NotNull APSHandler handler ) {
+    @Override
+    void subscribe( @NotNull String destination, @NotNull ID subscriptionId, @Nullable APSHandler<APSResult> result,
+                    @NotNull APSHandler<APSMessage<Message>> handler ) {
+
         String address = resolveAddress( destination )
 
         MessageConsumer consumer = this.eventBus.consumer( address ) { Message<String> msg ->
@@ -158,12 +166,16 @@ class MessageSubscriberProvider extends AddressResolver implements APSMessageSub
 
         this.subscribers[ subscriptionId ] = consumer
 
+        if ( result != null ) {
+            result.handle( APSResult.success( null ) )
+        }
     }
 
     /**
      * Cancel a subscription.
      *
      * @param subscriptionId The same id as passed to subscribe.
+     * @param result The result of the call. Can be null.
      */
     @Override
     void unsubscribe( @NotNull ID subscriptionId, @Nullable APSHandler<APSResult> result ) {

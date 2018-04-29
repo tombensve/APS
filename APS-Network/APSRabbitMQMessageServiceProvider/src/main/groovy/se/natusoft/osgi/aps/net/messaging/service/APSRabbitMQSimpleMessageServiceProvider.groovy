@@ -4,11 +4,12 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
-import se.natusoft.osgi.aps.api.messaging.APSMessage
 import se.natusoft.osgi.aps.api.messaging.APSMessagePublisher
 import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
 import se.natusoft.osgi.aps.api.messaging.APSMessagingException
+import se.natusoft.osgi.aps.api.messaging.APSMessage
 import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.model.APSHandler
 import se.natusoft.osgi.aps.model.APSResult
 import se.natusoft.osgi.aps.model.ID
@@ -18,11 +19,11 @@ import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 
 /**
- * Provides and manages this service.
- */
-@SuppressWarnings("GroovyUnusedDeclaration")
+ * Provides and manages this service.*/
+@SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
 @TypeChecked
+// @formatter:off
 @OSGiServiceProvider(
         serviceAPIs = [APSMessagePublisher.class, APSMessageSubscriber.class],
         properties = [
@@ -33,6 +34,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
                 @OSGiProperty(name = APS.Messaging.MultipleReceivers, value = APS.TRUE)
         ]
 )
+// @formatter:on
 class APSRabbitMQSimpleMessageServiceProvider implements APSMessagePublisher<byte[]>, APSMessageSubscriber<byte[]> {
 
     //
@@ -40,7 +42,7 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSMessagePublisher<byt
     //
 
     /** Our logger. */
-    @Managed(loggingFor = "aps-rabbitmq-simple-message-service-provider")
+    @Managed( loggingFor = "aps-rabbitmq-simple-message-service-provider" )
     private APSLogger logger
 
     /** For connecting to RabbitMQ. */
@@ -61,10 +63,9 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSMessagePublisher<byt
      *
      * It will register a configuration listener and then start all configured instances. The configuration listener
      * will reconnect to the RabbitMQ message bus in case connection configold has changed, and then take down deleted
-     * instances and start newly defined instances.
-     */
-    @SuppressWarnings("GroovyUnusedDeclaration")
-    @BundleStart(thread = true)
+     * instances and start newly defined instances.*/
+    @SuppressWarnings( "GroovyUnusedDeclaration" )
+    @BundleStart( thread = true )
     void startup() {
         // Since this is called on bundle startup the whole startup process will halt until this returns,
         // so we do what we need to do in a thread instead and then return immediately. The catch is that
@@ -86,9 +87,8 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSMessagePublisher<byt
     /**
      * This method is run on bundle stop.
      *
-     * It will take down all instances.
-     */
-    @SuppressWarnings("GroovyUnusedDeclaration")
+     * It will take down all instances.*/
+    @SuppressWarnings( "GroovyUnusedDeclaration" )
     @BundleStop
     void shutdown() {
         stopAllInstances()
@@ -117,12 +117,10 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSMessagePublisher<byt
 
     private void startInstance( Map<String, Serializable> instance ) {
 
-        APSRabbitMQMessageProvider messageService = new APSRabbitMQMessageProvider(
-                logger: this.logger,
+        APSRabbitMQMessageProvider messageService = new APSRabbitMQMessageProvider( logger: this.logger,
                 name: instance.name as String,
                 connectionProvider: { return this.rabbitMQConnectionManager.connection },
-                instanceConfig: instance
-        )
+                instanceConfig: instance )
         messageService.start()
 
         this.instances.put( instance.name as String, messageService )
@@ -149,8 +147,7 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSMessagePublisher<byt
     private void closeRemovedInstances() {
         this.instances.findAll { String name, APSRabbitMQMessageProvider instance ->
 
-            !Config.config.instances.any { Map.Entry<String, LinkedHashMap<String, String>> entry ->
-                entry.value.name == name
+            !Config.config.instances.any { Map.Entry<String, LinkedHashMap<String, String>> entry -> entry.value.name == name
             }
         }.each { String name, APSRabbitMQMessageProvider instance ->
 
@@ -214,9 +211,9 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSMessagePublisher<byt
 
             result.handle( APSResult.success( null ) )
         }
-        catch (APSMessagingException me) {
+        catch ( APSMessagingException me ) {
 
-            result.handle( APSResult.failure( me ))
+            result.handle( APSResult.failure( me ) )
         }
 
     }
@@ -234,13 +231,15 @@ class APSRabbitMQSimpleMessageServiceProvider implements APSMessagePublisher<byt
      * @param handler The subscription handler.
      */
     @Override
-    void subscribe( @NotNull String destination, @NotNull ID subscriptionId,
+    void subscribe( @NotNull String destination, @NotNull ID subscriptionId, @Nullable APSHandler<APSResult> result,
                     @NotNull APSHandler<APSMessage<byte[]>> handler ) {
 
         APSRabbitMQMessageProvider messageProvider = this.instances.get( destination )
 
         if ( messageProvider == null ) {
-            throw new IllegalArgumentException( "addMessageListener(): No such topic: '${destination}'!" )
+
+            APSResult.failureResult( result,
+                    new APSValidationException( "addMessageListener(): No such topic: '${destination}'!" ) )
         }
 
         messageProvider.addMessageSubscriber( subscriptionId, handler )

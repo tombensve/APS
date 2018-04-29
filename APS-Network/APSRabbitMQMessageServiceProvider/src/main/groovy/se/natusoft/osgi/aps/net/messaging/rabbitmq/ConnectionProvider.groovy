@@ -6,7 +6,7 @@ import groovy.transform.TypeChecked
 
 /**
  * This is received and should provide an implementation that provides a RabbitMQ Connection.
- */
+ **/
 @CompileStatic
 @TypeChecked
 interface ConnectionProvider {

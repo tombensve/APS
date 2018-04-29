@@ -22,9 +22,10 @@ import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
 import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
 
 // MessageType will always be Object!
-@SuppressWarnings("GroovyUnusedDeclaration")
+@SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
 @TypeChecked
+// @formatter:off
 @OSGiServiceProvider(
         // Possible criteria for client lookups. ex: "(aps-messaging-protocol=vertx-eventbus)" In most cases clients won't care.
         properties = [
@@ -36,6 +37,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
                 @OSGiProperty(name = APS.Messaging.Clustered, value = APS.TRUE)
         ]
 )
+// @formatter:on
 class MessagePublisherProvider<MessageType> extends AddressResolver implements APSMessagePublisher<MessageType> {
 
     //
@@ -63,11 +65,11 @@ class MessagePublisherProvider<MessageType> extends AddressResolver implements A
      *
      * All this of course assumes that a service goes away only because it is being restarted / upgraded, and
      * will rather quickly be available again.
-     */
+     **/
     private List<ServiceRegistration> svcRegs = [ ]
 
     /** For logging. */
-    @Managed(name = "publisher", loggingFor = "aps-vertx-event-bus-messaging-provider:publisher")
+    @Managed( name = "publisher", loggingFor = "aps-vertx-event-bus-messaging-provider:publisher" )
     private APSLogger logger
 
     /** Our bundles context. */
@@ -76,14 +78,13 @@ class MessagePublisherProvider<MessageType> extends AddressResolver implements A
 
     /**
      * This tracks the EventBus. init() will setup an onActiveServiceAvailable callback handler which
-     * will provide the eventBus instance.
-     */
-    @OSGiService(additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "30 sec")
+     * will provide the eventBus instance.*/
+    @OSGiService( additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "30 sec" )
     private APSServiceTracker<EventBus> eventBusTracker
     private EventBus eventBus
 
     /** Used to delay service registration. */
-    @Managed(name="publisherAI")
+    @Managed( name = "publisherAI" )
     private APSActivatorInteraction activatorInteraction
 
     //
@@ -91,8 +92,7 @@ class MessagePublisherProvider<MessageType> extends AddressResolver implements A
     //
 
     /**
-     * This is run by APSActivator when all @Managed & @OSGiService annotated fields have been injected.
-     */
+     * This is run by APSActivator when all @Managed & @OSGiService annotated fields have been injected.*/
     @Initializer
     void init() {
         // Yes, what these handlers do could be done directly below in onActiveServiceAvailable {...} instead
@@ -101,21 +101,21 @@ class MessagePublisherProvider<MessageType> extends AddressResolver implements A
             this.activatorInteraction.registerService( MessagePublisherProvider.class, this.context, this.svcRegs )
         }
         this.activatorInteraction.setStateHandler( APSActivatorInteraction.State.TEMP_UNAVAILABLE ) {
-            this.svcRegs.first( ).unregister(  )
-            this.svcRegs.clear(  )
+            this.svcRegs.first().unregister()
+            this.svcRegs.clear()
         }
 
         this.eventBusTracker.onActiveServiceAvailable { EventBus service, ServiceReference serviceReference ->
             this.eventBus = service
 
-            this.logger.info(">>>>>> Got EventBus: ${this.eventBus}")
+            this.logger.info( ">>>>>> Got EventBus: ${this.eventBus}" )
 
             this.activatorInteraction.state = APSActivatorInteraction.State.READY
         }
         this.eventBusTracker.onActiveServiceLeaving { ServiceReference service, Class serviceAPI ->
             this.eventBus = null
 
-            this.logger.info("<<<<<< Lost EventBus!")
+            this.logger.info( "<<<<<< Lost EventBus!" )
 
             this.activatorInteraction.state = APSActivatorInteraction.State.TEMP_UNAVAILABLE
         }
@@ -164,7 +164,7 @@ class MessagePublisherProvider<MessageType> extends AddressResolver implements A
                 eventBus.publish( address, TypeConv.apsToVertx( message ) )
 
                 if ( result != null ) {
-                    result.handle( APSResult.success( null ) )
+                    result.handle( APSResult.success( null ) as APSResult<MessageType> )
                 }
                 else {
                     this.logger.warn( "Call made to publish(message, resultHandler) without a result handler!" )

@@ -1,4 +1,4 @@
-package se.natusoft.osgi.aps.api.util;
+package se.natusoft.osgi.aps.api.misc.json.model;
 
 import se.natusoft.osgi.aps.api.misc.json.model.APSMapJson;
 import se.natusoft.osgi.aps.api.misc.json.model.APSMapJsonSchema;
