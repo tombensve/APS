@@ -9,11 +9,6 @@ import se.natusoft.osgi.aps.model.APSResult;
 public interface APSLockable<ID> {
 
     /**
-     * @return true if locking is supported, false otherwise.
-     */
-    boolean supportsLocking();
-
-    /**
      * Acquires a lock, and on success also provides an APSLock instance. Do note that even if the APSLock instance
      * is not used to release the lock, the lock should be released before the return of this method call!
      *

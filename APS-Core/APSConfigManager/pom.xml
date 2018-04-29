@@ -11,10 +11,10 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>aps-config-provider</artifactId>
+    <artifactId>aps-config-manager</artifactId>
     <packaging>bundle</packaging>
 
-    <name>APSConfigServiceProvider</name>
+    <name>APSConfigManager</name>
 
     <description>
     </description>
@@ -100,11 +100,13 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-json-lib</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
             <version>3.4.2</version>
+            <scope>provided</scope>
         </dependency>
 
         <!--

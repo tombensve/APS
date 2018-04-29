@@ -158,14 +158,6 @@ class APSVertxClusterDataStoreServiceProvider implements APSLockableDataStoreSer
     }
 
     /**
-     * @return true if locking is supported, false otherwise.
-     */
-    @Override
-    boolean supportsLocking() {
-        true
-    }
-
-    /**
      * Acquires a lock, and on success also provides an APSLock instance. Do note that even if the APSLock instance
      * is not used to release the lock, the lock should be released before the return of this method call!
      *
