@@ -45,7 +45,7 @@ import io.vertx.core.AsyncResult
 import io.vertx.core.Vertx
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.http.HttpServer
-import io.vertx.core.json.JsonObject
+import io.vertx.core.shareddata.SharedData
 import io.vertx.ext.web.Router
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceRegistration
@@ -90,6 +90,9 @@ class APSVertxProvider {
     /** Service registration for event bus. */
     private ServiceRegistration eventBusSvcReg
 
+    /** Service registration for shared data. */
+    private ServiceRegistration shareDataSvcReg
+
     /** A map of HTTP servers per service port. These are internal to this bundle. */
     private Map<Integer, HttpServer> httpServerByPort = [ : ]
 
@@ -99,7 +102,7 @@ class APSVertxProvider {
     /** Service registrations for routers. */
     private Map<Integer, ServiceRegistration> routerRegByPort = [ : ]
 
-    /**  */
+    /** */
     private List<Runnable> shutdownNotification = [ ]
 
     /**
@@ -164,6 +167,13 @@ class APSVertxProvider {
                 ] as Properties )
                 this.logger.info( "Registered EventBus as OSGi service!" )
 
+                this.shareDataSvcReg = this.context.registerService( SharedData.class.name, this.vertx.sharedData(), [
+                        "service-provider": "aps-vertx-provider",
+                        "service-category": "network",
+                        "service-function": "storage",
+                        "vertx-object"    : "SharedData"
+                ] as Properties )
+
                 startVertxServices()
 
             }
@@ -185,6 +195,9 @@ class APSVertxProvider {
 
         this.eventBusSvcReg.unregister()
         this.logger.info( "Unregistered EventBus as OSGi service!" )
+
+        this.shareDataSvcReg.unregister()
+        this.logger.info( "Unregistered SharedData as OSGi service!" )
 
         stopVertxServices()
 

@@ -39,6 +39,7 @@ package se.natusoft.osgi.aps.test.tools;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
 import se.natusoft.osgi.aps.test.tools.internal.ServiceRegistry;
 
 import java.io.File;
@@ -48,6 +49,42 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * This is the entry point to using the OSGi service test tools.
+ *
+ * In the most common case, let your unit test class extend this and then just call deploy("name") which
+ * will return a BundleBuilder.
+ *
+ * The below examples uses the maven GAV reference which looks in ~/.m2/repository. There is also a
+ * from variant that takes a root path and then scans it for content. Instead of 'from' it is also
+ * possible to use 'using' which takes an array of string bundle content paths. When test is run these
+ * must also be available in JUnit classpath for the test. This does no classloading, it only used
+ * the JUnit setup classpath. Using true OSGi bundle classloading here would make things very much
+ * more complicated. maven-bundle-plugin have already validated imports and exports so doing so again
+ * seems overkill.
+ *
+ * ## Groovy Example
+ *
+ *             deploy 'aps-vertx-provider' with new APSActivator() from(
+ *                 'se.natusoft.osgi.aps',
+ *                 'aps-vertx-provider',
+ *                 '1.0.0'
+ *            )
+ *
+ *            deploy 'aps-config-manager' with new APSActivator() from 'APS-Core/APSConfigManager/target/classes'
+ *
+ *            deploy 'moon-whale-service' with new APSActivator() from 'APS-Core/APSConfigManager/target/test-classes'
+ *
+ * ## Java Example
+ *
+ *             deploy("aps-vertx-provider").with(new APSActivator()).from(
+ *                 "se.natusoft.osgi.aps",
+ *                 "aps-vertx-provider",
+ *                 "1.0.0"
+ *             );
+ *
+ *            deploy( "aps-config-manager").with( new APSActivator() ).from( "APS-Core/APSConfigManager/target/classes");
+ *
+ *            deploy( "moon-whale-service").with( new APSActivator() ).from( "APS-Core/APSConfigManager/target/test-classes");
+ *
  */
 @SuppressWarnings("WeakerAccess")
 public class OSGIServiceTestTools {
@@ -72,6 +109,18 @@ public class OSGIServiceTestTools {
     //
 
     /**
+     * Send a bundle event to bundles.
+     *
+     * @param bundle The bundle the event is about.
+     * @param type The type of the event.
+     */
+    private void bundleEvent(Bundle bundle, int type) {
+        for (TestBundle testBundle : this.bundles) {
+            ((TestBundleContext)testBundle.getBundleContext()).bundleEvent( bundle, type );
+        }
+    }
+
+    /**
      * Creates a new TestBundle.
      *
      * @param symbolicName The symbolic name of the bundle to create.
@@ -81,6 +130,11 @@ public class OSGIServiceTestTools {
         this.bundles.add(bundle);
         this.bundleByName.put(symbolicName, bundle);
         this.bundleById.put(bundle.getBundleId(), bundle);
+
+        for (TestBundle testBundle : this.bundles) {
+            ((TestBundleContext)testBundle.getBundleContext()).bundleEvent( bundle, BundleEvent.INSTALLED );
+        }
+
         return bundle;
     }
 
@@ -93,6 +147,10 @@ public class OSGIServiceTestTools {
         this.bundles.remove(bundle);
         this.bundleByName.remove(bundle.getSymbolicName());
         this.bundleById.remove(bundle.getBundleId());
+
+        for (TestBundle testBundle : this.bundles) {
+            ((TestBundleContext)testBundle.getBundleContext()).bundleEvent( bundle, BundleEvent.UNINSTALLED );
+        }
     }
 
     /**
@@ -321,16 +379,15 @@ public class OSGIServiceTestTools {
                 throw new IllegalStateException("Activator has not been provided! Add an 'with new MyActivator()'");
             }
             this.activator.start(this.bundle.getBundleContext());
+
+            bundleEvent( bundle, BundleEvent.STARTED );
+
             return this;
         }
 
         public BundleBuilder with(BundleActivator bundleActivator) {
             return with_activator(bundleActivator);
         }
-
-//        public BundleBuilder with(Callable<APSConfig> config) throws Exception {
-//            return with_APSConfig(config);
-//        }
 
         public BundleBuilder with(ClassLoader bundleClassLoader) {
             this.bundle.setBundleClassLoader(bundleClassLoader);
@@ -348,33 +405,6 @@ public class OSGIServiceTestTools {
             this.activator = bundleActivator;
             return this;
         }
-
-//        /**
-//         * Supplies a Callable that creates and returns a subclass of APSConfig. If a static ManagedConfig instance
-//         * is found in the returned config object then it is setup.
-//         *
-//         * @param config A Callable that should setup configuration and return it.
-//         * @return itself
-//         * @throws Exception
-//         */
-//        public BundleBuilder with_APSConfig(Callable<APSConfig> config) throws Exception {
-//            if (this.started) throw new Exception("Config must be provided earlier in command line!");
-//            APSConfig apsConfig = config.call();
-//            for (Field field : apsConfig.getClass().getDeclaredFields()) {
-//                if (Modifier.isStatic(field.getModifiers())) {
-//                    field.setAccessible(true); // This should not be needed!
-//                    Object managed = field.get(apsConfig);
-//                    if (managed != null && ManagedConfig.class.isAssignableFrom(managed.getClass())) {
-//                        ManagedConfig managedConfig = (ManagedConfig) managed;
-//                        //noinspection unchecked
-//                        managedConfig.serviceProviderAPI.setConfigInstance(apsConfig);
-//                        managedConfig.serviceProviderAPI.setManaged();
-//                    }
-//                }
-//            }
-//
-//            return this;
-//        }
 
         /**
          * Provides bundle content by reading maven artifact.
@@ -422,7 +452,12 @@ public class OSGIServiceTestTools {
          * @throws Exception Forwards exceptions
          */
         public BundleBuilder using(String[] paths) throws Exception {
-            this.bundle.addEntryPaths(paths);
+            for (String path : paths) {
+                if (!path.startsWith( "/" )) {
+                    path = "/" + path;
+                }
+                this.bundle.addEntryPaths( new BundleEntryPath( path ) );
+            }
             return start();
         }
 
@@ -451,6 +486,9 @@ public class OSGIServiceTestTools {
             } catch (Exception e) {
                 e.printStackTrace(System.err);
             }
+
+            bundleEvent( bundle, BundleEvent.STOPPED );
+
             removeBundle(this.bundle);
         }
     }

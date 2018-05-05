@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS OSGi Test Tools
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides tools for testing OSGi services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -41,6 +41,8 @@ import org.osgi.framework.*;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Dictionary;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -56,6 +58,8 @@ public class TestBundleContext implements BundleContext {
 
     private Properties props = new Properties();
 
+    private List<BundleListener> bundleListeners = new LinkedList<>();
+
     //
     // Constructors
     //
@@ -65,7 +69,7 @@ public class TestBundleContext implements BundleContext {
      *
      * @param bundle The contexts Bundle.
      */
-    public TestBundleContext(TestBundle bundle) {
+    public TestBundleContext( TestBundle bundle ) {
         this.bundle = bundle;
     }
 
@@ -78,7 +82,7 @@ public class TestBundleContext implements BundleContext {
      *
      * @param props The properties to provide.
      */
-    public void setProperties(Properties props) {
+    public void setProperties( Properties props ) {
         this.props = props;
     }
 
@@ -94,8 +98,8 @@ public class TestBundleContext implements BundleContext {
     //
 
     @Override
-    public String getProperty(String key) {
-        return this.props.getProperty(key);
+    public String getProperty( String key ) {
+        return this.props.getProperty( key );
     }
 
     @Override
@@ -107,23 +111,23 @@ public class TestBundleContext implements BundleContext {
      * Not supported!
      */
     @Override
-    public Bundle installBundle(String location, InputStream input) throws BundleException {
-        throw new BundleException("installBundle(...) is not supported!");
+    public Bundle installBundle( String location, InputStream input ) throws BundleException {
+        throw new BundleException( "installBundle(...) is not supported!" );
     }
 
     /**
      * Not supported!
      */
     @Override
-    public Bundle installBundle(String location) throws BundleException {
-        throw new BundleException("installBundle(...) is not supported!");
+    public Bundle installBundle( String location ) throws BundleException {
+        throw new BundleException( "installBundle(...) is not supported!" );
     }
 
     /**
      * Not supported!
      */
     @Override
-    public Bundle getBundle(long id) {
+    public Bundle getBundle( long id ) {
         return this.bundle;
     }
 
@@ -132,101 +136,113 @@ public class TestBundleContext implements BundleContext {
      */
     @Override
     public Bundle[] getBundles() {
-        return new Bundle[] {this.bundle};
+        return new Bundle[]{ this.bundle };
     }
 
     @Override
-    public void addServiceListener(ServiceListener listener, String filter) throws InvalidSyntaxException {
-        this.bundle.getServiceRegistry().addServiceListener(listener, filter);
+    public void addServiceListener( ServiceListener listener, String filter ) throws InvalidSyntaxException {
+        this.bundle.getServiceRegistry().addServiceListener( listener, filter );
     }
 
     @Override
-    public void addServiceListener(ServiceListener listener) {
-        this.bundle.getServiceRegistry().addServiceListener(listener);
+    public void addServiceListener( ServiceListener listener ) {
+        this.bundle.getServiceRegistry().addServiceListener( listener );
     }
 
     @Override
-    public void removeServiceListener(ServiceListener listener) {
-        this.bundle.getServiceRegistry().removeServiceListener(listener);
-    }
-
-    /**
-     * Not supported!
-     */
-    @Override
-    public void addBundleListener(BundleListener listener) {
-        throw new RuntimeException("Not yet supported!");
+    public void removeServiceListener( ServiceListener listener ) {
+        this.bundle.getServiceRegistry().removeServiceListener( listener );
     }
 
     /**
      * Not supported!
      */
     @Override
-    public void removeBundleListener(BundleListener listener) {
-        throw new RuntimeException("Not yet supported!");
+    public void addBundleListener( BundleListener listener ) {
+        this.bundleListeners.add( listener );
     }
 
     /**
      * Not supported!
      */
     @Override
-    public void addFrameworkListener(FrameworkListener listener) {
-        throw new RuntimeException("Not yet supported!");
+    public void removeBundleListener( BundleListener listener ) {
+        this.bundleListeners.remove( listener );
     }
 
     /**
-     * Not supported!
+     * Sends bundle event to all listeners.
+     *
+     * @param bundle The Bundle the event is for.
+     * @param type The event type.
      */
-    @Override
-    public void removeFrameworkListener(FrameworkListener listener) {
-        throw new RuntimeException("Not yet supported!");
-    }
-
-    @Override
-    public ServiceRegistration registerService(String[] clazzes, Object service, Dictionary properties) {
-        return registerService(clazzes[0], service, properties);
-    }
-
-    @Override
-    public ServiceRegistration registerService(String clazz, Object service, Dictionary properties) {
-        if(properties.get(Constants.OBJECTCLASS) == null) {
-            properties.put(Constants.OBJECTCLASS, new String[] {clazz});
+    public void bundleEvent(Bundle bundle, int type) {
+        BundleEvent bundleEvent = new BundleEvent( type, bundle );
+        for (BundleListener bundleListener : this.bundleListeners) {
+            bundleListener.bundleChanged( bundleEvent );
         }
-        TestServiceRegistration sr = new TestServiceRegistration(clazz, new TestServiceReference(this, properties), this.bundle);
+    }
+
+    /**
+     * Not supported!
+     */
+    @Override
+    public void addFrameworkListener( FrameworkListener listener ) {
+        throw new RuntimeException( "Not yet supported!" );
+    }
+
+    /**
+     * Not supported!
+     */
+    @Override
+    public void removeFrameworkListener( FrameworkListener listener ) {
+        throw new RuntimeException( "Not yet supported!" );
+    }
+
+    @Override
+    public ServiceRegistration registerService( String[] clazzes, Object service, Dictionary properties ) {
+        return registerService( clazzes[ 0 ], service, properties );
+    }
+
+    @Override
+    public ServiceRegistration registerService( String clazz, Object service, Dictionary properties ) {
+        if ( properties.get( Constants.OBJECTCLASS ) == null ) {
+            properties.put( Constants.OBJECTCLASS, new String[]{ clazz } );
+        }
+        TestServiceRegistration sr = new TestServiceRegistration( clazz, new TestServiceReference( this, properties ), this.bundle );
         try {
-            this.bundle.getServiceRegistry().registerService(sr, service, Class.forName(clazz));
-        }
-        catch (ClassNotFoundException cnfe) {
-            throw new IllegalArgumentException("Bad value passed for 'clazz' parameter!", cnfe);
+            this.bundle.getServiceRegistry().registerService( sr, service, Class.forName( clazz ) );
+        } catch ( ClassNotFoundException cnfe ) {
+            throw new IllegalArgumentException( "Bad value passed for 'clazz' parameter!", cnfe );
         }
         return sr;
     }
 
     @Override
-    public ServiceReference[] getServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
-        return this.bundle.getServiceRegistry().getServiceReferences(clazz, filter);
+    public ServiceReference[] getServiceReferences( String clazz, String filter ) throws InvalidSyntaxException {
+        return this.bundle.getServiceRegistry().getServiceReferences( clazz, filter );
     }
 
     @Override
-    public ServiceReference[] getAllServiceReferences(String clazz, String filter) throws InvalidSyntaxException {
-        return this.bundle.getServiceRegistry().getAllServiceReferences(clazz, filter);
+    public ServiceReference[] getAllServiceReferences( String clazz, String filter ) throws InvalidSyntaxException {
+        return this.bundle.getServiceRegistry().getAllServiceReferences( clazz, filter );
     }
 
     @Override
-    public ServiceReference getServiceReference(String clazz) {
-        return this.bundle.getServiceRegistry().getServiceReference(clazz);
+    public ServiceReference getServiceReference( String clazz ) {
+        return this.bundle.getServiceRegistry().getServiceReference( clazz );
     }
 
     @Override
-    public Object getService(ServiceReference reference) {
-        return this.bundle.getServiceRegistry().getService(reference);
+    public Object getService( ServiceReference reference ) {
+        return this.bundle.getServiceRegistry().getService( reference );
     }
 
     /**
      * Does nothing!
      */
     @Override
-    public boolean ungetService(ServiceReference reference) {
+    public boolean ungetService( ServiceReference reference ) {
         return true;
     }
 
@@ -234,15 +250,15 @@ public class TestBundleContext implements BundleContext {
      * Not supported!
      */
     @Override
-    public File getDataFile(String filename) {
-        throw new RuntimeException("Not supported!");
+    public File getDataFile( String filename ) {
+        throw new RuntimeException( "Not supported!" );
     }
 
     /**
      * Not supported!
      */
     @Override
-    public Filter createFilter(String filter) throws InvalidSyntaxException {
-        throw new RuntimeException("Not supported!");
+    public Filter createFilter( String filter ) throws InvalidSyntaxException {
+        throw new RuntimeException( "Not supported!" );
     }
 }

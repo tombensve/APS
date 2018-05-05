@@ -4,6 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.core.Vertx
 import io.vertx.core.eventbus.EventBus
+import io.vertx.core.shareddata.SharedData
 import io.vertx.ext.web.Router
 import org.junit.Test
 import org.osgi.framework.ServiceReference
@@ -25,6 +26,7 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
     public static Vertx vertx = null
     public static Router router = null
     public static EventBus eventBus = null
+    public static SharedData sharedData = null
 
     @Test
     void reactiveAPITest() throws Exception {
@@ -44,10 +46,13 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
             hold() whilst { vertx == null } maxTime 6L unit SECONDS go()
             hold() whilst { router == null } maxTime 6L unit SECONDS go()
             hold() whilst { eventBus == null } maxTime 6L unit SECONDS go()
+            hold() whilst { sharedData == null } maxTime 6L unit SECONDS go()
             println "<<<<< " + new Date()
 
             assert vertx != null
             assert router != null
+            assert eventBus != null
+            assert sharedData != null
 
         }
         finally {
@@ -75,6 +80,9 @@ class VertxClient {
     @OSGiService(additionalSearchCriteria = "(vertx-object=EventBus)", timeout="10 sec")
     APSServiceTracker<EventBus> eventBusTracker
 
+    @OSGiService(additionalSearchCriteria = "(vertx-object=SharedData)", timeout="10 sec")
+    APSServiceTracker<SharedData> sharedDataTracker
+
     @Initializer
     void init() {
         this.logger.info "In VertxClient.init()!"
@@ -97,6 +105,11 @@ class VertxClient {
         this.eventBusTracker.onActiveServiceAvailable { EventBus eventBus, ServiceReference busRef ->
             APSVertxProviderTest.eventBus = eventBus
             this.logger.info "Got event bus!"
+        }
+
+        this.sharedDataTracker.onActiveServiceAvailable { SharedData sharedData, ServiceReference busRef ->
+            APSVertxProviderTest.sharedData = sharedData
+            this.logger.info "Got shared data!"
         }
     }
 

@@ -36,6 +36,9 @@
  */
 package se.natusoft.osgi.aps.constants;
 
+import se.natusoft.osgi.aps.model.APSHandler;
+import se.natusoft.osgi.aps.model.APSResult;
+
 /**
  * Hierarchy of constants.
  */
@@ -47,10 +50,16 @@ public interface APS {
 
     String DEFAULT = "default";
 
+    String CLUSTERED = "clustered";
+
+    APSHandler<APSResult> MSG_PREFER_EXCEPTION_RESULT = null;
+    APSHandler<APSResult> MSG_NO_RESULT = null;
+
     interface Service {
         String Provider = "service-provider";
         String Category = "service-category";
         String Function = "service-function";
+        String PersistenceScope = "service-persistence-scope";
 
         interface Production {
             String Ready = "service-production-ready";
@@ -76,6 +85,7 @@ public interface APS {
 
         String Persistent = "messaging-persistent";
         String MultipleReceivers = "messaging-multiple-receivers";
+        String Clustered = "messaging-clustered";
 
         interface Protocol {
             /** This is for router implementations of APSMessageService to be able to delegate to provider of correct protocol. */
@@ -108,7 +118,17 @@ public interface APS {
                 String Filesystem = "filesystem";
                 String Time = "time";
                 String Messaging = "messaging";
+                String Storage = "storage";
             }
+
+            interface PersistenceScope {
+                String None = "none";
+                String Session = "session";
+                String Clustered = "clustered";
+                String ClusteredSession = "clustered-session";
+                String Permanent = "permanent";
+            }
+
         }
 
         interface Messaging {

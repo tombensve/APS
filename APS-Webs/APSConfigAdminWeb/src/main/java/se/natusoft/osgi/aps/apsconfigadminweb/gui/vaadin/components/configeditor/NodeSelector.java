@@ -45,8 +45,8 @@ import se.natusoft.osgi.aps.api.core.configold.model.admin.APSConfigEditModel;
 import se.natusoft.osgi.aps.api.core.configold.model.admin.APSConfigReference;
 import se.natusoft.osgi.aps.api.core.configold.model.admin.APSConfigValueEditModel;
 import se.natusoft.osgi.aps.apsconfigadminweb.gui.vaadin.css.CSS;
-import se.natusoft.osgi.aps.tools.models.ID;
-import se.natusoft.osgi.aps.tools.models.IntID;
+import se.natusoft.osgi.aps.model.ID;
+import se.natusoft.osgi.aps.model.IntID;
 import se.natusoft.osgi.aps.tools.web.vaadin.models.HierarchicalModel;
 
 import java.util.LinkedList;

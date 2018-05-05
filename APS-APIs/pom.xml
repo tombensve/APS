@@ -71,59 +71,57 @@
         <!-- The bundle packages to export. -->
         <osgi.export.package>
             se.natusoft.osgi.aps.annotations;version="${project.version}",
-            se.natusoft.osgi.aps.exceptions;version="${project.version}",
             se.natusoft.osgi.aps.api;version="${project.version}",
             se.natusoft.osgi.aps.api.auth.user;version="${project.version}",
             se.natusoft.osgi.aps.api.auth.user.exceptions;version="${project.version}",
             se.natusoft.osgi.aps.api.auth.user.model;version="${project.version}",
             se.natusoft.osgi.aps.api.core;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.platform.service;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.platform.model;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.platform.service;version="${project.version}",
             se.natusoft.osgi.aps.api.core.config;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.config.model;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.config.service;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.config.util;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.content;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.content.service;version="${project.version}",
             se.natusoft.osgi.aps.api.core.filesystem;version="${project.version}",
             se.natusoft.osgi.aps.api.core.filesystem.model;version="${project.version}",
             se.natusoft.osgi.aps.api.core.filesystem.service;version="${project.version}",
             se.natusoft.osgi.aps.api.core.meta;version="${project.version}",
+            se.natusoft.osgi.aps.api.core.platform;version="${project.version}",
+            se.natusoft.osgi.aps.api.core.platform.model;version="${project.version}",
+            se.natusoft.osgi.aps.api.core.platform.service;version="${project.version}",
+            se.natusoft.osgi.aps.api.core.store;version="${project.version}",
+            se.natusoft.osgi.aps.api.data;version="${project.version}",
+            se.natusoft.osgi.aps.api.data.jdbc;version="${project.version}",
             se.natusoft.osgi.aps.api.data.jdbc.model;version="${project.version}",
             se.natusoft.osgi.aps.api.data.jdbc.service;version="${project.version}",
-            se.natusoft.osgi.aps.api.data.jpa.service;version="${project.version}",
+
+            se.natusoft.osgi.aps.api.external;version="${project.version}",
             se.natusoft.osgi.aps.api.external.extprotocolsvc;version="${project.version}",
             se.natusoft.osgi.aps.api.external.extprotocolsvc.model;version="${project.version}",
             se.natusoft.osgi.aps.api.external.model.type;version="${project.version}",
-            se.natusoft.osgi.aps.api.general;version="${project.version}",
+
+            se.natusoft.osgi.aps.api.messaging;version="${project.version}",
+            se.natusoft.osgi.aps.api.misc;version="${project.version}",
             se.natusoft.osgi.aps.api.misc.json;version="${project.version}",
-            se.natusoft.osgi.aps.api.misc.json.service;version="${project.version}",
             se.natusoft.osgi.aps.api.misc.json.model;version="${project.version}",
+            se.natusoft.osgi.aps.api.misc.json.service;version="${project.version}",
             se.natusoft.osgi.aps.api.misc.queue;version="${project.version}",
             se.natusoft.osgi.aps.api.misc.session;version="${project.version}",
-            se.natusoft.osgi.aps.api.misc.time;version="${project.version}",
-            se.natusoft.osgi.aps.model;version="${project.version}",
-            se.natusoft.osgi.aps.api.model.json;version="${project.version}",
             se.natusoft.osgi.aps.api.net;version="${project.version}",
-            se.natusoft.osgi.aps.api.net.communication;version="${project.version}",
-            se.natusoft.osgi.aps.api.net.discovery.exception;version="${project.version}",
             se.natusoft.osgi.aps.api.net.discovery;version="${project.version}",
+            se.natusoft.osgi.aps.api.net.discovery.exception;version="${project.version}",
             se.natusoft.osgi.aps.api.net.discovery.service;version="${project.version}",
+
+            se.natusoft.osgi.aps.api.net.rpc;version="${project.version}",
+            se.natusoft.osgi.aps.api.net.rpc.annotations;version="${project.version}",
             se.natusoft.osgi.aps.api.net.rpc.errors;version="${project.version}",
+            se.natusoft.osgi.aps.api.net.rpc.exceptions;version="${project.version}",
             se.natusoft.osgi.aps.api.net.rpc.model;version="${project.version}",
             se.natusoft.osgi.aps.api.net.rpc.service;version="${project.version}",
-            se.natusoft.osgi.aps.api.net.rpc.exceptions;version="${project.version}",
-            se.natusoft.osgi.aps.api.net.groups.service;version="${project.version}",
-            se.natusoft.osgi.aps.api.net.time.service;version="${project.version}",
+
             se.natusoft.osgi.aps.api.net.tcpip;version="${project.version}",
+
             se.natusoft.osgi.aps.api.net.util;version="${project.version}",
-            se.natusoft.osgi.aps.api.messaging;version="${project.version}",
-            se.natusoft.osgi.aps.api.reactive;version="${project.version}",
             se.natusoft.osgi.aps.api.util;version="${project.version}",
             se.natusoft.osgi.aps.api.web.config;version="${project.version}",
             se.natusoft.osgi.aps.constants;version="${project.version}",
-            se.natusoft.osgi.aps.util;version="${project.version}"
+            se.natusoft.osgi.aps.exceptions;version="${project.version}",
+            se.natusoft.osgi.aps.model;version="${project.version}"
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->
@@ -135,18 +133,6 @@
 
         <!-- The packages to export from dependent & embeded jars -->
         <osgi.export.dependency.package>
-            <!--
-            javax.jcr,
-            javax.jcr.lock,
-            javax.jcr.nodetype,
-            javax.jcr.observation,
-            javax.jcr.query,
-            javax.jcr.query.qom,
-            javax.jcr.retention,
-            javax.jcr.security,
-            javax.jcr.util,
-            javax.jcr.version
-            -->
         </osgi.export.dependency.package>
 
         <!-- Resources to include -->
@@ -173,9 +159,6 @@
     </properties>
 
     <dependencies>
-        <!--
-            Became increasingly difficult to avoid ...
-        -->
         <dependency>
             <artifactId>aps-tools-lib</artifactId>
             <groupId>se.natusoft.osgi.aps</groupId>
@@ -187,11 +170,6 @@
             <scope>compile</scope>
         </dependency>
 
-        <!--dependency>
-            <groupId>javax.jcr</groupId>
-            <artifactId>jcr</artifactId>
-            <version>2.0</version>
-        </dependency-->
     </dependencies>
 
     <build>

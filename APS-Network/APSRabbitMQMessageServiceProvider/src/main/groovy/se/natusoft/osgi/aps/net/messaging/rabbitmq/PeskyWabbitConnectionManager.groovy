@@ -8,7 +8,7 @@ import se.natusoft.osgi.aps.net.messaging.config.Config
 
 /**
  * Manages the RabbitMQ connection.
- */
+ **/
 @CompileStatic
 @TypeChecked
 class PeskyWabbitConnectionManager {
@@ -50,7 +50,7 @@ class PeskyWabbitConnectionManager {
                 connectionFactory.virtualHost = Config.config.virtualHost as String
             }
 
-            if ( (Config.config.timeout as int) > 0 ) {
+            if ( ( Config.config.timeout as int ) > 0 ) {
                 connectionFactory.connectionTimeout = Config.config.timeout as int
             }
         }
@@ -64,7 +64,8 @@ class PeskyWabbitConnectionManager {
                     try {
                         this.connection.close()
                     }
-                    catch ( IOException ignored ) { /* It has already failed and that failure is handled below. */
+                    catch ( IOException ignored ) {
+                        /* It has already failed and that failure is handled below. */
                     }
                 }
                 throw new IOException( "Failed to ensure connection to RabbitMQ due to instanceChannel create failure!", ioe )
@@ -76,7 +77,7 @@ class PeskyWabbitConnectionManager {
 
     /**
      * Closes the connection if not closed already.
-     */
+     **/
     synchronized String ensureConnectionClosed() throws IOException {
 
         if ( this.connection != null ) {
@@ -96,8 +97,8 @@ class PeskyWabbitConnectionManager {
 
     /**
      * Closes connection and then creates a new again.
-     */
-    @SuppressWarnings("GroovyUnusedDeclaration")
+     **/
+    @SuppressWarnings( "GroovyUnusedDeclaration" )
     synchronized void reconnect() throws IOException {
         ensureConnectionClosed()
         ensureConnection()

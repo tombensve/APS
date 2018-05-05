@@ -2,8 +2,8 @@ package se.natusoft.osgi.aps.core.lib
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.reactive.APSHandler
-import se.natusoft.osgi.aps.api.util.APSObject
+import se.natusoft.osgi.aps.model.APSHandler
+import se.natusoft.osgi.aps.model.APSObject
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 
 /**
@@ -30,26 +30,20 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *         assert structMap.lookup( "reply.webs.[0].name") == "ConfigAdmin"
  *         assert structMap.lookup( "reply.webs.[1].name") == "RemoteServicesAdmin"
  *         assert structMap.lookup( "reply.webs.[1].url") == "https://localhost:8080/aps/RemoteSvcAdmin"
+ *         assert structMap.lookup( "reply.webs.[*]" ) == 2
  *
  * Note that the values are API-wise of type Object! This is because it can be anything, like a String, Map,
  * List, Number (if you stick to JSON formats) or any other type of value you put in there.
  *
  * Also note the indexes in the paths in the example. It is not "webs[0]" but "webs.[0]"! The index is a
  * reference name in itself. The paths returned by getStructPaths() have a number between the '[' and the ']' for
- * List entries. This number is the number of entries in the list. The StructPath class (used by this class)
- * can be used to provide array size of an array value.
+ * List entries. An index of [*] and nothing more after that will return the number of entries in that list
+ * as an int.
  */
 @SuppressWarnings("SpellCheckingInspection")
 @CompileStatic
 @TypeChecked
-class StructMap implements Map<String, Object> {
-
-    //
-    // Properties
-    //
-
-    @Delegate
-    Map<String, Object> map = [ : ]
+class StructMap extends LinkedHashMap implements Map<String, Object> {
 
     //
     // Constructors
@@ -67,7 +61,7 @@ class StructMap implements Map<String, Object> {
      * @param map The map to work with.
      */
     StructMap( Map<String, Object> map ) {
-        this.map.putAll( map )
+        this.putAll( map )
     }
 
     //
@@ -81,7 +75,7 @@ class StructMap implements Map<String, Object> {
      */
     void withStructPath( APSHandler<String> keyHandler ) {
 
-        findPaths( this.map, new StructPath(), keyHandler )
+        findPaths( this, new StructPath(), keyHandler )
     }
 
     /**
@@ -136,7 +130,7 @@ class StructMap implements Map<String, Object> {
      * @param structPath The structPath to lookup.
      * @oaramn result Called with value found at path.
      */
-    void lookup( String structPath, APSHandler<Object> result ) {
+    void lookupr( String structPath, APSHandler<Object> result ) {
 
         result.handle( lookup( structPath ) )
     }
@@ -144,31 +138,26 @@ class StructMap implements Map<String, Object> {
     /**
      * Looks up the value of a specified stuctured path.
      *
+     * A path ending in [*] will return the number of entries in the array.
+     *
      * @param structPath The structured path to lookup.
      *
      * @return The value found at the path.
      */
     Object lookup( String structPath ) {
-        Object current = this.map
+        Object current = this
 
         for ( String part : structPath.split( "\\." ) ) {
 
-            // Vertx delivers a JsonObject implementing Iterable<Map.Entry<String, Object>>.
-            if ( current instanceof Iterable<Map.Entry<String, Object>> ) {
+            if ( Map.class.isAssignableFrom( current.class ) ) {
 
-//                for ( Map.Entry<String, Object> entry : (Iterable<Map.Entry<String, Object>>) current ) {
-//
-//                    if ( part == entry.key ) {
-//
-//                        current = entry.value
-//
-//                        break
-//                    }
-//                }
-            }
-            else if ( Map.class.isAssignableFrom( current.class ) ) {
-
-                current = ( current as Map ).get( part )
+                Object next = ( current as Map ).get( part )
+                if (next != null) {
+                    current = next
+                }
+                else {
+                    throw new APSValidationException("Bad path [${structPath}]! Failed on '${part}'")
+                }
             }
             else if ( List.class.isAssignableFrom( current.class ) ) {
 
@@ -176,8 +165,17 @@ class StructMap implements Map<String, Object> {
                     throw new APSValidationException( "Expected a list index here, got: '${part}'" )
                 }
 
-                int index = Integer.valueOf( part.replace( "[", "" ).replace( "]", "" ) )
-                current = ( current as List ).get( index )
+                String ixStr = part.replace( "[", "" ).replace( "]", "" )
+
+                // Index '*' means number of entries in the list. In this case anything below this is
+                // ignored, so we return with the size immediately.
+                if ( ixStr == "*" ) {
+                    return ( current as List ).size()
+                }
+                else {
+                    int index = Integer.valueOf( ixStr )
+                    current = ( current as List ).get( index )
+                }
             }
         }
 
@@ -202,10 +200,13 @@ class StructMap implements Map<String, Object> {
      * @param value The value.
      */
     void provide( String structPath, Object value ) {
+        if ( value instanceof APSObject ) {
+            value = value.content()
+        }
 
         // Yeah, I know. This is not a wonder of clarity!!
 
-        Object current = this.map
+        Object current = this
 
         String[] parts = structPath.split( "\\." )
 
@@ -280,7 +281,7 @@ class StructMap implements Map<String, Object> {
             }
         }
         else {
-            this.map.put( structPath, value )
+            this.put( structPath, value )
         }
     }
 }

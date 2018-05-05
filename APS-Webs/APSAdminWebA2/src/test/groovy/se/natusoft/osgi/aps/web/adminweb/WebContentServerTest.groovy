@@ -29,7 +29,7 @@ class WebContentServerTest extends OSGIServiceTestTools {
         // NOTE: You can move these 3 deploys in any order, and it will still work!
 
         // We deploy this service not to test it, but to add one more client to VertxProvider and verify
-        // that it can handle more than one. It didn't at first :-).
+        // that it can failure more than one. It didn't at first :-).
         deploy 'web-content-server' with new APSActivator() using '/se/natusoft/osgi/aps/web/adminweb/WebContentServer.class'
 
         deploy 'sockJS-event-bus-bridge' with new APSActivator() using '/se/natusoft/osgi/aps/web/adminweb/SockJSEventBusBridge.class'

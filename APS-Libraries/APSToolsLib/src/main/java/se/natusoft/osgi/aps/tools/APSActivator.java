@@ -1012,10 +1012,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param field        The field to inject into.
      * @param managedClass Used to lookup or create an instance of this class to inject into.
      * @param context      The bundle context.
-     * @return A Map of special handling objects keyed on class.
+     * @return A Map of special handling objects keyed on class. Currently APSActivatorInteraction.
      */
     protected Map<Class, Object> doInstanceInjection(Field field, Class managedClass, BundleContext context) {
-        Map<Class, Object> result = new HashMap<>();
+        Map<Class, Object> result = new LinkedHashMap<>();
 
         Managed managed = field.getAnnotation(Managed.class);
         if (managed != null) {
@@ -1576,8 +1576,25 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
          * @param state   The state to set handler for.
          * @param handler The handler to set.
          */
+        @Override
         public void setStateHandler(State state, Runnable handler) {
             this.stateHandlers.put(state, handler);
+        }
+
+        /**
+         * Registers the _managedClass_ as an OSGi service.
+         *
+         * @param managedClass The class of the managed instance.
+         * @param context      The bundle context.
+         * @param serviceRegs  The registrations of all instances will be returned in this list.
+         */
+        @Override
+        public void registerService(final Class managedClass, final BundleContext context, List<ServiceRegistration> serviceRegs) {
+            try {
+                registerServiceInstances(managedClass, context, serviceRegs);
+            } catch (Exception e) {
+                throw new APSActivatorException(e.getMessage(), e);
+            }
         }
     }
 
@@ -1622,34 +1639,34 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         @Override
         public void run() {
             try {
-                collectInjecteeAndServiceInstancesToManage(entryClass);
+                collectInjecteeAndServiceInstancesToManage(this.entryClass);
 
                 // Remember: The problem with the original thought about having OSGi services as plugins does
                 // not work due to that a wanted plugin service might not have been deployed before this bundle!
                 ServiceLoader<APSActivatorPlugin> pluginLoader = ServiceLoader.load(APSActivatorPlugin.class);
                 try {
                     for (APSActivatorPlugin apsActivatorPlugin : pluginLoader) {
-                        apsActivatorPlugin.analyseBundleClass(APSActivator.this, entryClass);
+                        apsActivatorPlugin.analyseBundleClass(APSActivator.this, this.entryClass);
                     }
                 } catch (Exception e) {
                     APSActivator.this.activatorLogger.error("Failed executing a plugin!", e);
                 }
 
-                Map<Class, Object> res = doFieldInjectionsIntoManagedInstances(entryClass, context);
-                scheduleTasks(entryClass);
+                Map<Class, Object> res = doFieldInjectionsIntoManagedInstances(this.entryClass, this.context);
+                scheduleTasks(this.entryClass);
 
                 if (res.containsKey(APSActivatorInteraction.class)) {
                     Interaction interaction = (Interaction) res.get(APSActivatorInteraction.class);
                     interaction.setStateHandler(
                             APSActivatorInteraction.State.READY,
-                            new DelayedSvcRegInteractionStateHandler(entryClass, context)
+                            new DelayedSvcRegInteractionStateHandler(this.entryClass, this.context)
                     );
                 } else {
-                    doServiceRegistrationsOfManagedServiceInstances(entryClass, context);
+                    doServiceRegistrationsOfManagedServiceInstances(this.entryClass, context);
                 }
-                handleMethodInvocationsOnManagedInstances(entryClass, context, initMethods);
+                handleMethodInvocationsOnManagedInstances(this.entryClass, this.context, this.initMethods);
             } catch (Exception e) {
-                activatorLogger.error("Failed to execute PerClassWorkRunnable!", e);
+                APSActivator.this.activatorLogger.error("Failed to execute PerClassWorkRunnable!", e);
             }
         }
     }

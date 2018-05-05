@@ -1,50 +1,50 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Vaadin Web Tools
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         This provides some utility classes for web applications.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2012-03-07: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.tools.web.vaadin.models;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.util.HierarchicalContainer;
-import se.natusoft.osgi.aps.tools.models.ID;
+import se.natusoft.osgi.aps.model.ID;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This is a wrapping of Vaadins HierarchicalContainer. 
+ * This is a wrapping of Vaadins HierarchicalContainer.
  *
  * The reason for this is that I want to be able to associate a set of specific data with each item. For a Tree you
  * can use item properties, but that is more of a side-effect than intentional usage. It will work less well with a
@@ -60,25 +60,25 @@ public class HierarchicalModel<Data> {
     //
     // Private Members
     //
-    
+
     /** The next item id to use. */
     private ID itemId = null;
-    
+
     /** Associates a data object with each item. */
     private Map<ID, Data> itemDataMap = new HashMap<>();
-    
+
     /** The HierarchicalContainer we will be building. */
     private HierarchicalContainer container = new HierarchicalContainer();
-    
+
     /** The field captions. */
     private String[] captionProperties = null;
-    
+
     //
     // Constructors
     //
 
     /**
-     * Creates a new HierarchicalModel. 
+     * Creates a new HierarchicalModel.
      *
      * @param idProvider An ID implementation providing IDs.
      * @param captionProperties container captions.
@@ -98,15 +98,15 @@ public class HierarchicalModel<Data> {
      */
     public HierarchicalModel(ID idProvider) {
         this(idProvider, getDefaultCaption());
-    }                
-    
+    }
+
     //
     // Methods
     //
 
     /**
      * If the no arg constructor is used the caption property is made up, and this will return it.
-     * 
+     *
      * @return The made up caption property.
      */
     public static String getDefaultCaption() {
@@ -114,12 +114,12 @@ public class HierarchicalModel<Data> {
     }
 
     /**
-     * Adds an item to the model. 
-     * 
+     * Adds an item to the model.
+     *
      * @param parent If non null this should be the item id of the parent of the item added.
      * @param data The data to associate with the item.
      * @param captions Caption values for the caption properties.
-     *                 
+     *
      * @return The item id of the added item.
      */
     @SuppressWarnings("unchecked")
@@ -133,7 +133,7 @@ public class HierarchicalModel<Data> {
                 item.getItemProperty(this.captionProperties[i]).setValue(captions[i]);
             }
         }
-        
+
         this.itemDataMap.put(this.itemId, data);
 
         if (parent != null) {
@@ -174,7 +174,7 @@ public class HierarchicalModel<Data> {
     public ID getCurrentItemId() {
         return this.itemId;
     }
-    
+
     /**
      * Returns the HierarchicalContainer that we have built so far.
      * <p/>

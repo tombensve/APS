@@ -62,8 +62,8 @@ public class JavaToJSON {
      *
      * @throws JSONConvertionException on converting failure.
      */
-    public static JSONObjectProvider convertObject(Object javaBean) throws JSONConvertionException {
-        return convertObject(new JSONObjectProvider(), javaBean);
+    public static JSONObject convertObject(Object javaBean) throws JSONConvertionException {
+        return convertObject(new JSONObject(), javaBean);
     }
 
     /**
@@ -76,11 +76,11 @@ public class JavaToJSON {
      *
      * @throws JSONConvertionException on converting failure.
      */
-    public static JSONObjectProvider convertObject(JSONObjectProvider jsonObject, Object javaBean) throws JSONConvertionException {
+    public static JSONObject convertObject(JSONObject jsonObject, Object javaBean) throws JSONConvertionException {
         try {
-            JSONObjectProvider obj = jsonObject;
+            JSONObject obj = jsonObject;
             if (obj == null) {
-                obj = new JSONObjectProvider();
+                obj = new JSONObject();
             }
 
             if (Dictionary.class.isAssignableFrom(javaBean.getClass())) {
@@ -88,7 +88,7 @@ public class JavaToJSON {
                 while (dictEnum.hasMoreElements()) {
                     Object key = dictEnum.nextElement();
                     String value = ((Dictionary) javaBean).get(key).toString();
-                    obj.setValue(key.toString(), new JSONStringProvider(value));
+                    obj.setValue(key.toString(), new JSONString(value));
                 }
             } else if (Map.class.isAssignableFrom(javaBean.getClass())) {
                 for (Object key : ((Map) javaBean).keySet()) {
@@ -147,14 +147,14 @@ public class JavaToJSON {
      *
      * @return The converted JSONValue.
      */
-    public static JSONValueProvider convertValue(Object value) {
-        JSONValueProvider json;
+    public static JSONValue convertValue(Object value) {
+        JSONValue json;
 
         if (value == null) {
-            json = new JSONNullProvider();
+            json = new JSONNull();
         }
         else if (Date.class.isAssignableFrom(value.getClass()) || Calendar.class.isAssignableFrom(value.getClass()) || Temporal.class.isAssignableFrom(value.getClass())) {
-            json = new JSONStringProvider(value.toString());
+            json = new JSONString(value.toString());
         }
         else if (
                 Number.class.isAssignableFrom(value.getClass()) ||
@@ -165,19 +165,19 @@ public class JavaToJSON {
                 long.class.isAssignableFrom(value.getClass()) ||
                 short.class.isAssignableFrom(value.getClass())
                 ) {
-            json = new JSONNumberProvider((Number)value);
+            json = new JSONNumber((Number)value);
         }
         else if (String.class.isAssignableFrom(value.getClass())) {
-            json = new JSONStringProvider((String)value);
+            json = new JSONString((String)value);
         }
         else if (boolean.class.isAssignableFrom(value.getClass()) || Boolean.class.isAssignableFrom(value.getClass())) {
-            json = new JSONBooleanProvider((Boolean)value);
+            json = new JSONBoolean((Boolean)value);
         }
         else if (Date.class.isAssignableFrom(value.getClass())) {
-            json = new JSONNumberProvider(((Date)value).getTime());
+            json = new JSONNumber(((Date)value).getTime());
         }
         else if (value.getClass().isArray()) {
-            JSONArrayProvider array = new JSONArrayProvider();
+            JSONArray array = new JSONArray();
             int length = Array.getLength(value);
             for (int i = 0; i < length; i++) {
                 Object aValue = Array.get(value, i);
@@ -186,14 +186,14 @@ public class JavaToJSON {
             json = array;
         }
         else if (Collection.class.isAssignableFrom(value.getClass())) {
-            JSONArrayProvider array = new JSONArrayProvider();
+            JSONArray array = new JSONArray();
             for (Object cValue : (Collection)value) {
                 array.addValue(convertValue(cValue));
             }
             json = array;
         }
         else if (value.getClass().isEnum()) {
-            json = new JSONStringProvider(((Enum)value).name());
+            json = new JSONString(((Enum)value).name());
         }
         else { // Treat as object
             json = convertObject(value);

@@ -1,7 +1,5 @@
 package se.natusoft.osgi.aps.api.misc.json.model;
 
-import se.natusoft.osgi.aps.api.util.APSMapJsonDelegator;
-
 import java.util.Map;
 
 /**

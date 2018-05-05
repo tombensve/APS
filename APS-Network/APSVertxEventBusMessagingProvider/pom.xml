@@ -130,6 +130,15 @@
             <artifactId>aps-tools-lib</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-json-lib</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.annotation</groupId>
+            <artifactId>docutations</artifactId>
+        </dependency>
 
         <!-- Unfortunately needed since IDEA can't see the mixin and keep removing groovy if added manually in IDEA. -->
         <dependency>
@@ -143,13 +152,6 @@
         <!--
             APSVerxMessagingProvider dependencies
         -->
-
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-vertx-provider</artifactId>
-            <version>1.0.0</version>
-            <scope>provided</scope>
-        </dependency>
 
         <dependency>
             <groupId>io.vertx</groupId>
@@ -167,6 +169,12 @@
         <!--
             Test
         -->
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-vertx-provider</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-osgi-test-tools</artifactId>

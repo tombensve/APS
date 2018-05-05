@@ -12,13 +12,13 @@ import se.natusoft.docutations.Issue
 import se.natusoft.docutations.NotUsed
 import se.natusoft.osgi.aps.api.core.platform.model.NodeInfo
 import se.natusoft.osgi.aps.api.core.platform.service.APSNodeInfoService
-import se.natusoft.osgi.aps.api.reactive.APSValue
-import se.natusoft.osgi.aps.api.reactive.APSHandler
+import se.natusoft.osgi.aps.model.APSValue
+import se.natusoft.osgi.aps.model.APSHandler
 import se.natusoft.osgi.aps.core.lib.DelayedExecutionHandler
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.APSServiceTracker
 import se.natusoft.osgi.aps.tools.annotation.activator.*
-import se.natusoft.osgi.aps.tools.models.UUID
+import se.natusoft.osgi.aps.model.APSUUID
 
 /**
  * Provides an implementation of the APSPlatformService.
@@ -48,14 +48,15 @@ class APSNodeInfoServiceProvider implements APSNodeInfoService {
     @Managed(loggingFor = "aps-node-info:provider")
     private APSLogger logger
 
+    // TODO: I strongly suspect that this will work as a wrapped servcie and nonBlocking = true.
     @OSGiService(additionalSearchCriteria = "(vertx-object=Vertx)", timeout = "forever")
     private APSServiceTracker<Vertx> vertxTracker
 
     private NodeInfo localNode = new NodeInfo()
             .setLocalNode( true )
             .setMaster( false )
-            .setAddress( System.getProperty( "aps-node-address", new UUID().toString() ) )
-            .setName( System.getProperty( "aps-node-id", new UUID().toString() ) )
+            .setAddress( System.getProperty( "aps-node-address", new APSUUID().toString() ) )
+            .setName( System.getProperty( "aps-node-id", new APSUUID().toString() ) )
             .setPurpose( System.getProperty( "aps-node-purpose", "development" ) )
             .setDescription( System.getProperty( "aps-node-description", "No descriptoin provided!" ) )
 
@@ -285,9 +286,9 @@ class APSNodeInfoServiceProvider implements APSNodeInfoService {
     }
 
     private void fightForThrone() {
-        vertx.sharedData().getLock( "aps-node-mgr" ) { AsyncResult<Lock> lres ->
+        vertx.sharedData().getLock( "aps-node-info-service" ) { AsyncResult<Lock> lres ->
 
-            vertx.sharedData().getClusterWideMap( "aps-node-mgr" ) { AsyncResult<AsyncMap<String, Object>> mres ->
+            vertx.sharedData().getClusterWideMap( "aps-node-info-service" ) { AsyncResult<AsyncMap<String, Object>> mres ->
 
                 mres.result().get( "master" ) { AsyncResult<Object> gres ->
 

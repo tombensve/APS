@@ -45,6 +45,7 @@ class StructPath {
      *
      * @param mapPath The MapPath to copy.
      */
+    @SuppressWarnings("GroovyUnusedDeclaration")
     StructPath( StructPath mapPath ) {
         this.path = mapPath.path
     }
@@ -102,6 +103,7 @@ class StructPath {
     /**
      * @return The size of the array if the right entry is an array. Otherwise -1 is returned.
      */
+    @SuppressWarnings("GroovyUnusedDeclaration")
     int rightArraySize() {
         int size = -1
         if (isRightArray()) {
@@ -113,6 +115,7 @@ class StructPath {
     /**
      * @return true if at root, false otherwise.
      */
+    @SuppressWarnings("GroovyUnusedDeclaration")
     boolean isAtRoot() {
         return this.path.size() == 1
     }
@@ -128,6 +131,7 @@ class StructPath {
     /**
      * @return the path as its parts.
      */
+    @SuppressWarnings("GroovyUnusedDeclaration")
     List<String> toParts() {
 
         List<String> list = new LinkedList()

@@ -77,13 +77,13 @@ public interface APSJPAService {
     /**
      * Once you get this it is valid until the _APSJPAService_ is stopped (which will happen if the service is redeployed!).
      */
-    public static interface APSJPAEntityManagerProvider {
+    interface APSJPAEntityManagerProvider {
 
         /**
          * Returns true if this instance is valid. If not call APSJPAService.initialize(...) again to get a new instance.
          * It will be invalid if the APSJPAService provider have been restarted.
          */
-        public boolean isValid();
+        boolean isValid();
 
         /**
          * Creates a new _EntityManager_. You are responsible for closing it!

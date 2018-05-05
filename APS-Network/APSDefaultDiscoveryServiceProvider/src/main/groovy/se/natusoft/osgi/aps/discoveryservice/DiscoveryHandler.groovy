@@ -6,7 +6,7 @@ import se.natusoft.docutations.Implements
 import se.natusoft.osgi.aps.api.core.configold.event.APSConfigChangedEvent
 import se.natusoft.osgi.aps.api.core.configold.event.APSConfigChangedListener
 import se.natusoft.osgi.aps.api.core.configold.model.APSConfigValue
-import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler
+import se.natusoft.osgi.aps.json.JSONErrorHandler
 import se.natusoft.osgi.aps.api.misc.json.model.JSONObject
 import se.natusoft.osgi.aps.api.misc.json.model.JSONValue
 import se.natusoft.osgi.aps.api.misc.json.service.APSJSONService

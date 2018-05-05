@@ -1,6 +1,6 @@
 package se.natusoft.osgi.aps.json.tools;
 
-import se.natusoft.osgi.aps.api.misc.json.JSONErrorHandler;
+import se.natusoft.osgi.aps.json.JSONErrorHandler;
 import se.natusoft.osgi.aps.exceptions.APSIOException;
 
 import java.io.PrintWriter;

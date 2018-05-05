@@ -1,41 +1,61 @@
 package se.natusoft.osgi.aps.api.core.config;
 
-import java.util.List;
+import se.natusoft.osgi.aps.model.APSHandler;
+
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * This represents a JSON configuration using Map & List to represent a JSON Object and JSON Array.
+ *
+ * "Struct path"s are paths that are separated by dots ('.') where the first part is a key in a Map
+ * and the part after the dot is a key in the object returned for the first key, and so on. For List
+ * objects and index in the form of '.[i].'. Note that the index is a path "part" in itself.
+ *
+ * Maps are used to represent JSON structure and the "Struct path"s are just a way to provide a
+ * reference to values within the structure.
+ *
+ * There is a "StructMap" class in aps-core-lib that can be used to failure these "struct path"s
+ * in implementations. Also if you make a "struct path" reference to a Map and not a end value
+ * then this result can be wrapped with a StructMap and from there be accessed just like the
+ * lookup path, but relative to this map.
  */
+@SuppressWarnings("unused")
 public interface APSConfig extends Map<String, Object> {
+
+    /** Cluster event address to use for config events. */
+    String CONFIG_EVENT_DESTINATION = "aps.config.events";
 
     /**
      * Calls the provided handler for each value path in the map.
      *
+     * This provides paths to all values available in the structure.
+     *
      * @param pathHandler The handler to call with value paths.
      */
-    void withStructPath(Consumer<String> pathHandler);
-
-
-    /**
-     * Returns all struct paths as a List.
-     */
-    @SuppressWarnings("GroovyUnusedDeclaration")
-    List<String> getStructPaths();
+    void withStructPath(APSHandler<String> pathHandler);
 
     /**
-     * Looks up the value of a specified struct Path.
+     * Looks up the value of a specified struct Path. Null or blank will return the whole root config Map.
      *
      * @param structPath The structPath to lookup.
+     * @param valueHandler The handler receiving the looked up value.
+     */
+    void lookupr( String structPath, APSHandler<Object> valueHandler);
+
+    /**
+     * Returns the value at the specified struct path.
      *
-     * @return The value or null.
+     * @param structPath The struct path to lookup.
+     *
+     * @return value or null.
      */
     Object lookup(String structPath);
 
     /**
-     * This gets called when the configuration is available.
+     * provides a new value.
      *
-     * @param handler The handler to call when there is actual config data in the map.
+     * @param structPath The value path.
+     * @param value The value.
      */
-    void onConfigReady(Runnable handler);
+    void provide( String structPath, Object value );
 }
