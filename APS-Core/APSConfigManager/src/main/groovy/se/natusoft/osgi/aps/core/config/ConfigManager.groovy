@@ -89,6 +89,7 @@ class ConfigManager {
     void init() {
 
         this.messageSubscriber.subscribe( APSConfig.CONFIG_EVENT_DESTINATION, SUBSCRIBER_ID, (APSHandler)null ) {
+
             APSMessage<Map<String, Object>> message ->
 
                 Map<String, Object> content = message.content()
@@ -108,6 +109,7 @@ class ConfigManager {
                     }
                 }
                 else {
+
                     this.logger.error( "Got unexpected message type on '${APSConfig.CONFIG_EVENT_DESTINATION}': " +
                             "${content.messageType}!" )
                 }
@@ -120,7 +122,9 @@ class ConfigManager {
     void shutDown() {
 
         this.messageSubscriber.unsubscribe( SUBSCRIBER_ID ) { APSResult res ->
+
             if ( !res.success() ) {
+
                 this.logger.error( "Failed to unsubscribe for config messages!", res.failure() )
             }
         }
@@ -149,11 +153,10 @@ class ConfigManager {
     void addManagedConfig( @NotNull String configId, @NotNull Bundle owner, @NotNull String schemaPath,
                            @NotNull String defaultConfigPath ) {
 
-        this.logger.info( "@@@@@@@@ Managing config for ${owner.symbolicName}.${configId} @@@@@@@@" )
-
         try {
 
             APSConfiguration provider = new APSConfiguration(
+
                     logger: this.logger,
                     apsConfigId: configId,
                     fsService: this.fsService,
@@ -170,6 +173,7 @@ class ConfigManager {
                         // to local disk store. Each node needs a local copy of the cluster version. Whichever
                         // node is started first provides the original cluster version.
                         this.messagePublisher.publish(
+
                                 APSConfig.CONFIG_EVENT_DESTINATION,
                                 [
                                         messageType: "CONFIG_UPDATED",
@@ -250,6 +254,7 @@ class ConfigManager {
      * @param configId The id of the configuration to load.
      */
     private void loadClusterFromLocal( @NotNull String configId ) {
+
         String clusterKey = "aps.config.${configId}"
 
         APSConfiguration provider = this.providers[ configId ]
@@ -277,11 +282,13 @@ class ConfigManager {
      * @param onNoClusterConf A closure to call if there were no configuration in the cluster.
      */
     private void saveLocalFromCluster( @NotNull String configId, @Nullable Closure onNoClusterConf ) {
+
         String clusterKey = "aps.config.${configId}"
 
         APSConfiguration provider = this.providers[ configId ]
 
         this.dataStoreService.lock( clusterKey ) { APSResult<APSLockable.APSLock> lock ->
+
             if ( lock.success() ) {
 
                 this.dataStoreService.retrieve( clusterKey ) { APSResult<Map<String, Object>> res ->

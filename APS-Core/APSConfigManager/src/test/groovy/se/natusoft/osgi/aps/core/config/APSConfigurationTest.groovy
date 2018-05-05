@@ -25,13 +25,19 @@ class APSConfigurationTest extends OSGIServiceTestTools {
     @Test
     void testConfigProvider() throws Exception {
 
+        // Note that when testing you only need to deploy bundles that publishes services.
+        // Pure libraries (all packages exported) are available anyhow in the JUnit classpath
+        // since the OSGIServiceTestTools does not provide separate class loaders for each
+        // bundle. This is intentional. Otherwise the test OSGi container behaves as any
+        // OSGi container.
+
         deploy 'aps-vertx-provider' with new APSActivator() from(
                 'se.natusoft.osgi.aps',
                 'aps-vertx-provider',
                 '1.0.0'
         )
 
-        hold()  maxTime 2 unit TimeUnit.SECONDS go()
+        hold() maxTime 2 unit TimeUnit.SECONDS go()
 
         deploy 'aps-vertx-cluster-datastore-service-provider' with new APSActivator() from(
                 'se.natusoft.osgi.aps',
@@ -39,7 +45,6 @@ class APSConfigurationTest extends OSGIServiceTestTools {
                 '1.0.0'
         )
 
-        // TODO: Lös varför denna startar en Vertx instans till!
         deploy 'aps-vertx-event-bus-messaging-provider' with new APSActivator() from(
                 'se.natusoft.osgi.aps',
                 'aps-vertx-event-bus-messaging-provider',
@@ -66,7 +71,8 @@ class APSConfigurationTest extends OSGIServiceTestTools {
 
 @CompileStatic
 @TypeChecked
-class MoonWhaleService { // Inspired by a South Park episode ...
+class MoonWhaleService {
+    // Name inspired by a South Park episode ...
 
     @OSGiService( additionalSearchCriteria = "(apsConfigId=moon-whale-service-config)", nonBlocking = true )
     private APSServiceTracker<APSConfig> configTracker
@@ -90,11 +96,16 @@ class MoonWhaleService { // Inspired by a South Park episode ...
             this.config = config
 
             Object value = this.config.lookup( "moonWhales.count" )
-            this.logger.info( "++++++++ value: [${value} : ${value.getClass()}]" )
             assert value instanceof Number
             assert ( value as int ) == 22
 
             value = this.config.lookup( "local.relayWhales" )
+            assert value instanceof Number
+            assert ( value as int ) == 18
+
+            value = this.config.lookup( "local.translatorWhales" )
+            assert value instanceof Number
+            assert ( value as int ) == 5
 
             APSConfigurationTest.ok = true
         }

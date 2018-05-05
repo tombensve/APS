@@ -3,6 +3,7 @@ package se.natusoft.osgi.aps.core.config
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.osgi.framework.Bundle
+import se.natusoft.docutations.Implements
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
 import se.natusoft.osgi.aps.api.core.APSSerializableData
@@ -110,8 +111,6 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
      *         apsConfigId: "someId",
      *         ...
      *     ).init()
-     *
-     * @return
      */
     APSConfiguration init() {
         loadConfig()
@@ -132,6 +131,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
      *        call the handler.
      */
     @Override
+    @Implements( APSConfig.class )
     void lookupr( @NotNull String structPath, @NotNull APSHandler<Object> valueHandler ) {
 
         valueHandler.handle( lookup( structPath ) )
@@ -144,13 +144,22 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
      *
      * @return value or null.
      */
+    @Override
+    @Implements( APSConfig.class )
     Object lookup( String structPath ) {
+
         Object res = this
+
         if ( structPath != null && !structPath.isEmpty() ) {
+
             Object value = super.lookup( structPath )
+
             if ( value == null ) {
+
                 value = this.defaultConfig.lookup( structPath )
+
                 if ( value != null ) {
+
                     provide( structPath, value )
                     // No, we should not notify on this!
                 }
@@ -169,6 +178,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
      * @param value The value.
      */
     @Override
+    @Implements( APSConfig.class )
     void provide( @NotNull String structPath, @Nullable Object value ) {
 
         super.provide( structPath, value )
@@ -179,23 +189,30 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
     }
 
     /**
-     * Triggers a notification of config being updated on cluster bus.*/
+     * Triggers a notification of config being updated on cluster bus.
+     */
     @SuppressWarnings( "GroovyUnusedDeclaration" )
     void notifyUpdate() {
+
         this.syncNotifier.call()
     }
 
     /**
-     * Make sure we have a config dir in our filesystem. If not create it. this.configDir will be updated.*/
+     * Make sure we have a config dir in our filesystem. If not create it. this.configDir will be updated.
+     */
     private void setupConfigDir() {
+
         if ( this.configDir == null ) {
+
             APSFilesystem fs = this.fsService.getFilesystem( "aps-config-provider" )
+
             if ( fs == null ) {
 
                 fs = this.fsService.createFilesystem( "aps-config-provider" )
             }
 
             APSDirectory root = fs.getRootDirectory()
+
             if ( !root.exists( "configs" ) ) {
 
                 root.createDir( "configs" )
@@ -211,13 +228,20 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
      * @param config The config to validate.
      */
     private validateConfig( Map<String, Object> config ) {
+
         if ( this.configValidator != null ) {
+
             this.configValidator.validate( config )
+        }
+        else {
+
+            this.logger.warn( "Config '${this.apsConfigId}' has not schema to validate against!" )
         }
     }
 
     /**
-     * Loads a configuration.*/
+     * Loads a configuration.
+     */
     void loadConfig() {
 
         this.clear()
@@ -273,24 +297,25 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
             try {
 
                 StructMap loaded = new StructMap(
+
                         JSON.readJSONAsMap(
+
                                 this.configDir.getFile( "${this.apsConfigId}.json" ).createInputStream(),
                                 this.jsonErrorHandler
                         )
                 )
 
-                if ( configSchema != null ) {
-                    MapJsonDocSchemaValidator validator = new MapJsonDocSchemaValidator( validStructure: configSchema )
-                    validator.validate( loaded )
-                }
+                validateConfig( loaded )
 
                 clear()
                 putAll( loaded )
             }
             catch ( IOException ioe ) {
+
                 throw new APSIOException( "Failed to load configuration for bundle ${this.owner.symbolicName}!", ioe )
             }
             finally {
+
                 schemaStream.close()
             }
 
@@ -299,7 +324,9 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
         else {
             // Create from default
             clear()
+
             if ( this.defaultConfig != null ) {
+
                 putAll( this.defaultConfig )
                 validateConfig( this )
                 saveConfig()
@@ -308,19 +335,23 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
     }
 
     /**
-     * Saves current configuration.*/
+     * Saves current configuration.
+     */
     void saveConfig() {
 
         setupConfigDir()
 
         OutputStream os = this.configDir.getFile( "${apsConfigId}.json" ).createOutputStream()
         try {
+
             JSON.writeMapAsJSON( this, os )
         }
         catch ( IOException ioe ) {
+
             throw new APSIOException( "Failed to save configuration for bundle ${this.owner.symbolicName}!", ioe )
         }
         finally {
+
             os.close()
         }
     }
@@ -331,10 +362,10 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
     @Override
     Serializable toSerializable() {
 
-        Map<String, Object> serCont = [ : ]
-        serCont.putAll( this )
+        Map<String, Object> serializableContent = [ : ]
+        serializableContent.putAll( this )
 
-        serCont
+        serializableContent
     }
 
     /**
@@ -344,7 +375,8 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
      */
     @Override
     void fromDeserialized( Serializable serializable ) {
-        clear(  )
+
+        clear()
         putAll( serializable as Map<String, Object> )
     }
 
@@ -353,6 +385,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
      */
     @Override
     Class getSerializedType() {
+
         LinkedHashMap.class
     }
 }

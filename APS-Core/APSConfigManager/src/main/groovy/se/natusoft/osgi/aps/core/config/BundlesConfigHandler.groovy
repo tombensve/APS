@@ -27,7 +27,7 @@ import se.natusoft.osgi.aps.tools.annotation.activator.Managed
  */
 // Nothing other than APSActivator will be referencing this, and it does it via reflection. Thereby the IDE
 // cannot tell that this is actually used.
-@SuppressWarnings("GroovyUnusedDeclaration")
+@SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
 @TypeChecked
 class BundlesConfigHandler {
@@ -36,8 +36,9 @@ class BundlesConfigHandler {
     // Private Members
     //
 
-    @Managed(loggingFor = "aps-config-provider:bundle-config-handler")
-    @NotNull APSLogger logger
+    @Managed( loggingFor = "aps-config-provider:bundle-config-handler" )
+    @NotNull
+    APSLogger logger
 
     @Managed
     private ConfigManager configManager
@@ -53,10 +54,13 @@ class BundlesConfigHandler {
      */
     @BundleListener
     void handleEvent( @NotNull BundleEvent event ) {
+
         if ( event.type == BundleEvent.STARTED ) {
+
             handleNewBundle( event.bundle )
         }
         else if ( event.type == BundleEvent.STOPPED ) {
+
             handleLeavingBundle( event.bundle )
         }
     }
@@ -67,7 +71,8 @@ class BundlesConfigHandler {
      * @param bundle The new bundle to manage config for.
      */
     private void handleNewBundle( @NotNull Bundle bundle ) {
-        String configId = (String)bundle.getHeaders().get( "APS-Config-Id" )
+
+        String configId = (String) bundle.getHeaders().get( "APS-Config-Id" )
         if ( configId != null ) {
             this.logger.info( "Found bundle with configuration id: " + configId )
 
@@ -77,17 +82,20 @@ class BundlesConfigHandler {
 
             if ( schemaResourcePath != null ) {
                 try {
+
                     this.configManager.addManagedConfig( configId, bundle, schemaResourcePath, defaultResourcePath )
                 }
                 catch ( Exception e ) {
-                    this.logger.error( "Failed to load config from: ${schemaResourcePath} / ${defaultResourcePath} for bundle '${bundle.symbolicName}'!", e )
+
+                    this.logger.error( "Failed to load config from: ${schemaResourcePath} / ${defaultResourcePath} " +
+                            "for bundle '${bundle.symbolicName}'!", e )
                 }
             }
             else {
-                this.logger.error( "Bad bundle ('${bundle.symbolicName}')! Configuration with id '${configId}' is available, but no APS-Config-Schema found!" )
+                this.logger.error( "Bad bundle ('${bundle.symbolicName}')! Configuration with id '${configId}' is " +
+                        "available, but no APS-Config-Schema found!" )
             }
         }
-
     }
 
     /**
@@ -96,6 +104,7 @@ class BundlesConfigHandler {
      * @param bundle The leaving bundle.
      */
     private void handleLeavingBundle( @NotNull Bundle bundle ) {
+
         String configId = bundle.getHeaders().get( "APS-Config-Id" )
         this.configManager.removeManagedConfig( configId )
     }
