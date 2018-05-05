@@ -17,5 +17,7 @@ __[Apache Software License version 2.0](http://www.apache.org/licenses/LICENSE-2
 The following third party products are using this license:
 
 * [groovy-all-2.4.13](http://groovy-lang.org)
+* [vertx-core-3.4.2](http://www.apache.org/licenses/LICENSE-2.0.txt)
+* [vertx-auth-common-3.4.2](http://rubygems-proxy.torquebox.org/releases)
 
 <!-- CLM -->

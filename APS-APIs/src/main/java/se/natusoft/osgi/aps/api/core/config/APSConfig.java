@@ -23,7 +23,7 @@ import java.util.Map;
 public interface APSConfig extends Map<String, Object> {
 
     /** Cluster event address to use for config events. */
-    String CONFIG_EVENT_ADDRESS = "aps.config.events";
+    String CONFIG_EVENT_DESTINATION = "aps.config.events";
 
     /**
      * Calls the provided handler for each value path in the map.
@@ -40,7 +40,16 @@ public interface APSConfig extends Map<String, Object> {
      * @param structPath The structPath to lookup.
      * @param valueHandler The handler receiving the looked up value.
      */
-    void lookup(String structPath, APSHandler<Object> valueHandler);
+    void lookupr( String structPath, APSHandler<Object> valueHandler);
+
+    /**
+     * Returns the value at the specified struct path.
+     *
+     * @param structPath The struct path to lookup.
+     *
+     * @return value or null.
+     */
+    Object lookup(String structPath);
 
     /**
      * provides a new value.

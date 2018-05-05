@@ -4,7 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.osgi.framework.Bundle
 import org.osgi.framework.BundleEvent
-import se.natusoft.osgi.aps.json.JSONErrorHandler
+import se.natusoft.docutations.NotNull
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.BundleListener
 import se.natusoft.osgi.aps.tools.annotation.activator.Managed
@@ -37,19 +37,10 @@ class BundlesConfigHandler {
     //
 
     @Managed(loggingFor = "aps-config-provider:bundle-config-handler")
-    APSLogger logger
+    @NotNull APSLogger logger
 
     @Managed
     private ConfigManager configManager
-
-    private jsonErrorHandler = new JSONErrorHandler() {
-
-        @Override
-        void warning( String message ) { logger.warn( message ) }
-
-        @Override
-        void fail( String message, Throwable cause ) throws RuntimeException { logger.error( message, cause ) }
-    }
 
     //
     // Methods
@@ -61,7 +52,7 @@ class BundlesConfigHandler {
      * @param event A received bundle event.
      */
     @BundleListener
-    void handleEvent( BundleEvent event ) {
+    void handleEvent( @NotNull BundleEvent event ) {
         if ( event.type == BundleEvent.STARTED ) {
             handleNewBundle( event.bundle )
         }
@@ -75,23 +66,18 @@ class BundlesConfigHandler {
      *
      * @param bundle The new bundle to manage config for.
      */
-    private void handleNewBundle( Bundle bundle ) {
-        String configId = bundle.getHeaders().get( "APS-Config-Id" )
+    private void handleNewBundle( @NotNull Bundle bundle ) {
+        String configId = (String)bundle.getHeaders().get( "APS-Config-Id" )
         if ( configId != null ) {
             this.logger.info( "Found bundle with configuration id: " + configId )
 
-            String schemaResourcePath = bundle.headers.get( "APS-Config-Schema" )
+            String schemaResourcePath = bundle.headers.get( "APS-Config-Schema" ) as String
 
-            String defaultResourcePath = bundle.headers.get( "APS-Config-Default-Resource" )
+            String defaultResourcePath = bundle.headers.get( "APS-Config-Default-Resource" ) as String
 
             if ( schemaResourcePath != null ) {
                 try {
-                    // IDEA thinks that:
-                    //   configId is an Object, but it is a String.
-                    //   schemaResourcePath is an Object, but it is a String.
-                    //   defaultResourcePath is an Object, but it is a String.
-                    // Thereby the crazy casts.
-                    this.configManager.addManagedConfig( (String)configId, bundle, (String)schemaResourcePath, (String)defaultResourcePath )
+                    this.configManager.addManagedConfig( configId, bundle, schemaResourcePath, defaultResourcePath )
                 }
                 catch ( Exception e ) {
                     this.logger.error( "Failed to load config from: ${schemaResourcePath} / ${defaultResourcePath} for bundle '${bundle.symbolicName}'!", e )
@@ -109,7 +95,7 @@ class BundlesConfigHandler {
      *
      * @param bundle The leaving bundle.
      */
-    private void handleLeavingBundle( Bundle bundle ) {
+    private void handleLeavingBundle( @NotNull Bundle bundle ) {
         String configId = bundle.getHeaders().get( "APS-Config-Id" )
         this.configManager.removeManagedConfig( configId )
     }

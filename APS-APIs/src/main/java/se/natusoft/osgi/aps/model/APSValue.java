@@ -53,6 +53,7 @@ public interface APSValue<T> {
         /**
          * @return The held value.
          */
+        @Override
         @NotNull
         public T content() {
             return this.value;
@@ -63,7 +64,8 @@ public interface APSValue<T> {
          *
          * @param val The value to set.
          */
-        public void content(T val) {
+        @Override
+        public void content(@NotNull T val) {
             this.value = val;
         }
     }

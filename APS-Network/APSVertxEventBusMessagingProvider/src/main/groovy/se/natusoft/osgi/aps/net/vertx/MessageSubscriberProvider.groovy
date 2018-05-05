@@ -25,11 +25,12 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 @SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
 @TypeChecked
-// @formatter:off
 @OSGiServiceProvider(
-        // Possible criteria for client lookups. ex: "(aps-messaging-protocol=vertx-eventbus)" In most cases clients won't care.
+        // Possible criteria for client lookups. ex: "(aps-messaging-protocol=vertx-eventbus)" In most cases clients
+        // won't care.
         properties = [
-                @OSGiProperty( name = APS.Service.Provider, value = "aps-vertx-event-bus-messaging-provider:subscriber" ),
+                @OSGiProperty( name = APS.Service.Provider, value =
+                        "aps-vertx-event-bus-messaging-provider:subscriber" ),
                 @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Network ),
                 @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
                 @OSGiProperty( name = APS.Messaging.Protocol.Name, value = "vertx-eventbus" ),
@@ -37,7 +38,6 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
                 @OSGiProperty( name = APS.Messaging.Clustered, value = APS.TRUE )
         ]
 )
-// @formatter:on
 class MessageSubscriberProvider extends AddressResolver implements APSMessageSubscriber<Message> {
 
     //
@@ -141,6 +141,7 @@ class MessageSubscriberProvider extends AddressResolver implements APSMessageSub
     @Override
     void subscribe( @NotNull String destination, @NotNull ID subscriptionId, @Nullable APSHandler<APSResult> result,
                     @NotNull APSHandler<APSMessage<Message>> handler ) {
+        //        this.logger.error( "@@@@@@@@ THREAD: ${Thread.currentThread()}" )
 
         String address = resolveAddress( destination )
 
@@ -179,6 +180,8 @@ class MessageSubscriberProvider extends AddressResolver implements APSMessageSub
      */
     @Override
     void unsubscribe( @NotNull ID subscriptionId, @Nullable APSHandler<APSResult> result ) {
+        //        this.logger.error( "@@@@@@@@ THREAD: ${Thread.currentThread()}" )
+
         MessageConsumer consumer = this.subscribers[ subscriptionId ]
 
         if ( consumer != null ) {

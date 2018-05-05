@@ -159,7 +159,7 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-core-lib</artifactId>
-            <version>1.0.0</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Unfortunately needed since IDEA can't see the mixin and keep removing groovy if added manually in IDEA. -->

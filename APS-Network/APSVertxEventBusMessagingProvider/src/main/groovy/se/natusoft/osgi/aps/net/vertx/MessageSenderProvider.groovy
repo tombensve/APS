@@ -11,7 +11,6 @@ import org.osgi.framework.ServiceRegistration
 import se.natusoft.osgi.aps.api.messaging.APSMessage
 import se.natusoft.osgi.aps.api.messaging.APSMessageSender
 import se.natusoft.osgi.aps.api.messaging.APSReplyableMessageSender
-import se.natusoft.osgi.aps.api.util.APSExecutor
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.json.JSON
 import se.natusoft.osgi.aps.model.APSHandler
@@ -24,7 +23,6 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
 @SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
 @TypeChecked
-// @formatter:off
 @OSGiServiceProvider(
         properties = [
                 @OSGiProperty( name = APS.Service.Provider, value = "aps-vertx-event-bus-messaging-provider:sender" ),
@@ -35,8 +33,8 @@ import se.natusoft.osgi.aps.tools.annotation.activator.*
                 @OSGiProperty( name = APS.Messaging.Clustered, value = APS.TRUE )
         ]
 )
-// @formatter:on
-class MessageSenderProvider<MessageType> extends AddressResolver implements APSReplyableMessageSender<MessageType, MessageType> {
+class MessageSenderProvider<MessageType> extends AddressResolver implements APSReplyableMessageSender<MessageType,
+        MessageType> {
 
     //
     // Private Members
@@ -129,29 +127,25 @@ class MessageSenderProvider<MessageType> extends AddressResolver implements APSR
      */
     @Override
     void send( String destination, MessageType message ) {
+        //        this.logger.error( "@@@@@@@@ THREAD: ${Thread.currentThread()}" )
         String address = resolveAddress( destination )
 
         if ( this.reply != null ) {
 
-            APSExecutor.submit {
-                this.eventBus.send( address, TypeConv.apsToVertx( message ) ) { AsyncResult<Message<String>> reply ->
+            this.eventBus.send( address, TypeConv.apsToVertx( message ) ) { AsyncResult<Message<String>> reply ->
 
-                    if ( reply.succeeded() ) {
+                if ( reply.succeeded() ) {
 
-                        Map<String, Object> msg = JSON.stringToMap( reply.result().body() )
-                        this.reply.handle( new APSMessageProvider<Map<String, Object>>( message: msg, vertxMsg: reply.result() ) )
-                    }
+                    Map<String, Object> msg = JSON.stringToMap( reply.result().body() )
+                    this.reply.handle( new APSMessageProvider<Map<String, Object>>( message: msg, vertxMsg: reply
+                            .result() ) )
                 }
             }
         }
         else {
 
-            APSExecutor.submit {
-                this.eventBus.send( address, TypeConv.apsToVertx( message ) )
-            }
+            this.eventBus.send( address, TypeConv.apsToVertx( message ) )
         }
-
-        this
     }
 
     /**
@@ -168,24 +162,23 @@ class MessageSenderProvider<MessageType> extends AddressResolver implements APSR
      */
     @Override
     void send( String destination, MessageType message, APSHandler<APSResult> result ) {
-        APSExecutor.submit {
-            try {
-                send( destination, message )
+        //        this.logger.error( "@@@@@@@@ THREAD: ${Thread.currentThread()}" )
+        try {
+            send( destination, message )
 
-                if ( result != null ) {
-                    result.handle( APSResult.success( null ) )
-                }
-                else {
-                    this.logger.warn( "Call to send(message, resultHandler) was made without a result handler!" )
-                }
+            if ( result != null ) {
+                result.handle( APSResult.success( null ) )
             }
-            catch ( Exception e ) {
-                if ( result != null ) {
-                    result.handle( APSResult.failure( e ) )
-                }
-                else {
-                    this.logger.error( e.message, e )
-                }
+            else {
+                this.logger.warn( "Call to send(message, resultHandler) was made without a result handler!" )
+            }
+        }
+        catch ( Exception e ) {
+            if ( result != null ) {
+                result.handle( APSResult.failure( e ) )
+            }
+            else {
+                this.logger.error( e.message, e )
             }
         }
     }

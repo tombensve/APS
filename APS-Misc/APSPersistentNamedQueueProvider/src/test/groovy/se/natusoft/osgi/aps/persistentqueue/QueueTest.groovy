@@ -7,7 +7,7 @@ import org.junit.Test
 import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.api.misc.queue.APSNamedQueueService
 import se.natusoft.osgi.aps.api.misc.queue.APSQueue
-import se.natusoft.osgi.aps.core.filesystem.APSFilesystemActivator
+
 import se.natusoft.osgi.aps.exceptions.APSIOTimeoutException
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator

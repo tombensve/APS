@@ -61,6 +61,8 @@ class APSVertxClusterDataStoreServiceProvider implements APSLockableDataStoreSer
      */
     @Override
     void store( String key, Object value, APSHandler<APSResult> result ) {
+        this.logger.info("&&&&&&&& value: ${value}")
+
         String[] keyParts = key.split( "\\." )
         if ( keyParts.length < 2 ) {
             throw new APSValidationException( "Bad key value! Must be in store-client-key.map-key format!" )

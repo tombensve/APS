@@ -60,7 +60,7 @@
     </properties>
 
     <modules>
-        <module>APSConfigProvider</module>
+        <module>APSConfigManager</module>
         <module>APSFilesystemServiceProvider</module>
         <module>APSMetaDataServiceProvider</module>
         <module>APSNodeInfoProvider</module>

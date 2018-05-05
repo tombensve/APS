@@ -8,36 +8,31 @@ import org.osgi.framework.ServiceReference
 import org.osgi.framework.ServiceRegistration
 import se.natusoft.osgi.aps.api.messaging.APSMessagePublisher
 import se.natusoft.osgi.aps.api.messaging.APSMessagingException
-import se.natusoft.osgi.aps.api.util.APSExecutor
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.model.APSHandler
 import se.natusoft.osgi.aps.model.APSResult
 import se.natusoft.osgi.aps.tools.APSActivatorInteraction
 import se.natusoft.osgi.aps.tools.APSLogger
 import se.natusoft.osgi.aps.tools.APSServiceTracker
-import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+import se.natusoft.osgi.aps.tools.annotation.activator.*
 
 // MessageType will always be Object!
 @SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
 @TypeChecked
-// @formatter:off
 @OSGiServiceProvider(
-        // Possible criteria for client lookups. ex: "(aps-messaging-protocol=vertx-eventbus)" In most cases clients won't care.
+        // Possible criteria for client lookups. ex: "(aps-messaging-protocol=vertx-eventbus)" In most cases clients
+        // won't care.
         properties = [
-                @OSGiProperty(name = APS.Service.Provider, value = "aps-vertx-event-bus-messaging-provider:publisher"),
-                @OSGiProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Network),
-                @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Messaging),
-                @OSGiProperty(name = APS.Messaging.Protocol.Name, value = "vertx-eventbus"),
-                @OSGiProperty(name = APS.Messaging.Persistent, value = APS.FALSE),
-                @OSGiProperty(name = APS.Messaging.Clustered, value = APS.TRUE)
+                @OSGiProperty( name = APS.Service.Provider, value =
+                        "aps-vertx-event-bus-messaging-provider:publisher" ),
+                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Network ),
+                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
+                @OSGiProperty( name = APS.Messaging.Protocol.Name, value = "vertx-eventbus" ),
+                @OSGiProperty( name = APS.Messaging.Persistent, value = APS.FALSE ),
+                @OSGiProperty( name = APS.Messaging.Clustered, value = APS.TRUE )
         ]
 )
-// @formatter:on
 class MessagePublisherProvider<MessageType> extends AddressResolver implements APSMessagePublisher<MessageType> {
 
     //
@@ -108,14 +103,14 @@ class MessagePublisherProvider<MessageType> extends AddressResolver implements A
         this.eventBusTracker.onActiveServiceAvailable { EventBus service, ServiceReference serviceReference ->
             this.eventBus = service
 
-            this.logger.info( ">>>>>> Got EventBus: ${this.eventBus}" )
+            //            this.logger.info( ">>>>>> Got EventBus: ${this.eventBus}" )
 
             this.activatorInteraction.state = APSActivatorInteraction.State.READY
         }
         this.eventBusTracker.onActiveServiceLeaving { ServiceReference service, Class serviceAPI ->
             this.eventBus = null
 
-            this.logger.info( "<<<<<< Lost EventBus!" )
+            //            this.logger.info( "<<<<<< Lost EventBus!" )
 
             this.activatorInteraction.state = APSActivatorInteraction.State.TEMP_UNAVAILABLE
         }
@@ -131,13 +126,12 @@ class MessagePublisherProvider<MessageType> extends AddressResolver implements A
      */
     @Override
     void publish( String destination, MessageType message ) throws APSMessagingException {
-        this.logger.info( "####### In publish(dest, message)!" )
+        //        this.logger.error("@@@@@@@@ THREAD: ${Thread.currentThread(  )}")
+        //        this.logger.info( "####### In publish(dest, message)!" )
         String address = resolveAddress( destination )
 
-        APSExecutor.submit {
-            this.eventBus.publish( address, TypeConv.apsToVertx( message ) )
-            this.logger.info( "####### Published(NH):${eventBus}" )
-        }
+        this.eventBus.publish( address, TypeConv.apsToVertx( message ) )
+        //        this.logger.info( "####### Published(NH):${eventBus}" )
 
     }
 
@@ -156,28 +150,27 @@ class MessagePublisherProvider<MessageType> extends AddressResolver implements A
      */
     @Override
     void publish( String destination, MessageType message, APSHandler<APSResult<MessageType>> result ) {
-        APSExecutor.submit {
-            String address = resolveAddress( destination )
+        String address = resolveAddress( destination )
 
-            try {
+        //        this.logger.error("@@@@@@@@ THREAD: ${Thread.currentThread(  )}")
+        try {
 
-                eventBus.publish( address, TypeConv.apsToVertx( message ) )
+            this.eventBus.publish( address, TypeConv.apsToVertx( message ) )
 
-                if ( result != null ) {
-                    result.handle( APSResult.success( null ) as APSResult<MessageType> )
-                }
-                else {
-                    this.logger.warn( "Call made to publish(message, resultHandler) without a result handler!" )
-                }
+            if ( result != null ) {
+                result.handle( APSResult.success( null ) as APSResult<MessageType> )
             }
-            catch ( Exception e ) {
+            else {
+                this.logger.warn( "Call made to publish(message, resultHandler) without a result handler!" )
+            }
+        }
+        catch ( Exception e ) {
 
-                if ( result != null ) {
-                    result.handle( APSResult.failure( e ) )
-                }
-                else {
-                    this.logger.error( e.message, e )
-                }
+            if ( result != null ) {
+                result.handle( APSResult.failure( e ) )
+            }
+            else {
+                this.logger.error( e.message, e )
             }
         }
     }

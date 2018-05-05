@@ -10,11 +10,11 @@ Bundle-Name: APSConfigServiceProviderTest
 Bundle-SymbolicName: aps-config-provider-test
 Bundle-Vendor: Natusoft AB
 Bundle-Version: 1.0.0
-Created-By: Manually by copy + paste for test
+Created-By: tommy
 Embed-Dependency: *;scope=system
 Embed-Directory: lib
 Import-Package: se.natusoft.osgi.aps.tools;version="[1.0,2)"
 Tool: Bnd-4.0.0.201801021950-SNAPSHOT
-APS-Config-Id: aps-config-provider-test
+APS-Config-Id: moon-whale-service-config
 APS-Config-Schema: config/config-schema.json
 APS-Config-Default-Resource: config/default-config.json

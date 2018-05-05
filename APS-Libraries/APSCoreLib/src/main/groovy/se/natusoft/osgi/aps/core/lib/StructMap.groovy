@@ -43,14 +43,7 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
 @SuppressWarnings("SpellCheckingInspection")
 @CompileStatic
 @TypeChecked
-class StructMap implements Map<String, Object> {
-
-    //
-    // Properties
-    //
-
-    @Delegate
-    Map<String, Object> map = [ : ]
+class StructMap extends LinkedHashMap implements Map<String, Object> {
 
     //
     // Constructors
@@ -68,7 +61,7 @@ class StructMap implements Map<String, Object> {
      * @param map The map to work with.
      */
     StructMap( Map<String, Object> map ) {
-        this.map.putAll( map )
+        this.putAll( map )
     }
 
     //
@@ -82,7 +75,7 @@ class StructMap implements Map<String, Object> {
      */
     void withStructPath( APSHandler<String> keyHandler ) {
 
-        findPaths( this.map, new StructPath(), keyHandler )
+        findPaths( this, new StructPath(), keyHandler )
     }
 
     /**
@@ -137,7 +130,7 @@ class StructMap implements Map<String, Object> {
      * @param structPath The structPath to lookup.
      * @oaramn result Called with value found at path.
      */
-    void lookup( String structPath, APSHandler<Object> result ) {
+    void lookupr( String structPath, APSHandler<Object> result ) {
 
         result.handle( lookup( structPath ) )
     }
@@ -152,13 +145,19 @@ class StructMap implements Map<String, Object> {
      * @return The value found at the path.
      */
     Object lookup( String structPath ) {
-        Object current = this.map
+        Object current = this
 
         for ( String part : structPath.split( "\\." ) ) {
 
             if ( Map.class.isAssignableFrom( current.class ) ) {
 
-                current = ( current as Map ).get( part )
+                Object next = ( current as Map ).get( part )
+                if (next != null) {
+                    current = next
+                }
+                else {
+                    throw new APSValidationException("Bad path [${structPath}]! Failed on '${part}'")
+                }
             }
             else if ( List.class.isAssignableFrom( current.class ) ) {
 
@@ -207,7 +206,7 @@ class StructMap implements Map<String, Object> {
 
         // Yeah, I know. This is not a wonder of clarity!!
 
-        Object current = this.map
+        Object current = this
 
         String[] parts = structPath.split( "\\." )
 
@@ -282,7 +281,7 @@ class StructMap implements Map<String, Object> {
             }
         }
         else {
-            this.map.put( structPath, value )
+            this.put( structPath, value )
         }
     }
 }

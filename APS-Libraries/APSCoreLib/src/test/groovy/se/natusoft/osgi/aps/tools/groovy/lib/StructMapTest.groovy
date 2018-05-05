@@ -56,20 +56,20 @@ class StructMapTest {
     @Test
     void testValues() throws Exception {
 
-        structMap.lookup( "header.type" ) { Object r -> assert r.toString() == "service" }
-        structMap.lookup( "header.address" ) { Object r -> assert r.toString() == "aps.admin.web" }
-        structMap.lookup( "header.classifier" ) { Object r -> assert r.toString() == "public" }
-        structMap.lookup( "body.action" ) { Object r -> assert r.toString() == "get-webs" }
-        structMap.lookup( "reply.webs.[0].name" ) { Object r -> assert r.toString() == "ConfigAdmin" }
-        structMap.lookup( "reply.webs.[1].name" ) { Object r -> assert r.toString() == "RemoteServicesAdmin" }
-        structMap.lookup( "reply.webs.[1].url" ) { Object r -> assert r.toString() == "https://localhost:8080/aps/RemoteSvcAdmin" }
-        structMap.lookup( "reply.webs.[*]" ) { int size -> assert size == 2 }
+        structMap.lookupr( "header.type" ) { Object r -> assert r.toString() == "service" }
+        structMap.lookupr( "header.address" ) { Object r -> assert r.toString() == "aps.admin.web" }
+        structMap.lookupr( "header.classifier" ) { Object r -> assert r.toString() == "public" }
+        structMap.lookupr( "body.action" ) { Object r -> assert r.toString() == "get-webs" }
+        structMap.lookupr( "reply.webs.[0].name" ) { Object r -> assert r.toString() == "ConfigAdmin" }
+        structMap.lookupr( "reply.webs.[1].name" ) { Object r -> assert r.toString() == "RemoteServicesAdmin" }
+        structMap.lookupr( "reply.webs.[1].url" ) { Object r -> assert r.toString() == "https://localhost:8080/aps/RemoteSvcAdmin" }
+        structMap.lookupr( "reply.webs.[*]" ) { int size -> assert size == 2 }
 
         // This works when it is a Map being returned. It will however not work for a List.
-        structMap.lookup( "header" ) { Map<String, Object> map ->
+        structMap.lookupr( "header" ) { Map<String, Object> map ->
             StructMap smap = new StructMap( map )
 
-            smap.lookup( "address" ) { Object r -> assert r.toString() == "aps.admin.web" }
+            smap.lookupr( "address" ) { Object r -> assert r.toString() == "aps.admin.web" }
         }
 
         for ( int i = 0; i < (int) structMap.lookup( "reply.webs.[*]" ); i++ ) {
@@ -81,16 +81,16 @@ class StructMapTest {
     @Test
     void testSetValue() throws Exception {
         structMap.provide( "body.name.general", "qwerty" )
-        structMap.lookup( "body.name.general" ) { Object r -> assert r.toString() == "qwerty" }
+        structMap.lookupr( "body.name.general" ) { Object r -> assert r.toString() == "qwerty" }
 
         structMap.provide( "header.type", "qaz" )
-        structMap.lookup( "header.type" ) { Object r -> assert r.toString() == "qaz" }
+        structMap.lookupr( "header.type" ) { Object r -> assert r.toString() == "qaz" }
 
         structMap.provide( "reply.webs.[1].url", "http://www.google.com/" )
-        structMap.lookup( "reply.webs.[1].url" ) { Object r -> assert r.toString() == "http://www.google.com/" }
+        structMap.lookupr( "reply.webs.[1].url" ) { Object r -> assert r.toString() == "http://www.google.com/" }
 
         structMap.provide( "tommy.test.arr.[1].val", "qwerty" )
-        structMap.lookup( "tommy.test.arr.[1].val" ) { Object r -> assert r.toString() == "qwerty" }
+        structMap.lookupr( "tommy.test.arr.[1].val" ) { Object r -> assert r.toString() == "qwerty" }
 
         structMap.withStructPath { String path ->
             println "${path}"

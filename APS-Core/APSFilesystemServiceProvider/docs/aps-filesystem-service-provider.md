@@ -72,7 +72,7 @@ _Parameters_
 
 _Throws_
 
-> _FileNotFoundException_
+> _FileNotFoundException_ - on failure 
 
 __APSFile getFile(String name)__
 
@@ -120,7 +120,7 @@ Creates a new _InputStream_ to this file.
 
 _Throws_
 
-> _IOException_
+> _IOException_ - on failure 
 
 __OutputStream createOutputStream() throws IOException__
 
@@ -128,7 +128,7 @@ Creates a new _OutputStream_ to this file.
 
 _Throws_
 
-> _IOException_
+> _IOException_ - on failure 
 
 __Reader createReader() throws IOException__
 
@@ -136,7 +136,7 @@ Creates a new _Reader_ to this file.
 
 _Throws_
 
-> _IOException_
+> _IOException_ - on failure 
 
 __Writer createWriter() throws IOException__
 
@@ -144,7 +144,7 @@ Creates a new _Writer_ to this file.
 
 _Throws_
 
-> _IOException_
+> _IOException_ - on failure 
 
 __Properties loadProperties() throws IOException__
 
