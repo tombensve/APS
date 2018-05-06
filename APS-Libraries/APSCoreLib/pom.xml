@@ -42,6 +42,7 @@
 
         <!-- The private packages. -->
         <osgi.private.package>
+            se.natusoft.osgi.aps.core.lib.service
         </osgi.private.package>
 
         <!-- The packages to export from dependent & embeded jars -->

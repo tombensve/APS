@@ -128,25 +128,25 @@ class MapJsonSchemaMeta implements MapJsonSchemaConst {
      *
      * @param typeIdentifier The type to convert.
      */
-    private static MapJsonSchemaEntry.Type typeConv(String typeIdentifier ) {
+    private static Type typeConv( String typeIdentifier ) {
 
         typeIdentifier = typeIdentifier.trim()
 
         if (typeIdentifier.startsWith(NUMBER)) {
 
-            MapJsonSchemaEntry.Type.NUMBER
+            Type.NUMBER
         }
         else if (typeIdentifier.startsWith( BOOLEAN )) {
 
-            MapJsonSchemaEntry.Type.BOOLEAN
+            Type.BOOLEAN
         }
         else if (typeIdentifier.startsWith(ENUMERATION)) {
 
-            MapJsonSchemaEntry.Type.ENUMERATION
+            Type.ENUMERATION
         }
         else {
 
-            MapJsonSchemaEntry.Type.STRING
+            Type.STRING
         }
 
     }
@@ -154,6 +154,7 @@ class MapJsonSchemaMeta implements MapJsonSchemaConst {
     /**
      * @return A MapJson representation of this object.
      */
+    @SuppressWarnings( "GroovyUnusedDeclaration" )
     List<Map<String,Object>> toMapJson() {
         List<Map<String, Object>> entries = []
 
@@ -167,6 +168,15 @@ class MapJsonSchemaMeta implements MapJsonSchemaConst {
 }
 
 /**
+ * The valid types of a schema entry.
+ */
+@CompileStatic
+@TypeChecked
+enum Type {
+    STRING, BOOLEAN, NUMBER, ENUMERATION
+}
+
+/**
  * Holds data about an individual value in a MapJson structure according to a MapJsonDocSchemaValidator defined schema.
  *
  * MapJsonSchemaMeta collects a set of these by parsing a MapJson schema.
@@ -174,14 +184,6 @@ class MapJsonSchemaMeta implements MapJsonSchemaConst {
 @CompileStatic
 @TypeChecked
 class MapJsonSchemaEntry implements MapJsonSchemaConst {
-
-    //
-    // Inner Types
-    //
-
-    enum Type {
-        STRING, BOOLEAN, NUMBER, ENUMERATION
-    }
 
     //
     // Properties
@@ -218,6 +220,7 @@ class MapJsonSchemaEntry implements MapJsonSchemaConst {
     /**
      * @return a List of valid values if type is ENUMERATION, null otherwise.
      */
+    @SuppressWarnings( "GroovyUnusedDeclaration" )
     List<String> getEnumValues() {
         List<String> enumValues = null
         if (this.constraints.startsWith("?")) {

@@ -2,6 +2,8 @@ package se.natusoft.osgi.aps.core.lib
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import se.natusoft.docutations.Implements
+import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.model.APSHandler
 import se.natusoft.osgi.aps.model.APSObject
 import se.natusoft.osgi.aps.exceptions.APSValidationException
