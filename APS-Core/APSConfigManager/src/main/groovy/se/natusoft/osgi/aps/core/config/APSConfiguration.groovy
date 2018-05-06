@@ -11,13 +11,13 @@ import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSDirectory
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
-import se.natusoft.osgi.aps.model.APSHandler
 import se.natusoft.osgi.aps.core.lib.MapJsonDocSchemaValidator
 import se.natusoft.osgi.aps.core.lib.StructMap
 import se.natusoft.osgi.aps.exceptions.APSConfigException
 import se.natusoft.osgi.aps.exceptions.APSIOException
 import se.natusoft.osgi.aps.json.JSON
 import se.natusoft.osgi.aps.json.JSONErrorHandler
+import se.natusoft.osgi.aps.model.APSHandler
 import se.natusoft.osgi.aps.tools.APSLogger
 
 /**
@@ -235,7 +235,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
         }
         else {
 
-            this.logger.warn( "Config '${this.apsConfigId}' has not schema to validate against!" )
+            this.logger.warn( "Config '${ this.apsConfigId }' has not schema to validate against!" )
         }
     }
 
@@ -278,7 +278,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
         catch ( IOException ioe ) {
 
             this.logger.error(
-                    "Failed to load default configuration from bundle: ${this.owner.symbolicName}!", ioe )
+                    "Failed to load default configuration from bundle: ${ this.owner.symbolicName }!", ioe )
 
             this.defaultConfig = null
         }
@@ -292,7 +292,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
 
         // Try load local config.
 
-        if ( this.configDir.exists( "${this.apsConfigId}.json" ) ) {
+        if ( this.configDir.exists( "${ this.apsConfigId }.json" ) ) {
 
             try {
 
@@ -300,7 +300,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
 
                         JSON.readJSONAsMap(
 
-                                this.configDir.getFile( "${this.apsConfigId}.json" ).createInputStream(),
+                                this.configDir.getFile( "${ this.apsConfigId }.json" ).createInputStream(),
                                 this.jsonErrorHandler
                         )
                 )
@@ -312,7 +312,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
             }
             catch ( IOException ioe ) {
 
-                throw new APSIOException( "Failed to load configuration for bundle ${this.owner.symbolicName}!", ioe )
+                throw new APSIOException( "Failed to load configuration for bundle ${ this.owner.symbolicName }!", ioe )
             }
             finally {
 
@@ -341,14 +341,14 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
 
         setupConfigDir()
 
-        OutputStream os = this.configDir.getFile( "${apsConfigId}.json" ).createOutputStream()
+        OutputStream os = this.configDir.getFile( "${ apsConfigId }.json" ).createOutputStream()
         try {
 
             JSON.writeMapAsJSON( this, os )
         }
         catch ( IOException ioe ) {
 
-            throw new APSIOException( "Failed to save configuration for bundle ${this.owner.symbolicName}!", ioe )
+            throw new APSIOException( "Failed to save configuration for bundle ${ this.owner.symbolicName }!", ioe )
         }
         finally {
 
@@ -362,7 +362,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
     @Override
     Serializable toSerializable() {
 
-        Map<String, Object> serializableContent = [ : ]
+        Map<String, Object> serializableContent = [:]
         serializableContent.putAll( this )
 
         serializableContent

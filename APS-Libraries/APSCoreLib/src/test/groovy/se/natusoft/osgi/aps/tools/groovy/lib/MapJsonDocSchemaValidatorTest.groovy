@@ -6,6 +6,7 @@ import org.junit.Test
 import se.natusoft.osgi.aps.core.lib.MapJsonDocSchemaValidator
 import se.natusoft.osgi.aps.core.lib.MapJsonSchemaEntry
 import se.natusoft.osgi.aps.core.lib.MapJsonSchemaMeta
+import se.natusoft.osgi.aps.exceptions.APSValidationException
 
 @CompileStatic
 @TypeChecked
@@ -15,7 +16,7 @@ class MapJsonDocSchemaValidatorTest {
             header_1     : [
                                                  type_1      : "service",
                                                  address_1   : "?aps\\.admin\\..*",
-                                                 classifier_1: "|?public|private", // Always use this for enum values.
+                                                 classifier_1: "|public|private", // Always use this for enum values.
                                                  enabled_0   : "!"
             ],
             body_1       : [
@@ -62,7 +63,7 @@ class MapJsonDocSchemaValidatorTest {
                         webs: [
                                 [
                                         name: "ConfigAdmin",
-                                        url : "http://localhost:8080/aps/ConfigAdminWeb",
+                                        url : "http://localhost:8080/aps/ConfigAdminWeb"
                                 ],
                                 [
                                         name: "RemoteServicesAdmin",
@@ -91,7 +92,7 @@ class MapJsonDocSchemaValidatorTest {
                             webs: [
                                     [
                                             name: "ConfigAdmin",
-                                            url : "http://localhost:8080/aps/ConfigAdminWeb",
+                                            url : "http://localhost:8080/aps/ConfigAdminWeb"
                                     ],
                                     [
                                             name: "RemoteServicesAdmin",
@@ -101,9 +102,9 @@ class MapJsonDocSchemaValidatorTest {
                     ]
             ] as Map<String, Object> )
 
-            throw new Exception( "This document is not valid! header.classifier: publicc is wrong!" )
+            throw new Exception( "This document is not valid! header.enabnled: \"false\" is wrong!" )
         }
-        catch ( IllegalStateException e ) {
+        catch ( APSValidationException e ) {
             assert e.message.contains( "boolean" )
 
             println "Correctly cauth exception: ${e.message}"
@@ -139,7 +140,7 @@ class MapJsonDocSchemaValidatorTest {
 
             throw new Exception( "This document is not valid! header.classifier: publicc is wrong!" )
         }
-        catch ( IllegalStateException e ) {
+        catch ( APSValidationException e ) {
             assert e.message.contains( "regular expression" )
             println "Correctly cauth exception: ${e.message}"
         }
@@ -173,7 +174,7 @@ class MapJsonDocSchemaValidatorTest {
 
             throw new Exception( "This document is not valid! webs[1] is missing url!" )
         }
-        catch ( IllegalStateException e ) {
+        catch ( APSValidationException e ) {
             assert e.message.contains( "Missing entry" )
             println "Correctly cauth exception: ${e.message}"
         }
@@ -210,7 +211,7 @@ class MapJsonDocSchemaValidatorTest {
 
             throw new Exception( "This document is not valid! reply.webs.active is invalid!" )
         }
-        catch ( IllegalStateException e ) {
+        catch ( APSValidationException e ) {
             assert e.message.contains( "is not valid!" )
             println "Correctly cauth exception: ${e.message}"
         }
@@ -255,7 +256,7 @@ class MapJsonDocSchemaValidatorTest {
                     ]
             ] as Map<String, Object> )
         }
-        catch ( IllegalStateException e ) {
+        catch ( APSValidationException e ) {
             assert e.message.contains( "Missing entry" )
             println "Correctly cauth exception: ${e.message}"
         }
@@ -288,7 +289,7 @@ class MapJsonDocSchemaValidatorTest {
                     ]
             ] as Map<String, Object> )
         }
-        catch ( IllegalStateException e ) {
+        catch ( APSValidationException e ) {
             assert e.message.contains( "match regular expression" )
             println "Correctly cauth exception: ${e.message}"
         }
@@ -341,7 +342,7 @@ class MapJsonDocSchemaValidatorTest {
                     ]
             ] as Map<String, Object> )
         }
-        catch ( IllegalStateException e ) {
+        catch ( APSValidationException e ) {
             assert e.message.contains( "must be" )
             println "Correctly cauth exception: ${e.message}"
         }
@@ -394,7 +395,7 @@ class MapJsonDocSchemaValidatorTest {
                     ]
             ] as Map<String, Object> )
         }
-        catch ( IllegalStateException e ) {
+        catch ( APSValidationException e ) {
             assert e.message.contains( "must be" )
             println "Correctly cauth exception: ${e.message}"
         }
@@ -447,7 +448,7 @@ class MapJsonDocSchemaValidatorTest {
                     ]
             ] as Map<String, Object> )
         }
-        catch ( IllegalStateException e ) {
+        catch ( APSValidationException e ) {
             assert e.message.contains( "must be" )
             println "Correctly cauth exception: ${e.message}"
         }
@@ -500,7 +501,7 @@ class MapJsonDocSchemaValidatorTest {
                     ]
             ] as Map<String, Object> )
         }
-        catch ( IllegalStateException e ) {
+        catch ( APSValidationException e ) {
             assert e.message.contains( "must be" )
             println "Correctly cauth exception: ${e.message}"
         }

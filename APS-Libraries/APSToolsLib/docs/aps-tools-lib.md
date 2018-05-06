@@ -72,6 +72,8 @@ When done with the service do:
 
 ### Accessing a service by tracker callback
 
+Note that the _onServiceAvailable_, _onServiceLeaving_, etc have historical reasons for the names, but do now accept multiple calls without overwriting previous callback. The reason for this is that __APSActivator__ reuses a tracker instance for tracking the same service in different classes. This allow for each class to do an _onServiceAvailable(...)_ and be called back when service is available. The easiest use of __APSServiceTracker__ & __APSActivator__ is to inject tracker as a proxied instance of the service API, by declaring its type to be the service interface. There are however times when you need to know when a service is available and this provides that.
+
 There are a few variants to get a service instance by callback. When the callbacks are used the actual service instance will only be allocated during the callback and then released again.
 
 #### onServiceAvailable
