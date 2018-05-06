@@ -214,6 +214,20 @@ public class TestBundle implements Bundle {
      *
      * @param paths A varargs of Strings, one for each path.
      */
+    public void addEntryPaths( String... paths ) {
+        for ( String path : paths ) {
+            addEntryPath(new BundleEntryPath( path, path ) );
+        }
+    }
+
+    /**
+     * Since this is not a real Bundle with real content, you have to specify the simulated test content
+     * you want to make available to getEntryPath().
+     * <p>
+     * Paths should always start with '/'!
+     *
+     * @param paths A varargs of Strings, one for each path.
+     */
     public void addEntryPaths( BundleEntryPath... paths ) {
         for ( BundleEntryPath path : paths ) {
             addEntryPath( path );
