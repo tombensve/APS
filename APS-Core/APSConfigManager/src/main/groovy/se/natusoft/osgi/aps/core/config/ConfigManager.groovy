@@ -68,10 +68,10 @@ class ConfigManager {
     private APSLockableDataStoreService dataStoreService
 
     /** Holds service registrations per configuration id. */
-    private Map<String, ServiceRegistration> regs = [ : ]
+    private Map<String, ServiceRegistration> regs = [:]
 
     /** Holds published instances per configuration id. */
-    private Map<String, APSConfiguration> providers = [ : ]
+    private Map<String, APSConfiguration> providers = [:]
 
     /** A unique id for this manager. This is passed along in bus publications, so that we can ignore messages from
      * self. */
@@ -88,7 +88,7 @@ class ConfigManager {
     @Initializer
     void init() {
 
-        this.messageSubscriber.subscribe( APSConfig.CONFIG_EVENT_DESTINATION, SUBSCRIBER_ID, (APSHandler)null ) {
+        this.messageSubscriber.subscribe( APSConfig.CONFIG_EVENT_DESTINATION, SUBSCRIBER_ID, ( APSHandler ) null ) {
 
             APSMessage<Map<String, Object>> message ->
 
@@ -110,8 +110,8 @@ class ConfigManager {
                 }
                 else {
 
-                    this.logger.error( "Got unexpected message type on '${APSConfig.CONFIG_EVENT_DESTINATION}': " +
-                            "${content.messageType}!" )
+                    this.logger.error( "Got unexpected message type on '${ APSConfig.CONFIG_EVENT_DESTINATION }': " +
+                            "${ content.messageType }!" )
                 }
         }
     }
@@ -167,28 +167,10 @@ class ConfigManager {
                     // This will be called when a local config value is changed.
                     syncNotifier: { APSConfiguration configProvider ->
 
-                        // This publishes the id of the configuration only since when a config is updated
-                        // the cluster instance of the config is also updated, and it is the cluster instance
-                        // that is always used. But when this is received the cluster instance should be copied
-                        // to local disk store. Each node needs a local copy of the cluster version. Whichever
-                        // node is started first provides the original cluster version.
-                        this.messagePublisher.publish(
-
-                                APSConfig.CONFIG_EVENT_DESTINATION,
-                                [
-                                        messageType: "CONFIG_UPDATED",
-                                        apsConfigId: configProvider.apsConfigId,
-                                        configMgrId: this.confMgrId
-
-                                ] as Map<String, Object>
-
-                        ) { APSResult res ->
-
-                            if ( !res.success() ) {
-
-                                logger.error( "Failed to publish new configuration!", res.failure() )
-                            }
-                        }
+                        updateOtherNodesOfChangedConfig( configProvider )
+                    },
+                    saveToCluster: { APSConfiguration configProvider ->
+                        loadClusterFromLocal( configProvider.apsConfigId as String )
                     }
             ).init()
 
@@ -209,7 +191,34 @@ class ConfigManager {
         }
         catch ( Exception e ) {
 
-            this.logger.error( "Failed to load config '${configId}' for bundle '${owner.symbolicName}'!", e )
+            this.logger.error( "Failed to load config '${ configId }' for bundle '${ owner.symbolicName }'!", e )
+        }
+    }
+
+    /**
+     * This publishes the id of the configuration only since when a config is updated
+     * the cluster instance of the config is also updated, and it is the cluster instance
+     * that is always used. But when this is received the cluster instance should be copied
+     * to local disk store. Each node needs a local copy of the cluster version. Whichever
+     * node is started first provides the original cluster version.
+     */
+    private void updateOtherNodesOfChangedConfig( APSConfiguration configProvider ) {
+        this.messagePublisher.publish(
+
+                APSConfig.CONFIG_EVENT_DESTINATION,
+                [
+                        messageType: "CONFIG_UPDATED",
+                        apsConfigId: configProvider.apsConfigId,
+                        configMgrId: this.confMgrId
+
+                ] as Map<String, Object>
+
+        ) { APSResult res ->
+
+            if ( !res.success() ) {
+
+                logger.error( "Failed to publish new configuration!", res.failure() )
+            }
         }
     }
 
@@ -243,8 +252,12 @@ class ConfigManager {
 
         saveLocalFromCluster( configId ) { ->
 
+            this.logger.info( "[${ configId }] No cluster config found, loading from disk ..." )
+
             // This is executed when nothing in cluster.
             loadClusterFromLocal( configId )
+
+            this.logger.info( "[${ configId }] ... and populated cluster!" )
         }
     }
 
@@ -255,7 +268,7 @@ class ConfigManager {
      */
     private void loadClusterFromLocal( @NotNull String configId ) {
 
-        String clusterKey = "aps.config.${configId}"
+        String clusterKey = "aps.config.${ configId }"
 
         APSConfiguration provider = this.providers[ configId ]
 
@@ -264,11 +277,15 @@ class ConfigManager {
         this.dataStoreService.lock( clusterKey ) { APSResult<APSLockable.APSLock> lock ->
 
             if ( lock.success() ) {
-                this.dataStoreService.store( clusterKey, provider.toSerializable(  ) ) { APSResult res ->
+                this.dataStoreService.store( clusterKey, provider.toSerializable() ) { APSResult res ->
 
                     if ( !res.success() ) {
 
-                        this.logger.error( "Failed to store loaded config[${configId}] in cluster!", res.failure() )
+                        this.logger.error( "Failed to store loaded config[${ configId }] in cluster!", res.failure() )
+                    }
+                    else {
+
+                        this.logger.info( "[${ configId }]: Stored config in cluster!" )
                     }
                 }
             }
@@ -283,13 +300,15 @@ class ConfigManager {
      */
     private void saveLocalFromCluster( @NotNull String configId, @Nullable Closure onNoClusterConf ) {
 
-        String clusterKey = "aps.config.${configId}"
+        String clusterKey = "aps.config.${ configId }"
 
         APSConfiguration provider = this.providers[ configId ]
 
         this.dataStoreService.lock( clusterKey ) { APSResult<APSLockable.APSLock> lock ->
 
             if ( lock.success() ) {
+
+                this.logger.info( "[${ configId }]: Successfully locked cluster store ..." )
 
                 this.dataStoreService.retrieve( clusterKey ) { APSResult<Map<String, Object>> res ->
 
@@ -301,15 +320,15 @@ class ConfigManager {
 
                         if ( conf != null ) {
 
-                                provider.fromDeserialized( conf as Serializable )
-                                provider.saveConfig()
-                        }
-                        else {
-                            this.logger.error( "Got null config from cluster! This should not happen!" )
+                            provider.fromDeserialized( conf as Serializable )
+                            provider.saveConfig()
+
+                            this.logger.info( "[${ configId }]: Took cluster config!" )
+
                         }
                     }
                     else {
-                        this.logger.error( "Failed lookup of config for id '${configId}'!", res.failure() )
+                        this.logger.error( "Failed lookup of config for id '${ configId }'!", res.failure() )
                     }
 
                     if ( conf == null && onNoClusterConf != null ) {

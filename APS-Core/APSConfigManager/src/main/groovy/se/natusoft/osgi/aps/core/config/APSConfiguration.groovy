@@ -42,6 +42,10 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
     @NotNull
     Closure syncNotifier
 
+    /** For updating cluster with locally updated config. */
+    @NotNull
+    Closure saveToCluster
+
     /** Filesystem access that won't go away on redeploy. */
     @NotNull
     APSFilesystemService fsService
@@ -185,6 +189,8 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
 
         saveConfig()
 
+        this.saveToCluster.call( this )
+
         notifyUpdate()
     }
 
@@ -194,7 +200,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
     @SuppressWarnings( "GroovyUnusedDeclaration" )
     void notifyUpdate() {
 
-        this.syncNotifier.call()
+        this.syncNotifier.call( this )
     }
 
     /**
@@ -338,6 +344,13 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
      * Saves current configuration.
      */
     void saveConfig() {
+        saveConfigToDisk(  )
+    }
+
+    /**
+     * Saves current configuration to disk.
+     */
+    void saveConfigToDisk() {
 
         setupConfigDir()
 
@@ -354,6 +367,10 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
 
             os.close()
         }
+    }
+
+    void saveConfigToCluster() {
+
     }
 
     /**

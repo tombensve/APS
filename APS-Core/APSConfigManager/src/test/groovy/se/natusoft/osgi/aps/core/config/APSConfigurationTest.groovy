@@ -6,6 +6,7 @@ import org.junit.Test
 import org.osgi.framework.ServiceReference
 import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
+import se.natusoft.osgi.aps.api.util.APSExecutor
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tools.APSActivator
 import se.natusoft.osgi.aps.tools.APSLogger
@@ -95,19 +96,22 @@ class MoonWhaleService {
             this.logger.info( "######## Config available! ########" )
             this.config = config
 
-            Object value = this.config.lookup( "moonWhales.count" )
-            assert value instanceof Number
-            assert ( value as int ) == 22
+            // Now, lets submit som work to a thread pool so that the tracker callback can return.
+            APSExecutor.submit {
+                Object value = this.config.lookup( "moonWhales.count" )
+                assert value instanceof Number
+                assert ( value as int ) == 22
 
             value = this.config.lookup( "local.relayWhales" )
             assert value instanceof Number
             assert ( value as int ) == 18
 
-            value = this.config.lookup( "local.translatorWhales" )
-            assert value instanceof Number
-            assert ( value as int ) == 5
+                value = this.config.lookup( "local.translatorWhales" )
+                assert value instanceof Number
+                assert ( value as int ) == 5
 
-            APSConfigurationTest.ok = true
+                APSConfigurationTest.ok = true
+            }
         }
     }
 }
