@@ -48,19 +48,25 @@ import io.vertx.groovy.core.net.NetSocket
 import org.osgi.framework.BundleContext
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
+import se.natusoft.osgi.aps.activator.annotation.BundleStop
+import se.natusoft.osgi.aps.activator.annotation.Initializer
+import se.natusoft.osgi.aps.activator.annotation.Managed
+import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
+import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
 import se.natusoft.osgi.aps.api.net.messaging.exception.APSMessagingException
 import se.natusoft.osgi.aps.api.net.messaging.service.APSMessageService
 import se.natusoft.osgi.aps.api.net.messaging.service.APSSubscriber
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
 import se.natusoft.osgi.aps.net.messaging.vertx.api.APSVertxTCPMessagingOptions
-import se.natusoft.osgi.aps.tools.APSActivatorInteraction
-import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.APSServiceTracker
-import se.natusoft.osgi.aps.tools.APSSimplePool
+import se.natusoft.osgi.aps.activator.APSActivatorInteraction
+import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.osgi.aps.tracker.APSServiceTracker
+import se.natusoft.osgi.aps.util.APSSimplePool
 import se.natusoft.osgi.aps.tools.annotation.activator.*
-import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException
-import se.natusoft.osgi.aps.tools.tracker.WithServiceException
+import se.natusoft.osgi.aps.tracker.APSNoServiceAvailableException
+import se.natusoft.osgi.aps.tracker.WithServiceException
 
 // Note to IDEA users: IDEA underlines (in beige color if you are using Darcula theme) all references to classes that are not
 // OSGi compatible (no OSGi MANIFEST.MF entries). The underlines you see here is for the Groovy wrapper of Vert.x. It is OK

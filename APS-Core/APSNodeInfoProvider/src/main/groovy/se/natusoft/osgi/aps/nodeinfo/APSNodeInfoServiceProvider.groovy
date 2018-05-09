@@ -10,13 +10,18 @@ import io.vertx.core.shareddata.Lock
 import org.osgi.framework.ServiceReference
 import se.natusoft.docutations.Issue
 import se.natusoft.docutations.NotUsed
+import se.natusoft.osgi.aps.activator.annotation.BundleStop
+import se.natusoft.osgi.aps.activator.annotation.Initializer
+import se.natusoft.osgi.aps.activator.annotation.Managed
+import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
 import se.natusoft.osgi.aps.api.core.platform.model.NodeInfo
 import se.natusoft.osgi.aps.api.core.platform.service.APSNodeInfoService
 import se.natusoft.osgi.aps.model.APSValue
 import se.natusoft.osgi.aps.model.APSHandler
 import se.natusoft.osgi.aps.core.lib.DelayedExecutionHandler
-import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.APSServiceTracker
+import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 import se.natusoft.osgi.aps.model.APSUUID
 

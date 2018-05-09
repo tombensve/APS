@@ -46,7 +46,7 @@ import se.natusoft.osgi.aps.api.net.rpc.errors.ErrorType;
 import se.natusoft.osgi.aps.api.net.rpc.exceptions.RequestedParamNotAvailableException;
 import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;
 import se.natusoft.osgi.aps.api.net.rpc.model.RequestIntention;
-import se.natusoft.osgi.aps.tools.APSLogger;
+import se.natusoft.osgi.aps.util.APSLogger;
 
 import java.io.IOException;
 import java.io.InputStream;

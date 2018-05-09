@@ -43,11 +43,11 @@ import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
 import se.natusoft.osgi.aps.constants.APS;
 import se.natusoft.osgi.aps.core.filesystem.model.APSFilesystemImpl;
-import se.natusoft.osgi.aps.tools.APSLogger;
-import se.natusoft.osgi.aps.tools.annotation.activator.Initializer;
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed;
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty;
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider;
+import se.natusoft.osgi.aps.util.APSLogger;
+import se.natusoft.osgi.aps.activator.annotation.Initializer;
+import se.natusoft.osgi.aps.activator.annotation.Managed;
+import se.natusoft.osgi.aps.activator.annotation.OSGiProperty;
+import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider;
 
 import java.io.File;
 import java.io.IOException;

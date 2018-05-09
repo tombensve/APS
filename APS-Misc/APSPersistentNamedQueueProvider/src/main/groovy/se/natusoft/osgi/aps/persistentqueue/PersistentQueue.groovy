@@ -6,8 +6,8 @@ import se.natusoft.docutations.Implements
 import se.natusoft.osgi.aps.api.misc.queue.APSQueue
 import se.natusoft.osgi.aps.exceptions.APSIOException
 import se.natusoft.osgi.aps.exceptions.APSIOTimeoutException
-import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
+import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.osgi.aps.activator.annotation.BundleStop
 
 //TODO: Have to lock and wait for data on empty read, but with a timeout.
 

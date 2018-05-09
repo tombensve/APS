@@ -60,12 +60,12 @@ import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 import se.natusoft.osgi.aps.externalprotocolextender.model.ProtocolEvent;
 import se.natusoft.osgi.aps.externalprotocolextender.model.ServiceDataReason;
 import se.natusoft.osgi.aps.externalprotocolextender.model.ServiceRepresentation;
-import se.natusoft.osgi.aps.tools.APSLogger;
-import se.natusoft.osgi.aps.tools.data.TrivialDataBus;
-import se.natusoft.osgi.aps.tools.data.TrivialDataBus.TrivialBusReceivingMember;
-import se.natusoft.osgi.aps.tools.data.TrivialDataBus.TrivialManyDataRequest;
-import se.natusoft.osgi.aps.tools.data.TrivialDataBus.TrivialSingleDataRequest;
-import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException;
+import se.natusoft.osgi.aps.util.APSLogger;
+import se.natusoft.osgi.aps.util.TrivialDataBus;
+import se.natusoft.osgi.aps.util.TrivialDataBus.TrivialBusReceivingMember;
+import se.natusoft.osgi.aps.util.TrivialDataBus.TrivialManyDataRequest;
+import se.natusoft.osgi.aps.util.TrivialDataBus.TrivialSingleDataRequest;
+import se.natusoft.osgi.aps.tracker.APSNoServiceAvailableException;
 
 import java.util.*;
 
@@ -139,7 +139,7 @@ public class APSExternalProtocolServiceProvider implements APSExternalProtocolSe
      *
      * @param serviceName The name of the service to get callables for.
      *
-     * @throws se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException
+     * @throws APSNoServiceAvailableException
      *          If the service is not available.
      */
     @Override

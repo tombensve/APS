@@ -14,8 +14,8 @@ import se.natusoft.osgi.aps.tcpipsvc.config.NamedDestinationsConfig
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.test.tools.TestBundle
-import se.natusoft.osgi.aps.tools.APSActivator
-import se.natusoft.osgi.aps.tools.APSServiceTracker
+import se.natusoft.osgi.aps.activator.APSActivator
+import se.natusoft.osgi.aps.tracker.APSServiceTracker
 
 import static org.junit.Assert.assertTrue
 

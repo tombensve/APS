@@ -5,12 +5,17 @@ import groovy.transform.TypeChecked
 import org.osgi.framework.Filter
 import org.osgi.framework.FrameworkUtil
 import se.natusoft.docutations.Implements
+import se.natusoft.osgi.aps.activator.annotation.Initializer
+import se.natusoft.osgi.aps.activator.annotation.Managed
+import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
+import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
+import se.natusoft.osgi.aps.activator.annotation.Schedule
 import se.natusoft.osgi.aps.api.core.configold.model.APSConfigValue
 import se.natusoft.osgi.aps.api.net.discovery.exception.APSDiscoveryException
 import se.natusoft.osgi.aps.api.net.discovery.service.APSSimpleDiscoveryService
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.discoveryservice.config.DiscoveryConfig
-import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.util.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 
 import java.util.concurrent.TimeUnit

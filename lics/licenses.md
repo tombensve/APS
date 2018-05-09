@@ -12,12 +12,10 @@ The following third party products are using this license:
 * [org.osgi.compendium-4.2.0-null](http://www.osgi.org/)
 * [org.osgi.core-4.2.0-null](http://www.osgi.org/)
 
-__[Apache Software License version 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)__
+__[Eclipse Public License -v 1.0 version 1.0](http://www.eclipse.org/legal/epl-v10.html)__
 
 The following third party products are using this license:
 
-* [vertx-core-3.4.2](http://www.apache.org/licenses/LICENSE-2.0.txt)
-* [vertx-auth-common-3.4.2](http://rubygems-proxy.torquebox.org/releases)
-* [groovy-all-2.4.13](http://groovy-lang.org)
+* [javax.persistence-2.0.0](http://www.eclipse.org/eclipselink)
 
 <!-- CLM -->

@@ -6,11 +6,11 @@ import org.apache.commons.net.ntp.TimeInfo
 import se.natusoft.osgi.aps.api.misc.time.APSTimeService
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.misc.time.config.NTPConfig
-import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
-import se.natusoft.osgi.aps.tools.annotation.activator.Schedule
+import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.osgi.aps.activator.annotation.Managed
+import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
+import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
+import se.natusoft.osgi.aps.activator.annotation.Schedule
 
 import java.time.Instant
 import java.util.concurrent.TimeUnit

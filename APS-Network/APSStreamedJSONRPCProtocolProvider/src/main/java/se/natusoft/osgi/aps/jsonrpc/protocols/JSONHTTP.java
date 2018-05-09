@@ -52,7 +52,7 @@ import se.natusoft.osgi.aps.api.net.rpc.model.RPCRequest;
 import se.natusoft.osgi.aps.api.net.rpc.model.RequestIntention;
 import se.natusoft.osgi.aps.api.net.rpc.service.StreamedRPCProtocol;
 import se.natusoft.osgi.aps.exceptions.APSRuntimeException;
-import se.natusoft.osgi.aps.tools.APSLogger;
+import se.natusoft.osgi.aps.util.APSLogger;
 
 import java.io.*;
 import java.util.LinkedList;

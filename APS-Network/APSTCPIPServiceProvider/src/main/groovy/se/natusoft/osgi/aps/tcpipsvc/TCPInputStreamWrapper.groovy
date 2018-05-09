@@ -40,7 +40,7 @@ package se.natusoft.osgi.aps.tcpipsvc
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.util.APSLogger
 
 /**
  * An InputStream wrapper to stop client code from closing the stream.

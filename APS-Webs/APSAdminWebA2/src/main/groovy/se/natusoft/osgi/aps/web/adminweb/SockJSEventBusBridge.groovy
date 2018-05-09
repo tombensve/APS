@@ -7,11 +7,15 @@ import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.sockjs.BridgeEvent
 import io.vertx.ext.web.handler.sockjs.SockJSHandler
 import org.osgi.framework.BundleContext
+import se.natusoft.osgi.aps.activator.annotation.BundleStop
+import se.natusoft.osgi.aps.activator.annotation.Initializer
+import se.natusoft.osgi.aps.activator.annotation.Managed
+import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
+import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
 import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
 import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
 import se.natusoft.osgi.aps.net.vertx.api.VertxSubscriber
-import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.*
+import se.natusoft.osgi.aps.util.APSLogger
 
 /**
  * Provides a Vertx EventBus bridge.

@@ -41,9 +41,9 @@ package se.natusoft.osgi.aps.tcpipsvc.security
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.net.tcpip.APSUDPSecurityService
-import se.natusoft.osgi.aps.tools.APSServiceTracker
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
-import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException
+import se.natusoft.osgi.aps.tracker.APSServiceTracker
+import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.osgi.aps.tracker.APSNoServiceAvailableException
 
 /**
  * Wraps APSUDPSecurityService and throwing an IOException if none is available.

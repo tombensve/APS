@@ -6,14 +6,14 @@ import se.natusoft.docutations.NotNull
 import se.natusoft.osgi.aps.api.core.platform.service.APSExecutionService
 import se.natusoft.osgi.aps.model.APSHandler
 import se.natusoft.osgi.aps.model.APSResult
-import se.natusoft.osgi.aps.api.util.APSThreadFactory
+import se.natusoft.osgi.aps.util.APSThreadFactory
 import se.natusoft.osgi.aps.constants.APS
-import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
-import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.osgi.aps.activator.annotation.BundleStop
+import se.natusoft.osgi.aps.activator.annotation.Initializer
+import se.natusoft.osgi.aps.activator.annotation.Managed
+import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
+import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
 
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors

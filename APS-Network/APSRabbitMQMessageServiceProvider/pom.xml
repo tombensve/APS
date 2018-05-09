@@ -62,7 +62,7 @@
         <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
 
         <!-- The bundle activator class -->
-        <osgi.bundle.activator>se.natusoft.osgi.aps.tools.APSActivator</osgi.bundle.activator>
+        <osgi.bundle.activator>se.natusoft.osgi.aps.activator.APSActivator</osgi.bundle.activator>
 
         <!-- The bundle packages to export. -->
         <osgi.export.package>

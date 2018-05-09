@@ -45,7 +45,7 @@ import se.natusoft.osgi.aps.apsuseradminweb.vaadin.componenthandlers.EditRoleCom
 import se.natusoft.osgi.aps.apsuseradminweb.vaadin.components.Description;
 import se.natusoft.osgi.aps.apsuseradminweb.vaadin.components.editors.RoleDeleteEditor;
 import se.natusoft.osgi.aps.apsuseradminweb.vaadin.components.editors.RoleEditor;
-import se.natusoft.osgi.aps.tools.APSLogger;
+import se.natusoft.osgi.aps.util.APSLogger;
 import se.natusoft.osgi.aps.model.ID;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.builderapi.MenuBuilder;
 import se.natusoft.osgi.aps.tools.web.vaadin.components.menutree.builderapi.MenuItemData;

@@ -42,7 +42,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.net.tcpip.NetworkConfig
 import se.natusoft.osgi.aps.tcpipsvc.security.UDPSecurityHandler
-import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.util.APSLogger
 
 /**
  * This sends UDP data.

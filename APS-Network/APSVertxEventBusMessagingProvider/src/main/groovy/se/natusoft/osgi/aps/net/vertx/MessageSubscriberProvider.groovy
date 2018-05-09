@@ -10,6 +10,11 @@ import org.osgi.framework.ServiceReference
 import org.osgi.framework.ServiceRegistration
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
+import se.natusoft.osgi.aps.activator.annotation.Initializer
+import se.natusoft.osgi.aps.activator.annotation.Managed
+import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
+import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
 import se.natusoft.osgi.aps.api.messaging.APSMessage
 import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
 import se.natusoft.osgi.aps.constants.APS
@@ -17,9 +22,9 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.model.APSHandler
 import se.natusoft.osgi.aps.model.APSResult
 import se.natusoft.osgi.aps.model.ID
-import se.natusoft.osgi.aps.tools.APSActivatorInteraction
-import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.APSServiceTracker
+import se.natusoft.osgi.aps.activator.APSActivatorInteraction
+import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 
 @SuppressWarnings( "GroovyUnusedDeclaration" )

@@ -1,43 +1,43 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Web Tools
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         This provides some utility classes for web applications.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
  *         2011-08-27: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.tools.web;
 
 import org.osgi.framework.BundleContext;
-import se.natusoft.osgi.aps.tools.APSActivator;
+import se.natusoft.osgi.aps.activator.APSActivator;
 
 import javax.servlet.http.HttpSession;
 
@@ -80,7 +80,7 @@ public class APSOSGiSupport implements OSGiBundleContextProvider, APSSessionList
     /** The long message for non OSGi deployment. */
     private static final String NON_OSGI_DEPLOYMENT_LONG_MESSAGE = "This application is an OSGi bundle and must be deployed as such in " +
             "an OSGi container for it to be able to do its work!";
-    
+
     //
     // Private Members
     //
@@ -152,9 +152,9 @@ public class APSOSGiSupport implements OSGiBundleContextProvider, APSSessionList
 
     /**
      * This will return this war bundles _BundleContext_. This is only available if this war is
-     * deployed in an R4.2+ compliant OSGi container. 
-     * 
-     * @return The OSGi bundle context. 
+     * deployed in an R4.2+ compliant OSGi container.
+     *
+     * @return The OSGi bundle context.
      */
     public BundleContext getBundleContext() {
         return this.bundleContext;

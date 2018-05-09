@@ -59,9 +59,9 @@ import se.natusoft.osgi.aps.api.core.configold.service.APSConfigService;
 import se.natusoft.osgi.aps.externalprotocolextender.model.ServiceDataReason;
 import se.natusoft.osgi.aps.externalprotocolextender.pub.config.APSExternalProtocolConfig;
 import se.natusoft.osgi.aps.externalprotocolextender.pub.config.APSExternalProtocolConfig.ExternalizableService;
-import se.natusoft.osgi.aps.tools.APSLogger;
-import se.natusoft.osgi.aps.tools.data.TrivialDataBus;
-import se.natusoft.osgi.aps.tools.data.TrivialDataBus.TrivialBusMember;
+import se.natusoft.osgi.aps.util.APSLogger;
+import se.natusoft.osgi.aps.util.TrivialDataBus;
+import se.natusoft.osgi.aps.util.TrivialDataBus.TrivialBusMember;
 
 /**
  * This tracks all OSGi framework services coming and going.

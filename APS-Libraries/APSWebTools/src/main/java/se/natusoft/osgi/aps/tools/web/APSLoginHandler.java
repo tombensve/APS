@@ -42,7 +42,7 @@ import se.natusoft.osgi.aps.api.core.configold.service.APSConfigService;
 import se.natusoft.osgi.aps.api.misc.session.APSSession;
 import se.natusoft.osgi.aps.api.misc.session.APSSessionService;
 import se.natusoft.osgi.aps.api.web.config.APSAdminConfig;
-import se.natusoft.osgi.aps.tools.APSServiceTracker;
+import se.natusoft.osgi.aps.tracker.APSServiceTracker;
 
 import java.util.Properties;
 

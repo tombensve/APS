@@ -10,8 +10,8 @@ import se.natusoft.osgi.aps.api.misc.queue.APSQueue
 
 import se.natusoft.osgi.aps.exceptions.APSIOTimeoutException
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
-import se.natusoft.osgi.aps.tools.APSActivator
-import se.natusoft.osgi.aps.tools.APSServiceTracker
+import se.natusoft.osgi.aps.activator.APSActivator
+import se.natusoft.osgi.aps.tracker.APSServiceTracker
 
 import static org.junit.Assert.assertEquals
 

@@ -18,7 +18,7 @@ import se.natusoft.osgi.aps.exceptions.APSIOException
 import se.natusoft.osgi.aps.json.JSON
 import se.natusoft.osgi.aps.json.JSONErrorHandler
 import se.natusoft.osgi.aps.model.APSHandler
-import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.util.APSLogger
 
 /**
  * This class represents one individual configuration.*/

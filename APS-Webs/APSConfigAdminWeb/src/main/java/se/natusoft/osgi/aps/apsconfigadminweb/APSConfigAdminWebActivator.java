@@ -41,10 +41,10 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import se.natusoft.osgi.aps.apsadminweb.service.APSAdminWebService;
 import se.natusoft.osgi.aps.apsadminweb.service.model.AdminWebReg;
-import se.natusoft.osgi.aps.tools.APSLogger;
-import se.natusoft.osgi.aps.tools.APSServiceTracker;
-import se.natusoft.osgi.aps.tools.tracker.OnServiceAvailable;
-import se.natusoft.osgi.aps.tools.tracker.WithService;
+import se.natusoft.osgi.aps.util.APSLogger;
+import se.natusoft.osgi.aps.tracker.APSServiceTracker;
+import se.natusoft.osgi.aps.tracker.OnServiceAvailable;
+import se.natusoft.osgi.aps.tracker.WithService;
 
 public class APSConfigAdminWebActivator implements BundleActivator {
     //

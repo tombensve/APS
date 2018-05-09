@@ -43,9 +43,7 @@ import groovy.transform.TypeChecked
 import se.natusoft.docutations.Issue
 import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequest
 import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
-import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.util.ClientConnection
-import se.natusoft.osgi.aps.tools.util.ClientMultiTryConnection
+import se.natusoft.osgi.aps.util.APSLogger
 
 /**
  * Handles TCP request connections.

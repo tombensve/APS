@@ -14,8 +14,8 @@ import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValueList
 import se.natusoft.osgi.aps.tcpipsvc.config.ExpertConfig
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
-import se.natusoft.osgi.aps.tools.APSActivator
-import se.natusoft.osgi.aps.tools.APSServiceTracker
+import se.natusoft.osgi.aps.activator.APSActivator
+import se.natusoft.osgi.aps.tracker.APSServiceTracker
 
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue

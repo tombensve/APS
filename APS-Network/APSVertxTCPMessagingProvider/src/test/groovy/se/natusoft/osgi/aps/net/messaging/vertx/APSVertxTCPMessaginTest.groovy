@@ -11,12 +11,12 @@ import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
 import se.natusoft.osgi.aps.net.messaging.vertx.api.APSVertxTCPMessagingOptions
 import se.natusoft.osgi.aps.net.vertx.config.VertxConfig
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
-import se.natusoft.osgi.aps.tools.APSActivator
-import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+import se.natusoft.osgi.aps.activator.APSActivator
+import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.osgi.aps.activator.annotation.Initializer
+import se.natusoft.osgi.aps.activator.annotation.Managed
+import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
 
 @CompileStatic
 @TypeChecked

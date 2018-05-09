@@ -7,8 +7,8 @@ import se.natusoft.osgi.aps.api.misc.time.APSTimeService
 import se.natusoft.osgi.aps.misc.time.config.NTPConfig
 import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
-import se.natusoft.osgi.aps.tools.APSActivator
-import se.natusoft.osgi.aps.tools.APSServiceTracker
+import se.natusoft.osgi.aps.activator.APSActivator
+import se.natusoft.osgi.aps.tracker.APSServiceTracker
 
 import java.time.Instant
 

@@ -49,11 +49,11 @@ import io.vertx.core.shareddata.SharedData
 import io.vertx.ext.web.Router
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceRegistration
-import se.natusoft.osgi.aps.exceptions.APSStartFailureException
-import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
-import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
+import se.natusoft.osgi.aps.exceptions.APSStartException
+import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.osgi.aps.activator.annotation.BundleStop
+import se.natusoft.osgi.aps.activator.annotation.Initializer
+import se.natusoft.osgi.aps.activator.annotation.Managed
 
 /**
  * Provides Vertx by publishing Vertx and other Vertx related objects some by configuration as OSGi services.
@@ -180,7 +180,7 @@ class APSVertxProvider {
             else {
 
                 logger.error "Vert.x cluster failed to start!", res.cause()
-                throw new APSStartFailureException( "Vert.x cluster failed to start!", res.cause() )
+                throw new APSStartException( "Vert.x cluster failed to start!", res.cause() )
             }
         }
     }

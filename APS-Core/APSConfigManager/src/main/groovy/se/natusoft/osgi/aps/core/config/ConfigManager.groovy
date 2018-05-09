@@ -20,11 +20,11 @@ import se.natusoft.osgi.aps.model.APSHandler
 import se.natusoft.osgi.aps.model.APSResult
 import se.natusoft.osgi.aps.model.APSUUID
 import se.natusoft.osgi.aps.model.ID
-import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
-import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
+import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.osgi.aps.activator.annotation.BundleStop
+import se.natusoft.osgi.aps.activator.annotation.Initializer
+import se.natusoft.osgi.aps.activator.annotation.Managed
+import se.natusoft.osgi.aps.activator.annotation.OSGiService
 
 /**
  * This class actually manages all configurations.

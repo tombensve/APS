@@ -72,9 +72,14 @@
         <osgi.export.package>
             se.natusoft.osgi.aps.annotations;version="${project.version}",
             se.natusoft.osgi.aps.api;version="${project.version}",
+
+            se.natusoft.osgi.aps.activator;version="${project.version}",
+            se.natusoft.osgi.aps.activator.annotation;version="${project.version}",
+
             se.natusoft.osgi.aps.api.auth.user;version="${project.version}",
             se.natusoft.osgi.aps.api.auth.user.exceptions;version="${project.version}",
             se.natusoft.osgi.aps.api.auth.user.model;version="${project.version}",
+
             se.natusoft.osgi.aps.api.core;version="${project.version}",
             se.natusoft.osgi.aps.api.core.config;version="${project.version}",
             se.natusoft.osgi.aps.api.core.filesystem;version="${project.version}",
@@ -85,6 +90,7 @@
             se.natusoft.osgi.aps.api.core.platform.model;version="${project.version}",
             se.natusoft.osgi.aps.api.core.platform.service;version="${project.version}",
             se.natusoft.osgi.aps.api.core.store;version="${project.version}",
+
             se.natusoft.osgi.aps.api.data;version="${project.version}",
             se.natusoft.osgi.aps.api.data.jdbc;version="${project.version}",
             se.natusoft.osgi.aps.api.data.jdbc.model;version="${project.version}",
@@ -96,13 +102,16 @@
             se.natusoft.osgi.aps.api.external.model.type;version="${project.version}",
 
             se.natusoft.osgi.aps.api.messaging;version="${project.version}",
+
             se.natusoft.osgi.aps.api.misc;version="${project.version}",
             se.natusoft.osgi.aps.api.misc.json;version="${project.version}",
             se.natusoft.osgi.aps.api.misc.json.model;version="${project.version}",
             se.natusoft.osgi.aps.api.misc.json.service;version="${project.version}",
             se.natusoft.osgi.aps.api.misc.queue;version="${project.version}",
             se.natusoft.osgi.aps.api.misc.session;version="${project.version}",
+
             se.natusoft.osgi.aps.api.net;version="${project.version}",
+
             se.natusoft.osgi.aps.api.net.discovery;version="${project.version}",
             se.natusoft.osgi.aps.api.net.discovery.exception;version="${project.version}",
             se.natusoft.osgi.aps.api.net.discovery.service;version="${project.version}",
@@ -117,11 +126,17 @@
             se.natusoft.osgi.aps.api.net.tcpip;version="${project.version}",
 
             se.natusoft.osgi.aps.api.net.util;version="${project.version}",
-            se.natusoft.osgi.aps.api.util;version="${project.version}",
             se.natusoft.osgi.aps.api.web.config;version="${project.version}",
             se.natusoft.osgi.aps.constants;version="${project.version}",
             se.natusoft.osgi.aps.exceptions;version="${project.version}",
-            se.natusoft.osgi.aps.model;version="${project.version}"
+            se.natusoft.osgi.aps.model;version="${project.version}",
+
+            se.natusoft.osgi.aps.tracker;version="${project.version}",
+
+            se.natusoft.osgi.aps.tuples;version="${project.version}",
+
+            se.natusoft.osgi.aps.util;version="${project.version}"
+
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->
@@ -168,6 +183,13 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>javax.persistence</artifactId>
             <scope>compile</scope>
+        </dependency>
+        <!--suppress NonOsgiMavenDependency -->
+        <dependency>
+            <groupId>se.natusoft.annotation</groupId>
+            <artifactId>bean-annotation-processor</artifactId>
+            <version>1.3</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

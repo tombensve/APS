@@ -10,10 +10,10 @@ import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.apsadminweb.service.APSAdminWebService
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.net.vertx.api.VertxSubscriber
-import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.Initializer
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
+import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.osgi.aps.activator.annotation.Initializer
+import se.natusoft.osgi.aps.activator.annotation.Managed
+import se.natusoft.osgi.aps.activator.annotation.OSGiService
 
 // IDEA shows this as not used, but that is not true!! This class will not compile without this import.
 /**

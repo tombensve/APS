@@ -62,11 +62,11 @@ import se.natusoft.osgi.aps.externalprotocolextender.service.APSExternalProtocol
 import se.natusoft.osgi.aps.externalprotocolextender.service.ExternalizableServiceTracker;
 import se.natusoft.osgi.aps.externalprotocolextender.service.RPCProtocolProviderTracker;
 import se.natusoft.osgi.aps.externalprotocolextender.service.ServiceReferenceToServiceRepresentationConverter;
-import se.natusoft.osgi.aps.tools.APSLogger;
-import se.natusoft.osgi.aps.tools.APSServiceTracker;
-import se.natusoft.osgi.aps.tools.data.TrivialDataBus;
-import se.natusoft.osgi.aps.tools.tracker.OnServiceAvailable;
-import se.natusoft.osgi.aps.tools.tracker.OnServiceLeaving;
+import se.natusoft.osgi.aps.util.APSLogger;
+import se.natusoft.osgi.aps.tracker.APSServiceTracker;
+import se.natusoft.osgi.aps.util.TrivialDataBus;
+import se.natusoft.osgi.aps.tracker.OnServiceAvailable;
+import se.natusoft.osgi.aps.tracker.OnServiceLeaving;
 
 import java.util.Properties;
 

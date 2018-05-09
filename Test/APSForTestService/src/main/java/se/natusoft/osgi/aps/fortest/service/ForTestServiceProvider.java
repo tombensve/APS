@@ -1,7 +1,7 @@
 package se.natusoft.osgi.aps.fortest.service;
 
 import se.natusoft.osgi.aps.fortest.pub.ForTestService;
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider;
+import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider;
 
 import java.util.HashMap;
 import java.util.Map;

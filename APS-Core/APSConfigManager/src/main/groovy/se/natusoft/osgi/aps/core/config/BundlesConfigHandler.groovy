@@ -5,9 +5,9 @@ import groovy.transform.TypeChecked
 import org.osgi.framework.Bundle
 import org.osgi.framework.BundleEvent
 import se.natusoft.docutations.NotNull
-import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.BundleListener
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
+import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.osgi.aps.activator.annotation.BundleListener
+import se.natusoft.osgi.aps.activator.annotation.Managed
 
 /**
  * This listens to bundles and manages configurations.

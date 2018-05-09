@@ -46,7 +46,7 @@ import se.natusoft.osgi.aps.model.APSHandler
 import se.natusoft.osgi.aps.model.ID
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.ReceiveThread
-import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.util.APSLogger
 
 /**
  * This provides an implementation of APSSimpleMessageService using RabbitMQ.

@@ -45,10 +45,10 @@ import se.natusoft.osgi.aps.api.net.tcpip.DatagramPacketListener
 import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequest
 import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequestListener
 import se.natusoft.osgi.aps.tcpipsvc.ConnectionProvider.Direction
-import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.BundleStop
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.osgi.aps.activator.annotation.BundleStop
+import se.natusoft.osgi.aps.activator.annotation.Managed
+import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
 
 /**
  * Provides an implementation of APSTCPIPService for nonsecure connections.

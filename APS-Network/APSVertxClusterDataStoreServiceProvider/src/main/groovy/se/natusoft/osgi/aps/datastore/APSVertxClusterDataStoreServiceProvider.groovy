@@ -12,11 +12,11 @@ import se.natusoft.osgi.aps.model.APSHandler
 import se.natusoft.osgi.aps.model.APSResult
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.exceptions.APSValidationException
-import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiService
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.osgi.aps.activator.annotation.Managed
+import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
+import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
 
 @SuppressWarnings("GroovyUnusedDeclaration")
 @OSGiServiceProvider(

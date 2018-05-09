@@ -2,7 +2,7 @@ package se.natusoft.osgi.aps.metadata;
 
 import se.natusoft.osgi.aps.api.core.meta.APSMetaDataService;
 import se.natusoft.osgi.aps.api.core.meta.MetaData;
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider;
+import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider;
 
 import java.util.Collections;
 import java.util.HashMap;

@@ -3,7 +3,7 @@ package se.natusoft.osgi.aps.discoveryservice
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.net.tcpip.APSTCPIPService
-import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.util.APSLogger
 
 /**
  * This is a task that sends one ServiceDescription to multiple instances of this service via multicast.

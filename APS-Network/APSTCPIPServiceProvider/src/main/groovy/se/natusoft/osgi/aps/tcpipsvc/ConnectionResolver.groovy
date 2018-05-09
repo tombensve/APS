@@ -46,8 +46,8 @@ import se.natusoft.osgi.aps.tcpipsvc.config.NamedDestinationsConfig
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
 import se.natusoft.osgi.aps.tcpipsvc.security.UDPSecurityHandler
-import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.annotation.activator.Managed
+import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.osgi.aps.activator.annotation.Managed
 
 /**
  * Resolves named configuration and creates configured network providers.

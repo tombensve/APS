@@ -43,9 +43,9 @@ import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.net.tcpip.StreamedRequestListener
 import se.natusoft.osgi.aps.tcpipsvc.config.TCPIPConfig
 import se.natusoft.osgi.aps.tcpipsvc.security.TCPSecurityHandler
-import se.natusoft.osgi.aps.tools.APSLogger
-import se.natusoft.osgi.aps.tools.exceptions.APSNoServiceAvailableException
-import se.natusoft.osgi.aps.tools.util.IntensiveExceptionsGuard
+import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.osgi.aps.tracker.APSNoServiceAvailableException
+import se.natusoft.osgi.aps.util.IntensiveExceptionsGuard
 
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bnd-LastModified: 1518027574810
 Build-Jdk: 1.8.0_92
 Built-By: tommy
-Bundle-Activator: se.natusoft.osgi.aps.tools.APSActivator
+Bundle-Activator: se.natusoft.osgi.aps.activator.APSActivator
 Bundle-DocURL: https://github.com/tombensve/APS
 Bundle-License: http://www.apache.org/licenses/LICENSE-2.0
 Bundle-ManifestVersion: 2

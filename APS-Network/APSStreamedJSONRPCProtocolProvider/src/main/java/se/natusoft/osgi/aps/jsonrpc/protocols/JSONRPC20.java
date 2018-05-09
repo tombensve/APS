@@ -52,7 +52,7 @@ import se.natusoft.osgi.aps.jsonrpc.errors.JSONRPCError;
 import se.natusoft.osgi.aps.jsonrpc.errors.JSONRPCInvalidRequestError;
 import se.natusoft.osgi.aps.jsonrpc.errors.JSONRPCParseError;
 import se.natusoft.osgi.aps.jsonrpc.model.JSONRPCRequest;
-import se.natusoft.osgi.aps.tools.APSLogger;
+import se.natusoft.osgi.aps.util.APSLogger;
 
 import java.io.IOException;
 import java.io.InputStream;

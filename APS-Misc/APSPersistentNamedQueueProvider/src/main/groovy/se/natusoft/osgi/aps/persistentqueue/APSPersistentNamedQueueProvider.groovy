@@ -3,6 +3,11 @@ package se.natusoft.osgi.aps.persistentqueue
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.docutations.Implements
+import se.natusoft.osgi.aps.activator.annotation.BundleStop
+import se.natusoft.osgi.aps.activator.annotation.Managed
+import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
+import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFile
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
@@ -10,7 +15,7 @@ import se.natusoft.osgi.aps.api.misc.queue.APSNamedQueueService
 import se.natusoft.osgi.aps.api.misc.queue.APSQueue
 import se.natusoft.osgi.aps.exceptions.APSIOException
 import se.natusoft.osgi.aps.exceptions.APSResourceNotFoundException
-import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.util.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 
 import java.util.concurrent.ExecutorService

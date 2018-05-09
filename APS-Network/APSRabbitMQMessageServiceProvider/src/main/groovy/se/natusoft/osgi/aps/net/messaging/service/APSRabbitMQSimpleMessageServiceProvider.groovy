@@ -4,6 +4,11 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
+import se.natusoft.osgi.aps.activator.annotation.BundleStart
+import se.natusoft.osgi.aps.activator.annotation.BundleStop
+import se.natusoft.osgi.aps.activator.annotation.Managed
+import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
+import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
 import se.natusoft.osgi.aps.api.messaging.APSMessagePublisher
 import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
 import se.natusoft.osgi.aps.api.messaging.APSMessagingException
@@ -15,7 +20,7 @@ import se.natusoft.osgi.aps.model.APSResult
 import se.natusoft.osgi.aps.model.ID
 import se.natusoft.osgi.aps.net.messaging.config.Config
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.PeskyWabbitConnectionManager
-import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.util.APSLogger
 import se.natusoft.osgi.aps.tools.annotation.activator.*
 
 /**

@@ -4,8 +4,8 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
-import se.natusoft.osgi.aps.tools.APSActivator
-import se.natusoft.osgi.aps.tools.APSLogger
+import se.natusoft.osgi.aps.activator.APSActivator
+import se.natusoft.osgi.aps.util.APSLogger
 
 import static java.util.concurrent.TimeUnit.SECONDS
 

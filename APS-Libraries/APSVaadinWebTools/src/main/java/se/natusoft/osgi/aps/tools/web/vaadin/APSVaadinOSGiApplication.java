@@ -37,11 +37,10 @@
 package se.natusoft.osgi.aps.tools.web.vaadin;
 
 import com.vaadin.server.*;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.*;
 import org.osgi.framework.BundleContext;
-import se.natusoft.osgi.aps.tools.APSActivator;
-import se.natusoft.osgi.aps.tools.APSLogger;
+import se.natusoft.osgi.aps.activator.APSActivator;
+import se.natusoft.osgi.aps.util.APSLogger;
 import se.natusoft.osgi.aps.tools.web.*;
 import se.natusoft.osgi.aps.tools.web.vaadin.tools.VaadinCookieAdapters;
 

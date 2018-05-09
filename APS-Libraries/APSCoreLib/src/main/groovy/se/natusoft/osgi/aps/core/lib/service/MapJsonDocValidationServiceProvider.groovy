@@ -7,8 +7,8 @@ import se.natusoft.osgi.aps.api.misc.json.model.APSMapJsonSchema
 import se.natusoft.osgi.aps.api.misc.json.service.APSMapJsonValidationService
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.exceptions.APSValidationException
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiProperty
-import se.natusoft.osgi.aps.tools.annotation.activator.OSGiServiceProvider
+import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
+import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
 import se.natusoft.osgi.aps.core.lib.MapJsonDocSchemaValidator
 
 /**

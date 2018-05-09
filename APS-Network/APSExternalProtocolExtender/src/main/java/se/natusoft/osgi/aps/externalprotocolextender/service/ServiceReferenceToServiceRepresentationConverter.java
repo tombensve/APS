@@ -59,8 +59,8 @@ import se.natusoft.osgi.aps.api.external.model.type.DataTypeDescription;
 import se.natusoft.osgi.aps.api.external.model.type.ParameterDataTypeDescription;
 import se.natusoft.osgi.aps.externalprotocolextender.model.ServiceDataReason;
 import se.natusoft.osgi.aps.externalprotocolextender.model.ServiceRepresentation;
-import se.natusoft.osgi.aps.tools.data.TrivialDataBus;
-import se.natusoft.osgi.aps.tools.data.TrivialDataBus.TrivialBusReceivingMember;
+import se.natusoft.osgi.aps.util.TrivialDataBus;
+import se.natusoft.osgi.aps.util.TrivialDataBus.TrivialBusReceivingMember;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
