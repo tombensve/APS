@@ -25,7 +25,7 @@ import se.natusoft.osgi.aps.activator.annotation.OSGiService
 import java.time.LocalDateTime
 import java.util.concurrent.ExecutorService
 
-import static se.natusoft.osgi.aps.api.net.discovery.DiscoveryKeys.*
+import static se.natusoft.osgi.aps.activator.annotation.DiscoveryKeys.*
 
 /**
  * Keeps track of the services and handles all communication.
