@@ -34,7 +34,7 @@
  *         2011-08-28: Created!
  *
  */
-package se.natusoft.osgi.aps.api.core.filesystem.model;
+package se.natusoft.osgi.aps.activator.annotation;
 
 import java.io.*;
 import java.util.Properties;

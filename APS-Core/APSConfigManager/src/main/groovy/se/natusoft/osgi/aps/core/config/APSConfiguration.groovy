@@ -8,8 +8,8 @@ import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
 import se.natusoft.osgi.aps.api.core.APSSerializableData
 import se.natusoft.osgi.aps.api.core.config.APSConfig
-import se.natusoft.osgi.aps.api.core.filesystem.model.APSDirectory
-import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem
+import se.natusoft.osgi.aps.activator.annotation.APSDirectory
+import se.natusoft.osgi.aps.activator.annotation.APSFilesystem
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
 import se.natusoft.osgi.aps.core.lib.MapJsonDocSchemaValidator
 import se.natusoft.osgi.aps.core.lib.StructMap

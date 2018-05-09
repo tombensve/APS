@@ -1,45 +1,45 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Filesystem Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides access to a service/application private filesystem that remains until the
  *         service/application specifically deletes it. This is independent of the OSGi server
  *         it is running in (if configured).
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
  *         2011-06-04: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.core.filesystem.model;
 
-import se.natusoft.osgi.aps.api.core.filesystem.model.APSDirectory;
-import se.natusoft.osgi.aps.api.core.filesystem.model.APSFile;
+import se.natusoft.osgi.aps.activator.annotation.APSDirectory;
+import se.natusoft.osgi.aps.activator.annotation.APSFile;
 
 import java.io.*;
 import java.util.Properties;
@@ -57,20 +57,20 @@ public class APSFileImpl /*extends File*/ implements APSFile {
 
     /** The filesystem this backingFile belongs to. */
     protected APSFilesystemImpl fs = null;
-    
+
     /** The filesystem root relative path. */
     protected String relPath;
-    
+
     /** The backing java.io.File. */
     protected File backingFile;
 
     //
     // Constructors
     //
-    
+
     /**
      * Creates a new APSFileImpl instance from the specified filesystem root relative path.
-     * 
+     *
      * @param fs The APSFilesystemImpl that created this APSFileImpl.
      * @param path The filesystem relative path of the backingFile.
      */
@@ -98,7 +98,7 @@ public class APSFileImpl /*extends File*/ implements APSFile {
 
     /**
      * Creates a new APSFileImpl instance.
-     * 
+     *
      * @param copy The APSFileImpl to copy from.
      */
     APSFileImpl(APSFileImpl copy) {
@@ -110,14 +110,14 @@ public class APSFileImpl /*extends File*/ implements APSFile {
     //
     // Methods
     //
-    
-    /** 
-     * Returns the backing backingFile. 
+
+    /**
+     * Returns the backing backingFile.
      */
     /*package*/ File getBackingFile() {
         return this.backingFile;
     }
-    
+
     /**
      * If this APSFileImpl represents a directory an APSDirectoryImpl instance will be returned.
      * Otherwise null will be returned.
@@ -132,7 +132,7 @@ public class APSFileImpl /*extends File*/ implements APSFile {
 
     /**
      * Returns the path of the specified child.
-     * 
+     *
      * @param name The name of the child to get the path for.
      */
     private String getChildPath(String name) {
@@ -150,8 +150,8 @@ public class APSFileImpl /*extends File*/ implements APSFile {
 
     /**
      * Creates a new InputStream to this backingFile.
-     * 
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     @Override
     public InputStream createInputStream() throws IOException {
@@ -161,7 +161,7 @@ public class APSFileImpl /*extends File*/ implements APSFile {
     /**
      * Creates a new OutputStream to this backingFile.
      *
-     * @throws IOException 
+     * @throws IOException
      */
     @Override
     public OutputStream createOutputStream() throws IOException {
@@ -171,7 +171,7 @@ public class APSFileImpl /*extends File*/ implements APSFile {
     /**
      * Creates a new Reader to this backingFile.
      *
-     * @throws IOException 
+     * @throws IOException
      */
     @Override
     public Reader createReader() throws IOException {
@@ -180,8 +180,8 @@ public class APSFileImpl /*extends File*/ implements APSFile {
 
     /**
      * Creates a new Writer to this backingFile.
-     * 
-     * @throws IOException 
+     *
+     * @throws IOException
      */
     @Override
     public Writer createWriter() throws IOException {
@@ -190,7 +190,7 @@ public class APSFileImpl /*extends File*/ implements APSFile {
 
     /**
      * If this backingFile denotes a properties backingFile it is loaded and returned.
-     * 
+     *
      * @throws IOException on failure or if it is not a properties backingFile.
      */
     @Override
@@ -206,15 +206,15 @@ public class APSFileImpl /*extends File*/ implements APSFile {
         finally {
             readStream.close();
         }
-        
+
         return props;
     }
-    
+
     /**
      * If this backingFile denotes a properties backingFile it is written with the specified properties.
-     * 
+     *
      * @param properties The properties to save.
-     * 
+     *
      * @throws IOException on failure or if it is not a properties backingFile.
      */
     @Override
@@ -230,9 +230,9 @@ public class APSFileImpl /*extends File*/ implements APSFile {
             writeStream.close();
         }
     }
-    
-    /** 
-     * @see java.io.File#getPath() 
+
+    /**
+     * @see java.io.File#getPath()
      */
     @Override
     public String getPath() {
@@ -265,7 +265,7 @@ public class APSFileImpl /*extends File*/ implements APSFile {
     }
 
     /**
-     * @see java.io.File#getAbsoluteFile() 
+     * @see java.io.File#getAbsoluteFile()
      */
     @Override
     public String getAbsolutePath() {
@@ -273,7 +273,7 @@ public class APSFileImpl /*extends File*/ implements APSFile {
     }
 
     /**
-     * @see java.io.File#getAbsoluteFile() 
+     * @see java.io.File#getAbsoluteFile()
      */
     @Override
     public APSFile getAbsoluteFile() {
@@ -286,7 +286,7 @@ public class APSFileImpl /*extends File*/ implements APSFile {
     }
 
     /**
-     * @see java.io.File#getCanonicalPath() 
+     * @see java.io.File#getCanonicalPath()
      */
     @Override
     public String getCanonicalPath() throws IOException {
@@ -294,7 +294,7 @@ public class APSFileImpl /*extends File*/ implements APSFile {
     }
 
     /**
-     * @see java.io.File#getCanonicalFile() 
+     * @see java.io.File#getCanonicalFile()
      */
     @Override
     public APSFile getCanonicalFile() throws IOException {

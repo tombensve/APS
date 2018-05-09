@@ -39,7 +39,7 @@
 package se.natusoft.osgi.aps.core.filesystem.service;
 
 import org.osgi.framework.BundleContext;
-import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
+import se.natusoft.osgi.aps.activator.annotation.APSFilesystem;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
 import se.natusoft.osgi.aps.constants.APS;
 import se.natusoft.osgi.aps.core.filesystem.model.APSFilesystemImpl;

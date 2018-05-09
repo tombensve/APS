@@ -36,7 +36,7 @@
  */
 package se.natusoft.osgi.aps.api.core.filesystem.service;
 
-import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
+import se.natusoft.osgi.aps.activator.annotation.APSFilesystem;
 
 import java.io.IOException;
 
