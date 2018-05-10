@@ -30,7 +30,9 @@ The reason for these are to be able to separate APS specific exceptions from oth
 
 Also note that much of the APS APIs are reactive with a result callback to an `APSHandler`. These do not throw exceptions, but provides an exception instance in a failure result.
 
-## APSServiceTracker
+## Tools
+
+### APSServiceTracker
 
 This does the same thing as the standard service tracker included with OSGi, but does it better with more options and flexibility. One of the differences between this tracker and the OSGi one is that this throws an _APSNoServiceAvailableException_ if the service is not available. Personally I think this is easier to work with than having to check for a null result. I also think that trying to keep bundles and services  up are better than pulling them down as soon as one depencency goes away for a short while, for example due to redeploy of newer version. This is why APSServiceTracker takes a timeout and waits for a service to come back before failing.
 
@@ -57,11 +59,11 @@ On bundle stop you should do:
 
 So that the tracker unregisters itself from receiving bundle/service events.
 
-### Services and active service
+#### Services and active service
 
 The tracker tracks all instances of the service being tracked. It however have the notion of an active service. The active service is the service instance that will be returned by allocateService() (which is internally used by all other access methods also). On startup the active service will be the first service instance received. It will keep tracking other instances comming in, but as long as the active service does not go away it will be the one used. If the active service goes away then the the one that is at the beginning of the list of the other tracked instances will become active. If that list is empty there will be no active, which will trigger a wait for a service to become available again if allocateService() is called.
 
-### Providing a logger
+#### Providing a logger
 
 You can provide an APSLogger (see further down about APSLogger) to the tracker:
 
@@ -69,7 +71,7 @@ You can provide an APSLogger (see further down about APSLogger) to the tracker:
 
 When available the tracker will log to this.
 
-### Tracker as a wrapped service
+#### Tracker as a wrapped service
 
 The tracker can be used as a wrapped service:
 
@@ -82,7 +84,7 @@ The _cacheCallsUntilServiceAvailable_ parameter means just that. This makes the 
 
 If you don't like this, don't use the _getWrappedService(true)_. The _.onActiveServiceAvailable(callback)_ method can be used to receive the service instance when it is available.
 
-### Using the tracker in a similar way to the OSGi standard tracker
+#### Using the tracker in a similar way to the OSGi standard tracker
 
 To get a service instance you do:
 
@@ -94,13 +96,13 @@ When done with the service do:
 
 	tracker.releaseService();
 
-### Accessing a service by tracker callback
+#### Accessing a service by tracker callback
 
 Note that the _onServiceAvailable_, _onServiceLeaving_, etc have historical reasons for the names, but do now accept multiple calls without overwriting previous callback. The reason for this is that **APSActivator** reuses a tracker instance for tracking the same service in different classes. This allow for each class to do an _onServiceAvailable(...)_ and be called back when service is available. The easiest use of **APSServiceTracker** & **APSActivator** is to inject tracker as a proxied instance of the service API, by declaring its type to be the service interface. There are however times when you need to know when a service is available and this provides that.
 
 There are a few variants to get a service instance by callback. When the callbacks are used the actual service instance will only be allocated during the callback and then released again.
 
-#### onServiceAvailable
+##### onServiceAvailable
 
 This will result in a callback when any instance of the service becomes available. If there is more than one service instance published then there will be a callback for each.
 
@@ -114,7 +116,7 @@ This will result in a callback when any instance of the service becomes availabl
             }
         });
 
-#### onServiceLeaving
+##### onServiceLeaving
 
 This will result in a callback when any instance of the service goes away. If there is more than one service instance published the there will be a callback for each instance leaving.
 
@@ -131,15 +133,15 @@ This will result in a callback when any instance of the service goes away. If th
 
 Note that since the service is already gone by this time you don't get the service instance, only its reference and the class representing its API. In most cases both of these parameters are irellevant.
 
-#### onActiveServiceAvailable
+##### onActiveServiceAvailable
 
 This does the same thing as onServiceAvailable() but only for the active service. It uses the same _OnServiceAvailable_ interface.
 
-#### onActiveServiceLeaving
+##### onActiveServiceLeaving
 
 This does the same thing as onServiceLeaving() but for the active service. It uses the same _OnServiceLeaving_ interface.
 
-#### withService
+##### withService
 
 Runs the specified callback providing it with a service to use. This will wait for a service to become available if a timeout has been provided for the tracker.
 
@@ -166,15 +168,15 @@ If you don't have any arguments this will also work:
             }
         });
 
-#### withServiceIfAvailable
+##### withServiceIfAvailable
 
 This does the same as withService(...) but without waiting for a service to become available. If the service is not available at the time of the call the callback will not be called. No exception is thrown by this!
 
-#### withAllAvailableServices
+##### withAllAvailableServices
 
 This is used exactly the same way as withService(...), but the callback will be done for each tracked service instance, not only the active.
 
-#### onTimeout (since 0.9.3)
+##### onTimeout (since 0.9.3)
 
 This allows for a callback when the tracker times out waiting for a service. This callback will be called just before the _APSNoServiceAvailableException_ is about to be thrown.
 
@@ -185,7 +187,7 @@ This allows for a callback when the tracker times out waiting for a service. Thi
         }
     });
 
-## APSLogger
+### APSLogger
 
 This provides logging functionality. The no args constructor will log to System.out by default. The OutputStream constructor will logg to the specified output stream by default.
 
@@ -198,7 +200,7 @@ then the logger will try to get hold of the standard OSGi LogService and if that
 
 If you call the _setServiceRefrence(serviceRef);_ method on the logger then information about that service will be provied with each log.
 
-## APSActivator
+### APSActivator
 
 This is a BundleActivator implementation that uses annotations to register services and inject tracked services. Any bundle can use this activator by just importing the _se.natusoft.osgi.aps.activator_ and _se.natusoft.osgi.aps.activator.annotation_ packages.
 
@@ -421,11 +423,14 @@ The non blocking variant of _APSServiceTracker.getWrappedService(true)_ as descr
 
     public @interface BundleStop {}
 
-### Usage as BundleActivator
+
+TODO: Since APS is nowmore built on top of vertx, servlets no longer need to be supported. Vaadin (traditional) is not supported either due to requiring servlets. Vaadin web components that works with Angular and React is however supported.
+
+#### Usage as BundleActivator
 
 The _APSActivator_ class has 2 constructors. The default constructor without arguments are used for BundleActivator usage. In this case you just specify this class as your bundles activator, and then use the annotations described above. Thats it!
 
-### Other Usage
+#### Other Usage
 
 Since the activator usage will manage and create instances of all annotated classes this will not always work in all situations. One example is web applications where the web container is responsible for creating servlets. If you specifiy APSActivator as an activator for a WAB bundle and then use the annotations in a servlet then APSActivator will have a managed instance of the servlet, but it will not be the same instance as the web contatiner will run.
 
@@ -441,7 +446,7 @@ There are 2 support classes:
 
 Both of these creates and manages an APSActivator internally and catches shutdown to take it down. They also provide other utilities like providing the BundleContext. See _APSWebTools_ for more information.
 
-### APSActivatorPlugin
+#### APSActivatorPlugin
 
 Any implementing classes of this interface can be specified in META-INF/services/se.natusoft.osgi.aps.tools.APSActivatorPlugin file, one per line. These are loaded by java.util.ServiceLoader. The implementation can be provided by another bundle which should then export the relevant packages which can then be imported in the using bundle.
 
@@ -458,7 +463,7 @@ The APSActivatorPlugin API looks like this:
 
 **Be warned** that this is currently very untested! No APS code uses this yet.
 
-## APSContextWrapper
+### APSContextWrapper
 
 This provides a static wrap(...) method:
 
@@ -468,7 +473,7 @@ where _serviceProvider_ is an instance of a class that implements _Service_. The
 
 Normally the threads context class loader is the original service callers context class loader. For a web application it would be the web containers context class loader. If a service needs its own bundles class loader during its execution then this wrapper can be used.
 
-## ID generators
+### ID generators
 
 There is one interface:
 
@@ -507,7 +512,7 @@ that have 2 implementations:
 * IntID - Produces int ids.
 * UUID - Produces java.util.UUID Ids.
 
-## Javadoc
+### Javadoc
 
 The javadoc for this can be found at <http://apidoc.natusoft.se/APSToolsLib/>.
 
