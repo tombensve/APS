@@ -7383,7 +7383,6 @@
                     </supportedProjectTypes>
                     <archive>
                         <manifestEntries>
-                            <APS-Configs>se.natusoft.osgi.aps.api.web.config.APSAdminConfig</APS-Configs>
                             <Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath>
                             <Web-ContextPath>${osgi.web.context.path}</Web-ContextPath>
                         </manifestEntries>
