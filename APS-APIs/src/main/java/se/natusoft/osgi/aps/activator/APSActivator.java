@@ -41,6 +41,7 @@ import org.osgi.framework.BundleListener;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceListener;
 import se.natusoft.osgi.aps.activator.annotation.*;
+import se.natusoft.osgi.aps.api.core.config.APSConfig;
 import se.natusoft.osgi.aps.util.APSLogger;
 import se.natusoft.osgi.aps.tracker.APSServiceTracker;
 import se.natusoft.osgi.aps.util.BundleClassCollector;
@@ -1388,29 +1389,57 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     protected void registerListenerMethodWrappers( Method method, Class managedClass, BundleContext context ) {
         se.natusoft.osgi.aps.activator.annotation.ServiceListener serviceListener =
                 method.getAnnotation( se.natusoft.osgi.aps.activator.annotation.ServiceListener.class );
+
         if ( serviceListener != null ) {
+
             ServiceListenerWrapper serviceListenerWrapper =
                     new ServiceListenerWrapper( method, getManagedInstanceRep( managedClass ).instance );
+
             serviceListenerWrapper.start( context );
+
             this.listeners.add( serviceListenerWrapper );
         }
 
+
         se.natusoft.osgi.aps.activator.annotation.BundleListener bundleListener =
                 method.getAnnotation( se.natusoft.osgi.aps.activator.annotation.BundleListener.class );
+
         if ( bundleListener != null ) {
+
             BundleListenerWrapper bundleListenerWrapper =
                     new BundleListenerWrapper( method, getManagedInstanceRep( managedClass ).instance );
+
             bundleListenerWrapper.start( context );
+
             this.listeners.add( bundleListenerWrapper );
         }
 
+
         se.natusoft.osgi.aps.activator.annotation.FrameworkListener frameworkListener =
                 method.getAnnotation( se.natusoft.osgi.aps.activator.annotation.FrameworkListener.class );
+
         if ( frameworkListener != null ) {
+
             FrameworkListenerWrapper frameworkListenerWrapper =
                     new FrameworkListenerWrapper( method, getManagedInstanceRep( managedClass ).instance );
+
             frameworkListenerWrapper.start( context );
+
             this.listeners.add( frameworkListenerWrapper );
+        }
+
+        se.natusoft.osgi.aps.activator.annotation.ConfigListener configListener =
+                method.getAnnotation( se.natusoft.osgi.aps.activator.annotation.ConfigListener.class );
+
+        if ( configListener != null ) {
+
+            ConfigListenerWrapper configListenerWrapper =
+                    new ConfigListenerWrapper( method, getManagedInstanceRep( managedClass ).instance,
+                            configListener.apsConfigId() );
+
+            configListenerWrapper.start( context );
+
+            this.listeners.add( configListenerWrapper );
         }
     }
 
@@ -1853,12 +1882,68 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
          */
         @Override
         public void frameworkEvent( FrameworkEvent event ) {
+
             try {
+
                 method.invoke( instance, event );
+
             } catch ( IllegalAccessException | InvocationTargetException e ) {
+
                 APSActivator.this.activatorLogger.error( "Failed to invoke ServiceListener method [" + method + "]!", e );
             }
         }
     }
 
+    /**
+     * Listens on and forwards framework events.
+     */
+    protected class ConfigListenerWrapper implements ListenerWrapper {
+
+        private Method method;
+        private Object instance;
+        private String configId;
+        private APSServiceTracker<APSConfig> configTracker;
+        private ServiceReference ref;
+
+        public ConfigListenerWrapper( Method method, Object instance, String configId ) {
+
+            this.method = method;
+            this.instance = instance;
+            this.configId = configId;
+        }
+
+        public void start( BundleContext context ) {
+
+            this.configTracker = new APSServiceTracker<>( context, APSConfig.class,
+                    "(apsConfigId=" + this.configId + ")", "10 sec" );
+            this.configTracker.start();
+
+            activatorLogger.info( "######## Started config tracker for ' " + this.configId + "' ########" );
+
+            this.configTracker.onActiveServiceAvailable( ( service, serviceReference ) -> {
+                        activatorLogger.info( "######## Received config: " + service + " ########" );
+
+                        // We need to save the reference and allocate our own usages of the APSConfig instance.
+                        // This because as soon as this callback exits the passes 'service' is released again.
+                        // We release our allocation on stop( BundleContext ) below.
+                        this.ref = serviceReference;
+                        APSConfig config = ( APSConfig ) context.getService( this.ref );
+                        method.invoke( instance, config );
+                    }
+            );
+
+            this.configTracker.onActiveServiceLeaving( ( serviceRef, clazz ) -> {
+                        context.ungetService( this.ref );
+                        this.ref = null;
+                        method.invoke( null );
+                    }
+            );
+        }
+
+        public void stop( BundleContext context ) {
+            this.configTracker.stop( context );
+            if (this.ref != null) context.ungetService( this.ref );
+        }
+
+    }
 }

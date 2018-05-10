@@ -37,7 +37,6 @@
 package se.natusoft.osgi.aps.test.tools;
 
 import org.osgi.framework.*;
-import se.natusoft.osgi.aps.exceptions.APSException;
 import se.natusoft.osgi.aps.test.tools.internal.ServiceRegistry;
 
 import java.io.File;
@@ -131,7 +130,7 @@ public class TestBundle implements Bundle {
             }
             System.out.println();
         } catch ( IOException ioe ) {
-            throw new APSException( "Failed to load bundle MANIFEST.MF", ioe );
+            throw new RuntimeException( "Failed to load bundle MANIFEST.MF", ioe );
         }
     }
 

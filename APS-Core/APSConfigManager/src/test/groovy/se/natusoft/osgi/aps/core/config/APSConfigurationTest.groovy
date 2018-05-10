@@ -4,6 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
 import org.osgi.framework.ServiceReference
+import se.natusoft.osgi.aps.activator.annotation.ConfigListener
 import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
 import se.natusoft.osgi.aps.util.APSExecutor
@@ -75,28 +76,19 @@ class APSConfigurationTest extends OSGIServiceTestTools {
 class MoonWhaleService {
     // Name inspired by a South Park episode ...
 
-    @OSGiService( additionalSearchCriteria = "(apsConfigId=moon-whale-service-config)", nonBlocking = true )
-    private APSServiceTracker<APSConfig> configTracker
-
     @Managed
     private APSLogger logger
 
     private APSConfig config
 
-    @Initializer
-    void init() {
+    @ConfigListener(apsConfigId = "moon-whale-service-config")
+    void config( APSConfig config ) {
+        this.logger.info( "######## Config available! ########" )
 
-        this.logger.info( "######## MoonWhaleService.init()! ########" )
-
-        // Note that the code within the closure will not break on assert or exception! This is swallowed
-        // by the tracker. Fails will however be logged to stdout. However, any exception or assert failure
-        // within the closure will end the closure at that point. This is why we have the
-        // APSConfigurationTest.ok = true done at the end. This ok flag is asserted at the end of the test.
-        this.configTracker.onActiveServiceAvailable { APSConfig config, ServiceReference configRef ->
-            this.logger.info( "######## Config available! ########" )
+        if (config != null) {
             this.config = config
 
-            // Now, lets submit som work to a thread pool so that the tracker callback can return.
+            // Now, lets submit som work to a thread pool so that the callback can return.
             APSExecutor.submit {
                 Object value = this.config.lookup( "moonWhales.count" )
                 assert value instanceof Number

@@ -337,7 +337,7 @@ class ConfigManager {
                 }
             }
             else {
-                this.logger.alarm( "Failed to get a lock to cluster store!", lock.failure() )
+                this.logger.error( "Failed to get a lock to cluster store!", lock.failure() )
             }
         } // Automatic unlock!
     }
