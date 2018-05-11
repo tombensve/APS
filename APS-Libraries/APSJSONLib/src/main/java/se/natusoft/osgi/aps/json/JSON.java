@@ -77,9 +77,7 @@ public class JSON {
             JSONValue.JSONReader reader =
                     new JSONValue.JSONReader(new PushbackReader(new InputStreamReader(jsonIn, "UTF-8")), errorHandler);
 
-            char c = reader.getChar();
-
-            JSONValue value = JSONValue.resolveAndParseJSONValue(c, reader, errorHandler);
+            JSONValue value = JSONValue.resolveAndParseJSONValue(reader.getChar(), reader, errorHandler);
 
             resultHandler.handle(new APSResult.Provider<>(new APSValue.Provider<>(value)));
         } catch (IOException | APSIOException ioe) {
@@ -101,9 +99,7 @@ public class JSON {
             JSONValue.JSONReader reader =
                     new JSONValue.JSONReader(new PushbackReader(new InputStreamReader(jsonIn, "UTF-8")), errorHandler);
 
-            char c = reader.getChar();
-
-            return JSONValue.resolveAndParseJSONValue(c, reader, errorHandler);
+            return JSONValue.resolveAndParseJSONValue(reader.getChar(), reader, errorHandler);
         } catch (IOException ioe) {
             throw new APSIOException(ioe.getMessage(), ioe);
         }

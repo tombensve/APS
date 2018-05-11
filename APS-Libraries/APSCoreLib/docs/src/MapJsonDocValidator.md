@@ -5,25 +5,26 @@ This takes a schema (made up of a ` Map<String, Object> `, see below) and anothe
 ### Useage
 
          private Map<String, Object> schema = [
-                "meta/header": "meta",
-                header_1: [
-                        type_1      : "service",
-                        "meta/type" : "metadata",
-                        address_1   : "?aps\\.admin\\..*",
-                        classifier_1: "?public|private"
+                "header_?": "Contains meta data about the message.",
+                "header_1": [
+                        "type_?"      : "The type of the message. Currently only 'service'.",
+                        "type_1"      : "service",
+                        "address_?"   : "The address of the sender.",
+                        "address_1"   : "?aps\\.admin\\..*",
+                        "classifier_1": "?public|private"
                 ],
-                body_1  : [
-                        action_1: "get-webs"
+                "body_1"  : [
+                        "action_1": "get-webs"
                 ],
-                reply_0: [
-                        webs_1: [
+                "reply_0": [
+                        "webs_1": [
                                 [
-                                        name_1: "?.*",
-                                        url_1: "?^https?://.*",
-                                        no1_0: "#1-100",
-                                        no2_0: "#<=10",
-                                        no3_0: "#>100",
-                                        no4_0: "#1.2-3.4"
+                                        "name_1": "?.*",
+                                        "url_1": "?^https?://.*",
+                                        "no1_0": "#1-100",
+                                        "no2_0": "#<=10",
+                                        "no3_0": "#>100",
+                                        "no4_0": "#1.2-3.4"
                                 ]
                         ]
                 ]
@@ -44,6 +45,8 @@ This will throw a runtime exception on validation failure.
 &lt;key&gt;\_0 - The key is optional.
 
 &lt;key&gt;\_1 - The key is required.
+
+&lt;key&gt;\_? - A description of the key. MapJsonSchemaMeta extracts this information. It is intended for editors editing data of a file validated by a schema. This should provide help information about the value. Since APS uses the MapJsonDocSchemaValidator for configurations and is intended to have web guis for editing configuration this is intended to provide information about configuration fields.
 
 #### Values
 
@@ -73,24 +76,12 @@ This requires values to be exactly "bla".
 
 #### Example
 
-     Map<String, Object> struct = [
-        header_1: [
-           type_1      : "service",
-           address_1   : "aps.admin.web",
-           classifier_0: "?public|private"
-        ],
-        body_1  : [
-           action_1: "get-webs"
-        ],
-        reply_0: [
-           webs_1: [
-              [
-                 name_1: "?.*",
-                 url_0: "?^https?://.*",
-                 someNumber_0: "#0-100" // Also valid: ( ">0" "<100" ) ( ">=0" "<=100" )
-              ]
-           ]
-        ]
-     ]
+    Map<String, Object> myJsonObject = JSON.readJsonAsMap( myJsonStream, jsonErrorHandler)
+    ...
+
+    Map<String, object> schema = JSON.readJsonAsMap(schemaStream, jsonErrorHandler)
+    MapJsonDocValidator jsonValidator = new MapJsonDocValidator( validstructure: schema )
+
+    jsonValidator.validate( myJsonObject )
 
 

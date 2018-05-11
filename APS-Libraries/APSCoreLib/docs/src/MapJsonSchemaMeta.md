@@ -11,6 +11,7 @@ From these the following can be resolved:
 - Is the value required ?
 - The constraints of the value. If this starts with '?' then the rest is a regular expression.
   If not the value is a constant, that is, the value has to be exactly as the constraint string.
+- A description of the value.
 
 This is not used by the MapJsonDocValidator when validating! This is intended for GUI configuration
 editors to use to build a configuration GUI producing valid configurations.

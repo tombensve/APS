@@ -13,6 +13,7 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  * Example:
  *
  *    Map<String, Object> struct = [
+ *       header_?: "The nessage header.",
  *       header_1: [
  *          type_1      : "service",
  *          address_1   : "aps.admin.web",
@@ -36,6 +37,7 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *
  *  * __key\_1__ : This entry is required.
  *  * __key\_0__ : This entry is optional.
+ *  * __key_?__  : A description of this key.
  *
  * ### Values
  *
@@ -89,11 +91,12 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
 
             schemaMap.each { String key, Object value ->
 
-                verifyKey( key, this.schemaMap )
-                String realKey = _key( key )
+                if (verifyKey( key, this.schemaMap )) {
+                    String realKey = _key( key )
 
-                this.schemaMap.put( realKey, value )
-                this.required.put( realKey, _required( key ) ? Boolean.TRUE : Boolean.FALSE )
+                    this.schemaMap.put( realKey, value )
+                    this.required.put( realKey, _required( key ) ? Boolean.TRUE : Boolean.FALSE )
+                }
             }
         }
 
@@ -130,14 +133,16 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
          * @param mapKey The key to verify.
          * @param source The source of the key. Used for exception message to make things clearer.
          */
-        private static verifyKey( String mapKey, Map<String, Object> source ) {
+        private static boolean verifyKey( String mapKey, Map<String, Object> source ) {
 
             String[] parts = mapKey.split( "_" )
 
-            if ( parts.length >= 2 && ( parts[ 1 ] != '0' && parts[ 1 ] != '1' ) ) {
+            if ( parts.length >= 2 && ( parts[ 1 ] != '0' && parts[ 1 ] != '1' ) && parts[ 1 ] != '?' ) {
 
                 throw new APSValidationException( "Bad key format! [$mapKey] Should be 'name' or 'name_0' or 'name_1'. ${ source }" )
             }
+
+            return parts[ 1 ] != '?'
         }
 
         /**

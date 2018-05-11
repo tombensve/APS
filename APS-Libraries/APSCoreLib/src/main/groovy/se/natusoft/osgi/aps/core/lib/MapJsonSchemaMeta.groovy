@@ -81,7 +81,7 @@ class MapJsonSchemaMeta implements MapJsonSchemaConst {
 
         map.each { String k, Object v ->
 
-            parseValue( k, v, entryKey )
+            parseValue( k, v, entryKey, map )
         }
     }
 
@@ -92,7 +92,7 @@ class MapJsonSchemaMeta implements MapJsonSchemaConst {
      * @param value Current Map value
      * @param entryKey Current entry key.
      */
-    private void parseValue( String key, Object value, String entryKey ) {
+    private void parseValue( String key, Object value, String entryKey, Map<String, Object>  map) {
         String[] parts = key.split( "_" )
 
         if (!entryKey.isEmpty(  )) {
@@ -107,17 +107,20 @@ class MapJsonSchemaMeta implements MapJsonSchemaConst {
         else if ( value instanceof List ) {
 
             Object obj = ( (List)value )[ 0 ]
-            parseValue( "${parts[NAME]}.[]", obj, "${entryKey}" )
+            parseValue( "${parts[NAME]}.[]", obj, "${entryKey}", map )
         }
         else if ( value instanceof String || value instanceof Number || value instanceof boolean || value instanceof Boolean) {
 
             if ( parts.length >= 2 ) {
-
+                String descKey = "${key.split( "_" )[0]}_?"
+                //println("############ descKey: ${descKey} : ${map.get( descKey )}")
+                String desc = map[ descKey as String ]
                 this.mapJsonSchemaEntries << new MapJsonSchemaEntry(
                         name: "${entryKey}${parts[ NAME ]}",
                         required: parts[ REQUIRED ] == "1",
                         constraints: value.toString(),
-                        type: typeConv( value.toString() )
+                        type: typeConv( value.toString() ),
+                        description: desc
                 )
             }
         }
@@ -201,6 +204,9 @@ class MapJsonSchemaEntry implements MapJsonSchemaConst {
     /** The entry constraints. */
     String constraints
 
+    /** A desription of the entry. */
+    String description
+
     //
     // Methods
     //
@@ -234,7 +240,7 @@ class MapJsonSchemaEntry implements MapJsonSchemaConst {
      * @return A string representation of this.
      */
     String toString() {
-        "{ name: ${name}, required: ${required}, type: ${type}, constraints: ${constraints} }"
+        "{ name: ${name}, required: ${required}, type: ${type}, constraints: ${constraints}, description: ${description} }"
     }
 
     /**
@@ -246,6 +252,7 @@ class MapJsonSchemaEntry implements MapJsonSchemaConst {
         entry.reqired = this.required
         entry.type = type.name()
         entry.constraints = this.constraints
+        entry.description = this.description
 
         entry
     }

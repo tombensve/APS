@@ -7,25 +7,26 @@ This takes a schema (made up of a `Map<String,``Object>`, see below) and another
 ### Useage
 
              private Map<String, Object> schema = [
-                    "meta/header": "meta",
-                    header_1: [
-                            type_1      : "service",
-                            "meta/type" : "metadata",
-                            address_1   : "?aps\\.admin\\..*",
-                            classifier_1: "?public|private"
+                    "header_?": "Contains meta data about the message.",
+                    "header_1": [
+                            "type_?"      : "The type of the message. Currently only 'service'.",
+                            "type_1"      : "service",
+                            "address_?"   : "The address of the sender.",
+                            "address_1"   : "?aps\\.admin\\..*",
+                            "classifier_1": "?public|private"
                     ],
-                    body_1  : [
-                            action_1: "get-webs"
+                    "body_1"  : [
+                            "action_1": "get-webs"
                     ],
-                    reply_0: [
-                            webs_1: [
+                    "reply_0": [
+                            "webs_1": [
                                     [
-                                            name_1: "?.*",
-                                            url_1: "?^https?://.*",
-                                            no1_0: "#1-100",
-                                            no2_0: "#<=10",
-                                            no3_0: "#>100",
-                                            no4_0: "#1.2-3.4"
+                                            "name_1": "?.*",
+                                            "url_1": "?^https?://.*",
+                                            "no1_0": "#1-100",
+                                            "no2_0": "#<=10",
+                                            "no3_0": "#>100",
+                                            "no4_0": "#1.2-3.4"
                                     ]
                             ]
                     ]
@@ -46,6 +47,8 @@ This will throw a runtime exception on validation failure.
 <key>_0 - The key is optional.
 
 <key>_1 - The key is required.
+
+<key>_? - A description of the key. MapJsonSchemaMeta extracts this information. It is intended for editors editing data of a file validated by a schema. This should provide help information about the value. Since APS uses the MapJsonDocSchemaValidator for configurations and is intended to have web guis for editing configuration this is intended to provide information about configuration fields.
 
 #### Values
 
@@ -75,25 +78,13 @@ This requires values to be exactly "bla".
 
 #### Example
 
-         Map<String, Object> struct = [
-            header_1: [
-               type_1      : "service",
-               address_1   : "aps.admin.web",
-               classifier_0: "?public|private"
-            ],
-            body_1  : [
-               action_1: "get-webs"
-            ],
-            reply_0: [
-               webs_1: [
-                  [
-                     name_1: "?.*",
-                     url_0: "?^https?://.*",
-                     someNumber_0: "#0-100" // Also valid: ( ">0" "<100" ) ( ">=0" "<=100" )
-                  ]
-               ]
-            ]
-         ]
+        Map<String, Object> myJsonObject = JSON.readJsonAsMap( myJsonStream, jsonErrorHandler)
+        ...
+        
+        Map<String, object> schema = JSON.readJsonAsMap(schemaStream, jsonErrorHandler)
+        MapJsonDocValidator jsonValidator = new MapJsonDocValidator( validstructure: schema )
+        
+        jsonValidator.validate( myJsonObject )
 
 ## MapJsonSchemaMeta
 
@@ -109,6 +100,8 @@ From these the following can be resolved:
 
 *  The constraints of the value. If this starts with '?' then the rest is a regular expression.  If not the value is a constant, that is, the value has to be exactly as the constraint string.
 
+*  A description of the value.
+
 This is not used by the MapJsonDocValidator when validating! This is intended for GUI configuration editors to use to build a configuration GUI producing valid configurations.
 
 Usage:
@@ -117,9 +110,7 @@ Usage:
         ...
         new MapJsonSchemaMeta(schema).mapJsonEntryMetas.each { MapJsonEntryMeta mjem -> ... }
 
-## Mapo
-
-Yes, I had a problem coming up with a good name for this!
+## StructMap
 
 This wraps a structured Map that looks like a JSON document, containing Map, List, and other 'Object's as values.
 
@@ -133,7 +124,7 @@ Note that since this delegates to the wrapped Map the class is also a Map when c
 
 Here is an example (in Groovy) that shows how to lookup and how to use the keys:
 
-        Mapo mapo = new Mapo<>(
+        StructMap smap = new StructMap<>(
                 [
                         header: [
                                 type      : "service",
@@ -157,17 +148,17 @@ Here is an example (in Groovy) that shows how to lookup and how to use the keys:
                                 ]
                         ]
                 ] as Map<String, Object>
-        ) as Mapo
+        ) as StructMap
         
-        assert mapo.lookup( "header.type" ).toString() == "service"
-        assert mapo.lookup( "header.address" ).toString() == "aps.admin.web"
-        assert mapo.lookup( "header.classifier" ).toString() == "public"
-        assert mapo.lookup( "body.action" ).toString() == "get-webs"
-        assert mapo.lookup( "reply.webs.[0].name") == "ConfigAdmin"
-        assert mapo.lookup( "reply.webs.[1].name") == "RemoteServicesAdmin"
-        assert mapo.lookup( "reply.webs.[1].url") == "https://localhost:8080/aps/RemoteSvcAdmin"
+        assert smap.lookup( "header.type" ).toString() == "service"
+        assert smap.lookup( "header.address" ).toString() == "aps.admin.web"
+        assert smap.lookup( "header.classifier" ).toString() == "public"
+        assert smap.lookup( "body.action" ).toString() == "get-webs"
+        assert smap.lookup( "reply.webs.[0].name") == "ConfigAdmin"
+        assert smap.lookup( "reply.webs.[1].name") == "RemoteServicesAdmin"
+        assert smap.lookup( "reply.webs.[1].url") == "https://localhost:8080/aps/RemoteSvcAdmin"
         
-        mapo.withAllKeys { String key ->
+        smap.withAllKeys { String key ->
             println "${key}"
         }
         
@@ -182,5 +173,5 @@ Here is an example (in Groovy) that shows how to lookup and how to use the keys:
 
 Note that the values are API-wise of type Object! This is because it can be anything, like a String, Map, List, Number (if you stick to JSON formats) or any other type of value you put in there.
 
-Also note the indexes in the keys in the example. It is not "webs[0]" but "webs.[0]"! The index is a reference name in itself. The keys returned by getAllKeys() have a number between the '[' and the ']' for List entries. This number is the number of entries in the list. The MapPath class (used by this class) can be used to provide array size of an array value.
+Also note the indexes in the keys in the example. It is not "webs[0]" but "webs.[0]"! The index is a reference name in itself. The keys returned by getAllKeys() have a number between the '[' and the ']' for List entries. This number is the number of entries in the list. The StructPath class (used by this class) can be used to provide array size of an array value.
 

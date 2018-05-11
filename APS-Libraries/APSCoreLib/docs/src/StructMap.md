@@ -1,6 +1,4 @@
-## Mapo
-
-Yes, I had a problem coming up with a good name for this!
+## StructMap
 
 This wraps a structured Map that looks like a JSON document, containing Map, List, and other 'Object's as values.
 
@@ -14,7 +12,7 @@ Note that since this delegates to the wrapped Map the class is also a Map when c
 
 Here is an example (in Groovy) that shows how to lookup and how to use the keys:
 
-    Mapo mapo = new Mapo<>(
+    StructMap smap = new StructMap<>(
             [
                     header: [
                             type      : "service",
@@ -38,17 +36,17 @@ Here is an example (in Groovy) that shows how to lookup and how to use the keys:
                             ]
                     ]
             ] as Map<String, Object>
-    ) as Mapo
+    ) as StructMap
 
-    assert mapo.lookup( "header.type" ).toString() == "service"
-    assert mapo.lookup( "header.address" ).toString() == "aps.admin.web"
-    assert mapo.lookup( "header.classifier" ).toString() == "public"
-    assert mapo.lookup( "body.action" ).toString() == "get-webs"
-    assert mapo.lookup( "reply.webs.[0].name") == "ConfigAdmin"
-    assert mapo.lookup( "reply.webs.[1].name") == "RemoteServicesAdmin"
-    assert mapo.lookup( "reply.webs.[1].url") == "https://localhost:8080/aps/RemoteSvcAdmin"
+    assert smap.lookup( "header.type" ).toString() == "service"
+    assert smap.lookup( "header.address" ).toString() == "aps.admin.web"
+    assert smap.lookup( "header.classifier" ).toString() == "public"
+    assert smap.lookup( "body.action" ).toString() == "get-webs"
+    assert smap.lookup( "reply.webs.[0].name") == "ConfigAdmin"
+    assert smap.lookup( "reply.webs.[1].name") == "RemoteServicesAdmin"
+    assert smap.lookup( "reply.webs.[1].url") == "https://localhost:8080/aps/RemoteSvcAdmin"
 
-    mapo.withAllKeys { String key ->
+    smap.withAllKeys { String key ->
         println "${key}"
     }
 
@@ -66,5 +64,5 @@ List, Number (if you stick to JSON formats) or any other type of value you put i
 
 Also note the indexes in the keys in the example. It is not "webs\[0\]" but "webs.\[0\]"! The index is a
 reference name in itself. The keys returned by getAllKeys() have a number between the '\[' and the '\]' for
-List entries. This number is the number of entries in the list. The MapPath class (used by this class)
+List entries. This number is the number of entries in the list. The StructPath class (used by this class)
 can be used to provide array size of an array value.
