@@ -1,0 +1,4 @@
+{
+  "ntpServer_?": "An IP address or a hostname to an NTP server.",
+  "ntpServer_1": "?[0-9,a-z,\\-,\\.]*\\.[0-9,a-z,\\-]*"
+}

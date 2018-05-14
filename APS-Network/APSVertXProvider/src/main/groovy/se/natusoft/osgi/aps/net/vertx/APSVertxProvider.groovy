@@ -42,6 +42,7 @@ package se.natusoft.osgi.aps.net.vertx
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.core.AsyncResult
+import io.vertx.core.Handler
 import io.vertx.core.Vertx
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.http.HttpServer
@@ -49,6 +50,7 @@ import io.vertx.core.shareddata.SharedData
 import io.vertx.ext.web.Router
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceRegistration
+import se.natusoft.osgi.aps.exceptions.APSException
 import se.natusoft.osgi.aps.exceptions.APSStartException
 import se.natusoft.osgi.aps.util.APSLogger
 import se.natusoft.osgi.aps.activator.annotation.BundleStop
@@ -58,7 +60,7 @@ import se.natusoft.osgi.aps.activator.annotation.Managed
 /**
  * Provides Vertx by publishing Vertx and other Vertx related objects some by configuration as OSGi services.
  */
-@SuppressWarnings([ "GroovyUnusedDeclaration", "PackageAccessibility" ])
+@SuppressWarnings( [ "GroovyUnusedDeclaration", "PackageAccessibility" ] )
 @CompileStatic
 @TypeChecked
 class APSVertxProvider {
@@ -78,7 +80,7 @@ class APSVertxProvider {
     private BundleContext context
 
     /** The logger for this service. */
-    @Managed(loggingFor = "aps-vertx-provider")
+    @Managed( loggingFor = "aps-vertx-provider" )
     private APSLogger logger
 
     /** The vertx instance. */
@@ -94,16 +96,16 @@ class APSVertxProvider {
     private ServiceRegistration shareDataSvcReg
 
     /** A map of HTTP servers per service port. These are internal to this bundle. */
-    private Map<Integer, HttpServer> httpServerByPort = [ : ]
+    private Map<Integer, HttpServer> httpServerByPort = [:]
 
     /** A map of Routers for HTTP servers per service port. These are provided to those that wants to serve a path. */
-    private Map<Integer, Router> httpServerRouterByPort = [ : ]
+    private Map<Integer, Router> httpServerRouterByPort = [:]
 
     /** Service registrations for routers. */
-    private Map<Integer, ServiceRegistration> routerRegByPort = [ : ]
+    private Map<Integer, ServiceRegistration> routerRegByPort = [:]
 
     /** */
-    private List<Runnable> shutdownNotification = [ ]
+    private List<Runnable> shutdownNotification = []
 
     /**
      * Temporary config handling until the APS config overhaul.
@@ -139,12 +141,47 @@ class APSVertxProvider {
         return key.substring( HTTP_CONF_PREFIX.length() )
     }
 
+    private static void vertxBoot( Map<String, Object> options, Handler<AsyncResult<Vertx>> handler ) {
+
+        boolean apsVertxClustered = true
+
+        String clusterProp = System.getProperty( "aps.vertx.clustered" )
+        if (clusterProp != null && clusterProp.trim(  ).toLowerCase(  ).equals( "false" )) {
+            apsVertxClustered = false
+        }
+
+        if (apsVertxClustered) {
+            Vertx.clusteredVertx( options, handler )
+        }
+        else {
+            Vertx vertx = Vertx.vertx( options )
+            handler.handle( new AsyncResult<Vertx> () {
+                Vertx result() {
+                    vertx
+                }
+
+                Throwable cause() {
+                    new APSException("Failed to create Vertx instance!")
+                }
+
+                boolean succeeded() {
+                    vertx != null
+                }
+
+                boolean failed() {
+                    vertx == null
+                }
+
+            } )
+        }
+    }
+
     /**
      * Starts the main Vertx service which in turn will start other Vertx services when up.
      */
     private void startVertx() {
 
-        Vertx.clusteredVertx( [ : ] ) { AsyncResult<Vertx> res ->
+        vertxBoot( [ : ] ) { AsyncResult<Vertx> res ->
 
             if ( res.succeeded() ) {
 
@@ -190,15 +227,20 @@ class APSVertxProvider {
      */
     private void stopVertx() {
 
-        this.vertxSvcReg.unregister()
-        this.logger.info( "Unregistered Vertx as OSGi service!" )
+        if ( this.vertxSvcReg != null ) {
+            this.vertxSvcReg.unregister()
+            this.logger.info( "Unregistered Vertx as OSGi service!" )
+        }
 
-        this.eventBusSvcReg.unregister()
-        this.logger.info( "Unregistered EventBus as OSGi service!" )
+        if ( this.eventBusSvcReg != null ) {
+            this.eventBusSvcReg.unregister()
+            this.logger.info( "Unregistered EventBus as OSGi service!" )
+        }
 
-        this.shareDataSvcReg.unregister()
-        this.logger.info( "Unregistered SharedData as OSGi service!" )
-
+        if ( this.shareDataSvcReg != null ) {
+            this.shareDataSvcReg.unregister()
+            this.logger.info( "Unregistered SharedData as OSGi service!" )
+        }
         stopVertxServices()
 
         this.vertx.close() { AsyncResult<Vertx> res ->
@@ -208,7 +250,7 @@ class APSVertxProvider {
             }
             else {
 
-                logger.error "Vert.x cluster failed to shutdown!: ${res.cause()}!"
+                logger.error "Vert.x cluster failed to shutdown!: ${ res.cause() }!"
             }
         }
     }
@@ -261,10 +303,10 @@ class APSVertxProvider {
             if ( router == null ) {
 
                 router = Router.router( vertx )
-                this.logger.info( "Created router for config '${toRealHttpKey( key )}'!" )
+                this.logger.info( "Created router for config '${ toRealHttpKey( key ) }'!" )
                 httpServerRouterByPort[ port ] = router
                 httpServer.requestHandler( router.&accept ).listen( port )
-                this.logger.info( "HTTP server for config '${toRealHttpKey( key )}' now listening on port ${port}!" )
+                this.logger.info( "HTTP server for config '${ toRealHttpKey( key ) }' now listening on port ${ port }!" )
 
                 this.routerRegByPort[ port ] = this.context.registerService( Router.class.name, router, [
                         "service-provider": "aps-vertx-provider",
@@ -274,13 +316,13 @@ class APSVertxProvider {
                         "vertx-router"    : toRealHttpKey( key )
                 ] as Properties )
 
-                this.logger.info( "Registered HTTP service 'Router' for config '${toRealHttpKey( key )}' as OSGi service!" )
+                this.logger.info( "Registered HTTP service 'Router' for config '${ toRealHttpKey( key ) }' as OSGi service!" )
 
             }
         }
         else {
 
-            this.logger.error( "No port for HTTP service '${key}'!" )
+            this.logger.error( "No port for HTTP service '${ key }'!" )
         }
 
     }
@@ -304,21 +346,26 @@ class APSVertxProvider {
     private void stopHttpService( String key ) {
         Integer port = this.config[ key ] as Integer
 
-        this.routerRegByPort.remove( port ).unregister()
-        this.logger.info( "Unregistered 'Router' for config '${toRealHttpKey( key )}' as OSGi service!" )
+        if ( this.routerRegByPort != null ) {
+            this.routerRegByPort.remove( port )?.unregister()
+            this.logger.info( "Unregistered 'Router' for config '${ toRealHttpKey( key ) }' as OSGi service!" )
+        }
 
-        this.httpServerRouterByPort.remove( port ).delete()
-        this.logger.info( "Deleted 'Router' for config '${toRealHttpKey( key )}' as OSGi service!" )
+        if ( this.httpServerRouterByPort != null ) {
+            this.httpServerRouterByPort.remove( port )?.delete()
+        }
 
-        this.httpServerByPort.remove( port ).close() { AsyncResult<Vertx> res ->
+        if ( this.httpServerByPort != null ) {
+            this.httpServerByPort.remove( port )?.close() { AsyncResult<Vertx> res ->
 
-            if ( res.succeeded() ) {
+                if ( res.succeeded() ) {
 
-                this.logger.info( "Http service '${toRealHttpKey( key )}' successfully stopped!" )
-            }
-            else {
+                    this.logger.info( "Http service '${ toRealHttpKey( key ) }' successfully stopped!" )
+                }
+                else {
 
-                this.logger.error( "Stopping http service '${key}' failed!", res.cause() )
+                    this.logger.error( "Stopping http service '${ key }' failed!", res.cause() )
+                }
             }
         }
     }

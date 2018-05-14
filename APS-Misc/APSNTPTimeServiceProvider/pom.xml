@@ -67,6 +67,8 @@
             Other properties
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <aps.clustered.vertx.for.tests>false</aps.clustered.vertx.for.tests>
     </properties>
 
     <dependencies>
@@ -76,11 +78,7 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-apis</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-tools-lib</artifactId>
+            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -94,15 +92,17 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <scope>provided</scope>
+            <classifier>indy</classifier>
+            <version>${groovy.version}</version>
+        </dependency>
+
         <!--
             Test
         -->
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-service-test-support</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
@@ -110,6 +110,7 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+
 
     </dependencies>
 
@@ -150,6 +151,17 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.20.1</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <aps.vertx.clustered>${aps.clustered.vertx.for.tests}</aps.vertx.clustered>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+
             <!--
                 OSGi bundle handling.
             -->
@@ -173,7 +185,9 @@
                     </supportedProjectTypes>
                     <archive>
                         <manifestEntries>
-                            <APS-Configs>${aps.config.classes}</APS-Configs>
+                            <APS-Config-Id>apsNTPTimeProvider</APS-Config-Id>
+                            <APS-Config-Schema>/apsconfig/config-schema.json</APS-Config-Schema>
+                            <APS-Config-Default-Resource>/apsconfig/default-config.json</APS-Config-Default-Resource>
                             <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
                         </manifestEntries>
                     </archive>
@@ -187,6 +201,8 @@
                         <Bundle-Activator>${osgi.bundle.activator}</Bundle-Activator>
                         <Embed-Directory>${osgi.embed.directory}</Embed-Directory>
                         <Embed-Dependency>${osgi.embed.dependency}</Embed-Dependency>
+                        <Include-Resource>src/main/resources</Include-Resource>
+
                     </instructions>
                 </configuration>
             </plugin>

@@ -270,7 +270,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
         }
         finally {
 
-            schemaStream.close()
+            if (schemaStream != null) schemaStream.close()
         }
 
         // Load default config from bundle.
@@ -290,7 +290,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
         }
         finally {
 
-            defaultConfigStream.close()
+            if (defaultConfigPath != null) defaultConfigStream.close()
         }
 
         // Validate default config.
@@ -365,7 +365,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
         }
         finally {
 
-            os.close()
+            if (os != null) os.close()
         }
     }
 

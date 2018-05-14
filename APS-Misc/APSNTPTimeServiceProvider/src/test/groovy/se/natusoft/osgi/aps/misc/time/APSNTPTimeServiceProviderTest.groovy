@@ -1,35 +1,64 @@
-package se.natusoft.osgi.aps.misc.time;
+package se.natusoft.osgi.aps.misc.time
 
 import org.junit.Test
-import static org.junit.Assert.*;
 import org.osgi.framework.BundleContext
-import se.natusoft.osgi.aps.api.misc.time.APSTimeService
-import se.natusoft.osgi.aps.misc.time.config.NTPConfig
-import se.natusoft.osgi.aps.net.messaging.models.config.TestConfigValue
-import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.activator.APSActivator
+import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
+import se.natusoft.osgi.aps.api.misc.time.APSTimeService
+import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
 
 import java.time.Instant
+import java.util.concurrent.TimeUnit
 
-public class APSNTPTimeServiceProviderTest extends OSGIServiceTestTools {
+class APSNTPTimeServiceProviderTest extends OSGIServiceTestTools {
 
     @Test
-    public void testNTPTimeService() throws Exception {
-        deploy 'aps-ntp-time-service-provider' with new APSActivator() with {
-            NTPConfig ntpConfig =  new NTPConfig()
-            ntpConfig.ntpServers = new TestConfigValue(value: "0.pool.ntp.org,1.pool.ntp.org")
+    void testNTPTimeService() throws Exception {
 
-            NTPConfig.get = ntpConfig
+        //System.setProperty( "aps.vertx.clustered", "false" )
 
-            ntpConfig
-        } from 'APS-Misc/APSNTPTimeServiceProvider/target/classes'
+        // Prerequisites for aps-config-manager
+
+        deploy 'aps-vertx-provider' with new APSActivator() from(
+                'se.natusoft.osgi.aps',
+                'aps-vertx-provider',
+                '1.0.0'
+        )
+
+        hold() maxTime 2 unit TimeUnit.SECONDS go()
+
+        deploy 'aps-vertx-cluster-datastore-service-provider' with new APSActivator() from(
+                'se.natusoft.osgi.aps',
+                'aps-vertx-cluster-datastore-service-provider',
+                '1.0.0'
+        )
+
+        deploy 'aps-vertx-event-bus-messaging-provider' with new APSActivator() from(
+                'se.natusoft.osgi.aps',
+                'aps-vertx-event-bus-messaging-provider',
+                '1.0.0'
+        )
+
+        System.setProperty( APSFilesystemService.CONF_APS_FILESYSTEM_ROOT, "target/config" )
+
+        deploy 'aps-filesystem-service-provider' with new APSActivator() from(
+                'se.natusoft.osgi.aps',
+                'aps-filesystem-service-provider',
+                '1.0.0'
+        )
+
+        // Needed by aps-ntp-time-service-provider
+
+        deploy 'aps-config-manager' with new APSActivator() from 'se.natusoft.osgi.aps', 'aps-config-manager', '1.0.0'
+
+
+        // The actual code to test
+
+        deploy 'aps-ntp-time-service-provider' with new APSActivator() from 'APS-Misc/APSNTPTimeServiceProvider/target/classes'
 
         try {
             with_new_bundle 'test-exec-bundle', { BundleContext context ->
-
-                // If test fails due to not getting a time from NTP server then you might want to increase this wait.
-                Thread.sleep(500)
 
                 APSServiceTracker<APSTimeService> timeServiceTracker =
                         new APSServiceTracker<>(context, APSTimeService.class, "10 sec")
@@ -40,13 +69,16 @@ public class APSNTPTimeServiceProviderTest extends OSGIServiceTestTools {
                 println "Remote time: ${apsTimeService.time}"
 
                 // There really isn't much we can validate here!
-                assertNotNull(apsTimeService.lastTimeUpdate)
+                assert apsTimeService.time != null
+                assert apsTimeService.lastTimeUpdate != null
 
                 timeServiceTracker.stop()
 
             }
         }
         finally {
+            hold() maxTime 2 unit TimeUnit.SECONDS go()
+
             shutdown()
         }
 

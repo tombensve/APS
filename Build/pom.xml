@@ -63,6 +63,7 @@
         <module>GroovyMixIn</module>
         <module>DocumentationMixIn</module>
         <module>BuildNumberMixIn</module>
+        <module>TestConfigDepsMixin</module>
 
     </modules>
 

@@ -109,6 +109,7 @@
             se.natusoft.osgi.aps.api.misc.json.service;version="${project.version}",
             se.natusoft.osgi.aps.api.misc.queue;version="${project.version}",
             se.natusoft.osgi.aps.api.misc.session;version="${project.version}",
+            se.natusoft.osgi.aps.api.misc.time;version="${project.version}",
 
             se.natusoft.osgi.aps.api.net;version="${project.version}",
 
