@@ -40,6 +40,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
+import se.natusoft.osgi.aps.activator.APSActivator;
 import se.natusoft.osgi.aps.test.tools.internal.ServiceRegistry;
 
 import java.io.File;
@@ -49,10 +50,10 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * This is the entry point to using the OSGi service test tools.
- *
+ * <p>
  * In the most common case, let your unit test class extend this and then just call deploy("name") which
  * will return a BundleBuilder.
- *
+ * <p>
  * The below examples uses the maven GAV reference which looks in ~/.m2/repository. There is also a
  * from variant that takes a root path and then scans it for content. Instead of 'from' it is also
  * possible to use 'using' which takes an array of string bundle content paths. When test is run these
@@ -60,33 +61,32 @@ import java.util.concurrent.TimeUnit;
  * the JUnit setup classpath. Using true OSGi bundle classloading here would make things very much
  * more complicated. maven-bundle-plugin have already validated imports and exports so doing so again
  * seems overkill.
- *
+ * <p>
  * ## Groovy Example
- *
- *             deploy 'aps-vertx-provider' with new APSActivator() from(
- *                 'se.natusoft.osgi.aps',
- *                 'aps-vertx-provider',
- *                 '1.0.0'
- *            )
- *
- *            deploy 'aps-config-manager' with new APSActivator() from 'APS-Core/APSConfigManager/target/classes'
- *
- *            deploy 'moon-whale-service' with new APSActivator() from 'APS-Core/APSConfigManager/target/test-classes'
- *
+ * <p>
+ * deploy 'aps-vertx-provider' with new APSActivator() from(
+ * 'se.natusoft.osgi.aps',
+ * 'aps-vertx-provider',
+ * '1.0.0'
+ * )
+ * <p>
+ * deploy 'aps-config-manager' with new APSActivator() from 'APS-Core/APSConfigManager/target/classes'
+ * <p>
+ * deploy 'moon-whale-service' with new APSActivator() from 'APS-Core/APSConfigManager/target/test-classes'
+ * <p>
  * ## Java Example
- *
- *             deploy("aps-vertx-provider").with(new APSActivator()).from(
- *                 "se.natusoft.osgi.aps",
- *                 "aps-vertx-provider",
- *                 "1.0.0"
- *             );
- *
- *            deploy( "aps-config-manager").with( new APSActivator() ).from( "APS-Core/APSConfigManager/target/classes");
- *
- *            deploy( "moon-whale-service").with( new APSActivator() ).from( "APS-Core/APSConfigManager/target/test-classes");
- *
+ * <p>
+ * deploy("aps-vertx-provider").with(new APSActivator()).from(
+ * "se.natusoft.osgi.aps",
+ * "aps-vertx-provider",
+ * "1.0.0"
+ * );
+ * <p>
+ * deploy( "aps-config-manager").with( new APSActivator() ).from( "APS-Core/APSConfigManager/target/classes");
+ * <p>
+ * deploy( "moon-whale-service").with( new APSActivator() ).from( "APS-Core/APSConfigManager/target/test-classes");
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings( "WeakerAccess" )
 public class OSGIServiceTestTools {
     //
     // Private Members
@@ -112,11 +112,11 @@ public class OSGIServiceTestTools {
      * Send a bundle event to bundles.
      *
      * @param bundle The bundle the event is about.
-     * @param type The type of the event.
+     * @param type   The type of the event.
      */
-    private void bundleEvent(Bundle bundle, int type) {
-        for (TestBundle testBundle : this.bundles) {
-            ((TestBundleContext)testBundle.getBundleContext()).bundleEvent( bundle, type );
+    private void bundleEvent( Bundle bundle, int type ) {
+        for ( TestBundle testBundle : this.bundles ) {
+            ( ( TestBundleContext ) testBundle.getBundleContext() ).bundleEvent( bundle, type );
         }
     }
 
@@ -125,14 +125,14 @@ public class OSGIServiceTestTools {
      *
      * @param symbolicName The symbolic name of the bundle to create.
      */
-    public TestBundle createBundle(String symbolicName) {
-        TestBundle bundle = new TestBundle(++idGen, symbolicName, this.serviceRegistry);
-        this.bundles.add(bundle);
-        this.bundleByName.put(symbolicName, bundle);
-        this.bundleById.put(bundle.getBundleId(), bundle);
+    public TestBundle createBundle( String symbolicName ) {
+        TestBundle bundle = new TestBundle( ++idGen, symbolicName, this.serviceRegistry );
+        this.bundles.add( bundle );
+        this.bundleByName.put( symbolicName, bundle );
+        this.bundleById.put( bundle.getBundleId(), bundle );
 
-        for (TestBundle testBundle : this.bundles) {
-            ((TestBundleContext)testBundle.getBundleContext()).bundleEvent( bundle, BundleEvent.INSTALLED );
+        for ( TestBundle testBundle : this.bundles ) {
+            ( ( TestBundleContext ) testBundle.getBundleContext() ).bundleEvent( bundle, BundleEvent.INSTALLED );
         }
 
         return bundle;
@@ -143,13 +143,13 @@ public class OSGIServiceTestTools {
      *
      * @param bundle The bundle to remove.
      */
-    public void removeBundle(TestBundle bundle) {
-        this.bundles.remove(bundle);
-        this.bundleByName.remove(bundle.getSymbolicName());
-        this.bundleById.remove(bundle.getBundleId());
+    public void removeBundle( TestBundle bundle ) {
+        this.bundles.remove( bundle );
+        this.bundleByName.remove( bundle.getSymbolicName() );
+        this.bundleById.remove( bundle.getBundleId() );
 
-        for (TestBundle testBundle : this.bundles) {
-            ((TestBundleContext)testBundle.getBundleContext()).bundleEvent( bundle, BundleEvent.UNINSTALLED );
+        for ( TestBundle testBundle : this.bundles ) {
+            ( ( TestBundleContext ) testBundle.getBundleContext() ).bundleEvent( bundle, BundleEvent.UNINSTALLED );
         }
     }
 
@@ -158,9 +158,9 @@ public class OSGIServiceTestTools {
      *
      * @param bundleContext The context of the bundle to remove.
      */
-    @SuppressWarnings("unused")
-    public void removeBundle(TestBundleContext bundleContext) {
-        removeBundle((TestBundle) bundleContext.getBundle());
+    @SuppressWarnings( "unused" )
+    public void removeBundle( TestBundleContext bundleContext ) {
+        removeBundle( ( TestBundle ) bundleContext.getBundle() );
     }
 
     /**
@@ -175,9 +175,9 @@ public class OSGIServiceTestTools {
      *
      * @param name The name of the bundle to get.
      */
-    @SuppressWarnings("unused")
-    public TestBundle getBundleBySymbolicName(String name) {
-        return this.bundleByName.get(name);
+    @SuppressWarnings( "unused" )
+    public TestBundle getBundleBySymbolicName( String name ) {
+        return this.bundleByName.get( name );
     }
 
     /**
@@ -185,17 +185,17 @@ public class OSGIServiceTestTools {
      *
      * @param id The id of the bundle to get.
      */
-    @SuppressWarnings("unused")
-    public TestBundle getBundleById(long id) {
-        return this.bundleById.get(id);
+    @SuppressWarnings( "unused" )
+    public TestBundle getBundleById( long id ) {
+        return this.bundleById.get( id );
     }
 
     /**
      * Shuts down all bundles started with deployBundle(...).
      */
     public void shutdown() {
-        Collections.reverse(this.bundleBuilders);
-        this.bundleBuilders.forEach(BundleBuilder::shutdown);
+        Collections.reverse( this.bundleBuilders );
+        this.bundleBuilders.forEach( BundleBuilder::shutdown );
         this.bundleBuilders = new LinkedList<>();
     }
 
@@ -212,9 +212,9 @@ public class OSGIServiceTestTools {
      * @param name The name of the bundle to create and deploy.
      * @return An intermediate BundleManager that handles the with() and from() giving you a BundleContext in the end.
      */
-    public BundleBuilder deploy(String name) {
-        BundleBuilder bm = new BundleBuilder(name);
-        this.bundleBuilders.add(bm);
+    public BundleBuilder deploy( String name ) {
+        BundleBuilder bm = new BundleBuilder( name );
+        this.bundleBuilders.add( bm );
         return bm;
     }
 
@@ -223,20 +223,63 @@ public class OSGIServiceTestTools {
      *
      * @param name The name of the bundle to undeploy.
      */
-    @SuppressWarnings("unused")
-    public void undeploy(String name) {
-        BundleBuilder bb = this.bundleBuilders.stream().filter(b -> b.getName().equals(name)).findFirst().orElse(null);
-        if (bb != null) {
-            this.bundleBuilders.remove(bb);
+    @SuppressWarnings( "unused" )
+    public void undeploy( String name ) {
+        BundleBuilder bb = this.bundleBuilders.stream().filter( b -> b.getName().equals( name ) ).findFirst().orElse( null );
+        if ( bb != null ) {
+            this.bundleBuilders.remove( bb );
             bb.shutdown();
         }
+    }
+
+    /**
+     * Deploys the aps-config-manager and all its dependencies. This is needed to be able to
+     * deploy a bundle that makes use of aps-config-manager to get its configuration.
+     *
+     * I'e decided to deploy actual services instead of faking configuration in test.
+     *
+     * @throws Exception on any failure to deploy.
+     */
+    public void deployConfigManager() throws Exception {
+
+        deploy( "aps-vertx-provider" ).with( new APSActivator() ).from(
+                "se.natusoft.osgi.aps",
+                "aps-vertx-provider",
+                "1.0.0"
+        );
+
+        hold().maxTime( 2 ).unit( TimeUnit.SECONDS ).go();
+
+        deploy( "aps-vertx-cluster-datastore-service-provider" ).with( new APSActivator() ).from(
+                "se.natusoft.osgi.aps",
+                "aps-vertx-cluster-datastore-service-provider",
+                "1.0.0"
+        );
+
+        deploy( "aps-vertx-event-bus-messaging-provider" ).with( new APSActivator() ).from(
+                "se.natusoft.osgi.aps",
+                "aps-vertx-event-bus-messaging-provider",
+                "1.0.0"
+        );
+
+        deploy( "aps-filesystem-service-provider" ).with( new APSActivator() ).from(
+                "se.natusoft.osgi.aps",
+                "aps-filesystem-service-provider",
+                "1.0.0"
+        );
+
+        deploy( "aps-config-manager" ).with( new APSActivator() ).from(
+                "se.natusoft.osgi.aps",
+                "aps-config-manager",
+                "1.0.0"
+        );
     }
 
     /**
      * API to implement for passing to withNewBundle.
      */
     public interface WithBundle {
-        void run(BundleContext bundleContext) throws Throwable;
+        void run( BundleContext bundleContext ) throws Throwable;
     }
 
     /**
@@ -246,12 +289,12 @@ public class OSGIServiceTestTools {
      * @param withBundle The code to run.
      * @throws Throwable Any exception is forwarded.
      */
-    public void with_new_bundle(String name, WithBundle withBundle) throws Throwable {
-        TestBundle bundle = createBundle(name);
+    public void with_new_bundle( String name, WithBundle withBundle ) throws Throwable {
+        TestBundle bundle = createBundle( name );
 
-        withBundle.run(bundle.getBundleContext());
+        withBundle.run( bundle.getBundleContext() );
 
-        removeBundle(bundle);
+        removeBundle( bundle );
     }
 
     /**
@@ -260,8 +303,8 @@ public class OSGIServiceTestTools {
      * @param milliseconds The number of milliseconds to wait.
      * @throws InterruptedException If interrupted.
      */
-    public void delay(int milliseconds) throws InterruptedException {
-        Thread.sleep(milliseconds);
+    public void delay( int milliseconds ) throws InterruptedException {
+        Thread.sleep( milliseconds );
     }
 
     /**
@@ -270,14 +313,15 @@ public class OSGIServiceTestTools {
      * @param delay A string. 'long' ==> 10000ms, 'very small' ==> 500ms, anything else ==> 1000ms.
      * @throws InterruptedException if interrupted.
      */
-    public void delay(String delay) throws InterruptedException {
+    public void delay( String delay ) throws InterruptedException {
         int ms = 1000;
-        if (delay.startsWith("long")) {
+        if ( delay.startsWith( "long" ) ) {
             ms = 10000;
-        } else if (delay.startsWith("very small")) {
+        }
+        else if ( delay.startsWith( "very small" ) ) {
             ms = 500;
         }
-        delay(ms);
+        delay( ms );
     }
 
     /**
@@ -302,42 +346,44 @@ public class OSGIServiceTestTools {
         private TimeUnit timeUnit = TimeUnit.SECONDS;
         private Callable<Boolean> condition;
 
-        public Wait whilst(Callable<Boolean> condition) {
+        public Wait whilst( Callable<Boolean> condition ) {
             this.condition = condition;
             return this;
         }
 
-        public Wait until(Callable<Boolean> condition) {
+        public Wait until( Callable<Boolean> condition ) {
             this.condition = () -> !condition.call();
             return this;
         }
 
-        public Wait maxTime(long time) {
+        public Wait maxTime( long time ) {
             this.maxTime = time;
             return this;
         }
 
-        public Wait unit(TimeUnit timeUnit) {
+        public Wait unit( TimeUnit timeUnit ) {
             this.timeUnit = timeUnit;
             return this;
         }
 
         public void go() {
             try {
-                if (this.condition != null) {
-                    int maxCount = (int) (TimeUnit.MILLISECONDS.convert(this.maxTime, this.timeUnit) / 200);
+                if ( this.condition != null ) {
+                    int maxCount = ( int ) ( TimeUnit.MILLISECONDS.convert( this.maxTime, this.timeUnit ) / 200 );
                     int count = 0;
-                    while (this.condition.call()) {
-                        synchronized (this) {
-                            wait(200);
+                    while ( this.condition.call() ) {
+                        synchronized ( this ) {
+                            wait( 200 );
                         }
                         ++count;
-                        if (count > maxCount) break;
+                        if ( count > maxCount ) break;
                     }
-                } else {
-                    Thread.sleep(TimeUnit.MILLISECONDS.convert(this.maxTime, this.timeUnit));
                 }
-            } catch (Exception ignore) {}
+                else {
+                    Thread.sleep( TimeUnit.MILLISECONDS.convert( this.maxTime, this.timeUnit ) );
+                }
+            } catch ( Exception ignore ) {
+            }
         }
     }
 
@@ -348,7 +394,7 @@ public class OSGIServiceTestTools {
 
         private TestBundle bundle;
         private BundleActivator activator = null;
-//        private boolean started = false;
+        //        private boolean started = false;
         private String name;
 
         /**
@@ -356,9 +402,9 @@ public class OSGIServiceTestTools {
          *
          * @param name The name of the bundle managed.
          */
-        public BundleBuilder(String name) {
+        public BundleBuilder( String name ) {
             this.name = name;
-            this.bundle = createBundle(name);
+            this.bundle = createBundle( name );
         }
 
         /**
@@ -375,22 +421,22 @@ public class OSGIServiceTestTools {
          * @throws Exception Any exceptions are forwarded.
          */
         private BundleBuilder start() throws Exception {
-            if (this.activator == null) {
-                throw new IllegalStateException("Activator has not been provided! Add an 'with new MyActivator()'");
+            if ( this.activator == null ) {
+                throw new IllegalStateException( "Activator has not been provided! Add an 'with new MyActivator()'" );
             }
-            this.activator.start(this.bundle.getBundleContext());
+            this.activator.start( this.bundle.getBundleContext() );
 
             bundleEvent( bundle, BundleEvent.STARTED );
 
             return this;
         }
 
-        public BundleBuilder with(BundleActivator bundleActivator) {
-            return with_activator(bundleActivator);
+        public BundleBuilder with( BundleActivator bundleActivator ) {
+            return with_activator( bundleActivator );
         }
 
-        public BundleBuilder with(ClassLoader bundleClassLoader) {
-            this.bundle.setBundleClassLoader(bundleClassLoader);
+        public BundleBuilder with( ClassLoader bundleClassLoader ) {
+            this.bundle.setBundleClassLoader( bundleClassLoader );
             return this;
         }
 
@@ -401,7 +447,7 @@ public class OSGIServiceTestTools {
          * @param bundleActivator The BundleActivator to provide.
          * @return itself
          */
-        public BundleBuilder with_activator(BundleActivator bundleActivator) {
+        public BundleBuilder with_activator( BundleActivator bundleActivator ) {
             this.activator = bundleActivator;
             return this;
         }
@@ -415,8 +461,8 @@ public class OSGIServiceTestTools {
          * @return itself
          * @throws Exception Forwards exceptions
          */
-        public BundleBuilder from(String group, String artifact, String version) throws Exception {
-            this.bundle.loadEntryPathsFromMaven(group, artifact, version);
+        public BundleBuilder from( String group, String artifact, String version ) throws Exception {
+            this.bundle.loadEntryPathsFromMaven( group, artifact, version );
             return start();
         }
 
@@ -427,8 +473,8 @@ public class OSGIServiceTestTools {
          * @return itself
          * @throws Exception Forwards exceptions
          */
-        public BundleBuilder from(String dirScan) throws Exception {
-            this.bundle.loadEntryPathsFromDirScan(dirScan);
+        public BundleBuilder from( String dirScan ) throws Exception {
+            this.bundle.loadEntryPathsFromDirScan( dirScan );
             return start();
         }
 
@@ -439,8 +485,8 @@ public class OSGIServiceTestTools {
          * @return itself
          * @throws Exception Forwards exceptions
          */
-        public BundleBuilder from(File dirScan) throws Exception {
-            this.bundle.loadEntryPathsFromDirScan(dirScan);
+        public BundleBuilder from( File dirScan ) throws Exception {
+            this.bundle.loadEntryPathsFromDirScan( dirScan );
             return start();
         }
 
@@ -451,9 +497,9 @@ public class OSGIServiceTestTools {
          * @return itself
          * @throws Exception Forwards exceptions
          */
-        public BundleBuilder using(String[] paths) throws Exception {
-            for (String path : paths) {
-                if (!path.startsWith( "/" )) {
+        public BundleBuilder using( String[] paths ) throws Exception {
+            for ( String path : paths ) {
+                if ( !path.startsWith( "/" ) ) {
                     path = "/" + path;
                 }
                 this.bundle.addEntryPaths( new BundleEntryPath( path ) );
@@ -464,7 +510,7 @@ public class OSGIServiceTestTools {
         /**
          * Terminates this builder and returns a BundleContext representing the result.
          */
-        @SuppressWarnings("unused")
+        @SuppressWarnings( "unused" )
         public BundleContext as_context() {
             return this.bundle.getBundleContext();
         }
@@ -472,7 +518,7 @@ public class OSGIServiceTestTools {
         /**
          * Terminates this builder and returns a Bundle representing the result.
          */
-        @SuppressWarnings("unused")
+        @SuppressWarnings( "unused" )
         public Bundle as_bundle() {
             return this.bundle;
         }
@@ -482,14 +528,14 @@ public class OSGIServiceTestTools {
          */
         public void shutdown() {
             try {
-                this.activator.stop(this.bundle.getBundleContext());
-            } catch (Exception e) {
-                e.printStackTrace(System.err);
+                this.activator.stop( this.bundle.getBundleContext() );
+            } catch ( Exception e ) {
+                e.printStackTrace( System.err );
             }
 
             bundleEvent( bundle, BundleEvent.STOPPED );
 
-            removeBundle(this.bundle);
+            removeBundle( this.bundle );
         }
     }
 }

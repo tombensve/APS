@@ -1693,12 +1693,12 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 // Remember: The problem with the original thought about having OSGi services as plugins does
                 // not work due to that a wanted plugin service might not have been deployed before this bundle!
                 ServiceLoader<APSActivatorPlugin> pluginLoader = ServiceLoader.load( APSActivatorPlugin.class );
-                try {
-                    for ( APSActivatorPlugin apsActivatorPlugin : pluginLoader ) {
+                for ( APSActivatorPlugin apsActivatorPlugin : pluginLoader ) {
+                    try {
                         apsActivatorPlugin.analyseBundleClass( APSActivator.this, this.entryClass );
+                    } catch ( Exception e ) {
+                        APSActivator.this.activatorLogger.error( "Failed executing a plugin!", e );
                     }
-                } catch ( Exception e ) {
-                    APSActivator.this.activatorLogger.error( "Failed executing a plugin!", e );
                 }
 
                 Map<Class, Object> res = doFieldInjectionsIntoManagedInstances( this.entryClass, this.context );
@@ -1769,9 +1769,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         List<Properties> getPropertiesPerInstance();
     }
 
-    // The following are wrappers for the OSGi framework listeners: ServiceListener, BundleListener, and FrameworkListener.
-    // The point of these is that they implement the listener interfaces, but in turn forwards listener calls to annotated
-    // method of class that does not need to implement the interfaces.
+    // The following are wrappers for the OSGi framework listeners: ServiceListener, BundleListener, and
+    // FrameworkListener. The point of these is that they implement the listener interfaces, but in turn
+    // forwards listener calls to annotated method of class that does not need to implement the interfaces.
 
     /**
      * This is implemented by all listener wrappers.
@@ -1813,7 +1813,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             try {
                 method.invoke( instance, event );
             } catch ( IllegalAccessException | InvocationTargetException e ) {
-                APSActivator.this.activatorLogger.error( "Failed to invoke ServiceListener method [" + method + "]!", e );
+                APSActivator.this.activatorLogger.error(
+                        "Failed to invoke ServiceListener method [" + method + "]!", e
+                );
             }
         }
     }
@@ -1918,13 +1920,13 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     "(apsConfigId=" + this.configId + ")", "10 sec" );
             this.configTracker.start();
 
-            activatorLogger.info( "######## Started config tracker for ' " + this.configId + "' ########" );
+            activatorLogger.info( "Started config tracker for id: '" + this.configId + "'" );
 
             this.configTracker.onActiveServiceAvailable( ( service, serviceReference ) -> {
-                        activatorLogger.info( "######## Received config: " + service + " ########" );
+                        activatorLogger.info( "Received config: " + service );
 
                         // We need to save the reference and allocate our own usages of the APSConfig instance.
-                        // This because as soon as this callback exits the passes 'service' is released again.
+                        // This because as soon as this callback exits the passed 'service' is released again.
                         // We release our allocation on stop( BundleContext ) below.
                         this.ref = serviceReference;
                         APSConfig config = ( APSConfig ) context.getService( this.ref );
@@ -1942,7 +1944,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
         public void stop( BundleContext context ) {
             this.configTracker.stop( context );
-            if (this.ref != null) context.ungetService( this.ref );
+            if ( this.ref != null ) context.ungetService( this.ref );
         }
 
     }

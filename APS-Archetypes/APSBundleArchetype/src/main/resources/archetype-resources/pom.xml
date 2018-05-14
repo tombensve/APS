@@ -61,11 +61,20 @@
         -->
 
         <!-- We register our configuration for auto registration and management. -->
-        <aps.config.classes></aps.config.classes>
+        <aps.config.id>apsNTPTimeProvider</aps.config.id>
+
+        <!-- This defines the configuration JSON file. -->
+        <aps.config.schema>/apsconfig/config-schema.json</aps.config.schema>
+
+        <!-- This provides a configuraton with default values for first time. -->
+        <aps.config.default.resource>/apsconfig/default-config.json</aps.config.default.resource>
 
         <!--
-             Trigger tiles.
-         -->
+            Other properties
+        -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <aps.clustered.vertx.for.tests>false</aps.clustered.vertx.for.tests>
 
         <!--
             Other properties
@@ -90,6 +99,98 @@
 
         <!--
             ${artifactId} dependencies
+        -->
+
+
+        <!--
+            Test
+        -->
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-osgi-test-tools</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--
+            These are for being able to run aps-config-manager and dependent bundles in unit tests
+            using aps-osgi-test-tools. It feels better running the real thing rather than fake config.
+        -->
+        <!-- REMOVE THESE IF YOU ARE NOT USING aps-config-manager TO MANAGE CONFIGURATION!
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-vertx-provider</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-vertx-cluster-datastore-service-provider</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-vertx-event-bus-messaging-provider</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-filesystem-service-provider</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-config-manager</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-core-lib</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-json-lib</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-core</artifactId>
+            <version>${vertx.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-auth-common</artifactId>
+            <version>${vertx.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web</artifactId>
+            <version>${vertx.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-hazelcast</artifactId>
+            <version>${vertx.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
+            <version>${hazelcast.version}</version>
+            <scope>test</scope>
+        </dependency>
         -->
 
     </dependencies>
@@ -156,8 +257,9 @@
                     </supportedProjectTypes>
                     <archive>
                         <manifestEntries>
-                            <APS-Configs>${aps.config.classes}</APS-Configs>
-                            <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
+                            <APS-Config-Id>${aps.config.id}</APS-Config-Id>
+                            <APS-Config-Schema>${aps.config.schema}</APS-Config-Schema>
+                            <APS-Config-Default-Resource>${aps.config.default.resource}</APS-Config-Default-Resource>
                         </manifestEntries>
                     </archive>
                     <instructions>

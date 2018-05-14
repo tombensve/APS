@@ -57,7 +57,7 @@ class APSNTPTimeServiceProvider implements APSTimeService {
 
         if ( this.config != null ) {
 
-            String ntpServer = this.config[ "ntpServer" ] as String
+            String ntpServer = (String)this.config[ "ntpServer" ]
 
             try {
 
