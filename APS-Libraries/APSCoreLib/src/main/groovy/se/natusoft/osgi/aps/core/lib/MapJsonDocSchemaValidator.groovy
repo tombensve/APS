@@ -486,7 +486,7 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
      */
     private void validateList( List<Object> validList, List<Object> toValidate ) {
 
-        Object validObject = validList[ 0 ]
+        Object validObject = validList[ 0 ] // All entries in a list must currently be identical.
 
         toValidate.each { Object sourceValue ->
 
