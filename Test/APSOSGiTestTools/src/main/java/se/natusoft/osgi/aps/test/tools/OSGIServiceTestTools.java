@@ -41,6 +41,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import se.natusoft.osgi.aps.activator.APSActivator;
+import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
 import se.natusoft.osgi.aps.test.tools.internal.ServiceRegistry;
 
 import java.io.File;
@@ -241,6 +242,8 @@ public class OSGIServiceTestTools {
      * @throws Exception on any failure to deploy.
      */
     public void deployConfigManager() throws Exception {
+
+        System.setProperty( APSFilesystemService.CONF_APS_FILESYSTEM_ROOT, "target/config" );
 
         deploy( "aps-vertx-provider" ).with( new APSActivator() ).from(
                 "se.natusoft.osgi.aps",
