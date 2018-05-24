@@ -14,16 +14,16 @@ class MapJsonDocSchemaValidatorTest {
 
     private Map<String, Object> schema = [
             "header_?": "Description",
-            "header_1"     : [
-                                                 "type_1"      : "service",
-                                                 "address_1"   : "?aps\\.admin\\..*",
-                                                 "classifier_1": "|public|private", // Always use this for enum values.
-                                                 "enabled_0"   : "!"
+            "header_1": [
+                    "type_1"      : "service",
+                    "address_1"   : "?aps\\.admin\\..*",
+                    "classifier_1": "|public|private", // Always use this for enum values.
+                    "enabled_0"   : "!"
             ],
-            "body_1"       : [
+            "body_1"  : [
                     "action_1": "get-webs"
             ],
-            "reply_0"      : [
+            "reply_0" : [
                     "webs_1": [
                             [
                                     "name_1": "?.*",
@@ -43,7 +43,7 @@ class MapJsonDocSchemaValidatorTest {
     void testSchema() throws Exception {
         MapJsonSchemaMeta mjs = new MapJsonSchemaMeta( schema )
         mjs.mapJsonSchemaEntries.each { MapJsonSchemaEntry mjem ->
-            println "${mjem}"
+            println "${ mjem }"
         }
     }
 
@@ -108,7 +108,7 @@ class MapJsonDocSchemaValidatorTest {
         catch ( APSValidationException e ) {
             assert e.message.contains( "boolean" )
 
-            println "Correctly cauth exception: ${e.message}"
+            println "Correctly cauth exception: ${ e.message }"
         }
     }
 
@@ -143,7 +143,7 @@ class MapJsonDocSchemaValidatorTest {
         }
         catch ( APSValidationException e ) {
             assert e.message.contains( "regular expression" )
-            println "Correctly cauth exception: ${e.message}"
+            println "Correctly cauth exception: ${ e.message }"
         }
     }
 
@@ -177,7 +177,7 @@ class MapJsonDocSchemaValidatorTest {
         }
         catch ( APSValidationException e ) {
             assert e.message.contains( "Missing entry" )
-            println "Correctly cauth exception: ${e.message}"
+            println "Correctly cauth exception: ${ e.message }"
         }
     }
 
@@ -214,7 +214,7 @@ class MapJsonDocSchemaValidatorTest {
         }
         catch ( APSValidationException e ) {
             assert e.message.contains( "is not valid!" )
-            println "Correctly cauth exception: ${e.message}"
+            println "Correctly cauth exception: ${ e.message }"
         }
     }
 
@@ -259,7 +259,7 @@ class MapJsonDocSchemaValidatorTest {
         }
         catch ( APSValidationException e ) {
             assert e.message.contains( "Missing entry" )
-            println "Correctly cauth exception: ${e.message}"
+            println "Correctly cauth exception: ${ e.message }"
         }
     }
 
@@ -292,7 +292,7 @@ class MapJsonDocSchemaValidatorTest {
         }
         catch ( APSValidationException e ) {
             assert e.message.contains( "match regular expression" )
-            println "Correctly cauth exception: ${e.message}"
+            println "Correctly cauth exception: ${ e.message }"
         }
     }
 
@@ -345,7 +345,7 @@ class MapJsonDocSchemaValidatorTest {
         }
         catch ( APSValidationException e ) {
             assert e.message.contains( "must be" )
-            println "Correctly cauth exception: ${e.message}"
+            println "Correctly cauth exception: ${ e.message }"
         }
     }
 
@@ -398,7 +398,7 @@ class MapJsonDocSchemaValidatorTest {
         }
         catch ( APSValidationException e ) {
             assert e.message.contains( "must be" )
-            println "Correctly cauth exception: ${e.message}"
+            println "Correctly cauth exception: ${ e.message }"
         }
     }
 
@@ -451,7 +451,7 @@ class MapJsonDocSchemaValidatorTest {
         }
         catch ( APSValidationException e ) {
             assert e.message.contains( "must be" )
-            println "Correctly cauth exception: ${e.message}"
+            println "Correctly cauth exception: ${ e.message }"
         }
     }
 
@@ -504,8 +504,86 @@ class MapJsonDocSchemaValidatorTest {
         }
         catch ( APSValidationException e ) {
             assert e.message.contains( "must be" )
-            println "Correctly cauth exception: ${e.message}"
+            println "Correctly cauth exception: ${ e.message }"
         }
+    }
+
+    @Test
+    void testRegexpKeyOK() throws Exception {
+
+        Map<String, Object> regexpschema = [
+                "addrMap_1": [
+                        "?([a-z]|[0-9]|[-]|[_])+": "?[0-9,.]+"
+                ]
+
+        ] as Map<String, Object>
+
+        MapJsonDocSchemaValidator verifier = new MapJsonDocSchemaValidator( validStructure: regexpschema )
+
+        verifier.validate(
+                [
+                        "addrMap": [
+                                "qaz-99": "192.168.1.5"
+                        ]
+                ] as Map<String, Object>
+        )
+    }
+
+
+    @Test
+    void testRegexpKeyFail1() throws Exception {
+
+        Map<String, Object> regexpschema = [
+                "addrMap_1": [
+                        "?([a-z]|[0-9]|-|_])+": "?[0-9,.]+"
+                ]
+
+        ] as Map<String, Object>
+
+        MapJsonDocSchemaValidator verifier = new MapJsonDocSchemaValidator( validStructure: regexpschema )
+
+        try {
+            verifier.validate( [
+                    "addrMap": [
+                            "qaz#99": "192.168.1.5"
+                    ]
+            ] as Map<String, Object> )
+
+            assert false // Shoud never get here!
+        }
+        catch ( APSValidationException e ) {
+            assert e.message == "Entry key 'qaz#99' does not match regexp: ([a-z]|[0-9]|-|_])+"
+            println "Correctly cauth exception: ${ e.message }"
+        }
+
+    }
+
+    @Test
+    void testRegexpKeyFail2() throws Exception {
+
+        Map<String, Object> regexpschema = [
+                "addrMap_1": [
+                        "?([a-z]|[0-9]|-|_])+": "?[0-9,.]+"
+                ]
+
+        ] as Map<String, Object>
+
+        MapJsonDocSchemaValidator verifier = new MapJsonDocSchemaValidator( validStructure: regexpschema )
+
+        try {
+            verifier.validate( [
+                    "addrMap": [
+                            "qaz-99": "192-168-1-5"
+                    ]
+            ] as Map<String, Object> )
+
+            assert false // Shoud never get here!
+        }
+        catch ( APSValidationException e ) {
+            assert e.message == "Value '192-168-1-5' does not match regular expression '[0-9,.]+'! [qaz-99:192-168-1-5]"
+            println "Correctly cauth exception: ${ e.message }"
+        }
+
     }
 
 }

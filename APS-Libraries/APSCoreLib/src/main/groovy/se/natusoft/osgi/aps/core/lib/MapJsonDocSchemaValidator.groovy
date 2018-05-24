@@ -1,3 +1,40 @@
+/*
+ *
+ * PROJECT
+ *     Name
+ *         APS Core Lib
+ *     
+ *     Code Version
+ *         1.0.0
+ *     
+ *     Description
+ *         This library is made in Groovy and thus depends on Groovy, and contains functionality that
+ *         makes sense for Groovy, but not as much for Java.
+ *         
+ * COPYRIGHTS
+ *     Copyright (C) 2012 by Natusoft AB All rights reserved.
+ *     
+ * LICENSE
+ *     Apache 2.0 (Open Source)
+ *     
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *     
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *     
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *     
+ * AUTHORS
+ *     tommy ()
+ *         Changes:
+ *         2018-05-23: Created!
+ *
+ */
 package se.natusoft.osgi.aps.core.lib
 
 import groovy.transform.CompileStatic
@@ -10,7 +47,7 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *
  * This class is used to define the content of such objects (like a schema) and validates real such objects against it.
  *
- * Example:
+ * Example (do not expect example to have realistic data):
  *
  *    Map<String, Object> struct = [
  *       header_?: "The nessage header.",
@@ -30,8 +67,9 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *                someNumber_0: "#0-100" // Also valid:  ">0" "<100" ">=0" "<=100"
  *             ]
  *          ]
- *       ]
- *    ]
+ *       ],
+ *       addrmap_1: {*           "?[a-z,A-z,0-9,_]*": "?[0-9,.]*"
+ *}*    ]
  *
  *  ### Keys
  *
@@ -81,6 +119,8 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
 
         private Map<String, Object> schemaMap = [:]
         private Map<String, Boolean> required = [:]
+        private String regexpKey = null
+        private Object regexpKeyValue = null
 
         /**
          * Creates a new MapObject.
@@ -91,7 +131,11 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
 
             schemaMap.each { String key, Object value ->
 
-                if (verifyKey( key, this.schemaMap )) {
+                if ( key.startsWith( "?" ) ) {
+                    this.regexpKey = key.substring( 1 )
+                    this.regexpKeyValue = value
+                }
+                else if ( verifyKey( key, this.schemaMap ) ) {
                     String realKey = _key( key )
 
                     this.schemaMap.put( realKey, value )
@@ -115,6 +159,18 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
         Object get( String key ) {
 
             this.schemaMap[ key ]
+        }
+
+        boolean hasRegexpKey() {
+            this.regexpKey != null
+        }
+
+        String getRegexpKey() {
+            this.regexpKey
+        }
+
+        Object getRegexpoKeyValue() {
+            this.regexpKeyValue
         }
 
         /**
@@ -425,24 +481,26 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
         MapObject validMO = new MapObject( validStructure )
 
         // validate children
-        toValidate.keySet().each { String key ->
+        toValidate.each { String key, Object value ->
 
-            if ( !validMO.keySet().contains( key ) ) {
+            /*
+             * When the key is a regexp then there are some limits on the values allowed. Only
+             * string, booleans and values can be used as values then, no sub structures like list
+             * or map.
+             *
+             * The reason for supporting regexp keys which breaks the general schema structure is
+             * to support simple mapping tables like name=>address.
+             */
+            if ( validMO.hasRegexpKey() ) {
 
-                throw new APSValidationException( "Entry '${ key }' is not valid! $toValidate" )
-            }
+                if ( !key.matches( validMO.regexpKey ) ) {
 
-            Object sourceValue = toValidate[ key ]
+                    throw new APSValidationException( "Entry key '${ key }' does not match regexp: ${ validMO.regexpKey }" )
+                }
 
-            if ( validMO.isRequired( key ) && sourceValue == null ) {
-                throw new APSValidationException( "'${ key }' is required! $toValidate" )
-            }
+                Object sourceValue = value
 
-            Object validStructureEntry = validMO.get( key )
-
-            if ( validStructureEntry instanceof String ) {
-
-                String validValue = validMO.get( key ) as String
+                String validValue = validMO.regexpKeyValue
 
                 if ( validValue.trim() == BOOLEAN ) {
                     validateBoolean( sourceValue, toValidate )
@@ -453,17 +511,51 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
                         validateString( validValue, sourceValue, toValidate )
                     }
                 }
-
             }
-            else if ( validStructureEntry instanceof Map ) {
+            /*
+             * Here is the normal validation.
+             */
+            else {
 
-                Map<String, Object> toValidateMap = sourceValue as Map<String, Object>
-                validateMap( validStructureEntry as Map<String, Object>, toValidateMap )
-            }
-            else if ( validStructureEntry instanceof List ) {
+                if ( !validMO.keySet().contains( key ) ) {
 
-                List<Object> toValidateList = toValidate[ key ] as List<Object>
-                validateList( validStructureEntry as List<Object>, toValidateList )
+                    throw new APSValidationException( "Entry '${ key }' is not valid! $toValidate" )
+                }
+
+                Object validStructureEntry = validMO.get( key )
+
+                Object sourceValue = value //toValidate[ key ]
+
+                if ( validMO.isRequired( key ) && sourceValue == null ) {
+
+                    throw new APSValidationException( "'${ key }' is required! $toValidate" )
+                }
+
+                if ( validStructureEntry instanceof String ) {
+
+                    String validValue = validMO.get( key ) as String
+
+                    if ( validValue.trim() == BOOLEAN ) {
+                        validateBoolean( sourceValue, toValidate )
+                    }
+                    else {
+                        if ( !validateNumber( validValue, sourceValue, toValidate ) ) {
+
+                            validateString( validValue, sourceValue, toValidate )
+                        }
+                    }
+
+                }
+                else if ( validStructureEntry instanceof Map ) {
+
+                    Map<String, Object> toValidateMap = sourceValue as Map<String, Object>
+                    validateMap( validStructureEntry as Map<String, Object>, toValidateMap )
+                }
+                else if ( validStructureEntry instanceof List ) {
+
+                    List<Object> toValidateList = toValidate[ key ] as List<Object>
+                    validateList( validStructureEntry as List<Object>, toValidateList )
+                }
             }
 
         }
