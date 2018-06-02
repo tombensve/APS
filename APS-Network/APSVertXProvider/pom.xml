@@ -3,34 +3,34 @@
     PROJECT
         Name
             APS VertX Provider
-
+        
         Code Version
             1.0.0
-
+        
         Description
             This service provides configured Vertx instances allowing multiple services to use the same Vertx instance.
-
+            
             This service also provides for multiple instances of VertX by associating an instance with a name. Everyone
             asking for the same name will get the same instance.
-
+        
     COPYRIGHTS
         Copyright (C) 2012 by Natusoft AB All rights reserved.
-
+        
     LICENSE
         Apache 2.0 (Open Source)
-
+        
         Licensed under the Apache License, Version 2.0 (the "License");
         you may not use this file except in compliance with the License.
         You may obtain a copy of the License at
-
+        
           http://www.apache.org/licenses/LICENSE-2.0
-
+        
         Unless required by applicable law or agreed to in writing, software
         distributed under the License is distributed on an "AS IS" BASIS,
         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
         See the License for the specific language governing permissions and
         limitations under the License.
-
+        
     AUTHORS
         tommy ()
             Changes:
@@ -132,6 +132,15 @@
         <!-- The directory whose content should be embeded into the bundle jar. -->
         <osgi.embed.directory>lib</osgi.embed.directory>
 
+        <!-- We register our configuration for auto registration and management. -->
+        <aps.config.id>apsVertxProvider</aps.config.id>
+
+        <!-- This defines the configuration JSON file. -->
+        <aps.config.schema>/apsconfig/config-schema.json</aps.config.schema>
+
+        <!-- This provides a configuraton with default values for first time. -->
+        <aps.config.default.resource>/apsconfig/default-config.json</aps.config.default.resource>
+
         <!--
             APS properties.
         -->
@@ -140,6 +149,9 @@
             Other properties
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <aps.clustered.vertx.for.tests>true</aps.clustered.vertx.for.tests>
+
     </properties>
 
     <dependencies>
@@ -149,11 +161,6 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-apis</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-tools-lib</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -398,6 +405,86 @@
             <scope>test</scope>
         </dependency>
 
+        <!--
+            Test
+        -->
+
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-osgi-test-tools</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
+        <!--
+            These are for being able to run aps-config-manager and dependent bundles in unit tests
+            using aps-osgi-test-tools. It feels better running the real thing rather than fake config.
+        -->
+
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-vertx-cluster-datastore-service-provider</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-vertx-event-bus-messaging-provider</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-filesystem-service-provider</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-config-manager</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-json-lib</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>io.vertx</groupId>-->
+            <!--<artifactId>vertx-core</artifactId>-->
+            <!--<version>${vertx.version}</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>io.vertx</groupId>-->
+            <!--<artifactId>vertx-auth-common</artifactId>-->
+            <!--<version>${vertx.version}</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>io.vertx</groupId>-->
+            <!--<artifactId>vertx-web</artifactId>-->
+            <!--<version>${vertx.version}</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>io.vertx</groupId>-->
+            <!--<artifactId>vertx-hazelcast</artifactId>-->
+            <!--<version>${vertx.version}</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>com.hazelcast</groupId>-->
+            <!--<artifactId>hazelcast</artifactId>-->
+            <!--<version>${hazelcast.version}</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+
     </dependencies>
 
     <build>
@@ -462,6 +549,17 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.20.1</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <aps.vertx.clustered>${aps.clustered.vertx.for.tests}</aps.vertx.clustered>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+
             <!--
                 OSGi bundle handling.
             -->
@@ -485,6 +583,9 @@
                     </supportedProjectTypes>
                     <archive>
                         <manifestEntries>
+                            <APS-Config-Id>${aps.config.id}</APS-Config-Id>
+                            <APS-Config-Schema>${aps.config.schema}</APS-Config-Schema>
+                            <APS-Config-Default-Resource>${aps.config.default.resource}</APS-Config-Default-Resource>
                             <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
                         </manifestEntries>
                     </archive>

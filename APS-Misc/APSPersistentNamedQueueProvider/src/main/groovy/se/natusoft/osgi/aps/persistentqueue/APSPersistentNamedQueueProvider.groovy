@@ -8,8 +8,7 @@ import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
 import se.natusoft.osgi.aps.activator.annotation.OSGiService
 import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
-import se.natusoft.osgi.aps.activator.annotation.APSFile
-import se.natusoft.osgi.aps.activator.annotation.APSFilesystem
+
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
 import se.natusoft.osgi.aps.api.misc.queue.APSNamedQueueService
 import se.natusoft.osgi.aps.api.misc.queue.APSQueue

@@ -1,0 +1,7 @@
+{
+  "http": {
+    "vertx_http_service_default": 9088,
+    "vertx_http_service_aps-admin-web-a2": 9080,
+    "vertx_http_service_test": 8888
+  }
+}

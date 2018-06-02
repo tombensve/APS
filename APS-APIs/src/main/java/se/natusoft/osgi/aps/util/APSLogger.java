@@ -2,32 +2,32 @@
  *
  * PROJECT
  *     Name
- *         APS Tools Library
- *
+ *         APS APIs
+ *     
  *     Code Version
  *         1.0.0
- *
+ *     
  *     Description
- *         Provides a library of utilities, among them APSServiceTracker used by all other APS bundles.
- *
+ *         Provides the APIs for the application platform services.
+ *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *
+ *     
  * LICENSE
  *     Apache 2.0 (Open Source)
- *
+ *     
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *
+ *     
  *       http://www.apache.org/licenses/LICENSE-2.0
- *
+ *     
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *
+ *     
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -54,7 +54,7 @@ import java.util.*;
 
 /**
  * This wraps a LogService instance and simply logs to stdout when no logservice is available.
- *
+ * <p>
  * Note that this also implements the LogService API!
  */
 public class APSLogger implements LogService {
@@ -120,6 +120,16 @@ public class APSLogger implements LogService {
      * The logging bundle.
      */
     private Bundle bundle;
+
+    /**
+     * The owner of the logger. Basically bundle owning logger. This is created when null and cached thereafter.
+     */
+    private String owner;
+
+    /**
+     * A more complete identifier including logger and logging for. This is created when null and cached thereafter.
+     */
+    private String logger;
 
     //
     // Constructors
@@ -280,6 +290,43 @@ public class APSLogger implements LogService {
     }
 
     /**
+     * @return owner of logger.
+     */
+    private String getOwner() {
+        if (this.owner == null) {
+            this.owner = "";
+            if ( this.svcRef != null ) {
+
+                Object bundleNameObj = svcRef.getProperty( Constants.BUNDLE_NAME );
+                if ( bundleNameObj != null ) {
+
+                    this.owner += bundleNameObj.toString();
+                }
+            }
+            else if ( this.bundle != null ) {
+                this.owner += this.bundle.getSymbolicName();
+            }
+        }
+
+        return this.owner;
+    }
+
+    /**
+     * @return A more complete information about who and what is logging.
+     */
+    private String getLogger() {
+        if (this.logger == null) {
+            this.logger = "[" + getOwner();
+            if (this.loggingFor != null) {
+                this.logger += ":" + this.loggingFor;
+            }
+            this.logger += "]";
+        }
+
+        return this.logger;
+    }
+
+    /**
      * Sets the service reference of the service to identify as logger.
      *
      * @param svcRef The service reference to set.
@@ -301,7 +348,7 @@ public class APSLogger implements LogService {
      * @param loggingFor The name of the object this logger is logging for.
      */
     public void setLoggingFor( String loggingFor ) {
-        this.loggingFor = "[" + loggingFor + "]";
+        this.loggingFor = loggingFor;
     }
 
     /**
@@ -434,21 +481,21 @@ public class APSLogger implements LogService {
 
             if ( cause != null ) {
 
-                logService.log( this.svcRef, level, this.loggingFor + message, cause );
+                logService.log( this.svcRef, level, getLogger() + message, cause );
             }
             else {
 
-                logService.log( this.svcRef, level, this.loggingFor + message );
+                logService.log( this.svcRef, level, getLogger() + message );
             }
         }
         else {
             if ( cause != null ) {
 
-                logService.log( level, this.loggingFor + message, cause );
+                logService.log( level, getLogger() + message, cause );
             }
             else {
 
-                logService.log( level, this.loggingFor + message );
+                logService.log( level, getLogger() + message );
             }
         }
     }
@@ -487,20 +534,12 @@ public class APSLogger implements LogService {
             log.append( YYMMDD_HHMMSS.format( new Date() ) );
             log.append( " " );
 
-            if ( svcRef != null ) {
-
-                Object bundleNameObj = svcRef.getProperty( Constants.BUNDLE_NAME );
-                if ( bundleNameObj != null ) {
-
-                    log.append( "[" ).append( bundleNameObj ).append( "] " );
-                }
-            }
+            log.append( getLogger() );
 
             log.append( "[" );
             log.append( Thread.currentThread().getName() );
             log.append( "] " );
 
-            log.append( this.loggingFor );
             log.append( " " );
 
             log.append( message );

@@ -2,32 +2,32 @@
  *
  * PROJECT
  *     Name
- *         APS Tools Library
- *
+ *         APS APIs
+ *     
  *     Code Version
  *         1.0.0
- *
+ *     
  *     Description
- *         Provides a library of utilities, among them APSServiceTracker used by all other APS bundles.
- *
+ *         Provides the APIs for the application platform services.
+ *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *
+ *     
  * LICENSE
  *     Apache 2.0 (Open Source)
- *
+ *     
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *
+ *     
  *       http://www.apache.org/licenses/LICENSE-2.0
- *
+ *     
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *
+ *     
  * AUTHORS
  *     Tommy Svensson (tommy.svensson@biltmore.se)
  *         Changes:
@@ -47,7 +47,7 @@ public class APSUUID implements ID, Serializable {
     //
 
     /** The wrapped java.util.UUID. */
-    private java.util.UUID uuid = java.util.UUID.randomUUID();
+    private java.util.UUID uuid;
 
     //
     // Constructors
@@ -56,7 +56,9 @@ public class APSUUID implements ID, Serializable {
     /**
      * Creates a new APSUUID.
      */
-    public APSUUID() {}
+    public APSUUID() {
+        this.uuid = java.util.UUID.randomUUID();
+    }
 
     /**
      * Creates a new APSUUID from a string formatted UUID. This allows to create an APSUUID
@@ -149,5 +151,9 @@ public class APSUUID implements ID, Serializable {
         }
 
         return -1;
+    }
+
+    public String toString() {
+        return this.uuid.toString();
     }
 }

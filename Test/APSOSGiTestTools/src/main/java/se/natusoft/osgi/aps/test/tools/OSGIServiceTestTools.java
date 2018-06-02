@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS OSGi Test Tools
- *
+ *     
  *     Code Version
  *         1.0.0
- *
+ *     
  *     Description
  *         Provides tools for testing OSGi services.
- *
+ *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *
+ *     
  * LICENSE
  *     Apache 2.0 (Open Source)
- *
+ *     
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *
+ *     
  *       http://www.apache.org/licenses/LICENSE-2.0
- *
+ *     
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *
+ *     
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -108,6 +108,10 @@ public class OSGIServiceTestTools {
     //
     // Methods
     //
+
+    private void thread(Runnable runnable) {
+        new Thread( runnable ).run();
+    }
 
     /**
      * Send a bundle event to bundles.
@@ -233,6 +237,10 @@ public class OSGIServiceTestTools {
         }
     }
 
+    public void deployConfigManager()  throws Exception {
+        deployConfigManager( null );
+    }
+
     /**
      * Deploys the aps-config-manager and all its dependencies. This is needed to be able to
      * deploy a bundle that makes use of aps-config-manager to get its configuration.
@@ -241,15 +249,26 @@ public class OSGIServiceTestTools {
      *
      * @throws Exception on any failure to deploy.
      */
-    public void deployConfigManager() throws Exception {
+    public void deployConfigManager(Runnable vertxDeployer) throws Exception {
 
         System.setProperty( APSFilesystemService.CONF_APS_FILESYSTEM_ROOT, "target/config" );
 
-        deploy( "aps-vertx-provider" ).with( new APSActivator() ).from(
+        deploy( "aps-config-manager" ).with( new APSActivator() ).from(
                 "se.natusoft.osgi.aps",
-                "aps-vertx-provider",
+                "aps-config-manager",
                 "1.0.0"
         );
+
+        if (vertxDeployer == null) {
+            deploy( "aps-vertx-provider" ).with( new APSActivator() ).from(
+                    "se.natusoft.osgi.aps",
+                    "aps-vertx-provider",
+                    "1.0.0"
+            );
+        }
+        else {
+            vertxDeployer.run();
+        }
 
         hold().maxTime( 2 ).unit( TimeUnit.SECONDS ).go();
 
@@ -271,11 +290,6 @@ public class OSGIServiceTestTools {
                 "1.0.0"
         );
 
-        deploy( "aps-config-manager" ).with( new APSActivator() ).from(
-                "se.natusoft.osgi.aps",
-                "aps-config-manager",
-                "1.0.0"
-        );
     }
 
     /**

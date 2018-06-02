@@ -2,13 +2,13 @@
  *
  * PROJECT
  *     Name
- *         APS Tools Library
+ *         APS APIs
  *     
  *     Code Version
  *         1.0.0
  *     
  *     Description
- *         Provides a library of utilities, among them APSServiceTracker used by all other APS bundles.
+ *         Provides the APIs for the application platform services.
  *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.

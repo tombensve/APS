@@ -1,13 +1,49 @@
+/*
+ *
+ * PROJECT
+ *     Name
+ *         APSConfigManager
+ *     
+ *     Code Version
+ *         1.0.0
+ *     
+ * COPYRIGHTS
+ *     Copyright (C) 2012 by Natusoft AB All rights reserved.
+ *     
+ * LICENSE
+ *     Apache 2.0 (Open Source)
+ *     
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *     
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *     
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *     
+ * AUTHORS
+ *     tommy ()
+ *         Changes:
+ *         2018-05-25: Created!
+ *
+ */
 package se.natusoft.osgi.aps.core.config
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.osgi.framework.Bundle
+import org.osgi.framework.BundleContext
 import org.osgi.framework.BundleEvent
 import se.natusoft.docutations.NotNull
+import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.util.APSLogger
 import se.natusoft.osgi.aps.activator.annotation.BundleListener
 import se.natusoft.osgi.aps.activator.annotation.Managed
+import se.natusoft.osgi.aps.util.DoSometime
 
 /**
  * This listens to bundles and manages configurations.
@@ -37,8 +73,10 @@ class BundlesConfigHandler {
     //
 
     @Managed( loggingFor = "aps-config-provider:bundle-config-handler" )
-    @NotNull
     APSLogger logger
+
+    @Managed
+    private BundleContext context
 
     @Managed
     private ConfigManager configManager
@@ -46,6 +84,20 @@ class BundlesConfigHandler {
     //
     // Methods
     //
+
+    /**
+     * Handles bundles already running when this bundle starts.
+     */
+    @Initializer
+    void handleAlreadyRunningBundles() {
+
+        this.context.bundles.each { Bundle bundle ->
+
+            this.logger.info("Already deployed: Checking bundle: ${bundle.symbolicName}")
+
+            handleNewBundle( bundle )
+        }
+    }
 
     /**
      * This receives events from other bundles and determines if there are any new configurations to manage.
@@ -71,29 +123,33 @@ class BundlesConfigHandler {
      * @param bundle The new bundle to manage config for.
      */
     private void handleNewBundle( @NotNull Bundle bundle ) {
+        if (!(bundle.symbolicName == "aps-config-manager")) {
+            this.logger.info( "New bundle: Checking bundle: ${ bundle.symbolicName }" )
 
-        String configId = (String) bundle.getHeaders().get( "APS-Config-Id" )
-        if ( configId != null ) {
-            this.logger.info( "Found bundle with configuration id: " + configId )
+            String configId = ( String ) bundle.getHeaders().get( "APS-Config-Id" )
+            this.logger.debug ">>>>>>> configId: [${configId}]"
+            if ( configId != null ) {
+                this.logger.info( "Found bundle with configuration id: " + configId )
 
-            String schemaResourcePath = bundle.headers.get( "APS-Config-Schema" ) as String
+                String schemaResourcePath = bundle.headers.get( "APS-Config-Schema" ) as String
 
-            String defaultResourcePath = bundle.headers.get( "APS-Config-Default-Resource" ) as String
+                String defaultResourcePath = bundle.headers.get( "APS-Config-Default-Resource" ) as String
 
-            if ( schemaResourcePath != null ) {
-                try {
+                if ( schemaResourcePath != null ) {
+                    try {
 
-                    this.configManager.addManagedConfig( configId, bundle, schemaResourcePath, defaultResourcePath )
+                        this.configManager.addManagedConfig( configId, bundle, schemaResourcePath, defaultResourcePath )
+                    }
+                    catch ( Exception e ) {
+
+                        this.logger.error( "Failed to load config from: ${ schemaResourcePath } / ${ defaultResourcePath } " +
+                                "for bundle '${ bundle.symbolicName }'!", e )
+                    }
                 }
-                catch ( Exception e ) {
-
-                    this.logger.error( "Failed to load config from: ${schemaResourcePath} / ${defaultResourcePath} " +
-                            "for bundle '${bundle.symbolicName}'!", e )
+                else {
+                    this.logger.error( "Bad bundle ('${ bundle.symbolicName }')! Configuration with id '${ configId }' is " +
+                            "available, but no APS-Config-Schema found!" )
                 }
-            }
-            else {
-                this.logger.error( "Bad bundle ('${bundle.symbolicName}')! Configuration with id '${configId}' is " +
-                        "available, but no APS-Config-Schema found!" )
             }
         }
     }

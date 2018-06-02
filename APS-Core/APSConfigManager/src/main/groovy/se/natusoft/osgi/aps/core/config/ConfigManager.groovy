@@ -1,3 +1,36 @@
+/*
+ *
+ * PROJECT
+ *     Name
+ *         APSConfigManager
+ *
+ *     Code Version
+ *         1.0.0
+ *
+ * COPYRIGHTS
+ *     Copyright (C) 2012 by Natusoft AB All rights reserved.
+ *
+ * LICENSE
+ *     Apache 2.0 (Open Source)
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *
+ * AUTHORS
+ *     tommy ()
+ *         Changes:
+ *         2018-05-25: Created!
+ *
+ */
 package se.natusoft.osgi.aps.core.config
 
 import groovy.transform.CompileStatic
@@ -9,6 +42,10 @@ import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Note
 import se.natusoft.docutations.Nullable
 import se.natusoft.docutations.Unbreakable
+import se.natusoft.osgi.aps.activator.annotation.BundleStop
+import se.natusoft.osgi.aps.activator.annotation.Initializer
+import se.natusoft.osgi.aps.activator.annotation.Managed
+import se.natusoft.osgi.aps.activator.annotation.OSGiService
 import se.natusoft.osgi.aps.api.core.APSLockable
 import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
@@ -16,15 +53,10 @@ import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
 import se.natusoft.osgi.aps.api.messaging.APSMessage
 import se.natusoft.osgi.aps.api.messaging.APSMessagePublisher
 import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
-import se.natusoft.osgi.aps.model.APSHandler
 import se.natusoft.osgi.aps.model.APSResult
 import se.natusoft.osgi.aps.model.APSUUID
 import se.natusoft.osgi.aps.model.ID
 import se.natusoft.osgi.aps.util.APSLogger
-import se.natusoft.osgi.aps.activator.annotation.BundleStop
-import se.natusoft.osgi.aps.activator.annotation.Initializer
-import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.OSGiService
 
 /**
  * This class actually manages all configurations.
@@ -61,7 +93,7 @@ class ConfigManager {
     private APSMessageSubscriber<Map<String, Object>> messageSubscriber
 
     /** Filesystem access that won't go away on redeploy. */
-    @OSGiService( timeout = "15 sec" )
+    @OSGiService( timeout = "15 sec", nonBlocking = true )
     private APSFilesystemService fsService
 
     @OSGiService( additionalSearchCriteria = "(service-persistence-scope=clustered)", nonBlocking = true )
@@ -88,7 +120,14 @@ class ConfigManager {
     @Initializer
     void init() {
 
-        this.messageSubscriber.subscribe( APSConfig.CONFIG_EVENT_DESTINATION, SUBSCRIBER_ID, ( APSHandler ) null ) {
+        this.messageSubscriber.subscribe( APSConfig.CONFIG_EVENT_DESTINATION, SUBSCRIBER_ID ) { APSResult res ->
+
+            if ( !res.success() ) {
+
+                this.logger.error( "", res.failure() )
+            }
+
+        } {
 
             APSMessage<Map<String, Object>> message ->
 
@@ -179,46 +218,19 @@ class ConfigManager {
             initializeConfig( configId ) // This will populate the provider from cluster or from disk.
 
             Properties confProps = new Properties()
-            confProps.setProperty( "apsConfigId", configId )
+            confProps[ "apsConfigId" ] = configId
 
             ServiceRegistration serviceRegistration = this.bundleContext.registerService(
 
                     APSConfig.class.name, provider, confProps
             )
 
-            this.regs[ configId ] = serviceRegistration
+            regs[ configId ] = serviceRegistration
 
         }
         catch ( Exception e ) {
 
             this.logger.error( "Failed to load config '${ configId }' for bundle '${ owner.symbolicName }'!", e )
-        }
-    }
-
-    /**
-     * This publishes the id of the configuration only since when a config is updated
-     * the cluster instance of the config is also updated, and it is the cluster instance
-     * that is always used. But when this is received the cluster instance should be copied
-     * to local disk store. Each node needs a local copy of the cluster version. Whichever
-     * node is started first provides the original cluster version.
-     */
-    private void updateOtherNodesOfChangedConfig( APSConfiguration configProvider ) {
-        this.messagePublisher.publish(
-
-                APSConfig.CONFIG_EVENT_DESTINATION,
-                [
-                        messageType: "CONFIG_UPDATED",
-                        apsConfigId: configProvider.apsConfigId,
-                        configMgrId: this.confMgrId
-
-                ] as Map<String, Object>
-
-        ) { APSResult res ->
-
-            if ( !res.success() ) {
-
-                logger.error( "Failed to publish new configuration!", res.failure() )
-            }
         }
     }
 
@@ -238,7 +250,35 @@ class ConfigManager {
         APSConfiguration provider = this.providers.remove( configId )
         if ( provider != null ) {
 
-            provider.saveConfig()
+            provider.saveConfigToDisk()
+        }
+    }
+
+    /**
+     * This publishes the id of the configuration only since when a config is updated
+     * the cluster instance of the config is also updated, and it is the cluster instance
+     * that is always used. But when this is received the cluster instance should be copied
+     * to local disk store. Each node needs a local copy of the cluster version. Whichever
+     * node is started first provides the original cluster version.
+     */
+    private void updateOtherNodesOfChangedConfig( APSConfiguration configProvider ) {
+
+        this.messagePublisher.publish(
+
+                APSConfig.CONFIG_EVENT_DESTINATION,
+                [
+                        messageType: "CONFIG_UPDATED",
+                        apsConfigId: configProvider.apsConfigId,
+                        configMgrId: this.confMgrId
+
+                ] as Map<String, Object>
+
+        ) { APSResult res ->
+
+            if ( !res.success() ) {
+
+                logger.error( "Failed to publish new configuration!", res.failure() )
+            }
         }
     }
 
@@ -321,7 +361,7 @@ class ConfigManager {
                         if ( conf != null ) {
 
                             provider.fromDeserialized( conf as Serializable )
-                            provider.saveConfig()
+                            provider.saveConfigToDisk()
 
                             this.logger.info( "[${ configId }]: Took cluster config!" )
 

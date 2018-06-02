@@ -1,3 +1,36 @@
+/*
+ *
+ * PROJECT
+ *     Name
+ *         APSConfigManager
+ *     
+ *     Code Version
+ *         1.0.0
+ *     
+ * COPYRIGHTS
+ *     Copyright (C) 2012 by Natusoft AB All rights reserved.
+ *     
+ * LICENSE
+ *     Apache 2.0 (Open Source)
+ *     
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *     
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *     
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *     
+ * AUTHORS
+ *     tommy ()
+ *         Changes:
+ *         2018-05-25: Created!
+ *
+ */
 package se.natusoft.osgi.aps.core.config
 
 import groovy.transform.CompileStatic
@@ -8,8 +41,8 @@ import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
 import se.natusoft.osgi.aps.api.core.APSSerializableData
 import se.natusoft.osgi.aps.api.core.config.APSConfig
-import se.natusoft.osgi.aps.activator.annotation.APSDirectory
-import se.natusoft.osgi.aps.activator.annotation.APSFilesystem
+import se.natusoft.osgi.aps.api.core.filesystem.model.APSDirectory
+import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
 import se.natusoft.osgi.aps.core.lib.MapJsonDocSchemaValidator
 import se.natusoft.osgi.aps.core.lib.StructMap
@@ -18,6 +51,7 @@ import se.natusoft.osgi.aps.exceptions.APSIOException
 import se.natusoft.osgi.aps.json.JSON
 import se.natusoft.osgi.aps.json.JSONErrorHandler
 import se.natusoft.osgi.aps.model.APSHandler
+import se.natusoft.osgi.aps.model.APSResult
 import se.natusoft.osgi.aps.util.APSLogger
 
 /**
@@ -72,8 +106,8 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
     /** A validator for validating agains configSchema. */
     private MapJsonDocSchemaValidator configValidator
 
-    /** Save of config dir for when saving. */
-    private APSDirectory configDir
+//    /** Save of config dir for when saving. */
+//    private APSDirectory configDir
 
     /** The default config. */
     private StructMap defaultConfig
@@ -187,7 +221,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
 
         super.provide( structPath, value )
 
-        saveConfig()
+        saveConfigToDisk()
 
         this.saveToCluster.call( this )
 
@@ -206,26 +240,36 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
     /**
      * Make sure we have a config dir in our filesystem. If not create it. this.configDir will be updated.
      */
-    private void setupConfigDir() {
+    private void withConfigDir( Closure doCode ) {
 
-        if ( this.configDir == null ) {
+        // Note: If the APSFileSystemService is not available yet, this operation will be queued and
+        //       called when it is available. So this can potentially be delayed. This is due to the
+        //       nonBlocking = true flag on the APSServiceTracker wrapped service injected to ConfigManager
+        //       and passed to this class. This is also why the APSFilesystemService API is reactive.
+        //       Otherwise this wouldn't work. This is to avoid having multiple threads with locked threads
+        //       just waiting for things.
+        this.fsService.getFilesystem( "aps-config-provider" ) { APSResult<APSFilesystem> res ->
 
-            APSFilesystem fs = this.fsService.getFilesystem( "aps-config-provider" )
+            if ( res.success() ) {
 
-            if ( fs == null ) {
+                APSFilesystem fs = res.result().content()
 
-                fs = this.fsService.createFilesystem( "aps-config-provider" )
+                APSDirectory root = fs.getRootDirectory()
+
+                if ( !root.exists( "configs" ) ) {
+
+                    root.createDir( "configs" )
+                }
+
+                APSDirectory configDir = fs.getDirectory( "configs" )
+
+                doCode( configDir )
             }
-
-            APSDirectory root = fs.getRootDirectory()
-
-            if ( !root.exists( "configs" ) ) {
-
-                root.createDir( "configs" )
+            else {
+                this.logger.error( res.failure().message, res.failure() )
             }
-
-            this.configDir = fs.getDirectory( "configs" )
         }
+
     }
 
     /**
@@ -235,13 +279,19 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
      */
     private validateConfig( Map<String, Object> config ) {
 
-        if ( this.configValidator != null ) {
+        if ( config != null ) {
+            if ( this.configValidator != null ) {
 
-            this.configValidator.validate( config )
+                this.configValidator.validate( config )
+            }
+            else {
+
+                this.logger.warn "Config '${ this.apsConfigId }' has not schema to validate against!"
+            }
+
         }
         else {
-
-            this.logger.warn( "Config '${ this.apsConfigId }' has not schema to validate against!" )
+            this.logger.error "Attempted validation of null config!"
         }
     }
 
@@ -252,16 +302,20 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
 
         this.clear()
 
-        setupConfigDir()
+        // Strangeness: The code below loading the schema and default config from the bundle completely
+        // fail if run within the "withConfigDir" closure below. Outside of it, it works fine. I fail
+        // to see a reason for that. The side effect is that there might be a delay between the loading
+        // of the default config and the last saved config.
 
         // Load config schema from bundle.
-
+        this.logger.info "Loading schema: ${ this.schemaPath }"
         InputStream schemaStream = this.owner.getResource( this.schemaPath ).openStream()
 
         try {
 
             this.configSchema = JSON.readJSONAsMap( schemaStream, this.jsonErrorHandler )
             this.configValidator = new MapJsonDocSchemaValidator( validStructure: configSchema )
+            this.logger.info "Loaded schema: ${ this.configSchema }"
 
         }
         catch ( IOException ioe ) {
@@ -270,7 +324,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
         }
         finally {
 
-            if (schemaStream != null) schemaStream.close()
+            if ( schemaStream != null ) schemaStream.close()
         }
 
         // Load default config from bundle.
@@ -290,61 +344,60 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
         }
         finally {
 
-            if (defaultConfigPath != null) defaultConfigStream.close()
+            if ( defaultConfigPath != null ) defaultConfigStream.close()
         }
+
+        this.logger.info "Loaded default config: ${ this.defaultConfig.toString() }"
 
         // Validate default config.
         validateConfig( this.defaultConfig )
 
+        // We populate our config with the default values first and then let the last saved config overwrite.
+        // If the default config have a new value it will then be available since the saved config will not
+        // have it until next save.
+        putAll( this.defaultConfig )
+
         // Try load local config.
 
-        if ( this.configDir.exists( "${ this.apsConfigId }.json" ) ) {
+        // IMPORTANT: This closure can potentially be run at a later time if the APSFilesytemService is not
+        //            available yet!
+        withConfigDir() { APSDirectory configDir ->
 
-            try {
+            if ( configDir.exists( "${ this.apsConfigId }.json" ) ) {
 
-                StructMap loaded = new StructMap(
+                try {
 
-                        JSON.readJSONAsMap(
+                    StructMap loaded = new StructMap(
 
-                                this.configDir.getFile( "${ this.apsConfigId }.json" ).createInputStream(),
-                                this.jsonErrorHandler
-                        )
-                )
+                            JSON.readJSONAsMap(
 
-                validateConfig( loaded )
+                                    configDir.getFile( "${ this.apsConfigId }.json" ).createInputStream(),
+                                    this.jsonErrorHandler
+                            )
+                    )
 
-                clear()
-                putAll( loaded )
-            }
-            catch ( IOException ioe ) {
+                    validateConfig( loaded )
 
-                throw new APSIOException( "Failed to load configuration for bundle ${ this.owner.symbolicName }!", ioe )
-            }
-            finally {
+                    putAll( loaded )
+                }
+                catch ( IOException ioe ) {
 
-                schemaStream.close()
-            }
+                    throw new APSIOException( "Failed to load configuration for bundle ${ this.owner.symbolicName }!",
+                            ioe )
+                }
+                finally {
 
-            validateConfig( this )
-        }
-        else {
-            // Create from default
-            clear()
+                    schemaStream.close()
+                }
 
-            if ( this.defaultConfig != null ) {
-
-                putAll( this.defaultConfig )
                 validateConfig( this )
-                saveConfig()
+            }
+            else { // We have no previous config saved.
+
+                saveConfigToDisk()
             }
         }
-    }
 
-    /**
-     * Saves current configuration.
-     */
-    void saveConfig() {
-        saveConfigToDisk(  )
     }
 
     /**
@@ -352,31 +405,29 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
      */
     void saveConfigToDisk() {
 
-        setupConfigDir()
+        withConfigDir() { APSDirectory configDir ->
 
-        OutputStream os = this.configDir.getFile( "${ apsConfigId }.json" ).createOutputStream()
-        try {
+            OutputStream os = configDir.getFile( "${ apsConfigId }.json" ).createOutputStream()
+            try {
 
-            JSON.writeMapAsJSON( this, os )
+                JSON.writeMapAsJSON( this, os )
+            }
+            catch ( IOException ioe ) {
+
+                throw new APSIOException( "Failed to save configuration for bundle ${ this.owner.symbolicName }!", ioe )
+            }
+            finally {
+
+                if ( os != null ) os.close()
+            }
         }
-        catch ( IOException ioe ) {
-
-            throw new APSIOException( "Failed to save configuration for bundle ${ this.owner.symbolicName }!", ioe )
-        }
-        finally {
-
-            if (os != null) os.close()
-        }
-    }
-
-    void saveConfigToCluster() {
-
     }
 
     /**
      * @return A Serializable object of the type provided by getSerializedType().
      */
     @Override
+    @Implements( APSSerializableData.class )
     Serializable toSerializable() {
 
         Map<String, Object> serializableContent = [:]
@@ -391,6 +442,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
      * @param serializable The deserialized object received.
      */
     @Override
+    @Implements( APSSerializableData.class )
     void fromDeserialized( Serializable serializable ) {
 
         clear()
@@ -401,6 +453,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
      * @return The serialized type.
      */
     @Override
+    @Implements( APSSerializableData.class )
     Class getSerializedType() {
 
         LinkedHashMap.class

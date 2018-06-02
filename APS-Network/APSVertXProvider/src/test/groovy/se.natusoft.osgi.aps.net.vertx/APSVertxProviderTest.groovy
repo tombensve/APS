@@ -32,12 +32,13 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
     void reactiveAPITest() throws Exception {
         // Most of the unfamiliar constructs here are provided by OSGiServiceTestTools and groovy DSL features.
 
-        println "============================================================================"
-        println "DO NOTE: All the RED colored output comes from Vertx! It is not something "
-        println "that have failed! Vertx have just chosen this color for their log output!"
-        println "============================================================================"
+        deployConfigManager() {
 
-        deploy 'aps-vertx-provider' with new APSActivator() using '/se/natusoft/osgi/aps/net/vertx/APSVertxProvider.class'
+            println "***************** aps-vertx-provider **************"
+            deploy 'aps-vertx-provider' with new APSActivator() from 'APS-Network/APSVertxProvider/target/classes'
+        }
+
+        hold() maxTime 2L unit SECONDS go()
 
         deploy 'vertx-client' with new APSActivator() using '/se/natusoft/osgi/aps/net/vertx/VertxClient.class'
 
@@ -50,37 +51,41 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
             println "<<<<< " + new Date()
 
             assert vertx != null
+            println ">>>> Got Vertx!"
             assert router != null
+            println ">>>> Got router!"
             assert eventBus != null
+            println ">>> Got event bus!"
             assert sharedData != null
+            println ">>>> Got shared data!"
 
         }
         finally {
             shutdown()
-            hold() maxTime 500 unit MILLISECONDS go() // Give Vertx time to shut down.
+            hold() maxTime 3 unit SECONDS go() // Give Vertx time to shut down.
         }
     }
 
 }
 
-@SuppressWarnings("GroovyUnusedDeclaration")
+@SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
 @TypeChecked
 class VertxClient {
 
-    @Managed(loggingFor = "Test:VertxClient")
+    @Managed( loggingFor = "Test:VertxClient" )
     private APSLogger logger
 
-    @OSGiService(additionalSearchCriteria = "(vertx-object=Vertx)", timeout="10 sec")
+    @OSGiService( additionalSearchCriteria = "(vertx-object=Vertx)", timeout = "10 sec" )
     APSServiceTracker<Vertx> vertxTracker
 
-    @OSGiService(additionalSearchCriteria = "(&(vertx-object=Router)(vertx-router=test))", timeout="10 sec")
+    @OSGiService( additionalSearchCriteria = "(&(vertx-object=Router)(vertx-router=test))", timeout = "10 sec" )
     APSServiceTracker<Router> routerTracker
 
-    @OSGiService(additionalSearchCriteria = "(vertx-object=EventBus)", timeout="10 sec")
+    @OSGiService( additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "10 sec" )
     APSServiceTracker<EventBus> eventBusTracker
 
-    @OSGiService(additionalSearchCriteria = "(vertx-object=SharedData)", timeout="10 sec")
+    @OSGiService( additionalSearchCriteria = "(vertx-object=SharedData)", timeout = "10 sec" )
     APSServiceTracker<SharedData> sharedDataTracker
 
     @Initializer
@@ -96,29 +101,36 @@ class VertxClient {
 
         // Here we listen to the active, which ever works.
         this.routerTracker.onActiveServiceAvailable { Router router, ServiceReference routerRef ->
+
             APSVertxProviderTest.router = router
             this.logger.info "Got router!"
+
         }.onServiceLeaving { ServiceReference sr, Class api ->
+
             this.logger.info "Router leaving!"
         }
 
         this.eventBusTracker.onActiveServiceAvailable { EventBus eventBus, ServiceReference busRef ->
+
             APSVertxProviderTest.eventBus = eventBus
             this.logger.info "Got event bus!"
         }
 
         this.sharedDataTracker.onActiveServiceAvailable { SharedData sharedData, ServiceReference busRef ->
+
             APSVertxProviderTest.sharedData = sharedData
             this.logger.info "Got shared data!"
         }
     }
 
-    private void onVertxAvailable(Vertx vertx, ServiceReference vertxRef) {
+    private void onVertxAvailable( Vertx vertx, ServiceReference vertxRef ) {
+
         APSVertxProviderTest.vertx = vertx
         this.logger.info "Got vertx!"
     }
 
-    private void onVertxLeaving(ServiceReference vertxRef, Class vertxAPIClass) {
+    private void onVertxLeaving( ServiceReference vertxRef, Class vertxAPIClass ) {
+
         this.logger.info "Vertx going away!"
     }
 }

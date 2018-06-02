@@ -3,34 +3,34 @@
  * PROJECT
  *     Name
  *         APS VertX Provider
- *
+ *     
  *     Code Version
  *         1.0.0
- *
+ *     
  *     Description
  *         This service provides configured Vertx instances allowing multiple services to use the same Vertx instance.
- *
+ *         
  *         This service also provides for multiple instances of VertX by associating an instance with a name. Everyone
  *         asking for the same name will get the same instance.
- *
+ *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *
+ *     
  * LICENSE
  *     Apache 2.0 (Open Source)
- *
+ *     
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *
+ *     
  *       http://www.apache.org/licenses/LICENSE-2.0
- *
+ *     
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *
+ *     
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -50,6 +50,8 @@ import io.vertx.core.shareddata.SharedData
 import io.vertx.ext.web.Router
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceRegistration
+import se.natusoft.osgi.aps.activator.annotation.ConfigListener
+import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.exceptions.APSException
 import se.natusoft.osgi.aps.exceptions.APSStartException
 import se.natusoft.osgi.aps.util.APSLogger
@@ -107,14 +109,7 @@ class APSVertxProvider {
     /** */
     private List<Runnable> shutdownNotification = []
 
-    /**
-     * Temporary config handling until the APS config overhaul.
-     */
-    private Map<String, Integer> config = [
-            vertx_http_service_default           : 9088,
-            "vertx_http_service_aps-admin-web-a2": 9080,
-            vertx_http_service_test              : 8888
-    ]
+    private APSConfig config
 
     /**
      * This gets called after all injections are done.
@@ -122,7 +117,15 @@ class APSVertxProvider {
     @Initializer
     void init() {
         this.logger.connectToLogService( this.context )
+    }
 
+    @ConfigListener( apsConfigId = "apsVertxProvider" )
+    void configReceiver( APSConfig config ) {
+        this.config = config
+
+        this.logger.info("#### Got config! : ${config}")
+
+        // We wait for config before doing this since it will use config.
         startVertx()
     }
 
@@ -137,42 +140,57 @@ class APSVertxProvider {
     // Methods
     //
 
-    private static String toRealHttpKey( String key ) {
-        return key.substring( HTTP_CONF_PREFIX.length() )
-    }
-
+    /**
+     * This starts vertx either clustered or not depending on the 'aps.vertx.clustered' system property.
+     *
+     * @param options Vert.x options passed to Vertx on creation. can be [ : ]!
+     * @param handler The handler to call with result.
+     */
     private static void vertxBoot( Map<String, Object> options, Handler<AsyncResult<Vertx>> handler ) {
 
         boolean apsVertxClustered = true
 
         String clusterProp = System.getProperty( "aps.vertx.clustered" )
-        if (clusterProp != null && clusterProp.trim(  ).toLowerCase(  ).equals( "false" )) {
+
+        if ( clusterProp != null && clusterProp.trim().toLowerCase() == "false" ) {
+
             apsVertxClustered = false
         }
 
-        if (apsVertxClustered) {
+        if ( apsVertxClustered ) {
+
             Vertx.clusteredVertx( options, handler )
         }
         else {
+            // On a non clustered Vertx it just returns the Vertx instance directly, not requiring a handler.
+            // But since the caller of this method don't know or care if Vertx is clustered or not it expects
+            // a handler callback in either case, so we have to call the handler instead of Vertx.
             Vertx vertx = Vertx.vertx( options )
-            handler.handle( new AsyncResult<Vertx> () {
-                Vertx result() {
-                    vertx
-                }
 
-                Throwable cause() {
-                    new APSException("Failed to create Vertx instance!")
-                }
+            handler.handle(
+                    new AsyncResult<Vertx>() {
 
-                boolean succeeded() {
-                    vertx != null
-                }
+                        Vertx result() {
 
-                boolean failed() {
-                    vertx == null
-                }
+                            vertx
+                        }
 
-            } )
+                        Throwable cause() {
+
+                            failed() ? new APSException( "Failed to create Vertx instance!" ) : null
+                        }
+
+                        boolean succeeded() {
+
+                            vertx != null
+                        }
+
+                        boolean failed() {
+
+                            vertx == null
+                        }
+                    }
+            )
         }
     }
 
@@ -181,7 +199,7 @@ class APSVertxProvider {
      */
     private void startVertx() {
 
-        vertxBoot( [ : ] ) { AsyncResult<Vertx> res ->
+        vertxBoot( [:] ) { AsyncResult<Vertx> res ->
 
             if ( res.succeeded() ) {
 
@@ -228,16 +246,19 @@ class APSVertxProvider {
     private void stopVertx() {
 
         if ( this.vertxSvcReg != null ) {
+
             this.vertxSvcReg.unregister()
             this.logger.info( "Unregistered Vertx as OSGi service!" )
         }
 
         if ( this.eventBusSvcReg != null ) {
+
             this.eventBusSvcReg.unregister()
             this.logger.info( "Unregistered EventBus as OSGi service!" )
         }
 
         if ( this.shareDataSvcReg != null ) {
+
             this.shareDataSvcReg.unregister()
             this.logger.info( "Unregistered SharedData as OSGi service!" )
         }
@@ -273,9 +294,14 @@ class APSVertxProvider {
      * Starts all Vertx Http services and a router for each. It is the router that is published to clients.
      */
     private void startHttpServices() {
-        this.config.findAll { String key, Object value -> key.startsWith( HTTP_CONF_PREFIX ) }.each { String key, Object value ->
 
-            startHttpService( key )
+        Map<String, Object> httpConf = this.config[ "http" ] as Map<String, Object>
+
+        httpConf.findAll { String key, Object value ->
+
+            Integer port = httpConf[ key ] as Integer
+
+            startHttpService( key, port )
         }
     }
 
@@ -284,8 +310,7 @@ class APSVertxProvider {
      *
      * @param key A key in configuration providing a port to listen to.
      */
-    private void startHttpService( String key ) {
-        Integer port = this.config[ key ] as Integer
+    private void startHttpService( String key, int port ) {
 
         if ( port != null ) {
 
@@ -303,20 +328,21 @@ class APSVertxProvider {
             if ( router == null ) {
 
                 router = Router.router( vertx )
-                this.logger.info( "Created router for config '${ toRealHttpKey( key ) }'!" )
+                this.logger.info( "Created router for config '${ key }'!" )
                 httpServerRouterByPort[ port ] = router
+
                 httpServer.requestHandler( router.&accept ).listen( port )
-                this.logger.info( "HTTP server for config '${ toRealHttpKey( key ) }' now listening on port ${ port }!" )
+                this.logger.info( "HTTP server for config '${ key }' now listening on port ${ port }!" )
 
                 this.routerRegByPort[ port ] = this.context.registerService( Router.class.name, router, [
                         "service-provider": "aps-vertx-provider",
                         "service-category": "network",
                         "service-function": "client/server",
                         "vertx-object"    : "Router",
-                        "vertx-router"    : toRealHttpKey( key )
+                        "vertx-router"    : key
                 ] as Properties )
 
-                this.logger.info( "Registered HTTP service 'Router' for config '${ toRealHttpKey( key ) }' as OSGi service!" )
+                this.logger.info( "Registered HTTP service 'Router' for config '${ key }' as OSGi service!" )
 
             }
         }
@@ -332,9 +358,11 @@ class APSVertxProvider {
      */
     private void stopHttpServices() {
 
-        this.config.findAll { String key, Object value -> key.startsWith( HTTP_CONF_PREFIX ) }.each { String key, Object value ->
+        Map<String, Object> httpConf = this.config[ "http" ] as Map<String, Object>
 
-            stopHttpService( key )
+        httpConf.findAll { String key, Object value ->
+
+            stopHttpService( key, value as int )
         }
     }
 
@@ -343,29 +371,26 @@ class APSVertxProvider {
      *
      * @param key A key in configuration providing the service port. This is used to find locally cached service.
      */
-    private void stopHttpService( String key ) {
-        Integer port = this.config[ key ] as Integer
+    private void stopHttpService( String key, int port ) {
 
         if ( this.routerRegByPort != null ) {
+
             this.routerRegByPort.remove( port )?.unregister()
-            this.logger.info( "Unregistered 'Router' for config '${ toRealHttpKey( key ) }' as OSGi service!" )
+            this.logger.info( "Unregistered 'Router' for config '${ key }' as OSGi service!" )
         }
 
-        if ( this.httpServerRouterByPort != null ) {
-            this.httpServerRouterByPort.remove( port )?.delete()
-        }
+        this.httpServerRouterByPort?.remove( port )?.delete()
 
-        if ( this.httpServerByPort != null ) {
-            this.httpServerByPort.remove( port )?.close() { AsyncResult<Vertx> res ->
 
-                if ( res.succeeded() ) {
+        this.httpServerByPort?.remove( port )?.close() { AsyncResult<Vertx> res ->
 
-                    this.logger.info( "Http service '${ toRealHttpKey( key ) }' successfully stopped!" )
-                }
-                else {
+            if ( res.succeeded() ) {
 
-                    this.logger.error( "Stopping http service '${ key }' failed!", res.cause() )
-                }
+                this.logger.info( "Http service '${ key }' successfully stopped!" )
+            }
+            else {
+
+                this.logger.error( "Stopping http service '${ key }' failed!", res.cause() )
             }
         }
     }

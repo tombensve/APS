@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS APIs
- *
+ *     
  *     Code Version
  *         1.0.0
- *
+ *     
  *     Description
  *         Provides the APIs for the application platform services.
- *
+ *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *
+ *     
  * LICENSE
  *     Apache 2.0 (Open Source)
- *
+ *     
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *
+ *     
  *       http://www.apache.org/licenses/LICENSE-2.0
- *
+ *     
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *
+ *     
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -36,9 +36,10 @@
  */
 package se.natusoft.osgi.aps.api.core.filesystem.service;
 
-import se.natusoft.osgi.aps.activator.annotation.APSFilesystem;
-
-import java.io.IOException;
+import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
+import se.natusoft.osgi.aps.exceptions.APSIOException;
+import se.natusoft.osgi.aps.model.APSHandler;
+import se.natusoft.osgi.aps.model.APSResult;
 
 /**
  * This provides a filesystem for use by services/applications. Each filesystem has its own root that cannot be navigated
@@ -49,12 +50,11 @@ import java.io.IOException;
  *     APSFilesystemService fss;
  *     APSFilesystem fs;
  *
- *     if (fss.hasFilesystem("my.file.system")) {
- *         fs = fss.getFilsystem("my.file.system");
- *     }
- *     else {
- *         fs = fss.createFilesystem("my.file.system");
- *     }
+ *     fss.getFilesystem("my.file.system", (result) -> {
+ *         if (result.success()) {
+ *             fs = result.result();
+ *         }
+ *     });
  *
  */
 public interface APSFilesystemService {
@@ -71,37 +71,21 @@ public interface APSFilesystemService {
     //
 
     /**
-     * Creates a new filesystem for use by an application or service. Where on disk this filesystem resides is irrelevant. It is
-     * accessed using the "owner", and will exist until it is removed.
-     *
-     * @param owner The owner of the filesystem or rather a unique identifier of it. Consider using application or service package.
-     *
-     * @throws IOException on any failure. An already existing filesystem for the "owner" will cause this exception.
-     */
-    APSFilesystem createFilesystem(String owner) throws IOException;
-
-    /**
-     * Returns true if the specified owner has a filesystem.
+     * Returns the filesystem for the specified owner. If the filesystem does not exist it is created.
      *
      * @param owner The owner of the filesystem or rather a unique identifier of it.
-     */
-    boolean hasFilesystem(String owner);
-
-    /**
-     * Returns the filesystem for the specified owner.
+     * @param handler Called with the filesystem.
      *
-     * @param owner The owner of the filesystem or rather a unique identifier of it.
-     *
-     * @throws IOException on any failure.
+     * @exception APSIOException on failure.
      */
-    APSFilesystem getFilesystem(String owner) throws IOException;
+    void getFilesystem( String owner, APSHandler<APSResult<APSFilesystem>> handler);
 
     /**
      * Removes the filesystem and all files in it.
      *
      * @param owner The owner of the filesystem to delete.
      *
-     * @throws IOException on any failure.
+     * @exception APSIOException on any failure.
      */
-    void deleteFilesystem(String owner) throws IOException;
+    void deleteFilesystem(String owner, APSHandler<APSResult<Void>> handler);
 }

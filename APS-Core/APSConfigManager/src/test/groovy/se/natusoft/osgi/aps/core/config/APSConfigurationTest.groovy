@@ -65,7 +65,7 @@ class APSConfigurationTest extends OSGIServiceTestTools {
 
         deploy 'moon-whale-service' with new APSActivator() from 'APS-Core/APSConfigManager/target/test-classes'
 
-        hold() whilst { !ok } maxTime 5 unit TimeUnit.SECONDS go()
+        hold() whilst { !ok } maxTime 10 unit TimeUnit.SECONDS go()
 
         assert ok
     }
@@ -94,9 +94,9 @@ class MoonWhaleService {
                 assert value instanceof Number
                 assert ( value as int ) == 22
 
-            value = this.config.lookup( "local.relayWhales" )
-            assert value instanceof Number
-            assert ( value as int ) == 18
+                value = this.config.lookup( "local.relayWhales" )
+                assert value instanceof Number
+                assert ( value as int ) == 18
 
                 value = this.config.lookup( "local.translatorWhales" )
                 assert value instanceof Number

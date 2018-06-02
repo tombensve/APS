@@ -3,33 +3,33 @@
  * PROJECT
  *     Name
  *         APS Filesystem Service Provider
- *
+ *     
  *     Code Version
  *         1.0.0
- *
+ *     
  *     Description
  *         Provides access to a service/application private filesystem that remains until the
  *         service/application specifically deletes it. This is independent of the OSGi server
  *         it is running in (if configured).
- *
+ *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *
+ *     
  * LICENSE
  *     Apache 2.0 (Open Source)
- *
+ *     
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *
+ *     
  *       http://www.apache.org/licenses/LICENSE-2.0
- *
+ *     
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *
+ *     
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -38,9 +38,10 @@
  */
 package se.natusoft.osgi.aps.core.filesystem.model;
 
-import se.natusoft.osgi.aps.activator.annotation.APSDirectory;
-import se.natusoft.osgi.aps.activator.annotation.APSFile;
-import se.natusoft.osgi.aps.activator.annotation.APSFilesystem;
+import se.natusoft.osgi.aps.api.core.filesystem.model.APSDirectory;
+import se.natusoft.osgi.aps.api.core.filesystem.model.APSFile;
+import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
+import se.natusoft.osgi.aps.exceptions.APSIOException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -61,7 +62,7 @@ public class APSFilesystemImpl implements APSFilesystem {
     private String owner = null;
 
     //
-    // Cosntructors
+    // Constructors
     //
 
     /**
@@ -72,19 +73,19 @@ public class APSFilesystemImpl implements APSFilesystem {
      *
      * @throws FileNotFoundException on failure.
      */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public APSFilesystemImpl(String fsRoot, String owner) throws FileNotFoundException {
+    public APSFilesystemImpl(String fsRoot, String owner) {
         File root = new File(fsRoot);
-        if (!root.exists()) {
-            throw new FileNotFoundException("Specified filesystem does not exist! [" + fsRoot + "]");
-        }
-        if (!root.isDirectory() || !root.canRead() || !root.canWrite()) {
-            throw new FileNotFoundException("Bad filesystem root! [" + fsRoot + "]");
-        }
         root = new File(root, owner);
+
         if (!root.exists()) {
-            root.mkdirs();
+            if (!root.mkdirs())
+                throw new APSIOException( "Specified filesystem is not creatable! [" + fsRoot + "]" );
         }
+
+        if (!root.isDirectory() || !root.canRead() || !root.canWrite()) {
+            throw new APSIOException("Bad filesystem root! [" + fsRoot + "]");
+        }
+
         this.fsRoot = root.getAbsolutePath();
         this.owner = owner;
     }
@@ -142,7 +143,7 @@ public class APSFilesystemImpl implements APSFilesystem {
      * @param path The path of the file.
      */
     @Override
-    public APSFile getFile(String path) {
+    public APSFile getFile( String path) {
         return new APSFileImpl(this, path);
     }
 
@@ -154,7 +155,7 @@ public class APSFilesystemImpl implements APSFilesystem {
      * @throws IOException on any failure, specifically if the specified path is not a folder or doesn't exist.
      */
     @Override
-    public APSDirectory getDirectory(String path) throws IOException {
+    public APSDirectory getDirectory( String path) throws IOException {
         APSDirectoryImpl dir = new APSDirectoryImpl(this, path);
         if (!dir.exists()) {
             throw new IOException("Specified path does not exist! [" + path + "]");
