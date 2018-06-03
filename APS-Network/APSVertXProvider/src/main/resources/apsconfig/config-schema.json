@@ -1,10 +1,10 @@
 {
   "http_?": "This maps a name to a port. Each entry will get an active vertx http router.",
   "http_0": {
-    "?([a-z]|[A-Z]|_|-)+": "?[0-9]+"
+    "?([a-z]|[A-Z]|[0-9]|_|-)+": "?[0-9]+"
   },
   "tcp_?": "This maps a name to a port. Each entry will have a vertx TCP server listening on it.",
   "tcp_0": {
-    "?([a-z]|[A-Z]|_|-)+": "?[0-9]+"
+    "?([a-z]|[A-Z]|[0-9]|_|-)+": "?[0-9]+"
   }
 }

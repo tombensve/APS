@@ -8,15 +8,14 @@ import io.vertx.core.shareddata.SharedData
 import io.vertx.ext.web.Router
 import org.junit.Test
 import org.osgi.framework.ServiceReference
-import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.activator.APSActivator
-import se.natusoft.osgi.aps.util.APSLogger
-import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
+import se.natusoft.osgi.aps.tracker.APSServiceTracker
+import se.natusoft.osgi.aps.util.APSLogger
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static java.util.concurrent.TimeUnit.SECONDS
 
 @CompileStatic
@@ -34,7 +33,6 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
 
         deployConfigManager() {
 
-            println "***************** aps-vertx-provider **************"
             deploy 'aps-vertx-provider' with new APSActivator() from 'APS-Network/APSVertxProvider/target/classes'
         }
 
@@ -43,19 +41,17 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
         deploy 'vertx-client' with new APSActivator() using '/se/natusoft/osgi/aps/net/vertx/VertxClient.class'
 
         try {
-            println ">>>>> " + new Date()
             hold() whilst { vertx == null } maxTime 6L unit SECONDS go()
             hold() whilst { router == null } maxTime 6L unit SECONDS go()
             hold() whilst { eventBus == null } maxTime 6L unit SECONDS go()
             hold() whilst { sharedData == null } maxTime 6L unit SECONDS go()
-            println "<<<<< " + new Date()
 
             assert vertx != null
             println ">>>> Got Vertx!"
             assert router != null
             println ">>>> Got router!"
             assert eventBus != null
-            println ">>> Got event bus!"
+            println ">>>> Got event bus!"
             assert sharedData != null
             println ">>>> Got shared data!"
 

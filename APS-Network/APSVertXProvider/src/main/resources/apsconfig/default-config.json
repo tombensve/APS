@@ -1,5 +1,5 @@
 {
   "http": {
-    "vertx_http_service_default": 8888
+    "default": 8888
   }
 }
