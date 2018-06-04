@@ -39,12 +39,16 @@ class APSVertxClusterDataStoreTest extends OSGIServiceTestTools {
         println "that have failed! Vertx have just chosen this color for their log output!"
         println "============================================================================"
 
-        deploy 'aps-vertx-provider' with new APSActivator() from 'se.natusoft.osgi.aps', 'aps-vertx-provider', '1.0.0'
+        deployConfigAndVertxPlusDeps(
+                dataStoreServiceDeployer( null ) {
+                    deploy 'aps-vertx-cluster-data-store-provider' with new APSActivator() from 'APS-Network/APSVertxClusterDataStoreServiceProvider/target/classes'
+                }
+        )
 
         // Note that since these test deploys does not use its own classloader but uses the general test classpath
         // we don't need to supply the other 3 classes. They will be available anyhow. The one specified however
         // must be specified since only specified classes are looked at by APSActivator.
-        deploy 'aps-vertx-cluster-datastore-provider' with new APSActivator() using '/se/natusoft/osgi/aps/datastore/APSVertxClusterDataStoreServiceProvider.class'
+//        deploy 'aps-vertx-cluster-datastore-provider' with new APSActivator() using '/se/natusoft/osgi/aps/datastore/APSVertxClusterDataStoreServiceProvider.class'
 
         deploy 'producer' with new APSActivator() using '/se/natusoft/osgi/aps/datastore/ClusterStoreTestClient.class'
 

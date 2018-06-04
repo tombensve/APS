@@ -3,28 +3,28 @@
  * PROJECT
  *     Name
  *         APSConfigManager
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -308,23 +308,31 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
         // of the default config and the last saved config.
 
         // Load config schema from bundle.
-        this.logger.info "Loading schema: ${ this.schemaPath }"
-        InputStream schemaStream = this.owner.getResource( this.schemaPath ).openStream()
+        this.logger.info "(configId:${this.apsConfigId}):Loading schema: ${ this.schemaPath }"
+        URL schemaUrl = this.owner.getResource( this.schemaPath )
+        this.logger.debug ">>>> schemaUrl: ${schemaUrl}"
 
-        try {
+        InputStream schemaStream = schemaUrl.openStream(  )
 
-            this.configSchema = JSON.readJSONAsMap( schemaStream, this.jsonErrorHandler )
-            this.configValidator = new MapJsonDocSchemaValidator( validStructure: configSchema )
-            this.logger.info "Loaded schema: ${ this.configSchema }"
+        if (schemaStream != null) {
+            try {
 
+                this.configSchema = JSON.readJSONAsMap( schemaStream, this.jsonErrorHandler )
+                this.configValidator = new MapJsonDocSchemaValidator( validStructure: configSchema )
+                this.logger.info "Loaded schema: ${ this.configSchema }"
+
+            }
+            catch ( IOException ioe ) {
+
+                this.logger.error( "Failed to load configuration schema! Config will not be verified!", ioe )
+            }
+            finally {
+
+                if ( schemaStream != null ) schemaStream.close()
+            }
         }
-        catch ( IOException ioe ) {
-
-            this.logger.error( "Failed to load configuration schema! Config will not be verified!", ioe )
-        }
-        finally {
-
-            if ( schemaStream != null ) schemaStream.close()
+        else {
+            this.logger.error "(configId:${this.apsConfigId}):No configuration schema is available!"
         }
 
         // Load default config from bundle.
@@ -338,7 +346,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
         catch ( IOException ioe ) {
 
             this.logger.error(
-                    "Failed to load default configuration from bundle: ${ this.owner.symbolicName }!", ioe )
+                    "(configId:${this.apsConfigId}):Failed to load default configuration from bundle: ${ this.owner.symbolicName }!", ioe )
 
             this.defaultConfig = null
         }
@@ -347,7 +355,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
             if ( defaultConfigPath != null ) defaultConfigStream.close()
         }
 
-        this.logger.info "Loaded default config: ${ this.defaultConfig.toString() }"
+        this.logger.info "(configId:${this.apsConfigId}):Loaded default config: ${ this.defaultConfig.toString() }"
 
         // Validate default config.
         validateConfig( this.defaultConfig )

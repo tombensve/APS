@@ -61,7 +61,6 @@ class APSVertxClusterDataStoreServiceProvider implements APSLockableDataStoreSer
      */
     @Override
     void store( String key, Object value, APSHandler<APSResult> result ) {
-        this.logger.info("&&&&&&&& value: ${value}")
 
         String[] keyParts = key.split( "\\." )
         if ( keyParts.length < 2 ) {

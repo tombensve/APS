@@ -297,7 +297,7 @@ class APSVertxProvider {
 
         Map<String, Object> httpConf = (Map<String, Object>)this.config[ "http" ]
 
-        httpConf.findAll { String key, Object value ->
+        httpConf?.findAll { String key, Object value ->
 
             Integer port = httpConf[ key ] as Integer
 

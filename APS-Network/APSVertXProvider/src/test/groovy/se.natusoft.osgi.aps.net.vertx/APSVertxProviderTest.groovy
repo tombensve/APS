@@ -31,10 +31,9 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
     void reactiveAPITest() throws Exception {
         // Most of the unfamiliar constructs here are provided by OSGiServiceTestTools and groovy DSL features.
 
-        deployConfigManager() {
-
+        deployConfigAndVertxPlusDeps( vertxDeployer( null ) {
             deploy 'aps-vertx-provider' with new APSActivator() from 'APS-Network/APSVertxProvider/target/classes'
-        }
+        } )
 
         hold() maxTime 2L unit SECONDS go()
 

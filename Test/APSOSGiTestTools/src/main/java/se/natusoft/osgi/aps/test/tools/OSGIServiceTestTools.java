@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS OSGi Test Tools
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides tools for testing OSGi services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -237,9 +237,32 @@ public class OSGIServiceTestTools {
         }
     }
 
-    public void deployConfigManager()  throws Exception {
-        deployConfigManager( null );
+    public void deployConfigAndVertxPlusDeps()  throws Exception {
+        deployConfigAndVertxPlusDeps( null );
     }
+
+    public static final String VERTX_DEPLOYER = "vertxDeployer";
+    public static final String DATASTORE_SERVICE_DEPLOYER = "dataStoreServiceDeployer";
+    public static final String BUS_MESSAGING_DEPLOYER = "busMessagingDeployer";
+
+    public static Map<String, Runnable> vertxDeployer(Map<String, Runnable> depMap, Runnable deployer) {
+        if (depMap == null) depMap = new LinkedHashMap<>(  );
+        depMap.put(VERTX_DEPLOYER, deployer);
+        return depMap;
+    }
+
+    public static Map<String, Runnable> dataStoreServiceDeployer(Map<String, Runnable> depMap, Runnable deployer) {
+        if (depMap == null) depMap = new LinkedHashMap<>(  );
+        depMap.put(DATASTORE_SERVICE_DEPLOYER, deployer);
+        return depMap;
+    }
+
+    public static Map<String, Runnable> busMessagingDeployer(Map<String, Runnable> depMap, Runnable deployer) {
+        if (depMap == null) depMap = new LinkedHashMap<>(  );
+        depMap.put(BUS_MESSAGING_DEPLOYER, deployer);
+        return depMap;
+    }
+
 
     /**
      * Deploys the aps-config-manager and all its dependencies. This is needed to be able to
@@ -249,7 +272,7 @@ public class OSGIServiceTestTools {
      *
      * @throws Exception on any failure to deploy.
      */
-    public void deployConfigManager(Runnable vertxDeployer) throws Exception {
+    public void deployConfigAndVertxPlusDeps( Map<String, Runnable> altDeployers) throws Exception {
 
         System.setProperty( APSFilesystemService.CONF_APS_FILESYSTEM_ROOT, "target/config" );
 
@@ -259,6 +282,7 @@ public class OSGIServiceTestTools {
                 "1.0.0"
         );
 
+        Runnable vertxDeployer = altDeployers.get("vertxDeployer");
         if (vertxDeployer == null) {
             deploy( "aps-vertx-provider" ).with( new APSActivator() ).from(
                     "se.natusoft.osgi.aps",
@@ -272,17 +296,29 @@ public class OSGIServiceTestTools {
 
         hold().maxTime( 2 ).unit( TimeUnit.SECONDS ).go();
 
-        deploy( "aps-vertx-cluster-datastore-service-provider" ).with( new APSActivator() ).from(
-                "se.natusoft.osgi.aps",
-                "aps-vertx-cluster-datastore-service-provider",
-                "1.0.0"
-        );
+        Runnable dataStoreServiceDeployer = altDeployers.get("dataStoreServiceDeployer");
+        if (dataStoreServiceDeployer == null) {
+            deploy( "aps-vertx-cluster-datastore-service-provider" ).with( new APSActivator() ).from(
+                    "se.natusoft.osgi.aps",
+                    "aps-vertx-cluster-datastore-service-provider",
+                    "1.0.0"
+            );
+        }
+        else {
+            dataStoreServiceDeployer.run();
+        }
 
-        deploy( "aps-vertx-event-bus-messaging-provider" ).with( new APSActivator() ).from(
-                "se.natusoft.osgi.aps",
-                "aps-vertx-event-bus-messaging-provider",
-                "1.0.0"
-        );
+        Runnable busMessagingDeployer = altDeployers.get("busMessagingDeployer");
+        if (busMessagingDeployer == null) {
+            deploy( "aps-vertx-event-bus-messaging-provider" ).with( new APSActivator() ).from(
+                    "se.natusoft.osgi.aps",
+                    "aps-vertx-event-bus-messaging-provider",
+                    "1.0.0"
+            );
+        }
+        else {
+            busMessagingDeployer.run();
+        }
 
         deploy( "aps-filesystem-service-provider" ).with( new APSActivator() ).from(
                 "se.natusoft.osgi.aps",

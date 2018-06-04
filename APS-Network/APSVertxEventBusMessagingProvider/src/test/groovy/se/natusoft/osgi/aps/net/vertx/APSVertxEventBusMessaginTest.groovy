@@ -30,10 +30,12 @@ class APSVertXEventBusMessagingTest extends OSGIServiceTestTools {
     @Test
     void runTest() throws Exception {
 
-
-        deploy 'aps-vertx-provider' with new APSActivator() from 'se.natusoft.osgi.aps', 'aps-vertx-provider', '1.0.0'
-
-        deploy 'aps-vertx-event-bus-messaging-provider' with new APSActivator() from 'APS-Network/APSVertxEventBusMessagingProvider/target/classes'
+        deployConfigAndVertxPlusDeps(
+                // Override default deployment from ~/.m2/... of our self and use the just built code instead.
+                busMessagingDeployer( null ) {
+                    deploy 'aps-vertx-event-bus-messaging-provider' with new APSActivator() from 'APS-Network/APSVertxEventBusMessagingProvider/target/classes'
+                }
+        )
 
         deploy 'msg-receiver' with new APSActivator() using '/se/natusoft/osgi/aps/net/vertx/MsgReceiver.class'
 
@@ -74,23 +76,23 @@ class MsgReceiver {
         this.msgSubscriber.subscribe( "testaddr", subscriptionId, APS.MSG_NO_RESULT ) {
             APSMessage<Map<String, Object>> messageValue ->
 
-            this.logger.info( ">>>>>> Received message!" )
+                this.logger.info( ">>>>>> Received message!" )
 
-            StructMap message = new StructMap( messageValue.content() )
-            message.lookupObject( "meta.test-message" ).onTrue() { boolean tm ->
+                StructMap message = new StructMap( messageValue.content() )
+                message.lookupObject( "meta.test-message" ).onTrue() { boolean tm ->
 
-                if ( message[ 'id' ] == APSVertXEventBusMessagingTest.UNIQUE_MESSAGE ) {
+                    if ( message[ 'id' ] == APSVertXEventBusMessagingTest.UNIQUE_MESSAGE ) {
 
-                    this.logger.info( "Got '${message[ "id" ]}'!" )
-                    APSVertXEventBusMessagingTest.messageReceived = true
+                        this.logger.info( "Got '${ message[ "id" ] }'!" )
+                        APSVertXEventBusMessagingTest.messageReceived = true
+                    }
                 }
-            }
 
-            this.msgSubscriber.unsubscribe( subscriptionId ) { APSResult res ->
-                if ( !res.success() ) {
-                    this.logger.error( "Failed to unsubscribe!" )
+                this.msgSubscriber.unsubscribe( subscriptionId ) { APSResult res ->
+                    if ( !res.success() ) {
+                        this.logger.error( "Failed to unsubscribe!" )
+                    }
                 }
-            }
         }
         this.logger.info( "Subscribed to 'testaddr'" )
     }
@@ -122,13 +124,13 @@ class MsgSender {
         // the rest.
 
         this.msgPublisher.publish( "testaddr",
-                [ "meta": [ "test-message": true ],
-                  "id"  : APSVertXEventBusMessagingTest.UNIQUE_MESSAGE ] as Map<String, Object> ) { APSResult res ->
+                ["meta": ["test-message": true],
+                 "id"  : APSVertXEventBusMessagingTest.UNIQUE_MESSAGE] as Map<String, Object> ) { APSResult res ->
             if ( !res.success() ) {
                 throw res.failure()
             }
             else {
-                logger.info( "Published '${APSVertXEventBusMessagingTest.UNIQUE_MESSAGE}'!" )
+                logger.info( "Published '${ APSVertXEventBusMessagingTest.UNIQUE_MESSAGE }'!" )
             }
         }
 

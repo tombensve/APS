@@ -15,7 +15,7 @@ class APSNTPTimeServiceProviderTest extends OSGIServiceTestTools {
     @Test
     void testNTPTimeService() throws Exception {
 
-        deployConfigManager(  )
+        deployConfigAndVertxPlusDeps(  )
 
         // The actual code to test
 

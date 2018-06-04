@@ -3,31 +3,31 @@
     PROJECT
         Name
             APS Vertx Event Bus Messaging Provider
-        
+
         Code Version
             1.0.0
-        
+
         Description
             Provides an implementation of APSMessageService using Vert.x event bus.
-        
+
     COPYRIGHTS
         Copyright (C) 2012 by Natusoft AB All rights reserved.
-        
+
     LICENSE
         Apache 2.0 (Open Source)
-        
+
         Licensed under the Apache License, Version 2.0 (the "License");
         you may not use this file except in compliance with the License.
         You may obtain a copy of the License at
-        
+
           http://www.apache.org/licenses/LICENSE-2.0
-        
+
         Unless required by applicable law or agreed to in writing, software
         distributed under the License is distributed on an "AS IS" BASIS,
         WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
         See the License for the specific language governing permissions and
         limitations under the License.
-        
+
     AUTHORS
         tommy ()
             Changes:
@@ -109,6 +109,9 @@
             Other properties
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <aps.clustered.vertx.for.tests>false</aps.clustered.vertx.for.tests>
+
     </properties>
 
     <dependencies>
@@ -205,6 +208,34 @@
             </exclusions>
         </dependency>
 
+        <!--
+            These are for being able to run aps-config-manager and dependent bundles in unit tests
+            using aps-osgi-test-tools. It feels better running the real thing rather than fake config.
+        -->
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-vertx-cluster-datastore-service-provider</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-vertx-event-bus-messaging-provider</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-filesystem-service-provider</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-config-manager</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
@@ -245,6 +276,18 @@
                 </configuration>
             </plugin>
 
+            <!-- Provide system properties to tests. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.20.1</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <aps.vertx.clustered>${aps.clustered.vertx.for.tests}</aps.vertx.clustered>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+
             <!--
                 OSGi bundle handling.
             -->
@@ -282,6 +325,8 @@
                         <Bundle-Activator>${osgi.bundle.activator}</Bundle-Activator>
                         <Embed-Directory>${osgi.embed.directory}</Embed-Directory>
                         <Embed-Dependency>${osgi.embed.dependency}</Embed-Dependency>
+                        <!--<Include-Resource>src/main/resources</Include-Resource>-->
+
                     </instructions>
                 </configuration>
             </plugin>
