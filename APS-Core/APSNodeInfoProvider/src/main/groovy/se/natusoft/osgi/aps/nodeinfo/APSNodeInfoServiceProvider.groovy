@@ -162,7 +162,8 @@ class APSNodeInfoServiceProvider implements APSNodeInfoService {
         Closure handle = {
             handler.handle(
                     new APSValue.Provider<NodeInfo>(
-                            this.nodes.find { Map.Entry<String, NodeInfo> entry -> entry.value.master }.value
+                            this.nodes.find { Map.Entry<String, NodeInfo> entry -> entry.value.master }.value as
+                                    NodeInfo
                     )
             )
         }

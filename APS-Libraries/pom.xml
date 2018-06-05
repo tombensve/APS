@@ -60,7 +60,6 @@
 
     <modules>
         <module>APSJSONLib</module>
-        <module>APSVaadinWebTools</module>
         <module>APSCoreLib</module>
     </modules>
 </project>

@@ -59,16 +59,9 @@
     </properties>
 
     <modules>
-        <module>APSExternalProtocolExtender</module>
-        <module>APSExtProtocolHTTPTransportProvider</module>
-        <module>APSStreamedJSONRPCProtocolProvider</module>
         <module>APSRabbitMQMessageServiceProvider</module>
-        <module>APSTCPIPServiceProvider</module>
-        <module>APSDefaultDiscoveryServiceProvider</module>
-        <module>APSSSHTunnelProvider</module>
         <module>APSVertxEventBusMessagingProvider</module>
         <module>APSVertXProvider</module>
-        <module>APSVertxTCPMessagingProvider</module>
         <module>APSVertxClusterDataStoreServiceProvider</module>
     </modules>
 

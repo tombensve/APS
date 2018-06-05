@@ -65,10 +65,6 @@
         Modules
     -->
     <modules>
-        <module>APSAdminWebServiceProvider</module>
-        <module>APSAdminWeb</module>
-        <module>APSConfigAdminWeb</module>
-        <module>APSUserAdminWeb</module>
         <module>APSAdminWebA2</module>
     </modules>
 

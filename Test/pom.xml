@@ -56,9 +56,7 @@
     </properties>
 
     <modules>
-        <module>APSServiceTestSupport</module>
         <module>APSOSGiTestTools</module>
-        <module>APSForTestService</module>
     </modules>
 
 </project>

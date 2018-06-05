@@ -14,9 +14,9 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 ### Current
 
-* A configuration service that works with annotated configuration models where each config value can be described/documented. The configuration model can be structured with sub models that there can be one or many of. Each top level configuration model registered with the configuration service will be available for publishing in the admin web. The configuration service also supports different configuration environments and allows for configuration values to be different for different configuration environments, but doesn´t require them to be.
+* A far better service tracker that does a better job at handling services coming and going. Supports service availability wait and timeout and can be wrapped as a proxy to the service. Instead of returning null it throws an exception if no service becomes available within the timeout, and is thus much easier to handle.
 
-* Synchronization of configurations across servers. There is currently 2 implementations for this, one that syncs using APSGroups service, one that syncs using RabbitMQ, and one that syncs via Hazelcast.
+* A configuration manager that extends deployed bundles by reading their configuration schema, their default configuration file, and their configuration id, and then loads and publishes an `APSConfig` instance with the bundles configuration. All active configurations are stored in a cluster (vertx/hazelcast). There will be a config web to edit configurations.
 
 * A filesystem service that provides a persistent filesystem outside of the OSGi server. The configuration service makes use of this to store configurations. Each client can get its own filesystem area, and can´t access anything outside of its area.
 
@@ -24,69 +24,18 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 * A JPA service that is easier and more clearly defined than the osgi-ee JPA API, and allows for multiple JPA contexts. It works as an extender picking up persistence.xml whose defined persistence unit name can then be looked up using the service. A client can only lookup its own persistence units. It is based on OpenJPA.
 
-* A data source service. Only provides connection information, no pooling (OpenJPA provides its own pooling)!
-
-* External protocol extender that allows more or less any OSGi service to be called remotely using any deployed protocol service and transport. Currently provides JSONRPC 1.0 & 2.0, JSONHTTP, and JSONREST protocols, and an http transport. Protocols have a defined service API whose implementations can just be dropped in to make them available. Transport providers can make use of any deployed protocol. The APSExternalProtocolService now provides support for REST services where there is a method for post, put, get,and delete, and the http transport makes use of this in conjunction with any protocol that indicates it can support REST like JSONREST.
-
-* A group service that can send data to each member over transport safe multicast.
-
-* A service discovery service using the group service.
-
-* A session service (not http!). This is used by apsadminweb to keep a session among several different administration web applications.
-
 * An administration web service to which administration web applications can register themselves with an url and thus be available in the .../apsadminweb admin gui.
 
-* A user service. Provides basic user management including roles/groups. Is accompanied with a admin GUI (plugnis into apsadminweb) for administration of users. (org.osgi.service.useradmin.UserAdmin felt uncomplete. It did not provide what I wanted).
-
-* A user authentication service. This does nothing more that authenticating a user and have a really simple API. APS provides an implementation that makes use of the user service, but it is easy to make another implementation that authenticates against an LDAP for example or something else. The Admin web applications uses the authentication service for authenticating admin users. 
-
-* A far better service tracker that does a better job at handling services coming and going. Supports service availability wait and timeout and can be wrapped as a proxy to the service. Instead of returning null it throws an exception if no service becomes available within the timeout, and is thus much easier to handle.
 
 ### Planned
 
 * An implementation of the standard OSGi LogService since not all servers provide one.
 
-* A log veiwer web application supporting reqular expression filters on log information and a live log view. This is waiting on Vaadin 7.1 which will support server push.  Another alternative is to go pure GWT and use Errai for this, but I rather continue with Vaadin having all admin webs looking and feeling the same. 
+* A log veiwer web application supporting reqular expression filters on log information and a live log view. 
 
 * Anything else relevant I come up with and consider fun to do :-).
 
-### Ideas
-
-* A JCR (Java Content Repository) service and a content publishing GUI (following the general APS ambition - reasonable functionality and flexibility, ease of use. Will fit many, but not everyone).
-
-* Support for being able to redeploy a web application and services live without loosing session nor user transactions. With OSGi it should be teoretically possible. For a limited number of redeployments at least. It is very easy to run into the "perm gen space" problem, but according to Frank Kieviet ([Classloader leaks: The dreaded permgen space](http://frankkieviet.blogspot.se/2006/10/classloader-leaks-dreaded-permgen-space.html)) it is caused by bad code and can be avoided. 
-
 ### What is new in 
-
-#### 1.0.0
-
-* Bug fix in APSConfigService that was forced to make it non backwards compatible to fix. Sorry for that! Using the APSConfigService work exactly as before, but editing config have changed. **The big catch however is that the keys in the configuration files have changed and thus old saved configurations no longer work!** I had no choice. The old keys where part of the problem. I admit that I did something very stupid in the first version and that I should have known better, and in the end I had no other choice than to fix it, which came as no surprice! 
-
-* Added Hazelcast support with APS Hazelcast configuration service.
-
-* 
-
-#### 0.10.0
-
-Added syncrhonization services and made config synchronizable.
-
-#### 0.9.2
-
-* Small bug fixes.
-
-* APSActivator has been added to aps-tools-lib and can be used as bundle activator. It uses annotations to register services and inject tracked services and other things.
-
-* A service can now be registered with an _aps-externalizable_ property with value _true_ to be made externally available by aps-external-protocol-extender.
-
-#### 0.9.1
-
-* Now have full REST support in aps-external-protocol-extender and aps-ext-protocol-http-transport-provider.
-
-* Documentation have been cleaned up a bit.
-
-## Requirements
-
-The administration web application(s) are currently WABs and thus require a server supporting WAB deployments. I have developed/tested this on Glassfish and Virgo. I am however considering seeing if it is possible to also support both Glassfish and JBoss JEE WAR to OSGi bridges. They are unfortunately very server specific since there are no such standard. Other than that all services are basic OSGi services and should theoretically run in any R4 compatible OSGi server. 
 
 ## Pre Setup
 
@@ -99,10 +48,4 @@ How to do this differs between servers. In Glassfish you can supply system prope
 If this system property is not set the default root will be BundleContext.getFile(). This can work for development setup, but not for more serious installations!
 
 After this path has been setup and the server started, all other configuration can be done in http://.../apsadminweb/. 
-
-__Please note__ that the /apsadminweb by default require no login! This so that _"Configurations tab, Configurations/persistence/datasources"_ can be used to setup a datasource called "APSSimpleUserServiceDS" needed by APSSimpleUserService. If you use the provided APSAuthService implementation that uses APSSimpleUserService then you need to configure this datasource before APSSimpleUserService can be used. See the documentation for APSSimpleUserService further down in this document for more information on the datasource configuration. After that is setup go to _"Configurations tab, Configurations/aps/adminweb"_ and enable the "requireauthentication" config. After having enabled this and saved, do a browser refresh and then provide userid and password when prompted.
-
-## Javadoc
-
-The complete javadoc for all services can be found at [http://apidoc.natusoft.se/APS](http://apidoc.natusoft.se/APS).
 
