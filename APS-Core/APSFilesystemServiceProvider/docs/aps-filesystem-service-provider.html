@@ -624,44 +624,21 @@
     APSFilesystemService fss;
     APSFilesystem fs;
     
-    if (fss.hasFilesystem("my.file.system")) {
-        fs = fss.getFilsystem("my.file.system");
-    }
-    else {
-        fs = fss.createFilesystem("my.file.system");
-    }
+    fss.getFilesystem("my.file.system", (result) -&gt; {
+        if (result.success()) {
+            fs = result.result();
+        }
+    });
       </code>
     </pre>
     <p>
             
     </p>
     <p>
-      <strong>APSFilesystem createFilesystem(String owner) throws IOException</strong>      
+      <strong>void getFilesystem( String owner, APSHandler&lt;APSResult&lt;APSFilesystem&gt;&gt; handler)</strong>      
     </p>
     <p>
-      Creates a new filesystem for use by an application or service. Where on disk this filesystem resides is irrelevant. It is accessed using the "owner", and will exist until it is removed.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>owner</em> - The owner of the filesystem or rather a unique identifier of it. Consider using application or service package.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>IOException</em> - on any failure. An already existing filesystem for the "owner" will cause this exception.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>boolean hasFilesystem(String owner)</strong>      
-    </p>
-    <p>
-      Returns true if the specified owner has a filesystem.      
+      Returns the filesystem for the specified owner. If the filesystem does not exist it is created.      
     </p>
     <p>
       <em>Parameters</em>      
@@ -671,18 +648,9 @@
         <em>owner</em> - The owner of the filesystem or rather a unique identifier of it.         
       </p>
     </blockquote>
-    <p>
-      <strong>APSFilesystem getFilesystem(String owner) throws IOException</strong>      
-    </p>
-    <p>
-      Returns the filesystem for the specified owner.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
     <blockquote>
       <p>
-        <em>owner</em> - The owner of the filesystem or rather a unique identifier of it.         
+        <em>handler</em> - Called with the filesystem.         
       </p>
     </blockquote>
     <p>
@@ -690,11 +658,11 @@
     </p>
     <blockquote>
       <p>
-        <em>IOException</em> - on any failure.         
+        <em>APSIOException</em> - on failure.         
       </p>
     </blockquote>
     <p>
-      <strong>void deleteFilesystem(String owner) throws IOException</strong>      
+      <strong>void deleteFilesystem(String owner, APSHandler&lt;APSResult&lt;Void&gt;&gt; handler)</strong>      
     </p>
     <p>
       Removes the filesystem and all files in it.      
@@ -712,7 +680,7 @@
     </p>
     <blockquote>
       <p>
-        <em>IOException</em> - on any failure.         
+        <em>APSIOException</em> - on any failure.         
       </p>
     </blockquote>
     <p>

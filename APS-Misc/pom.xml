@@ -61,8 +61,6 @@
 
     <modules>
         <module>APSSessionServiceProvider</module>
-        <module>APSResolvingBundleDeployer</module>
-        <module>APSPersistentNamedQueueProvider</module>
         <module>APSNTPTimeServiceProvider</module>
     </modules>
 

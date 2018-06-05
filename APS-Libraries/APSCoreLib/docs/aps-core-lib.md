@@ -38,7 +38,19 @@ This takes a schema (made up of a `Map<String,``Object>`, see below) and another
         
             verifier.validate(myJsonMap)
 
-This will throw a runtime exception on validation failure.
+This will throw a runtime exception on validation failure, specifically APSValidationException.
+
+Note that there is also a special feature for defining a simple dynamic key=>value map where the key is defined with a regexp and the value can be a regexp, string, number, or boolean. This is done be defining a map with only one entry. Example:
+
+        private Map<String, Object> schema = [
+            "nameAddress": [
+                "?([a-z]|[0-9]|_|-)+": "?[0-9,.]+"
+            ]
+        ]
+
+In this case `nameAdress` can contain any number of entries as long as each entry have a key containging a-z or 0-9 or _ or - and there must be at least one character, and the value only contains numbers and dots.
+
+Note that when the key is a regexp (starts with '?') then there can be no more rule for this submap!
 
 ### Schema
 
@@ -49,6 +61,8 @@ This will throw a runtime exception on validation failure.
 <key>_1 - The key is required.
 
 <key>_? - A description of the key. MapJsonSchemaMeta extracts this information. It is intended for editors editing data of a file validated by a schema. This should provide help information about the value. Since APS uses the MapJsonDocSchemaValidator for configurations and is intended to have web guis for editing configuration this is intended to provide information about configuration fields.
+
+?regexp - special handling. See usage above.
 
 #### Values
 

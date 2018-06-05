@@ -361,48 +361,29 @@ Services or application using this should do something like this in their activa
         APSFilesystemService fss;
         APSFilesystem fs;
         
-        if (fss.hasFilesystem("my.file.system")) {
-            fs = fss.getFilsystem("my.file.system");
-        }
-        else {
-            fs = fss.createFilesystem("my.file.system");
-        }
+        fss.getFilesystem("my.file.system", (result) -> {
+            if (result.success()) {
+                fs = result.result();
+            }
+        });
 
 
 
-__APSFilesystem createFilesystem(String owner) throws IOException__
+__void getFilesystem( String owner, APSHandler<APSResult<APSFilesystem>> handler)__
 
-Creates a new filesystem for use by an application or service. Where on disk this filesystem resides is irrelevant. It is accessed using the "owner", and will exist until it is removed.
-
-_Parameters_
-
-> _owner_ - The owner of the filesystem or rather a unique identifier of it. Consider using application or service package. 
-
-_Throws_
-
-> _IOException_ - on any failure. An already existing filesystem for the "owner" will cause this exception. 
-
-__boolean hasFilesystem(String owner)__
-
-Returns true if the specified owner has a filesystem.
+Returns the filesystem for the specified owner. If the filesystem does not exist it is created.
 
 _Parameters_
 
 > _owner_ - The owner of the filesystem or rather a unique identifier of it. 
 
-__APSFilesystem getFilesystem(String owner) throws IOException__
-
-Returns the filesystem for the specified owner.
-
-_Parameters_
-
-> _owner_ - The owner of the filesystem or rather a unique identifier of it. 
+> _handler_ - Called with the filesystem. 
 
 _Throws_
 
-> _IOException_ - on any failure. 
+> _APSIOException_ - on failure. 
 
-__void deleteFilesystem(String owner) throws IOException__
+__void deleteFilesystem(String owner, APSHandler<APSResult<Void>> handler)__
 
 Removes the filesystem and all files in it.
 
@@ -412,7 +393,7 @@ _Parameters_
 
 _Throws_
 
-> _IOException_ - on any failure. 
+> _APSIOException_ - on any failure. 
 
 }
 
