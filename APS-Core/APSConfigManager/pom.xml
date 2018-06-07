@@ -143,74 +143,6 @@
             APSConfigServiceProvider dependencies
         -->
 
-        <!--
-            Test
-        -->
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-osgi-test-tools</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-service-test-support</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-vertx-cluster-datastore-service-provider</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-vertx-event-bus-messaging-provider</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-web</artifactId>
-            <version>${vertx.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-filesystem-service-provider</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-lang-groovy</artifactId>
-            <version>${vertx.version}</version>
-            <scope>test</scope>
-            <!-- This pulls in an older version of groovy causing problems when running tests. -->
-            <exclusions>
-                <exclusion>
-                    <groupId>org.codehaus.groovy</groupId>
-                    <artifactId>groovy-all</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-vertx-provider</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-core</artifactId>
-            <version>${vertx.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-auth-common</artifactId>
-            <version>${vertx.version}</version>
-            <scope>test</scope>
-        </dependency>
 
     </dependencies>
 
@@ -248,6 +180,15 @@
                             <version>${project.version}</version>
                         </mixin>
                     </mixins>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.21.0</version>
+                <configuration>
+                    <skipTests>true</skipTests>
                 </configuration>
             </plugin>
 
@@ -295,4 +236,99 @@
         </plugins>
     </build>
 
+    <profiles>
+        <!--
+            This test causes circular dependency to aps-vertx-provider.
+        -->
+        <profile>
+            <id>test-aps-config-manager</id>
+
+            <dependencies>
+                <!--
+                    Test
+                -->
+                <dependency>
+                    <groupId>se.natusoft.osgi.aps</groupId>
+                    <artifactId>aps-osgi-test-tools</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>se.natusoft.osgi.aps</groupId>
+                    <artifactId>aps-service-test-support</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>se.natusoft.osgi.aps</groupId>
+                    <artifactId>aps-vertx-cluster-datastore-service-provider</artifactId>
+                    <version>1.0.0</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>se.natusoft.osgi.aps</groupId>
+                    <artifactId>aps-vertx-event-bus-messaging-provider</artifactId>
+                    <version>1.0.0</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>io.vertx</groupId>
+                    <artifactId>vertx-web</artifactId>
+                    <version>${vertx.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>se.natusoft.osgi.aps</groupId>
+                    <artifactId>aps-filesystem-service-provider</artifactId>
+                    <version>1.0.0</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>io.vertx</groupId>
+                    <artifactId>vertx-lang-groovy</artifactId>
+                    <version>${vertx.version}</version>
+                    <scope>test</scope>
+                    <!-- This pulls in an older version of groovy causing problems when running tests. -->
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.codehaus.groovy</groupId>
+                            <artifactId>groovy-all</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>se.natusoft.osgi.aps</groupId>
+                    <artifactId>aps-vertx-provider</artifactId>
+                    <version>1.0.0</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>io.vertx</groupId>
+                    <artifactId>vertx-core</artifactId>
+                    <version>${vertx.version}</version>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>io.vertx</groupId>
+                    <artifactId>vertx-auth-common</artifactId>
+                    <version>${vertx.version}</version>
+                    <scope>test</scope>
+                </dependency>
+
+            </dependencies>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.21.0</version>
+                        <configuration>
+
+                            <skipTests>false</skipTests>
+
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

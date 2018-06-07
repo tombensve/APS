@@ -405,17 +405,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!--
-            Test
-        -->
-
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-osgi-test-tools</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-
 
         <!--
             These are for being able to run aps-config-manager and dependent bundles in unit tests
