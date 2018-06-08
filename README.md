@@ -4,7 +4,7 @@ Copyright © 2013 Natusoft AB
 
 __Version:__ 1.0.0
 
-__This project is currently work in progress and cannot be expected to be stable!!__ 
+__This project is currently work in progress and cannot be expected to be stable!!__
 
 Work is slow, whenever time permits.
 
@@ -18,7 +18,7 @@ There is one thing that is currenlty useful and does not depend on any other bun
 
 Yes, I know that the OSGi APIs contains annotations for injecting and publishing services, etc. These produce XML files that are then used by the OSGi container. This so that they are compatible with J2ME java not supporting annotations. These are features supported by the container. APSActivator is a plain OSGi activator and will work with any OSGi container, but requires Java SE.
 
-APSActivator also interacts with APSServiceTracker allowing annotations based configuration of the tracker. It also allows injecting a tracker as a proxied service that uses the tracker, allocates the service, calls it, releases the service and returns any eventual return value.   
+APSActivator also interacts with APSServiceTracker allowing annotations based configuration of the tracker. It also allows injecting a tracker as a proxied service that uses the tracker, allocates the service, calls it, releases the service and returns any eventual return value.
 
 The APSServiceTracker is also a bit different in that it does not like to tear services down, it and APSActivator both work to keep services up. The tracker provides a timeout and throws an APSNoServiceAvailableException on timeout.
 
