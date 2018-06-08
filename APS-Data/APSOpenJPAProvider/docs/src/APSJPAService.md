@@ -6,10 +6,10 @@ The provided service is using OpenJPA. The service works partly as an extender i
 
 Here is an example of usage:
 
-		private APSJPAEntityManagerProvider emp = null;
-		...
-		private APSJPAEntityManagerProvider getEMP() {
-		    if (this.emp == null || !this.emp.isValid()) {
+        private APSJPAEntityManagerProvider emp = null;
+        ...
+        private APSJPAEntityManagerProvider getEMP() {
+            if (this.emp == null || !this.emp.isValid()) {
                 DataSourceDef dsDef = this.dataSourceDefService.lookupByName(”MyDS");
                 if (dsDef == null) {
                     throw new SomeException("Could not find an ’MyDs’ in 'persistence/datasources' configuration!");

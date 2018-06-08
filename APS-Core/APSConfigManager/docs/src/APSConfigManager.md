@@ -62,8 +62,8 @@ Note that in both these cases you wait for the configuration to become available
 
 But in this case you will be blocking the thread if it is accessed before it is available. If this was done in code called from bundle activator then there would be a problem! The other two ways are completely non blocking and reactive in that you get it when it is available. 
 
-Whatever the code is doing, it can start doing it when the config is available. Do however note that whatever it is, it should most probably be done in another thread since the config listener call made by APSActivator needs
-to return rather quickly. Here is a suggestion: `APSExecutor.submit { ... }`. This will then be submitted to a thread pool with as many threads as there are cores in the machine. APSActivator can inject an `ExecutionService` that is backed by a thread pool. `APSExecutor` provides one thread pool for all bundles to share and are intended for short jobs.
+Whatever the code is doing, it can start doing it when the config is available. If it needs to do something that isn't quick, then it should work in another thread since the config listener call made by APSActivator needs
+to return rather quickly. Here is a suggestion: `APSExecutor.submit { ... }`. This will then be submitted to a thread pool with as many threads as there are cores in the machine. APSActivator can also inject an `ExecutionService` that is backed by a thread pool for use by the bundle only. `APSExecutor` provides one thread pool for all bundles to share and are intended for shorter jobs.
 
 ### MapJSON
 

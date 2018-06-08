@@ -98,12 +98,6 @@
         <!-- The directory whose content should be embeded into the bundle jar. -->
         <osgi.embed.directory>lib</osgi.embed.directory>
 
-        <!--
-            APS properties.
-        -->
-
-        <!-- We register our configuration for auto registration and management. -->
-        <aps.config.classes></aps.config.classes>
 
         <!--
             Other properties
@@ -169,74 +163,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--
-            Test
-        -->
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-vertx-provider</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-osgi-test-tools</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-service-test-support</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-web</artifactId>
-            <version>${vertx.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-lang-groovy</artifactId>
-            <version>${vertx.version}</version>
-            <scope>test</scope>
-            <!-- This pulls in an older version of groovy causing problems when running tests. -->
-            <exclusions>
-                <exclusion>
-                    <groupId>org.codehaus.groovy</groupId>
-                    <artifactId>groovy-all</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!--
-            These are for being able to run aps-config-manager and dependent bundles in unit tests
-            using aps-osgi-test-tools. It feels better running the real thing rather than fake config.
-        -->
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-vertx-cluster-datastore-service-provider</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-vertx-event-bus-messaging-provider</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-filesystem-service-provider</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-config-manager</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -285,6 +211,7 @@
                     <systemPropertyVariables>
                         <aps.vertx.clustered>${aps.clustered.vertx.for.tests}</aps.vertx.clustered>
                     </systemPropertyVariables>
+
                 </configuration>
             </plugin>
 
@@ -311,7 +238,7 @@
                     </supportedProjectTypes>
                     <archive>
                         <manifestEntries>
-                            <APS-Configs>${aps.config.classes}</APS-Configs>
+                            <!--<APS-Configs>${aps.config.classes}</APS-Configs>-->
                             <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
                         </manifestEntries>
                     </archive>

@@ -58,7 +58,6 @@
 
     <modules>
         <module>DeployBundleMixIn</module>
-        <module>DeployWABBundleMixIn</module>
         <module>ServerDeployPlugin</module>
         <module>GroovyMixIn</module>
         <module>DocumentationMixIn</module>

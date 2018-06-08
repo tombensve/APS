@@ -63,6 +63,8 @@
         <module>APSVertxEventBusMessagingProvider</module>
         <module>APSVertXProvider</module>
         <module>APSVertxClusterDataStoreServiceProvider</module>
+        <module>APSVertxClusterDataStoreServiceTest</module>
+        <module>APSVertxEventBusMessagingTest</module>
     </modules>
 
 </project>

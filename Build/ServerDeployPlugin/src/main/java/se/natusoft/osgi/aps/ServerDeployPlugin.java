@@ -1,39 +1,39 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         ServerDeployPlugin
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Basically copies one file from one place to another. This is however used
  *         to deploy build artifacts from target to server pickup directory.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
  *         2013-02-05: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps;
 
@@ -50,7 +50,7 @@ import java.util.List;
  * @goal copy
  * @phase install
  */
-@SuppressWarnings("JavaDoc")
+@SuppressWarnings( { "JavaDoc", "unused" } )
 public class ServerDeployPlugin extends AbstractMojo {
     /**
      * Source file. This is for backwards compatibility. 'deployableList' should be used instead.
@@ -71,6 +71,7 @@ public class ServerDeployPlugin extends AbstractMojo {
      *
      * @parameter
      */
+    @SuppressWarnings( { "SpellCheckingInspection", "MismatchedQueryAndUpdateOfCollection" } )
     private List<Deployable> deployables;
 
     /**
@@ -109,7 +110,7 @@ public class ServerDeployPlugin extends AbstractMojo {
         deployable.destPath = expandHome(deployable.destPath);
 
         File source = new File(deployable.sourceFile);
-        File dest = null;
+        File dest;
         if (deployable.destFile != null && !deployable.destFile.trim().isEmpty()) {
             dest = new File(deployable.destFile);
         }
@@ -176,6 +177,7 @@ public class ServerDeployPlugin extends AbstractMojo {
     /**
      * This represents one deployable.
      */
+    @SuppressWarnings( "WeakerAccess" )
     public static final class Deployable {
         /**
          * Source file.

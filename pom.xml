@@ -257,6 +257,7 @@
         <module>APS-UserGuide</module>
         <module>APS-Archetypes</module>
         <module>Test</module>
+        <module>APS-APIs-Test</module>
         <!--<module>Test</module>-->
     </modules>
 

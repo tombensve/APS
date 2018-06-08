@@ -4,19 +4,17 @@ Copyright © 2013 Natusoft AB
 
 __Version:__ 1.0.0
 
-This repo is used for development. __This repo is thereby work in progress and cannot be expected to be stable nor build completely!!__ Releases will be done to _APS_ repo. Why do development in a separate repo ? Well, not sure, but it felt like a good idea at the time :-). I however see no problems with it either.
+__This project is currently work in progress and cannot be expected to be stable!!__ 
 
 Work is slow, whenever time permits.
 
+To be very clear: **This is currently, and probably for a long time comming, a playground where I'm having fun.** The original (and still active) goal with this is to make a very easy to use web platform based on OSGi & Vertx. APS is however only using the basic 4 OSGi APIs, and currently java8 & Groovy code so it will probably **not** run in most embedded OSGi containers.
+
 ---
 
-To be very clear: This is currently, and probably for a long time comming, a playground where I'm having fun. The original (and still active) goal with this is to make a very easy to use web platform based on OSGi. APS is however only using the basic 4 OSGi APIs, and currently java8 & Groovy code so it will probably **not** run in most embedded OSGi containers.
+I have decided to base this project on Vertx rather than traditional Java EE APIs.
 
-I have decided to base this project on Vertx rather than traditional EE APIs.
-
-Almost all of what is in this version will be replaced, some things just removed. As I said, this is currently a playground, that I play with when I have the time.
-
-There is however one thing that is currenlty useful and does not depend on any other bundle. APS-APIs, which now also contains the formarly APSToolsLib. APSToolsLib was so central to all APS bundles that it just made more sense to put it in APS-APIs, which might change name to APSPlatform. There is a nicer service tracker and something the maven-bundle-plugin people never considered, and might consider me completely crazy: APSActivator. It is a generic bundle activator that makes use of annotations to publish services, etc. It will inject into classes and instantiate annotated classes. It goes through all classes in the bundle and checks them for annotations. maven-bundle-plugin warns about seeing an external activator and suggests that it is probably an error, but it isn't! Note that it is the maven-bundle-plugin that complains. All OSGi containers I've tested (Karaf, Glassfish, Virgo, KnopplerFish) have no problem what so ever with this.
+There is one thing that is currenlty useful and does not depend on any other bundle. APS-APIs, which now also contains the formarly APSToolsLib. APSToolsLib was so central to all APS bundles that it just made more sense to put it in APS-APIs, which might change name to APSPlatform. There is a nicer service tracker and something the maven-bundle-plugin people never considered, and might consider me completely crazy: APSActivator. It is a generic bundle activator that makes use of annotations to publish services, etc. It will inject into classes and instantiate annotated classes. It goes through all classes in the bundle and checks them for annotations. maven-bundle-plugin warns about seeing an external activator and suggests that it is probably an error, but it isn't! Note that it is the maven-bundle-plugin that complains. All OSGi containers I've tested (Karaf (felix), Glassfish, Virgo, KnopplerFish) have no problem what so ever with this.
 
 Yes, I know that the OSGi APIs contains annotations for injecting and publishing services, etc. These produce XML files that are then used by the OSGi container. This so that they are compatible with J2ME java not supporting annotations. These are features supported by the container. APSActivator is a plain OSGi activator and will work with any OSGi container, but requires Java SE.
 
@@ -30,16 +28,12 @@ There is also OSGIServiceTestTools that can be extended by tests and provide Gro
 
 In the end I'm planning for a minimalistic OSGi container supporting only the 4 base APIs. It won't be a fullfledged OSGi container. The goal with this is also to provide an executable jar with both container and all app bundles kind of like Spring Boot. When this is available it will also be used for running tests instead of OSGiTestTools (which I'm considering renaming to APSTestTools instead since that would be a clearer name).
 
-## Building
+## Tests
 
-There is currenly a catch to building. A first time build must be done without executing any tests. After that it can be built again with tests. All bundles are using APIs in APS-APIs. This is a clear and easy dependency. But since almost all tests actually deploy the bundle being tested and dependent bundles in tests, which have more depenencies and implementation specific such.
-
-For example, APSConfigManager makes use of APS-APIs APIs that are actually implemented using Vertx. APSVertxProvider has a dependency to APSConfig from APS-APIs for configuration, but its test requires deploying APSConfigManager and 2 other service implementations that makes use of Vertx. This only works if all code is built first and then tests are run in a second build.
-
-I have decided that this is OK since I consider having my tests as "life like" as possible more important. By that I mean that deploy and use all real services instead of faking/mocking. The tests run things exactly the way it would be run when deployed for real. When testing there is usually a test bundle deployed also that performs the tests and assertions by calling the services of the other bundles.
+Using the OSGiServiceTestTools all the tests deploy both the tested bundle and real dependent bundles rather than mocking things, and runs things as it would be run normally. This sometimes causes test dependences that create circular dependencies in maven. To go around that problem these bundles have a separate test maven project that only contains the tests. Bundles of course only interact with each other using the interfaces in APS-APIs. This is a side effect of OSGiTestTools not supporting classloading, but using JUnit classpath instead. So in the long run this problem will go away.
 
 ----
 
-This works very well mostly due the the simplicity of the core OSGi APIs. There is a clear reason why I stayed with only those. Keep things as simple as possible and as small as possible is always my goal. Sometimes that is just not possible, but you should always try :-).
+In general this works very well mostly due the the simplicity of the core OSGi APIs. There is a clear reason why I stayed with only those. Keep things as simple as possible and as small as possible is always my goal. I'm also very satisfied and impressed with Vert.x! It just works!
 
 /Tommy

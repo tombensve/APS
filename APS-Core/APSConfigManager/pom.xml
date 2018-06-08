@@ -241,7 +241,7 @@
             This test causes circular dependency to aps-vertx-provider.
         -->
         <profile>
-            <id>test-aps-config-manager</id>
+            <id>testp-config-manager-</id>
 
             <dependencies>
                 <!--
