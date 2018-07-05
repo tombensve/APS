@@ -1,0 +1,24 @@
+{
+  "id": "top",
+  "name": "top",
+  "type": "layout",
+  "layout": "horizontal",
+  "content": [
+    {
+      "id": "configs",
+      "name": "configTree",
+      "type": "tree",
+      "listensTo": "aps-config-editor",
+      "publishesTo": "aps-configEditor",
+      "publishGlobal": true
+    },
+    {
+      "id": "configEditor",
+      "name": "configEditor",
+      "type": "contentBox",
+      "listensTo": "aps-config-editor",
+      "publishesTo": "aps-config-editor",
+      "publishGlobal": true
+    }
+  ]
+}
