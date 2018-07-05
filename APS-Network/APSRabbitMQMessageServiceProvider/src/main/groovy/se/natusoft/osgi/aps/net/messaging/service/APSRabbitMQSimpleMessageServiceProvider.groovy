@@ -15,9 +15,9 @@ import se.natusoft.osgi.aps.api.messaging.APSMessagingException
 import se.natusoft.osgi.aps.api.messaging.APSMessage
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.exceptions.APSValidationException
-import se.natusoft.osgi.aps.model.APSHandler
-import se.natusoft.osgi.aps.model.APSResult
-import se.natusoft.osgi.aps.model.ID
+import se.natusoft.osgi.aps.types.APSHandler
+import se.natusoft.osgi.aps.types.APSResult
+import se.natusoft.osgi.aps.types.ID
 import se.natusoft.osgi.aps.net.messaging.config.Config
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.PeskyWabbitConnectionManager
 import se.natusoft.osgi.aps.util.APSLogger

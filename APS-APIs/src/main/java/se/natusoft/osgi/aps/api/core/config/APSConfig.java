@@ -36,7 +36,7 @@
  */
 package se.natusoft.osgi.aps.api.core.config;
 
-import se.natusoft.osgi.aps.model.APSHandler;
+import se.natusoft.osgi.aps.types.APSHandler;
 
 import java.util.Map;
 

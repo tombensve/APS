@@ -34,41 +34,31 @@
  *         2018-05-26: Created!
  *
  */
-package se.natusoft.osgi.aps.api.core.platform.service;
+package se.natusoft.osgi.aps.types;
 
-import se.natusoft.docutations.NotNull;
-import se.natusoft.osgi.aps.types.APSHandler;
-import se.natusoft.osgi.aps.types.APSResult;
+import java.io.Serializable;
 
 /**
- * This provides a thread pool for executing jobs as a service.
+ * Classes implementing this interface are not Serializable in themselves, but have certain data
+ * which can be serialized and be provided from deserialized data. In some cases the whole class
+ * might be serializable, but there is no point in serializing everything.
  */
-public interface APSExecutionService {
+public interface APSSerializableData {
 
     /**
-     * Submits a job for execution on a thread pool.
-     *
-     * @param job The job to submit.
+     * @return A Serializable object of the type provided by getSerializedType().
      */
-    void submit(@NotNull APSHandler job);
+    Serializable toSerializable();
 
     /**
-     * Submits a job for execution on a thread pool.
+     * Receives a deserialized object of the type provided by getSerializedType().
      *
-     * @param job The job to submit.
-     * @param jobDoneHandler The handler to call when the job have finished execution. It will supply a success or fail result.
-     *                       fail will only happen if the job threw an exception.
+     * @param serializable The deserialized object received.
      */
-    void submit(@NotNull APSHandler job, @NotNull APSHandler<APSResult> jobDoneHandler);
-
-    // For Groovy
+    void fromDeserialized(Serializable serializable);
 
     /**
-     * Does the same as submit(job), but in groovy you can do:
-     *
-     *     this.execSvc << { ... }
-     *
-     * @param job The job to submit.
+     * @return The serialized type.
      */
-    void leftShift(@NotNull APSHandler job);
+    Class getSerializedType();
 }

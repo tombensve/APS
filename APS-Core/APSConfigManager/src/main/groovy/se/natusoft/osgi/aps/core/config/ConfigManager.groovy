@@ -46,16 +46,16 @@ import se.natusoft.osgi.aps.activator.annotation.BundleStop
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.activator.annotation.OSGiService
-import se.natusoft.osgi.aps.api.core.APSLockable
+import se.natusoft.osgi.aps.types.APSLockable
 import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
 import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
 import se.natusoft.osgi.aps.api.messaging.APSMessage
 import se.natusoft.osgi.aps.api.messaging.APSMessagePublisher
 import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
-import se.natusoft.osgi.aps.model.APSResult
-import se.natusoft.osgi.aps.model.APSUUID
-import se.natusoft.osgi.aps.model.ID
+import se.natusoft.osgi.aps.types.APSResult
+import se.natusoft.osgi.aps.types.APSUUID
+import se.natusoft.osgi.aps.types.ID
 import se.natusoft.osgi.aps.util.APSLogger
 
 /**

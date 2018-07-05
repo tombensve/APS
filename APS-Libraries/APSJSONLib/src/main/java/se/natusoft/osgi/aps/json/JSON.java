@@ -42,9 +42,9 @@ package se.natusoft.osgi.aps.json;
 
 import se.natusoft.docutations.NotNull;
 import se.natusoft.docutations.Nullable;
-import se.natusoft.osgi.aps.model.APSHandler;
-import se.natusoft.osgi.aps.model.APSResult;
-import se.natusoft.osgi.aps.model.APSValue;
+import se.natusoft.osgi.aps.types.APSHandler;
+import se.natusoft.osgi.aps.types.APSResult;
+import se.natusoft.osgi.aps.types.APSValue;
 import se.natusoft.osgi.aps.exceptions.APSIOException;
 import se.natusoft.osgi.aps.json.tools.CollectingErrorHandler;
 

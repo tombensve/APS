@@ -97,8 +97,6 @@
             APS properties.
         -->
 
-        <!-- We register our configuration for auto registration and management. -->
-        <aps.config.classes>se.natusoft.osgi.aps.net.messaging.config.Config</aps.config.classes>
 
         <!--
             Other properties
@@ -116,11 +114,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-tools-lib</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
             <scope>provided</scope>
@@ -131,28 +124,24 @@
         <!--
             RabbitMQ client jars
         -->
+        <!--<dependency>-->
+            <!--<groupId>org.apache.commons</groupId>-->
+            <!--<artifactId>commons-io</artifactId>-->
+            <!--<version>1.2</version>-->
+            <!--<scope>compile</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.apache.commons</groupId>-->
+            <!--<artifactId>commons-cli</artifactId>-->
+            <!--<version>1.1</version>-->
+            <!--<scope>compile</scope>-->
+        <!--</dependency>-->
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>1.2</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/commons-io-1.2.jar</systemPath>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>5.2.0</version>
+            <type>pom</type>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-cli</artifactId>
-            <version>1.1</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/commons-cli-1.1.jar</systemPath>
-        </dependency>
-        <dependency>
-            <groupId>rabbitmq</groupId>
-            <artifactId>rabbitmq-client</artifactId>
-            <version>LATEST</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/rabbitmq-client.jar</systemPath>
-        </dependency>
-
     </dependencies>
 
     <build>

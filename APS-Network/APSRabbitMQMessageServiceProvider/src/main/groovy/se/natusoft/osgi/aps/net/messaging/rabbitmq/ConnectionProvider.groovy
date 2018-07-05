@@ -1,6 +1,5 @@
 package se.natusoft.osgi.aps.net.messaging.rabbitmq
 
-import com.rabbitmq.client.Connection
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 

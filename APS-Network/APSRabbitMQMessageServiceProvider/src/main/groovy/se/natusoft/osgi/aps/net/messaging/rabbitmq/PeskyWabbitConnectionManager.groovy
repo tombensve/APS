@@ -1,11 +1,9 @@
 package se.natusoft.osgi.aps.net.messaging.rabbitmq
 
-import com.rabbitmq.client.Connection
-import com.rabbitmq.client.ConnectionFactory
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.net.messaging.config.Config
-
+import com.rabbitmq.client.*
 /**
  * Manages the RabbitMQ connection.
  **/

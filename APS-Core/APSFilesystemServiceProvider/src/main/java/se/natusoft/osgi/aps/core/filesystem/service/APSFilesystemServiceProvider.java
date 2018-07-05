@@ -48,8 +48,8 @@ import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
 import se.natusoft.osgi.aps.constants.APS;
 import se.natusoft.osgi.aps.core.filesystem.model.APSFilesystemImpl;
 import se.natusoft.osgi.aps.exceptions.APSIOException;
-import se.natusoft.osgi.aps.model.APSHandler;
-import se.natusoft.osgi.aps.model.APSResult;
+import se.natusoft.osgi.aps.types.APSHandler;
+import se.natusoft.osgi.aps.types.APSResult;
 import se.natusoft.osgi.aps.util.APSLogger;
 
 import java.io.File;

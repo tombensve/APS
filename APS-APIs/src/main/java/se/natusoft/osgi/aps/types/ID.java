@@ -29,43 +29,39 @@
  *     limitations under the License.
  *
  * AUTHORS
- *     tommy ()
+ *     Tommy Svensson (tommy.svensson@biltmore.se)
  *         Changes:
- *         2011-08-16: Created!
+ *         2012-04-08: Created!
  *
  */
-package se.natusoft.osgi.aps.api.core.platform.service;
-
-import se.natusoft.osgi.aps.api.core.platform.model.NodeInfo;
-import se.natusoft.osgi.aps.types.APSValue;
-import se.natusoft.osgi.aps.types.APSHandler;
-
-import java.util.List;
+package se.natusoft.osgi.aps.types;
 
 /**
- * Provides information about the platform instance.
+ * This is a generic interface for representing IDs.
  */
-public interface APSNodeInfoService {
+public interface ID extends Comparable<ID> {
 
     /**
-     * Delivers the descriptions of currently knows nodes.
+     * Creates a new unique ID.
      *
-     * @param handler The handler to receive the node descriptions.
+     * @return A newly created ID.
      */
-    void nodeDescriptions(APSHandler<APSValue<List<NodeInfo>>> handler);
+    ID newID();
 
     /**
-     * Delivers info about the local node.
+     * Tests for equality.
      *
-     * @param handler The handler to receive the local node info.
+     * @param obj The object to compare with.
+     *
+     * @return true if equal, false otherwise.
      */
-    void localNode(APSHandler<APSValue<NodeInfo>> handler);
+    @Override
+    boolean equals(Object obj);
 
     /**
-     * Delivers info about the master node.
-     *
-     * @param handler The handler to receive the master node info.
+     * @return The hash code.
      */
-    void masterNode(APSHandler<APSValue<NodeInfo>> handler);
+    @Override
+    int hashCode();
 
 }

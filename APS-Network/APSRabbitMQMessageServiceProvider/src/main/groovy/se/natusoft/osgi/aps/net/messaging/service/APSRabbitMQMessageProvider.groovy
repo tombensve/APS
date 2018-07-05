@@ -42,8 +42,8 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.messaging.APSMessage
 import se.natusoft.osgi.aps.api.messaging.APSMessagingException
-import se.natusoft.osgi.aps.model.APSHandler
-import se.natusoft.osgi.aps.model.ID
+import se.natusoft.osgi.aps.types.APSHandler
+import se.natusoft.osgi.aps.types.ID
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.ConnectionProvider
 import se.natusoft.osgi.aps.net.messaging.rabbitmq.ReceiveThread
 import se.natusoft.osgi.aps.util.APSLogger

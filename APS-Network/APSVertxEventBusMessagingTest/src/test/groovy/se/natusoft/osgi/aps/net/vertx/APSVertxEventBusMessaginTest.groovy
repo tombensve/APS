@@ -8,15 +8,15 @@ import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
 import se.natusoft.osgi.aps.api.messaging.APSMessage
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.StructMap
-import se.natusoft.osgi.aps.model.APSResult
-import se.natusoft.osgi.aps.model.ID
+import se.natusoft.osgi.aps.types.APSResult
+import se.natusoft.osgi.aps.types.ID
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.util.APSLogger
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.activator.annotation.OSGiService
-import se.natusoft.osgi.aps.model.APSUUID
+import se.natusoft.osgi.aps.types.APSUUID
 import static java.util.concurrent.TimeUnit.SECONDS
 
 @CompileStatic

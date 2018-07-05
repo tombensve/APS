@@ -39,7 +39,7 @@ import org.osgi.framework.Bundle
 import se.natusoft.docutations.Implements
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
-import se.natusoft.osgi.aps.api.core.APSSerializableData
+import se.natusoft.osgi.aps.types.APSSerializableData
 import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSDirectory
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem
@@ -50,8 +50,8 @@ import se.natusoft.osgi.aps.exceptions.APSConfigException
 import se.natusoft.osgi.aps.exceptions.APSIOException
 import se.natusoft.osgi.aps.json.JSON
 import se.natusoft.osgi.aps.json.JSONErrorHandler
-import se.natusoft.osgi.aps.model.APSHandler
-import se.natusoft.osgi.aps.model.APSResult
+import se.natusoft.osgi.aps.types.APSHandler
+import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.util.APSLogger
 
 /**

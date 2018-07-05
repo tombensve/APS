@@ -50,8 +50,8 @@ import se.natusoft.osgi.aps.api.messaging.APSMessage
 import se.natusoft.osgi.aps.api.messaging.APSMessageSender
 import se.natusoft.osgi.aps.api.messaging.APSReplyableMessageSender
 import se.natusoft.osgi.aps.constants.APS
-import se.natusoft.osgi.aps.model.APSHandler
-import se.natusoft.osgi.aps.model.APSResult
+import se.natusoft.osgi.aps.types.APSHandler
+import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.util.APSLogger
 import se.natusoft.osgi.aps.json.JSON

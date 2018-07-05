@@ -31,41 +31,24 @@
  * AUTHORS
  *     tommy ()
  *         Changes:
- *         2011-08-16: Created!
+ *         2018-05-26: Created!
  *
  */
-package se.natusoft.osgi.aps.api.core.platform.service;
+package se.natusoft.osgi.aps.types;
 
-import se.natusoft.osgi.aps.api.core.platform.model.NodeInfo;
-import se.natusoft.osgi.aps.types.APSValue;
-import se.natusoft.osgi.aps.types.APSHandler;
-
-import java.util.List;
+import se.natusoft.docutations.Nullable;
 
 /**
- * Provides information about the platform instance.
+ * Generic handler api inspired by Vertx.
+ *
+ * @param <T> The type of a potential value to handle.
  */
-public interface APSNodeInfoService {
+public interface APSHandler<T> {
 
     /**
-     * Delivers the descriptions of currently knows nodes.
+     * Does the handling.
      *
-     * @param handler The handler to receive the node descriptions.
+     * @param value A value to handle.
      */
-    void nodeDescriptions(APSHandler<APSValue<List<NodeInfo>>> handler);
-
-    /**
-     * Delivers info about the local node.
-     *
-     * @param handler The handler to receive the local node info.
-     */
-    void localNode(APSHandler<APSValue<NodeInfo>> handler);
-
-    /**
-     * Delivers info about the master node.
-     *
-     * @param handler The handler to receive the master node info.
-     */
-    void masterNode(APSHandler<APSValue<NodeInfo>> handler);
-
+    void handle(@Nullable T value);
 }

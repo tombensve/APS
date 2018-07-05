@@ -3,18 +3,14 @@ package se.natusoft.osgi.aps.core.config
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
-import org.osgi.framework.ServiceReference
+import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.activator.annotation.ConfigListener
+import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
-import se.natusoft.osgi.aps.util.APSExecutor
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
-import se.natusoft.osgi.aps.activator.APSActivator
+import se.natusoft.osgi.aps.util.APSExecutor
 import se.natusoft.osgi.aps.util.APSLogger
-import se.natusoft.osgi.aps.tracker.APSServiceTracker
-import se.natusoft.osgi.aps.activator.annotation.Initializer
-import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.OSGiService
 
 import java.util.concurrent.TimeUnit
 

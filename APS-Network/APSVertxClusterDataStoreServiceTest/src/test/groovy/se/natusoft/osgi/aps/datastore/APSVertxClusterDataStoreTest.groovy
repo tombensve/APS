@@ -7,9 +7,9 @@ import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.activator.annotation.OSGiService
-import se.natusoft.osgi.aps.api.core.APSLockable
+import se.natusoft.osgi.aps.types.APSLockable
 import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
-import se.natusoft.osgi.aps.model.APSResult
+import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.util.APSLogger
 

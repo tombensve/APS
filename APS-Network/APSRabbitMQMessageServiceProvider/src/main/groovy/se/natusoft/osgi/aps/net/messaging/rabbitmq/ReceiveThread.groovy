@@ -7,8 +7,8 @@ import com.rabbitmq.client.ShutdownSignalException
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.api.messaging.APSMessage
-import se.natusoft.osgi.aps.model.APSHandler
-import se.natusoft.osgi.aps.model.ID
+import se.natusoft.osgi.aps.types.APSHandler
+import se.natusoft.osgi.aps.types.ID
 import se.natusoft.osgi.aps.net.messaging.config.Config
 import se.natusoft.osgi.aps.util.APSLogger
 

@@ -17,13 +17,13 @@ import se.natusoft.osgi.aps.activator.annotation.OSGiService
 import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
 import se.natusoft.osgi.aps.api.core.platform.model.NodeInfo
 import se.natusoft.osgi.aps.api.core.platform.service.APSNodeInfoService
-import se.natusoft.osgi.aps.model.APSValue
-import se.natusoft.osgi.aps.model.APSHandler
+import se.natusoft.osgi.aps.types.APSValue
+import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.core.lib.DelayedExecutionHandler
 import se.natusoft.osgi.aps.util.APSLogger
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.tools.annotation.activator.*
-import se.natusoft.osgi.aps.model.APSUUID
+import se.natusoft.osgi.aps.types.APSUUID
 
 /**
  * Provides an implementation of the APSPlatformService.
