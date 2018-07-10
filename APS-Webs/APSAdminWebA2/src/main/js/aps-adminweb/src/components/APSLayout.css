@@ -1,0 +1,7 @@
+.layout-horiz {
+    display: inline;
+}
+
+.layout-vert {
+    display: inline-list-item;
+}

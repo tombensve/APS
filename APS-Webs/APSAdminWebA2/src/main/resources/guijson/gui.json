@@ -3,7 +3,7 @@
   "name": "top",
   "type": "layout",
   "layout": "horizontal",
-  "content": [
+  "children": [
     {
       "id": "configs",
       "name": "configTree",
