@@ -6,7 +6,7 @@ import APSLayout from "./components/APSLayout"
 import APSButton from "./components/APSButton"
 import APSTextField from "./components/APSTextField"
 import APSTextArea from "./components/APSTextArea"
-import { GLOBAL_MSG } from "./Consts"
+import { ROUTE_EXTERNAL, ROUTE_LOCAL } from "./Consts"
 import { uuidv4 } from "./UUID"
 
 /**
@@ -41,7 +41,8 @@ class GuiMgr extends Component {
         this.listenAddress = "guimgr:" + this.uuid;
 
         this.eventBus = new LocalEventBus();
-        this.eventBus.addBusRouter(new LocalBusRouter());
+        this.eventBus.addBusRouter( new LocalBusRouter() );
+        //this.eventBus.addBusRouter( new VertxEventBusRouter() );
 
         /**
          * Event bus subscriber. We need to keep the instance of this so that we can unsubscribe later.
@@ -58,7 +59,7 @@ class GuiMgr extends Component {
 
                 if ( msg['type'] === "gui" ) {
 
-                    this.updateGui(msg['gui']);
+                    this.updateGui( msg['gui'] );
                 }
             }
         };
@@ -74,10 +75,10 @@ class GuiMgr extends Component {
     componentDidMount() {
 
         // Subscribe to eventbus for content events.
-        this.eventBus.subscribe( this.listenAddress, this.compSubscriber );
+        this.eventBus.subscribe( this.listenAddress, this.compSubscriber, ROUTE_LOCAL );
 
         // Inform someone that there is a new client available and provide clients unique address.
-        this.eventBus.send( "aps:web", JSON.stringify({ op: "init", client: this.listenAddress }), GLOBAL_MSG );
+        this.eventBus.send( "aps:web", JSON.stringify( { op: "init", client: this.listenAddress } ), ROUTE_EXTERNAL );
 
         this.fakeContentForTestDebugAndPOC();
     }
@@ -88,7 +89,7 @@ class GuiMgr extends Component {
     componentWillUnmount() {
 
         // Since we are going away, stop listening for events.
-        this.eventBus.unsubscribe(this.listenAddress, this.compSubscriber);
+        this.eventBus.unsubscribe( this.listenAddress, this.compSubscriber, ROUTE_LOCAL );
     }
 
     /**
@@ -110,14 +111,14 @@ class GuiMgr extends Component {
      *
      * @param gui A specification for the GUI.
      */
-    updateGui(gui) {
+    updateGui( gui ) {
 
         // Should hopefully trigger a render ...
-        this.setState({
+        this.setState( {
 
             gui: gui,
-            comps: this.parseGui(gui, {key: 0})
-        });
+            comps: this.parseGui( gui, { key: 0 } )
+        } );
     }
 
     /**
@@ -125,7 +126,8 @@ class GuiMgr extends Component {
      *
      * @param {Object} gui The GUI spec to parse.
      * @param {Object} arrKeyCon Hold the array key (.key) to use. This is needed since we return an array
-     *                           of components, and React wants a unique key of components in arrays.
+     *                           of components, and React wants a unique key of components in arrays. It won't
+     *                           break, but it will complain loudly!
      *
      * @returns {Array} created components.
      */
@@ -140,7 +142,7 @@ class GuiMgr extends Component {
 
             for ( let child of children ) {
 
-                childContent.push( this.parseGui( child,  arrKeyCon) )
+                childContent.push( this.parseGui( child, arrKeyCon ) )
             }
         }
 
@@ -216,7 +218,7 @@ class GuiMgr extends Component {
                 break;
 
             default:
-                console.log("ERROR: Bad 'type': " + type);
+                console.log( "ERROR: Bad 'type': " + type );
             //     throw "Bad type '" + type + "' in GUI specification JSON!"
         }
 
@@ -236,49 +238,44 @@ class GuiMgr extends Component {
                 {
                     id: "name",
                     name: "name-field",
-                    groups: "gpoc",
+                    group: "gpoc",
                     type: "textField",
                     width: 20,
                     value: "name",
                     listenTo: "test-gui",
                     publishTo: "test-gui",
-                    publishGlobal: false,
-                    subscribeGlobal: false
+                    routing: "local",
                 },
                 {
                     id: "description",
                     name: "descriptionField",
-                    groups: "gpoc",
+                    group: "gpoc",
                     type: "textArea",
                     cols: 30,
                     rows: 4,
                     value: "description",
                     listenTo: "test-gui",
                     publishTo: "test-gui",
-                    publishGlobal: false,
-                    subscribeGlobal: false
+                    routing: "local"
                 },
                 {
                     id: "submit",
                     name: "submitButton",
-                    groups: "gpoc",
+                    group: "gpoc",
                     type: "button",
                     label: "Save",
                     disabled: true,
-                    enabled: {
-                        groups: "gpoc",
-                        property: "!empty"
-                    },
+                    collectGroup: true,
+                    enabled: "boolCompsNotEmpty('name', 'description')",
                     listenTo: "test-gui",
                     publishTo: "test-gui",
-                    publishGlobal: true,
-                    subscribeGlobal: true
+                    routing: "local,external"
                 }
             ]
         };
 
         // This would normally come from elsewhere.
-        this.eventBus.send(this.listenAddress, JSON.stringify({ type: "gui", gui: testData}));
+        this.eventBus.send( this.listenAddress, JSON.stringify( { type: "gui", gui: testData } ), ROUTE_LOCAL );
     }
 }
 

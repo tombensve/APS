@@ -32,11 +32,11 @@ class APSTextField extends APSComponent {
 
         this.empty = (event.target.value === "");
 
-        event.stopPropagation();
+        // event.stopPropagation();
 
         this.send( this.eventMsg( {
             componentType: "textField",
-            value: this.state.text,
+            value: event.target.value,
             action: "changed"
         } ) );
 

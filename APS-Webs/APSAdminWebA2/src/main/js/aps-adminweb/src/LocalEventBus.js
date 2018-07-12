@@ -9,29 +9,22 @@
  * This is a target group for messages. A message sent to an address will only be received by
  * those listening to that address.
  *
- * ### Sender
+ * ### Routers
  *
- * A sender is a function that is called by the send(address, global, message) method. There can be more
- * than one sender, but only one default sender is created with the instance. The default sender only
- * sends to subscribes of this local bus.
+ * This class actually does nothing at all! It just provides an API to one or more "routers".
+ * Well you can have zero also, but nothing will happen then. This just calls the corresponding
+ * subscribe(...), unsubscribe(...), and send(...) method of each added router.
  *
- * ### Receiver
+ * The intention with this is to have at least 2 different "routers". One that only sends locally
+ * among the subscribers within the JS instance, that is no networking, just calling another object
+ * directly. One that uses the Vert.x eventbus JS client over the eventbus bridge to the Vert.x server
+ * side. Most of the messages sent and received are only between the local components and it would be
+ * a waste to send them out on the network and back again. Some of the messages we want to go to the
+ * backend. This will also allow different clients to indirectly communicate with each other.
  *
- * A receiver handles subscribe and unsubscribe for the bus. There can be more than one of these too.
- * A default provider is provided that only subscribes to messages on this local bus.
- *
- * ### General
- *
- * So why add senders and receivers ? Well, this bus is used by all APS components. They can communicate
- * with each other over this bus. But as is they cannot communicate outside of the specific client they
- * are in. Note the global flag used. As is, it has no function. It is intended for other senders and
- * receivers that can communicate over the network. Those will listen to the global flag and forward
- * messages to another networking bus. External receivers will subscribe using networking bus.
- *
- * I didn't want to bake this functionality into this code. Since APS currently uses Vert.x it will
- * also provide a sender and receiver using the Vert.x eventbus. But with this design it is easy to
- * supply whatever implementation.
- *
+ * Also if at some later time I decided to use something else than Vert.x for example, then I only
+ * need to change the router handling Vert.x. It will not affect the components which only uses
+ * this.
  */
 class LocalEventBus {
 
@@ -43,52 +36,63 @@ class LocalEventBus {
     constructor() {
 
         // noinspection JSValidateTypes
-        /** @type {array} busRouters */
+        /**
+         * @type {array} busRouters. These routers must provide the subscribe, unsubscribe, and send methods
+         *               and parameters as this API have. These calls will be forwarded to each added router.
+         *               Router is a bad name here since each actually takes full responsibility for any
+         *               messaging. But it also makes things clear and very flexible. The components only
+         *               uses / knows about this class. Where messages go and where they come from is the
+         *               responsibility for other code.
+         */
         this.busRouters = [];
     }
 
     /**
      * This adds a subscriber for an address.
      *
-     * @param {String} address                      - The address to subscribe to messages from.
+     * @param {string} address                      - The address to subscribe to messages from.
      * @param {function(String, String)} subscriber - A function taking an address and a message.
-     * @param {Boolean} global                      - Subscribe to global messages.
+     * @param {string} routing                      - Routing hints.
      */
-    subscribe( address, subscriber, global = false ) {
+    subscribe( address, subscriber, routing = "" ) {
 
         for ( let busRouter of this.busRouters ) {
-            busRouter.subscribe( address, subscriber, global );
+            busRouter.subscribe( address, subscriber, routing );
         }
     }
 
     /**
      * Unsubscribes to a previously done subscription.
      *
-     * @param {String} address                      - The address of the subscription.
+     * @param {string} address                      - The address of the subscription.
      * @param {function(String, String)} subscriber - The subscriber to unsubscribe.
-     * @param {Boolean} global                      - True if the subscription to unsubscribe is global.
+     * @param {string} routing                     - Routing hints.
      */
-    unsubscribe( address, subscriber, global = false ) {
+    unsubscribe( address, subscriber, routing = "" ) {
 
         for ( let busRouter of this.busRouters ) {
 
-            busRouter.unsubscribe( address, subscriber, global );
+            busRouter.unsubscribe( address, subscriber, routing );
         }
     }
 
     /**
      * Sends a message.
      *
-     * @param {String}  address - The address to send to.
-     * @param {String}  message - The message to send. Note that this must be a JSON string
-     * @param {Boolean} global  - If true the message can be routed over the network. Defaults to false.
+     * @param {String} address  - The address to send to.
+     * @param {String} message  - The message to send. Note that this must be a JSON string
+     * @param {string} routing  - Routing hints. Note that this could be provided in the actual
+     *                            message for this method, but subscribe(...) and unsubscribe(...)
+     *                            still needs this, so for consistency I pass it along here too.
+     *                            It is of course entirely OK for a "router" provider to ignore this
+     *                            and use message information instead if it wants.
      */
-    send( address, message, global = false ) {
-        console.log( "EventBus: sending(address:" + address + ", global:" + global + "): " + message );
+    send( address, message, routing = "" ) {
+        console.log( "EventBus: sending(address:" + address + ", routing:" + routing + "): " + message );
 
         for ( let busRouter of this.busRouters ) {
 
-            busRouter.send( address, message, global );
+            busRouter.send( address, message, routing );
         }
     }
 
@@ -98,41 +102,3 @@ class LocalEventBus {
 }
 
 export default LocalEventBus;
-
-// /**
-//  * This represents the API for event bus routers. Multiple such can be added to the bus instance, and
-//  * all will be called on each send, subscribe or unsubscribe. It is upp to each router to determine
-//  * from message content what it should do, if anything.
-//  */
-// class BusRouter {
-//
-//     /**
-//      * Sends a message.
-//      *
-//      * @param {string} address - Address to send to.
-//      * @param {string} message - The message to send.
-//      * @param {boolean} global - The global flag.
-//      */
-//     send( address, message, global = false ) {
-//     }
-//
-//     /**
-//      * Subscribes to messages.
-//      *
-//      * @param {string} address                    - Address to subscribe to.
-//      * @param {function(string, string)} callback - Callback to call with messages.
-//      * @param {boolean} global                    - The global flag.
-//      */
-//     subscribe( address, callback, global = false ) {
-//     }
-//
-//     /**
-//      * Unsubscribe from receiving messages.
-//      *
-//      * @param {string} address - The address to unsubscribe for.
-//      * @param {function(string, string)} callback - The callback to unsubscribe.
-//      * @param {boolean} global - The global flagh.
-//      */
-//     unsubscribe( address, callback, global = false ) {
-//     }
-// }

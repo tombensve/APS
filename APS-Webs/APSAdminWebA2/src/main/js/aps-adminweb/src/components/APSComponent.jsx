@@ -19,6 +19,7 @@ class APSComponent extends Component {
         super( props );
 
         this._empty = false;
+        this.collected = {};
 
         this.subscribe( ( address, message ) => {
 
@@ -43,47 +44,28 @@ class APSComponent extends Component {
         console.log( "ERROR: 'disabled' in APSComponent called! This should be overridden!" )
     }
 
-    get primaryGroup() {
-        return this.props.guiProps.groups.split( "," )[0];
-    }
-
     //
     // Methods
     //
 
     componentId() {
+
         return "APSComponent";
-    }
-
-    /**
-     * @private
-     * @returns {boolean}
-     */
-    isPublishGlobal() {
-        return this.props.guiProps.publishGlobal != null ? this.props.guiProps.publishGlobal : false;
-    }
-
-    /**
-     * @private
-     * @returns {boolean}
-     */
-    isSubscribeGlobal() {
-        return this.props.guiProps.subscribeGlobal != null ? this.props.guiProps.subscribeGlobal : false;
     }
 
     send( message ) {
 
-        this.props.eventBus.send( this.props.guiProps.publishTo, message, this.isPublishGlobal() );
+        this.props.eventBus.send( this.props.guiProps.publishTo, message, this.props.guiProps.routing );
     }
 
     subscribe( subscriber ) {
 
-        this.props.eventBus.subscribe( this.props.guiProps.listenTo, subscriber, this.isSubscribeGlobal() );
+        this.props.eventBus.subscribe( this.props.guiProps.listenTo, subscriber, this.props.guiProps.routing );
     }
 
     unsubscribe( subscriber ) {
 
-        this.props.eventBus.unsubscribe( this.props.guiProps.listenTo, subscriber );
+        this.props.eventBus.unsubscribe( this.props.guiProps.listenTo, subscriber, this.props.guiProps.routing );
     }
 
     /**
@@ -94,11 +76,19 @@ class APSComponent extends Component {
      * @returns {String} The passed and upgraded object as a JSON string.
      */
     eventMsg( msg ) {
+
         msg.type = "gui-event";
-        msg.groups = this.props.guiProps.groups;
+        msg.group = this.props.guiProps.group;
         msg.managerId = this.props.mgrId;
-        msg.compoentId = this.props.guiProps.id;
+        msg.componentId = this.props.guiProps.id;
+        msg.componentName = this.props.guiProps.name;
+        msg.submitter = this.props.guiProps.submitter != null  && this.props.guiProps.submitter;
         msg.empty = this.empty;
+
+        if ( this.props.guiProps.collectGroup ) {
+
+            msg.additional = this.collected;
+        }
 
         return JSON.stringify( msg );
     }
@@ -106,13 +96,26 @@ class APSComponent extends Component {
 
     // noinspection JSMethodCanBeStatic
     messageHandler( address, message ) {
+
         console.log( this.componentId() + ": Received(address:" + address + "): " + message );
 
-        // if ( this.props.guiProps.enabled != null ) {
-        //
-        //     let msg = JSON.parse( message );
-        //
-        // }
+        let msg = JSON.parse( message );
+
+        if ( this.props.guiProps.collectGroup ) {
+            if (this.props.guiProps.group === msg.group) {
+                this.collected[msg.componentId] = msg;
+
+                //console.log(">>>> [" + this.props.guiProps.id + "] Collected: " + message)
+            }
+        }
+
+    }
+
+    //
+    // Eval funcs
+    //
+
+    eval_boolCompsNotEmpty() {
 
     }
 }

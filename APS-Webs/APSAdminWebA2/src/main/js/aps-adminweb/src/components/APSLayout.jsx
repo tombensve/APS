@@ -6,7 +6,7 @@ class APSLayout extends Component {
         let result = null;
 
         // noinspection JSUnresolvedVariable
-        if ( this.props.orientation.startsWith( "horiz" ) || this.props.ortn.startsWith( "horiz" ) ) {
+        if (this.props.orientation === null || this.props.orientation.startsWith( "horiz" ) ) {
 
             result = (
                 <div className="layout-horiz">

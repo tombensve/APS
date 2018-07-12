@@ -39,7 +39,7 @@ class APSTextArea extends APSComponent {
 
         this.send( this.eventMsg( {
             componentType: "textArea",
-            value: this.state.text,
+            value: event.target.value,
             action: "changed"
         } ) );
     }

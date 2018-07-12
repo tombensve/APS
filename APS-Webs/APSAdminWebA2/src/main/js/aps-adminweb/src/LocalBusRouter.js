@@ -1,7 +1,10 @@
+import { ROUTE_LOCAL } from "./Consts"
+import { containsAnyOrBlank } from "./Utils"
 /**
  * This represents a router and is responsible for sending and subscribing to messages.
  */
 export default class LocalBusRouter {
+
 
     /**
      * Creates a new LocalBusRouter.
@@ -17,10 +20,11 @@ export default class LocalBusRouter {
      *
      * @param {string} address - Address to send to.
      * @param {string} message - The message to send.
-     * @param {boolean} global - The global flag.
+     * @param {string} routing - Routing hints.
      */
-    send( address, message, global = false ) {
-        if ( !global ) {
+    send( address, message, routing ) {
+        console.log("@@@@@@@@@@@@@@@@@@@ routing: " + routing);
+        if (containsAnyOrBlank(routing, [ ROUTE_LOCAL  ]) ) {
             let addressSubscribers = this.subscribers[address];
 
             if ( addressSubscribers != null ) {
@@ -37,10 +41,11 @@ export default class LocalBusRouter {
      *
      * @param {string} address                    - Address to subscribe to.
      * @param {function(string, string)} callback - Callback to call with messages.
-     * @param {boolean} global                    - The global flag.
+     * @param {string} routing                    - Routing hints.
      */
-    subscribe( address, callback, global = false ) {
-        if (!global) {
+    subscribe( address, callback, routing ) {
+        console.log("@@@@@@@@@@@@@@@@@@@ routing: " + routing);
+        if (containsAnyOrBlank(routing, [ ROUTE_LOCAL ]) ) {
             let addressSubscribers = this.subscribers[address];
 
             if ( addressSubscribers == null ) {
@@ -57,14 +62,17 @@ export default class LocalBusRouter {
      *
      * @param {string} address - The address to unsubscribe for.
      * @param {function(string, string)} callback - The callback to unsubscribe.
-     * @param {boolean} global - The global flagh.
+     * @param {string} routing - Routing hints.
      */
-    unsubscribe( address, callback, global = false ) {
-        let addressSubscribers = this.subscribers[address];
+    unsubscribe( address, callback, routing ) {
+        console.log("@@@@@@@@@@@@@@@@@@@ routing: " + routing);
+        if (containsAnyOrBlank(routing, [ ROUTE_LOCAL ]) ) {
+            let addressSubscribers = this.subscribers[address];
 
-        if ( addressSubscribers != null ) {
-            let remix = addressSubscribers.indexOf( callback );
-            addressSubscribers.splice( remix, 1 );
+            if ( addressSubscribers != null ) {
+                let remix = addressSubscribers.indexOf( callback );
+                addressSubscribers.splice( remix, 1 );
+            }
         }
     }
 }
