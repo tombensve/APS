@@ -9,7 +9,8 @@ class APSTextField extends APSComponent {
 
         this.state = {
             disabled: false,
-            text: this.props.guiProps.text
+            // Note: The name of the state value has to match the component value name to be a "controlled" component!
+            value: this.props.guiProps.text
         };
 
     }
@@ -17,26 +18,33 @@ class APSTextField extends APSComponent {
     componentId() { return "APSTextField"; }
 
     set disabled( state ) {
-        this.state.disabled = state;
+        let _state = this.state;
+        _state.disabled = state;
+        this.setState(_state);
     }
 
     handleEvent( event ) {
-        //console.log( this.componentId() + " : " + JSON.stringify(event) );
-        console.log( this.componentId() + " : " + event.type)
-        event.preventDefault();
 
-        this.send( JSON.stringify( {
-            type: "gui-event",
+        this.setState({
+            disabled: this.state.disabled,
+            text: event.target.value
+        });
+
+        this.empty = (event.target.value === "");
+
+        event.stopPropagation();
+
+        this.send( this.eventMsg( {
             componentType: "textField",
             value: this.state.text,
-            action: "changed",
-            managerId: this.props.mgrId,
-            componentId: this.props.guiProps.id
+            action: "changed"
         } ) );
+
+        console.log( this.componentId() + " : " + event.type + " : " + event.target.value);
     }
 
     render() {
-        return <input value={this.state.text} type="text" onChange={this.handleEvent.bind( this )}
+        return <input value={this.state.value} type="text" onChange={this.handleEvent.bind( this )}
                       disabled={this.state.disabled}/>
     }
 }

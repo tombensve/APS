@@ -16,24 +16,31 @@ class APSTextArea extends APSComponent {
 
     }
 
-    componentId() { return "APSTextArea"; }
+    componentId() {
+        return "APSTextArea";
+    }
 
     set disabled( state ) {
 
-        this.state.disabled = state;
+        let _state = this.state;
+        _state.disabled = state;
+        this.setState(_state);
     }
 
     handleEvent( event ) {
 
-        console.log( this, event );
+        this.setState( {
+            disabled: this.state.disabled,
+            text: event.target.value
+        } );
 
-        this.send( JSON.stringify( {
-            type: "gui-event",
+        // Handle emptiness.
+        this.empty = ( event.target.value === "" );
+
+        this.send( this.eventMsg( {
             componentType: "textArea",
             value: this.state.text,
-            action: "changed",
-            managerId: this.props.mgrId,
-            componentId: this.props.guiProps.id
+            action: "changed"
         } ) );
     }
 

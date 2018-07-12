@@ -1,68 +1,13 @@
 import React, { Component } from 'react'
 import './GuiMgr.css'
 import LocalEventBus from "./LocalEventBus"
+import LocalBusRouter from "./LocalBusRouter"
 import APSLayout from "./components/APSLayout"
-import APSButton from "./components/APSButton";
+import APSButton from "./components/APSButton"
 import APSTextField from "./components/APSTextField"
 import APSTextArea from "./components/APSTextArea"
-
-let testData = {
-    id: "top",
-    name: "top",
-    type: "layout",
-    layout: "horizontal",
-    children: [
-        {
-            id: "name",
-            name: "name-field",
-            type: "textField",
-            width: 20,
-            value: "name",
-            listenTo: "test-gui",
-            publishTo: "test-gui",
-            publishGlobal: false,
-            subscribeGlobal: false
-        },
-        {
-            id: "description",
-            name: "descriptionField",
-            type: "textArea",
-            cols: 30,
-            rows: 4,
-            value: "description",
-            listenTo: "test-gui",
-            publishTo: "test-gui",
-            publishGlobal: false,
-            subscribeGlobal: false
-        },
-        {
-            id: "submit",
-            name: "submitButton",
-            type: "button",
-            label: "Save",
-            disabled: true,
-            track: ["name", "descriptor"],
-            enabledOn: "tracked-non-empty",
-            disabledOn: null,
-            listenTo: "test-gui",
-            publishTo: "test-gui",
-            publishGlobal: true,
-            subscribeGlobal: true
-        }
-    ]
-};
-
-/*
- * Strange that JS does not have build in support for UUID!
- *
- * Found this on: https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
- */
-function uuidv4() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace( /[xy]/g, function ( c ) {
-        let r = Math.random() * 16 | 0, v = c === 'x' ? r : ( (r & 0x3) | 0x8 );
-        return v.toString( 16 )
-    } )
-}
+import { GLOBAL_MSG } from "./Consts"
+import { uuidv4 } from "./UUID"
 
 /**
  * A component reading a JSON spec of components to render. The GuiMgr also creates a local
@@ -75,6 +20,10 @@ function uuidv4() {
  */
 class GuiMgr extends Component {
 
+    //
+    // Constructors
+    //
+
     /**
      * Creates a new GuiMgr component.
      *
@@ -83,53 +32,104 @@ class GuiMgr extends Component {
     constructor( props ) {
         super( props );
 
-        this.state = { gui: testData };
+        this.state = {
+            gui: null,
+            comps: []
+        };
 
         this.uuid = uuidv4();
-        let listenAddress = "guimgr:" + this.uuid;
+        this.listenAddress = "guimgr:" + this.uuid;
 
         this.eventBus = new LocalEventBus();
+        this.eventBus.addBusRouter(new LocalBusRouter());
 
         /**
-         * @type {string} address
-         * @type {string} message
+         * Event bus subscriber. We need to keep the instance of this so that we can unsubscribe later.
+         *
+         * @param {String} address - The address the message is to. Always received if you use same function
+         *                           for multiple subscriptions.
+         * @param {String} message - A received message in JSON format.
          */
-        this.eventBus.subscribe( listenAddress, ( address, message ) => {
+        this.compSubscriber = ( address, message ) => {
 
-            if ( address === listenAddress ) {
+            if ( address === this.listenAddress ) {
 
                 let msg = JSON.parse( message );
 
                 if ( msg['type'] === "gui" ) {
 
-                    this.state.gui = msg['gui']
+                    this.updateGui(msg['gui']);
                 }
             }
-        } );
+        };
+    }
 
-        this.eventBus.send( "aps:web", JSON.stringify({ op: "init", client: listenAddress }), true );
+    //
+    // Component Interactions
+    //
+
+    /**
+     * React callback for when component is available.
+     */
+    componentDidMount() {
+
+        // Subscribe to eventbus for content events.
+        this.eventBus.subscribe( this.listenAddress, this.compSubscriber );
+
+        // Inform someone that there is a new client available and provide clients unique address.
+        this.eventBus.send( "aps:web", JSON.stringify({ op: "init", client: this.listenAddress }), GLOBAL_MSG );
+
+        this.fakeContentForTestDebugAndPOC();
     }
 
     /**
-     * Creates a client specific id also containing this instances UUID.
-     *
-     * @param {string} id The id to append to the internal UUID.
-     *
-     * @returns {string} A combined id.
+     * React is telling us the component will be removed.
      */
-    createClientId(id) {
+    componentWillUnmount() {
 
-        return this.uuid + ":" + id;
+        // Since we are going away, stop listening for events.
+        this.eventBus.unsubscribe(this.listenAddress, this.compSubscriber);
+    }
+
+    /**
+     * Provides component rendering.
+     *
+     * @returns {Array} Since this component is very dynamic we provide an array of components, and what
+     *                  those are, are up to the input to the component.
+     */
+    render() {
+        return this.state.gui != null ? this.state.comps : <h1>No gui available!</h1>;
+    }
+
+    //
+    // Methods
+    //
+
+    /**
+     * Updates the GUI. Component must be mounted before this can be called.
+     *
+     * @param gui A specification for the GUI.
+     */
+    updateGui(gui) {
+
+        // Should hopefully trigger a render ...
+        this.setState({
+
+            gui: gui,
+            comps: this.parseGui(gui, {key: 0})
+        });
     }
 
     /**
      * Parses the GUI spec and creates components.
      *
-     * @param {Object} gui
+     * @param {Object} gui The GUI spec to parse.
+     * @param {Object} arrKeyCon Hold the array key (.key) to use. This is needed since we return an array
+     *                           of components, and React wants a unique key of components in arrays.
      *
      * @returns {Array} created components.
      */
-    parseGui( gui ) {
+    parseGui( gui, arrKeyCon ) {
 
         let content = [];
         let childContent = [];
@@ -140,7 +140,7 @@ class GuiMgr extends Component {
 
             for ( let child of children ) {
 
-                childContent.push( this.parseGui( child ) )
+                childContent.push( this.parseGui( child,  arrKeyCon) )
             }
         }
 
@@ -155,7 +155,7 @@ class GuiMgr extends Component {
                 if ( gui['layout'] === "horizontal" ) {
 
                     content.push(
-                        <APSLayout orientation="horiz">
+                        <APSLayout key={++arrKeyCon.key} orientation="horiz">
                             {childContent}
                         </APSLayout>
                     )
@@ -163,7 +163,7 @@ class GuiMgr extends Component {
                 else {
 
                     content.push(
-                        <APSLayout orientation="vert">
+                        <APSLayout key={++arrKeyCon.key} orientation="vert">
                             {childContent}
                         </APSLayout>
                     )
@@ -174,7 +174,7 @@ class GuiMgr extends Component {
             case 'button':
 
                 content.push(
-                    <APSButton eventBus={this.eventBus} mgrId={this.uuid} guiProps={gui}/>
+                    <APSButton key={++arrKeyCon.key} eventBus={this.eventBus} mgrId={this.uuid} guiProps={gui}/>
                 );
 
                 break;
@@ -182,7 +182,7 @@ class GuiMgr extends Component {
             case 'textField':
 
                 content.push(
-                    <APSTextField eventBus={this.eventBus} mgrId={this.uuid} guiProps={gui}/>
+                    <APSTextField key={++arrKeyCon.key} eventBus={this.eventBus} mgrId={this.uuid} guiProps={gui}/>
                 );
 
                 break;
@@ -190,7 +190,7 @@ class GuiMgr extends Component {
             case 'textArea':
 
                 content.push(
-                    <APSTextArea eventBus={this.eventBus} mgrId={this.uuid} guiProps={gui}/>
+                    <APSTextArea key={++arrKeyCon.key} eventBus={this.eventBus} mgrId={this.uuid} guiProps={gui}/>
                 );
 
                 break;
@@ -223,11 +223,65 @@ class GuiMgr extends Component {
         return content
     }
 
-    render() {
-        return this.state.gui != null ? this.parseGui( this.state.gui ) : <h1>No gui available!</h1>;
-    }
+    /**
+     * This produces real browser output.
+     */
+    fakeContentForTestDebugAndPOC() {
+        let testData = {
+            id: "top",
+            name: "top",
+            type: "layout",
+            layout: "horizontal",
+            children: [
+                {
+                    id: "name",
+                    name: "name-field",
+                    groups: "gpoc",
+                    type: "textField",
+                    width: 20,
+                    value: "name",
+                    listenTo: "test-gui",
+                    publishTo: "test-gui",
+                    publishGlobal: false,
+                    subscribeGlobal: false
+                },
+                {
+                    id: "description",
+                    name: "descriptionField",
+                    groups: "gpoc",
+                    type: "textArea",
+                    cols: 30,
+                    rows: 4,
+                    value: "description",
+                    listenTo: "test-gui",
+                    publishTo: "test-gui",
+                    publishGlobal: false,
+                    subscribeGlobal: false
+                },
+                {
+                    id: "submit",
+                    name: "submitButton",
+                    groups: "gpoc",
+                    type: "button",
+                    label: "Save",
+                    disabled: true,
+                    enabled: {
+                        groups: "gpoc",
+                        property: "!empty"
+                    },
+                    listenTo: "test-gui",
+                    publishTo: "test-gui",
+                    publishGlobal: true,
+                    subscribeGlobal: true
+                }
+            ]
+        };
 
+        // This would normally come from elsewhere.
+        this.eventBus.send(this.listenAddress, JSON.stringify({ type: "gui", gui: testData}));
+    }
 }
+
 
 // noinspection JSUnusedGlobalSymbols
 export default GuiMgr

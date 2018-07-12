@@ -66,7 +66,7 @@ class SockJSEventBusBridge extends VertxSubscriber implements APSMessageSubscrib
     @Managed( name = "sockjs-evenbus-bridge", loggingFor = "aps-admin-web-a2:sockjs-eventbus-bridge" )
     private APSLogger logger
 
-    /** A Router for an HTTP server. */
+    /** A BusRouter for an HTTP server. */
     private Router router
 
     //

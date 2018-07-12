@@ -35,96 +35,16 @@
  */
 class LocalEventBus {
 
-    // static instance = new LocalEventBus();
-    //
-    // static get INSTANCE() {
-    //     return LocalEventBus.instance;
-    // }
-
     /**
      * Creates a new LocalEventBus.
      *
      * @constructor
      */
     constructor() {
-        this.subscribers = {};
 
-        /** @type {function(String, Boolean, String)[]} Used to send messages. */
-        this.senders = [];
-
-        /** @type {Object[]} Used to subscribe to messages. */
-        this.receivers = [];
-
-        // The defaultReceiver does not use the 'global' flag, which is why we need to suppress this warning.
-        // noinspection JSUnusedLocalSymbols
-        /**
-         * The default sender, always added internally.
-         *
-         * Sends all messages to all subscribers. Note that the default sender does not use
-         * the 'global' argument. It is however passed when the sender function is called.
-         *
-         * @param {String}  address - The address to send to.
-         * @param {String}  message - The message to send. Will be JSON in a string.
-         * @param {Boolean} global  - True if global message.
-         */
-        this.defaultSender = ( address, message, global ) => {
-            let addressSubscribers = this.subscribers[address];
-
-            if ( addressSubscribers != null ) {
-
-                for ( let subscriber of addressSubscribers ) {
-                    subscriber( address, message );
-                }
-            }
-        };
-
-        this.addSender( this.defaultSender );
-
-        // noinspection JSUnusedLocalSymbols
-        /**
-         * Contains a subscriber function and an unsubscriber function. These functions as the name
-         * hints handles subscriptions and unsubscribes. These only subscribes and unsubscribes to
-         * messages on this local event bus.
-         *
-         * @type {{subscriber: LocalEventBus.defaultReceiver.subscriber, unsubscriber: LocalEventBus.defaultReceiver.unsubscriber}}
-         */
-        this.defaultReceiver = {
-            /**
-             * The default subscriber. Stores subscribers locally mapped on address listening to.
-             *
-             * @param {String} address      - The address to subscribe to.
-             * @param {function} subscriber - The subscriber function to call on messages.
-             * @param {Boolean} global      - True if subscriber is global.
-             */
-            subscriber: ( address, subscriber, global ) => {
-                let addressSubscribers = this.subscribers[address];
-
-                if ( addressSubscribers == null ) {
-                    addressSubscribers = [];
-                    this.subscribers[address] = addressSubscribers;
-                }
-
-                addressSubscribers.push( subscriber );
-            },
-
-            /**
-             * The default unsubscriber. Removes a previously added subscriber.
-             *
-             * @param {String}   address    - The adress to unsubscribe from.
-             * @param {function} subscriber - The subscription callback to remove.
-             * @param {Boolean}  global     - True if the subscriber was subscribed as global.
-             */
-            unsubscriber: ( address, subscriber, global ) => {
-                let addressSubscribers = this.subscribers[address];
-
-                if ( addressSubscribers != null ) {
-                    let remix = addressSubscribers.indexOf( subscriber );
-                    addressSubscribers.splice( remix, 1 );
-                }
-            }
-        };
-
-        this.addReceiver( this.defaultReceiver )
+        // noinspection JSValidateTypes
+        /** @type {array} busRouters */
+        this.busRouters = [];
     }
 
     /**
@@ -136,9 +56,8 @@ class LocalEventBus {
      */
     subscribe( address, subscriber, global = false ) {
 
-        for ( let receiver of this.receivers ) {
-
-            receiver.subscriber( address, subscriber, global );
+        for ( let busRouter of this.busRouters ) {
+            busRouter.subscribe( address, subscriber, global );
         }
     }
 
@@ -151,9 +70,9 @@ class LocalEventBus {
      */
     unsubscribe( address, subscriber, global = false ) {
 
-        for ( let receiver of this.receivers ) {
+        for ( let busRouter of this.busRouters ) {
 
-            receiver.unsubscriber( address, subscriber, global );
+            busRouter.unsubscribe( address, subscriber, global );
         }
     }
 
@@ -167,41 +86,53 @@ class LocalEventBus {
     send( address, message, global = false ) {
         console.log( "EventBus: sending(address:" + address + ", global:" + global + "): " + message );
 
-        for ( let sender of this.senders ) {
+        for ( let busRouter of this.busRouters ) {
 
-            sender( address, message, global );
+            busRouter.send( address, message, global );
         }
     }
 
-    /**
-     * Adds a router to the bus.
-     *
-     * @param sender {function(String, Boolean, Object)} - The sender to add.
-     */
-    addSender( sender ) {
-
-        this.senders.push( sender );
+    addBusRouter( busRouter ) {
+        this.busRouters.push( busRouter )
     }
-
-    /**
-     * Adds a receiver to the
-     *
-     * The receiver must be an object with 2 function properties:
-     *
-     *     subscriber:   function(String, boolean, function)
-     *     unsubscriber: function(String, boolean, function)
-     *
-     * The arguments are _address_, _global_, and the _callback_ to call on messages.
-     *
-     * __global__ set to true means that the subscriber is not only interested in local messages.
-     *
-     * @param {Object} receiver - The receiver to add.
-     */
-    addReceiver( receiver ) {
-
-        this.receivers.push( receiver );
-    }
-
 }
 
 export default LocalEventBus;
+
+// /**
+//  * This represents the API for event bus routers. Multiple such can be added to the bus instance, and
+//  * all will be called on each send, subscribe or unsubscribe. It is upp to each router to determine
+//  * from message content what it should do, if anything.
+//  */
+// class BusRouter {
+//
+//     /**
+//      * Sends a message.
+//      *
+//      * @param {string} address - Address to send to.
+//      * @param {string} message - The message to send.
+//      * @param {boolean} global - The global flag.
+//      */
+//     send( address, message, global = false ) {
+//     }
+//
+//     /**
+//      * Subscribes to messages.
+//      *
+//      * @param {string} address                    - Address to subscribe to.
+//      * @param {function(string, string)} callback - Callback to call with messages.
+//      * @param {boolean} global                    - The global flag.
+//      */
+//     subscribe( address, callback, global = false ) {
+//     }
+//
+//     /**
+//      * Unsubscribe from receiving messages.
+//      *
+//      * @param {string} address - The address to unsubscribe for.
+//      * @param {function(string, string)} callback - The callback to unsubscribe.
+//      * @param {boolean} global - The global flagh.
+//      */
+//     unsubscribe( address, callback, global = false ) {
+//     }
+// }

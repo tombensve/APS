@@ -3,7 +3,7 @@ import './APSLayout.css'
 
 class APSLayout extends Component {
     render() {
-        let result;
+        let result = null;
 
         // noinspection JSUnresolvedVariable
         if ( this.props.orientation.startsWith( "horiz" ) || this.props.ortn.startsWith( "horiz" ) ) {

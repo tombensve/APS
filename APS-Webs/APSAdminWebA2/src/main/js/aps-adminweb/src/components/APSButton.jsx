@@ -8,7 +8,7 @@ class APSButton extends APSComponent {
         super( props );
 
         this.state = {
-            disabled: false
+            disabled: props.guiProps.disabled != null ? props.guiProps.disabled : false
         };
 
     }
@@ -16,17 +16,16 @@ class APSButton extends APSComponent {
     componentId() { return "APSButton"; }
 
     set disabled( state ) {
-        this.state.disabled = state;
+        let _state = this.state;
+        _state.disabled = state;
+        this.setState(_state);
     }
 
     handleEvent( event ) {
         console.log( this, event );
 
-        this.send( JSON.stringify( {
-            type: "gui-event",
-            componentType: "button",
-            managerId: this.props.mgrId,
-            componentId: this.props.guiProps.id
+        this.send( this.eventMsg( {
+            componentType: "button"
         } ) );
     }
 

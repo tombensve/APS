@@ -11,15 +11,45 @@ import PropTypes from "prop-types";
  */
 class APSComponent extends Component {
 
+    //
+    // Constructor
+    //
+
     constructor( props ) {
         super( props );
 
+        this._empty = false;
+
         this.subscribe( ( address, message ) => {
 
-            this.internalMsgHandler( address, message );
+            this.messageHandler( address, message );
 
         } );
     }
+
+    //
+    // Properties
+    //
+
+    get empty() {
+        return this._empty;
+    }
+
+    set empty( empty ) {
+        this._empty = empty;
+    }
+
+    set disabled( state ) {
+        console.log( "ERROR: 'disabled' in APSComponent called! This should be overridden!" )
+    }
+
+    get primaryGroup() {
+        return this.props.guiProps.groups.split( "," )[0];
+    }
+
+    //
+    // Methods
+    //
 
     componentId() {
         return "APSComponent";
@@ -56,9 +86,34 @@ class APSComponent extends Component {
         this.props.eventBus.unsubscribe( this.props.guiProps.listenTo, subscriber );
     }
 
+    /**
+     * Event message helper.
+     *
+     * @param {Object} msg The message to append standard info to. This will be returned after modifications.
+     *
+     * @returns {String} The passed and upgraded object as a JSON string.
+     */
+    eventMsg( msg ) {
+        msg.type = "gui-event";
+        msg.groups = this.props.guiProps.groups;
+        msg.managerId = this.props.mgrId;
+        msg.compoentId = this.props.guiProps.id;
+        msg.empty = this.empty;
+
+        return JSON.stringify( msg );
+    }
+
+
     // noinspection JSMethodCanBeStatic
-    internalMsgHandler( address, message ) {
-        console.log(this.componentId() + ": Received(address:" + address + "): " + message);
+    messageHandler( address, message ) {
+        console.log( this.componentId() + ": Received(address:" + address + "): " + message );
+
+        // if ( this.props.guiProps.enabled != null ) {
+        //
+        //     let msg = JSON.parse( message );
+        //
+        // }
+
     }
 }
 
