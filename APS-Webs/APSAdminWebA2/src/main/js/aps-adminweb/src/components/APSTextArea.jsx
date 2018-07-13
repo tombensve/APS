@@ -11,7 +11,7 @@ class APSTextArea extends APSComponent {
         this.state = {
 
             disabled: false,
-            text: this.props.guiProps.text
+            value: this.props.guiProps.value != null ? this.props.guiProps.value : ""
         };
 
     }
@@ -24,7 +24,7 @@ class APSTextArea extends APSComponent {
 
         let _state = this.state;
         _state.disabled = state;
-        this.setState(_state);
+        this.setState( _state );
     }
 
     handleEvent( event ) {
@@ -47,9 +47,8 @@ class APSTextArea extends APSComponent {
     render() {
 
         return <textarea rows={this.props.guiProps.rows} cols={this.props.guiProps.cols}
-                         onChange={this.handleEvent.bind( this )} disabled={this.state.disabled}>
-            {this.state.text}
-        </textarea>
+                         onChange={this.handleEvent.bind( this )} disabled={this.state.disabled}
+                         defaultValue={this.state.value}/>
     }
 }
 

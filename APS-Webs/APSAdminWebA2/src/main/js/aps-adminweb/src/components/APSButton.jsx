@@ -11,6 +11,7 @@ class APSButton extends APSComponent {
             disabled: props.guiProps.disabled != null ? props.guiProps.disabled : false
         };
 
+        this.hasValue = false;
     }
 
     componentId() { return "APSButton"; }

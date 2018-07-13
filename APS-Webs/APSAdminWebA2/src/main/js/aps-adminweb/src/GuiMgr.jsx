@@ -80,6 +80,7 @@ class GuiMgr extends Component {
         // Inform someone that there is a new client available and provide clients unique address.
         this.eventBus.send( "aps:web", JSON.stringify( { op: "init", client: this.listenAddress } ), ROUTE_EXTERNAL );
 
+        // For testing ...
         this.fakeContentForTestDebugAndPOC();
     }
 
@@ -241,7 +242,7 @@ class GuiMgr extends Component {
                     group: "gpoc",
                     type: "textField",
                     width: 20,
-                    value: "name",
+                    value: "",
                     listenTo: "test-gui",
                     publishTo: "test-gui",
                     routing: "local",
@@ -253,7 +254,7 @@ class GuiMgr extends Component {
                     type: "textArea",
                     cols: 30,
                     rows: 4,
-                    value: "description",
+                    value: "",
                     listenTo: "test-gui",
                     publishTo: "test-gui",
                     routing: "local"
@@ -265,8 +266,8 @@ class GuiMgr extends Component {
                     type: "button",
                     label: "Save",
                     disabled: true,
-                    collectGroup: true,
-                    enabled: "boolCompsNotEmpty('name', 'description')",
+                    collectGroups: "gpoc",
+                    enabled: "groupNotEmpty:gpoc",
                     listenTo: "test-gui",
                     publishTo: "test-gui",
                     routing: "local,external"

@@ -10,7 +10,7 @@ class APSTextField extends APSComponent {
         this.state = {
             disabled: false,
             // Note: The name of the state value has to match the component value name to be a "controlled" component!
-            value: this.props.guiProps.text
+            value: this.props.guiProps.value
         };
 
     }
@@ -27,7 +27,7 @@ class APSTextField extends APSComponent {
 
         this.setState({
             disabled: this.state.disabled,
-            text: event.target.value
+            value: event.target.value
         });
 
         this.empty = (event.target.value === "");
@@ -40,7 +40,7 @@ class APSTextField extends APSComponent {
             action: "changed"
         } ) );
 
-        console.log( this.componentId() + " : " + event.type + " : " + event.target.value);
+        console.log( this.name + " : " + event.type + " : " + event.target.value);
     }
 
     render() {
