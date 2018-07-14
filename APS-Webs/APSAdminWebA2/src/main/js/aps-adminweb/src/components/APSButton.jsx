@@ -14,12 +14,14 @@ class APSButton extends APSComponent {
         this.hasValue = false;
     }
 
-    componentId() { return "APSButton"; }
+    componentId() {
+        return "APSButton";
+    }
 
     set disabled( state ) {
         let _state = this.state;
         _state.disabled = state;
-        this.setState(_state);
+        this.setState( _state );
     }
 
     handleEvent( event ) {
@@ -31,7 +33,10 @@ class APSButton extends APSComponent {
     }
 
     render() {
-        return <button onClick={this.handleEvent.bind( this )} disabled={this.state.disabled}>
+        return <button class={this.props.guiProps.class}
+                       id={this.props.guiProps.id}
+                       onClick={this.handleEvent.bind( this )}
+                       disabled={this.state.disabled}>
             {this.props.guiProps.label}
         </button>
     }

@@ -243,6 +243,7 @@ class GuiMgr extends Component {
                     type: "textField",
                     width: 20,
                     value: "",
+                    class: "",
                     listenTo: "test-gui",
                     publishTo: "test-gui",
                     routing: "local",
@@ -255,6 +256,7 @@ class GuiMgr extends Component {
                     cols: 30,
                     rows: 4,
                     value: "",
+                    class: "",
                     listenTo: "test-gui",
                     publishTo: "test-gui",
                     routing: "local"
@@ -265,6 +267,7 @@ class GuiMgr extends Component {
                     group: "gpoc",
                     type: "button",
                     label: "Save",
+                    class: "",
                     disabled: true,
                     collectGroups: "gpoc",
                     enabled: "groupNotEmpty:gpoc",

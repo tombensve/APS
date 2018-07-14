@@ -46,7 +46,9 @@ class APSTextArea extends APSComponent {
 
     render() {
 
-        return <textarea rows={this.props.guiProps.rows} cols={this.props.guiProps.cols}
+        return <textarea class={this.props.guiProps.class}
+                         id={this.props.guiProps.id}
+                         rows={this.props.guiProps.rows} cols={this.props.guiProps.cols}
                          onChange={this.handleEvent.bind( this )} disabled={this.state.disabled}
                          defaultValue={this.state.value}/>
     }
