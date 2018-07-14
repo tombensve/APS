@@ -44,9 +44,10 @@ class APSTextField extends APSComponent {
     }
 
     render() {
+        // noinspection HtmlUnknownAttribute
         return <input value={this.state.value} type="text"
                       id={this.props.guiProps.id}
-                      class={this.props.guiProps.class}
+                      className={this.props.guiProps.class + " apsTextField"}
                       onChange={this.handleEvent.bind( this )}
                       disabled={this.state.disabled}/>
     }

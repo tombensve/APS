@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
 import './GuiMgr.css'
-import LocalEventBus from "./LocalEventBus"
-import LocalBusRouter from "./LocalBusRouter"
-import APSLayout from "./components/APSLayout"
-import APSButton from "./components/APSButton"
-import APSTextField from "./components/APSTextField"
-import APSTextArea from "./components/APSTextArea"
-import { ROUTE_EXTERNAL, ROUTE_LOCAL } from "./Consts"
-import { uuidv4 } from "./UUID"
+import LocalEventBus from "./../LocalEventBus"
+import LocalBusRouter from "./../LocalBusRouter"
+import APSLayout from "./APSLayout"
+import APSDiv from "./APSDiv"
+import APSButton from "./APSButton"
+import APSTextField from "./APSTextField"
+import APSTextArea from "./APSTextArea"
+import { ROUTE_EXTERNAL, ROUTE_LOCAL } from "./../Consts"
+import { uuidv4 } from "./../UUID"
 
 /**
  * A component reading a JSON spec of components to render. The GuiMgr also creates a local
@@ -174,6 +175,16 @@ class GuiMgr extends Component {
 
                 break;
 
+            case 'div':
+
+                content.push(
+                    <APSDiv key={++arrKeyCon.key} >
+                        {childContent}
+                    </APSDiv>
+                );
+
+                break;
+
             case 'button':
 
                 content.push(
@@ -243,7 +254,7 @@ class GuiMgr extends Component {
                     type: "textField",
                     width: 20,
                     value: "",
-                    class: "",
+                    class: "form-control",
                     listenTo: "test-gui",
                     publishTo: "test-gui",
                     routing: "local",
@@ -256,7 +267,7 @@ class GuiMgr extends Component {
                     cols: 30,
                     rows: 4,
                     value: "",
-                    class: "",
+                    class: "form-control",
                     listenTo: "test-gui",
                     publishTo: "test-gui",
                     routing: "local"
@@ -267,7 +278,7 @@ class GuiMgr extends Component {
                     group: "gpoc",
                     type: "button",
                     label: "Save",
-                    class: "",
+                    class: "btn btn-success",
                     disabled: true,
                     collectGroups: "gpoc",
                     enabled: "groupNotEmpty:gpoc",

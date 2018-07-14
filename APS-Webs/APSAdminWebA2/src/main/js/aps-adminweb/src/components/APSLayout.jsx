@@ -6,18 +6,20 @@ class APSLayout extends Component {
         let result = null;
 
         // noinspection JSUnresolvedVariable
-        if (this.props.orientation === null || this.props.orientation.startsWith( "horiz" ) ) {
+        if ( this.props.orientation === null || this.props.orientation.startsWith( "horiz" ) ) {
 
             result = (
-                <div className="layout-horiz">
-                    {this.props.children}
+                <div className="form-inline">
+                    <div className="form-group">
+                        {this.props.children}
+                    </div>
                 </div>
             )
         }
         else {
 
             result = (
-                <div className="layout-vert">
+                <div className="form-group">
                     {this.props.children}
                 </div>
             )

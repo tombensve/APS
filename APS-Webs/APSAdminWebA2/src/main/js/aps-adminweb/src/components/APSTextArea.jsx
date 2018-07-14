@@ -46,7 +46,8 @@ class APSTextArea extends APSComponent {
 
     render() {
 
-        return <textarea class={this.props.guiProps.class}
+        // noinspection HtmlUnknownAttribute
+        return <textarea className={this.props.guiProps.class + " apsTextArea"}
                          id={this.props.guiProps.id}
                          rows={this.props.guiProps.rows} cols={this.props.guiProps.cols}
                          onChange={this.handleEvent.bind( this )} disabled={this.state.disabled}

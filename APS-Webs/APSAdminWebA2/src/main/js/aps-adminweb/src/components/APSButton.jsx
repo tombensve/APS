@@ -33,7 +33,9 @@ class APSButton extends APSComponent {
     }
 
     render() {
-        return <button class={this.props.guiProps.class}
+
+        // noinspection HtmlUnknownAttribute
+        return <button className={this.props.guiProps.class + " apsButton"}
                        id={this.props.guiProps.id}
                        onClick={this.handleEvent.bind( this )}
                        disabled={this.state.disabled}>
