@@ -53,13 +53,13 @@ class EventDefs {
      *
      * ## Structure
      *
-     * * __sender__ (required) Contains information about the sender.
-     *    * __address__ (required) The address of the sender.
-     * * __eventType__ (required) What type of event. The rest of the body depends on this.
-     * * __data__ (optional) The event data section.
-     * * __error__ (optional) An error message when things go wrong.
-     *    * __code__ (required) An error code (int).
-     *    * __message__ (required) An error message.
+     * - __sender__ (required) Contains information about the sender.
+     *    - __address__ (required) The address of the sender.
+     * - __eventType__ (required) What type of event. The rest of the body depends on this.
+     * - __data__ (optional) The event data section.
+     * - __error__ (optional) An error message when things go wrong.
+     *    - __code__ (required) An error code (int).
+     *    - __message__ (required) An error message.
      */
     public static final Map<String, Object> EVENT_SCHEMA = [
             header_1   : [
