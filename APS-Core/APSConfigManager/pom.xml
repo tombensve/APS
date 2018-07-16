@@ -26,7 +26,7 @@
         limitations under the License.
 
     AUTHORS
-        tommy ()
+        tommy ()‘
             Changes:
             2018-05-26: Created!
 
@@ -143,7 +143,14 @@
             APSConfigServiceProvider dependencies
         -->
 
-
+        <!--
+            Test
+        -->
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-osgi-test-tools</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

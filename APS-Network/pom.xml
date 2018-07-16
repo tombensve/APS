@@ -59,7 +59,7 @@
     </properties>
 
     <modules>
-        <module>APSRabbitMQMessageServiceProvider</module>
+        <!--<module>APSRabbitMQMessageServiceProvider</module>-->
         <module>APSVertxEventBusMessagingProvider</module>
         <module>APSVertXProvider</module>
         <module>APSVertxClusterDataStoreServiceProvider</module>

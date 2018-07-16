@@ -93,6 +93,8 @@
             se.natusoft.osgi.aps.api.data.jdbc.model;version="${project.version}",
             se.natusoft.osgi.aps.api.data.jdbc.service;version="${project.version}",
 
+            se.natusoft.osgi.aps.api.data.jpa.service;version="${project.version}",
+
             se.natusoft.osgi.aps.api.messaging;version="${project.version}",
 
             se.natusoft.osgi.aps.api.misc;version="${project.version}",

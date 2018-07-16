@@ -4,8 +4,8 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.core.json.JsonObject
 import se.natusoft.docutations.NotNull
-import se.natusoft.osgi.aps.api.misc.json.model.JSONObject
 import se.natusoft.osgi.aps.core.lib.MapJsonDocSchemaValidator
+import se.natusoft.osgi.aps.json.JSONObject
 
 /**
  * This class defines a generic event structure in JSONish Map structure as can be defined and validated
@@ -22,6 +22,7 @@ class EventDefs {
     public static final String _data_ = "data"
     public static final String _header_ = "header"
     public static final String _address_ = "address"
+    @SuppressWarnings( "GroovyUnusedDeclaration" )
     public static final String _classifier_ = "classifier"
     public static final String _eventType_ = "eventType"
     public static final String _error_ = "error"
@@ -33,9 +34,11 @@ class EventDefs {
     // Misc Constants
     //
 
+    @SuppressWarnings( "GroovyUnusedDeclaration" )
     public static final String VERTX_EVENT_MESSAGE_SRC = "eventMessageSrc"
 
     /** For hanging up an original message in the root of a forwarded local message. */
+    @SuppressWarnings( "GroovyUnusedDeclaration" )
     public static final String ORIG_EVENT = "origMessage"
 
     /** Validates an event structure. */
@@ -135,18 +138,22 @@ class Event {
         this.content[ EventDefs._header_ ][ EventDefs._address_ ] as String
     }
 
+    @SuppressWarnings( "GroovyUnusedDeclaration" )
     List<Map<String, Object>> getWebs() {
         this.content[ EventDefs._data_ ][ EventDefs._webs_ ] as List<Map<String, Object>>
     }
 
+    @SuppressWarnings( "GroovyUnusedDeclaration" )
     int getErrorCode() {
         this.content[ EventDefs._error_ ][ EventDefs._code_ ] as Integer
     }
 
+    @SuppressWarnings( "GroovyUnusedDeclaration" )
     String getErrorMessage() {
         this.content[ EventDefs._error_ ][ EventDefs._message_ ] as String
     }
 
+    @SuppressWarnings( "GroovyUnusedDeclaration" )
     void validate() {
         EventDefs.EVENT_VALIDATOR.validate( this.content )
     }

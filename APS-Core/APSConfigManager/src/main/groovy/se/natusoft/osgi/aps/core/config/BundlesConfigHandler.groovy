@@ -39,11 +39,10 @@ import org.osgi.framework.Bundle
 import org.osgi.framework.BundleContext
 import org.osgi.framework.BundleEvent
 import se.natusoft.docutations.NotNull
-import se.natusoft.osgi.aps.activator.annotation.Initializer
-import se.natusoft.osgi.aps.util.APSLogger
 import se.natusoft.osgi.aps.activator.annotation.BundleListener
+import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.util.DoSometime
+import se.natusoft.osgi.aps.util.APSLogger
 
 /**
  * This listens to bundles and manages configurations.

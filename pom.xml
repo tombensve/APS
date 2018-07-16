@@ -79,7 +79,7 @@
         <!--
             Dependency versions
         -->
-        <maven.bundle.plugin.version>3.5.0</maven.bundle.plugin.version>
+        <maven.bundle.plugin.version>3.5.0-df</maven.bundle.plugin.version>
         <vaadin.version>7.1.14</vaadin.version>
         <osgi.version>4.2.0</osgi.version>
         <mixin.plugin.version>0.1-alpha-39</mixin.plugin.version>
@@ -103,7 +103,8 @@
         Project Information
     -->
     <description>
-        APS (Application Platform Services) - A smörgåsbord of OSGi application/platform type services.
+        APS (Application Platform Services) - A smörgåsbord of OSGi application/platform type services intended for
+        web applications. Currently based on Vert.x for backend and React for frontend (its own web admin apps).
     </description>
 
     <organization>
@@ -463,12 +464,12 @@
 
                 See: https://stackoverflow.com/questions/3084629/finding-the-root-directory-of-a-multi-module-maven-reactor-project
 
-                I I hadn't found this I would have made such a plugin myself! This is a constant problem with maven. Without
+                If I hadn't found this I would have made such a plugin myself! This is a constant problem with maven. Without
                 a feature like this it is very difficult to have common resources used in multiple modules. In this specific
                 case the markdown-doc plugin is run by the top pom, and is inherited by all other modules. It needs an
                 mss file with a full path passed to the plugin. This will differ depending if you build from top or a specific
                 submodule. So either I have to make every single submodule have its own copy of the mss file or a solution like
-                this to fine the one and same mss file no matter if you build from top or only builds a submodule.
+                this to find the one and same mss file no matter if you build from top or only builds a submodule.
 
                 Another option also in the page above suggested defining a property in every pom, like "projectTopDir" or
                 something and then set it to the top path relative to itself. That would probably work. But you have to

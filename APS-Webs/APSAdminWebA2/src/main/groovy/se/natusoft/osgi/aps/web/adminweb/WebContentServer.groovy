@@ -2,7 +2,6 @@ package se.natusoft.osgi.aps.web.adminweb
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import io.vertx.core.Vertx
 import io.vertx.core.http.HttpServerRequest
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
@@ -13,11 +12,8 @@ import se.natusoft.docutations.Nullable
 import se.natusoft.osgi.aps.activator.annotation.BundleStop
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
-import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
-import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
-import se.natusoft.osgi.aps.net.vertx.api.APSVertxService
-import se.natusoft.osgi.aps.net.vertx.api.VertxSubscriber
+import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.util.APSLogger
 
 /**
@@ -54,11 +50,7 @@ import se.natusoft.osgi.aps.util.APSLogger
 @SuppressWarnings( [ "GroovyUnusedDeclaration", "PackageAccessibility", "UnnecessaryQualifiedReference" ] )
 @CompileStatic
 @TypeChecked
-@OSGiServiceProvider( properties = [
-        @OSGiProperty( name = "consumed", value = "vertx" ),
-        @OSGiProperty( name = APSVertxService.HTTP_SERVICE_NAME, value = Constants.APP_NAME )
-] )
-class WebContentServer extends VertxSubscriber implements APSMessageSubscriber<Vertx>, Constants {
+class WebContentServer implements Constants {
 
     //
     // Constants
@@ -76,6 +68,9 @@ class WebContentServer extends VertxSubscriber implements APSMessageSubscriber<V
     @Managed
     private BundleContext context
 
+    @OSGiService(additionalSearchCriteria = "&((service-provider=aps-vertx-provider)(vertx-router=default))")
+    private APSServiceTracker<Router> routerTracker
+
     /** Maps the requested file names to the path of the actual file. */
     private Map<String, File> serveFiles = [:]
 
@@ -88,7 +83,7 @@ class WebContentServer extends VertxSubscriber implements APSMessageSubscriber<V
 
     WebContentServer() {
 
-        this.onRouterAvailable = { Router router ->
+        this.routerTracker.onActiveServiceAvailable = { Router router ->
             this.logger.info( "######## WebContentServer.onRouterAvailable" )
             this.router = router
 
@@ -108,12 +103,12 @@ class WebContentServer extends VertxSubscriber implements APSMessageSubscriber<V
 
         }
 
-        this.onVertxRevoked = {
+        this.routerTracker.onActiveServiceLeaving = {
             this.logger.info "Vertx instance was revoked. Will not operate until new instance is available!"
         }
 
-        this.onError = { String message ->
-            this.logger.error( message )
+        this.routerTracker.onTimeout = {
+            this.logger.error( "Timed out while waiting for HTTP router!" )
         }
     }
 

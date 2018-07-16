@@ -12,6 +12,10 @@ To be very clear: **This is currently, and probably for a long time comming, a p
 
 ---
 
+__To build__ this you must first follow the instructions here: https://github.com/tombensve/maven-bundle-plugin/blob/master/README.md
+
+---
+
 I have decided to base this project on Vertx rather than traditional Java EE APIs.
 
 There is one thing that is currenlty useful and does not depend on any other bundle. APS-APIs, which now also contains the formarly APSToolsLib. APSToolsLib was so central to all APS bundles that it just made more sense to put it in APS-APIs, which might change name to APSPlatform. There is a nicer service tracker and something the maven-bundle-plugin people never considered, and might consider me completely crazy: APSActivator. It is a generic bundle activator that makes use of annotations to publish services, etc. It will inject into classes and instantiate annotated classes. It goes through all classes in the bundle and checks them for annotations. maven-bundle-plugin warns about seeing an external activator and suggests that it is probably an error, but it isn't! Note that it is the maven-bundle-plugin that complains. All OSGi containers I've tested (Karaf (felix), Glassfish, Virgo, KnopplerFish) have no problem what so ever with this.

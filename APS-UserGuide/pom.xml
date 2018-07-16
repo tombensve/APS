@@ -90,6 +90,7 @@
                                 <copyright>Copyright © 2013 ${project.organization.name}</copyright>
                                 <generateTitlePage>true</generateTitlePage>
                                 <generateTOC>true</generateTOC>
+                                <mss>${project.basedir}/docs/docs-A4.mss</mss>
                             </pdfGeneratorOptions>
 
                         </configuration>
@@ -111,7 +112,7 @@
                             <htmlGeneratorOptions>
                                 <resultFile>${project.basedir}/docs/${project.artifactId}.html</resultFile>
                                 <makeFileLinksRelativeTo>{project.basedir}/../..+../../</makeFileLinksRelativeTo>
-                                <css>docs.css</css>
+                                <css>${project.basedir}/docs/docs.css</css>
                             </htmlGeneratorOptions>
 
                         </configuration>

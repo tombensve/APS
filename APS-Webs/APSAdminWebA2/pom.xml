@@ -56,6 +56,7 @@
     </description>
 
     <properties>
+        <buildNumber>0</buildNumber>
 
         <!--
             Bundle properties
@@ -127,9 +128,10 @@
             <artifactId>aps-apis</artifactId>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-tools-lib</artifactId>
+            <artifactId>aps-json-lib</artifactId>
             <scope>provided</scope>
         </dependency>
 

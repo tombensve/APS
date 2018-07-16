@@ -360,7 +360,7 @@ class APSVertxProvider {
 
         Map<String, Object> httpConf = this.config[ "http" ] as Map<String, Object>
 
-        httpConf.findAll { String key, Object value ->
+        httpConf?.findAll { String key, Object value ->
 
             stopHttpService( key, value as int )
         }

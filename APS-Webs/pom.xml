@@ -65,7 +65,7 @@
         Modules
     -->
     <modules>
-        <module>APSAdminWebA2</module>
+        <!--<module>APSAdminWebA2</module>-->
     </modules>
 
     <dependencies>

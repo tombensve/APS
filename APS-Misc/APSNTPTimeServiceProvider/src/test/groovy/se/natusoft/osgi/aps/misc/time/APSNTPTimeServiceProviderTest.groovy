@@ -6,11 +6,14 @@ import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.api.misc.time.APSTimeService
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
+import se.natusoft.osgi.aps.util.APSLogger
 
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 
 class APSNTPTimeServiceProviderTest extends OSGIServiceTestTools {
+
+    private APSLogger logger = new APSLogger()
 
     @Test
     void testNTPTimeService() throws Exception {
@@ -25,8 +28,11 @@ class APSNTPTimeServiceProviderTest extends OSGIServiceTestTools {
             with_new_bundle 'test-exec-bundle', { BundleContext context ->
 
                 APSServiceTracker<APSTimeService> timeServiceTracker =
-                        new APSServiceTracker<>(context, APSTimeService.class, "10 sec")
+                        new APSServiceTracker<>(context, APSTimeService.class, "2 sec")
                 timeServiceTracker.start()
+
+                // To make sure deployment is done and that tracker has picked up service.
+                hold() maxTime 2 unit TimeUnit.SECONDS
 
                 APSTimeService apsTimeService = timeServiceTracker.allocateService()
                 println "Local time: ${Instant.ofEpochMilli(new Date().time)}"

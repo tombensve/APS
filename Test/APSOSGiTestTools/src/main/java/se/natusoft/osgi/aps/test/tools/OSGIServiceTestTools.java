@@ -268,10 +268,11 @@ public class OSGIServiceTestTools {
      * Deploys the aps-config-manager and all its dependencies. This is needed to be able to
      * deploy a bundle that makes use of aps-config-manager to get its configuration.
      *
-     * I'e decided to deploy actual services instead of faking configuration in test.
+     * I've decided to deploy actual services instead of faking configuration in test.
      *
      * @throws Exception on any failure to deploy.
      */
+    @SuppressWarnings( "ConstantConditions" )
     public void deployConfigAndVertxPlusDeps( Map<String, Runnable> altDeployers) throws Exception {
 
         System.setProperty( APSFilesystemService.CONF_APS_FILESYSTEM_ROOT, "target/config" );
@@ -282,7 +283,7 @@ public class OSGIServiceTestTools {
                 "1.0.0"
         );
 
-        Runnable vertxDeployer = altDeployers.get("vertxDeployer");
+        Runnable vertxDeployer = altDeployers != null ? altDeployers.get("vertxDeployer") : null;
         if (vertxDeployer == null) {
             deploy( "aps-vertx-provider" ).with( new APSActivator() ).from(
                     "se.natusoft.osgi.aps",
@@ -296,7 +297,7 @@ public class OSGIServiceTestTools {
 
         hold().maxTime( 2 ).unit( TimeUnit.SECONDS ).go();
 
-        Runnable dataStoreServiceDeployer = altDeployers.get("dataStoreServiceDeployer");
+        Runnable dataStoreServiceDeployer = altDeployers != null ? altDeployers.get("dataStoreServiceDeployer") : null;
         if (dataStoreServiceDeployer == null) {
             deploy( "aps-vertx-cluster-datastore-service-provider" ).with( new APSActivator() ).from(
                     "se.natusoft.osgi.aps",
@@ -308,7 +309,7 @@ public class OSGIServiceTestTools {
             dataStoreServiceDeployer.run();
         }
 
-        Runnable busMessagingDeployer = altDeployers.get("busMessagingDeployer");
+        Runnable busMessagingDeployer = altDeployers != null ? altDeployers.get("busMessagingDeployer") : null;
         if (busMessagingDeployer == null) {
             deploy( "aps-vertx-event-bus-messaging-provider" ).with( new APSActivator() ).from(
                     "se.natusoft.osgi.aps",
