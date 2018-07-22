@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import './GuiMgr.css'
+import './APSGuiMgr.css'
 import LocalEventBus from "./../LocalEventBus"
 import LocalBusRouter from "./../LocalBusRouter"
 import APSLayout from "./APSLayout"
@@ -19,7 +19,7 @@ import { uuidv4 } from "./../UUID"
  * but may also come from the frontend. This component does not care in any way where the
  * JSON spec comes from.
  */
-class GuiMgr extends Component {
+class APSGuiMgr extends Component {
 
     //
     // Constructors
@@ -101,6 +101,9 @@ class GuiMgr extends Component {
      *                  those are, are up to the input to the component.
      */
     render() {
+        // gui: The gui spec received.
+        // comps: The components created from the gui spec.
+        // If the gui spec is empty no components should be rendered even if there happens to be comps.
         return this.state.gui != null ? this.state.comps : <h1>No gui available!</h1>;
     }
 
@@ -296,4 +299,4 @@ class GuiMgr extends Component {
 
 
 // noinspection JSUnusedGlobalSymbols
-export default GuiMgr
+export default APSGuiMgr

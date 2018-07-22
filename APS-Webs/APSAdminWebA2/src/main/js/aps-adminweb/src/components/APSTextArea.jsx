@@ -31,7 +31,7 @@ class APSTextArea extends APSComponent {
 
         this.setState( {
             disabled: this.state.disabled,
-            text: event.target.value
+            value: event.target.value
         } );
 
         // Handle emptiness.

@@ -3,32 +3,32 @@
  * PROJECT
  *     Name
  *         APS Core Lib
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         This library is made in Groovy and thus depends on Groovy, and contains functionality that
  *         makes sense for Groovy, but not as much for Java.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -54,7 +54,7 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *       header_1: [
  *          type_1      : "service",
  *          address_1   : "aps.admin.web",
- *          classifier_0: "|?public|private"
+ *          classifier_0: "?public|private"
  *       ],
  *       body_1  : [
  *          action_1: "get-webs"
@@ -68,8 +68,10 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *             ]
  *          ]
  *       ],
- *       addrmap_1: {*           "?[a-z,A-z,0-9,_]*": "?[0-9,.]*"
- *}*    ]
+ *       addrmap_1: {
+ *          "?[a-z,A-z,0-9,_]*": "?[0-9,.]*"
+ *       }
+ *   ]
  *
  *  ### Keys
  *

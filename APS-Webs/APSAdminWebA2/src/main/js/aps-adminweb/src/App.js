@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import './App.css';
-import './components/GuiMgr'
-import GuiMgr from "./components/GuiMgr";
+import './components/APSGuiMgr'
+import APSGuiMgr from "./components/APSGuiMgr";
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <GuiMgr/>
+        <APSGuiMgr/>
       </div>
     );
   }
