@@ -488,8 +488,6 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
 
         MapObject validMO = new MapObject( validStructure )
 
-        System.err.println( "§§§§ validMO.isEmpty: ${ validMO.empty }" )
-
         if ( validMO.isEmpty() ) return
 
         // validate children
@@ -497,12 +495,15 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
 
             Object validStructureEntry = validMO.get( key )
 
-            //noinspection GroovyUnusedCatchParameter
-            try {
+            boolean doValidate = true
 
-                if ( validStructureEntry != null && validStructureEntry instanceof Map ) {
-                    if ( ( validStructureEntry as Map ).isEmpty() ) throw new APSOptOutException()
-                }
+            if ( validStructureEntry != null && validStructureEntry instanceof Map ) {
+                if ( ( validStructureEntry as Map ).isEmpty() ) doValidate = false
+            }
+
+            // An empty map as a value means accept anything there under. Thereby we don't
+            // validate in that situation.
+            if ( doValidate ) {
 
                 if ( !validMO.keySet().contains( key ) ) {
 
@@ -543,8 +544,6 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
                     validateList( validStructureEntry as List<Object>, toValidateList )
                 }
             }
-            catch ( APSOptOutException aooe ) {}
-
         }
 
         validMO.keySet().each { String key ->
