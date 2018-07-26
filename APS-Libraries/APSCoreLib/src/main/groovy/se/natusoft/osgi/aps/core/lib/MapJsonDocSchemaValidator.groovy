@@ -40,6 +40,7 @@ package se.natusoft.osgi.aps.core.lib
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.docutations.Nullable
+import se.natusoft.osgi.aps.exceptions.APSOptOutException
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 
 /**
@@ -68,9 +69,12 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *             ]
  *          ]
  *       ],
- *       addrmap_1: {
- *          "?[a-z,A-z,0-9,_]*": "?[0-9,.]*"
- *       }
+ *       addrmap_1: [
+ *          [
+ *             "name_1": "?[a-z,A-z,0-9,_]*",
+ *             "value_1": "?[0-9,.]*"
+ *          ]
+ *       ]
  *   ]
  *
  *  ### Keys
@@ -78,6 +82,8 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *  * __key\_1__ : This entry is required.
  *  * __key\_0__ : This entry is optional.
  *  * __key_?__  : A description of this key.
+ *
+ * __Note__ that all keys must always be static!
  *
  * ### Values
  *
@@ -101,13 +107,18 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *
  * Note: Both floating point numbers and integers are allowed.
  *
- * #### "/"
+ * #### "!"
  *
  * This means the value is a boolean.
  *
  * #### "bla"
  *
  * This requires values to be exactly "bla".
+ *
+ * #### [:]
+ *
+ * An empty object means any object, non validated. Do note that it is not possible to have validated objects
+ * under a non validated object. When there is a non validated object, anything under it is also non validated.
  *
  */
 @CompileStatic
@@ -121,8 +132,7 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
 
         private Map<String, Object> schemaMap = [:]
         private Map<String, Boolean> required = [:]
-        private String regexpKey = null
-        private Object regexpKeyValue = null
+        private boolean empty = false;
 
         /**
          * Creates a new MapObject.
@@ -131,17 +141,18 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
          */
         MapObject( Map<String, Object> schemaMap ) {
 
-            schemaMap.each { String key, Object value ->
+            if ( schemaMap.isEmpty() ) {
+                this.empty = true
+            }
+            else {
+                schemaMap.each { String key, Object value ->
 
-                if ( key.startsWith( "?" ) ) {
-                    this.regexpKey = key.substring( 1 )
-                    this.regexpKeyValue = value
-                }
-                else if ( verifyKey( key, this.schemaMap ) ) {
-                    String realKey = _key( key )
+                    if ( verifyKey( key, this.schemaMap ) ) {
+                        String realKey = _key( key )
 
-                    this.schemaMap.put( realKey, value )
-                    this.required.put( realKey, _required( key ) ? Boolean.TRUE : Boolean.FALSE )
+                        this.schemaMap.put( realKey, value )
+                        this.required.put( realKey, _required( key ) ? Boolean.TRUE : Boolean.FALSE )
+                    }
                 }
             }
         }
@@ -163,18 +174,6 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
             this.schemaMap[ key ]
         }
 
-        boolean hasRegexpKey() {
-            this.regexpKey != null
-        }
-
-        String getRegexpKey() {
-            this.regexpKey
-        }
-
-        Object getRegexpoKeyValue() {
-            this.regexpKeyValue
-        }
-
         /**
          * Returns true if the specified key points to a required object.
          *
@@ -183,6 +182,13 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
         boolean isRequired( String key ) {
 
             this.required[ key ]
+        }
+
+        /**
+         * @return true if the valid Map object is empty. In this case anything is allowed.
+         */
+        boolean isEmpty() {
+            return this.empty
         }
 
         /**
@@ -482,51 +488,28 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
 
         MapObject validMO = new MapObject( validStructure )
 
+        System.err.println( "§§§§ validMO.isEmpty: ${ validMO.empty }" )
+
+        if ( validMO.isEmpty() ) return
+
         // validate children
         toValidate.each { String key, Object value ->
 
-            /*
-             * When the key is a regexp then there are some limits on the values allowed. Only
-             * string, booleans and values can be used as values then, no sub structures like list
-             * or map.
-             *
-             * The reason for supporting regexp keys which breaks the general schema structure is
-             * to support simple mapping tables like name=>address.
-             */
-            if ( validMO.hasRegexpKey() ) {
+            Object validStructureEntry = validMO.get( key )
 
-                if ( !key.matches( validMO.regexpKey ) ) {
+            //noinspection GroovyUnusedCatchParameter
+            try {
 
-                    throw new APSValidationException( "Entry key '${ key }' does not match regexp: ${ validMO.regexpKey }" )
+                if ( validStructureEntry != null && validStructureEntry instanceof Map ) {
+                    if ( ( validStructureEntry as Map ).isEmpty() ) throw new APSOptOutException()
                 }
-
-                Object sourceValue = value
-
-                String validValue = validMO.regexpKeyValue
-
-                if ( validValue.trim() == BOOLEAN ) {
-                    validateBoolean( sourceValue, toValidate )
-                }
-                else {
-                    if ( !validateNumber( validValue, sourceValue, toValidate ) ) {
-
-                        validateString( validValue, sourceValue, toValidate )
-                    }
-                }
-            }
-            /*
-             * Here is the normal validation.
-             */
-            else {
 
                 if ( !validMO.keySet().contains( key ) ) {
 
                     throw new APSValidationException( "Entry '${ key }' is not valid! $toValidate" )
                 }
 
-                Object validStructureEntry = validMO.get( key )
-
-                Object sourceValue = value //toValidate[ key ]
+                Object sourceValue = value
 
                 if ( validMO.isRequired( key ) && sourceValue == null ) {
 
@@ -538,6 +521,7 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
                     String validValue = validMO.get( key ) as String
 
                     if ( validValue.trim() == BOOLEAN ) {
+
                         validateBoolean( sourceValue, toValidate )
                     }
                     else {
@@ -553,12 +537,13 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
                     Map<String, Object> toValidateMap = sourceValue as Map<String, Object>
                     validateMap( validStructureEntry as Map<String, Object>, toValidateMap )
                 }
-                else if ( validStructureEntry instanceof List ) {
+                else if ( validStructureEntry instanceof List || validStructureEntry.class.array ) {
 
-                    List<Object> toValidateList = toValidate[ key ] as List<Object>
+                    List<Object> toValidateList = sourceValue as List<Object>
                     validateList( validStructureEntry as List<Object>, toValidateList )
                 }
             }
+            catch ( APSOptOutException aooe ) {}
 
         }
 
@@ -602,7 +587,7 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
 
                 validateMap( validObject as Map<String, Object>, sourceValue as Map<String, Object> )
             }
-            else if ( validObject instanceof List ) {
+            else if ( validObject instanceof List || validObject.class.array ) {
 
                 validateList( validObject as List<Object>, sourceValue as List<Object> )
             }
