@@ -53,14 +53,14 @@ import java.util.*;
 
 /**
  * This is the official API for reading and writing JSON values.
- *
+ * <p>
  * It also contains conversion methods between the JSON\* objects and Map\<String, Object\>, and
  * JSON\* objects and JSON structures in String. The latter for convenience for passing over network
  * in for example Vertx event bus.
- *
+ * <p>
  * To Serialize/deserialize between Java use JSONToJava and JavaToJSON under tools.
  */
-@SuppressWarnings({"WeakerAccess", "unused"})
+@SuppressWarnings( { "WeakerAccess", "unused" } )
 public class JSON {
 
     /**
@@ -69,20 +69,46 @@ public class JSON {
      * @param jsonIn        The InputStream to read from.
      * @param resultHandler The handler to call with result.
      */
-    public static void read(@NotNull InputStream jsonIn, @NotNull APSHandler<APSResult<JSONValue>> resultHandler) {
+    public static void read( @NotNull InputStream jsonIn, @NotNull APSHandler<APSResult<JSONValue>> resultHandler ) {
         // Fails will cause an APSIOException!
-        CollectingErrorHandler errorHandler = new CollectingErrorHandler(true);
+        CollectingErrorHandler errorHandler = new CollectingErrorHandler( true );
 
         try {
             JSONValue.JSONReader reader =
-                    new JSONValue.JSONReader(new PushbackReader(new InputStreamReader(jsonIn, "UTF-8")), errorHandler);
+                    new JSONValue.JSONReader( new PushbackReader( new InputStreamReader( jsonIn, "UTF-8" ) ), errorHandler );
 
-            JSONValue value = JSONValue.resolveAndParseJSONValue(reader.getChar(), reader, errorHandler);
+            JSONValue value = JSONValue.resolveAndParseJSONValue( reader.getChar(), reader, errorHandler );
 
-            resultHandler.handle(new APSResult.Provider<>(new APSValue.Provider<>(value)));
-        } catch (IOException | APSIOException ioe) {
-            resultHandler.handle(new APSResult.Provider<>(ioe));
+            resultHandler.handle( new APSResult.Provider<>( new APSValue.Provider<>( value ) ) );
+        } catch ( IOException | APSIOException ioe ) {
+            resultHandler.handle( new APSResult.Provider<>( ioe ) );
         }
+    }
+
+    /**
+     * Reads a JSON InputSteam and returns the JSON structure as a Map&lt;String, Object&gt;.
+     *
+     * @param jsonIn The JSON stream to read.
+     * @param resultHandler The handler to receive the result.
+     */
+    public static void readToMap( @NotNull InputStream jsonIn, @NotNull APSHandler<APSResult<Map<String, Object>>> resultHandler ) {
+        read( jsonIn, ( res ) -> {
+            res.onSuccess( shandler ->
+                    resultHandler.handle( APSResult.success( jsonObjectToMap( ( JSONObject ) shandler.content() ) ) )
+            );
+
+            res.onFailure( (exception) -> resultHandler.handle( APSResult.failure( exception ) ) );
+        });
+    }
+
+    /**
+     * Reads a JSON classpath resource and returns the JSON structure as a Map&lt;String,Object&gt;.
+     *
+     * @param resource The resource to read.
+     * @param resultHandler The handler to receive the result.
+     */
+    public static void resourceToMap(@NotNull String resource, @NotNull APSHandler<APSResult<Map<String, Object>>> resultHandler) {
+        readToMap( ClassLoader.getSystemResourceAsStream( resource), resultHandler );
     }
 
     /**
@@ -93,15 +119,16 @@ public class JSON {
      * @return A JSONValue subclass. Which depends on what was found on the stream.
      * @throws APSIOException on any IO failures.
      */
-    public static @NotNull JSONValue read(@NotNull InputStream jsonIn, @NotNull JSONErrorHandler errorHandler) {
+    public static @NotNull
+    JSONValue read( @NotNull InputStream jsonIn, @NotNull JSONErrorHandler errorHandler ) {
 
         try {
             JSONValue.JSONReader reader =
-                    new JSONValue.JSONReader(new PushbackReader(new InputStreamReader(jsonIn, "UTF-8")), errorHandler);
+                    new JSONValue.JSONReader( new PushbackReader( new InputStreamReader( jsonIn, "UTF-8" ) ), errorHandler );
 
-            return JSONValue.resolveAndParseJSONValue(reader.getChar(), reader, errorHandler);
-        } catch (IOException ioe) {
-            throw new APSIOException(ioe.getMessage(), ioe);
+            return JSONValue.resolveAndParseJSONValue( reader.getChar(), reader, errorHandler );
+        } catch ( IOException ioe ) {
+            throw new APSIOException( ioe.getMessage(), ioe );
         }
     }
 
@@ -112,13 +139,13 @@ public class JSON {
      * @param value         The value to write.
      * @param resultHandler handler for result. only success() or failure() is relevant.
      */
-    @SuppressWarnings("Duplicates")
-    public static void write(@NotNull OutputStream jsonOut, @NotNull JSONValue value, @Nullable APSHandler<APSResult<Void>> resultHandler) {
+    @SuppressWarnings( "Duplicates" )
+    public static void write( @NotNull OutputStream jsonOut, @NotNull JSONValue value, @Nullable APSHandler<APSResult<Void>> resultHandler ) {
         try {
-            write(jsonOut, value);
-            if (resultHandler != null) resultHandler.handle(APSResult.success(null));
-        } catch (APSIOException ioe) {
-            if (resultHandler != null) resultHandler.handle(APSResult.failure(ioe));
+            write( jsonOut, value );
+            if ( resultHandler != null ) resultHandler.handle( APSResult.success( null ) );
+        } catch ( APSIOException ioe ) {
+            if ( resultHandler != null ) resultHandler.handle( APSResult.failure( ioe ) );
         }
     }
 
@@ -129,8 +156,8 @@ public class JSON {
      * @param value   The value to write.
      * @throws APSIOException on failure.
      */
-    public static void write(@NotNull OutputStream jsonOut, @NotNull JSONValue value) throws APSIOException {
-        value.writeJSON(jsonOut);
+    public static void write( @NotNull OutputStream jsonOut, @NotNull JSONValue value ) throws APSIOException {
+        value.writeJSON( jsonOut );
     }
 
     /**
@@ -140,13 +167,13 @@ public class JSON {
      * @param value         The value to write.
      * @param resultHandler handler for result. only success() or failure() is relevant.
      */
-    public static void write(@NotNull OutputStream jsonOut, @NotNull JSONValue value, boolean compact,
-                             @Nullable APSHandler<APSResult<Void>> resultHandler) {
+    public static void write( @NotNull OutputStream jsonOut, @NotNull JSONValue value, boolean compact,
+                              @Nullable APSHandler<APSResult<Void>> resultHandler ) {
         try {
-            write(jsonOut, value, compact);
-            if (resultHandler != null) resultHandler.handle(APSResult.success(null));
-        } catch (APSIOException ioe) {
-            if (resultHandler != null) resultHandler.handle(APSResult.failure(ioe));
+            write( jsonOut, value, compact );
+            if ( resultHandler != null ) resultHandler.handle( APSResult.success( null ) );
+        } catch ( APSIOException ioe ) {
+            if ( resultHandler != null ) resultHandler.handle( APSResult.failure( ioe ) );
         }
     }
 
@@ -159,8 +186,8 @@ public class JSON {
      *                If false then the output will be larger but readable with indents. Use this when debugging.
      * @throws APSIOException on IO problems.
      */
-    public static void write(@NotNull OutputStream jsonOut, @NotNull JSONValue value, boolean compact) throws APSIOException {
-        value.writeJSON(jsonOut, compact);
+    public static void write( @NotNull OutputStream jsonOut, @NotNull JSONValue value, boolean compact ) throws APSIOException {
+        value.writeJSON( jsonOut, compact );
     }
 
     //
@@ -174,18 +201,18 @@ public class JSON {
      * @return A byte array.
      * @throws APSIOException on any IO failure.
      */
-    public static byte[] jsonToBytes(@NotNull JSONValue jsonValue) throws APSIOException {
+    public static byte[] jsonToBytes( @NotNull JSONValue jsonValue ) throws APSIOException {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-            write(baos, jsonValue);
+            write( baos, jsonValue );
 
             baos.close();
 
             return baos.toByteArray();
-        } catch (IOException ioe) {
+        } catch ( IOException ioe ) {
 
-            throw new APSIOException(ioe.getMessage(), ioe);
+            throw new APSIOException( ioe.getMessage(), ioe );
         }
     }
 
@@ -194,20 +221,21 @@ public class JSON {
      *
      * @param bytes The bytes to conve  rt.
      */
-    public static @NotNull JSONValue bytesToJson(byte[] bytes) {
+    public static @NotNull
+    JSONValue bytesToJson( byte[] bytes ) {
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+        ByteArrayInputStream bais = new ByteArrayInputStream( bytes );
 
         try {
 
             CollectingErrorHandler errorHandler = new CollectingErrorHandler();
-            return read(bais, errorHandler);
+            return read( bais, errorHandler );
 
         } finally {
 
             try {
                 bais.close();
-            } catch (IOException ignore) {
+            } catch ( IOException ignore ) {
             }
         }
     }
@@ -223,15 +251,16 @@ public class JSON {
      * @return A String of JSON.
      * @throws APSIOException on failure. Since the JSON is valid and we are writing to memory this is unlikely ...
      */
-    public static @NotNull String jsonToString(@NotNull JSONValue jsonValue) throws APSIOException {
-        byte[] bytes = jsonToBytes(jsonValue);
+    public static @NotNull
+    String jsonToString( @NotNull JSONValue jsonValue ) throws APSIOException {
+        byte[] bytes = jsonToBytes( jsonValue );
         String result;
 
         try {
-            result = new String(bytes, "UTF-8");
-        } catch (UnsupportedEncodingException uee) {
+            result = new String( bytes, "UTF-8" );
+        } catch ( UnsupportedEncodingException uee ) {
 
-            throw new APSIOException(uee.getMessage(), uee);
+            throw new APSIOException( uee.getMessage(), uee );
         } // "Should" not happen. UTF-8 is valid and the bytes are in UTF-8!
 
         return result;
@@ -244,16 +273,17 @@ public class JSON {
      * @return Whatever JSON object the string contained, as a base JSONValue.
      * @throws APSIOException on failure, like bad JSON in string.
      */
-    public static @NotNull JSONValue stringToJson(@NotNull String jsonString) throws APSIOException {
+    public static @NotNull
+    JSONValue stringToJson( @NotNull String jsonString ) throws APSIOException {
 
         JSONValue json;
 
         try {
 
-            json = bytesToJson(jsonString.getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException uee) {
+            json = bytesToJson( jsonString.getBytes( "UTF-8" ) );
+        } catch ( UnsupportedEncodingException uee ) {
 
-            throw new APSIOException(uee.getMessage(), uee);
+            throw new APSIOException( uee.getMessage(), uee );
         }
 
         return json;
@@ -269,9 +299,10 @@ public class JSON {
      * @param is The InputStream to read.
      * @throws APSIOException on failure.
      */
-    @SuppressWarnings("WeakerAccess")
-    public static @NotNull Map<String, Object> jsonObjectToMap(@NotNull InputStream is) throws APSIOException {
-        return jsonObjectToMap(is, null);
+    @SuppressWarnings( "WeakerAccess" )
+    public static @NotNull
+    Map<String, Object> jsonObjectToMap( @NotNull InputStream is ) throws APSIOException {
+        return jsonObjectToMap( is, null );
     }
 
     /**
@@ -280,12 +311,13 @@ public class JSON {
      * @param is The InputStream to read.
      * @throws APSIOException on failure.
      */
-    @SuppressWarnings("WeakerAccess")
-    public static @NotNull Map<String, Object> jsonObjectToMap(@NotNull InputStream is, @NotNull JSONErrorHandler errorHandler) throws APSIOException {
-        JSONObject jsonObject = new JSONObject(errorHandler);
-        jsonObject.readJSON(is);
+    @SuppressWarnings( "WeakerAccess" )
+    public static @NotNull
+    Map<String, Object> jsonObjectToMap( @NotNull InputStream is, @NotNull JSONErrorHandler errorHandler ) throws APSIOException {
+        JSONObject jsonObject = new JSONObject( errorHandler );
+        jsonObject.readJSON( is );
 
-        return toMap(jsonObject);
+        return toMap( jsonObject );
     }
 
     /**
@@ -294,8 +326,9 @@ public class JSON {
      * @param jsonObject The JSONObject to convert to a Map.
      * @return The converted Map.
      */
-    public static @NotNull Map<String, Object> jsonObjectToMap(@NotNull JSONObject jsonObject) {
-        return toMap(jsonObject);
+    public static @NotNull
+    Map<String, Object> jsonObjectToMap( @NotNull JSONObject jsonObject ) {
+        return toMap( jsonObject );
     }
 
     //
@@ -308,8 +341,9 @@ public class JSON {
      * @param map The Map to convert.
      * @return A converted JSONObject.
      */
-    public static @NotNull JSONObject mapToJSONObject(@NotNull Map<String, Object> map) {
-        return mapToObject(map);
+    public static @NotNull
+    JSONObject mapToJSONObject( @NotNull Map<String, Object> map ) {
+        return mapToObject( map );
     }
 
     /**
@@ -318,22 +352,21 @@ public class JSON {
      * @param map The Map to write as JSON.
      * @param os  The OutputStream to write to.
      */
-    @SuppressWarnings("WeakerAccess")
-    public static void writeMapAsJSON(@NotNull Map<String, Object> map, @NotNull OutputStream os) {
-        JSONObject jsonObject = mapToObject(map);
-        jsonObject.writeJSON(os, true);
+    @SuppressWarnings( "WeakerAccess" )
+    public static void writeMapAsJSON( @NotNull Map<String, Object> map, @NotNull OutputStream os ) {
+        JSONObject jsonObject = mapToObject( map );
+        jsonObject.writeJSON( os, true );
     }
 
     /**
      * For consitency. The same as doing JSON.jsonObjectToMap(InputStream, JSONErrorHandler).
      *
-     * @param jsonIn The input stream to read.
+     * @param jsonIn       The input stream to read.
      * @param errorHandler The error handler to use.
-     *
      * @return A Map\<String, Object\> of JSON data.
      */
-    public static Map<String, Object> readJSONAsMap(@NotNull InputStream jsonIn, @NotNull JSONErrorHandler errorHandler) {
-        return JSON.jsonObjectToMap(jsonIn, errorHandler);
+    public static Map<String, Object> readJSONAsMap( @NotNull InputStream jsonIn, @NotNull JSONErrorHandler errorHandler ) {
+        return JSON.jsonObjectToMap( jsonIn, errorHandler );
     }
 
 
@@ -347,9 +380,10 @@ public class JSON {
      * @param json The JSON String to convert.
      * @return A Map representation of the JSON.
      */
-    public static @NotNull Map<String, Object> stringToMap(@NotNull String json) {
+    public static @NotNull
+    Map<String, Object> stringToMap( @NotNull String json ) {
 
-        return toMap((JSONObject) stringToJson(json));
+        return toMap( ( JSONObject ) stringToJson( json ) );
     }
 
 
@@ -363,9 +397,10 @@ public class JSON {
      * @param map The Map to convert.
      * @return A String containing JSON.
      */
-    public static @NotNull String mapToString(@NotNull Map<String, Object> map) {
+    public static @NotNull
+    String mapToString( @NotNull Map<String, Object> map ) {
 
-        return jsonToString(mapToJSONObject(map));
+        return jsonToString( mapToJSONObject( map ) );
     }
 
     //
@@ -377,22 +412,28 @@ public class JSON {
      *
      * @param value The value to convert to JSONValue.
      */
-    private static @NotNull JSONValue toJSON(@NotNull Object value) {
-        if (value instanceof Map) {
+    private static @NotNull
+    JSONValue toJSON( @NotNull Object value ) {
+        if ( value instanceof Map ) {
             //noinspection unchecked
-            return mapToObject((Map<String, Object>) value);
-        } else if (value instanceof Collection) {
-            return collectionToArray((Collection) value);
-        } else if (value.getClass().isArray()) {
+            return mapToObject( ( Map<String, Object> ) value );
+        }
+        else if ( value instanceof Collection ) {
+            return collectionToArray( ( Collection ) value );
+        }
+        else if ( value.getClass().isArray() ) {
             LinkedList<Object> list = new LinkedList<>();
-            Collections.addAll(list, ((Object[]) value));
-            return collectionToArray(list);
-        } else if (value instanceof String) {
-            return new JSONString(value.toString());
-        } else if (value instanceof Number) {
-            return new JSONNumber((Number) value);
-        } else if (value instanceof Boolean) {
-            return new JSONBoolean((boolean) value);
+            Collections.addAll( list, ( ( Object[] ) value ) );
+            return collectionToArray( list );
+        }
+        else if ( value instanceof String ) {
+            return new JSONString( value.toString() );
+        }
+        else if ( value instanceof Number ) {
+            return new JSONNumber( ( Number ) value );
+        }
+        else if ( value instanceof Boolean ) {
+            return new JSONBoolean( ( boolean ) value );
         }
 
         return new JSONNull();
@@ -403,10 +444,11 @@ public class JSON {
      *
      * @param map The Map to convert.
      */
-    private static @NotNull  JSONObject mapToObject(@NotNull Map<String, Object> map) {
+    private static @NotNull
+    JSONObject mapToObject( @NotNull Map<String, Object> map ) {
         JSONObject jsonObject = new JSONObject();
 
-        map.forEach((key, value) -> jsonObject.setValue(key, toJSON(value)));
+        map.forEach( ( key, value ) -> jsonObject.setValue( key, value != null ? toJSON( value ) : new JSONNull(  ) ) );
 
         return jsonObject;
     }
@@ -416,14 +458,15 @@ public class JSON {
      *
      * @param collection The Collection to convert.
      */
-    private static @NotNull JSONArray collectionToArray(@NotNull Collection collection) {
+    private static @NotNull
+    JSONArray collectionToArray( @NotNull Collection collection ) {
         JSONArray array = new JSONArray();
 
         //noinspection unchecked
-        collection.forEach((entry) -> {
-            JSONValue value = toJSON(entry);
-            array.addValue(value);
-        });
+        collection.forEach( ( entry ) -> {
+            JSONValue value = toJSON( entry );
+            array.addValue( value );
+        } );
 
         return array;
     }
@@ -433,18 +476,24 @@ public class JSON {
      *
      * @param value The JSON value to convert.
      */
-    private static @Nullable Object toJava(@NotNull JSONValue value) {
-        if (value instanceof JSONObject) {
-            return toMap((JSONObject) value);
-        } else if (value instanceof JSONArray) {
-            return toArray((JSONArray) value);
-        } else if (value instanceof JSONString) {
+    private static @Nullable
+    Object toJava( @NotNull JSONValue value ) {
+        if ( value instanceof JSONObject ) {
+            return toMap( ( JSONObject ) value );
+        }
+        else if ( value instanceof JSONArray ) {
+            return toArray( ( JSONArray ) value );
+        }
+        else if ( value instanceof JSONString ) {
             return value.toString();
-        } else if (value instanceof JSONNumber) {
-            return ((JSONNumber) value).toNumber();
-        } else if (value instanceof JSONBoolean) {
-            return ((JSONBoolean) value).toBoolean();
-        } else if (value instanceof JSONNull) { // Not entirely sure of this ...
+        }
+        else if ( value instanceof JSONNumber ) {
+            return ( ( JSONNumber ) value ).toNumber();
+        }
+        else if ( value instanceof JSONBoolean ) {
+            return ( ( JSONBoolean ) value ).toBoolean();
+        }
+        else if ( value instanceof JSONNull ) { // Not entirely sure of this ...
             return null;
         }
 
@@ -456,14 +505,15 @@ public class JSON {
      *
      * @param jsonObject The JSONObject to convert.
      */
-    private static @NotNull Map<String, Object> toMap(@NotNull JSONObject jsonObject) {
+    private static @NotNull
+    Map<String, Object> toMap( @NotNull JSONObject jsonObject ) {
         Map<String, Object> jsonMap = new HashMap<>();
 
-        jsonObject.getValueNames().forEach((name) -> {
-            JSONValue value = jsonObject.getValue(name);
+        jsonObject.getValueNames().forEach( ( name ) -> {
+            JSONValue value = jsonObject.getValue( name );
 
-            jsonMap.put(name.toString(), toJava(value));
-        });
+            jsonMap.put( name.toString(), toJava( value ) );
+        } );
 
         return jsonMap;
     }
@@ -473,10 +523,11 @@ public class JSON {
      *
      * @param array The JSONArray to convert.
      */
-    private static @NotNull Object[] toArray(@NotNull JSONArray array) {
+    private static @NotNull
+    Object[] toArray( @NotNull JSONArray array ) {
         ArrayList<Object> arrayList = new ArrayList<>();
 
-        array.getAsList().forEach((value) -> arrayList.add(toJava(value)));
+        array.getAsList().forEach( ( value ) -> arrayList.add( toJava( value ) ) );
 
         return arrayList.toArray();
     }

@@ -1,10 +1,37 @@
 {
   "http_?": "This maps a name to a port. Each entry will get an active vertx http router.",
-  "http_0": {
-    "?([a-z]|[A-Z]|[0-9]|_|-)+": "?[0-9]+"
-  },
+  "http_0": [
+    {
+      "name_?": "The name of the http service.",
+      "name_1": "?([a-z]|[A-Z]|[0-9]|_|-)+",
+
+      "port_?": "Thr port the service should listen to.",
+      "port_1": "?[0-9]+",
+
+      "eventBusBridge_?": "Setting specific for the vert.x event bus bridge.",
+      "eventBusBridge_0": {
+        "enabled_?": "If true then a SockJS event bus bridge is created for this entry under /eventbus/*",
+        "enabled_1": "!",
+
+        "allowEventAddresses_?": "A comma separated list of addresses allowed to send and receive over the bridge.",
+        "allowEventAddresses_0": "?([a-z]|[A-Z]|[0-9]|_|-|,|\\.)+",
+
+        "allowEventMatchIn_?": "JSON matching part of message from root. Any message that matches will be allowed for receive.",
+        "allowEventMatchIn_0": {},
+
+        "allowEventMatchOut_?": "JSON matching part of message from root. Any message that matches will be allowed to send.",
+        "allowEventMatchOut_0": {},
+
+        "allowEventAddressesRegex_?": "Regular expression for matching allowed addresses. Applies to both receive and send.",
+        "allowEventAddressesRegex_0": "?.*"
+      }
+    }
+  ],
   "tcp_?": "This maps a name to a port. Each entry will have a vertx TCP server listening on it.",
-  "tcp_0": {
-    "?([a-z]|[A-Z]|[0-9]|_|-)+": "?[0-9]+"
-  }
+  "tcp_0": [
+    {
+      "name_1": "?([a-z]|[A-Z]|[0-9]|_|-)+",
+      "address_1": "?[0-9]+"
+    }
+  ]
 }

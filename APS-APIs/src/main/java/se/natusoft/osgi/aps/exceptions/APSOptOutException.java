@@ -31,17 +31,21 @@
  * AUTHORS
  *     tommy ()
  *         Changes:
- *         2016-02-27: Created!
+ *         2016-04-04: Created!
  *
  */
-package se.natusoft.osgi.aps.api;
+package se.natusoft.osgi.aps.exceptions;
 
 /**
- * These are "properties" for use in service registrations.
+ * This is a special exception that can be used to skip the rest of a round in a `.each { entry -> ... }` loop
+ * without cancelling the rest of the iterations. Just to a `try` and `catch (APSOptOutException aooe)`
+ * within the loop. Then throw this when you want to break out of the specific iteration.
  */
-public interface APSServiceProperties {
+public class APSOptOutException extends APSException {
 
-    interface Instance {
-        String Name = "aps.svc.props.instance.name";
-    }
+    /**
+     * Creates a new APSIOException instance.
+     */
+    public APSOptOutException() {}
+
 }

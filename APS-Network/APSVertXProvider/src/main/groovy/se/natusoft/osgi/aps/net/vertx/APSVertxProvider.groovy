@@ -44,10 +44,12 @@ import groovy.transform.TypeChecked
 import io.vertx.core.AsyncResult
 import io.vertx.core.Handler
 import io.vertx.core.Vertx
+import io.vertx.core.VertxOptions
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.http.HttpServer
 import io.vertx.core.shareddata.SharedData
 import io.vertx.ext.web.Router
+import io.vertx.ext.web.handler.sockjs.SockJSHandler
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceRegistration
 import se.natusoft.osgi.aps.activator.annotation.ConfigListener
@@ -123,7 +125,7 @@ class APSVertxProvider {
     void configReceiver( APSConfig config ) {
         this.config = config
 
-        this.logger.info("#### Got config! : ${config}")
+        this.logger.info( "#### Got config! : ${ config }" )
 
         // We wait for config before doing this since it will use config.
         startVertx()
@@ -143,6 +145,15 @@ class APSVertxProvider {
     /**
      * This starts vertx either clustered or not depending on the 'aps.vertx.clustered' system property.
      *
+     * __Do note__ that a clustered Vert.x is basically required for APS. APSConfigManager depends on it.
+     * The reason for making it possible to start an unclustered Vert.x instance is for tests. You don't
+     * want multiple parallel tests in a Jenkins for example to cluster with each other which by default
+     * Vert.x / Hazelcast setup, they will do.
+     *
+     * So what happens with APSConfigManager when not clustered ? Well nothing for tests if they are
+     * correctly setup. Tests provide (or rather override) the default configuration values which are
+     * used by APSConfigManager when it cannot get the cluster config, nor a local filesystem config.
+     *
      * @param options Vert.x options passed to Vertx on creation. can be [ : ]!
      * @param handler The handler to call with result.
      */
@@ -159,12 +170,15 @@ class APSVertxProvider {
 
         if ( apsVertxClustered ) {
 
+            // If the arguments are error marked, then you are using IDEA. The only error here is in IDEA.
             Vertx.clusteredVertx( options, handler )
         }
         else {
             // On a non clustered Vertx it just returns the Vertx instance directly, not requiring a handler.
             // But since the caller of this method don't know or care if Vertx is clustered or not it expects
             // a handler callback in either case, so we have to call the handler instead of Vertx.
+
+            // If the arguments are error marked, then you are using IDEA. The only error here is in IDEA.
             Vertx vertx = Vertx.vertx( options )
 
             handler.handle(
@@ -196,6 +210,13 @@ class APSVertxProvider {
 
     /**
      * Starts the main Vertx service which in turn will start other Vertx services when up.
+     *
+     * Currently the following are registered as OSGi services in addition to the Vertx instance:
+     *
+     * - EventBus
+     * - SharedData
+     *
+     * Also note that startHttpService(...) will start and publish HTTP routers depending on configuration.
      */
     private void startVertx() {
 
@@ -295,22 +316,30 @@ class APSVertxProvider {
      */
     private void startHttpServices() {
 
-        Map<String, Object> httpConf = (Map<String, Object>)this.config[ "http" ]
+        List<Map<String, Object>> httpConfs = ( List<Map<String, Object>> ) this.config[ "http" ]
 
-        httpConf?.findAll { String key, Object value ->
+        httpConfs?.each { Map<String, Object> http ->
 
-            Integer port = httpConf[ key ] as Integer
+            this.logger.debug("#### http: ${http}")
 
-            startHttpService( key, port )
+            def name = http[ "name" ] as String
+            def port = http[ "port" ] as Integer
+            def eventBusBridge = http[ "eventBusBridge" ] as Map<String, Object>
+
+            this.logger.debug( ">>>> ${name} / ${port}: eventBusBridge: ${eventBusBridge}" )
+
+            startHttpService( name, port, eventBusBridge )
         }
     }
 
     /**
      * Starts a specific Http servcie and router.
      *
-     * @param key A key in configuration providing a port to listen to.
+     * @param name The http config name for refrerence in logs.
+     * @param port The port the server should listen to.
+     * @param eventBusBridge A JSON object containing eventbus bridge info.
      */
-    private void startHttpService( String key, int port ) {
+    private void startHttpService( String name, int port, Map<String, Object> eventBusBridge ) {
 
         if ( port != null ) {
 
@@ -328,29 +357,91 @@ class APSVertxProvider {
             if ( router == null ) {
 
                 router = Router.router( vertx )
-                this.logger.info( "Created router for config '${ key }'!" )
+                this.logger.info( "Created router for config '${ name }'!" )
                 httpServerRouterByPort[ port ] = router
 
                 httpServer.requestHandler( router.&accept ).listen( port )
-                this.logger.info( "HTTP server for config '${ key }' now listening on port ${ port }!" )
+                this.logger.info( "HTTP server for config '${ name }' now listening on port ${ port }!" )
 
                 this.routerRegByPort[ port ] = this.context.registerService( Router.class.name, router, [
                         "service-provider": "aps-vertx-provider",
                         "service-category": "network",
                         "service-function": "client/server",
                         "vertx-object"    : "Router",
-                        "vertx-router"    : key
+                        "vertx-router"    : name
                 ] as Properties )
 
-                this.logger.info( "Registered HTTP service 'Router' for config '${ key }' as OSGi service!" )
+                this.logger.info( "Registered HTTP service 'Router' for config '${ name }' as OSGi service!" )
 
+                if ( eventBusBridge != null && eventBusBridge[ "enabled" ] != null) {
+                    startEventBusBridge( router, port, eventBusBridge )
+                }
+                else {
+                    this.logger.info("No eventbus bridge for this service!")
+                }
             }
         }
         else {
 
-            this.logger.error( "No port for HTTP service '${ key }'!" )
+            this.logger.error( "No port for HTTP service '${ name }'!" )
         }
 
+    }
+
+    private void startEventBusBridge( Router router, int port,  Map<String, Object> eventBusBridge ) {
+
+        def sockJSHandler = SockJSHandler.create( this.vertx )
+
+        def inboundPermitteds = []
+        def outboundPermitteds = []
+
+        if ( eventBusBridge[ "allowEventAddresses" ] != null ) {
+            ( eventBusBridge[ "allowEventAddresses" ] as String ).split( "," ).each { String addr ->
+                if ( addr.startsWith( "in:" ) ) {
+                    inboundPermitteds << [address: addr.substring( 3 )]
+                }
+                else if ( addr.startsWith( "out:" ) ) {
+                    outboundPermitteds << [address: addr.substring( 4 )]
+                }
+                else {
+                    inboundPermitteds << [address: addr]
+                    outboundPermitteds << [address: addr]
+                }
+            }
+        }
+        if ( eventBusBridge[ "allowEventAddressesRegex" ] != null ) {
+            ( eventBusBridge[ "allowEventAddressesRegex" ] as String ).split( "," ).each { String addr ->
+                if ( addr.startsWith( "in:" ) ) {
+                    inboundPermitteds << [addressRegex: addr.substring( 3 )]
+                }
+                else if ( addr.startsWith( "out:" ) ) {
+                    outboundPermitteds << [addressRegex: addr.substring( 4 )]
+                }
+                else {
+                    inboundPermitteds << [addressRegex: addr]
+                    outboundPermitteds << [addressRegex: addr]
+                }
+            }
+        }
+        if ( eventBusBridge[ "allowEventAddressMatchIn" ] != null ) {
+            inboundPermitteds << [match: eventBusBridge[ "allowEventAddressMatchIn" ]]
+        }
+        if ( eventBusBridge[ "allowEventAddressMatchOut" ] != null ) {
+            outboundPermitteds << [match: eventBusBridge[ "allowEventAddressMatchOut" ]]
+        }
+
+        // Currently no more detailed permissions than on target address. Might add limits on message contents
+        // later.
+        def options = [
+                inboundPermitteds : inboundPermitteds,
+                outboundPermitteds: outboundPermitteds
+        ] as Map<String, Object>
+
+        sockJSHandler.bridge( options )
+
+        router.route( "/eventbus/*" ).handler( sockJSHandler )
+
+        this.logger.info("Starded event bus bridge for port: ${port}")
     }
 
     /**
@@ -358,25 +449,29 @@ class APSVertxProvider {
      */
     private void stopHttpServices() {
 
-        Map<String, Object> httpConf = this.config[ "http" ] as Map<String, Object>
+        List<Map<String, Object>> httpConfs = ( List<Map<String, Object>> ) this.config[ "http" ]
 
-        httpConf?.findAll { String key, Object value ->
+        httpConfs?.each { Map<String, Object> http ->
 
-            stopHttpService( key, value as int )
+            String name = http[ "name" ] as String
+            Integer port = http[ "port" ] as Integer
+            boolean eventBus = http[ "eventBusBridge" ] as boolean
+
+            stopHttpService( name, port )
         }
     }
 
     /**
      * Stops a Http service and its router.
      *
-     * @param key A key in configuration providing the service port. This is used to find locally cached service.
+     * @param name A key in configuration providing the service port. This is used to find locally cached service.
      */
-    private void stopHttpService( String key, int port ) {
+    private void stopHttpService( String name, int port ) {
 
         if ( this.routerRegByPort != null ) {
 
             this.routerRegByPort.remove( port )?.unregister()
-            this.logger.info( "Unregistered 'Router' for config '${ key }' as OSGi service!" )
+            this.logger.info( "Unregistered 'Router' for config '${ name }' as OSGi service!" )
         }
 
         this.httpServerRouterByPort?.remove( port )?.delete()
@@ -386,11 +481,11 @@ class APSVertxProvider {
 
             if ( res.succeeded() ) {
 
-                this.logger.info( "Http service '${ key }' successfully stopped!" )
+                this.logger.info( "Http service '${ name }' successfully stopped!" )
             }
             else {
 
-                this.logger.error( "Stopping http service '${ key }' failed!", res.cause() )
+                this.logger.error( "Stopping http service '${ name }' failed!", res.cause() )
             }
         }
     }

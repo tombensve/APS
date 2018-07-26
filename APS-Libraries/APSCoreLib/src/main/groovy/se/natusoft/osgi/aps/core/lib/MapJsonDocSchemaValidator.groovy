@@ -533,11 +533,14 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
                     }
 
                 }
+
                 else if ( validStructureEntry instanceof Map ) {
 
                     Map<String, Object> toValidateMap = sourceValue as Map<String, Object>
                     validateMap( validStructureEntry as Map<String, Object>, toValidateMap )
                 }
+
+                // If the 'array' part in this line is red marked, then you are using IDEA 2018.2!
                 else if ( validStructureEntry instanceof List || validStructureEntry.class.array ) {
 
                     List<Object> toValidateList = sourceValue as List<Object>

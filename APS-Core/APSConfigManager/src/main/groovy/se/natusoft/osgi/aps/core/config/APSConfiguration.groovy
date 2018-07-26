@@ -39,7 +39,6 @@ import org.osgi.framework.Bundle
 import se.natusoft.docutations.Implements
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
-import se.natusoft.osgi.aps.types.APSSerializableData
 import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSDirectory
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem
@@ -52,6 +51,7 @@ import se.natusoft.osgi.aps.json.JSON
 import se.natusoft.osgi.aps.json.JSONErrorHandler
 import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult
+import se.natusoft.osgi.aps.types.APSSerializableData
 import se.natusoft.osgi.aps.util.APSLogger
 
 /**
@@ -105,9 +105,6 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
 
     /** A validator for validating agains configSchema. */
     private MapJsonDocSchemaValidator configValidator
-
-//    /** Save of config dir for when saving. */
-//    private APSDirectory configDir
 
     /** The default config. */
     private StructMap defaultConfig
@@ -199,7 +196,6 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
                 if ( value != null ) {
 
                     provide( structPath, value )
-                    // No, we should not notify on this!
                 }
             }
 
@@ -308,13 +304,13 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
         // of the default config and the last saved config.
 
         // Load config schema from bundle.
-        this.logger.info "(configId:${this.apsConfigId}):Loading schema: ${ this.schemaPath }"
+        this.logger.info "(configId:${ this.apsConfigId }):Loading schema: ${ this.schemaPath }"
         URL schemaUrl = this.owner.getResource( this.schemaPath )
-        this.logger.debug ">>>> schemaUrl: ${schemaUrl}"
+        this.logger.debug ">>>> schemaUrl: ${ schemaUrl }"
 
-        InputStream schemaStream = schemaUrl.openStream(  )
+        InputStream schemaStream = schemaUrl.openStream()
 
-        if (schemaStream != null) {
+        if ( schemaStream != null ) {
             try {
 
                 this.configSchema = JSON.readJSONAsMap( schemaStream, this.jsonErrorHandler )
@@ -332,7 +328,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
             }
         }
         else {
-            this.logger.error "(configId:${this.apsConfigId}):No configuration schema is available!"
+            this.logger.error "(configId:${ this.apsConfigId }):No configuration schema is available!"
         }
 
         // Load default config from bundle.
@@ -346,7 +342,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
         catch ( IOException ioe ) {
 
             this.logger.error(
-                    "(configId:${this.apsConfigId}):Failed to load default configuration from bundle: ${ this.owner.symbolicName }!", ioe )
+                    "(configId:${ this.apsConfigId }):Failed to load default configuration from bundle: ${ this.owner.symbolicName }!", ioe )
 
             this.defaultConfig = null
         }
@@ -355,7 +351,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
             if ( defaultConfigPath != null ) defaultConfigStream.close()
         }
 
-        this.logger.info "(configId:${this.apsConfigId}):Loaded default config: ${ this.defaultConfig.toString() }"
+        this.logger.info "(configId:${ this.apsConfigId }):Loaded default config: ${ this.defaultConfig.toString() }"
 
         // Validate default config.
         validateConfig( this.defaultConfig )
@@ -371,7 +367,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
         //            available yet!
         withConfigDir() { APSDirectory configDir ->
 
-            if ( configDir.exists( "${ this.apsConfigId }.json" ) ) {
+            if ( configDir.existsAndNotEmpty( "${ this.apsConfigId }.json" ) ) {
 
                 try {
 

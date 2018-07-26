@@ -248,6 +248,13 @@
             <version>${vertx.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web</artifactId>
+            <version>${vertx.version}</version>
+            <classifier>client</classifier>
+            <type>js</type>
+        </dependency>
 
         <!-- Clusters -->
 
@@ -373,7 +380,6 @@
             <version>${netty.version}</version>
             <scope>provided</scope>
         </dependency>
-
         <!--
             Needed for full JTA support required by hazelcast.
             org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1
@@ -402,6 +408,11 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-service-test-support</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-json-lib</artifactId>
             <scope>test</scope>
         </dependency>
 

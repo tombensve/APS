@@ -280,42 +280,50 @@
                                 <mkdir dir="target/classes/webContent"/>
                                 <echo message="COPYING WEB FILES!"/>
                                 <mkdir dir="${project.basedir}/src/main/resources/webContent"/>
-                                <copy file="${basedir}/src/main/typescript/index.html"
-                                      tofile="${basedir}/src/main/resources/webContent/index.html"
-                                      filtering="false"
-                                      overwrite="true"
-                                      verbose="true"
-                                />
-                                <copy file="${basedir}/src/main/typescript/index.html"
-                                      tofile="${basedir}/target/classes/webContent/index.html"
-                                      filtering="false"
-                                      overwrite="true"
-                                      verbose="true"
-                                />
-                                <copy file="${basedir}/src/main/typescript/dist/bundle.js"
-                                      tofile="${basedir}/src/main/resources/webContent/adminweb-bundle.js"
-                                      filtering="false"
-                                      overwrite="true"
-                                      verbose="true"
-                                />
-                                <copy file="${basedir}/src/main/typescript/dist/bundle.js"
-                                      tofile="${basedir}/target/classes/webContent/adminweb-bundle.js"
-                                      filtering="false"
-                                      overwrite="true"
-                                      verbose="true"
-                                />
 
-                                <echo message="Copying Angular 2 html templates to src/main/resources/webContent."/>
-                                <copydir src="${project.basedir}/src/main/typescript/"
-                                         dest="${project.basedir}/src/main/resources/webContent"
-                                         includes="**/*.html **/*.css"
-                                         excludes="node/** node_modules/**"
-                                />
-                                <copydir src="${project.basedir}/src/main/typescript/"
-                                         dest="${project.basedir}/target/classes/webContent"
-                                         includes="**/*.html **/*.css"
-                                         excludes="node/** node_modules/**"
-                                />
+                                <copydir src="${project.basedir}/src/main/js/aps-adminweb/build"
+                                         dest="${project.basedir}/src/main/resources/webContent"/>
+
+
+
+
+
+                                <!--<copy file="${basedir}/src/main/typescript/index.html"-->
+                                      <!--tofile="${basedir}/src/main/resources/webContent/index.html"-->
+                                      <!--filtering="false"-->
+                                      <!--overwrite="true"-->
+                                      <!--verbose="true"-->
+                                <!--/>-->
+                                <!--<copy file="${basedir}/src/main/typescript/index.html"-->
+                                      <!--tofile="${basedir}/target/classes/webContent/index.html"-->
+                                      <!--filtering="false"-->
+                                      <!--overwrite="true"-->
+                                      <!--verbose="true"-->
+                                <!--/>-->
+                                <!--<copy file="${basedir}/src/main/typescript/dist/bundle.js"-->
+                                      <!--tofile="${basedir}/src/main/resources/webContent/adminweb-bundle.js"-->
+                                      <!--filtering="false"-->
+                                      <!--overwrite="true"-->
+                                      <!--verbose="true"-->
+                                <!--/>-->
+                                <!--<copy file="${basedir}/src/main/typescript/dist/bundle.js"-->
+                                      <!--tofile="${basedir}/target/classes/webContent/adminweb-bundle.js"-->
+                                      <!--filtering="false"-->
+                                      <!--overwrite="true"-->
+                                      <!--verbose="true"-->
+                                <!--/>-->
+
+                                <!--<echo message="Copying Angular 2 html templates to src/main/resources/webContent."/>-->
+                                <!--<copydir src="${project.basedir}/src/main/typescript/"-->
+                                         <!--dest="${project.basedir}/src/main/resources/webContent"-->
+                                         <!--includes="**/*.html **/*.css"-->
+                                         <!--excludes="node/** node_modules/**"-->
+                                <!--/>-->
+                                <!--<copydir src="${project.basedir}/src/main/typescript/"-->
+                                         <!--dest="${project.basedir}/target/classes/webContent"-->
+                                         <!--includes="**/*.html **/*.css"-->
+                                         <!--excludes="node/** node_modules/**"-->
+                                <!--/>-->
                                 <!--
                                     We need maven/ant time to catch up here too.
                                 -->
@@ -391,79 +399,79 @@
     </build>
 
     <profiles>
-        <profile>
-            <id>frontend</id>
+        <!--<profile>-->
+            <!--<id>frontend</id>-->
 
-            <build>
-                <plugins>
-                    <!--
-                        This plugin from https://github.com/eirslett/frontend-maven-plugin
-                    -->
-                    <plugin>
-                        <groupId>com.github.eirslett</groupId>
-                        <artifactId>frontend-maven-plugin</artifactId>
-                        <!-- Use the latest released version:
-                        https://repo1.maven.org/maven2/com/github/eirslett/frontend-maven-plugin/ -->
-                        <version>1.5</version>
+            <!--<build>-->
+                <!--<plugins>-->
+                    <!--&lt;!&ndash;-->
+                        <!--This plugin from https://github.com/eirslett/frontend-maven-plugin-->
+                    <!--&ndash;&gt;-->
+                    <!--<plugin>-->
+                        <!--<groupId>com.github.eirslett</groupId>-->
+                        <!--<artifactId>frontend-maven-plugin</artifactId>-->
+                        <!--&lt;!&ndash; Use the latest released version:-->
+                        <!--https://repo1.maven.org/maven2/com/github/eirslett/frontend-maven-plugin/ &ndash;&gt;-->
+                        <!--<version>1.5</version>-->
 
-                        <configuration>
-                            <nodeVersion>v6.10.3</nodeVersion>
+                        <!--<configuration>-->
+                            <!--<nodeVersion>v6.10.3</nodeVersion>-->
 
-                            <!-- optional: with node version greater than 4.0.0 will use npm provided by node distribution -->
-                            <npmVersion>5.3.0</npmVersion>
-                            <workingDirectory>src/main/typescript</workingDirectory>
-                        </configuration>
+                            <!--&lt;!&ndash; optional: with node version greater than 4.0.0 will use npm provided by node distribution &ndash;&gt;-->
+                            <!--<npmVersion>5.3.0</npmVersion>-->
+                            <!--<workingDirectory>src/main/typescript</workingDirectory>-->
+                        <!--</configuration>-->
 
-                        <executions>
-                            <execution>
-                                <!-- optional: you don't really need execution ids, but it looks nice in your build log. -->
-                                <id>install node and npm</id>
-                                <goals>
-                                    <goal>install-node-and-npm</goal>
-                                </goals>
-                                <!-- optional: default phase is "generate-resources" -->
-                                <phase>generate-resources</phase>
-                            </execution>
+                        <!--<executions>-->
+                            <!--<execution>-->
+                                <!--&lt;!&ndash; optional: you don't really need execution ids, but it looks nice in your build log. &ndash;&gt;-->
+                                <!--<id>install node and npm</id>-->
+                                <!--<goals>-->
+                                    <!--<goal>install-node-and-npm</goal>-->
+                                <!--</goals>-->
+                                <!--&lt;!&ndash; optional: default phase is "generate-resources" &ndash;&gt;-->
+                                <!--<phase>generate-resources</phase>-->
+                            <!--</execution>-->
 
-                            <execution>
-                                <id>npm install</id>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
+                            <!--<execution>-->
+                                <!--<id>npm install</id>-->
+                                <!--<goals>-->
+                                    <!--<goal>npm</goal>-->
+                                <!--</goals>-->
 
-                                <!-- optional: default phase is "generate-resources" -->
-                                <phase>generate-resources</phase>
-
-                                <configuration>
-                                    <!-- optional: The default argument is actually
-                                    "install", so unless you need to run some other npm command,
-                                    you can remove this whole <configuration> section.
-                                    -->
-                                    <arguments>install</arguments>
-                                </configuration>
-                            </execution>
-
-                            <execution>
-                                <id>webpack build</id>
-                                <goals>
-                                    <goal>webpack</goal>
-                                </goals>
-
-                                <!-- optional: the default phase is "generate-resources" -->
-                                <phase>generate-resources</phase>
+                                <!--&lt;!&ndash; optional: default phase is "generate-resources" &ndash;&gt;-->
+                                <!--<phase>generate-resources</phase>-->
 
                                 <!--<configuration>-->
-                                <!--&lt;!&ndash; optional: if not specified, it will run webpack's default-->
-                                <!--build (and you can remove this whole <configuration> section.) &ndash;&gt;-->
-                                <!--<arguments>-p</arguments>-->
+                                    <!--&lt;!&ndash; optional: The default argument is actually-->
+                                    <!--"install", so unless you need to run some other npm command,-->
+                                    <!--you can remove this whole <configuration> section.-->
+                                    <!--&ndash;&gt;-->
+                                    <!--<arguments>install</arguments>-->
                                 <!--</configuration>-->
-                            </execution>
+                            <!--</execution>-->
 
-                        </executions>
+                            <!--<execution>-->
+                                <!--<id>webpack build</id>-->
+                                <!--<goals>-->
+                                    <!--<goal>webpack</goal>-->
+                                <!--</goals>-->
 
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+                                <!--&lt;!&ndash; optional: the default phase is "generate-resources" &ndash;&gt;-->
+                                <!--<phase>generate-resources</phase>-->
+
+                                <!--&lt;!&ndash;<configuration>&ndash;&gt;-->
+                                <!--&lt;!&ndash;&lt;!&ndash; optional: if not specified, it will run webpack's default&ndash;&gt;-->
+                                <!--&lt;!&ndash;build (and you can remove this whole <configuration> section.) &ndash;&gt;&ndash;&gt;-->
+                                <!--&lt;!&ndash;<arguments>-p</arguments>&ndash;&gt;-->
+                                <!--&lt;!&ndash;</configuration>&ndash;&gt;-->
+                            <!--</execution>-->
+
+                        <!--</executions>-->
+
+                    <!--</plugin>-->
+                <!--</plugins>-->
+            <!--</build>-->
+        <!--</profile>-->
     </profiles>
 </project>

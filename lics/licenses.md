@@ -16,10 +16,10 @@ __[Apache Software License version 2.0](http://www.apache.org/licenses/LICENSE-2
 
 The following third party products are using this license:
 
-* [groovy-all-2.4.13](http://groovy-lang.org)
+* [groovy-all-2.4.15](http://groovy-lang.org)
+* [vertx-lang-groovy-3.4.2](http://www.apache.org/licenses/LICENSE-2.0.txt)
 * [vertx-core-3.4.2](http://www.apache.org/licenses/LICENSE-2.0.txt)
 * [vertx-auth-common-3.4.2](http://rubygems-proxy.torquebox.org/releases)
-* [vertx-lang-groovy-3.4.2](http://www.apache.org/licenses/LICENSE-2.0.txt)
 * [vertx-web-3.4.2](http://rubygems-proxy.torquebox.org/releases)
 * [vertx-hazelcast-3.4.2](http://www.apache.org/licenses/LICENSE-2.0.txt)
 * [hazelcast-3.6.3](http://www.hazelcast.com/)
@@ -39,13 +39,5 @@ The following third party products are using this license:
 * [netty-common-4.1.6.Final](http://netty.io/)
 * [netty-transport-4.1.6.Final](http://netty.io/)
 * [geronimo-jta_1.1_spec-1.1.1](scm:svn:https://svn.apache.org/repos/asf/geronimo/specs/tags/geronimo-jta_1.1_spec-1.1.1)
-* [commons-net-3.5](http://commons.apache.org/proper/commons-net/)
-* [openjpa-all-2.2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
-
-__[Eclipse Public License -v 1.0 version 1.0](http://www.eclipse.org/legal/epl-v10.html)__
-
-The following third party products are using this license:
-
-* [javax.persistence-2.0.0](http://www.eclipse.org/eclipselink)
 
 <!-- CLM -->

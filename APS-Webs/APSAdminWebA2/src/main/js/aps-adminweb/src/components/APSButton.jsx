@@ -10,6 +10,7 @@ class APSButton extends APSComponent {
         this.state = {
             disabled: props.guiProps.disabled != null ? props.guiProps.disabled : false
         };
+        this.setState( this.state );
 
         this.hasValue = false;
     }
@@ -18,10 +19,11 @@ class APSButton extends APSComponent {
         return "APSButton";
     }
 
-    set disabled( state ) {
-        let _state = this.state;
-        _state.disabled = state;
-        this.setState( _state );
+    set disabled( disabled ) {
+        this.state.disabled = disabled;
+        // Note that just changing the this.state state does not affect anything. We must pass the
+        // updated state to setState( state ) to have an effect.
+        this.setState( this.state );
     }
 
     handleEvent( event ) {

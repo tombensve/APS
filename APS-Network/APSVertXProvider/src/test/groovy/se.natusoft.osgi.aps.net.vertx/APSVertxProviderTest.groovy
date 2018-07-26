@@ -12,8 +12,10 @@ import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.osgi.aps.json.JSON
 import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
+import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.util.APSLogger
 
 import static java.util.concurrent.TimeUnit.SECONDS
@@ -60,7 +62,6 @@ class APSVertxProviderTest extends OSGIServiceTestTools {
             hold() maxTime 3 unit SECONDS go() // Give Vertx time to shut down.
         }
     }
-
 }
 
 @SuppressWarnings( "GroovyUnusedDeclaration" )
@@ -92,7 +93,7 @@ class VertxClient {
         // is done on bundle startup in an @Initializer method!
 
         this.vertxTracker.onActiveServiceAvailable = this.&onVertxAvailable
-        this.vertxTracker.onServiceLeaving = this.&onVertxLeaving
+        this.vertxTracker.onActiveServiceLeaving = this.&onVertxLeaving
 
         // Here we listen to the active, which ever works.
         this.routerTracker.onActiveServiceAvailable { Router router, ServiceReference routerRef ->

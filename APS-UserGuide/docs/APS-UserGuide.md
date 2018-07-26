@@ -1397,7 +1397,7 @@ _Parameters_
 
 
 
-__public static void read(InputStream jsonIn, APSHandler<APSResult<JSONValue>> resultHandler)__
+__public static void read( InputStream jsonIn, APSHandler<APSResult<JSONValue>> resultHandler )__
 
 Reads any JSON object from the specified _InputStream_.
 
@@ -1407,7 +1407,27 @@ _Parameters_
 
 > _resultHandler_ - The handler to call with result. 
 
-__public static JSONValue read(InputStream jsonIn, JSONErrorHandler errorHandler)__
+__public static void readToMap( InputStream jsonIn, APSHandler<APSResult<Map<String, Object>>> resultHandler )__
+
+Reads a JSON InputSteam and returns the JSON structure as a Map<String, Object>.
+
+_Parameters_
+
+> _jsonIn_ - The JSON stream to read. 
+
+> _resultHandler_ - The handler to receive the result. 
+
+__public static void resourceToMap(String resource, APSHandler<APSResult<Map<String, Object>>> resultHandler)__
+
+Reads a JSON classpath resource and returns the JSON structure as a Map<String,Object>.
+
+_Parameters_
+
+> _resource_ - The resource to read. 
+
+> _resultHandler_ - The handler to receive the result. 
+
+__public static JSONValue read( InputStream jsonIn, JSONErrorHandler errorHandler )__
 
 Reads any JSON object from the specified _InputStream_.
 
@@ -1427,7 +1447,7 @@ _Throws_
 
 
 
-__public static void write(OutputStream jsonOut, JSONValue value) throws APSIOException__
+__public static void write( OutputStream jsonOut, JSONValue value ) throws APSIOException__
 
 Writes a _JSONValue_ to an _OutputStream_. This will write compact output by default.
 
@@ -1441,7 +1461,7 @@ _Throws_
 
 > _APSIOException_ - on failure. 
 
-__public static void write(OutputStream jsonOut, JSONValue value, boolean compact, APSHandler<APSResult<Void>> resultHandler)__
+__public static void write( OutputStream jsonOut, JSONValue value, boolean compact, APSHandler<APSResult<Void>> resultHandler )__
 
 Writes a _JSONValue_ to an _OutputStream_. This will write compact output by default.
 
@@ -1453,7 +1473,7 @@ _Parameters_
 
 > _resultHandler_ - handler for result. only success() or failure() is relevant. 
 
-__public static void write(OutputStream jsonOut, JSONValue value, boolean compact) throws APSIOException__
+__public static void write( OutputStream jsonOut, JSONValue value, boolean compact ) throws APSIOException__
 
 Writes a _JSONValue_ to an _OutputStream_.
 
@@ -1469,7 +1489,7 @@ _Throws_
 
 > _APSIOException_ - on IO problems. 
 
-__public static byte[] jsonToBytes(JSONValue jsonValue) throws APSIOException__
+__public static byte[] jsonToBytes( JSONValue jsonValue ) throws APSIOException__
 
 Converts a JSONValue into bytes.
 
@@ -1485,7 +1505,7 @@ _Throws_
 
 > _APSIOException_ - on any IO failure. 
 
-__public static JSONValue bytesToJson(byte[] bytes)__
+__public static JSONValue bytesToJson( byte[] bytes )__
 
 Converts a byte array into a JSONValue object. For this to work the byte array of course must contain valid JSON!
 
@@ -1493,7 +1513,7 @@ _Parameters_
 
 > _bytes_ - The bytes to conve rt. 
 
-__public static String jsonToString(JSONValue jsonValue) throws APSIOException__
+__public static String jsonToString( JSONValue jsonValue ) throws APSIOException__
 
 Converts a JSONValue to a String of JSON.
 
@@ -1509,7 +1529,7 @@ _Throws_
 
 > _APSIOException_ - on failure. Since the JSON is valid and we are writing to memory this is unlikely ... 
 
-__public static JSONValue stringToJson(String jsonString) throws APSIOException__
+__public static JSONValue stringToJson( String jsonString ) throws APSIOException__
 
 Converts a String with JSON into a JSONValue.
 
@@ -1529,7 +1549,7 @@ _Throws_
 
 
 
-__public static Map<String, Object> jsonObjectToMap(JSONObject jsonObject)__
+__public static Map<String, Object> jsonObjectToMap( JSONObject jsonObject )__
 
 This takes a JSONObject and returns a Map.
 
@@ -1541,7 +1561,7 @@ _Parameters_
 
 > _jsonObject_ - The JSONObject to convert to a Map. 
 
-__public static JSONObject mapToJSONObject(Map<String, Object> map)__
+__public static JSONObject mapToJSONObject( Map<String, Object> map )__
 
 Converts a `Map<String,``Object>` to a JSONObject.
 
@@ -1555,7 +1575,7 @@ _Parameters_
 
 
 
-__public static Map<String, Object> readJSONAsMap(InputStream jsonIn, JSONErrorHandler errorHandler)__
+__public static Map<String, Object> readJSONAsMap( InputStream jsonIn, JSONErrorHandler errorHandler )__
 
 For consitency. The same as doing JSON.jsonObjectToMap(InputStream, JSONErrorHandler).
 
@@ -1569,7 +1589,7 @@ _Parameters_
 
 > _errorHandler_ - The error handler to use. 
 
-__public static Map<String, Object> stringToMap(String json)__
+__public static Map<String, Object> stringToMap( String json )__
 
 Converts from String to JSON to Map.
 
@@ -1581,7 +1601,7 @@ _Parameters_
 
 > _json_ - The JSON String to convert. 
 
-__public static String mapToString(Map<String, Object> map)__
+__public static String mapToString( Map<String, Object> map )__
 
 Converts from Map to JSONObject to String.
 
@@ -2744,44 +2764,6 @@ General
 The name and trademarks of OSGi or any other Authors may NOT be used in any manner, including advertising or publicity pertaining to the Specification or its contents without specific, written prior permission. Title to copyright in the Specification will at all times remain with OSGi.
 
 No other rights are granted by implication, estoppel or otherwise.
-
-<!--
-  
-  This was created by CodeLicenseManager
--->
-## Day Specification version License
-
-Day Management AG ("Licensor") is willing to license this specification to you ONLY UPON THE CONDITION THAT YOU ACCEPT ALL OF THE TERMS CONTAINED IN THIS LICENSE AGREEMENT ("Agreement"). Please read the terms and conditions of this Agreement carefully.
-
-Content Repository for JavaTM  Technology API Specification ("Specification") Version: 2.0 Status: FCS Release: 10 August 2009
-
-Copyright 2009 Day Management AG Barf&#252;sserplatz 6, 4001 Basel, Switzerland. All rights reserved.
-
-NOTICE; LIMITED LICENSE GRANTS
-
-1.  License for Purposes of Evaluation and Developing Applications.
-
-Licensor hereby grants you a fully-paid, non-exclusive, non-transferable, worldwide, limited license (without the right to sublicense), under Licensor's applicable intellectual property rights to view, download, use and reproduce the Specification only for the purpose of internal evaluation. This includes developing applications intended to run on an implementation of the Specification provided that such applications do not themselves implement any portion(s) of the Specification.
-
-1.  License for the Distribution of Compliant Implementations. Licensor also grants you a perpetual, non-exclusive, non-transferable, worldwide, fully paid-up, royalty free, limited license (without the right to sublicense) under any applicable copyrights or, subject to the provisions of subsection 4 below, patent rights it may have covering the Specification to create and/or distribute an Independent Implementation of the Specification that: (a) fully implements the Specification including all its required interfaces and functionality; (b) does not modify, subset, superset or otherwise extend the Licensor Name Space, or include any public or protected packages, classes, Java interfaces, fields or methods within the Licensor Name Space other than those required/authorized by the Specification or Specifications being implemented; and (c) passes the Technology Compatibility Kit (including satisfying the requirements of the applicable TCK Users Guide) for such Specification ("Compliant Implementation"). In addition, the foregoing license is expressly conditioned on your not acting outside its scope. No license is granted hereunder for any other purpose (including, for example, modifying the Specification, other than to the extent of your fair use rights, or distributing the Specification to third parties).
-
-2.  Pass-through Conditions. You need not include limitations (a)-(c) from the previous paragraph or any other particular "pass through" requirements in any license You grant concerning the use of your Independent Implementation or products derived from it. However, except with respect to Independent Implementations (and products derived from them) that satisfy limitations (a)-(c) from the previous paragraph, You may neither: (a) grant or otherwise pass through to your licensees any licenses under Licensor's applicable intellectual property rights; nor (b) authorize your licensees to make any claims concerning their implementation's compliance with the Specification.
-
-3.  Reciprocity Concerning Patent Licenses. With respect to any patent claims covered by the license granted under subparagraph 2 above that would be infringed by all technically feasible implementations of the Specification, such license is conditioned upon your offering on fair, reasonable and non-discriminatory terms, to any party seeking it from You, a perpetual, non-exclusive, non-transferable, worldwide license under Your patent rights that are or would be infringed by all technically feasible implementations of the Specification to develop, distribute and use a Compliant Implementation.
-
-4.  Definitions. For the purposes of this Agreement: "Independent Implementation" shall mean an implementation of the Specification that neither derives from any of Licensor's source code or binary code materials nor, except with an appropriate and separate license from Licensor, includes any of Licensor's source code or binary code materials; "Licensor Name Space" shall mean the public class or interface declarations whose names begin with "java", "javax", "javax.jcr" or their equivalents in any subsequent naming convention adopted by Licensor through the Java Community Process, or any recognized successors or replacements thereof; and "Technology Compatibility Kit" or "TCK" shall mean the test suite and accompanying TCK User's Guide provided by Licensor which corresponds to the particular version of the Specification being tested.
-
-5.  Termination. This Agreement will terminate immediately without notice from Licensor if you fail to comply with any material provision of or act outside the scope of the licenses granted above.
-
-6.  Trademarks. No right, title, or interest in or to any trademarks, service marks, or trade names of Licensor is granted hereunder. Java is a registered trademark of Sun Microsystems, Inc. in the United States and other countries.
-
-7.  Disclaimer of Warranties. The Specification is provided "AS IS". LICENSOR MAKES NO REPRESENTATIONS OR WARRANTIES, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT (INCLUDING AS A CONSEQUENCE OF ANY PRACTICE OR IMPLEMENTATION OF THE SPECIFICATION), OR THAT THE CONTENTS OF THE SPECIFICATION ARE SUITABLE FOR ANY PURPOSE. This document does not represent any commitment to release or implement any portion of the Specification in any product.
-
-The Specification could include technical inaccuracies or typographical errors. Changes are periodically added to the information therein; these changes will be incorporated into new versions of the Specification, if any. Licensor may make improvements and/or changes to the product(s) and/or the program(s) described in the Specification at any time. Any use of such changes in the Specification will be governed by the then-current license for the applicable version of the Specification.
-
-1.  Limitation of Liability. TO THE EXTENT NOT PROHIBITED BY LAW, IN NO EVENT WILL LICENSOR BE LIABLE FOR ANY DAMAGES, INCLUDING WITHOUT LIMITATION, LOST REVENUE, PROFITS OR DATA, OR FOR SPECIAL, INDIRECT, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF OR RELATED TO ANY FURNISHING, PRACTICING, MODIFYING OR ANY USE OF THE SPECIFICATION, EVEN IF LICENSOR HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
-
-2.  Report. If you provide Licensor with any comments or suggestions in connection with your use of the Specification ("Feedback"), you hereby: (i) agree that such Feedback is provided on a non-proprietary and non-confidential basis, and (ii) grant Licensor a perpetual, non-exclusive, worldwide, fully paid-up, irrevocable license, with the right to sublicense through multiple levels of sublicensees, to incorporate, disclose, and use without limitation the Feedback for any purpose related to the Specification and future versions, implementations, and test suites thereof.
 
 <!--
   

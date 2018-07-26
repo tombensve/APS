@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -444,6 +444,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         this.listeners = null;
 
         this.shutdownMethods.forEach( shutdownMethod -> {
+            this.activatorLogger.info("Shutting down method: " + shutdownMethod.t1 + ", instance:" + shutdownMethod.t2);
             try {
                 //noinspection RedundantArrayCreation
                 shutdownMethod.t1.invoke( shutdownMethod.t2, new Object[ 0 ] );
@@ -451,6 +452,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 this.activatorLogger.info( "Called bundle shutdown method '" + shutdownMethod.t2.getClass() +
                         "." + shutdownMethod.t1.getName() + "() for bundle: " +
                         context.getBundle().getSymbolicName() + "!" );
+            } catch (InvocationTargetException e) {
+                e.printStackTrace(System.err);
             } catch ( Exception e ) {
                 this.activatorLogger.error( "Shutdown methods: Bundle stop problem!", e );
                 failures.addException( e );
