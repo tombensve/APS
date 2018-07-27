@@ -284,46 +284,6 @@
                                 <copydir src="${project.basedir}/src/main/js/aps-adminweb/build"
                                          dest="${project.basedir}/src/main/resources/webContent"/>
 
-
-
-
-
-                                <!--<copy file="${basedir}/src/main/typescript/index.html"-->
-                                      <!--tofile="${basedir}/src/main/resources/webContent/index.html"-->
-                                      <!--filtering="false"-->
-                                      <!--overwrite="true"-->
-                                      <!--verbose="true"-->
-                                <!--/>-->
-                                <!--<copy file="${basedir}/src/main/typescript/index.html"-->
-                                      <!--tofile="${basedir}/target/classes/webContent/index.html"-->
-                                      <!--filtering="false"-->
-                                      <!--overwrite="true"-->
-                                      <!--verbose="true"-->
-                                <!--/>-->
-                                <!--<copy file="${basedir}/src/main/typescript/dist/bundle.js"-->
-                                      <!--tofile="${basedir}/src/main/resources/webContent/adminweb-bundle.js"-->
-                                      <!--filtering="false"-->
-                                      <!--overwrite="true"-->
-                                      <!--verbose="true"-->
-                                <!--/>-->
-                                <!--<copy file="${basedir}/src/main/typescript/dist/bundle.js"-->
-                                      <!--tofile="${basedir}/target/classes/webContent/adminweb-bundle.js"-->
-                                      <!--filtering="false"-->
-                                      <!--overwrite="true"-->
-                                      <!--verbose="true"-->
-                                <!--/>-->
-
-                                <!--<echo message="Copying Angular 2 html templates to src/main/resources/webContent."/>-->
-                                <!--<copydir src="${project.basedir}/src/main/typescript/"-->
-                                         <!--dest="${project.basedir}/src/main/resources/webContent"-->
-                                         <!--includes="**/*.html **/*.css"-->
-                                         <!--excludes="node/** node_modules/**"-->
-                                <!--/>-->
-                                <!--<copydir src="${project.basedir}/src/main/typescript/"-->
-                                         <!--dest="${project.basedir}/target/classes/webContent"-->
-                                         <!--includes="**/*.html **/*.css"-->
-                                         <!--excludes="node/** node_modules/**"-->
-                                <!--/>-->
                                 <!--
                                     We need maven/ant time to catch up here too.
                                 -->
