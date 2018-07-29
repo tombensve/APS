@@ -34,10 +34,6 @@ import se.natusoft.osgi.aps.util.APSLogger
 class APSWebBooter {
 
     //
-    // Private Members
-    //
-
-    //
     // Properties
     //
 

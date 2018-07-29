@@ -7,6 +7,7 @@ import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
 import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.util.APSLogger
 
+import static java.util.concurrent.TimeUnit.HOURS
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static java.util.concurrent.TimeUnit.MINUTES
 import static java.util.concurrent.TimeUnit.SECONDS
@@ -17,7 +18,32 @@ class APSWebBooterTest extends OSGIServiceTestTools {
 
     private static APSLogger logger = new APSLogger( APSLogger.PROP_LOGGING_FOR, "WebContentServerTest" )
 
-//    public static Consumer.Consumed<Vertx> vertx = null
+    private void deploy() {
+        deployConfigAndVertxPlusDeps()
+
+        hold() maxTime 2L unit SECONDS go()
+
+        deploy 'aps-web-manager' with new APSActivator() from 'APS-Webs/APSAdminWebA2/target/classes'
+
+        // Unfortunately we have to wait a while here for the services to completely start up.
+        // If you build on a really slow computer, this might not be enough.
+        hold() maxTime 3L unit SECONDS go()
+    }
+
+    /*
+     * This will start the server and let it run for 24 hours. So you will have to kill the process
+     * when done. This is for testing that the app boots by opening it in a web browser. Don't expect
+     * much of functionality since there is no backend listening to messages.
+     *
+     * You must first remove the comment from @Test. Don't remember to put it back when done. You must also
+     * comment out the other test to not run that.
+     */
+    //@Test
+    void manualTest() {
+        deploy(  )
+        println "SERVER RUNNING FOR NEXT 24 HOURS ..."
+        hold(  ) maxTime 24L unit HOURS go()
+    }
 
     @Test
     void testWebContentServer() throws Exception {
@@ -28,17 +54,7 @@ class APSWebBooterTest extends OSGIServiceTestTools {
         println " output are done in red. This is not an error.                                 "
         println "==============================================================================="
 
-        // NOTE: You can move these 3 deploys in any order, and it will still work!
-
-        deployConfigAndVertxPlusDeps()
-
-        hold() maxTime 2L unit SECONDS go()
-
-        deploy 'aps-web-manager' with new APSActivator() from 'APS-Webs/APSAdminWebA2/target/classes'
-
-        // Unfortunately we have to wait a while here for the services to completely start up.
-        // If you build on a really slow computer, this might not be enough.
-        hold() maxTime 3L unit SECONDS go()
+        deploy()
 
         try {
 
