@@ -2,7 +2,7 @@
   "http": [
     {
       "name": "default",
-      "port": 8888,
+      "port": 8880,
       "eventBusBridge": {
         "enabled": true,
         "allowEventAddresses": null,
