@@ -103,6 +103,8 @@
             se.natusoft.osgi.aps.api.misc.json.service;version="${project.version}",
             se.natusoft.osgi.aps.api.misc.time;version="${project.version}",
 
+            se.natusoft.osgi.aps.api.web;version="${project.version}",
+
             se.natusoft.osgi.aps.constants;version="${project.version}",
             se.natusoft.osgi.aps.exceptions;version="${project.version}",
             se.natusoft.osgi.aps.tracker;version="${project.version}",
