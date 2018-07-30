@@ -30,9 +30,6 @@ class WebBoot {
     @OSGiService( additionalSearchCriteria = "(&(vertx-object=Router)(vertx-router=default))" )
     private APSServiceTracker<Router> routerTracker
 
-    /** The current router. */
-    private Router router
-
     /**
      * This is called after all injections are done.
      */
@@ -40,25 +37,10 @@ class WebBoot {
     setup() {
         this.routerTracker.onActiveServiceAvailable = { Router router, ServiceReference sr ->
 
-            this.router = router
-
-            // Handle the dumbness of root /static/... What the (BEEP) did they think about when
-            // they came up with this ? It makes it more or less impossible to serve multiple web
-            // apps at different root paths on the same port. When I edited the React files compiled
-            // by babel and removed the '/' from '/static/...' the web app worked just fine. Maybe
-            // I should write some editing code that does that during build ...
-            this.router.route( "/static/*" )
-                    .handler( StaticHandler.create( "webContent/static", this.class.classLoader )
-                    .setCachingEnabled( false ) )
-
-            // Yeah ... out of words ... (generated and referenced file not in source! Seems to do some caching.)
-            this.router.route( "/service-worker.js" )
-                    .handler( StaticHandler.create( "webContent", this.class.classLoader )
-                    .setCachingEnabled( false ) )
-
-            // And this is the only one that should be relevant! Every single file used by the frontend app
-            // is available under 'webContent'. There are just crazy references from other non needed roots!
-            this.router.route( "/aps/*" )
+            // This works due to "homepage": "/aps" in package.json.
+            // Found this tip at: https://github.com/facebook/create-react-app/issues/165
+            // Note that if /aps below changes the path in package.json must also change!
+            router.route( "/aps/*" )
                     .handler( StaticHandler.create( "webContent", this.class.classLoader )
                     .setCachingEnabled( false ) )
 
@@ -67,7 +49,6 @@ class WebBoot {
 
         this.routerTracker.onActiveServiceLeaving = { ServiceReference ref, Class api ->
 
-            this.router = null
             this.logger.info "/aps route is going down!"
         }
     }
