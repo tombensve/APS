@@ -46,9 +46,9 @@ import se.natusoft.osgi.aps.types.APSHandler;
 import se.natusoft.osgi.aps.types.APSResult;
 import se.natusoft.osgi.aps.types.APSValue;
 import se.natusoft.osgi.aps.exceptions.APSIOException;
-import se.natusoft.osgi.aps.json.tools.CollectingErrorHandler;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -75,12 +75,12 @@ public class JSON {
 
         try {
             JSONValue.JSONReader reader =
-                    new JSONValue.JSONReader( new PushbackReader( new InputStreamReader( jsonIn, "UTF-8" ) ), errorHandler );
+                    new JSONValue.JSONReader( new PushbackReader( new InputStreamReader( jsonIn, StandardCharsets.UTF_8 ) ), errorHandler );
 
             JSONValue value = JSONValue.resolveAndParseJSONValue( reader.getChar(), reader, errorHandler );
 
             resultHandler.handle( new APSResult.Provider<>( new APSValue.Provider<>( value ) ) );
-        } catch ( IOException | APSIOException ioe ) {
+        } catch ( APSIOException ioe ) {
             resultHandler.handle( new APSResult.Provider<>( ioe ) );
         }
     }
@@ -122,14 +122,10 @@ public class JSON {
     public static @NotNull
     JSONValue read( @NotNull InputStream jsonIn, @NotNull JSONErrorHandler errorHandler ) {
 
-        try {
-            JSONValue.JSONReader reader =
-                    new JSONValue.JSONReader( new PushbackReader( new InputStreamReader( jsonIn, "UTF-8" ) ), errorHandler );
+        JSONValue.JSONReader reader =
+                new JSONValue.JSONReader( new PushbackReader( new InputStreamReader( jsonIn, StandardCharsets.UTF_8 ) ), errorHandler );
 
-            return JSONValue.resolveAndParseJSONValue( reader.getChar(), reader, errorHandler );
-        } catch ( IOException ioe ) {
-            throw new APSIOException( ioe.getMessage(), ioe );
-        }
+        return JSONValue.resolveAndParseJSONValue( reader.getChar(), reader, errorHandler );
     }
 
     /**
@@ -226,6 +222,7 @@ public class JSON {
 
         ByteArrayInputStream bais = new ByteArrayInputStream( bytes );
 
+        //noinspection TryFinallyCanBeTryWithResources
         try {
 
             CollectingErrorHandler errorHandler = new CollectingErrorHandler();
@@ -256,12 +253,7 @@ public class JSON {
         byte[] bytes = jsonToBytes( jsonValue );
         String result;
 
-        try {
-            result = new String( bytes, "UTF-8" );
-        } catch ( UnsupportedEncodingException uee ) {
-
-            throw new APSIOException( uee.getMessage(), uee );
-        } // "Should" not happen. UTF-8 is valid and the bytes are in UTF-8!
+        result = new String( bytes, StandardCharsets.UTF_8 );
 
         return result;
     }
@@ -278,13 +270,7 @@ public class JSON {
 
         JSONValue json;
 
-        try {
-
-            json = bytesToJson( jsonString.getBytes( "UTF-8" ) );
-        } catch ( UnsupportedEncodingException uee ) {
-
-            throw new APSIOException( uee.getMessage(), uee );
-        }
+        json = bytesToJson( jsonString.getBytes( StandardCharsets.UTF_8 ) );
 
         return json;
     }

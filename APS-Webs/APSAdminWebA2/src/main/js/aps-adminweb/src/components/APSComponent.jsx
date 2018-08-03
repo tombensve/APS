@@ -1,6 +1,7 @@
 import { Component } from 'react'
 import '../LocalEventBus'
-import PropTypes from "prop-types";
+import PropTypes from "prop-types"
+import ApsLogger from "../APSLogger"
 
 /**
  * A common base component for all APS components.
@@ -18,13 +19,17 @@ class APSComponent extends Component {
     constructor( props ) {
         super( props );
 
+        this.logger = new ApsLogger(this.componentId());
+
         this._empty = true;
         this._hasValue = true;
         this.collected = {};
 
-        this.subscribe( ( address, message ) => {
+        //this.logger = new ApsLogger();
 
-            this.messageHandler( address, message );
+        this.subscribe( ( message ) => {
+
+            this.messageHandler( message );
 
         } );
     }
@@ -55,7 +60,7 @@ class APSComponent extends Component {
     // Sets component disabled state. This must be overridden by sub components.
 
     set disabled( state ) {
-        console.log( "ERROR: 'disabled' in APSComponent called! This should be overridden!" )
+        this.logger.error( "ERROR: 'disabled' in APSComponent called! This should be overridden!" )
     }
 
     //
@@ -90,7 +95,7 @@ class APSComponent extends Component {
      */
     send( message ) {
 
-        this.props.eventBus.send( this.props.guiProps.publishTo, message, this.props.guiProps.routing );
+        this.props.eventBus.send( this.props.guiProps.publishTo, this.props.guiProps.headers, message );
     }
 
     /**
@@ -100,7 +105,7 @@ class APSComponent extends Component {
      */
     subscribe( subscriber ) {
 
-        this.props.eventBus.subscribe( this.props.guiProps.listenTo, subscriber, this.props.guiProps.routing );
+        this.props.eventBus.subscribe( this.props.guiProps.listenTo, this.props.guiProps.headers, subscriber );
     }
 
     /**
@@ -110,15 +115,15 @@ class APSComponent extends Component {
      */
     unsubscribe( subscriber ) {
 
-        this.props.eventBus.unsubscribe( this.props.guiProps.listenTo, subscriber, this.props.guiProps.routing );
+        this.props.eventBus.unsubscribe( this.props.guiProps.listenTo, this.props.guiProps.headers, subscriber );
     }
 
     /**
      * Event message helper.
      *
-     * @param {Object} msg The message to append standard info to. This will be returned after modifications.
+     * @param {object} msg The message to append standard info to. This will be returned after modifications.
      *
-     * @returns {String} The passed and upgraded object as a JSON string.
+     * @returns {object} The passed and upgraded object as a JSON string.
      */
     eventMsg( msg ) {
 
@@ -137,33 +142,30 @@ class APSComponent extends Component {
             msg.additional = this.collected;
         }
 
-        return JSON.stringify( msg );
+        return msg;
     }
 
 
     /**
      * Component generic message handler.
      *
-     * @param {string} address The address of the message.
-     * @param {string} message The actual message as JSON string.
+     * @param {object} message The actual message as JSON string.
      */
     // noinspection JSMethodCanBeStatic
-    messageHandler( address, message ) {
+    messageHandler( message ) {
 
-        console.log( this.componentId() + ": Received(address:" + address + "): " + message );
-
-        let msg = JSON.parse( message );
+        this.logger.debug( "messageHandler > Received: {}", [ message ] );
 
         // If this component wants to collect values sent by other components, we
         // just save the whole message under 'collected' and using the componentId as key.
         // This is for submit type components. Rather than having all components publish
         // all data over the network, submit type components collect their data and passes
         // it along on a submit.
-        if ( msg.hasValue && this.props.guiProps.collectGroups != null &&
-            this.props.guiProps.collectGroups.indexOf( msg.group ) !== -1 ) {
+        if ( message.hasValue && this.props.guiProps.collectGroups != null &&
+            this.props.guiProps.collectGroups.indexOf( message.group ) !== -1 ) {
 
             // Save message using the originating components id.
-            this.collected[msg.componentId] = msg;
+            this.collected[message.componentId] = message;
 
             //console.log(">>>> [" + this.props.guiProps.id + "] Collected: " + message)
         }
@@ -217,7 +219,7 @@ class APSComponent extends Component {
                 }
             }
             else {
-                console.log( "Oops! Bad gui spec! For enable: \"namedComponentsNotEmpty:<compid>,...\" the component " +
+                this.logger.error( "Oops! Bad gui spec! For enable: \"namedComponentsNotEmpty:<compid>,...\" the component " +
                     "must have at least one \"collectGroups:<group>\" in the gui spec and the given compid:s must be " +
                     "part of one of the groups." )
             }

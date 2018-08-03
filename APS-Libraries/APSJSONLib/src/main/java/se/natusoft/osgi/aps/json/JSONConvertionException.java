@@ -38,43 +38,34 @@
  *         2012-01-15: Created!
  *
  */
-package se.natusoft.osgi.aps.json.tools;
-
-import se.natusoft.osgi.aps.json.JSONErrorHandler;
+package se.natusoft.osgi.aps.json;
 
 /**
- * A simple implementation of _JSONErrorHandler_ that simply displays messages on System.out
- * and throws a _RuntimeException_ on fail. This is used by the tests. In a non test case
- * another implementation is probably preferred.
+ * This exception is thrown on failure to convert from JSON to Java or Java to JSON.
+ *
+ * Almost all exceptions within the APS services and libraries extend either _APSException_ or _APSRuntimeException_.
+ * I decided to just extend RuntimeException here to avoid any other dependencies for this library since it can
+ * be useful outside of APS and can be used as any jar if not deployed in OSGi container.
  */
-public class SystemOutErrorHandler implements JSONErrorHandler {
+public class JSONConvertionException extends RuntimeException {
 
     /**
-     * Warns about something.
+     * Creates a new _JSONConvertionException_.
      *
-     * @param message The warning message.
+     * @param message The exception message
      */
-    @Override
-    public void warning(String message) {
-        System.out.println("Warning: " + message);
+    public JSONConvertionException(final String message) {
+        super(message);
     }
 
     /**
-     * Indicate failure.
+     * Creates a new _JSONConvertionException_.
      *
-     * @param message The failure message.
-     * @param cause   The cause of the failure. Can be null!
-     *
-     * @throws RuntimeException This method must throw a RuntimeException.
+     * @param message The exception message
+     * @param cause The cause of this exception.
      */
-    @Override
-    public void fail(String message, Throwable cause) throws RuntimeException {
-        if (cause != null) {
-            System.out.println("Fail: " + message + ", cause: [" + cause.getClass().getName() + "]:" + cause.getMessage());
-        }
-        else {
-            System.out.println("Fail: " + message);
-        }
-        throw new RuntimeException(message, cause);
+    public JSONConvertionException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 }
+

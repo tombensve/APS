@@ -38,9 +38,7 @@
  *         2012-01-16: Created!
  *
  */
-package se.natusoft.osgi.aps.json.tools;
-
-import se.natusoft.osgi.aps.json.*;
+package se.natusoft.osgi.aps.json;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;

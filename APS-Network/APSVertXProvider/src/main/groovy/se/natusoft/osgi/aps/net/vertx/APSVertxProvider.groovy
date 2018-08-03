@@ -48,7 +48,9 @@ import io.vertx.core.VertxOptions
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.http.HttpServer
 import io.vertx.core.shareddata.SharedData
+import io.vertx.ext.bridge.PermittedOptions
 import io.vertx.ext.web.Router
+import io.vertx.ext.web.handler.sockjs.BridgeOptions
 import io.vertx.ext.web.handler.sockjs.SockJSHandler
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceRegistration
@@ -159,6 +161,11 @@ class APSVertxProvider {
      */
     private static void vertxBoot( Map<String, Object> options, Handler<AsyncResult<Vertx>> handler ) {
 
+        APSLogger _logger = new APSLogger()
+        _logger.setLoggingFor( "vertxBoot" )
+
+        _logger.debug( "vertxBoot: options: ${ options }" )
+
         boolean apsVertxClustered = true
 
         String clusterProp = System.getProperty( "aps.vertx.clustered" )
@@ -171,7 +178,8 @@ class APSVertxProvider {
         if ( apsVertxClustered ) {
 
             // If the arguments are error marked, then you are using IDEA. The only error here is in IDEA.
-            Vertx.clusteredVertx( options, handler )
+            Vertx.clusteredVertx( options as VertxOptions, handler )
+
         }
         else {
             // On a non clustered Vertx it just returns the Vertx instance directly, not requiring a handler.
@@ -179,7 +187,7 @@ class APSVertxProvider {
             // a handler callback in either case, so we have to call the handler instead of Vertx.
 
             // If the arguments are error marked, then you are using IDEA. The only error here is in IDEA.
-            Vertx vertx = Vertx.vertx( options )
+            Vertx vertx = Vertx.vertx( options as VertxOptions )
 
             handler.handle(
                     new AsyncResult<Vertx>() {
@@ -320,13 +328,13 @@ class APSVertxProvider {
 
         httpConfs?.each { Map<String, Object> http ->
 
-            this.logger.debug("#### http: ${http}")
+            this.logger.debug( "#### http: ${ http }" )
 
             def name = http[ "name" ] as String
             def port = http[ "port" ] as Integer
             def eventBusBridge = http[ "eventBusBridge" ] as Map<String, Object>
 
-            this.logger.debug( ">>>> ${name} / ${port}: eventBusBridge: ${eventBusBridge}" )
+            this.logger.debug( ">>>> ${ name } / ${ port }: eventBusBridge: ${ eventBusBridge }" )
 
             startHttpService( name, port, eventBusBridge )
         }
@@ -373,11 +381,11 @@ class APSVertxProvider {
 
                 this.logger.info( "Registered HTTP service 'Router' for config '${ name }' as OSGi service!" )
 
-                if ( eventBusBridge != null && eventBusBridge[ "enabled" ] != null) {
+                if ( eventBusBridge != null && eventBusBridge[ "enabled" ] != null ) {
                     startEventBusBridge( router, port, eventBusBridge )
                 }
                 else {
-                    this.logger.info("No eventbus bridge for this service!")
+                    this.logger.info( "No eventbus bridge for this service!" )
                 }
             }
         }
@@ -388,60 +396,64 @@ class APSVertxProvider {
 
     }
 
-    private void startEventBusBridge( Router router, int port,  Map<String, Object> eventBusBridge ) {
+    private void startEventBusBridge( Router router, int port, Map<String, Object> ebConf ) {
 
         def sockJSHandler = SockJSHandler.create( this.vertx )
 
-        def inboundPermitteds = []
-        def outboundPermitteds = []
+        def bridgeOptions = new BridgeOptions()
 
-        if ( eventBusBridge[ "allowEventAddresses" ] != null ) {
-            ( eventBusBridge[ "allowEventAddresses" ] as String ).split( "," ).each { String addr ->
+        if ( ebConf[ "addresses" ] != null ) {
+            ( ebConf[ "addresses" ] as String ).split( "," ).each { String addr ->
+                PermittedOptions permitted = new PermittedOptions()
+
                 if ( addr.startsWith( "in:" ) ) {
-                    inboundPermitteds << [address: addr.substring( 3 )]
+                    permitted.address = addr.substring( 3 )
+                    bridgeOptions.inboundPermitteds << permitted
+                    this.logger.debug("Permitted inbound address: '${permitted.address}'")
                 }
                 else if ( addr.startsWith( "out:" ) ) {
-                    outboundPermitteds << [address: addr.substring( 4 )]
+                    permitted.address = addr.substring( 4 )
+                    bridgeOptions.outboundPermitteds << permitted
+                    this.logger.debug("Permitted outbound address: '${permitted.address}'")
                 }
                 else {
-                    inboundPermitteds << [address: addr]
-                    outboundPermitteds << [address: addr]
+                    permitted.address = addr
+                    bridgeOptions.inboundPermitteds << permitted
+                    bridgeOptions.outboundPermitteds << permitted
+                    this.logger.debug("Permitted both inbound and outbound address: '${permitted.address}'")
                 }
             }
         }
-        if ( eventBusBridge[ "allowEventAddressesRegex" ] != null ) {
-            ( eventBusBridge[ "allowEventAddressesRegex" ] as String ).split( "," ).each { String addr ->
+        if ( ebConf[ "addressesRegex" ] != null ) {
+            ( ebConf[ "addressesRegex" ] as String ).split( "," ).each { String addr ->
+                PermittedOptions permitted = new PermittedOptions()
+
                 if ( addr.startsWith( "in:" ) ) {
-                    inboundPermitteds << [addressRegex: addr.substring( 3 )]
+                    permitted.addressRegex = addr.substring( 3 )
+                    bridgeOptions.inboundPermitteds << permitted
+                    this.logger.debug("Permitted inbound addressRegex: '${permitted.addressRegex}'")
                 }
                 else if ( addr.startsWith( "out:" ) ) {
-                    outboundPermitteds << [addressRegex: addr.substring( 4 )]
+                    permitted.addressRegex = addr.substring( 4 )
+                    bridgeOptions.outboundPermitteds << permitted
+                    this.logger.debug("Permitted outbound addressRegex: '${permitted.addressRegex}'")
                 }
                 else {
-                    inboundPermitteds << [addressRegex: addr]
-                    outboundPermitteds << [addressRegex: addr]
+                    permitted.addressRegex = addr
+                    bridgeOptions.inboundPermitteds << permitted
+                    bridgeOptions.outboundPermitteds << permitted
+                    this.logger.debug("Permitted both inbound and outbound addressRegex: '${permitted.addressRegex}'")
                 }
             }
         }
-        if ( eventBusBridge[ "allowEventAddressMatchIn" ] != null ) {
-            inboundPermitteds << [match: eventBusBridge[ "allowEventAddressMatchIn" ]]
-        }
-        if ( eventBusBridge[ "allowEventAddressMatchOut" ] != null ) {
-            outboundPermitteds << [match: eventBusBridge[ "allowEventAddressMatchOut" ]]
-        }
 
-        // Currently no more detailed permissions than on target address. Might add limits on message contents
-        // later.
-        def options = [
-                inboundPermitteds : inboundPermitteds,
-                outboundPermitteds: outboundPermitteds
-        ] as Map<String, Object>
-
-        sockJSHandler.bridge( options )
+        sockJSHandler.bridge( bridgeOptions )
 
         router.route( "/eventbus/*" ).handler( sockJSHandler )
 
-        this.logger.info("Starded event bus bridge for port: ${port}")
+        this.logger.info( "=============================================" )
+        this.logger.info( "Starded event bus bridge for port: ${ port }" )
+        this.logger.info( "=============================================" )
     }
 
     /**

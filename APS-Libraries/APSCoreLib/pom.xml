@@ -128,11 +128,13 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-apis</artifactId>
+            <scope>provided</scope>
         </dependency>
         <!--suppress NonOsgiMavenDependency -->
         <dependency>
             <groupId>se.natusoft.annotation</groupId>
             <artifactId>docutations</artifactId>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

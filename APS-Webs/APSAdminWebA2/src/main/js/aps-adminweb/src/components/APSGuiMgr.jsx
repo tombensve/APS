@@ -2,13 +2,15 @@ import React, { Component } from 'react'
 import './APSGuiMgr.css'
 import LocalEventBus from "./../LocalEventBus"
 import LocalBusRouter from "./../LocalBusRouter"
+import VertxEventBusRouter from "./../VertxEventBusRouter"
 import APSLayout from "./APSLayout"
 import APSDiv from "./APSDiv"
 import APSButton from "./APSButton"
 import APSTextField from "./APSTextField"
 import APSTextArea from "./APSTextArea"
-import { ROUTE_EXTERNAL, ROUTE_LOCAL } from "./../Consts"
 import { uuidv4 } from "./../UUID"
+import { ADDR_NEW_CLIENT } from "../Constants"
+import APSLogger from "../APSLogger"
 
 /**
  * A component reading a JSON spec of components to render. The GuiMgr also creates a local
@@ -33,35 +35,30 @@ class APSGuiMgr extends Component {
     constructor( props ) {
         super( props );
 
+        this.logger = new APSLogger( "APSGuiMgr" );
+
         this.state = {
             gui: null,
             comps: []
         };
 
         this.uuid = uuidv4();
-        this.listenAddress = "guimgr:" + this.uuid;
+        this.listenAddress = "aps:guimgr:" + this.uuid;
 
-        this.eventBus = new LocalEventBus();
-        this.eventBus.addBusRouter( new LocalBusRouter() );
-        //this.eventBus.addBusRouter( new VertxEventBusRouter() );
+        this.localEventBus = new LocalEventBus();
 
         /**
          * Event bus subscriber. We need to keep the instance of this so that we can unsubscribe later.
          *
-         * @param {String} address - The address the message is to. Always received if you use same function
-         *                           for multiple subscriptions.
-         * @param {String} message - A received message in JSON format.
+         * @param {string} message - A received message in JSON format.
          */
-        this.compSubscriber = ( address, message ) => {
+        this.compSubscriber = ( message ) => {
 
-            if ( address === this.listenAddress ) {
+            this.logger.debug( ">>>>>>>: message: {}",  message  );
 
-                let msg = JSON.parse( message );
+            if ( message['msgType'] === "gui" ) {
 
-                if ( msg['type'] === "gui" ) {
-
-                    this.updateGui( msg['gui'] );
-                }
+                this.updateGui( message['msgData'] );
             }
         };
     }
@@ -75,14 +72,20 @@ class APSGuiMgr extends Component {
      */
     componentDidMount() {
 
+        this.localEventBus.addBusRouter( new LocalBusRouter() );
+        this.localEventBus.addBusRouter( new VertxEventBusRouter() );
+
         // Subscribe to eventbus for content events.
-        this.eventBus.subscribe( this.listenAddress, this.compSubscriber, ROUTE_LOCAL );
+        this.localEventBus.subscribe( this.listenAddress, { routing: "local,external" }, ( message ) => {
+            // noinspection JSCheckFunctionSignatures
+            this.compSubscriber( message );
+        } );
 
         // Inform someone that there is a new client available and provide clients unique address.
-        this.eventBus.send( "aps:web", JSON.stringify( { op: "init", client: this.listenAddress } ), ROUTE_EXTERNAL );
+        this.localEventBus.send( ADDR_NEW_CLIENT, { op: "init", client: this.listenAddress }, { routing: "external" } );
 
         // For testing ...
-        this.fakeContentForTestDebugAndPOC();
+        //this.fakeContentForTestDebugAndPOC();
     }
 
     /**
@@ -91,7 +94,7 @@ class APSGuiMgr extends Component {
     componentWillUnmount() {
 
         // Since we are going away, stop listening for events.
-        this.eventBus.unsubscribe( this.listenAddress, this.compSubscriber, ROUTE_LOCAL );
+        this.localEventBus.unsubscribe( this.listenAddress, { routing: "local,external" }, this.compSubscriber );
     }
 
     /**
@@ -104,7 +107,7 @@ class APSGuiMgr extends Component {
         // gui: The gui spec received.
         // comps: The components created from the gui spec.
         // If the gui spec is empty no components should be rendered even if there happens to be comps.
-        return this.state.gui != null ? this.state.comps : <h1>No gui available!</h1>;
+        return this.state.gui != null ? this.state.comps : <b>Waiting for gui ...</b>;
     }
 
     //
@@ -118,7 +121,6 @@ class APSGuiMgr extends Component {
      */
     updateGui( gui ) {
 
-        // Should hopefully trigger a render ...
         this.setState( {
 
             gui: gui,
@@ -181,7 +183,7 @@ class APSGuiMgr extends Component {
             case 'div':
 
                 content.push(
-                    <APSDiv key={++arrKeyCon.key} >
+                    <APSDiv key={++arrKeyCon.key}>
                         {childContent}
                     </APSDiv>
                 );
@@ -191,7 +193,7 @@ class APSGuiMgr extends Component {
             case 'button':
 
                 content.push(
-                    <APSButton key={++arrKeyCon.key} eventBus={this.eventBus} mgrId={this.uuid} guiProps={gui}/>
+                    <APSButton key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={this.uuid} guiProps={gui}/>
                 );
 
                 break;
@@ -199,7 +201,7 @@ class APSGuiMgr extends Component {
             case 'textField':
 
                 content.push(
-                    <APSTextField key={++arrKeyCon.key} eventBus={this.eventBus} mgrId={this.uuid} guiProps={gui}/>
+                    <APSTextField key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={this.uuid} guiProps={gui}/>
                 );
 
                 break;
@@ -207,7 +209,7 @@ class APSGuiMgr extends Component {
             case 'textArea':
 
                 content.push(
-                    <APSTextArea key={++arrKeyCon.key} eventBus={this.eventBus} mgrId={this.uuid} guiProps={gui}/>
+                    <APSTextArea key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={this.uuid} guiProps={gui}/>
                 );
 
                 break;
@@ -233,7 +235,7 @@ class APSGuiMgr extends Component {
                 break;
 
             default:
-                console.log( "ERROR: Bad 'type': " + type );
+                console.error( "Bad 'type': " + type );
             //     throw "Bad type '" + type + "' in GUI specification JSON!"
         }
 
@@ -258,9 +260,9 @@ class APSGuiMgr extends Component {
                     width: 20,
                     value: "",
                     class: "form-control",
-                    listenTo: "test-gui",
-                    publishTo: "test-gui",
-                    routing: "local",
+                    listenTo: "aps:test-gui",
+                    publishTo: "aps:test-gui",
+                    headers: { routing: "local" }
                 },
                 {
                     id: "description",
@@ -271,9 +273,9 @@ class APSGuiMgr extends Component {
                     rows: 4,
                     value: "",
                     class: "form-control",
-                    listenTo: "test-gui",
-                    publishTo: "test-gui",
-                    routing: "local"
+                    listenTo: "aps:test-gui",
+                    publishTo: "aps:test-gui",
+                    headers: { routing: "local" }
                 },
                 {
                     id: "submit",
@@ -285,15 +287,15 @@ class APSGuiMgr extends Component {
                     disabled: true,
                     collectGroups: "gpoc",
                     enabled: "groupNotEmpty:gpoc",
-                    listenTo: "test-gui",
-                    publishTo: "test-gui",
-                    routing: "local,external"
+                    listenTo: "aps:test-gui",
+                    publishTo: "aps:test-gui",
+                    headers: { routing: "external" }
                 }
             ]
         };
 
         // This would normally come from elsewhere.
-        this.eventBus.send( this.listenAddress, JSON.stringify( { type: "gui", gui: testData } ), ROUTE_LOCAL );
+        this.localEventBus.send( this.listenAddress, { routing: "local" }, { msgType: "gui", msgData: testData } );
     }
 }
 

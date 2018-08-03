@@ -75,7 +75,7 @@ class VertxClient {
     @OSGiService( additionalSearchCriteria = "(vertx-object=Vertx)", timeout = "10 sec" )
     APSServiceTracker<Vertx> vertxTracker
 
-    @OSGiService( additionalSearchCriteria = "(&(vertx-object=Router)(vertx-router=test))", timeout = "10 sec" )
+    @OSGiService( additionalSearchCriteria = "(&(vertx-object=Router)(vertx-router=default))", timeout = "10 sec" )
     APSServiceTracker<Router> routerTracker
 
     @OSGiService( additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "10 sec" )

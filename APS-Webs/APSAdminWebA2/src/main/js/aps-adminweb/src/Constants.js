@@ -2,6 +2,11 @@
 // The following are routing values that are checked for in the guiProps.routing field.
 //
 
+//
+// ROUTING
+//
+export const HDR_ROUTING = "routing";
+
 // Only sent locally within the client between components.
 export const ROUTE_LOCAL = "local";
 
@@ -9,5 +14,8 @@ export const ROUTE_LOCAL = "local";
 // like "local,external".
 export const ROUTE_EXTERNAL = "external";
 
-// ----------------------------------------
+//
+// ADDRESSES
+//
 
+export const ADDR_NEW_CLIENT = "aps:new_client";

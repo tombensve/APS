@@ -808,6 +808,18 @@ _Parameters_
 
 > _name_ - The name to check. 
 
+__boolean existsAndNotEmpty(String name)__
+
+Checks if the named file exists and is not empty.
+
+_Returns_
+
+> true or false.
+
+_Parameters_
+
+> _name_ - The name of the file to check. 
+
 __boolean isDirectory()__
 
 _See_
@@ -2598,17 +2610,17 @@ The following third party products are using this license:
 
 The following third party products are using this license:
 
-*  [groovy-all-2.4.13](http://groovy-lang.org)
+*  [groovy-all-2.4.15](http://groovy-lang.org)
 
 *  [vertx-core-3.4.2](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-*  [vertx-auth-common-3.4.2](http://rubygems-proxy.torquebox.org/releases)
+*  [vertx-auth-common-3.5.3](http://rubygems-proxy.torquebox.org/releases)
 
-*  [vertx-lang-groovy-3.4.2](http://www.apache.org/licenses/LICENSE-2.0.txt)
+*  [vertx-lang-groovy-3.5.3](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-*  [vertx-web-3.4.2](http://rubygems-proxy.torquebox.org/releases)
+*  [vertx-web-3.5.3](http://rubygems-proxy.torquebox.org/releases)
 
-*  [vertx-hazelcast-3.4.2](http://www.apache.org/licenses/LICENSE-2.0.txt)
+*  [vertx-hazelcast-3.5.3](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 *  [hazelcast-3.6.3](http://www.hazelcast.com/)
 

@@ -42,9 +42,9 @@ package se.natusoft.osgi.aps;
 
 import org.junit.Test;
 import se.natusoft.osgi.aps.json.*;
-import se.natusoft.osgi.aps.json.tools.JSONToJava;
-import se.natusoft.osgi.aps.json.tools.JavaToJSON;
-import se.natusoft.osgi.aps.json.tools.SystemOutErrorHandler;
+import se.natusoft.osgi.aps.json.JSONToJava;
+import se.natusoft.osgi.aps.json.JavaToJSON;
+import se.natusoft.osgi.aps.json.SystemOutErrorHandler;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

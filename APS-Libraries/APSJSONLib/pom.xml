@@ -46,7 +46,6 @@
         <artifactId>APS-Libraries</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
         <version>1.0.0</version>
-        <relativePath>..</relativePath>
     </parent>
 
     <artifactId>aps-json-lib</artifactId>
@@ -75,8 +74,7 @@
 
         <!-- The bundle packages to export. -->
         <osgi.export.package>
-            se.natusoft.osgi.aps.json,
-            se.natusoft.osgi.aps.json.tools
+            se.natusoft.osgi.aps.json;version="${project.version}"
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->
@@ -101,11 +99,6 @@
         <osgi.embed.directory>lib</osgi.embed.directory>
 
         <!--
-            Trigger tiles.
-        -->
-        <tile.deploy>${project.groupId}:DeployBundleTile:${project.version}</tile.deploy>
-
-        <!--
             Misc properties
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -116,6 +109,7 @@
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-apis</artifactId>
             <version>1.0.0</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

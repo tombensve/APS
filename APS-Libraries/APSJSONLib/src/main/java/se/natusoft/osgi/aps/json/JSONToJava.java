@@ -38,11 +38,9 @@
  *         2012-01-06: Created!
  *
  */
-package se.natusoft.osgi.aps.json.tools;
+package se.natusoft.osgi.aps.json;
 
-import se.natusoft.osgi.aps.json.JSONErrorHandler;
 import se.natusoft.osgi.aps.exceptions.APSIOException;
-import se.natusoft.osgi.aps.json.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -103,6 +101,8 @@ public class JSONToJava {
      */
     public static <T> T convert(String json, Class<T> javaClass) throws APSIOException, JSONConvertionException {
         ByteArrayInputStream bais = new ByteArrayInputStream(json.getBytes());
+        // IDEA is wrong here!!
+        //noinspection TryFinallyCanBeTryWithResources
         try {
             return convert(bais, javaClass);
         }
@@ -123,7 +123,7 @@ public class JSONToJava {
      *
      * @throws JSONConvertionException On failure to convert.
      */
-    public static <T> T convert(JSONValue json, Class<T> javaClass) throws JSONConvertionException {
+    public static <T> T convert( JSONValue json, Class<T> javaClass) throws JSONConvertionException {
         T converted;
 
         if (json instanceof JSONObject) {
@@ -146,7 +146,7 @@ public class JSONToJava {
      */
     private static void load(BeanInstance bean, JSONObject jsonObject) throws JSONConvertionException {
         // Load bean properties.
-        for (JSONString prop : jsonObject.getValueNames()) {
+        for ( JSONString prop : jsonObject.getValueNames()) {
             JSONValue value = jsonObject.getValue(prop);
 
             @SuppressWarnings("unchecked") Object convertedValue = convertJSONValue(value, bean.getPropertyType(prop.toString()));
@@ -195,7 +195,7 @@ public class JSONToJava {
             resVal = (T)value.toString();
         }
         else if (value instanceof JSONBoolean) {
-            resVal = (T)((JSONBoolean)value).toBoolean();
+            resVal = (T)(( JSONBoolean )value).toBoolean();
         }
         else if (value instanceof JSONNumber) {
             resVal = (T)((JSONNumber)value).to(modelType);

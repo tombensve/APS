@@ -1,4 +1,4 @@
-package se.natusoft.osgi.aps.json.tools;
+package se.natusoft.osgi.aps.json;
 
 import se.natusoft.osgi.aps.json.JSONErrorHandler;
 import se.natusoft.osgi.aps.exceptions.APSIOException;

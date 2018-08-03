@@ -1,7 +1,4 @@
 /**
- * This is a simple local event bus that by default sends all messages to all current
- * subscribers.
- *
  * ## Types
  *
  * ### Address
@@ -13,7 +10,7 @@
  *
  * This class actually does nothing at all! It just provides an API to one or more "routers".
  * Well you can have zero also, but nothing will happen then. This just calls the corresponding
- * subscribe(...), unsubscribe(...), and send(...) method of each added router.
+ * subscribe(...), unsubscribe(...), send(...), and publish(...) method of each added router.
  *
  * The intention with this is to have at least 2 different "routers". One that only sends locally
  * among the subscribers within the JS instance, that is no networking, just calling another object
@@ -26,7 +23,9 @@
  * need to change the router handling Vert.x. It will not affect the components which only uses
  * this.
  */
-class LocalEventBus {
+import APSLogger from "./APSLogger";
+
+export default class LocalEventBus {
 
     /**
      * Creates a new LocalEventBus.
@@ -34,6 +33,8 @@ class LocalEventBus {
      * @constructor
      */
     constructor() {
+
+        this.logger = new APSLogger("LocalEventBus");
 
         // noinspection JSValidateTypes
         /**
@@ -48,51 +49,121 @@ class LocalEventBus {
     }
 
     /**
-     * This adds a subscriber for an address.
+     * JSDoc declaration of messageReceiver as param type.
      *
-     * @param {string} address                      - The address to subscribe to messages from.
-     * @param {function(String, String)} subscriber - A function taking an address and a message.
-     * @param {string} routing                      - Routing hints.
+     * @callback subscriber
+     * @param {object} message
      */
-    subscribe( address, subscriber, routing = "" ) {
+
+    /**
+     * This adds a subscriber for an address. The first param can also be an object containing 3 keys for each
+     * parameter. In that case the other 2 are ignored.
+     *
+     * @param {string} address        - The address to subscribe to messages from.
+     * @param {object} headers        - Filter subscriptions on headers.
+     * @param {subscriber} subscriber - A function taking an address and a message.
+     */
+    subscribe( address, headers = null, subscriber = null) {
+
+        if (typeof address === "object") {
+            let params = address;
+            address = params["address"];
+            headers = params["headers"];
+            subscriber= params["subscriber"];
+        }
+
+        if (headers == null && subscriber == null) {
+            throw new Error( "If the first argument is not an object containing 3 keys then header and subscriber " +
+            "must also be supplied!");
+        }
 
         for ( let busRouter of this.busRouters ) {
-            busRouter.subscribe( address, subscriber, routing );
+            busRouter.subscribe( address, headers, subscriber );
         }
     }
 
     /**
      * Unsubscribes to a previously done subscription.
      *
-     * @param {string} address                      - The address of the subscription.
-     * @param {function(String, String)} subscriber - The subscriber to unsubscribe.
-     * @param {string} routing                     - Routing hints.
+     * @param {string} address        - The address of the subscription.
+     * @param {object} headers        - The headers used to subscribe with.
+     * @param {subscriber} subscriber - The subscriber to unsubscribe.
      */
-    unsubscribe( address, subscriber, routing = "" ) {
+    unsubscribe( address, headers = null, subscriber = null ) {
+
+        if (typeof address === "object") {
+            let params = address;
+            address = params["address"];
+            headers = params["headers"];
+            subscriber = params["subscriber"];
+        }
+
+        if (headers == null && subscriber == null) {
+            throw new Error( "If the first argument is not an object containing 3 keys then header and subscriber " +
+                "must also be supplied!");
+        }
 
         for ( let busRouter of this.busRouters ) {
 
-            busRouter.unsubscribe( address, subscriber, routing );
+            busRouter.unsubscribe( address, headers, subscriber );
         }
     }
 
     /**
-     * Sends a message.
+     * Sends a message to one subscriber.
      *
-     * @param {String} address  - The address to send to.
-     * @param {String} message  - The message to send. Note that this must be a JSON string
-     * @param {string} routing  - Routing hints. Note that this could be provided in the actual
-     *                            message for this method, but subscribe(...) and unsubscribe(...)
-     *                            still needs this, so for consistency I pass it along here too.
-     *                            It is of course entirely OK for a "router" provider to ignore this
-     *                            and use message information instead if it wants.
+     * @param {string} address  - The address to send to.
+     * @param {object} headers  - The headers for the message.
+     * @param {object} message  - The message to send. Note that this must be a JSON string
      */
-    send( address, message, routing = "" ) {
-        console.log( "EventBus: sending(address:" + address + ", routing:" + routing + "): " + message );
+    send( address, headers = null, message = null ) {
+
+        if ( typeof address === "object" ) {
+            let params = address;
+            address = params["address"];
+            headers = params["headers"];
+            message = params["message"];
+        }
+
+        if (headers == null && message == null) {
+            throw new Error( "If the first argument is not an object containing 3 keys then header and message " +
+                "must also be supplied!");
+        }
+
+        this.logger.debug( "EventBus: sending(address: {}, headers: {}): {}", [ address, headers, message ] );
 
         for ( let busRouter of this.busRouters ) {
 
-            busRouter.send( address, message, routing );
+            busRouter.send( address, message, headers );
+        }
+    }
+
+    /**
+     * Publishes a message to all subscribers.
+     *
+     * @param {string} address  - The address to send to.
+     * @param {object} headers  - The headers for the message.
+     * @param {object} message  - The message to send. Note that this must be a JSON string
+     */
+    publish( address, headers = null, message = null ) {
+
+        if ( typeof address === "object" ) {
+            let params = address;
+            address = params["address"];
+            headers = params["headers"];
+            message = params["message"];
+        }
+
+        if (headers == null && message == null) {
+            throw new Error( "If the first argument is not an object containing 3 keys then header and message " +
+                "must also be supplied!");
+        }
+
+        this.logger.debug( "EventBus: publishing(address: {}, headers:{}): {}", [ address, headers, message ] );
+
+        for ( let busRouter of this.busRouters ) {
+
+            busRouter.publish( address, message, headers );
         }
     }
 
@@ -101,4 +172,3 @@ class LocalEventBus {
     }
 }
 
-export default LocalEventBus;

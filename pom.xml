@@ -87,7 +87,7 @@
         <ftpPlugin.version>1.0.1</ftpPlugin.version>
         <markdownDoc.version>2.1.0</markdownDoc.version>
         <groovy.version>2.4.15</groovy.version>
-        <vertx.version>3.4.2</vertx.version>
+        <vertx.version>3.5.3</vertx.version>
         <!--
             NOTE: Vertx 3.3.3 requires netty 4.1.6, fails with 4.1.9!! This is nettys fault since they
             have changed APIs!! That should never be done when only the third digit of the version number
@@ -313,12 +313,6 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.6</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-war-plugin</artifactId>
                     <version>2.6</version>
                 </plugin>
 

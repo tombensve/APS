@@ -77,7 +77,6 @@
 
         <!-- The bundle packages to export. -->
         <osgi.export.package>
-            se.natusoft.osgi.aps.net.vertx.tools;version="${project.version}"
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->

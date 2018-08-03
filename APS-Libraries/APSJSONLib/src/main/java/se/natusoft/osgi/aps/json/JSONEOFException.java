@@ -41,4 +41,5 @@ import se.natusoft.osgi.aps.exceptions.APSIOException;
 /**
  * Thrown if a JSON structure is tried to be read from a stream that has no more data.
  */
+@SuppressWarnings( "WeakerAccess" )
 public class JSONEOFException extends APSIOException {}

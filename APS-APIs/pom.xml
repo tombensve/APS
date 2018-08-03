@@ -216,7 +216,6 @@
                     <supportedProjectTypes>
                         <supportedProjectType>jar</supportedProjectType>
                         <supportedProjectType>bundle</supportedProjectType>
-                        <supportedProjectType>war</supportedProjectType>
                     </supportedProjectTypes>
                     <archive>
                         <manifestEntries>

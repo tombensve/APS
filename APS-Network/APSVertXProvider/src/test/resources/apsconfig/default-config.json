@@ -2,26 +2,11 @@
   "http": [
     {
       "name": "default",
-      "port": 9088,
+      "port": 8880,
       "eventBusBridge": {
         "enabled": true,
-        "allowEventAddresses": null,
-        "allowEventMatchIn": {
-          "group": "gpoc"
-        },
-        "allowEventMatchOut": {
-          "group": "gpoc"
-        },
-        "allowEventAddressesRegex": "apsSvc-.*,apsClient-.*"
+        "addressesRegex": "aps.*"
       }
-    },
-    {
-      "name": "aps-admin-web-a2",
-      "port": 9080
-    },
-    {
-      "name": "test",
-      "port": 8888
     }
   ]
 }

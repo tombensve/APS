@@ -40,6 +40,11 @@ class WebBoot {
             // This works due to "homepage": "/aps" in package.json.
             // Found this tip at: https://github.com/facebook/create-react-app/issues/165
             // Note that if /aps below changes the path in package.json must also change!
+            //
+            // Also note that since this is OSGi and vertx is provided by another bundle
+            // it has another ClassLoader and thus also another classpath and will not see
+            // our files. Thereby we need to provide our ClassLoader for StaticHandler to
+            // be able to load our files.
             router.route( "/aps/*" )
                     .handler( StaticHandler.create( "webContent", this.class.classLoader )
                     .setCachingEnabled( false ) )
