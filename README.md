@@ -10,6 +10,8 @@ Work is slow, whenever time permits.
 
 To be very clear: **This is currently, and probably for a long time comming, a playground where I'm having fun.** The original (and still active) goal with this is to make a very easy to use web platform based on OSGi & Vertx. APS is however only using the basic 4 OSGi APIs, and currently java8 & Groovy code so it will probably **not** run in most embedded OSGi containers.
 
+This project is now using 2 exceptional frameworks: __Vert.x & React__. These both belong to the same category: Things that just work! I have the highest respect for the people behind both of these. It gives me a warm feeling to know that there is people out there who knows what they are doing, and are doing things very well. These both also supply outstanding documentation.
+
 ---
 
 __To build__ this you must first follow the instructions here: https://github.com/tombensve/maven-bundle-plugin/blob/master/README.md
@@ -38,6 +40,6 @@ Using the OSGiServiceTestTools all the tests deploy both the tested bundle and r
 
 ----
 
-In general this works very well mostly due the the simplicity of the core OSGi APIs. There is a clear reason why I stayed with only those. Keep things as simple as possible and as small as possible is always my goal. I'm also very satisfied and impressed with Vert.x! It just works!
+In general this works very well mostly due the the simplicity of the core OSGi APIs. There is a clear reason why I stayed with only those. Keep things as simple as possible and as small as possible is always my goal. 
 
 /Tommy
