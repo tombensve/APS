@@ -12,7 +12,7 @@ import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.util.APSLogger
 
 /**
- * Serve our web using an HTTP Router published by aps-vertx-provider. We currently use
+ * Serve our web using an HTTP Router published by aps-vertx-provider. I currently use
  * the default http server configuration rather than configuring a separate server
  * on a different port.
  */
@@ -20,7 +20,7 @@ import se.natusoft.osgi.aps.util.APSLogger
 @SuppressWarnings( "unused" )
 @CompileStatic
 @TypeChecked
-class WebBoot {
+class APSWebManagerBoot {
 
     /** Our logger. */
     @Managed
@@ -37,24 +37,24 @@ class WebBoot {
     setup() {
         this.routerTracker.onActiveServiceAvailable = { Router router, ServiceReference sr ->
 
-            // This works due to "homepage": "/aps" in package.json.
+            // This works due to "homepage": "/apsweb" in package.json.
             // Found this tip at: https://github.com/facebook/create-react-app/issues/165
-            // Note that if /aps below changes the path in package.json must also change!
+            // Note that if /apsweb below changes the path in package.json must also change!
             //
             // Also note that since this is OSGi and vertx is provided by another bundle
             // it has another ClassLoader and thus also another classpath and will not see
             // our files. Thereby we need to provide our ClassLoader for StaticHandler to
             // be able to load our files.
-            router.route( "/aps/*" )
+            router.route( "/apsweb/*" )
                     .handler( StaticHandler.create( "webContent", this.class.classLoader )
                     .setCachingEnabled( false ) )
 
-            this.logger.info "Started web content server for /aps!"
+            this.logger.info "Started web content server for /apsweb!"
         }
 
         this.routerTracker.onActiveServiceLeaving = { ServiceReference ref, Class api ->
 
-            this.logger.info "/aps route is going down!"
+            this.logger.info "/apsweb route is going down!"
         }
     }
 }

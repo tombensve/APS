@@ -21,7 +21,7 @@ import APSLogger from "../APSLogger"
  * but may also come from the frontend. This component does not care in any way where the
  * JSON spec comes from.
  */
-class APSGuiMgr extends Component {
+class APSWebManager extends Component {
 
     //
     // Constructors
@@ -301,4 +301,4 @@ class APSGuiMgr extends Component {
 
 
 // noinspection JSUnusedGlobalSymbols
-export default APSGuiMgr
+export default APSWebManager

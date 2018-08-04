@@ -57,7 +57,7 @@ class TestApp implements Constants {
 
     private void provideGui( EventBus eventBus, String address ) {
 
-        def testData = [
+        def testGui = [
                 id      : "top",
                 name    : "top",
                 type    : "layout",
@@ -105,7 +105,7 @@ class TestApp implements Constants {
                 ]
         ]
 
-        JsonObject reply = new JsonObject([ msgType: "gui", msgData: testData ] as Map<String, Object> )
+        JsonObject reply = new JsonObject([ msgType: "gui", msgData: testGui ] as Map<String, Object> )
 
         eventBus.send( address, reply)
 

@@ -21,7 +21,7 @@ class RunBackendTest extends OSGIServiceTestTools {
 
         hold() maxTime 2L unit SECONDS go()
 
-        deploy 'aps-web-manager' with new APSActivator() from 'APS-Webs/APSAdminWebA2/target/classes'
+        deploy 'aps-web-manager' with new APSActivator() from 'APS-Webs/APSWebManager/target/classes'
 
         // Unfortunately we have to wait a while here for the services to completely start up.
         // If you build on a really slow computer, this might not be enough.

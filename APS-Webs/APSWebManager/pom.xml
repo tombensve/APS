@@ -46,10 +46,10 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>aps-admin-web-a2</artifactId>
+    <artifactId>aps-web-manager</artifactId>
     <packaging>bundle</packaging>
 
-    <name>APS Admin Web A2</name>
+    <name>APS Web Manager</name>
 
     <description>
         This is a remake of old Vaadin APSAdminWeb made with Vert.x and Angular 2 instead.
@@ -82,8 +82,7 @@
 
         <!-- The private packages. -->
         <osgi.private.package>
-            se.natusoft.osgi.aps.web.adminweb;version="${project.version}",
-            se.natusoft.osgi.aps.web.adminweb.config;version="${project.version}",
+            se.natusoft.osgi.aps.web;version="${project.version}",
             webContent;version="${project.version}"
         </osgi.private.package>
 
@@ -336,7 +335,7 @@
                                 <mkdir dir="${project.basedir}/src/main/resources/webContent"/>
 
                                 <copy todir="${project.basedir}/src/main/resources/webContent" >
-                                    <fileset dir="${project.basedir}/src/main/js/aps-adminweb/build" includes="**"/>
+                                    <fileset dir="${project.basedir}/src/main/js/aps-webmanager-frontend/build" includes="**"/>
                                 </copy>
 
                                 <!--

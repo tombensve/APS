@@ -28,7 +28,8 @@ export default class VertxEventBusRouter {
 
         /** Our bus instance. */
         // noinspection JSValidateTypes
-        this.eventBus = new EventBus( "http://localhost:8880/eventbus/", {} );
+        this.eventBus = new EventBus( window.location.protocol + "//" + window.location.hostname +
+            (window.location.port !== "" ? (":" + window.location.port) : "") + "/eventbus/", {} );
 
         /** Callback for when bus is connected. */
         this.eventBus.onopen = () => {

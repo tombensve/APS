@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import './App.css';
-import './components/APSGuiMgr'
-import APSGuiMgr from "./components/APSGuiMgr";
+import './components/APSWebManager'
+import APSWebManager from "./components/APSWebManager";
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <APSGuiMgr/>
+        <APSWebManager/>
       </div>
     );
   }

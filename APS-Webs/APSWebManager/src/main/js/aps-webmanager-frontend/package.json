@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "comment1": "Suggested in https://github.com/facebook/create-react-app/issues/165",
-  "homepage": "/aps",
+  "homepage": "/apsweb",
   "dependencies": {
     "prop-types": "^15.6.2",
     "react": "^16.4.1",

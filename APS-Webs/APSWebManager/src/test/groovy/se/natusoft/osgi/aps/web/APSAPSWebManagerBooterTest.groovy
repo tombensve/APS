@@ -15,7 +15,7 @@ import static java.util.concurrent.TimeUnit.SECONDS
 
 @CompileStatic
 @TypeChecked
-class APSWebBooterTest extends OSGIServiceTestTools {
+class APSAPSWebManagerBooterTest extends OSGIServiceTestTools {
 
     private static APSLogger logger = new APSLogger( APSLogger.PROP_LOGGING_FOR, "WebContentServerTest" )
 
