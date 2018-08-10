@@ -1,0 +1,11 @@
+body {
+    margin: 5px;
+    padding: 5px;
+    font-family: sans-serif;
+}
+
+/*.form-inline > * {*/
+    /*margin-left:5px !important;*/
+    /*margin-right:5px !important;*/
+/*}*/
+

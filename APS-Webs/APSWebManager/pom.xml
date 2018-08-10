@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    PROJECT
+        Name
+            APS VertX Provider
+
+        Code Version
+            1.0.0
+
+        Description
+            This service provides configured Vertx instances allowing multiple services to use the same Vertx instance.
+
+            This service also provides for multiple instances of VertX by associating an instance with a name. Everyone
+            asking for the same name will get the same instance.
+
+    COPYRIGHTS
+        Copyright (C) 2012 by Natusoft AB All rights reserved.
+
+    LICENSE
+        Apache 2.0 (Open Source)
+
+        Licensed under the Apache License, Version 2.0 (the "License");
+        you may not use this file except in compliance with the License.
+        You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+        Unless required by applicable law or agreed to in writing, software
+        distributed under the License is distributed on an "AS IS" BASIS,
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        See the License for the specific language governing permissions and
+        limitations under the License.
+
+    AUTHORS
+        tommy ()
+            Changes:
+            2017-01-01: Created!
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>APS-Webs</artifactId>
+        <groupId>se.natusoft.osgi.aps</groupId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>aps-web-manager</artifactId>
+    <packaging>bundle</packaging>
+
+    <name>APS Web Manager</name>
+
+    <description>
+        This is a remake of old Vaadin APSAdminWeb made with Vert.x and Angular 2 instead.
+    </description>
+
+    <properties>
+        <buildNumber>0</buildNumber>
+
+        <!--
+            Bundle properties
+        -->
+
+        <!--
+            The symbolic name of the bundle. Defaults to the artifact id, but can be overridden.
+
+            Note that the ${buildNumber} which is probably error marked by your IDE is made available
+            at runtime by build-number-mixin triggered by the mixin-maven-plugin below.
+        -->
+        <osgi.bundle.symbolic.name>${project.artifactId}_${buildNumber}</osgi.bundle.symbolic.name>
+
+        <!-- The bundle activator class -->
+        <osgi.bundle.activator>se.natusoft.osgi.aps.activator.APSActivator</osgi.bundle.activator>
+
+        <!-- The bundle packages to export. -->
+        <osgi.export.package>
+        </osgi.export.package>
+
+        <!-- The packages to import for the bundle. -->
+        <osgi.import.package>*</osgi.import.package>
+
+        <!-- The private packages. -->
+        <osgi.private.package>
+            se.natusoft.osgi.aps.web;version="${project.version}",
+            webContent;version="${project.version}"
+        </osgi.private.package>
+
+        <!-- The packages to export from dependent & embeded jars -->
+        <!--
+            Export the non OSGi compliant vertx-lang-groovy packages.
+        -->
+        <osgi.export.dependency.package>
+        </osgi.export.dependency.package>
+
+        <!-- The resources to include in the bundle -->
+        <!--
+            All resources are included for this bundle, so this have no effect!
+        -->
+        <!--<osgi.include.resource>-->
+        <!--webContent/adminweb-bundle.js=src/main/resources/webContent/adminweb-bundle.js,-->
+        <!--webContent/index.html=src/main/resources/webContent/index.html-->
+        <!--</osgi.include.resource>-->
+
+        <!-- The default for embedding dependencies in bundle. -->
+        <osgi.embed.dependency>*;scope=compile</osgi.embed.dependency>
+
+        <!-- The directory whose content should be embeded into the bundle jar. -->
+        <osgi.embed.directory>lib</osgi.embed.directory>
+
+        <!--
+            APS properties.
+        -->
+
+        <!--
+            Other properties
+        -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!--
+            APS
+        -->
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-apis</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-json-lib</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-admin-web-service-provider</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-vertx-provider</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-core</artifactId>
+            <version>${vertx.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--suppress NonOsgiMavenDependency -->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-lang-groovy</artifactId>
+            <version>${vertx.version}</version>
+            <scope>compile</scope>
+            <!-- This pulls in an older version of groovy causing problems when running tests. -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.codehaus.groovy</groupId>
+                    <artifactId>groovy-all</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>io.vertx</groupId>-->
+        <!--<artifactId>vertx-auth-common</artifactId>-->
+        <!--<version>${vertx.version}</version>-->
+        <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web</artifactId>
+            <version>${vertx.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-core-lib</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Unfortunately needed since IDEA can't see the mixin and keep removing groovy if added manually in IDEA. -->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <scope>provided</scope>
+            <classifier>indy</classifier>
+            <version>${groovy.version}</version>
+        </dependency>
+
+        <!--
+            Test
+        -->
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-osgi-test-tools</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-service-test-support</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!--
+            These are for being able to run aps-config-manager and dependent bundles in unit tests
+            using aps-osgi-test-tools. It feels better running the real thing rather than fake config.
+        -->
+
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-vertx-cluster-datastore-service-provider</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-vertx-event-bus-messaging-provider</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-filesystem-service-provider</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-config-manager</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <!--
+                Force the jar plugin to use the maven-bundle-plugin generated manifest.
+            -->
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!--<plugin>-->
+                <!--<artifactId>maven-compiler-plugin</artifactId>-->
+                <!--<version>3.1</version>-->
+                <!--<configuration>-->
+                    <!--<source>1.8</source>-->
+                    <!--<target>1.8</target>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+
+            <!--
+                 Mixins
+             -->
+            <plugin>
+                <groupId>com.github.odavid.maven.plugins</groupId>
+                <artifactId>mixin-maven-plugin</artifactId>
+                <configuration>
+                    <mixins>
+                        <mixin>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>groovy-mixin</artifactId>
+                            <version>${project.version}</version>
+                        </mixin>
+                        <mixin>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>deploy-bundle-mixin</artifactId>
+                            <version>${project.version}</version>
+                        </mixin>
+                        <mixin>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>build-number-mixin</artifactId>
+                            <version>${project.version}</version>
+                        </mixin>
+                    </mixins>
+                </configuration>
+            </plugin>
+
+            <!--
+                Copy web content
+
+                Note that the web who is in src/main/typescript. This job will copy the relevant js & html files
+                from src/main/typescript to src/main/resources/webContent. Maven will then install src/main/resources/webContent
+                in target/classes. The Vertx web server will then get the files to serve from webContent/... classpath.
+
+                Yes, it would have been possible to do all web client development under src/main/resources/webContent directly.
+                But src/main/groovy and src/main/typescript made more maven sense ...
+            -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+
+                        <id>copy-webContent</id>
+                        <!--
+                            This has to be generate-resources or "mvn clean install" will fail since it
+                            will install an empty src/main/resources/webContent before this copy occurs
+                            if run during "process-resources".
+                        -->
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <target>
+                                <!--
+                                    Give maven parallel execution time to catch up before we start copying.
+                                    Without this delay we will not get what we expect ...
+
+                                    I almost went bald, tearing my hair trying to figure this one out!!!
+
+
+                                    Do note that if you have a very slow machine this might need increasing in value!
+                                -->
+                                <sleep milliseconds="3000"/>
+
+                                <echo message="Installing web files under src/main/resources/webContent ..."/>
+                                <delete dir="${project.basedir}/src/main/resources/webContent"/>
+                                <mkdir dir="${project.basedir}/src/main/resources/webContent"/>
+
+                                <copy todir="${project.basedir}/src/main/resources/webContent" >
+                                    <fileset dir="${project.basedir}/src/main/js/aps-webmanager-frontend/build" includes="**"/>
+                                </copy>
+
+                                <!--
+                                    We need maven/ant time to catch up here too.
+                                -->
+                                <sleep milliseconds="3000"/>
+
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+
+                    </execution>
+
+                    <execution>
+                        <id>clean-webContent</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <target>
+                                <echo message="Cleaning ${project.basedir}/src/main/resources/webContent."/>
+                                <delete dir="${project.basedir}/src/main/resources/webContent"/>
+                                <echo message="Cleaning ${project.basedir}/.vertx cache."/>
+                                <delete dir="${project.basedir}/.vertx"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>Delete-vertx-cache</id>
+                        <phase>process-test-resources</phase>
+                        <configuration>
+                            <target>
+                                <delete dir="${project.basedir}/.vertx"/>
+                            </target>
+                        </configuration>
+
+                    </execution>
+                </executions>
+
+            </plugin>
+
+            <!--
+                OSGi bundle handling.
+            -->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <supportedProjectTypes>
+                        <supportedProjectType>jar</supportedProjectType>
+                        <supportedProjectType>bundle</supportedProjectType>
+                    </supportedProjectTypes>
+                    <archive>
+                        <manifestEntries>
+                            <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
+                        </manifestEntries>
+                    </archive>
+                    <instructions>
+                        <Export-Package>${osgi.export.package}</Export-Package>
+                        <Import-Package>${osgi.import.package}</Import-Package>
+                        <_exportcontents>${osgi.export.dependency.package}</_exportcontents>
+                        <Private-Package>${osgi.private.package}</Private-Package>
+                        <!-- Not specifying this makes it include all resources! -->
+                        <!--<Include-Resource>${osgi.include.resource}</Include-Resource>-->
+                        <Bundle-SymbolicName>${osgi.bundle.symbolic.name}</Bundle-SymbolicName>
+                        <Bundle-Activator>${osgi.bundle.activator}</Bundle-Activator>
+                        <Embed-Directory>${osgi.embed.directory}</Embed-Directory>
+                        <Embed-Dependency>${osgi.embed.dependency}</Embed-Dependency>
+                    </instructions>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.0</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/RunBackendTest</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>run-backend</id>
+            <activation>
+                <property>
+                    <name>run-backend</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.22.0</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/APSWebBooterTest</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/RunBackendTest</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!--<profile>-->
+        <!--<id>frontend</id>-->
+
+        <!--<build>-->
+        <!--<plugins>-->
+        <!--&lt;!&ndash;-->
+        <!--This plugin from https://github.com/eirslett/frontend-maven-plugin-->
+        <!--&ndash;&gt;-->
+        <!--<plugin>-->
+        <!--<groupId>com.github.eirslett</groupId>-->
+        <!--<artifactId>frontend-maven-plugin</artifactId>-->
+        <!--&lt;!&ndash; Use the latest released version:-->
+        <!--https://repo1.maven.org/maven2/com/github/eirslett/frontend-maven-plugin/ &ndash;&gt;-->
+        <!--<version>1.5</version>-->
+
+        <!--<configuration>-->
+        <!--<nodeVersion>v6.10.3</nodeVersion>-->
+
+        <!--&lt;!&ndash; optional: with node version greater than 4.0.0 will use npm provided by node distribution &ndash;&gt;-->
+        <!--<npmVersion>5.3.0</npmVersion>-->
+        <!--<workingDirectory>src/main/typescript</workingDirectory>-->
+        <!--</configuration>-->
+
+        <!--<executions>-->
+        <!--<execution>-->
+        <!--&lt;!&ndash; optional: you don't really need execution ids, but it looks nice in your build log. &ndash;&gt;-->
+        <!--<id>install node and npm</id>-->
+        <!--<goals>-->
+        <!--<goal>install-node-and-npm</goal>-->
+        <!--</goals>-->
+        <!--&lt;!&ndash; optional: default phase is "generate-resources" &ndash;&gt;-->
+        <!--<phase>generate-resources</phase>-->
+        <!--</execution>-->
+
+        <!--<execution>-->
+        <!--<id>npm install</id>-->
+        <!--<goals>-->
+        <!--<goal>npm</goal>-->
+        <!--</goals>-->
+
+        <!--&lt;!&ndash; optional: default phase is "generate-resources" &ndash;&gt;-->
+        <!--<phase>generate-resources</phase>-->
+
+        <!--<configuration>-->
+        <!--&lt;!&ndash; optional: The default argument is actually-->
+        <!--"install", so unless you need to run some other npm command,-->
+        <!--you can remove this whole <configuration> section.-->
+        <!--&ndash;&gt;-->
+        <!--<arguments>install</arguments>-->
+        <!--</configuration>-->
+        <!--</execution>-->
+
+        <!--<execution>-->
+        <!--<id>webpack build</id>-->
+        <!--<goals>-->
+        <!--<goal>webpack</goal>-->
+        <!--</goals>-->
+
+        <!--&lt;!&ndash; optional: the default phase is "generate-resources" &ndash;&gt;-->
+        <!--<phase>generate-resources</phase>-->
+
+        <!--&lt;!&ndash;<configuration>&ndash;&gt;-->
+        <!--&lt;!&ndash;&lt;!&ndash; optional: if not specified, it will run webpack's default&ndash;&gt;-->
+        <!--&lt;!&ndash;build (and you can remove this whole <configuration> section.) &ndash;&gt;&ndash;&gt;-->
+        <!--&lt;!&ndash;<arguments>-p</arguments>&ndash;&gt;-->
+        <!--&lt;!&ndash;</configuration>&ndash;&gt;-->
+        <!--</execution>-->
+
+        <!--</executions>-->
+
+        <!--</plugin>-->
+        <!--</plugins>-->
+        <!--</build>-->
+        <!--</profile>-->
+    </profiles>
+</project>
