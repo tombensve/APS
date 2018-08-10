@@ -51,8 +51,6 @@ import se.natusoft.osgi.aps.types.APSObject
  * Well, because JSON basically is a Map, and because this is Groovy and Groovy supports JSON structures
  * using maps. The difference is that Groovy has '[' where JSON has '{' for objects.
  *
- * I started out calling it a JSONMap, but finally decided agains that.
- *
  * A key is a String contining branches separated by '.' characters for each sub structure, and I've
  * decided to call these paths.
  *

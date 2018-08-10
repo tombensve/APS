@@ -332,6 +332,7 @@
                                 <sleep milliseconds="3000"/>
 
                                 <echo message="Installing web files under src/main/resources/webContent ..."/>
+                                <delete dir="${project.basedir}/src/main/resources/webContent"/>
                                 <mkdir dir="${project.basedir}/src/main/resources/webContent"/>
 
                                 <copy todir="${project.basedir}/src/main/resources/webContent" >

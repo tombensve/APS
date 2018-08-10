@@ -1,6 +1,6 @@
 import React from 'react'
-import './APSTextArea.css'
 import APSComponent from "./APSComponent"
+import { FormControl } from 'react-bootstrap'
 
 class APSTextArea extends APSComponent {
 
@@ -37,21 +37,27 @@ class APSTextArea extends APSComponent {
         // Handle emptiness.
         this.empty = ( event.target.value === "" );
 
-        this.send( this.eventMsg( {
-            componentType: "textArea",
-            value: event.target.value,
-            action: "changed"
-        } ) );
+        this.message(
+            this.changeEvent(
+                {
+                    componentType: "textArea",
+                    value: event.target.value
+                }
+            )
+        );
     }
 
     render() {
 
         // noinspection HtmlUnknownAttribute
-        return <textarea className={this.props.guiProps.class + " apsTextArea"}
-                         id={this.props.guiProps.id}
-                         rows={this.props.guiProps.rows} cols={this.props.guiProps.cols}
-                         onChange={this.handleEvent.bind( this )} disabled={this.state.disabled}
-                         defaultValue={this.state.value}/>
+        return <FormControl componentClass="textarea"
+                            value={this.state.value}
+                            id={this.props.guiProps.id}
+                            rows={this.props.guiProps.textArea.rows}
+                            cols={this.props.guiProps.textArea.cols}
+                            onChange={this.handleEvent.bind( this )}
+                            disabled={this.state.disabled}
+        />
     }
 }
 

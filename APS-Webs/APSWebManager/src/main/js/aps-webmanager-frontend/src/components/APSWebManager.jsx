@@ -1,20 +1,19 @@
 import React, { Component } from 'react'
-import './APSGuiMgr.css'
-import LocalEventBus from "./../LocalEventBus"
-import LocalBusRouter from "./../LocalBusRouter"
-import VertxEventBusRouter from "./../VertxEventBusRouter"
+import LocalEventBus from "../LocalEventBus"
+import LocalBusRouter from "../LocalBusRouter"
+import VertxEventBusRouter from "../VertxEventBusRouter"
 import APSLayout from "./APSLayout"
-import APSDiv from "./APSDiv"
+import APSPanel from "./APSPanel"
 import APSButton from "./APSButton"
 import APSTextField from "./APSTextField"
 import APSTextArea from "./APSTextArea"
-import { uuidv4 } from "./../UUID"
-import { ADDR_NEW_CLIENT } from "../Constants"
+import { uuidv4 } from "../UUID"
+import { ADDR_NEW_CLIENT, multiRoutes, EVENT_ROUTES } from "../Constants"
 import APSLogger from "../APSLogger"
 
 /**
  * A component reading a JSON spec of components to render. The GuiMgr also creates a local
- * event bus passed on to components. The JSON spec provides messages for components to send
+ * event bus passed on to components. The JSON spec provides messages for components to message
  * on the bus. Some will be forwarded on a global cluster bus also reaching the backend.
  *
  * The JSON spec to parse is provided on the event bus, and usually comes from the backend,
@@ -35,15 +34,14 @@ class APSWebManager extends Component {
     constructor( props ) {
         super( props );
 
-        this.logger = new APSLogger( "APSGuiMgr" );
+        this.logger = new APSLogger( "APSWebManager" );
 
         this.state = {
             gui: null,
             comps: []
         };
 
-        this.uuid = uuidv4();
-        this.listenAddress = "aps:guimgr:" + this.uuid;
+        this.listenAddress = "aps:web-manager:" + uuidv4() + "/" + this.props.mgrId;
 
         this.localEventBus = new LocalEventBus();
 
@@ -54,7 +52,7 @@ class APSWebManager extends Component {
          */
         this.compSubscriber = ( message ) => {
 
-            this.logger.debug( ">>>>>>>: message: {}",  message  );
+            this.logger.debug( ">>>>>>>: message: {}", message );
 
             if ( message['msgType'] === "gui" ) {
 
@@ -76,13 +74,19 @@ class APSWebManager extends Component {
         this.localEventBus.addBusRouter( new VertxEventBusRouter() );
 
         // Subscribe to eventbus for content events.
-        this.localEventBus.subscribe( this.listenAddress, { routing: "local,external" }, ( message ) => {
-            // noinspection JSCheckFunctionSignatures
-            this.compSubscriber( message );
-        } );
+        this.localEventBus.subscribe( this.listenAddress, { routing: multiRoutes( [EVENT_ROUTES.CLIENT, EVENT_ROUTES.BACKEND] ) },
+            ( message ) => {
+
+                // noinspection JSCheckFunctionSignatures
+                this.compSubscriber( message );
+            } );
 
         // Inform someone that there is a new client available and provide clients unique address.
-        this.localEventBus.send( ADDR_NEW_CLIENT, { op: "init", client: this.listenAddress }, { routing: "external" } );
+        this.localEventBus.message(
+            ADDR_NEW_CLIENT,
+            { routing: "backend" },
+            { op: "init", apsWebMgrId: this.props.apsWebMgrId, client: this.listenAddress }
+        );
 
         // For testing ...
         //this.fakeContentForTestDebugAndPOC();
@@ -94,7 +98,7 @@ class APSWebManager extends Component {
     componentWillUnmount() {
 
         // Since we are going away, stop listening for events.
-        this.localEventBus.unsubscribe( this.listenAddress, { routing: "local,external" }, this.compSubscriber );
+        this.localEventBus.unsubscribe( this.listenAddress, { routing: "client,backend" }, this.compSubscriber );
     }
 
     /**
@@ -154,85 +158,56 @@ class APSWebManager extends Component {
         }
 
         let type = gui['type'];
+        let mgrId = this.props.mgrId;
+        if ( mgrId == null ) mgrId = this.uuid;
 
         // noinspection JSUnresolvedVariable
         switch ( type ) {
 
-            case 'layout':
-
-                // noinspection JSUnresolvedVariable
-                if ( gui['layout'] === "horizontal" ) {
-
-                    content.push(
-                        <APSLayout key={++arrKeyCon.key} orientation="horiz">
-                            {childContent}
-                        </APSLayout>
-                    )
-                }
-                else {
-
-                    content.push(
-                        <APSLayout key={++arrKeyCon.key} orientation="vert">
-                            {childContent}
-                        </APSLayout>
-                    )
-                }
-
-                break;
-
-            case 'div':
+            case 'aps-layout':
 
                 content.push(
-                    <APSDiv key={++arrKeyCon.key}>
+                    <APSLayout key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={mgrId} guiProps={gui}>
                         {childContent}
-                    </APSDiv>
-                );
+                    </APSLayout>
+                )
 
                 break;
 
-            case 'button':
+            case 'aps-panel':
 
                 content.push(
-                    <APSButton key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={this.uuid} guiProps={gui}/>
+                    <APSPanel key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={mgrId} guiProps={gui}>
+                        {childContent}
+                    </APSPanel>
                 );
 
                 break;
 
-            case 'textField':
+            case 'aps-button':
 
                 content.push(
-                    <APSTextField key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={this.uuid} guiProps={gui}/>
+                    <APSButton key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={mgrId} guiProps={gui}/>
                 );
 
                 break;
 
-            case 'textArea':
+            case 'aps-text-field':
 
                 content.push(
-                    <APSTextArea key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={this.uuid} guiProps={gui}/>
+                    <APSTextField key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={mgrId} guiProps={gui}/>
                 );
 
                 break;
 
-            case 'number':
+            case 'aps-text-area':
+
+                content.push(
+                    <APSTextArea key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={mgrId} guiProps={gui}/>
+                );
 
                 break;
 
-            case 'date':
-
-                break;
-
-            case 'header':
-
-                break;
-
-            case 'text':
-
-                break;
-
-            case 'markdown':
-
-                break;
 
             default:
                 console.error( "Bad 'type': " + type );
@@ -240,62 +215,6 @@ class APSWebManager extends Component {
         }
 
         return content
-    }
-
-    /**
-     * This produces real browser output.
-     */
-    fakeContentForTestDebugAndPOC() {
-        let testData = {
-            id: "top",
-            name: "top",
-            type: "layout",
-            layout: "horizontal",
-            children: [
-                {
-                    id: "name",
-                    name: "name-field",
-                    group: "gpoc",
-                    type: "textField",
-                    width: 20,
-                    value: "",
-                    class: "form-control",
-                    listenTo: "aps:test-gui",
-                    publishTo: "aps:test-gui",
-                    headers: { routing: "local" }
-                },
-                {
-                    id: "description",
-                    name: "descriptionField",
-                    group: "gpoc",
-                    type: "textArea",
-                    cols: 30,
-                    rows: 4,
-                    value: "",
-                    class: "form-control",
-                    listenTo: "aps:test-gui",
-                    publishTo: "aps:test-gui",
-                    headers: { routing: "local" }
-                },
-                {
-                    id: "submit",
-                    name: "submitButton",
-                    group: "gpoc",
-                    type: "button",
-                    label: "Save",
-                    class: "btn btn-success",
-                    disabled: true,
-                    collectGroups: "gpoc",
-                    enabled: "groupNotEmpty:gpoc",
-                    listenTo: "aps:test-gui",
-                    publishTo: "aps:test-gui",
-                    headers: { routing: "external" }
-                }
-            ]
-        };
-
-        // This would normally come from elsewhere.
-        this.localEventBus.send( this.listenAddress, { routing: "local" }, { msgType: "gui", msgData: testData } );
     }
 }
 

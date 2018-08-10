@@ -1,25 +1,22 @@
 import React, { Component } from 'react'
-import './APSLayout.css'
+import { Row } from 'react-bootstrap'
 
-class APSLayout extends Component {
+export default class APSLayout extends Component {
     render() {
         let result = null;
 
-        // noinspection JSUnresolvedVariable
-        if ( this.props.orientation === null || this.props.orientation.startsWith( "horiz" ) ) {
+        if ( this.props.guiProps.layout.orientation === null || this.props.guiProps.layout.orientation.startsWith( "horiz" ) ) {
 
             result = (
-                <div className="form-inline">
-                    <div className="form-group">
+                    <Row id={this.props.id} className="form-inline">
                         {this.props.children}
-                    </div>
-                </div>
+                    </Row>
             )
         }
         else {
 
             result = (
-                <div className="form-group">
+                <div id={this.props.id} className="form-group">
                     {this.props.children}
                 </div>
             )
@@ -28,6 +25,3 @@ class APSLayout extends Component {
         return result
     }
 }
-
-// noinspection JSUnusedGlobalSymbols
-export default APSLayout

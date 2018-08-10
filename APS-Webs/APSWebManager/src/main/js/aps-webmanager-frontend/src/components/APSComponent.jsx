@@ -2,7 +2,7 @@ import { Component } from 'react'
 import '../LocalEventBus'
 import PropTypes from "prop-types"
 import ApsLogger from "../APSLogger"
-
+import { EVENT } from "../Constants"
 /**
  * A common base component for all APS components.
  *
@@ -19,24 +19,35 @@ class APSComponent extends Component {
     constructor( props ) {
         super( props );
 
-        this.logger = new ApsLogger(this.componentId());
+        this.logger = new ApsLogger( this.componentId() );
 
         this._empty = true;
+        this._busMember = true;
         this._hasValue = true;
         this.collected = {};
 
         //this.logger = new ApsLogger();
 
-        this.subscribe( ( message ) => {
+        if ( this.busMember ) {
+            this.subscribe( ( message ) => {
 
-            this.messageHandler( message );
+                this.messageHandler( message );
 
-        } );
+            } );
+        }
     }
 
     //
     // Properties (subclasses should override or set these as needed)
     //
+
+    get busMember() {
+        return this._busMember;
+    }
+
+    set busMember( busMember ) {
+        this._busMember = busMember;
+    }
 
     // Component has empty value.
 
@@ -71,11 +82,18 @@ class APSComponent extends Component {
      * React callback for when component is available.
      */
     componentDidMount() {
-        this.send( this.eventMsg( {
-            eventType: "hello"
-        } ) );
     }
 
+    /**
+     * Provides default classes or overridden classes in guiProps. Its either or.
+     *
+     * @param {string} classes The components default classes.
+     *
+     * @returns {string} the passes classes or the overridden ones.
+     */
+    clsName( classes ) {
+        return this.props.guiProps.class != null ? this.props.guiProps.class : classes;
+    }
 
     /**
      * This should be overridden by subclasses to provide the name of the component. This is useful
@@ -89,13 +107,13 @@ class APSComponent extends Component {
     }
 
     /**
-     * Helper to send messages from event handlers. This gets everything but the message from the gui spec JSON.
+     * Helper to message messages from event handlers. This gets everything but the message from the gui spec JSON.
      *
-     * @param {string} message The message to send. Should be a string of JSON. Use eventMessage() as input to this.
+     * @param {object} message The message to message. Should be a string of JSON. Use eventMessage() as input to this.
      */
-    send( message ) {
+    message( message ) {
 
-        this.props.eventBus.send( this.props.guiProps.publishTo, this.props.guiProps.headers, message );
+        this.props.eventBus.message( this.props.guiProps.publishTo, this.props.guiProps.headers, message );
     }
 
     /**
@@ -105,7 +123,10 @@ class APSComponent extends Component {
      */
     subscribe( subscriber ) {
 
-        this.props.eventBus.subscribe( this.props.guiProps.listenTo, this.props.guiProps.headers, subscriber );
+        if ( this.props.guiProps.headers != null ) {
+
+            this.props.eventBus.subscribe( this.props.guiProps.listenTo, this.props.guiProps.headers, subscriber );
+        }
     }
 
     /**
@@ -128,7 +149,6 @@ class APSComponent extends Component {
     eventMsg( msg ) {
 
         msg.type = "gui-event";
-        if ( msg.eventType == null ) msg.eventType = "change";
         msg.group = this.props.guiProps.group;
         msg.managerId = this.props.mgrId;
         msg.componentId = this.props.guiProps.id;
@@ -145,6 +165,43 @@ class APSComponent extends Component {
         return msg;
     }
 
+    /**
+     * Creates a "changeEvent" message.
+     *
+     * @param {object} msg Base message to append to.
+     * @returns {Object} An updated message.
+     */
+    changeEvent( msg ) {
+        msg = this.eventMsg( msg );
+        msg[EVENT.TYPE] = EVENT.TYPES.CHANGE;
+        return msg;
+    }
+
+    /**
+     * Creates a "changeEvent" message.
+     *
+     * @param {object} msg    - Base message to append to.
+     * @param {string} action - The action.
+     *
+     * @returns {Object} An updated message.
+     */
+    actionEvent( msg, action ) {
+        msg = this.eventMsg( msg );
+        msg["eventType"] = "action";
+        msg["action"] = action;
+        return msg;
+    }
+
+    /**
+     * A more specific submit action event.
+     *
+     * @param msg The message to append to.
+     *
+     * @returns {Object} The updated message.
+     */
+    submitActionEvent( msg ) {
+        return this.actionEvent( msg, "submit");
+    }
 
     /**
      * Component generic message handler.
@@ -154,7 +211,7 @@ class APSComponent extends Component {
     // noinspection JSMethodCanBeStatic
     messageHandler( message ) {
 
-        this.logger.debug( "messageHandler > Received: {}", [ message ] );
+        this.logger.debug( "messageHandler > Received: {}", [message] );
 
         // If this component wants to collect values sent by other components, we
         // just save the whole message under 'collected' and using the componentId as key.
@@ -231,7 +288,7 @@ class APSComponent extends Component {
 
 // Workarounds like this is why I don't like typeless languages! You end up faking types in different ways anyhow.
 APSComponent.propTypes = {
-    // The eventbus we send messages when needed.
+    // The eventbus we message messages when needed.
     eventBus: PropTypes.object,
     // The unique id of the GuiMgr creating the component.
     mgrId: PropTypes.string,

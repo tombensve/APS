@@ -1,7 +1,18 @@
 import React from 'react'
-import './APSButton.css'
 import APSComponent from "./APSComponent"
+import { Button } from 'react-bootstrap'
 
+/**
+ * ### Button specific properties
+ *
+ * #### guiProps.button.style
+ *
+ * Takes one of the bootstrap style names. Ex: "warning", "error", "info", ...
+ *
+ * #### guiProps.button.label
+ *
+ * A label for the button.
+ */
 class APSButton extends APSComponent {
 
     constructor( props ) {
@@ -29,20 +40,25 @@ class APSButton extends APSComponent {
     handleEvent( event ) {
         console.log( this, event );
 
-        this.send( this.eventMsg( {
-            componentType: "button"
-        } ) );
+        this.message(
+            this.submitActionEvent(
+                {
+                    componentType: "button"
+                }
+            )
+        );
     }
 
     render() {
 
         // noinspection HtmlUnknownAttribute
-        return <button className={this.props.guiProps.class + " apsButton"}
+        return <Button bsStyle={this.props.guiProps.button.style != null ? this.props.guiProps.button.style : "success"}
                        id={this.props.guiProps.id}
                        onClick={this.handleEvent.bind( this )}
                        disabled={this.state.disabled}>
-            {this.props.guiProps.label}
-        </button>
+            {this.props.guiProps.button.label}
+        </Button>
+
     }
 }
 

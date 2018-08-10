@@ -1,5 +1,5 @@
 import EventBus from 'vertx3-eventbus-client'
-import { HDR_ROUTING, ROUTE_EXTERNAL } from "./Constants"
+import { EVENT_ROUTING, EVENT_ROUTES } from "./Constants"
 import APSLogger from "./APSLogger"
 
 /**
@@ -12,16 +12,18 @@ export default class VertxEventBusRouter {
      */
     constructor() {
 
-        this.logger = new APSLogger("VertxEventBusRouter");
+        this.logger = new APSLogger( "VertxEventBusRouter" );
 
-        /** Cache of sends done before bus is connected. Will be sent when it is. */
-        this.sendMsgs = [];
-
-        /** Cache of publishes done before bus is connected. Will be published when it is. */
-        this.publishMsgs = [];
-
-        /** Cache of subscriptions done before bus is connected. Will be done when it is. */
-        this.subscribes = [];
+        /**
+         * A cache of messages and subscribers for when these are registered before the bus is
+         * connected.
+         *
+         * @type {{messages: Array, subscribers: Array}}
+         */
+        this.cache = {
+            messages: [],
+            subscribers: []
+        };
 
         /** Will change to true when bus is connected. */
         this.busReady = false;
@@ -29,7 +31,7 @@ export default class VertxEventBusRouter {
         /** Our bus instance. */
         // noinspection JSValidateTypes
         this.eventBus = new EventBus( window.location.protocol + "//" + window.location.hostname +
-            (window.location.port !== "" ? (":" + window.location.port) : "") + "/eventbus/", {} );
+            ( window.location.port !== "" ? ( ":" + window.location.port ) : "" ) + "/eventbus/", {} );
 
         /** Callback for when bus is connected. */
         this.eventBus.onopen = () => {
@@ -48,78 +50,58 @@ export default class VertxEventBusRouter {
 
         this.busReady = true;
 
-        for ( let sub of this.subscribes ) {
+        for ( let sub of this.cache.subscribers ) {
             this.logger.info( "Executing cached subscription!" );
             this.subscribe( sub.address, sub.headers, sub.callback );
         }
 
         this.subscribes = [];
 
-        for ( let msg of this.sendMsgs ) {
+        for ( let msg of this.cache.messages ) {
             this.logger.info( "Executing cached send!" );
-            this.send( msg.address, msg.headers, msg.message );
+            // noinspection JSUnresolvedFunction
+            this.message( msg.address, msg.headers, msg.message );
         }
 
         this.sendMsgs = [];
-
-        for ( let msg of this.publishMsgs ) {
-            this.logger.info( "Executing cached publish!" );
-            this.publish( msg.address, msg.headers, msg.message );
-        }
-
-        this.publishMsgs = [];
-
     }
 
     /**
      * Sends a message.
      *
-     * @param {string} address - Address to send to.
+     * @param {string} address - Address to message to.
      * @param {object} headers - The headers for the message.
-     * @param {object} message - The message to send.
+     * @param {object} message - The message to message.
      */
-    send( address, headers, message ) {
-        this.logger.debug( "Sending to {} with headers: {} and message: {}", [ address, headers, message ] );
+    message( address, headers, message ) {
+        this.logger.debug( "Sending to {} with headers: {} and message: {}", [address, headers, message] );
 
         if ( this.busReady ) {
 
-            if ( VertxEventBusRouter.valid( headers ) ) {
+            // Note here that we do no imitate the vertx event bus totally. We only have one message(...)
+            // method to send messages. It is the 'routing' in the header that determines if a send or a
+            // publish should be done.
 
-                // Note that we do not support request/response type messages that Vert.x does. That is why we just
-                // pass null for reply handler. In APS we only react to messages when and if they come. There is no
-                // hard connection between a send message and a received message. But it is OK to send a message
-                // and expect another message to be received at some time.
+            if ( headers[EVENT_ROUTING] != null ) {
+                if ( headers[EVENT_ROUTING].indexOf( EVENT_ROUTES.BACKEND ) >= 0 ) {
 
-                // noinspection JSUnresolvedFunction
-                this.eventBus.send( address, message, headers, null );
+                    // Note that we do not support request/response type messages that Vert.x does. That is why we just
+                    // pass null for reply handler. In APS we only react to messages when and if they come. There is no
+                    // hard connection between a message message and a received message. But it is OK to message a message
+                    // and expect another message to be received at some time.
+
+                    // noinspection JSUnresolvedFunction
+                    this.eventBus.send( address, message, headers, null );
+                }
+                else if ( headers[EVENT_ROUTING].indexOf( EVENT_ROUTES.CLUSTER ) >= 0 ) {
+
+                    // noinspection JSUnresolvedFunction
+                    this.eventBus.publish( address, message, headers );
+                }
             }
         }
         else {
-            this.sendMsgs.push( { address: address, message: message, headers: headers } )
-        }
-    }
-
-    /**
-     * Publishes a message.
-     *
-     * @param {string} address - Address to send to.
-     * @param {object} headers - The headers for the message.
-     * @param {object} message - The message to send.
-     */
-    publish( address, headers, message ) {
-        this.logger.debug( "Publishing to {} with headers: {} and message: {}", [ address, headers, message ] );
-
-        if ( this.busReady ) {
-
-            if ( VertxEventBusRouter.valid( headers ) ) {
-
-                // noinspection JSUnresolvedFunction
-                this.eventBus.publish( address, message, headers );
-            }
-        }
-        else {
-
-            this.publishMsgs.push( { adress: address, message: message, headers: headers } )
+            this.cache.messages.push( { address: address, message: message, headers: headers } );
         }
     }
 
@@ -131,26 +113,23 @@ export default class VertxEventBusRouter {
      * @param {function(object)} callback - Callback to call with messages.
      */
     subscribe( address, headers, callback ) {
-        this.logger.debug( "Subscribing to address {} with headers: {}", [ address, headers ] );
+        this.logger.debug( "Subscribing to address {} with headers: {}", [address, headers] );
 
         if ( this.busReady ) {
 
-            if ( VertxEventBusRouter.valid( headers ) ) {
-
-                // noinspection JSUnresolvedFunction
-                this.eventBus.registerHandler( address, headers, ( alwaysNull, message ) => {
-                    // console.log( "ADDSRESS: " + address );
-                    // console.log( "RECEIVED: " + JSON.stringify( message ) );
-                    // console.info("CALLBACK: " + callback);
-                    // For some reason we get the full internal vertx evemntbus message, not just
-                    // the client relevant 'body' part.
-                    callback( message['body'] );
-                } );
-            }
+            // noinspection JSUnresolvedFunction
+            this.eventBus.registerHandler( address, headers, ( alwaysNull, message ) => {
+                // console.log( "ADDSRESS: " + address );
+                // console.log( "RECEIVED: " + JSON.stringify( message ) );
+                // console.info("CALLBACK: " + callback);
+                // For some reason we get the full internal vertx evemntbus message, not just
+                // the client relevant 'body' part.
+                callback( message['body'] );
+            } );
         }
         else {
 
-            this.subscribes.push( { address: address, headers: headers, callback: callback } )
+            this.cache.subscribers.push( { address: address, headers: headers, callback: callback } )
         }
     }
 
@@ -162,27 +141,11 @@ export default class VertxEventBusRouter {
      * @param {function(string, string)} callback - The callback to unsubscribe.
      */
     unsubscribe( address, headers, callback ) {
-        this.logger.debug( "Unsubscribing from address '{}' with headers: {}", [ address, headers ] ) ;
+        this.logger.debug( "Unsubscribing from address '{}' with headers: {}", [address, headers] );
 
         // I expect the bus to be upp by the time this is done :-)
 
-        if ( VertxEventBusRouter.valid( headers ) ) {
-
-            // noinspection JSUnresolvedFunction
-            this.eventBus.unregisterHandler( address, headers, callback )
-        }
+        // noinspection JSUnresolvedFunction
+        this.eventBus.unregisterHandler( address, headers, callback )
     }
-
-    /**
-     * Validates that the operation is valid for this router based on header info.
-     *
-     * @param headers The headers to check for validity.
-     * @returns {boolean} true or false.
-     *
-     * @private
-     */
-    static valid( headers ) {
-        return headers[HDR_ROUTING] != null && headers[HDR_ROUTING].indexOf( ROUTE_EXTERNAL ) >= 0;
-    }
-
 }

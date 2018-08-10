@@ -1,6 +1,6 @@
 import React from 'react'
-import './APSTextField.css'
 import APSComponent from "./APSComponent"
+import { FormControl } from 'react-bootstrap'
 
 class APSTextField extends APSComponent {
 
@@ -15,41 +15,51 @@ class APSTextField extends APSComponent {
 
     }
 
-    componentId() { return "APSTextField"; }
+    componentId() {
+        return "APSTextField";
+    }
 
     set disabled( state ) {
         let _state = this.state;
         _state.disabled = state;
-        this.setState(_state);
+        this.setState( _state );
     }
 
     handleEvent( event ) {
 
-        this.setState({
+        this.setState( {
             disabled: this.state.disabled,
             value: event.target.value
-        });
+        } );
 
-        this.empty = (event.target.value === "");
+        this.empty = ( event.target.value === "" );
 
         // event.stopPropagation();
 
-        this.send( this.eventMsg( {
-            componentType: "textField",
-            value: event.target.value,
-            action: "changed"
-        } ) );
+        this.message(
+            this.changeEvent(
+                {
+                    componentType: "textField",
+                    value: event.target.value
+                }
+            )
+        );
 
-        console.log( this.name + " : " + event.type + " : " + event.target.value);
+        console.log( this.name + " : " + event.type + " : " + event.target.value );
     }
 
     render() {
-        // noinspection HtmlUnknownAttribute
-        return <input value={this.state.value} type="text"
-                      id={this.props.guiProps.id}
-                      className={this.props.guiProps.class + " apsTextField"}
-                      onChange={this.handleEvent.bind( this )}
-                      disabled={this.state.disabled}/>
+
+        let placeHolder = "";
+        if (this.props.guiProps.textField != null && this.props.guiProps.textField.placeholder != null) {
+            placeHolder = this.props.guiProps.textField.placeholder;
+        }
+        return <FormControl componentClass="input"
+                            value={this.state.value}
+                            id={this.props.guiProps.id}
+                            placeholder={placeHolder}
+                            onChange={this.handleEvent.bind( this )}
+                            disabled={this.state.disabled}/>
     }
 }
 

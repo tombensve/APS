@@ -65,7 +65,7 @@
         Modules
     -->
     <modules>
-        <module>APSAdminWebA2</module>
+        <module>APSWebManager</module>
     </modules>
 
     <dependencies>

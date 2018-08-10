@@ -1,3 +1,21 @@
+The goal of this web project isto make components that communicate on a local eventbus. These are React components, and build upon mostly React-bootstrap components.
+
+- All relevant events of a component are sent as a message on the bus, always including current _value_, and component id, etc.
+
+- Components can also listen to messages on the bus and adapt.
+
+- Bus messages can be routed as "client", "backend", "cluster", or "client" & "backend" / "cluster". Vert.x EventBus client is used for "backend" and "cluster". The LocalEventBus does nothing else that pass on to all added EventBusRouter:s. There is a router for local messages, and one for Vert.x messages.
+
+- Components can belong to a group, by having a common group name. Any component can be a "collector", which means that is will listen to and save messages received from other components in the group. This type of component is optimal for having routing "backend" and will then work like a submit function. This type of component will pass along is collected information in its own message.
+
+- Much of this functionallity is in a common base component which reacts on `props.compProps`, a set of properties defining both features and behaviors of components.
+
+-  This also allows for a special component: `APSWebManager`. This creates an `LocalEventBus` internally, creates a unique adress for itself, and then sends a message to "aps:new\_client" address containing its unique address and an apsWebMgrId that needs to be a property of the component. This is routed to "client,backend". Any code listening to this message should check the _apsWebMgrId_ to see if it is for that code to use. If it is a JSON document of guiProps (including component names) is sent to the specified address. When `APSWebManager` sees this message it will render the components. This works because the _guiProps_ contains routing information and all components just sends messages. This component is in no way required to be used. The other components can be used as any other React component, but with the slight oddity of having to provide an `guiProps` object will all component settings.
+
+----
+
+__I decided to keep the imressive React documentation I got automatically from ~create-react:__
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>

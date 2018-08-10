@@ -1,4 +1,4 @@
-import { HDR_ROUTING, ROUTE_LOCAL } from "./Constants";
+import { EVENT_ROUTING, EVENT_ROUTES } from "./Constants";
 
 /**
  * This represents a router and is responsible for sending and subscribing to messages.
@@ -17,42 +17,15 @@ export default class LocalBusRouter {
     }
 
     /**
-     * Validates that the operation is valid for this router based on header info.
-     *
-     * @param headers The headers to check for validity.
-     * @returns {boolean} true or false.
-     *
-     * @private
-     */
-    static valid( headers ) {
-
-        return headers[HDR_ROUTING] != null && headers[HDR_ROUTING].indexOf( ROUTE_LOCAL ) >= 0;
-    }
-
-    /**
-     * Sends a message. This just calls publish since there is not difference between send and publish
-     * locally. Vert.x on a cluster sends to only one listener at a time in a round robin fashion for
-     * load balancing. But locally we are executing within the same JS environment.
-     *
-     * @param {string} address - Address to send to.
-     * @param {object} headers - The headers for the message.
-     * @param {object} message - The message to send.
-     */
-    send( address, headers , message) {
-
-        this.publish( address, message, headers );
-    }
-
-    /**
-     * Publishes a message to all listeners.
+     * sends a message to all listeners.
      *
      * @param {string} address
      * @param {object} headers
      * @param {object} message
      */
-    publish( address, headers, message ) {
+    message( address, headers, message ) {
 
-        if ( LocalBusRouter.valid( headers ) ) {
+        if ( headers[EVENT_ROUTING] === EVENT_ROUTES.CLIENT ) {
 
             let addressSubscribers = this.subscribers[address];
 
@@ -74,18 +47,15 @@ export default class LocalBusRouter {
      */
     subscribe( address, headers, callback ) {
 
-        if ( LocalBusRouter.valid( headers ) ) {
+        let addressSubscribers = this.subscribers[address];
 
-            let addressSubscribers = this.subscribers[address];
+        if ( addressSubscribers == null ) {
 
-            if ( addressSubscribers == null ) {
-
-                addressSubscribers = [];
-                this.subscribers[address] = addressSubscribers;
-            }
-
-            addressSubscribers.push( callback );
+            addressSubscribers = [];
+            this.subscribers[address] = addressSubscribers;
         }
+
+        addressSubscribers.push( callback );
     }
 
     /**
@@ -97,15 +67,13 @@ export default class LocalBusRouter {
      */
     unsubscribe( address, headers, callback ) {
 
-        if ( LocalBusRouter.valid( headers ) ) {
+        let addressSubscribers = this.subscribers[address];
 
-            let addressSubscribers = this.subscribers[address];
+        if ( addressSubscribers != null ) {
 
-            if ( addressSubscribers != null ) {
-
-                let remix = addressSubscribers.indexOf( callback );
-                addressSubscribers.splice( remix, 1 );
-            }
+            let remix = addressSubscribers.indexOf( callback );
+            addressSubscribers.splice( remix, 1 );
         }
+
     }
 }

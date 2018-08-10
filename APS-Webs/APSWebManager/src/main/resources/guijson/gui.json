@@ -1,24 +1,60 @@
 {
-  "id": "top",
+  "id": "h-test-group",
   "name": "top",
-  "type": "layout",
-  "layout": "horizontal",
+  "type": "aps-layout",
+  "layout": {
+    "orientation": "horiz"
+  },
   "children": [
     {
-      "id": "configs",
-      "name": "configTree",
-      "type": "tree",
-      "listensTo": "aps-config-editor",
-      "publishesTo": "aps-configEditor",
-      "publishGlobal": true
+      "id": "name",
+      "name": "name-field",
+      "group": "gpoc",
+      "type": "aps-text-field",
+      "textField": {
+        "width": 20
+      },
+      "value": "",
+      "listenTo": "aps:test-gui",
+      "publishTo": "aps:test-gui",
+      "headers": {
+        "routing": "client"
+      }
     },
     {
-      "id": "configEditor",
-      "name": "configEditor",
-      "type": "contentBox",
-      "listensTo": "aps-config-editor",
-      "publishesTo": "aps-config-editor",
-      "publishGlobal": true
+      "id": "description",
+      "name": "descriptionField",
+      "group": "gpoc",
+      "type": "aps-text-area",
+      "textArea": {
+        "cols": 30,
+        "rows": 4
+      },
+      "value": "",
+      "listenTo": "aps:test-gui",
+      "publishTo": "aps:test-gui",
+      "headers": {
+        "routing": "client"
+      }
+    },
+    {
+      "id": "submit",
+      "name": "submitButton",
+      "group": "gpoc",
+      "type": "aps-button",
+      "button": {
+        "label": "Save"
+      },
+      "class": "btn btn-success",
+      "disabled": true,
+      "collectGroups": "gpoc",
+      "enabled": "groupNotEmpty:gpoc",
+      "listenTo": "aps:test-gui",
+      "publishTo": "aps:test-gui",
+      "headers": {
+        "routing": "client,backend"
+      }
     }
   ]
 }
+
