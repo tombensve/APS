@@ -3,13 +3,13 @@ import APSComponent from "./APSComponent"
 import { Button } from 'react-bootstrap'
 
 /**
- * ### Button specific properties
- *
- * #### guiProps.button.style
+ * ## Properties
+
+ * ### guiProps.button.style
  *
  * Takes one of the bootstrap style names. Ex: "warning", "error", "info", ...
  *
- * #### guiProps.button.label
+ * ### guiProps.button.label
  *
  * A label for the button.
  */
@@ -26,7 +26,7 @@ class APSButton extends APSComponent {
         this.hasValue = false;
     }
 
-    componentId() {
+    componentType() {
         return "APSButton";
     }
 
@@ -52,11 +52,11 @@ class APSButton extends APSComponent {
     render() {
 
         // noinspection HtmlUnknownAttribute
-        return <Button bsStyle={this.props.guiProps.button.style != null ? this.props.guiProps.button.style : "success"}
+        return <Button bsStyle={this.props.guiProps.style != null ? this.props.guiProps.style : "success"}
                        id={this.props.guiProps.id}
                        onClick={this.handleEvent.bind( this )}
                        disabled={this.state.disabled}>
-            {this.props.guiProps.button.label}
+            {this.props.guiProps.label}
         </Button>
 
     }

@@ -3,6 +3,7 @@ import '../LocalEventBus'
 import PropTypes from "prop-types"
 import ApsLogger from "../APSLogger"
 import { EVENT } from "../Constants"
+
 /**
  * A common base component for all APS components.
  *
@@ -19,7 +20,7 @@ class APSComponent extends Component {
     constructor( props ) {
         super( props );
 
-        this.logger = new ApsLogger( this.componentId() );
+        this.logger = new ApsLogger( this.componentType() );
 
         this._empty = true;
         this._busMember = true;
@@ -101,7 +102,7 @@ class APSComponent extends Component {
      *
      * @returns {string}
      */
-    componentId() {
+    componentType() {
 
         return "APSComponent";
     }
@@ -153,7 +154,6 @@ class APSComponent extends Component {
         msg.managerId = this.props.mgrId;
         msg.componentId = this.props.guiProps.id;
         msg.componentName = this.props.guiProps.name;
-        //msg.submitter = this.props.guiProps.submitter != null  && this.props.guiProps.submitter;
         msg.empty = this.empty;
         msg.hasValue = this.hasValue;
 
@@ -185,7 +185,7 @@ class APSComponent extends Component {
      *
      * @returns {Object} An updated message.
      */
-    actionEvent( msg, action ) {
+    actionEvent( msg , action ) {
         msg = this.eventMsg( msg );
         msg["eventType"] = "action";
         msg["action"] = action;
@@ -200,7 +200,7 @@ class APSComponent extends Component {
      * @returns {Object} The updated message.
      */
     submitActionEvent( msg ) {
-        return this.actionEvent( msg, "submit");
+        return this.actionEvent( msg, "submit" );
     }
 
     /**
@@ -214,10 +214,11 @@ class APSComponent extends Component {
         this.logger.debug( "messageHandler > Received: {}", [message] );
 
         // If this component wants to collect values sent by other components, we
-        // just save the whole message under 'collected' and using the componentId as key.
+        // just save the whole message under 'collected' and using the componentType as key.
         // This is for submit type components. Rather than having all components publish
         // all data over the network, submit type components collect their data and passes
         // it along on a submit.
+        // noinspection JSUnresolvedVariable
         if ( message.hasValue && this.props.guiProps.collectGroups != null &&
             this.props.guiProps.collectGroups.indexOf( message.group ) !== -1 ) {
 
@@ -245,6 +246,14 @@ class APSComponent extends Component {
 
     }
 
+    /**
+     * Enables or disables component depending on other components in same group being empty
+     * or not empty.
+     *
+     * @param group The name of the group the components should belong to.
+     *
+     * @returns {boolean}
+     */
     enableDisableOnGroupNotEmpty( group ) {
         let notEmpty = true;
         for ( let key of Object.keys( this.collected ) ) {
@@ -259,6 +268,13 @@ class APSComponent extends Component {
         return notEmpty;
     }
 
+    /**
+     * Enables or disables on named components being empty nor not.
+     *
+     * @param names A string with comma separated list of component names that should not be empty.
+     *
+     * @returns {boolean}
+     */
     enableDisableOnNamedComponentsNotEmpty( names ) {
         if ( this.collected == null ) return true;
 
@@ -293,7 +309,29 @@ APSComponent.propTypes = {
     // The unique id of the GuiMgr creating the component.
     mgrId: PropTypes.string,
     // This is part of a JSON document that is the spec for this component.
-    guiProps: PropTypes.object
+    guiProps: {
+        id: PropTypes.string,
+        name: PropTypes.string,
+        type: PropTypes.string,
+        orientation: PropTypes.string,
+        children: {
+            id: PropTypes.string,
+            name: PropTypes.string,
+            group: PropTypes.string,
+            type: PropTypes.string,
+            value: PropTypes.any,
+            listenTo: PropTypes.string,
+            publishTo: PropTypes.string,
+            class: PropTypes.string,
+            headers: {
+                routing: PropTypes.string
+            },
+            width: PropTypes.number,
+            cols: PropTypes.number,
+            rows: PropTypes.number,
+            label: PropTypes.string
+        }
+    }
 };
 
 export default APSComponent;

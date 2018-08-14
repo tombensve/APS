@@ -2,6 +2,29 @@ import React from 'react'
 import APSComponent from "./APSComponent"
 import { FormControl } from 'react-bootstrap'
 
+/**
+ * ## Properties
+ *
+ * ### guiProps.id
+ *
+ * The id of the component.
+ *
+ * ### guiProps.value
+ *
+ * The initial value of the component.
+ *
+ * ### guiProps.rows
+ *
+ * The number of rows for the text area.
+ *
+ * ### guiProps.cols
+ *
+ * The number of columns in the text area.
+ *
+ * ### guiProps.placeholder
+ *
+ * A greyed out placeholder for the component.
+ */
 class APSTextArea extends APSComponent {
 
     constructor( props ) {
@@ -16,7 +39,7 @@ class APSTextArea extends APSComponent {
 
     }
 
-    componentId() {
+    componentType() {
         return "APSTextArea";
     }
 
@@ -48,13 +71,18 @@ class APSTextArea extends APSComponent {
     }
 
     render() {
+        let placeHolder = "";
+        if (this.props.guiProps.placeholder != null) {
+            placeHolder = this.props.guiProps.placeholder;
+        }
 
         // noinspection HtmlUnknownAttribute
         return <FormControl componentClass="textarea"
                             value={this.state.value}
                             id={this.props.guiProps.id}
-                            rows={this.props.guiProps.textArea.rows}
-                            cols={this.props.guiProps.textArea.cols}
+                            rows={this.props.guiProps.rows}
+                            cols={this.props.guiProps.cols}
+                            placeHolder={placeHolder}
                             onChange={this.handleEvent.bind( this )}
                             disabled={this.state.disabled}
         />

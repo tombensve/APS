@@ -2,6 +2,25 @@ import React from 'react'
 import APSComponent from "./APSComponent"
 import { Panel } from 'react-bootstrap'
 
+/**
+ * ## Properties
+ *
+ * ### guiProps.disabled
+ *
+ * Disables or enables the component.
+ *
+ * ### guiProps.heading
+ *
+ * A heading for the panel. Don't specify to avoid a heading.
+ *
+ * ### guiProps.footer
+ *
+ * A footer for the panel. Don't specify to avoid footer.
+ *
+ * ### guiProps.bsStyle
+ *
+ * Changes the default bootstrap style of "primary" to the specified style.
+ */
 export default class APSPanel extends APSComponent {
 
     constructor( props ) {
@@ -15,7 +34,7 @@ export default class APSPanel extends APSComponent {
         this.busMember = false;
     }
 
-    componentId() {
+    componentType() {
         return "APSPanel";
     }
 
