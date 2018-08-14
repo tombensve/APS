@@ -120,11 +120,17 @@ export default class VertxEventBusRouter {
             // noinspection JSUnresolvedFunction
             this.eventBus.registerHandler( address, headers, ( alwaysNull, message ) => {
                 // console.log( "ADDSRESS: " + address );
-                // console.log( "RECEIVED: " + JSON.stringify( message ) );
+                console.log( "RECEIVED: " + JSON.stringify( message ) );
                 // console.info("CALLBACK: " + callback);
-                // For some reason we get the full internal vertx evemntbus message, not just
-                // the client relevant 'body' part.
-                callback( message['body'] );
+
+                if ( typeof message !== "undefined" ) {
+                    // For some reason we get the full internal vertx evemntbus message, not just
+                    // the client relevant 'body' part.
+                    callback( message['body'] );
+                }
+                else {
+                    this.logger.error("Got an 'undefined' message!");
+                }
             } );
         }
         else {

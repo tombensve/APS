@@ -7,6 +7,8 @@ import APSPanel from "./APSPanel"
 import APSButton from "./APSButton"
 import APSTextField from "./APSTextField"
 import APSTextArea from "./APSTextArea"
+import APSNumber from "./APSNumber"
+import APSDate from "./APSDate"
 import { uuidv4 } from "../UUID"
 import { ADDR_NEW_CLIENT, multiRoutes, EVENT_ROUTES } from "../Constants"
 import APSLogger from "../APSLogger"
@@ -170,8 +172,7 @@ class APSWebManager extends Component {
                     <APSLayout key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={mgrId} guiProps={gui}>
                         {childContent}
                     </APSLayout>
-                )
-
+                );
                 break;
 
             case 'aps-panel':
@@ -181,7 +182,6 @@ class APSWebManager extends Component {
                         {childContent}
                     </APSPanel>
                 );
-
                 break;
 
             case 'aps-button':
@@ -189,7 +189,6 @@ class APSWebManager extends Component {
                 content.push(
                     <APSButton key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={mgrId} guiProps={gui}/>
                 );
-
                 break;
 
             case 'aps-text-field':
@@ -197,7 +196,6 @@ class APSWebManager extends Component {
                 content.push(
                     <APSTextField key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={mgrId} guiProps={gui}/>
                 );
-
                 break;
 
             case 'aps-text-area':
@@ -205,16 +203,28 @@ class APSWebManager extends Component {
                 content.push(
                     <APSTextArea key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={mgrId} guiProps={gui}/>
                 );
-
                 break;
 
+            case 'aps-number':
+
+                content.push(
+                    <APSNumber key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={mgrId} guiProps={gui}/>
+                );
+                break;
+
+            case 'aps-date':
+
+                content.push(
+                    <APSDate key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={mgrId} guiProps={gui}/>
+                );
+                break;
 
             default:
                 console.error( "Bad 'type': " + type );
             //     throw "Bad type '" + type + "' in GUI specification JSON!"
         }
 
-        return content
+        return content;
     }
 }
 

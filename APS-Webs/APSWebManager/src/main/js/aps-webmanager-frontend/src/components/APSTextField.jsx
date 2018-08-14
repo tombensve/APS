@@ -2,6 +2,22 @@ import React from 'react'
 import APSComponent from "./APSComponent"
 import { FormControl } from 'react-bootstrap'
 
+/**
+ * ## Properties
+ *
+ * ### guiProps.id
+ *
+ * The id of the component.
+ *
+ * ### guiProps.value
+ *
+ * The initial value of the component.
+ *
+ * ### guiProps.placeholder
+ *
+ * A greyed out placeholder for the component.
+ *
+ */
 class APSTextField extends APSComponent {
 
     constructor( props ) {
@@ -15,7 +31,7 @@ class APSTextField extends APSComponent {
 
     }
 
-    componentId() {
+    componentType() {
         return "APSTextField";
     }
 
@@ -51,8 +67,8 @@ class APSTextField extends APSComponent {
     render() {
 
         let placeHolder = "";
-        if (this.props.guiProps.textField != null && this.props.guiProps.textField.placeholder != null) {
-            placeHolder = this.props.guiProps.textField.placeholder;
+        if (this.props.guiProps.placeholder != null) {
+            placeHolder = this.props.guiProps.placeholder;
         }
         return <FormControl componentClass="input"
                             value={this.state.value}
