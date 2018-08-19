@@ -35,7 +35,7 @@ export default class APSLogger {
      * @param {string} message                                  - The log message.
      * @param {array.<object|string|number>|string|object} data - Data to be inserted in message.
      */
-    logMsg( type, message, data ) {
+    logMsg( type, message, ...data ) {
 
         if ( ! Array.isArray( data) ) {
 
@@ -62,7 +62,7 @@ export default class APSLogger {
      * @param {string} message      - The log message.
      * @param {array.<object|string|number>|string|object} data - Data to be inserted in message.
      */
-    info( message, data = [] ) {
+    info( message, ...data) {
 
         console.info( this.logMsg( "INFO", message, data ) );
     }
@@ -73,7 +73,7 @@ export default class APSLogger {
      * @param {string} message      - The log message.
      * @param {array.<object|string|number>|string|object} data - Data to be inserted in message.
      */
-    warn( message, data = [] ) {
+    warn( message, ...data ) {
 
         console.warn( this.logMsg( "WARN", message, data ) );
     }
@@ -84,7 +84,7 @@ export default class APSLogger {
      * @param {string} message      - The log message.
      * @param {array.<object|string|number>|string|object} data - Data to be inserted in message.
      */
-    error( message, data =[] ) {
+    error( message, ...data ) {
 
         console.error( this.logMsg( "ERROR", message, data ) );
     }
@@ -95,9 +95,9 @@ export default class APSLogger {
      * @param {string} message      - The log message.
      * @param {array.<object|string|number>|string|object} data - Data to be inserted in message.
      */
-    debug( message, data = [] ) {
+    debug( message, ...data) {
 
-        console.debug( this.logMsg( "DEBUG", message, data ) );
+        console.debug( this.logMsg( "DEBUG", message, ...data ) );
     }
 
 }

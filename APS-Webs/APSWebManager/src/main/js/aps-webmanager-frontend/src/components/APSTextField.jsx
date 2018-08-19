@@ -1,6 +1,6 @@
 import React from 'react'
 import APSComponent from "./APSComponent"
-import { FormControl } from 'react-bootstrap'
+import { FormControl, FormGroup } from 'react-bootstrap'
 
 /**
  * ## Properties
@@ -26,7 +26,8 @@ class APSTextField extends APSComponent {
         this.state = {
             disabled: false,
             // Note: The name of the state value has to match the component value name to be a "controlled" component!
-            value: this.props.guiProps.value
+            value: this.props.guiProps.value,
+            validationState: ""
         };
 
     }
@@ -41,11 +42,18 @@ class APSTextField extends APSComponent {
         this.setState( _state );
     }
 
+    set validationState( state ) {
+        let _state = this.state;
+        _state.validationState = state;
+        this.setState( _state );
+    }
+
     handleEvent( event ) {
 
         this.setState( {
             disabled: this.state.disabled,
-            value: event.target.value
+            value: event.target.value,
+            validationState: this.state.validationState
         } );
 
         this.empty = ( event.target.value === "" );
@@ -67,15 +75,18 @@ class APSTextField extends APSComponent {
     render() {
 
         let placeHolder = "";
-        if (this.props.guiProps.placeholder != null) {
+        if ( this.props.guiProps.placeholder != null ) {
             placeHolder = this.props.guiProps.placeholder;
         }
-        return <FormControl componentClass="input"
-                            value={this.state.value}
-                            id={this.props.guiProps.id}
-                            placeholder={placeHolder}
-                            onChange={this.handleEvent.bind( this )}
-                            disabled={this.state.disabled}/>
+        return <FormGroup id={this.props.guiProps.id + '_fg'} validationState={this.state.validationState}>
+            <FormControl componentClass="input"
+                         value={this.state.value}
+                         id={this.props.guiProps.id}
+                         placeholder={placeHolder}
+                         onChange={this.handleEvent.bind( this )}
+                         disabled={this.state.disabled}/>
+            <FormControl.Feedback />
+        </FormGroup>
     }
 }
 

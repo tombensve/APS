@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import LocalEventBus from "../LocalEventBus"
-import LocalBusRouter from "../LocalBusRouter"
-import VertxEventBusRouter from "../VertxEventBusRouter"
+import APSLocalEventBus from "../APSLocalEventBus"
+import APSLocalEventBusRouter from "../APSLocalEventBusRouter"
+import APSVertxEventBusRouter from "../APSVertxEventBusRouter"
 import APSLayout from "./APSLayout"
 import APSPanel from "./APSPanel"
 import APSButton from "./APSButton"
@@ -9,9 +9,9 @@ import APSTextField from "./APSTextField"
 import APSTextArea from "./APSTextArea"
 import APSNumber from "./APSNumber"
 import APSDate from "./APSDate"
-import { uuidv4 } from "../UUID"
 import { ADDR_NEW_CLIENT, multiRoutes, EVENT_ROUTES } from "../Constants"
 import APSLogger from "../APSLogger"
+import APSBusAddress from "../APSBusAddress";
 
 /**
  * A component reading a JSON spec of components to render. The GuiMgr also creates a local
@@ -43,20 +43,21 @@ class APSWebManager extends Component {
             comps: []
         };
 
-        this.listenAddress = "aps:web-manager:" + uuidv4() + "/" + this.props.mgrId;
+        this.busAddress = new APSBusAddress( "aps-web-manager" );
+        //this.listenAddress = "aps:web-manager:" + uuidv4() + "/" + this.props.mgrId;
 
-        this.localEventBus = new LocalEventBus();
+        this.localEventBus = new APSLocalEventBus();
 
         /**
          * Event bus subscriber. We need to keep the instance of this so that we can unsubscribe later.
          *
-         * @param {string} message - A received message in JSON format.
+         * @param {object} message - A received message in JSON format.
          */
         this.compSubscriber = ( message ) => {
 
             this.logger.debug( ">>>>>>>: message: {}", message );
 
-            if ( message['msgType'] === "gui" ) {
+            if ( message['type'] === "gui" ) {
 
                 this.updateGui( message['msgData'] );
             }
@@ -72,16 +73,19 @@ class APSWebManager extends Component {
      */
     componentDidMount() {
 
-        this.localEventBus.addBusRouter( new LocalBusRouter() );
-        this.localEventBus.addBusRouter( new VertxEventBusRouter() );
+        this.localEventBus.addBusRouter( new APSLocalEventBusRouter( this.busAddress ) );
+        this.localEventBus.addBusRouter( new APSVertxEventBusRouter( this.busAddress ) );
 
         // Subscribe to eventbus for content events.
-        this.localEventBus.subscribe( this.listenAddress, { routing: multiRoutes( [EVENT_ROUTES.CLIENT, EVENT_ROUTES.BACKEND] ) },
+        this.localEventBus.subscribe(
+            this.listenAddress,
+            { routing: multiRoutes( [EVENT_ROUTES.CLIENT, EVENT_ROUTES.ALL_CLIENTS, EVENT_ROUTES.ALL] ) },
             ( message ) => {
 
                 // noinspection JSCheckFunctionSignatures
                 this.compSubscriber( message );
-            } );
+            }
+        );
 
         // Inform someone that there is a new client available and provide clients unique address.
         this.localEventBus.message(
