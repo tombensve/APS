@@ -4,6 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.eventbus.Message
+import io.vertx.core.eventbus.MessageConsumer
 import io.vertx.core.json.JsonObject
 import org.osgi.framework.ServiceReference
 import se.natusoft.osgi.aps.activator.annotation.Initializer
@@ -25,6 +26,8 @@ class TestApp implements Constants {
     @OSGiService( additionalSearchCriteria = "(vertx-object=EventBus)" )
     private APSServiceTracker<EventBus> eventBusTracker
 
+    private MessageConsumer newClientConsumer
+
     @Initializer
     void init() {
 
@@ -32,9 +35,9 @@ class TestApp implements Constants {
 
             this.logger.info( "An EventBus just became available!" )
 
-            eventBus.consumer( ADDR_NEW_CLIENT ) { Message message ->
+            this.newClientConsumer = eventBus.consumer( ADDR_NEW_CLIENT ) { Message message ->
 
-                Map<String, Object> received = ( message.body() as JsonObject ).getMap() //JSON.stringToMap( message.body().toString() )
+                Map<String, Object> received = ( message.body() as JsonObject ).getMap()
 
                 this.logger.debug( ">>>>>Received: ${ received }" )
                 this.logger.debug( "received['op']=='${ received[ "op" ] }'" )
@@ -45,15 +48,24 @@ class TestApp implements Constants {
                     }
                 }
                 catch ( Exception e ) {
-                    this.logger.error( e.getMessage(  ), e )
+                    this.logger.error( e.getMessage(), e )
                 }
 
             }
 
             this.logger.debug( "Waiting for messages ..." )
+
+            eventBus.consumer( "aps:test-gui" ) { Message message ->
+
+                Map<String, Object> testGuiMsg = ( message.body() as JsonObject ).getMap()
+                this.logger.debug("aps:test-gui ==> ${testGuiMsg}")
+
+            }
         }
 
         this.eventBusTracker.onActiveServiceLeaving = { ServiceReference sref, Class api ->
+
+            this.newClientConsumer.unregister(  )
 
             this.logger.info( "EventBus going away!" )
         }

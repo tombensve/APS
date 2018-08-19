@@ -12,7 +12,7 @@
       "width": 20,
       "value": "",
       "listenTo": "aps:test-gui",
-      "publishTo": "aps:test-gui",
+      "sendTo": "aps:test-gui",
       "headers": {
         "routing": "client"
       }
@@ -26,7 +26,7 @@
       "rows": 4,
       "value": "",
       "listenTo": "aps:test-gui",
-      "publishTo": "aps:test-gui",
+      "sendTo": "aps:test-gui",
       "headers": {
         "routing": "client"
       }
@@ -42,7 +42,7 @@
       "collectGroups": "gpoc",
       "enabled": "groupNotEmpty:gpoc",
       "listenTo": "aps:test-gui",
-      "publishTo": "aps:test-gui",
+      "sendTo": "aps:test-gui",
       "headers": {
         "routing": "client,backend"
       }
@@ -54,7 +54,7 @@
       "min": 0,
       "max": 10,
       "value": 2,
-      "publishTo": "aps:test-gui",
+      "SendTo": "aps:test-gui",
       "headers": {
         "routing": "client"
       }
@@ -64,9 +64,9 @@
       "name": "dateSelector",
       "type": "aps-date",
       "startValue": "2018-08-10",
-      "publishTo": "aps:test-gui",
+      "SendTo": "aps:test-gui",
       "headers": {
-        "routing": "client"
+        "routing": "client,backend"
       }
     }
   ]

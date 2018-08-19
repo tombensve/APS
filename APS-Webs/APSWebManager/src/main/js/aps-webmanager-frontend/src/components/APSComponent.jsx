@@ -1,8 +1,9 @@
 import { Component } from 'react'
-import '../LocalEventBus'
+import '../APSEventBus'
 import PropTypes from "prop-types"
 import ApsLogger from "../APSLogger"
 import { EVENT } from "../Constants"
+import APSBusAddress from "../APSBusAddress"
 
 /**
  * A common base component for all APS components.
@@ -26,6 +27,8 @@ class APSComponent extends Component {
         this._busMember = true;
         this._hasValue = true;
         this.collected = {};
+
+        this.busAddresses = new APSBusAddress(props.app);
 
         //this.logger = new ApsLogger();
 
@@ -114,7 +117,7 @@ class APSComponent extends Component {
      */
     message( message ) {
 
-        this.props.eventBus.message( this.props.guiProps.publishTo, this.props.guiProps.headers, message );
+        this.props.eventBus.message( this.props.guiProps.sendTo, this.props.guiProps.headers, message );
     }
 
     /**
@@ -321,7 +324,7 @@ APSComponent.propTypes = {
             type: PropTypes.string,
             value: PropTypes.any,
             listenTo: PropTypes.string,
-            publishTo: PropTypes.string,
+            sendTo: PropTypes.string,
             class: PropTypes.string,
             headers: {
                 routing: PropTypes.string

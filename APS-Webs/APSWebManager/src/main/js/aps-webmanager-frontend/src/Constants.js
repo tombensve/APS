@@ -9,15 +9,21 @@
 export const EVENT_ROUTING = "routing";
 
 export const EVENT_ROUTES = Object.freeze({
-    // Only sent locally within the client between components.
+    // Locally within the client between components.
     CLIENT:  "client",
 
-    // Leaves the client and goes out on the network. In most cases when this is used you also want the "local" value,
-    // like "client,backend".
+    // Backend for the app using round robin strategy on send.
     BACKEND: "backend",
 
     // Delivers message to all listeners of the address in the whole cluster.
-    CLUSTER: "cluster"
+    ALL: "all",
+
+    //
+    ALL_CLIENTS: "all:client",
+
+    ALL_BACKENDS: "all:backend",
+
+    LOCAL: "local"
 });
 
 /**
@@ -31,7 +37,7 @@ export function multiRoutes(routes) {
 
     for (let route of routes) {
         res += comma + route;
-        comma = ",";
+        comma = " ";
     }
 
     return res;
@@ -47,13 +53,12 @@ export const ADDR_NEW_CLIENT = "aps:new_client";
 // Events
 //
 
-export const EVENT = {
-    TYPE: "eventType",
-    TYPES: {
+export const EVENT = Object.freeze({
+    TYPE: "type",
+    TYPES: Object.freeze({
         CHANGE: "change",
-        ACTION: "action",
-        ACTIONS: {
-            SUBMIT: "submit"
-        }
-    }
-};
+        UPDATE: "update",
+        DELETE: "delete",
+        WANT: "want"
+    })
+});
