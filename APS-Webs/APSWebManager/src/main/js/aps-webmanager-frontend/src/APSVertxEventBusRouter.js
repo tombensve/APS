@@ -1,5 +1,5 @@
 import EventBus from 'vertx3-eventbus-client'
-import { EVENT_ROUTES, EVENT_ROUTING } from "./Constants"
+import { EVENT_ROUTES, EVENT_ROUTING, ROUTE_INCOMING, ROUTE_OUTGOING } from "./Constants"
 import APSLogger from "./APSLogger"
 import APSEventBusRouter from "./APSEventBusRouter";
 import APSBusAddress from "./APSBusAddress";
@@ -78,18 +78,20 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
      * @param headers - The headers for the message.
      * @param message - The message to message.
      */
-    message( headers: object, message: object ) {
-        this.logger.debug( "Sending with headers: {} and message: {}", headers, message );
+    message( headers: {}, message: {} ) {
+        this.logger.debug( `Sending with headers: ${headers} and message: ${message}` );
 
         if ( this.busReady ) {
 
-            // Note here that we do no imitate the vertx event bus totally. We only have one message(...)
+            // Note here that we do not imitate the vertx event bus totally. We only have one message(...)
             // method to send messages. It is the 'routing' in the header that determines if a send or a
             // publish should be done.
 
-            if ( headers[EVENT_ROUTING] != null ) {
-                for ( let route: string in headers[EVENT_ROUTING].split( ',' ) ) {
-                    // noinspection JSUnfilteredForInLoop
+            let routes = headers[EVENT_ROUTING];
+
+            if ( routes != null && routes !== undefined ) {
+                for ( let route: string of routes[ROUTE_OUTGOING].split( ',' ) ) {
+
                     switch ( route ) {
                         case EVENT_ROUTES.CLIENT:
                             break;
@@ -116,12 +118,12 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
 
                         default:
                             // noinspection JSUnfilteredForInLoop
-                            throw new Error( `Bad routing value: ${route}!` );
+                            throw new Error( `APSVertxEventBusRouter: message(): Bad routing value: ${route}!` );
                     }
                 }
             }
             else {
-                //this.logger.error(`No 'routing:' entry in headers: ${headers}!`);
+                //this._logger.error(`No 'routing:' entry in headers: ${headers}!`);
                 throw new Error( `No 'routing:' entry in headers: ${headers}!` );
             }
         }
@@ -136,14 +138,14 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
      * @param headers  - The relevant headers for the subscription.
      * @param callback - Callback to call with messages.
      */
-    subscribe( headers: object, callback: func ) {
+    subscribe( headers: {}, callback: Function) {
         this.logger.debug( `Subscribing with headers: ${headers}` );
 
         // This is a wrapper handler that extracts the 'body' part of the message and
         // forwards to the callback.
         let handler = ( alwaysNull, message ) => {
             this.logger.debug( "RECEIVED: " + JSON.stringify( message ) );
-            // this.logger.debug("CALLBACK: " + callback);
+            // this._logger.debug("CALLBACK: " + callback);
 
             if ( typeof message !== "undefined" ) {
                 // For some reason we get the full internal vertx eventbus message, not just
@@ -159,9 +161,11 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
 
         if ( this.busReady ) {
 
-            if ( headers[EVENT_ROUTING] != null ) {
-                for ( let route: string in headers[EVENT_ROUTING].split( ',' ) ) {
-                    // noinspection JSUnfilteredForInLoop
+            let routes = headers[EVENT_ROUTING];
+
+            if ( routes != null && routes !== undefined ) {
+                for ( let route: string of routes[ROUTE_INCOMING].split( ',' ) ) {
+
                     switch ( route ) {
                         case EVENT_ROUTES.CLIENT:
                             // noinspection JSUnresolvedFunction
@@ -169,6 +173,11 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                             break;
 
                         case EVENT_ROUTES.BACKEND:
+                            break;
+
+                        case EVENT_ROUTES.ALL:
+                            // noinspection JSUnresolvedFunction
+                            this.eventBus.registerHandler( this.busAddress.all, headers, handler );
                             break;
 
                         case EVENT_ROUTES.ALL_BACKENDS:
@@ -181,7 +190,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
 
                         default:
                             // noinspection JSUnfilteredForInLoop
-                            throw new Error( `Bad routing value: ${route}!` );
+                            throw new Error( `APSVertxEventBusRouter: subscribe(): Bad routing value: ${route}!` );
                     }
                 }
             }
@@ -201,42 +210,55 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
      * @param headers  - The headers used to subscribe.
      * @param callback - The callback to unsubscribe.
      */
-    unsubscribe( headers: object, callback: func ) {
+    unsubscribe( headers: {}, callback: Function ) {
         this.logger.debug( `Unsubscribing with headers: ${headers}` );
 
         // I expect the bus to be upp by the time this is done :-)
 
-        let handler: func = this.callbackHandlers.get( callback );
+        let handler: Function = this.callbackHandlers.get( callback );
         this.callbackHandlers.delete( callback );
 
-        if ( headers[EVENT_ROUTING] != null ) {
-            for ( let route: string in headers[EVENT_ROUTING].split( ',' ) ) {
-                // noinspection JSUnfilteredForInLoop
-                switch ( route ) {
-                    case EVENT_ROUTES.CLIENT:
-                        // noinspection JSUnresolvedFunction
-                        this.eventBus.unregisterHandler( this.busAddress.client, handler );
-                        break;
+        if ( this.busReady ) {
+            let routes = headers[EVENT_ROUTING];
 
-                    case EVENT_ROUTES.BACKEND:
-                        break;
+            if ( routes != null && routes !== undefined ) {
 
-                    case EVENT_ROUTES.ALL_BACKENDS:
-                        break;
+                for ( let route: string of routes[ROUTE_INCOMING].split( ',' ) ) {
 
-                    case EVENT_ROUTES.ALL_CLIENTS:
-                        // noinspection JSUnresolvedFunction
-                        this.eventBus.unregisterHandler( this.busAddress.allClients, handler );
-                        break;
+                    switch ( route ) {
+                        case EVENT_ROUTES.CLIENT:
+                            // noinspection JSUnresolvedFunction
+                            this.eventBus.unregisterHandler( this.busAddress.client, handler );
+                            break;
 
-                    default:
-                        // noinspection JSUnfilteredForInLoop
-                        throw new Error( `Bad routing value: ${route}!` );
+                        case EVENT_ROUTES.BACKEND:
+                            break;
+
+                        case EVENT_ROUTES.ALL:
+                            // noinspection JSUnresolvedFunction
+                            this.eventBus.unregisterHandler( this.busAddress.all, handler );
+                            break;
+
+                        case EVENT_ROUTES.ALL_BACKENDS:
+                            break;
+
+                        case EVENT_ROUTES.ALL_CLIENTS:
+                            // noinspection JSUnresolvedFunction
+                            this.eventBus.unregisterHandler( this.busAddress.allClients, handler );
+                            break;
+
+                        default:
+                            // noinspection JSUnfilteredForInLoop
+                            throw new Error( `APSVertxEventBusRouter: unsubscribe(): Bad routing value: ${route}!` );
+                    }
                 }
+            }
+            else {
+                throw new Error( `No 'routing:' entry in headers: ${headers}!` );
             }
         }
         else {
-            throw new Error( `No 'routing:' entry in headers: ${headers}!` );
+            this.logger.info("Vert.x eventbus not open at unsubscribe! This is most probably OK.")
         }
     }
 }

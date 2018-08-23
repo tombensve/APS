@@ -3,7 +3,6 @@ import APSEventBus from "../APSEventBus"
 import APSLocalEventBusRouter from "../APSLocalEventBusRouter"
 import APSVertxEventBusRouter from "../APSVertxEventBusRouter"
 import APSBusAddress from "../APSBusAddress";
-import APSBusRoutes from "../APSBusRoutes"
 
 class APSPage extends Component {
 
@@ -12,7 +11,7 @@ class APSPage extends Component {
 
         this.busAddresses = new APSBusAddress( this.props.app );
 
-        this.localEventBus = new APSEventBus();
+        this.apsEventBus = new APSEventBus();
 
         /**
          * Event bus subscriber. We need to keep the instance of this so that we can unsubscribe later.
@@ -31,10 +30,10 @@ class APSPage extends Component {
      * React callback for when component is available.
      */
     componentDidMount() {
-        this.localEventBus.addBusRouter( new APSLocalEventBusRouter() );
-        this.localEventBus.addBusRouter( new APSVertxEventBusRouter() );
+        this.apsEventBus.addBusRouter( new APSLocalEventBusRouter() );
+        this.apsEventBus.addBusRouter( new APSVertxEventBusRouter() );
 
-        this.localEventBus.subscribe( this.busAddresses.client, { }, this.compSubscriber );
+        //this.apsEventBus.subscribe( { headers: {},  subscriber:this.compSubscriber} );
     }
 
     /**
@@ -43,8 +42,8 @@ class APSPage extends Component {
     componentWillUnmount() {
 
         // Since we are going away, stop listening for events.
-        this.localEventBus.unsubscribe( this.busAddresses.client,
-            { routing: APSBusRoutes.BACKEND }, this.compSubscriber );
+        // this.apsEventBus.unsubscribe( this.busAddresses.client,
+        //     { routing: APSBusRoutes.BACKEND }, this.compSubscriber );
     }
 
 }

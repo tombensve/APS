@@ -24,8 +24,9 @@
  * this.
  */
 import APSLogger from "./APSLogger";
-import { EVENT_ROUTES, EVENT_ROUTING } from "./Constants";
+import { EVENT_ROUTES } from "./Constants";
 import APSEventBusRouter from "./APSEventBusRouter";
+import NamedParams from "./NamedParams"
 
 export default class APSEventBus {
 
@@ -36,7 +37,7 @@ export default class APSEventBus {
      */
     constructor() {
 
-        this.logger = new APSLogger( "LocalEventBus" );
+        this.logger = new APSLogger( "APSEventBus" );
 
         // noinspection JSValidateTypes
         /**
@@ -51,33 +52,19 @@ export default class APSEventBus {
     }
 
     /**
-     * JSDoc declaration of messageReceiver as param type.
-     *
-     * @callback subscriber
-     * @param {object} message
-     */
-
-    /**
      * This adds a subscriber for an address. The first param can also be an object containing 3 keys for each
      * parameter. In that case the other 2 are ignored.
      *
-     * @param headers    - Filter subscriptions on headers.
-     * @param subscriber - A function taking an address and a message.
+     * @param params - Named parameters: { headers: ..., subscriber: ... }
      */
-    subscribe( headers : object, subscriber : func = null ) {
+    subscribe( params : {headers: {routing: { outgoing: string, incoming: string }}, subscriber: () => mixed} ) {
 
-        if ( typeof headers === "object" ) {
-            let params = headers;
-            headers = params["headers"];
-            subscriber = params["subscriber"];
-        }
+        let pars = new NamedParams(params, "APSEventBus.subscribe");
 
-        APSEventBus.validRoutingHeaders( headers );
+        let headers = APSEventBus.ensureHeaders( pars.requiredParam("headers") );
+        let subscriber = pars.requiredParam("subscriber");
 
-        if ( headers == null && subscriber == null ) {
-            throw new Error( "If the first argument is not an object containing 3 keys then header and subscriber " +
-                "must also be supplied!" );
-        }
+        APSEventBus.validRoutingHeaders( headers.routing.incoming );
 
         for ( let busRouter of this.busRouters ) {
 
@@ -88,23 +75,16 @@ export default class APSEventBus {
     /**
      * Unsubscribes to a previously done subscription.
      *
-     * @param headers    - The headers used to subscribe with.
-     * @param subscriber - The subscriber to unsubscribe.
+     * @param params params - Named parameters: { headers: ..., subscriber: ... }
      */
-    unsubscribe( headers : object, subscriber : func = null ) {
+    unsubscribe( params : {headers: {routing: { outgoing: string, incoming: string }}, subscriber: () => mixed} ) {
 
-        if ( typeof headers === "object" ) {
-            let params = headers;
-            headers = params["headers"];
-            subscriber = params["subscriber"];
-        }
+        let pars = new NamedParams(params, "APSEventBus.unsubscribe");
 
-        APSEventBus.validRoutingHeaders( headers );
+        let headers = APSEventBus.ensureHeaders( pars.requiredParam("headers") );
+        let subscriber = pars.requiredParam("subscriber");
 
-        if ( headers == null && subscriber == null ) {
-            throw new Error( "If the first argument is not an object containing 3 keys then header and subscriber " +
-                "must also be supplied!" );
-        }
+        APSEventBus.validRoutingHeaders( headers.routing.incoming );
 
         for ( let busRouter of this.busRouters ) {
 
@@ -113,27 +93,20 @@ export default class APSEventBus {
     }
 
     /**
-     * Sends a message to one subscriber.
+     * Sends a message.
      *
-     * @param headers - The headers for the message.
-     * @param message - The message to message. Note that this must be a JSON string
+     * @param params - Named parameters: { headers: {...}, message: {...}}
      */
-    message( headers : object, message : object = {} ) {
+    message( params: {headers: {routing: { outgoing: string, incoming: string }}, message: {aps:{}, content?:{}}} ) {
 
-        if ( typeof headers === "object" ) {
-            let params = headers;
-            headers = params["headers"];
-            message = params["message"];
-        }
+        let pars = new NamedParams(params, "APSEventBus.message");
 
-        APSEventBus.validRoutingHeaders( headers );
+        let headers = APSEventBus.ensureHeaders(pars.requiredParam("headers"));
+        let message = pars.requiredParam("message");
 
-        if ( Object.keys( headers ).length === 0 && Object.keys( message ).length === 0 ) {
-            throw new Error( "If the first argument is not an object containing 3 keys then header and message " +
-                "must also be supplied!" );
-        }
+        APSEventBus.validRoutingHeaders( headers.routing.outgoing );
 
-        this.logger.debug( "EventBus: sending( headers: {}): {}", [ headers, message ] );
+        this.logger.debug( `EventBus: sending( headers: ${headers}): ${message}` );
 
         for ( let busRouter of this.busRouters ) {
 
@@ -141,37 +114,57 @@ export default class APSEventBus {
         }
     }
 
-    addBusRouter( busRouter : APSEventBusRouter ) {
+    addBusRouter( busRouter: APSEventBusRouter ) {
         this.busRouters.push( busRouter )
+    }
+
+    /**
+     * Helper to ensure default headers if none is specified.
+     *
+     * @param headers The headers to check.
+     *
+     * @returns {{routing: {outgoing: string, incoming: string}}}
+     */
+    static ensureHeaders( headers: { routing: { outgoing: string, incoming: string } } ): {} {
+        if ( headers == null ) {
+            headers = {}
+        }
+        if ( headers.routing == null ) {
+            headers.routing = {
+                outgoing: "client",
+                incoming: "client"
+            }
+        }
+
+        return headers;
     }
 
     /**
      * Validates that the operation is valid for this router based on header info.
      *
-     * @param headers -The headers to check for validity.
+     * @param routing - The routing string to check for validity.
      *
      * @throws Error on bad headers.
      *
      * @private
      */
-    static validRoutingHeaders( headers : object ) {
+    static validRoutingHeaders( routing: string ) {
 
         if (
-            headers[EVENT_ROUTING] != null && (
-                headers[EVENT_ROUTING].indexOf( EVENT_ROUTES.CLIENT ) >= 0 ||
-                headers[EVENT_ROUTING].indexOf( EVENT_ROUTES.BACKEND ) >= 0 ||
-                headers[EVENT_ROUTING].indexOf( EVENT_ROUTES.ALL ) >= 0 ||
-                headers[EVENT_ROUTING].indexOf( EVENT_ROUTES.ALL_BACKENDS ) >= 0 ||
-                headers[EVENT_ROUTING].indexOf( EVENT_ROUTES.ALL_CLIENTS ) >= 0
+            routing != null && (
+                routing.indexOf( EVENT_ROUTES.CLIENT ) >= 0 ||
+                routing.indexOf( EVENT_ROUTES.BACKEND ) >= 0 ||
+                routing.indexOf( EVENT_ROUTES.ALL ) >= 0 ||
+                routing.indexOf( EVENT_ROUTES.ALL_BACKENDS ) >= 0 ||
+                routing.indexOf( EVENT_ROUTES.ALL_CLIENTS ) >= 0
             )
         ) {
             // OK.
         }
         else {
-            throw new Error( "Bad routing headers: " + JSON.stringify( headers ) +
-                " The following header must be available: " + EVENT_ROUTING +
-                ": " + EVENT_ROUTES.CLIENT + " |& " + EVENT_ROUTES.BACKEND + " |& " +
-                EVENT_ROUTES.ALL + " |& " + EVENT_ROUTES.ALL_CLIENTS + " |&" + EVENT_ROUTES.ALL_BACKENDS + "!" );
+            throw new Error( `Bad routing headers: ${routing} One or more of the following are valid: \
+${EVENT_ROUTES.CLIENT} |& ${EVENT_ROUTES.BACKEND} |& ${EVENT_ROUTES.ALL} |& ${EVENT_ROUTES.ALL_CLIENTS} \
+|&" ${EVENT_ROUTES.ALL_BACKENDS}!` );
         }
     }
 

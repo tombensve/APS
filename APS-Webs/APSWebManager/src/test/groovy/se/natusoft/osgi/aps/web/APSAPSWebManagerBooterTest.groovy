@@ -24,7 +24,7 @@ class APSAPSWebManagerBooterTest extends OSGIServiceTestTools {
 
         hold() maxTime 2L unit SECONDS go()
 
-        deploy 'aps-web-manager' with new APSActivator() from 'APS-Webs/APSAdminWebA2/target/classes'
+        deploy 'aps-web-manager' with new APSActivator() from 'APS-Webs/APSWebManager/target/classes'
 
         // Unfortunately we have to wait a while here for the services to completely start up.
         // If you build on a really slow computer, this might not be enough.
@@ -77,7 +77,7 @@ class APSAPSWebManagerBooterTest extends OSGIServiceTestTools {
 
     private static void getAndVerify( String serverFile, String localFile ) throws Exception {
         try {
-            URL url = new URL( "http://localhost:8880/aps/${ serverFile }" )
+            URL url = new URL( "http://localhost:8880/apsweb/${ serverFile }" )
             logger.debug( "URL: '${ url }'" )
             String fileFromServer = loadFromStream( url.openStream() )
             if ( localFile != null ) {

@@ -28,7 +28,7 @@ A note: _Vert.x uses Hazelcast by default to handle the cluster. Hazelcast by de
 
 Each message must be addressed! An address is just a string. It can be anything. If you send to an address it will be received if there is something also listening to exactly the same address. See an address as a group name as is common in other messaging solutions.
 
-As said above when a send is done on the Vert.x event bus it does a round robin between each listener of the "sent to" address. This to support load balancing. This makes it very important to think through the addresses used. 
+As said above when a send is done on the Vert.x event bus it does a round robin between each listener of the "sent to" address. This to support load balancing.  
 
 #### Address Strategy
 
@@ -58,11 +58,11 @@ From client perspective:
     - "aps:(app):all:client" : Every client of (app).
         - Network: listen, send
    
-Note 1:  Only clients have a unique address. They are the only ones that needs a unique address due to being the only unique thing. 
+**Note 1:**  Only clients have a unique address. They are the only ones that needs a unique address due to being the only unique thing. 
 
-Note 2:  Vert.x does a round robin on "send" to same address. Only backend messages are delivered with a send. All cluster messages are delived with a "publish" and will always go to every listener.
+**Note 2:**  Vert.x does a round robin on "send" to same address. Only backend messages are delivered with a send. All cluster messages are delived with a "publish" and will always go to every subscriber.
 
-Note 3: Both on client side and on backend, code is not interacting with the Vert.x bus, but local busses with message routers. So what messages are sent on the Vert.x bus and wich message method is used is a routing question. Senders and receivers don't need to care. 
+**Note 3:** Both on client side and on backend, code is not interacting with the Vert.x bus, but local busses with message routers. So what messages are sent on the Vert.x bus and which message method is used is a routing question. Senders and receivers don't need to care. 
 
 ### Routing Strategy
 
@@ -73,9 +73,11 @@ Components have indirect routing information passed to them by the creater of th
 Some components need to talk to each other locally, and some need to reach a backend. It is up to the code that creates the components to determine that by supplying a routing property of:
 
     {
-        outgoing: ["client"/"backend"/"all"/"all:backend"/"all:client", ...],
-        incomming: ["client"/"backend"/"all"/"all:backend"/"all:client", ...]
+        outgoing: "client/backend/all/all:backend/all:client",
+        incoming: "client/all/all:client"
     }
+
+Both outgoing and incomming can have more than one route. Routes are comma separated within the string. No spaces. 
 
 ### Messages
 
@@ -83,42 +85,71 @@ When a message is sent, there is no from, there is only a to. My goal is that al
 
 The `content` part can be missing or empty depending on `type`.
 
+In the following specification any entry starting with '?' is optional. 
+
 #### General
 
     {
-        aps: {
-            origin: 'address',
-            app: 'app',
-            type: 'message type'
+        "aps": {
+            "origin": "(address)",
+            "app": "(app)",
+            "type": "(message type)"
         },
         content: {
             ...message type specific data
         }
     }
 
-#### GUI 
+#### --> Avail 
 
 Client tells a backend that it exists and are ready for a GUI JSON document. 
 
 This is not a requirement, components can be created and a gui built with client code like any other React GUI. There are 2 components that works together and use this message: `APSPage` and `APSWebManager`. They will as default inform the backend that they are upp and running and the backend will send a JSON document with components to create. `APSWebMAnager` can however also be used with a property that tells it to not send the message, and only act as container, but create and supplying a common event bus to all children. 
 
     {
-        aps: {
-            origin: 'address'
-            app: 'app',
-            type: "gui"
+        "aps": {
+            "origin": "(address)"
+            "app": "(app)",
+            "type": "avail"
         }
     }
 
-#### Create
+#### <-- Gui
+
+Client receives a gui, most probably from backend, but can really be send from anywhere including client itself.
+
+{
+    "aps": {
+        "origin": "(address)",
+        "app": "(app)",
+        "type": "gui"
+    },
+    "content": {
+        "id": "(comp id)",
+        "name": "(comp name)",
+        ?"group": "(Name of group component belongs to if any.)",
+        "type": "(comp type)",
+        ?"class": "(class class ...)",
+        ?"disabled": true/false,
+    
+        "collectGroups": "(space separated list of groups to listen to and collect data from.)",
+        "(type specific)": "(...)",
+        ...,
+        "children": [
+            ...
+        ]
+    } 
+} 
+
+#### --> Create
 
     {
-        aps: {
-            origin: 'address'
-            app: 'app',
-            type: "create"
+        "aps": {
+            "origin": 'address'
+            "app": 'app',
+            "type": "create"
         }
-        content: {
+        "content": {
     
         }
     }

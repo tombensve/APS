@@ -1,3 +1,11 @@
+**NOTE**: **Flow syntax is used by the code, but flow is not being run on build!** The reason for that is that it is a very large job to flow:ize everything to the level that makes flow happy. The flow syntax is however nice and makes the code more readable, and also, IntelliJ IDEA understands and uses the Flow syntax to figure out the types of things, which provides a lot of help while coding.
+
+If IDEA is used the _Settings / JavaScript / JavaScript language version_ must be set to _"Flow"_, which automatically includes JSX and ES6. If not set to "Flow" then IDEA will show errors for all typings.
+
+See <https://flow.org/en/docs/types/> for Flow types.
+
+----
+
 The goal of this web project isto make components that communicate on a local eventbus. These are React components, and build upon mostly React-bootstrap components.
 
 - All relevant events of a component are sent as a message on the bus, always including current _value_, and component id, etc.
@@ -11,10 +19,6 @@ The goal of this web project isto make components that communicate on a local ev
 - Much of this functionallity is in a common base component which reacts on `props.compProps`, a set of properties defining both features and behaviors of components.
 
 -  This also allows for a special component: `APSWebManager`. This creates an `LocalEventBus` internally, creates a unique adress for itself, and then sends a message to "aps:new\_client" address containing its unique address and an apsWebMgrId that needs to be a property of the component. This is routed to "client,backend". Any code listening to this message should check the _apsWebMgrId_ to see if it is for that code to use. If it is a JSON document of guiProps (including component names) is sent to the specified address. When `APSWebManager` sees this message it will render the components. This works because the _guiProps_ contains routing information and all components just sends messages. This component is in no way required to be used. The other components can be used as any other React component, but with the slight oddity of having to provide an `guiProps` object will all component settings.
-
-**NOTE**: Flow syntax is used by the code, but flow is not being run on build! The reason for that is that it is a very large job to flow:ize everything to the level that makes flow happy. The flow syntax is however nice and makes the code more readable, and also, IntelliJ IDEA understands and uses the Flow syntax to figure out the types of things, which provides a lot of help while coding.
-
-If IDEA is used the _Settings / JavaScript / JavaScript language version_ must be set to _"Flow"_, which automatically includes JSX and ES6. If not set to "Flow" then IDEA will show errors for all typings.
 
 
 ----

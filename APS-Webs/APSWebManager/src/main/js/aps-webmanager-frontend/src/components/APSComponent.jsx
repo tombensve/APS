@@ -1,9 +1,9 @@
+// This code uses Flow syntax!
 import { Component } from 'react'
 import '../APSEventBus'
 import PropTypes from "prop-types"
-import ApsLogger from "../APSLogger"
+import APSLogger from "../APSLogger"
 import { EVENT } from "../Constants"
-import APSBusAddress from "../APSBusAddress"
 
 /**
  * A common base component for all APS components.
@@ -18,19 +18,15 @@ class APSComponent extends Component {
     // Constructor
     //
 
-    constructor( props ) {
+    constructor( props : object ) {
         super( props );
 
-        this.logger = new ApsLogger( this.componentType() );
+        this.logger = new APSLogger( this.componentType() );
 
         this._empty = true;
         this._busMember = true;
         this._hasValue = true;
         this.collected = {};
-
-        this.busAddresses = new APSBusAddress(props.app);
-
-        //this.logger = new ApsLogger();
 
         if ( this.busMember ) {
             this.subscribe( ( message ) => {
@@ -45,30 +41,30 @@ class APSComponent extends Component {
     // Properties (subclasses should override or set these as needed)
     //
 
-    get busMember() {
+    get busMember() : boolean {
         return this._busMember;
     }
 
-    set busMember( busMember ) {
+    set busMember( busMember : boolean ) {
         this._busMember = busMember;
     }
 
     // Component has empty value.
 
-    get empty() {
+    get empty() : boolean {
         return this._empty;
     }
 
-    set empty( empty ) {
+    set empty( empty : boolean ) {
         this._empty = empty;
     }
 
     // Component has a value to provide. Default is true, so a button for example should do this.hasValue = false.
-    get hasValue() {
+    get hasValue() : boolean {
         return this._hasValue;
     }
 
-    set hasValue( hasValue ) {
+    set hasValue( hasValue : boolean ) {
         this._hasValue = hasValue;
     }
 
@@ -95,7 +91,7 @@ class APSComponent extends Component {
      *
      * @returns {string} the passes classes or the overridden ones.
      */
-    clsName( classes ) {
+    clsName( classes : string ) : string {
         return this.props.guiProps.class != null ? this.props.guiProps.class : classes;
     }
 
@@ -105,7 +101,7 @@ class APSComponent extends Component {
      *
      * @returns {string}
      */
-    componentType() {
+    componentType() : string {
 
         return "APSComponent";
     }
@@ -115,9 +111,9 @@ class APSComponent extends Component {
      *
      * @param {object} message The message to message. Should be a string of JSON. Use eventMessage() as input to this.
      */
-    message( message ) {
+    message( message : object ) {
 
-        this.props.eventBus.message( this.props.guiProps.sendTo, this.props.guiProps.headers, message );
+        this.props.eventBus.message( this.props.guiProps.headers, message );
     }
 
     /**
@@ -125,11 +121,14 @@ class APSComponent extends Component {
      *
      * @param {function(string, string)} subscriber The function to call with messages.
      */
-    subscribe( subscriber ) {
+    subscribe( subscriber : () => mixed ) {
 
         if ( this.props.guiProps.headers != null ) {
 
-            this.props.eventBus.subscribe( this.props.guiProps.listenTo, this.props.guiProps.headers, subscriber );
+            this.props.eventBus.subscribe( this.props.guiProps.headers, subscriber );
+        }
+        else {
+            throw new Error(`Tried to subscribe without guiProps.headers being available!`);
         }
     }
 
@@ -138,9 +137,9 @@ class APSComponent extends Component {
      *
      * @param {function(string, string)} subscriber The function to no longer call with messages.
      */
-    unsubscribe( subscriber ) {
+    unsubscribe( subscriber : func ) {
 
-        this.props.eventBus.unsubscribe( this.props.guiProps.listenTo, this.props.guiProps.headers, subscriber );
+        this.props.eventBus.unsubscribe( this.props.guiProps.headers, subscriber );
     }
 
     /**
@@ -150,7 +149,8 @@ class APSComponent extends Component {
      *
      * @returns {object} The passed and upgraded object as a JSON string.
      */
-    eventMsg( msg ) {
+    eventMsg( msg : {type: string, group: string, managerId: string, componentId: string, componentName: string,
+        empty: boolean, hasValue: boolean} ) : object {
 
         msg.type = "gui-event";
         msg.group = this.props.guiProps.group;
@@ -174,7 +174,7 @@ class APSComponent extends Component {
      * @param {object} msg Base message to append to.
      * @returns {Object} An updated message.
      */
-    changeEvent( msg ) {
+    changeEvent( msg : object ) : object {
         msg = this.eventMsg( msg );
         msg[EVENT.TYPE] = EVENT.TYPES.CHANGE;
         return msg;
@@ -188,7 +188,7 @@ class APSComponent extends Component {
      *
      * @returns {Object} An updated message.
      */
-    actionEvent( msg , action ) {
+    actionEvent( msg : object , action : string ) : object {
         msg = this.eventMsg( msg );
         msg["eventType"] = "action";
         msg["action"] = action;
@@ -202,7 +202,7 @@ class APSComponent extends Component {
      *
      * @returns {Object} The updated message.
      */
-    submitActionEvent( msg ) {
+    submitActionEvent( msg : object ) {
         return this.actionEvent( msg, "submit" );
     }
 
@@ -212,7 +212,7 @@ class APSComponent extends Component {
      * @param {object} message The actual message as JSON string.
      */
     // noinspection JSMethodCanBeStatic
-    messageHandler( message ) {
+    messageHandler( message : object ) {
 
         this.logger.debug( "messageHandler > Received: {}", [message] );
 
@@ -257,7 +257,7 @@ class APSComponent extends Component {
      *
      * @returns {boolean}
      */
-    enableDisableOnGroupNotEmpty( group ) {
+    enableDisableOnGroupNotEmpty( group : string ) {
         let notEmpty = true;
         for ( let key of Object.keys( this.collected ) ) {
             let msg = this.collected[key];
@@ -278,7 +278,7 @@ class APSComponent extends Component {
      *
      * @returns {boolean}
      */
-    enableDisableOnNamedComponentsNotEmpty( names ) {
+    enableDisableOnNamedComponentsNotEmpty( names : string ) {
         if ( this.collected == null ) return true;
 
         let namesArr = names.split( "," );
@@ -295,9 +295,11 @@ class APSComponent extends Component {
                 }
             }
             else {
-                this.logger.error( "Oops! Bad gui spec! For enable: \"namedComponentsNotEmpty:<compid>,...\" the component " +
-                    "must have at least one \"collectGroups:<group>\" in the gui spec and the given compid:s must be " +
-                    "part of one of the groups." )
+                this.logger.error(
+                    `Oops! Bad gui spec! For enable: "namedComponentsNotEmpty:<compid>,..." the component`,
+                    `must have at least one "collectGroups:<group>" in the gui spec and the given compid:s must be`,
+                    `part of one of the groups.`
+                );
             }
         }
 

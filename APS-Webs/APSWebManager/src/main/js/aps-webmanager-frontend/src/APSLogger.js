@@ -3,9 +3,9 @@
  *
  * ### Usage:
  *
- *     this.logger.info/warn/error/debug("Something: {}, something else: {}", [ someObject, "whatever" ]);
- *     this.logger.warn("{} is on a collision course with your house!", ["Santa"] );
- *     this.logger.error("{} ate all candied apples!", "Rudolf" );
+ *     this._logger.info/warn/error/debug("Something: {}, something else: {}", [ someObject, "whatever" ]);
+ *     this._logger.warn("{} is on a collision course with your house!", ["Santa"] );
+ *     this._logger.error("{} ate all candied apples!", "Rudolf" );
  *
  * - All {} will be replaced with the string version of the corresponding value in 'data' array.
  *   The first {} will get the first value in the array and so on.
@@ -23,9 +23,15 @@ export default class APSLogger {
      *
      * @param {string} who
      */
-    constructor( who ) {
+    constructor( who: string ) {
         this.who = who;
 
+        this.logging = {
+            INFO:  { logger: console.info, log: true },
+            WARN:  { logger: console.warn, log: true },
+            ERROR: { logger: console.error, log: true },
+            DEBUG: { logger: typeof console.debug === "function" ? console.debug : console.info, log: true }
+        }
     }
 
     /**
@@ -33,71 +39,68 @@ export default class APSLogger {
      *
      * @param {string} type                                     - The type of the log entry.
      * @param {string} message                                  - The log message.
-     * @param {array.<object|string|number>|string|object} data - Data to be inserted in message.
      */
-    logMsg( type, message, ...data ) {
+    _logMsg( type: string, ...message: string[] ) {
 
-        if ( ! Array.isArray( data) ) {
-
-            data = [ data ]
-        }
-
-        for ( let entry of data ) {
-
-            if ( typeof entry === "object" ) {
-
-                entry = JSON.stringify( entry );
-            }
-            message = message.replace( "{}", entry )
+        let msg = "";
+        for ( let msgPart of message ) {
+            msg += msgPart;
         }
 
         let now = new Date();
         return "[ " + now.toLocaleDateString() + " " + now.toLocaleTimeString() + " | " + type + " | " + this.who +
-            " ]: " + message;
+            " ]: " + msg;
+    }
+
+    _logger( type: String, ...message: String[] ) {
+        if ( this.logging[type].log ) {
+            this.logging[type].logger( this._logMsg( type, message ) )
+        }
     }
 
     /**
      * Makes an info log.
      *
      * @param {string} message      - The log message.
-     * @param {array.<object|string|number>|string|object} data - Data to be inserted in message.
      */
-    info( message, ...data) {
+    info( ...message: string[] ) {
 
-        console.info( this.logMsg( "INFO", message, data ) );
+        this._logger( "INFO", message );
     }
 
     /**
      * Makes a warning log.
      *
      * @param {string} message      - The log message.
-     * @param {array.<object|string|number>|string|object} data - Data to be inserted in message.
      */
-    warn( message, ...data ) {
+    warn( ...message: string[] ) {
 
-        console.warn( this.logMsg( "WARN", message, data ) );
+        this._logger( "WARN", message );
     }
 
     /**
      * Makes an error log.
      *
      * @param {string} message      - The log message.
-     * @param {array.<object|string|number>|string|object} data - Data to be inserted in message.
      */
-    error( message, ...data ) {
+    error( ...message: string[] ) {
 
-        console.error( this.logMsg( "ERROR", message, data ) );
+        this._logger( "ERROR", message );
     }
 
     /**
      * Makes a debug log.
      *
      * @param {string} message      - The log message.
-     * @param {array.<object|string|number>|string|object} data - Data to be inserted in message.
      */
-    debug( message, ...data) {
+    debug( ...message: string[] ) {
 
-        console.debug( this.logMsg( "DEBUG", message, ...data ) );
+        this._logger( "DEBUG", message );
+    }
+
+    debugTrace( ...message: string[] ) {
+        this.debug( message );
+        console.trace();
     }
 
 }

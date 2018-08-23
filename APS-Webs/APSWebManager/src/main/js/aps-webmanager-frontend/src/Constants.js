@@ -8,9 +8,12 @@
 
 export const EVENT_ROUTING = "routing";
 
-export const EVENT_ROUTES = Object.freeze({
+export const ROUTE_OUTGOING = "outgoing";
+export const ROUTE_INCOMING = "incoming";
+
+export const EVENT_ROUTES = Object.freeze( {
     // Locally within the client between components.
-    CLIENT:  "client",
+    CLIENT: "client",
 
     // Backend for the app using round robin strategy on send.
     BACKEND: "backend",
@@ -24,41 +27,18 @@ export const EVENT_ROUTES = Object.freeze({
     ALL_BACKENDS: "all:backend",
 
     LOCAL: "local"
-});
-
-/**
- *
- * @param {array<string>} routes
- * @returns {string}
- */
-export function multiRoutes(routes) {
-    let res = "";
-    let comma = "";
-
-    for (let route of routes) {
-        res += comma + route;
-        comma = " ";
-    }
-
-    return res;
-}
-
-//
-// ADDRESSES
-//
-
-export const ADDR_NEW_CLIENT = "aps:new_client";
+} );
 
 //
 // Events
 //
 
-export const EVENT = Object.freeze({
+export const EVENT = Object.freeze( {
     TYPE: "type",
-    TYPES: Object.freeze({
+    TYPES: Object.freeze( {
         CHANGE: "change",
         UPDATE: "update",
         DELETE: "delete",
         WANT: "want"
-    })
-});
+    } )
+} );
