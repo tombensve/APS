@@ -35,7 +35,7 @@ export default class APSPanel extends APSComponent {
     }
 
     componentType() {
-        return "APSPanel";
+        return "aps-panel";
     }
 
     set disabled( state ) {

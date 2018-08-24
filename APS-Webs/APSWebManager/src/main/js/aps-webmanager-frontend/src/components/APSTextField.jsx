@@ -23,6 +23,8 @@ class APSTextField extends APSComponent {
     constructor( props ) {
         super( props );
 
+        this.defaultValue = "";
+
         this.state = {
             disabled: false,
             // Note: The name of the state value has to match the component value name to be a "controlled" component!
@@ -30,10 +32,12 @@ class APSTextField extends APSComponent {
             validationState: ""
         };
 
+        this.empty = true;
+
     }
 
     componentType() {
-        return "APSTextField";
+        return "aps-text-field";
     }
 
     set disabled( state ) {
@@ -63,13 +67,17 @@ class APSTextField extends APSComponent {
         this.message(
             this.changeEvent(
                 {
-                    componentType: "textField",
+                    componentType: this.componentType(),
                     value: event.target.value
                 }
             )
         );
 
         console.log( this.name + " : " + event.type + " : " + event.target.value );
+    }
+
+    componentDidMount() {
+        this.sendDefaultValue();
     }
 
     render() {
@@ -85,7 +93,7 @@ class APSTextField extends APSComponent {
                          placeholder={placeHolder}
                          onChange={this.handleEvent.bind( this )}
                          disabled={this.state.disabled}/>
-            <FormControl.Feedback />
+            <FormControl.Feedback/>
         </FormGroup>
     }
 }

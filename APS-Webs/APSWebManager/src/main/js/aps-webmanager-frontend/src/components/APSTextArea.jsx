@@ -31,16 +31,19 @@ class APSTextArea extends APSComponent {
 
         super( props );
 
+        this.defaultValue = "";
+
         this.state = {
 
             disabled: false,
             value: this.props.guiProps.value != null ? this.props.guiProps.value : ""
         };
 
+        this.empty = true;
     }
 
     componentType() {
-        return "APSTextArea";
+        return "aps-text-area";
     }
 
     set disabled( state ) {
@@ -63,16 +66,20 @@ class APSTextArea extends APSComponent {
         this.message(
             this.changeEvent(
                 {
-                    componentType: "textArea",
+                    componentType: this.componentType(),
                     value: event.target.value
                 }
             )
         );
     }
 
+    componentDidMount() {
+        this.sendDefaultValue();
+    }
+
     render() {
         let placeHolder = "";
-        if (this.props.guiProps.placeholder != null) {
+        if ( this.props.guiProps.placeholder != null ) {
             placeHolder = this.props.guiProps.placeholder;
         }
 

@@ -18,22 +18,21 @@ class APSButton extends APSComponent {
     constructor( props ) {
         super( props );
 
-        this.state = {
-            disabled: props.guiProps.disabled != null ? props.guiProps.disabled : false
-        };
-        this.setState( this.state );
-
+        this.disabled = props.guiProps.disabled != null ? props.guiProps.disabled : false;
         this.hasValue = false;
     }
 
+    // Override
     componentType() {
-        return "APSButton";
+        return "aps-button";
     }
 
+    // Override
     set disabled( disabled ) {
+        if ( !this.state ) {
+            this.state = {};
+        }
         this.state.disabled = disabled;
-        // Note that just changing the this.state state does not affect anything. We must pass the
-        // updated state to setState( state ) to have an effect.
         this.setState( this.state );
     }
 
@@ -41,7 +40,7 @@ class APSButton extends APSComponent {
         console.log( this, event );
 
         this.message(
-            this.submitActionEvent( { componentType: "button" } )
+            this.submitActionEvent( { componentType: this.componentType() } )
         );
     }
 

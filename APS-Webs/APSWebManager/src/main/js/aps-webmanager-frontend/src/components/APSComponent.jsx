@@ -68,6 +68,14 @@ class APSComponent extends Component {
         this._hasValue = hasValue;
     }
 
+    get defaultValue() : * {
+        return this._defaultValue;
+    }
+
+    set defaultValue(defaultValue: *) {
+        this._defaultValue = defaultValue;
+    }
+
     // Sets component disabled state. This must be overridden by sub components.
 
     set disabled( state: Boolean ) {
@@ -82,6 +90,24 @@ class APSComponent extends Component {
      * React callback for when component is available.
      */
     componentDidMount() {
+    }
+
+    /**
+     * Sends a message on the bus with the default value.
+     *
+     * Certain components wants to do this on componentDidMount(). this.defaultValue = value must be done first!
+     *
+     * This is so that collector components can get default values before user manipulates components.
+     */
+    sendDefaultValue() {
+        this.message(
+            this.changeEvent(
+                {
+                    componentType: this.componentType(),
+                    value: this.defaultValue
+                }
+            )
+        );
     }
 
     /**
@@ -220,7 +246,7 @@ class APSComponent extends Component {
     // noinspection JSMethodCanBeStatic
     messageHandler( message: { aps: { /*...*/ }, content: { /*...*/ } } ) {
 
-        this.logger.debug( "messageHandler > Received: {}", [message] );
+        this.logger.debug( `messageHandler > Received: ${JSON.stringify(message)}` );
 
         // If this component wants to collect values sent by other components, we
         // just save the whole message under 'collected' and using the components id as key.

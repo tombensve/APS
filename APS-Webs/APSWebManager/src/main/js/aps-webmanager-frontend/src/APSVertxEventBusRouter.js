@@ -29,15 +29,15 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
             subscribers: []
         };
 
+        this.activeSubscribers = [];
+
         this.callbackHandlers = new Map();
 
         /** Will change to true when bus is connected. */
         this.busReady = false;
 
         /** Our bus instance. */
-        // noinspection JSValidateTypes
-        this.eventBus = new EventBus( window.location.protocol + "//" + window.location.hostname +
-            ( window.location.port !== "" ? ( ":" + window.location.port ) : "" ) + "/eventbus/", {} );
+        this.re_startBus();
 
         /** Callback for when bus is connected. */
         this.eventBus.onopen = () => {
@@ -47,12 +47,27 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
 
     }
 
+    re_startBus() {
+        // noinspection JSValidateTypes
+        this.eventBus = new EventBus( window.location.protocol + "//" + window.location.hostname +
+            ( window.location.port !== "" ? ( ":" + window.location.port ) : "" ) + "/eventbus/", {} );
+
+        // This should be empty first time.
+        for ( let sub of this.activeSubscribers ) {
+            this.subscribe( sub.headers, sub.callback );
+        }
+    }
+
     /**
      * Handles the bus becoming available and triggers any actions that has been done before the bus was
      * connected.
      */
     onBusOpen() {
         console.info( "Vertx EventBuss is now connected!" );
+
+        // This seem to help the problem of the bus shutting down after 2-4 minutes. It now takes 5-7 minutes!
+        // noinspection JSUnresolvedFunction
+        this.eventBus.enableReconnect( true );
 
         this.busReady = true;
 
@@ -70,6 +85,14 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
         }
 
         this.sendMsgs = [];
+
+        // Unfortunately this is needed since we cannot receive when the bus is down.
+        this.keepAlive = setInterval( () => {
+            this.message( { routing: { outgoing: `${EVENT_ROUTES.BACKEND}` } }, {
+                aps: { type: "keep-alive" },
+                content: {}
+            } );
+        }, 20000 );
     }
 
     /**
@@ -79,56 +102,73 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
      * @param message - The message to message.
      */
     message( headers: {}, message: {} ) {
-        this.logger.debug( `Sending with headers: ${headers} and message: ${message}` );
+        this.tries = 0;
 
-        if ( this.busReady ) {
+        try {
+            this.logger.debug( `Sending with headers: ${headers} and message: ${message}` );
 
-            // Note here that we do not imitate the vertx event bus totally. We only have one message(...)
-            // method to send messages. It is the 'routing' in the header that determines if a send or a
-            // publish should be done.
+            if ( this.busReady ) {
 
-            let routes = headers[EVENT_ROUTING];
+                // Note here that we do not imitate the vertx event bus totally. We only have one message(...)
+                // method to send messages. It is the 'routing' in the header that determines if a send or a
+                // publish should be done.
 
-            if ( routes != null && routes !== undefined ) {
-                for ( let route: string of routes[ROUTE_OUTGOING].split( ',' ) ) {
+                let routes = headers[EVENT_ROUTING];
 
-                    switch ( route ) {
-                        case EVENT_ROUTES.CLIENT:
-                            break;
+                if ( routes != null && routes !== undefined ) {
+                    for ( let route: string of routes[ROUTE_OUTGOING].split( ',' ) ) {
 
-                        case EVENT_ROUTES.BACKEND:
-                            // noinspection JSUnresolvedFunction
-                            this.eventBus.send( this.busAddress.backend, message, headers, null );
-                            break;
+                        switch ( route ) {
+                            case EVENT_ROUTES.CLIENT:
+                                break;
 
-                        case EVENT_ROUTES.ALL:
-                            // noinspection JSUnresolvedFunction
-                            this.eventBus.publish( this.busAddress.all, message, headers );
-                            break;
+                            case EVENT_ROUTES.BACKEND:
+                                // noinspection JSUnresolvedFunction
+                                this.eventBus.send( this.busAddress.backend, message, headers, null );
+                                break;
 
-                        case EVENT_ROUTES.ALL_BACKENDS:
-                            // noinspection JSUnresolvedFunction
-                            this.eventBus.publish( this.busAddress.allBackends, message, headers );
-                            break;
+                            case EVENT_ROUTES.ALL:
+                                // noinspection JSUnresolvedFunction
+                                this.eventBus.publish( this.busAddress.all, message, headers );
+                                break;
 
-                        case EVENT_ROUTES.ALL_CLIENTS:
-                            // noinspection JSUnresolvedFunction
-                            this.eventBus.publish( this.busAddress.allClients, message, headers );
-                            break;
+                            case EVENT_ROUTES.ALL_BACKENDS:
+                                // noinspection JSUnresolvedFunction
+                                this.eventBus.publish( this.busAddress.allBackends, message, headers );
+                                break;
 
-                        default:
-                            // noinspection JSUnfilteredForInLoop
-                            throw new Error( `APSVertxEventBusRouter: message(): Bad routing value: ${route}!` );
+                            case EVENT_ROUTES.ALL_CLIENTS:
+                                // noinspection JSUnresolvedFunction
+                                this.eventBus.publish( this.busAddress.allClients, message, headers );
+                                break;
+
+                            default:
+                                // noinspection JSUnfilteredForInLoop
+                                throw new Error( `APSVertxEventBusRouter: message(): Bad routing value: ${route}!` );
+                        }
                     }
+                }
+                else {
+                    //this._logger.error(`No 'routing:' entry in headers: ${headers}!`);
+                    throw new Error( `No 'routing:' entry in headers: ${headers}!` );
                 }
             }
             else {
-                //this._logger.error(`No 'routing:' entry in headers: ${headers}!`);
-                throw new Error( `No 'routing:' entry in headers: ${headers}!` );
+                this.cache.messages.push( { message: message, headers: headers } );
             }
+
+            this.tries = 0;
         }
-        else {
-            this.cache.messages.push( { message: message, headers: headers } );
+        catch ( error ) {
+
+            this.tries = this.tries + 1;
+            if ( this.tries <= 5 ) {
+                this.re_startBus();
+                message( headers, message );
+            }
+            else {
+                throw new Error( "Vert.x eventbus has failed!" )
+            }
         }
     }
 
@@ -138,8 +178,10 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
      * @param headers  - The relevant headers for the subscription.
      * @param callback - Callback to call with messages.
      */
-    subscribe( headers: {}, callback: Function) {
+    subscribe( headers: {}, callback: Function ) {
         this.logger.debug( `Subscribing with headers: ${headers}` );
+
+        this.activeSubscribers.push( { headers: headers, callback: callback } );
 
         // This is a wrapper handler that extracts the 'body' part of the message and
         // forwards to the callback.
@@ -258,7 +300,18 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
             }
         }
         else {
-            this.logger.info("Vert.x eventbus not open at unsubscribe! This is most probably OK.")
+            this.logger.info( "Vert.x eventbus not open at unsubscribe! This is most probably OK." )
         }
+
+        let newSubs = [];
+        for ( let sub of this.activeSubscribers ) {
+            if ( sub.headers.incoming === headers.incoming && sub.headers.outgoing === headers.outgoing && sub.callback === callback ) {
+                // Do nothing
+            }
+            else {
+                newSubs.push( sub );
+            }
+        }
+        this.activeSubscribers = newSubs;
     }
 }

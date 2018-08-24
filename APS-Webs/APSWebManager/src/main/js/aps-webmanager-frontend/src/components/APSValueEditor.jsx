@@ -43,7 +43,7 @@ export class APSValueEditor extends APSComponent {
     }
 
     componentType() {
-        return "APSValueEditor";
+        return "aps-value-editor";
     }
 
     render() {

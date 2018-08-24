@@ -34,7 +34,7 @@ export default class APSDate extends APSComponent {
     }
 
     componentType() {
-        return "APSDate";
+        return "aps-date";
     }
 
     valueChangedHandler( date ) {
@@ -51,7 +51,7 @@ export default class APSDate extends APSComponent {
             this.message(
                 this.changeEvent(
                     {
-                        componentType: "date",
+                        componentType: this.componentType(),
                         value: date
                     }
                 )

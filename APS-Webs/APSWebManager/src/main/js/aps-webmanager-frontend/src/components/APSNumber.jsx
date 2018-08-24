@@ -38,7 +38,7 @@ export default class APSNumber extends APSComponent {
     }
 
     componentType() {
-        return "APSNumber";
+        return "aps-number";
     }
 
     /**
@@ -57,7 +57,7 @@ export default class APSNumber extends APSComponent {
         this.message(
             this.changeEvent(
                 {
-                    componentType: "number",
+                    componentType: this.componentType(),
                     value: valueAsNumber
                 }
             )
