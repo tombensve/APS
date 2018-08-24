@@ -10,7 +10,7 @@ import APSTextField from "./APSTextField"
 import APSTextArea from "./APSTextArea"
 import APSNumber from "./APSNumber"
 import APSDate from "./APSDate"
-import { EVENT_ROUTES } from "../Constants"
+import { APP_NAME, EVENT_ROUTES } from "../Constants"
 import APSLogger from "../APSLogger"
 import APSBusAddress from "../APSBusAddress"
 import uuid from "../APSUUID"
@@ -45,7 +45,7 @@ class APSWebManager extends Component {
             comps: []
         };
 
-        this.busAddress = new APSBusAddress( "aps-web-manager" );
+        this.busAddress = new APSBusAddress( APP_NAME );
 
         this.apsEventBus = new APSEventBus();
     }
@@ -62,24 +62,18 @@ class APSWebManager extends Component {
         this.apsEventBus.addBusRouter( new APSLocalEventBusRouter( this.busAddress ) );
         this.apsEventBus.addBusRouter( new APSVertxEventBusRouter( this.busAddress ) );
 
-        this.subscribingRoute = {
-            incoming: `${EVENT_ROUTES.BACKEND},${EVENT_ROUTES.CLIENT}`
-        };
-
         // Subscribe to eventbus for content events.
         this.apsEventBus.subscribe( {
-            headers: { routing: this.subscribingRoute },
-            subscriber: this.messageHandler
+            headers: { routing: { incoming: `${EVENT_ROUTES.BACKEND},${EVENT_ROUTES.CLIENT},${EVENT_ROUTES.ALL},${EVENT_ROUTES.ALL_CLIENTS}` } },
+            subscriber: ( message ) => {
+                this.messageHandler( message );
+            }
         } );
 
-        let sendingRoute = {
-            outgoing: `${EVENT_ROUTES.BACKEND}`
-        };
-
-        // Inform someone that there is a new client available and provide clients unique address.
+        // Inform a backend that there is a new client available and provide clients unique address.
         this.apsEventBus.message( {
 
-            headers: { routing: sendingRoute },
+            headers: { routing: { outgoing: `${EVENT_ROUTES.BACKEND}` } },
 
             message: {
                 aps: {
@@ -100,16 +94,21 @@ class APSWebManager extends Component {
      * @param message The received message.
      */
     messageHandler( message: {} ) {
-        this.logger.debug( `>>>>>>>: message: ${message}` );
+        this.logger.debug( `>>>>>>>: message: ${JSON.stringify(message)}` );
 
-        switch ( message.aps.type.toLowerCase() ) {
+        if (message.aps) {
+            switch ( message.aps.type.toLowerCase() ) {
 
-            case "gui":
-                this.updateGui( message.content );
-                break;
+                case "gui":
+                    this.updateGui( message.content );
+                    break;
 
-            default:
-                this.logger.error(`Received message of unknown type: ${message.aps.type.toLowerCase()}`)
+                // Unknown message are OK and expected. But a default: i required to not get a Babel warning.
+                default:
+            }
+        }
+        else {
+            this.logger.error( `RECEIVED MESSAGE OF UNKNOWN FORMAT: ${message}` )
         }
     }
 
@@ -191,7 +190,8 @@ class APSWebManager extends Component {
             case 'aps-layout':
 
                 content.push(
-                    <APSLayout key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}>
+                    <APSLayout key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                               origin={this.busAddress.client}>
                         {childContent}
                     </APSLayout>
                 );
@@ -200,7 +200,8 @@ class APSWebManager extends Component {
             case 'aps-panel':
 
                 content.push(
-                    <APSPanel key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}>
+                    <APSPanel key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                              origin={this.busAddress.client}>
                         {childContent}
                     </APSPanel>
                 );
@@ -209,35 +210,40 @@ class APSWebManager extends Component {
             case 'aps-button':
 
                 content.push(
-                    <APSButton key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}/>
+                    <APSButton key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                               origin={this.busAddress.client}/>
                 );
                 break;
 
             case 'aps-text-field':
 
                 content.push(
-                    <APSTextField key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}/>
+                    <APSTextField key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                                  origin={this.busAddress.client}/>
                 );
                 break;
 
             case 'aps-text-area':
 
                 content.push(
-                    <APSTextArea key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}/>
+                    <APSTextArea key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                                 origin={this.busAddress.client}/>
                 );
                 break;
 
             case 'aps-number':
 
                 content.push(
-                    <APSNumber key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}/>
+                    <APSNumber key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                               origin={this.busAddress.client}/>
                 );
                 break;
 
             case 'aps-date':
 
                 content.push(
-                    <APSDate key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}/>
+                    <APSDate key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                             origin={this.busAddress.client}/>
                 );
                 break;
 

@@ -127,11 +127,11 @@ Client receives a gui, most probably from backend, but can really be send from a
     "content": {
         "id": "(comp id)",
         "name": "(comp name)",
-        ?"group": "(Name of group component belongs to if any.)",
+        ?"group": "(name of group component belongs to if any.)",
         "type": "(comp type)",
         ?"class": "(class class ...)",
         ?"disabled": true/false,
-    
+        ?"enabled": "groupNotEmpty:(group)/namedComponentsNotEmpty:(names)"
         "collectGroups": "(space separated list of groups to listen to and collect data from.)",
         "(type specific)": "(...)",
         ...,

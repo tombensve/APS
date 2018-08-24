@@ -3,7 +3,7 @@ import { Component } from 'react'
 import '../APSEventBus'
 import PropTypes from "prop-types"
 import APSLogger from "../APSLogger"
-import { EVENT } from "../Constants"
+import { APP_NAME, EVENT } from "../Constants"
 
 /**
  * A common base component for all APS components.
@@ -18,7 +18,7 @@ class APSComponent extends Component {
     // Constructor
     //
 
-    constructor( props : object ) {
+    constructor( props: {} ) {
         super( props );
 
         this.logger = new APSLogger( this.componentType() );
@@ -41,36 +41,36 @@ class APSComponent extends Component {
     // Properties (subclasses should override or set these as needed)
     //
 
-    get busMember() : boolean {
+    get busMember(): Boolean {
         return this._busMember;
     }
 
-    set busMember( busMember : boolean ) {
+    set busMember( busMember: Boolean ) {
         this._busMember = busMember;
     }
 
     // Component has empty value.
 
-    get empty() : boolean {
+    get empty(): Boolean {
         return this._empty;
     }
 
-    set empty( empty : boolean ) {
+    set empty( empty: Boolean ) {
         this._empty = empty;
     }
 
     // Component has a value to provide. Default is true, so a button for example should do this.hasValue = false.
-    get hasValue() : boolean {
+    get hasValue(): Boolean {
         return this._hasValue;
     }
 
-    set hasValue( hasValue : boolean ) {
+    set hasValue( hasValue: Boolean ) {
         this._hasValue = hasValue;
     }
 
     // Sets component disabled state. This must be overridden by sub components.
 
-    set disabled( state ) {
+    set disabled( state: Boolean ) {
         this.logger.error( "ERROR: 'disabled' in APSComponent called! This should be overridden!" )
     }
 
@@ -91,7 +91,7 @@ class APSComponent extends Component {
      *
      * @returns {string} the passes classes or the overridden ones.
      */
-    clsName( classes : string ) : string {
+    clsName( classes: String ): String {
         return this.props.guiProps.class != null ? this.props.guiProps.class : classes;
     }
 
@@ -101,7 +101,7 @@ class APSComponent extends Component {
      *
      * @returns {string}
      */
-    componentType() : string {
+    componentType(): String {
 
         return "APSComponent";
     }
@@ -111,9 +111,9 @@ class APSComponent extends Component {
      *
      * @param {object} message The message to message. Should be a string of JSON. Use eventMessage() as input to this.
      */
-    message( message : object ) {
+    message( message: {} ) {
 
-        this.props.eventBus.message( this.props.guiProps.headers, message );
+        this.props.eventBus.message( { headers: this.props.guiProps.headers, message: message } );
     }
 
     /**
@@ -121,14 +121,14 @@ class APSComponent extends Component {
      *
      * @param {function(string, string)} subscriber The function to call with messages.
      */
-    subscribe( subscriber : () => mixed ) {
+    subscribe( subscriber: () => mixed ) {
 
         if ( this.props.guiProps.headers != null ) {
 
-            this.props.eventBus.subscribe( this.props.guiProps.headers, subscriber );
+            this.props.eventBus.subscribe( { headers: this.props.guiProps.headers, subscriber: subscriber } );
         }
         else {
-            throw new Error(`Tried to subscribe without guiProps.headers being available!`);
+            throw new Error( `Tried to subscribe without guiProps.headers being available!` );
         }
     }
 
@@ -137,46 +137,52 @@ class APSComponent extends Component {
      *
      * @param {function(string, string)} subscriber The function to no longer call with messages.
      */
-    unsubscribe( subscriber : func ) {
+    unsubscribe( subscriber: () => mixed ) {
 
-        this.props.eventBus.unsubscribe( this.props.guiProps.headers, subscriber );
+        this.props.eventBus.unsubscribe( { headers: this.props.guiProps.headers, subscriber: subscriber } );
     }
 
     /**
      * Event message helper.
      *
-     * @param {object} msg The message to append standard info to. This will be returned after modifications.
+     * @param {object} content - The content of the message to send. A standard aps: object is added to this,
+     *                           and passed content is places under content:.
      *
      * @returns {object} The passed and upgraded object as a JSON string.
      */
-    eventMsg( msg : {type: string, group: string, managerId: string, componentId: string, componentName: string,
-        empty: boolean, hasValue: boolean} ) : object {
-
-        msg.type = "gui-event";
-        msg.group = this.props.guiProps.group;
-        msg.managerId = this.props.mgrId;
-        msg.componentId = this.props.guiProps.id;
-        msg.componentName = this.props.guiProps.name;
-        msg.empty = this.empty;
-        msg.hasValue = this.hasValue;
-
-        if ( Object.keys( this.collected ).length !== 0 ) {
-
-            msg.additional = this.collected;
+    eventMsg( content: {
+        aps: { type: string }, content: {
+            group: string, managerId: string, componentId: string, componentName: string,
+            empty: boolean, hasValue: boolean
         }
-
-        return msg;
+    } ): {} {
+        return {
+            aps: {
+                origin: this.props.origin,
+                app: APP_NAME,
+                type: "gui-event"
+            },
+            content: Object.assign( content, {
+                group: this.props.guiProps.group,
+                managerId: this.props.mgrId,
+                componentId: this.props.guiProps.name,
+                componentName: this.props.guiProps.name,
+                empty:this.empty,
+                hasValue: this.hasValue,
+                collected: Object.keys( this.collected ).length !== 0 ? this.collected: undefined
+            } )
+        };
     }
 
     /**
      * Creates a "changeEvent" message.
      *
-     * @param {object} msg Base message to append to.
+     * @param {Object} msg Base message to append to.
      * @returns {Object} An updated message.
      */
-    changeEvent( msg : object ) : object {
+    changeEvent( msg: { aps: { type: string }, content: {} } ): {} {
         msg = this.eventMsg( msg );
-        msg[EVENT.TYPE] = EVENT.TYPES.CHANGE;
+        msg.content.eventType = EVENT.TYPES.CHANGE;
         return msg;
     }
 
@@ -188,10 +194,10 @@ class APSComponent extends Component {
      *
      * @returns {Object} An updated message.
      */
-    actionEvent( msg : object , action : string ) : object {
+    actionEvent( msg: { aps: {}, content: { eventType: String, action: String } }, action: string ): {} {
         msg = this.eventMsg( msg );
-        msg["eventType"] = "action";
-        msg["action"] = action;
+        msg.content.eventType = "action";
+        msg.content.action = action;
         return msg;
     }
 
@@ -202,7 +208,7 @@ class APSComponent extends Component {
      *
      * @returns {Object} The updated message.
      */
-    submitActionEvent( msg : object ) {
+    submitActionEvent( msg: {} ) {
         return this.actionEvent( msg, "submit" );
     }
 
@@ -212,21 +218,21 @@ class APSComponent extends Component {
      * @param {object} message The actual message as JSON string.
      */
     // noinspection JSMethodCanBeStatic
-    messageHandler( message : object ) {
+    messageHandler( message: { aps: { /*...*/ }, content: { /*...*/ } } ) {
 
         this.logger.debug( "messageHandler > Received: {}", [message] );
 
         // If this component wants to collect values sent by other components, we
-        // just save the whole message under 'collected' and using the componentType as key.
+        // just save the whole message under 'collected' and using the components id as key.
         // This is for submit type components. Rather than having all components publish
         // all data over the network, submit type components collect their data and passes
         // it along on a submit.
-        // noinspection JSUnresolvedVariable
-        if ( message.hasValue && this.props.guiProps.collectGroups != null &&
-            this.props.guiProps.collectGroups.indexOf( message.group ) !== -1 ) {
+
+        if ( message.content.hasValue && this.props.guiProps.collectGroups != null &&
+            this.props.guiProps.collectGroups.indexOf( message.content.group ) !== -1 ) {
 
             // Save message using the originating components id.
-            this.collected[message.componentId] = message;
+            this.collected[message.content.componentId] = message.content;
 
             //console.log(">>>> [" + this.props.guiProps.id + "] Collected: " + message)
         }
@@ -234,14 +240,17 @@ class APSComponent extends Component {
         // Handle enable and disable of a component that have supplied a criteria for that.
         if ( this.props.guiProps.enabled != null ) {
 
-            let enabparams = this.props.guiProps.enabled.split( ':' );
+            let enableDisableParameters = this.props.guiProps.enabled.split( ':' );
             let _disable = true;
 
-            if ( enabparams[0] === "groupNotEmpty" ) {
-                _disable = !this.enableDisableOnGroupNotEmpty( enabparams[1] );
+            if ( enableDisableParameters[0] === "groupNotEmpty" ) {
+                _disable = !this.enableDisableOnGroupNotEmpty( enableDisableParameters[1] );
             }
-            else if ( enabparams[0] === "namedComponentsNotEmpty" ) {
-                _disable = !this.enableDisableOnNamedComponentsNotEmpty( enabparams[1] );
+            else if ( enableDisableParameters[0] === "namedComponentsNotEmpty" ) {
+                _disable = !this.enableDisableOnNamedComponentsNotEmpty( enableDisableParameters[1] );
+            }
+            else {
+                this.logger.error( `Unknown enable/disable property value: ${this.props.guiProps.enabled}` )
             }
 
             this.disabled = _disable;
@@ -257,7 +266,7 @@ class APSComponent extends Component {
      *
      * @returns {boolean}
      */
-    enableDisableOnGroupNotEmpty( group : string ) {
+    enableDisableOnGroupNotEmpty( group: String ) {
         let notEmpty = true;
         for ( let key of Object.keys( this.collected ) ) {
             let msg = this.collected[key];
@@ -278,7 +287,7 @@ class APSComponent extends Component {
      *
      * @returns {boolean}
      */
-    enableDisableOnNamedComponentsNotEmpty( names : string ) {
+    enableDisableOnNamedComponentsNotEmpty( names: String ) {
         if ( this.collected == null ) return true;
 
         let namesArr = names.split( "," );
@@ -319,23 +328,20 @@ APSComponent.propTypes = {
         name: PropTypes.string,
         type: PropTypes.string,
         orientation: PropTypes.string,
-        children: {
-            id: PropTypes.string,
-            name: PropTypes.string,
-            group: PropTypes.string,
-            type: PropTypes.string,
-            value: PropTypes.any,
-            listenTo: PropTypes.string,
-            sendTo: PropTypes.string,
-            class: PropTypes.string,
-            headers: {
-                routing: PropTypes.string
-            },
-            width: PropTypes.number,
-            cols: PropTypes.number,
-            rows: PropTypes.number,
-            label: PropTypes.string
-        }
+        value: PropTypes.any,
+        class: PropTypes.string,
+        collectGroups: PropTypes.string,
+        headers: {
+            routing: {
+                incoming: PropTypes.string,
+                outgoing: PropTypes.string
+            }
+        },
+        width: PropTypes.number,
+        cols: PropTypes.number,
+        rows: PropTypes.number,
+        label: PropTypes.string,
+        children: [APSComponent.propTypes]
     }
 };
 

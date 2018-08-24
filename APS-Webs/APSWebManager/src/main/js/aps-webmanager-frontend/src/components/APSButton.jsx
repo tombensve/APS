@@ -41,11 +41,7 @@ class APSButton extends APSComponent {
         console.log( this, event );
 
         this.message(
-            this.submitActionEvent(
-                {
-                    componentType: "button"
-                }
-            )
+            this.submitActionEvent( { componentType: "button" } )
         );
     }
 

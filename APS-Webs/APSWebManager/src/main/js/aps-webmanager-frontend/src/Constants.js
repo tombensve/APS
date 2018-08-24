@@ -2,6 +2,8 @@
 // The following are routing values that are checked for in the guiProps.routing field.
 //
 
+export const APP_NAME = "aps-web-manager";
+
 //
 // ROUTING
 //

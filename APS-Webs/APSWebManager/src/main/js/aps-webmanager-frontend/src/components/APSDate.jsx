@@ -13,7 +13,7 @@ import { isMobileDevice } from "../Utils";
  */
 export default class APSDate extends APSComponent {
 
-    constructor( props ) {
+    constructor( props: { guiProps: { startValue: *, disabled: boolean } } ) {
         super( props );
 
         this.logger = new APSLogger( "APSDate" );

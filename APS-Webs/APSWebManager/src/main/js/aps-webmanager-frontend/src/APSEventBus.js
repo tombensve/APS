@@ -51,18 +51,27 @@ export default class APSEventBus {
         this.busRouters = [];
     }
 
+    // I though it was a good idea to use named parameters in the form of an object with named values.
+    // This so that arguments wouldn't accidentally be passed in the wrong order. What I missed was the
+    // extreme dynamicness (is that a word ?) of JS. It is still possible to misspell names, and even pass
+    // 2 separate argument rather than one object. Think happilly builds anyhow.
+
     /**
      * This adds a subscriber for an address. The first param can also be an object containing 3 keys for each
      * parameter. In that case the other 2 are ignored.
      *
      * @param params - Named parameters: { headers: ..., subscriber: ... }
+     * @param jic - Just In Case something still uses (headers, subscriber).
      */
-    subscribe( params : {headers: {routing: { outgoing: string, incoming: string }}, subscriber: () => mixed} ) {
+    subscribe( params: { headers: { routing: { outgoing: string, incoming: string } }, subscriber: () => mixed }, jic: * = undefined) {
+        if ( jic !== undefined ) {
+            throw new Error("Old method call subscribe(headers, subscriber) done!")
+        }
 
-        let pars = new NamedParams(params, "APSEventBus.subscribe");
+        let pars = new NamedParams( params, "APSEventBus.subscribe" );
 
-        let headers = APSEventBus.ensureHeaders( pars.requiredParam("headers") );
-        let subscriber = pars.requiredParam("subscriber");
+        let headers = APSEventBus.ensureHeaders( pars.param( "headers" ) );
+        let subscriber = pars.requiredParam( "subscriber" );
 
         APSEventBus.validRoutingHeaders( headers.routing.incoming );
 
@@ -77,12 +86,12 @@ export default class APSEventBus {
      *
      * @param params params - Named parameters: { headers: ..., subscriber: ... }
      */
-    unsubscribe( params : {headers: {routing: { outgoing: string, incoming: string }}, subscriber: () => mixed} ) {
+    unsubscribe( params: { headers: { routing: { outgoing: string, incoming: string } }, subscriber: () => mixed } ) {
 
-        let pars = new NamedParams(params, "APSEventBus.unsubscribe");
+        let pars = new NamedParams( params, "APSEventBus.unsubscribe" );
 
-        let headers = APSEventBus.ensureHeaders( pars.requiredParam("headers") );
-        let subscriber = pars.requiredParam("subscriber");
+        let headers = APSEventBus.ensureHeaders( pars.param( "headers" ) );
+        let subscriber = pars.requiredParam( "subscriber" );
 
         APSEventBus.validRoutingHeaders( headers.routing.incoming );
 
@@ -96,13 +105,17 @@ export default class APSEventBus {
      * Sends a message.
      *
      * @param params - Named parameters: { headers: {...}, message: {...}}
+     * @param jic - Just In Case something still uses (headers, subscriber).
      */
-    message( params: {headers: {routing: { outgoing: string, incoming: string }}, message: {aps:{}, content?:{}}} ) {
+    message( params: { headers: { routing: { outgoing: string, incoming: string } }, message: { aps: {}, content?: {} } }, jic: * = undefined ) {
+        if ( jic !== undefined ) {
+            throw new Error("Old method call message(headers, subscriber) done!")
+        }
 
-        let pars = new NamedParams(params, "APSEventBus.message");
+        let pars = new NamedParams( params, "APSEventBus.message" );
 
-        let headers = APSEventBus.ensureHeaders(pars.requiredParam("headers"));
-        let message = pars.requiredParam("message");
+        let headers = APSEventBus.ensureHeaders( pars.param( "headers" ) );
+        let message = pars.requiredParam( "message" );
 
         APSEventBus.validRoutingHeaders( headers.routing.outgoing );
 
