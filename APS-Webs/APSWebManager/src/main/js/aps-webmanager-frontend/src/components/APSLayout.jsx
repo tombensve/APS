@@ -1,14 +1,21 @@
 import React, { Component } from 'react'
 import { Row } from 'react-bootstrap'
 
+/**
+ * ## Properties
+ *
+ * ### guiProps.orientation
+ *
+ * horizontal or vertical.
+ */
 export default class APSLayout extends Component {
     render() {
         let result = null;
 
-        if ( this.props.guiProps.layout.orientation === null || this.props.guiProps.layout.orientation.startsWith( "horiz" ) ) {
+        if ( this.props.guiProps.orientation === null || this.props.guiProps.orientation.startsWith( "horiz" ) ) {
 
             result = (
-                    <Row id={this.props.id} className="form-inline">
+                    <Row className="form-inline">
                         {this.props.children}
                     </Row>
             )
@@ -16,7 +23,7 @@ export default class APSLayout extends Component {
         else {
 
             result = (
-                <div id={this.props.id} className="form-group">
+                <div className="form-group">
                     {this.props.children}
                 </div>
             )

@@ -22,7 +22,7 @@ import se.natusoft.osgi.aps.util.APSLogger
 @TypeChecked
 class APSWebManagerBoot {
 
-    /** Our logger. */
+    /** Our _logger. */
     @Managed
     private APSLogger logger
 

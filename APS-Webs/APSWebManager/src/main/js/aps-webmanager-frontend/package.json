@@ -1,15 +1,20 @@
 {
-  "name": "aps-adminweb",
+  "name": "aps-webmanager",
   "version": "0.1.0",
   "private": true,
   "comment1": "Suggested in https://github.com/facebook/create-react-app/issues/165",
   "homepage": "/apsweb",
   "dependencies": {
+    "moment": "^2.22.2",
+    "moment-range": "^4.0.1",
     "prop-types": "^15.6.2",
     "react": "^16.4.1",
     "react-bootstrap": "^0.32.1",
+    "react-day-picker": "^7.1.10",
     "react-dom": "^16.4.2",
+    "react-numeric-input": "^2.2.3",
     "react-scripts": "1.1.4",
+    "uuid": "^3.3.2",
     "vertx3-eventbus-client": "^3.5.3"
   },
   "scripts": {

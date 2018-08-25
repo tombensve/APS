@@ -2,23 +2,20 @@
   "id": "h-test-group",
   "name": "top",
   "type": "aps-layout",
-  "layout": {
-    "orientation": "horiz"
-  },
+  "orientation": "horiz",
   "children": [
     {
       "id": "name",
       "name": "name-field",
       "group": "gpoc",
       "type": "aps-text-field",
-      "textField": {
-        "width": 20
-      },
+      "width": 20,
       "value": "",
-      "listenTo": "aps:test-gui",
-      "publishTo": "aps:test-gui",
       "headers": {
-        "routing": "client"
+        "routing": {
+          "outgoing": "client",
+          "incoming": "client"
+        }
       }
     },
     {
@@ -26,15 +23,14 @@
       "name": "descriptionField",
       "group": "gpoc",
       "type": "aps-text-area",
-      "textArea": {
-        "cols": 30,
-        "rows": 4
-      },
+      "cols": 30,
+      "rows": 4,
       "value": "",
-      "listenTo": "aps:test-gui",
-      "publishTo": "aps:test-gui",
       "headers": {
-        "routing": "client"
+        "routing": {
+          "outgoing": "client",
+          "incoming": "client"
+        }
       }
     },
     {
@@ -42,17 +38,42 @@
       "name": "submitButton",
       "group": "gpoc",
       "type": "aps-button",
-      "button": {
-        "label": "Save"
-      },
+      "label": "Save",
       "class": "btn btn-success",
       "disabled": true,
       "collectGroups": "gpoc",
       "enabled": "groupNotEmpty:gpoc",
-      "listenTo": "aps:test-gui",
-      "publishTo": "aps:test-gui",
       "headers": {
-        "routing": "client,backend"
+        "routing": {
+          "outgoing": "client,backend",
+          "incoming": "client"
+        }
+      }
+    },
+    {
+      "id": "num",
+      "name": "numeric-spinner",
+      "type": "aps-number",
+      "min": 0,
+      "max": 10,
+      "value": 2,
+      "headers": {
+        "routing": {
+          "outgoing": "client",
+          "incoming": "client"
+        }
+      }
+    },
+    {
+      "id": "date",
+      "name": "dateSelector",
+      "type": "aps-date",
+      "startValue": "2018-08-10",
+      "headers": {
+        "routing": {
+          "outgoing": "client,backend",
+          "incoming": "client"
+        }
       }
     }
   ]

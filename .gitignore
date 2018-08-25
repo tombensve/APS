@@ -3,6 +3,7 @@
 *.war
 .DS_Store
 .DS_Store?
+._.DS_Store
 .idea/
 target/
 !vagrant/deploy/git.anchor

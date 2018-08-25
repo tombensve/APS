@@ -4,11 +4,13 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.eventbus.Message
+import io.vertx.core.eventbus.MessageConsumer
 import io.vertx.core.json.JsonObject
 import org.osgi.framework.ServiceReference
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.util.APSJson
 import se.natusoft.osgi.aps.util.APSLogger
@@ -17,13 +19,15 @@ import se.natusoft.osgi.aps.util.APSLogger
 @SuppressWarnings( "unused" )
 @CompileStatic
 @TypeChecked
-class TestApp implements Constants {
+class TestApp {
 
     @Managed
     private APSLogger logger
 
     @OSGiService( additionalSearchCriteria = "(vertx-object=EventBus)" )
     private APSServiceTracker<EventBus> eventBusTracker
+
+    private MessageConsumer newClientConsumer
 
     @Initializer
     void init() {
@@ -32,28 +36,40 @@ class TestApp implements Constants {
 
             this.logger.info( "An EventBus just became available!" )
 
-            eventBus.consumer( ADDR_NEW_CLIENT ) { Message message ->
+            this.newClientConsumer = eventBus.consumer( "aps:aps-web-manager:backend" ) { Message message ->
 
-                Map<String, Object> received = ( message.body() as JsonObject ).getMap() //JSON.stringToMap( message.body().toString() )
-
-                this.logger.debug( ">>>>>Received: ${ received }" )
-                this.logger.debug( "received['op']=='${ received[ "op" ] }'" )
+                // Since JsonObject from Vert.x only maps the current values to a Map, not the whole tree
+                // I'm currently producing a JSON string from JsonObject and then parse it again with
+                // Jackson Jr, which gives a full Map structure.
+                //Map<String, Object> received = APSJson.readObject( message.body(  ).toString(  ) )
+                Map<String, Object> received = new RecursiveJsonObjectMap(message.body(  ) as JsonObject)
+                String recv = received.toString(  )
+                this.logger.debug( ">>>>>Received from '${received["aps"]["origin"]}': ${ recv }" )
 
                 try {
-                    if ( received[ "op" ] == "init" ) {
-                        provideGui( eventBus, received[ "client" ] as String )
+                    if ( received[ "aps" ][ "type" ] == "avail" ) {
+                        provideGui( eventBus, received[ "aps" ][ "origin" ] as String )
                     }
                 }
                 catch ( Exception e ) {
-                    this.logger.error( e.getMessage(  ), e )
+                    this.logger.error( e.getMessage(), e )
                 }
 
             }
 
             this.logger.debug( "Waiting for messages ..." )
+
+            eventBus.consumer( "aps:aps-web-manager:backend:all" ) { Message message ->
+
+                Map<String, Object> testGuiMsg = ( message.body() as JsonObject ).getMap()
+                this.logger.debug( "aps:test-gui ==> ${ testGuiMsg }" )
+
+            }
         }
 
         this.eventBusTracker.onActiveServiceLeaving = { ServiceReference sref, Class api ->
+
+            this.newClientConsumer.unregister()
 
             this.logger.info( "EventBus going away!" )
         }
@@ -61,6 +77,7 @@ class TestApp implements Constants {
     }
 
     private void provideGui( EventBus eventBus, String address ) {
+        this.logger.debug("In provideGui!")
 
         InputStream jsonStream =
                 new BufferedInputStream( this.class.classLoader.getResourceAsStream( "guijson/gui.json" ) )
@@ -74,9 +91,18 @@ class TestApp implements Constants {
             jsonStream.close()
         }
 
-        this.logger.debug( "incode: ${ gui }" )
+        this.logger.debug( "gui: ${ gui }" )
 
-        JsonObject reply = new JsonObject( [msgType: "gui", msgData: gui] as Map<String, Object> )
+        JsonObject reply = new JsonObject(
+                [
+                        aps    : [
+                                origin: "aps:aps-web-manager:backend",
+                                app   : "aps-web-manager",
+                                type  : "gui"
+                        ],
+                        content: gui
+                ] as Map<String, Object>
+        )
 
         println "Thread: ${ Thread.currentThread().getName() }"
 

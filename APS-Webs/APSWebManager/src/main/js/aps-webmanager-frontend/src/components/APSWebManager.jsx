@@ -1,15 +1,19 @@
+// Flow syntax is used by this code!
 import React, { Component } from 'react'
-import LocalEventBus from "../LocalEventBus"
-import LocalBusRouter from "../LocalBusRouter"
-import VertxEventBusRouter from "../VertxEventBusRouter"
+import APSEventBus from "../APSEventBus"
+import APSLocalEventBusRouter from "../APSLocalEventBusRouter"
+import APSVertxEventBusRouter from "../APSVertxEventBusRouter"
 import APSLayout from "./APSLayout"
 import APSPanel from "./APSPanel"
 import APSButton from "./APSButton"
 import APSTextField from "./APSTextField"
 import APSTextArea from "./APSTextArea"
-import { uuidv4 } from "../UUID"
-import { ADDR_NEW_CLIENT, multiRoutes, EVENT_ROUTES } from "../Constants"
+import APSNumber from "./APSNumber"
+import APSDate from "./APSDate"
+import { APP_NAME, EVENT_ROUTES } from "../Constants"
 import APSLogger from "../APSLogger"
+import APSBusAddress from "../APSBusAddress"
+import uuid from "../APSUUID"
 
 /**
  * A component reading a JSON spec of components to render. The GuiMgr also creates a local
@@ -31,7 +35,7 @@ class APSWebManager extends Component {
      *
      * @param props The standard properties.
      */
-    constructor( props ) {
+    constructor( props: {} ) {
         super( props );
 
         this.logger = new APSLogger( "APSWebManager" );
@@ -41,24 +45,9 @@ class APSWebManager extends Component {
             comps: []
         };
 
-        this.listenAddress = "aps:web-manager:" + uuidv4() + "/" + this.props.mgrId;
+        this.busAddress = new APSBusAddress( APP_NAME );
 
-        this.localEventBus = new LocalEventBus();
-
-        /**
-         * Event bus subscriber. We need to keep the instance of this so that we can unsubscribe later.
-         *
-         * @param {string} message - A received message in JSON format.
-         */
-        this.compSubscriber = ( message ) => {
-
-            this.logger.debug( ">>>>>>>: message: {}", message );
-
-            if ( message['msgType'] === "gui" ) {
-
-                this.updateGui( message['msgData'] );
-            }
-        };
+        this.apsEventBus = new APSEventBus();
     }
 
     //
@@ -70,26 +59,57 @@ class APSWebManager extends Component {
      */
     componentDidMount() {
 
-        this.localEventBus.addBusRouter( new LocalBusRouter() );
-        this.localEventBus.addBusRouter( new VertxEventBusRouter() );
+        this.apsEventBus.addBusRouter( new APSLocalEventBusRouter( this.busAddress ) );
+        this.apsEventBus.addBusRouter( new APSVertxEventBusRouter( this.busAddress ) );
 
         // Subscribe to eventbus for content events.
-        this.localEventBus.subscribe( this.listenAddress, { routing: multiRoutes( [EVENT_ROUTES.CLIENT, EVENT_ROUTES.BACKEND] ) },
-            ( message ) => {
+        this.apsEventBus.subscribe( {
+            headers: { routing: { incoming: `${EVENT_ROUTES.BACKEND},${EVENT_ROUTES.CLIENT},${EVENT_ROUTES.ALL},${EVENT_ROUTES.ALL_CLIENTS}` } },
+            subscriber: ( message ) => {
+                this.messageHandler( message );
+            }
+        } );
 
-                // noinspection JSCheckFunctionSignatures
-                this.compSubscriber( message );
-            } );
+        // Inform a backend that there is a new client available and provide clients unique address.
+        this.apsEventBus.message( {
 
-        // Inform someone that there is a new client available and provide clients unique address.
-        this.localEventBus.message(
-            ADDR_NEW_CLIENT,
-            { routing: "backend" },
-            { op: "init", apsWebMgrId: this.props.apsWebMgrId, client: this.listenAddress }
-        );
+            headers: { routing: { outgoing: `${EVENT_ROUTES.BACKEND}` } },
+
+            message: {
+                aps: {
+                    origin: this.busAddress.client,
+                    app: "aps-web-manager",
+                    type: "avail"
+                }
+            }
+        } );
 
         // For testing ...
         //this.fakeContentForTestDebugAndPOC();
+    }
+
+    /**
+     * Handles received messages.
+     *
+     * @param message The received message.
+     */
+    messageHandler( message: {} ) {
+        this.logger.debug( `>>>>>>>: message: ${JSON.stringify(message)}` );
+
+        if (message.aps) {
+            switch ( message.aps.type.toLowerCase() ) {
+
+                case "gui":
+                    this.updateGui( message.content );
+                    break;
+
+                // Unknown message are OK and expected. But a default: i required to not get a Babel warning.
+                default:
+            }
+        }
+        else {
+            this.logger.error( `RECEIVED MESSAGE OF UNKNOWN FORMAT: ${message}` )
+        }
     }
 
     /**
@@ -98,7 +118,10 @@ class APSWebManager extends Component {
     componentWillUnmount() {
 
         // Since we are going away, stop listening for events.
-        this.localEventBus.unsubscribe( this.listenAddress, { routing: "client,backend" }, this.compSubscriber );
+        this.apsEventBus.unsubscribe( {
+            headers: { routing: this.subscribingRoute },
+            subscriber: this.messageHandler
+        } );
     }
 
     /**
@@ -123,7 +146,7 @@ class APSWebManager extends Component {
      *
      * @param gui A specification for the GUI.
      */
-    updateGui( gui ) {
+    updateGui( gui: {} ) {
 
         this.setState( {
 
@@ -142,7 +165,7 @@ class APSWebManager extends Component {
      *
      * @returns {Array} created components.
      */
-    parseGui( gui, arrKeyCon ) {
+    parseGui( gui: {}, arrKeyCon: { key: number } ): [] {
 
         let content = [];
         let childContent = [];
@@ -159,7 +182,7 @@ class APSWebManager extends Component {
 
         let type = gui['type'];
         let mgrId = this.props.mgrId;
-        if ( mgrId == null ) mgrId = this.uuid;
+        if ( mgrId == null ) mgrId = uuid();
 
         // noinspection JSUnresolvedVariable
         switch ( type ) {
@@ -167,54 +190,69 @@ class APSWebManager extends Component {
             case 'aps-layout':
 
                 content.push(
-                    <APSLayout key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={mgrId} guiProps={gui}>
+                    <APSLayout key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                               origin={this.busAddress.client}>
                         {childContent}
                     </APSLayout>
-                )
-
+                );
                 break;
 
             case 'aps-panel':
 
                 content.push(
-                    <APSPanel key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={mgrId} guiProps={gui}>
+                    <APSPanel key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                              origin={this.busAddress.client}>
                         {childContent}
                     </APSPanel>
                 );
-
                 break;
 
             case 'aps-button':
 
                 content.push(
-                    <APSButton key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={mgrId} guiProps={gui}/>
+                    <APSButton key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                               origin={this.busAddress.client}/>
                 );
-
                 break;
 
             case 'aps-text-field':
 
                 content.push(
-                    <APSTextField key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={mgrId} guiProps={gui}/>
+                    <APSTextField key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                                  origin={this.busAddress.client}/>
                 );
-
                 break;
 
             case 'aps-text-area':
 
                 content.push(
-                    <APSTextArea key={++arrKeyCon.key} eventBus={this.localEventBus} mgrId={mgrId} guiProps={gui}/>
+                    <APSTextArea key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                                 origin={this.busAddress.client}/>
                 );
-
                 break;
 
+            case 'aps-number':
+
+                content.push(
+                    <APSNumber key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                               origin={this.busAddress.client}/>
+                );
+                break;
+
+            case 'aps-date':
+
+                content.push(
+                    <APSDate key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                             origin={this.busAddress.client}/>
+                );
+                break;
 
             default:
                 console.error( "Bad 'type': " + type );
             //     throw "Bad type '" + type + "' in GUI specification JSON!"
         }
 
-        return content
+        return content;
     }
 }
 
