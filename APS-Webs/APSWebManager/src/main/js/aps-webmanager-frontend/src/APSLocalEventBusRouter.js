@@ -89,7 +89,7 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
      * @param headers  - Relevant headers for subscription.
      * @param callback - Callback to call with messages.
      */
-    subscribe( headers: {}, callback: Function ) {
+    subscribe( headers: {}, callback: () => mixed ) {
 
         if ( headers[EVENT_ROUTING] != null ) {
 

@@ -8,7 +8,7 @@
  *
  * @returns {{Android: (function(): RegExpMatchArray), BlackBerry: (function(): RegExpMatchArray), iOS: (function(): RegExpMatchArray), Opera: (function(): RegExpMatchArray), Windows: (function(): RegExpMatchArray), any: (function(): *)}}
  */
-export function isMobileDevice() {
+export function isMobileDevice(): boolean {
     return {
         Android: function() {
             return navigator.userAgent.match(/Android/i);
@@ -40,7 +40,7 @@ export function isMobileDevice() {
 //     return screen.width < 1000;
 // }
 
-function _sleep(ms) {
+function _sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -49,7 +49,7 @@ function _sleep(ms) {
  * @param time
  * @returns {Promise<void>}
  */
-export async function sleep(time) {
+export async function sleep(time: number) {
     console.log('Taking a break...');
     await _sleep(time);
     console.log('Break over');
@@ -62,7 +62,7 @@ export async function sleep(time) {
  * @param {string} value The value to check.
  * @param {array.<string>} contains An array of valid strings for the value to contain. Any hit on these will return true.
  */
-export function containsAnyOrBlank(value, contains) {
+export function containsAnyOrBlank(value: string, contains: string[]) {
     let found = false;
 
     if (value === "") {

@@ -24,7 +24,7 @@ import NumericInput from 'react-numeric-input';
  */
 export default class APSNumber extends APSComponent {
 
-    constructor( props ) {
+    constructor( props: {} ) {
         super( props );
 
         this.state = {
@@ -37,7 +37,7 @@ export default class APSNumber extends APSComponent {
         this.hasValue = true;
     }
 
-    componentType() {
+    componentType(): string {
         return "aps-number";
     }
 
@@ -48,7 +48,7 @@ export default class APSNumber extends APSComponent {
      * @param valueAsNumber
      * @param element
      */
-    handleEvent( valueAsNumber, valueAsString, element ) {
+    handleEvent( valueAsNumber: number, valueAsString: string, element: * ) {
         this.setState( {
             value: valueAsNumber,
             disabled: this.state.disabled

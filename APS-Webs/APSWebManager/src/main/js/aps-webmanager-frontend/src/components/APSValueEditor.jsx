@@ -29,7 +29,7 @@ import APSNumber from "./APSNumber"
  */
 export class APSValueEditor extends APSComponent {
 
-    constructor( props ) {
+    constructor( props: {} ) {
         super( props );
 
         this.state = {
@@ -42,7 +42,7 @@ export class APSValueEditor extends APSComponent {
         this.hasValue = true;
     }
 
-    componentType() {
+    componentType(): string {
         return "aps-value-editor";
     }
 

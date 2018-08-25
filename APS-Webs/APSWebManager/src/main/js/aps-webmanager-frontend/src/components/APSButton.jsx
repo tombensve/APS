@@ -15,7 +15,7 @@ import { Button } from 'react-bootstrap'
  */
 class APSButton extends APSComponent {
 
-    constructor( props ) {
+    constructor( props: {} ) {
         super( props );
 
         this.disabled = props.guiProps.disabled != null ? props.guiProps.disabled : false;
@@ -23,12 +23,12 @@ class APSButton extends APSComponent {
     }
 
     // Override
-    componentType() {
+    componentType():string {
         return "aps-button";
     }
 
     // Override
-    set disabled( disabled ) {
+    set disabled( disabled: boolean ) {
         if ( !this.state ) {
             this.state = {};
         }
@@ -36,7 +36,7 @@ class APSButton extends APSComponent {
         this.setState( this.state );
     }
 
-    handleEvent( event ) {
+    handleEvent( event: {} ) {
         console.log( this, event );
 
         this.message(

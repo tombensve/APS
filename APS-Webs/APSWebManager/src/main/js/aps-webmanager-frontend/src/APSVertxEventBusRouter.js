@@ -189,7 +189,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
      * @param headers  - The relevant headers for the subscription.
      * @param callback - Callback to call with messages.
      */
-    subscribe( headers: {}, callback: Function ) {
+    subscribe( headers: {}, callback: () => mixed ) {
         this.logger.debug( `Subscribing with headers: ${headers}` );
 
         this.activeSubscribers.push( { headers: headers, callback: callback } );
@@ -263,7 +263,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
      * @param headers  - The headers used to subscribe.
      * @param callback - The callback to unsubscribe.
      */
-    unsubscribe( headers: {}, callback: Function ) {
+    unsubscribe( headers: {}, callback: () => mixed ) {
         this.logger.debug( `Unsubscribing with headers: ${headers}` );
 
         // I expect the bus to be upp by the time this is done :-)

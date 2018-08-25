@@ -41,30 +41,30 @@ class APSComponent extends Component {
     // Properties (subclasses should override or set these as needed)
     //
 
-    get busMember(): Boolean {
+    get busMember(): boolean {
         return this._busMember;
     }
 
-    set busMember( busMember: Boolean ) {
+    set busMember( busMember: boolean ) {
         this._busMember = busMember;
     }
 
     // Component has empty value.
 
-    get empty(): Boolean {
+    get empty(): boolean {
         return this._empty;
     }
 
-    set empty( empty: Boolean ) {
+    set empty( empty: boolean ) {
         this._empty = empty;
     }
 
     // Component has a value to provide. Default is true, so a button for example should do this.hasValue = false.
-    get hasValue(): Boolean {
+    get hasValue(): boolean {
         return this._hasValue;
     }
 
-    set hasValue( hasValue: Boolean ) {
+    set hasValue( hasValue: boolean ) {
         this._hasValue = hasValue;
     }
 
@@ -78,7 +78,7 @@ class APSComponent extends Component {
 
     // Sets component disabled state. This must be overridden by sub components.
 
-    set disabled( state: Boolean ) {
+    set disabled( state: boolean ) {
         this.logger.error( "ERROR: 'disabled' in APSComponent called! This should be overridden!" )
     }
 
@@ -117,7 +117,7 @@ class APSComponent extends Component {
      *
      * @returns {string} the passes classes or the overridden ones.
      */
-    clsName( classes: String ): String {
+    clsName( classes: String ): string {
         return this.props.guiProps.class != null ? this.props.guiProps.class : classes;
     }
 
@@ -127,7 +127,7 @@ class APSComponent extends Component {
      *
      * @returns {string}
      */
-    componentType(): String {
+    componentType(): string {
 
         return "APSComponent";
     }
@@ -220,7 +220,7 @@ class APSComponent extends Component {
      *
      * @returns {Object} An updated message.
      */
-    actionEvent( msg: { aps: {}, content: { eventType: String, action: String } }, action: string ): {} {
+    actionEvent( msg: { aps: {}, content: { eventType: string, action: string } }, action: string ): {} {
         msg = this.eventMsg( msg );
         msg.content.eventType = "action";
         msg.content.action = action;
@@ -292,7 +292,7 @@ class APSComponent extends Component {
      *
      * @returns {boolean}
      */
-    enableDisableOnGroupNotEmpty( group: String ) {
+    enableDisableOnGroupNotEmpty( group: string ) {
         let notEmpty = true;
         for ( let key of Object.keys( this.collected ) ) {
             let msg = this.collected[key];
@@ -313,7 +313,7 @@ class APSComponent extends Component {
      *
      * @returns {boolean}
      */
-    enableDisableOnNamedComponentsNotEmpty( names: String ) {
+    enableDisableOnNamedComponentsNotEmpty( names: string ) {
         if ( this.collected == null ) return true;
 
         let namesArr = names.split( "," );

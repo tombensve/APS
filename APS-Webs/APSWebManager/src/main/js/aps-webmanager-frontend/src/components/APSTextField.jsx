@@ -20,7 +20,7 @@ import { FormControl, FormGroup } from 'react-bootstrap'
  */
 class APSTextField extends APSComponent {
 
-    constructor( props ) {
+    constructor( props: {} ) {
         super( props );
 
         this.defaultValue = "";
@@ -36,23 +36,23 @@ class APSTextField extends APSComponent {
 
     }
 
-    componentType() {
+    componentType(): string {
         return "aps-text-field";
     }
 
-    set disabled( state ) {
+    set disabled( state: boolean ) {
         let _state = this.state;
         _state.disabled = state;
         this.setState( _state );
     }
 
-    set validationState( state ) {
+    set validationState( state: boolean ) {
         let _state = this.state;
         _state.validationState = state;
         this.setState( _state );
     }
 
-    handleEvent( event ) {
+    handleEvent( event: {} ) {
 
         this.setState( {
             disabled: this.state.disabled,

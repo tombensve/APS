@@ -9,7 +9,7 @@ export default class APSEventBusRouter {
      * @param headers The headers for the message.
      * @param message The message to send.
      */
-    message( headers: object, message: object ) {
+    message( headers: {}, message: {} ) {
     }
 
     /**
@@ -27,7 +27,7 @@ export default class APSEventBusRouter {
      * @param headers - The headers used when subscribing.
      * @param callback - The callback to unsubscribe.
      */
-    unsubscribe( headers: object, callback: func ) {
+    unsubscribe( headers: {}, callback: {} ) {
     }
 }
 

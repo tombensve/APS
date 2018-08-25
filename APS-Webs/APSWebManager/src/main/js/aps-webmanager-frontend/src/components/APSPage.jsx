@@ -6,7 +6,7 @@ import APSBusAddress from "../APSBusAddress";
 
 class APSPage extends Component {
 
-    constructor( props ) {
+    constructor( props: {} ) {
         super( props );
 
         this.busAddresses = new APSBusAddress( this.props.app );

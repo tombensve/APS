@@ -23,7 +23,7 @@ import { Panel } from 'react-bootstrap'
  */
 export default class APSPanel extends APSComponent {
 
-    constructor( props ) {
+    constructor( props: {} ) {
         super( props );
 
         this.state = {
@@ -34,11 +34,11 @@ export default class APSPanel extends APSComponent {
         this.busMember = false;
     }
 
-    componentType() {
+    componentType(): string {
         return "aps-panel";
     }
 
-    set disabled( state ) {
+    set disabled( state: {} ) {
         let _state = this.state;
         _state.disabled = state;
         this.setState( _state );

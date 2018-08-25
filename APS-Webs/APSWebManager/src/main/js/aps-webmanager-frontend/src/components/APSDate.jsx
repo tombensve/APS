@@ -33,11 +33,11 @@ export default class APSDate extends APSComponent {
         this.hasValue = true;
     }
 
-    componentType() {
+    componentType(): string {
         return "aps-date";
     }
 
-    valueChangedHandler( date ) {
+    valueChangedHandler( date: string ) {
         this.logger.debug( "Selected date: " + date );
 
         if ( typeof date !== "undefined" && date !== null ) {
