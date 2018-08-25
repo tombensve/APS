@@ -43,6 +43,14 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
         this.eventBus.onopen = () => {
 
             this.onBusOpen();
+        };
+
+        this.eventBus.onclose = (e) => {
+            this.onBusClose(e);
+        };
+
+        this.eventBus.onerror = (err) => {
+            this.logger.error(err);
         }
 
     }
@@ -95,6 +103,9 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
         }, 20000 );
     }
 
+    onBusClose(e) {
+    }
+
     /**
      * Sends a message.
      *
@@ -105,7 +116,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
         this.tries = 0;
 
         try {
-            this.logger.debug( `Sending with headers: ${headers} and message: ${message}` );
+            this.logger.debug( `Sending with headers: ${JSON.stringify(headers)} and message: ${JSON.stringify(message)}` );
 
             if ( this.busReady ) {
 
@@ -143,13 +154,13 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                                 break;
 
                             default:
-                                // noinspection JSUnfilteredForInLoop
+                                // noinspection ExceptionCaughtLocallyJS
                                 throw new Error( `APSVertxEventBusRouter: message(): Bad routing value: ${route}!` );
                         }
                     }
                 }
                 else {
-                    //this._logger.error(`No 'routing:' entry in headers: ${headers}!`);
+                    // noinspection ExceptionCaughtLocallyJS
                     throw new Error( `No 'routing:' entry in headers: ${headers}!` );
                 }
             }
@@ -167,7 +178,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                 message( headers, message );
             }
             else {
-                throw new Error( "Vert.x eventbus has failed!" )
+                throw new Error( `Vert.x eventbus has failed: ${error}` )
             }
         }
     }

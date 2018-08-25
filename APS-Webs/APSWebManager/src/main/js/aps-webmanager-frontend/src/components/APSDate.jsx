@@ -64,7 +64,7 @@ export default class APSDate extends APSComponent {
 
     render() {
         if ( isMobileDevice().any() ) {
-            return <input type={"date"} className={"form-control"} placeholder={"YYYY-MM-DD"}
+            return <input id={this.props.guiProps.id} type={"date"} className={"form-control"} placeholder={"YYYY-MM-DD"}
                           onChange={this.valueChangedHandler.bind( this )}/>
         }
         else {
