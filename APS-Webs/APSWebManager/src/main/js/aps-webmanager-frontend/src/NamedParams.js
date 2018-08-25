@@ -9,7 +9,7 @@ export default class NamedParams {
      * @param params An object containing a key and value for each parameter.
      * @param what The object using this util. For display in error messages.
      */
-    constructor( params: {}, what: String = "" ) {
+    constructor( params: {}, what: string = "" ) {
         this.params = params;
         this.what = what === "" ? "" : (what + ": ");
     }
@@ -21,7 +21,7 @@ export default class NamedParams {
      *
      * @returns {*} whatever the parameter value is.
      */
-    requiredParam( name: String ) {
+    requiredParam( name: string ) {
         let param = this.params[name];
         if ( !param ) {
             throw new Error( `${this.what}Required parameter '${name}' is missing` );
@@ -37,7 +37,7 @@ export default class NamedParams {
      *
      * @returns {*} whatever the parameter value is, or null, or undefined.
      */
-    param( name: String ) {
+    param( name: string ) {
         return this.params[name];
     }
 
@@ -49,7 +49,7 @@ export default class NamedParams {
      *
      * @returns {*} whatever the parameter value is, or null, or undefined.
      */
-    paramWithDefault( name: String, def: *) {
+    paramWithDefault( name: string, def: *) {
         let param = this.params[name];
         if ( !param ) {
             param = def;

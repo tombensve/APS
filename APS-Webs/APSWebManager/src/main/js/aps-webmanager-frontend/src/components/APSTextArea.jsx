@@ -25,9 +25,9 @@ import { FormControl } from 'react-bootstrap'
  *
  * A greyed out placeholder for the component.
  */
-class APSTextArea extends APSComponent {
+export default class APSTextArea extends APSComponent {
 
-    constructor( props ) {
+    constructor( props: {} ) {
 
         super( props );
 
@@ -42,18 +42,18 @@ class APSTextArea extends APSComponent {
         this.empty = true;
     }
 
-    componentType() {
+    componentType(): string {
         return "aps-text-area";
     }
 
-    set disabled( state ) {
+    set disabled( state: boolean ) {
 
         let _state = this.state;
         _state.disabled = state;
         this.setState( _state );
     }
 
-    handleEvent( event ) {
+    handleEvent( event: {} ) {
 
         this.setState( {
             disabled: this.state.disabled,
@@ -96,5 +96,3 @@ class APSTextArea extends APSComponent {
     }
 }
 
-// noinspection JSUnusedGlobalSymbols
-export default APSTextArea;
