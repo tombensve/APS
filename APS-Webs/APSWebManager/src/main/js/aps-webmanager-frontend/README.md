@@ -16,14 +16,17 @@ The goal of this web project isto make components that communicate on a local ev
 
 - Components can belong to a group, by having a common group name. Any component can be a "collector", which means that is will listen to and save messages received from other components in the group. This type of component is optimal for having routing "backend" and will then work like a submit function. This type of component will pass along is collected information in its own message.
 
-- Much of this functionallity is in a common base component which reacts on `props.compProps`, a set of properties defining both features and behaviors of components.
+- Much of this functionallity is in a common base component which reacts on `props.guiProps`, a set of properties defining both features and behaviors of components.
 
--  This also allows for a special component: `APSWebManager`. This creates an `LocalEventBus` internally, creates a unique adress for itself, and then sends a message to "aps:new\_client" address containing its unique address and an apsWebMgrId that needs to be a property of the component. This is routed to "client,backend". Any code listening to this message should check the _apsWebMgrId_ to see if it is for that code to use. If it is a JSON document of guiProps (including component names) is sent to the specified address. When `APSWebManager` sees this message it will render the components. This works because the _guiProps_ contains routing information and all components just sends messages. This component is in no way required to be used. The other components can be used as any other React component, but with the slight oddity of having to provide an `guiProps` object will all component settings.
+-  This also allows for a special component: `APSWebManager`. This creates an `LocalEventBus` internally, creates a unique adress for itself, and then sends a message to "aps:(app):backend" address containing its unique address and an apsWebMgrId that needs to be a property of the component. This is routed to "client,backend". Any code listening to this message should check the _apsWebMgrId_ to see if it is for that code to use. If it is a JSON document of guiProps (including component names) is sent to the specified address. When `APSWebManager` sees this message it will render the components. This works because the _guiProps_ contains routing information and all components just sends messages. This component is in no way required to be used. The other components can be used as any other React component, but with the slight oddity of having to provide an `guiProps` object will all component settings.
 
+This is currently a work in progress and when run and you open <http://localhost:8880/apsweb/> you will only see most of the currently available components rendered horizontally in a row. This for testing each component. They are rendered from .../resources/guijson/gui.json.
 
-----
+When done the components will either be used as any other React components or used via the `APSWebManager` component and sending a JSON document on the eventbus.
 
-__I decided to keep the imressive React documentation I got automatically from ~create-react:__
+---
+
+__I decided to keep the impressive React documentation I got automatically from ~create-react:__
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 

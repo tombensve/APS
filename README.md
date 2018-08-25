@@ -2,7 +2,7 @@
 
 Copyright © 2013 Natusoft AB
 
-__Version:__ 1.0.0
+__Version:__ 1.0.0 (working up to ...)
 
 __This project is currently work in progress and cannot be expected to be stable!!__
 
@@ -10,13 +10,15 @@ Work is slow, whenever time permits.
 
 To be very clear: **This is currently, and probably for a long time comming, a playground where I'm having fun.** The original (and still active) goal with this is to make a very easy to use web platform based on OSGi & Vertx. APS is however only using the basic 4 OSGi APIs, and currently java8 & Groovy code so it will probably **not** run in most embedded OSGi containers.
 
+This project is now using 2 exceptional frameworks: __Vert.x & React__. These both belong to the same category: Things that just work! I have the highest respect for the people behind both of these. It gives me a warm feeling to know that there is people out there who knows what they are doing, and are doing things very well. These both also supply outstanding documentation.
+
 ---
 
 __To build__ this you must first follow the instructions here: https://github.com/tombensve/maven-bundle-plugin/blob/master/README.md
 
 ---
 
-I have decided to base this project on Vertx rather than traditional Java EE APIs.
+I have decided to base this project on Vertx.
 
 There is one thing that is currenlty useful and does not depend on any other bundle. APS-APIs, which now also contains the formarly APSToolsLib. APSToolsLib was so central to all APS bundles that it just made more sense to put it in APS-APIs, which might change name to APSPlatform. There is a nicer service tracker and something the maven-bundle-plugin people never considered, and might consider me completely crazy: APSActivator. It is a generic bundle activator that makes use of annotations to publish services, etc. It will inject into classes and instantiate annotated classes. It goes through all classes in the bundle and checks them for annotations. maven-bundle-plugin warns about seeing an external activator and suggests that it is probably an error, but it isn't! Note that it is the maven-bundle-plugin that complains. All OSGi containers I've tested (Karaf (felix), Glassfish, Virgo, KnopplerFish) have no problem what so ever with this.
 
