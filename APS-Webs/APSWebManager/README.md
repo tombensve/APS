@@ -14,4 +14,6 @@ These components can be used as any React components, but all gui specific prope
 
 There is a component actually called `APSWebManager`, if this is used it is the only component needed under `<App>`. This component listens on the bus for a JSON gui spec and renders the components in this spec within itself. Each component will be connected to the bus, and JSON spec includes routing properties. As a common feature of APSComponent base component every component can act as a collector which listens to other components and saves their latest published data. Any event sent by a collector includes the collected data. If such a component is routed to the backend it will basically serve as a submit component. This does not require a form!
 
+Do **note** that there is absolutely no security what so ever yet!
+
 The frontend code is [here](src/main/js/aps-webmanager-frontend).

@@ -37,10 +37,9 @@ export default class APSDate extends APSComponent {
         return "aps-date";
     }
 
-    valueChangedHandler( date: string ) {
-        this.logger.debug( "Selected date: " + date );
+    valueChangedHandlerComputer( date: string ) {
 
-        if ( typeof date !== "undefined" && date !== null ) {
+        if ( date ) {
             this.empty = false;
             this.setState( {
                 value: date,
@@ -62,10 +61,37 @@ export default class APSDate extends APSComponent {
         }
     }
 
+    valueChangedHandlerMobile( event : {} ) {
+
+        if ( event ) {
+
+            this.empty = false;
+            this.setState( {
+                value: event.target.value,
+                disabled: this.state.disabled
+                // showPopover: false
+            } );
+
+            this.message(
+                this.changeEvent(
+                    {
+                        componentType: this.componentType(),
+                        value: event.target.value
+                    }
+                )
+            );
+        }
+        else {
+            this.empty = true;
+        }
+    }
+
     render() {
+
         if ( isMobileDevice().any() ) {
-            return <input id={this.props.guiProps.id} type={"date"} className={"form-control"} placeholder={"YYYY-MM-DD"}
-                          onChange={this.valueChangedHandler.bind( this )}/>
+            return <input id={this.props.guiProps.id} type={"date"} className={"form-control"}
+                          placeholder={"YYYY-MM-DD"}
+                          onChange={this.valueChangedHandlerMobile.bind( this )}/>
         }
         else {
             return <DayPickerInput
@@ -85,7 +111,7 @@ export default class APSDate extends APSComponent {
                 // This is needed to play nice with the Bootstrap L&F.
                 component={props => <input className="form-control" {...props} />}
 
-                onDayChange={this.valueChangedHandler.bind( this )}
+                onDayChange={this.valueChangedHandlerComputer.bind( this )}
 
                 disabled={this.state.disabled}
             />

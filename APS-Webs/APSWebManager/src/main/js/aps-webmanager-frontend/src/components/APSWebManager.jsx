@@ -94,7 +94,12 @@ class APSWebManager extends Component {
      * @param message The received message.
      */
     messageHandler( message: {} ) {
-        this.logger.debug( `>>>>>>>: message: ${JSON.stringify(message)}` );
+        try {
+            this.logger.debug( `>>>>>>>: message: ${JSON.stringify( message )}` );
+        }
+        catch ( e ) {
+            this.logger.error(`Failed to log: ${e}`);
+        }
 
         if (message.aps) {
             switch ( message.aps.type.toLowerCase() ) {
