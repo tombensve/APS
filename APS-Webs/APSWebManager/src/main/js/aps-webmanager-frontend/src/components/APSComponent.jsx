@@ -246,7 +246,11 @@ class APSComponent extends Component {
     // noinspection JSMethodCanBeStatic
     messageHandler( message: { aps: { /*...*/ }, content: { /*...*/ } } ) {
 
-        this.logger.debug( `messageHandler > Received: ${JSON.stringify(message)}` );
+        try {
+            this.logger.debug( `messageHandler > Received: ${JSON.stringify( message )}` );
+        } catch ( e ) {
+            this.logger.error(`Failed logging: ${e}`);
+        }
 
         // If this component wants to collect values sent by other components, we
         // just save the whole message under 'collected' and using the components id as key.

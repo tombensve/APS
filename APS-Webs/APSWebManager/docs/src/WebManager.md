@@ -8,15 +8,15 @@ All components has a listenTo and a sendTo property which points out and address
 
 This separation of component rendering code and event handler code makes it rather easy to render components after a JSON specification. That is what WebManager does. It listens for a JSON GUI spec on the bus, and when it sees such, it renders it. When a user interacts with the rendered GUI messges will be sent on the bus.  
 
-## Bus
+## APSEventBus
 
-On the frontend there is a local `LocalEventBus` that is used to send and receive messages. This is basically a wrapper. It does not do anything other than pass on to 'EventBusRouter's. There are 2 'EventBusRouter's: `LocalEventBusRouter`and `VertxEventBusRouter`. These are both added to `LocalEventBus`. 
+On the frontend there is a local `APSEventBus` that is used to send and receive messages. This is basically a wrapper. It does not do anything other than pass on to 'EventBusRouter's. There are 2 'EventBusRouter's: `APSLocalEventBusRouter`and `APSVertxEventBusRouter`. These are both added to `APSEventBus`. 
 
-### LocalEventBusRouter
+### APSLocalEventBusRouter
 
 This looks at the header of a message and if _routing_ contains _client_ then it passes the message to all registered local subscribers. This never goes out on the network, it only works internatlly in the client. This is used to communicate between different components locally.
 
-### VertxEventBusRouter
+### APSVertxEventBusRouter
 
 This looks at the header of a message and if _routing_ contains _backend_ it does a send on the Vert.x client event bus bridge. A send does a round robin to to listeners of specified address. If _routing_ contains _cluster_ it does a publish on the Vert.x client event bus bridge. This goes to all listeners of the address in the whole cluster, including other clients.
 
@@ -34,7 +34,7 @@ As said above when a send is done on the Vert.x event bus it does a round robin 
 
 Note: (app) refers to a specific application as a wildcard, and (UUID) refers to a generated UUID value.
 
-From client perspective:
+From **client perspective**:
 
 - Client 
 
@@ -90,12 +90,20 @@ In the following specification any entry starting with '?' is optional.
 #### General
 
     {
-        "aps": {
+        "aps": { // To be moved to header instead ...
             "origin": "(address)",
             "app": "(app)",
-            "type": "(message type)"
+            "type": "(message type)",
+            "identity": {
+                userId: "(id)",
+                userName: "(name of user)",
+                auth: {
+                    "type": "(authentication type)",
+                    (authentication specific data)
+                }
+            }
         },
-        content: {
+        content: { // Will probably go away when "aps" is moved to header.
             ...message type specific data
         }
     }

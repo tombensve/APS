@@ -173,11 +173,12 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
         catch ( error ) {
 
             this.tries = this.tries + 1;
-            if ( this.tries <= 5 ) {
+            if ( this.tries <= 1 ) {
                 this.re_startBus();
                 message( headers, message );
             }
             else {
+                if (this.tries <= 3)
                 throw new Error( `Vert.x eventbus has failed: ${error}` )
             }
         }
