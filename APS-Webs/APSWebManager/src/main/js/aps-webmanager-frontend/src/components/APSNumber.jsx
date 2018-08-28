@@ -1,12 +1,12 @@
-import React from 'react'
-import APSComponent from "./APSComponent";
-import NumericInput from 'react-numeric-input';
+import APSTextField from "./APSTextField"
 
 /**
  * # Component
  *
- * This uses the following component: https://www.npmjs.com/package/react-numeric-input.
- * It is not one of the react-bootstrap components.
+ * A simple numeric input. Takes an optional min and a max. Floating point numbers and integers allowed.
+ *
+ * There is no GUI fanciness here. Just an input field. However '<' will decrease value by 1 and '>' will
+ * increase value by one.
  *
  * ## Properties
  *
@@ -22,17 +22,21 @@ import NumericInput from 'react-numeric-input';
  *
  * The starting value.
  */
-export default class APSNumber extends APSComponent {
+export default class APSNumber extends APSTextField {
 
     constructor( props: {} ) {
         super( props );
 
+        this.props.guiProps.placeholder = "0";
+
         this.state = {
             value: this.props.guiProps.value,
-            disabled: props.guiProps.disabled != null ? props.guiProps.disabled : false
+            disabled: props.guiProps.disabled != null ? props.guiProps.disabled : false,
         };
         this.setState( this.state );
 
+        this.min = Number( this.props.guiProps.min );
+        this.max = Number( this.props.guiProps.max );
         this.empty = false;
         this.hasValue = true;
     }
@@ -42,40 +46,85 @@ export default class APSNumber extends APSComponent {
     }
 
     /**
-     * Event handler. See https://www.npmjs.com/package/react-numeric-input#event-callbacks
+     * Event handler
      *
-     * @param valueAsString
-     * @param valueAsNumber
-     * @param element
+     * @param event
      */
-    handleEvent( valueAsNumber: number, valueAsString: string, element: * ) {
-        this.setState( {
-            value: valueAsNumber,
-            disabled: this.state.disabled
-        } );
+    handleEvent( event: {} ) {
 
-        this.message(
-            this.changeEvent(
-                {
-                    componentType: this.componentType(),
-                    value: valueAsNumber
-                }
-            )
-        );
-    }
+        let value: string = event.target.value;
 
-    render() {
-        // From: https://www.npmjs.com/package/react-numeric-input  License: MIT
-        return <NumericInput
-            min={this.props.guiProps.min}
-            max={this.props.guiProps.max}
-            value={this.state.value}
-            onChange={this.handleEvent.bind( this )}
-            style={{
-                input: {
-                    "border-radius": '4px'
+        // Exclude any characters not part of a number.
+        let iterator = value[Symbol.iterator]();
+        let currChar = iterator.next();
+        let filteredValue = "";
+        let first = true;
+
+        while ( !currChar.done && "0123456789.,-".indexOf( currChar.value ) >= 0 ) {
+
+            if ( currChar === '-') {
+
+                if (first) {
+
+                    filteredValue = filteredValue + currChar.value;
                 }
-            }}
-        />;
+            }
+            else {
+
+                filteredValue = filteredValue + currChar.value;
+            }
+
+            currChar = iterator.next();
+            first = false;
+        }
+
+        // Convert string to number and validate min and max.
+        let validationNumber = null;
+        if ( filteredValue.indexOf( '.' ) >= 0 || filteredValue.indexOf( ',' ) >= 0 ) {
+            validationNumber = Number.parseFloat( filteredValue );
+        }
+        else {
+            validationNumber = Number.parseInt( filteredValue, 10 );
+        }
+
+        if ( !Number.isNaN( validationNumber ) ) {
+
+            // Allows > to increase number and < to decrease number.
+            if (value.endsWith(">")) {
+                validationNumber = validationNumber + 1;
+                filteredValue = validationNumber.toString(10);
+            }
+            else if (value.endsWith("<")) {
+                validationNumber = validationNumber - 1;
+                filteredValue = validationNumber.toString(10);
+            }
+
+            // Limit value between max and min if provided.
+            if ( !Number.isNaN(this.min) && validationNumber < this.min ) {
+                filteredValue = "" + this.min;
+            }
+
+            if ( !Number.isNaN(this.max) && (validationNumber > this.max) ) {
+                filteredValue = "" + this.max;
+            }
+        }
+
+        // Only update value and send event if value actually changed after filtering.
+        if (this.state.value !== filteredValue) {
+            this.setState( {
+                value: filteredValue,
+                disabled: this.state.disabled
+            } );
+
+
+            this.message(
+                this.changeEvent(
+                    {
+                        componentType: this.componentType(),
+                        value: filteredValue
+                    }
+                )
+            );
+        }
     }
 }
