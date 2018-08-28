@@ -52,11 +52,11 @@
     },
     {
       "id": "num",
-      "name": "numeric-spinner",
+      "name": "numeric",
       "type": "aps-number",
-      "min": 0,
-      "max": 10,
-      "value": 2,
+      "min": 0.0,
+      "max": 10.0,
+      "value": 2.5,
       "headers": {
         "routing": {
           "outgoing": "client",

@@ -94,13 +94,12 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
 
         this.sendMsgs = [];
 
-        // Unfortunately this is needed since we cannot receive when the bus is down.
-        this.keepAlive = setInterval( () => {
-            this.message( { routing: { outgoing: `${EVENT_ROUTES.BACKEND}` } }, {
-                aps: { type: "keep-alive" },
-                content: {}
-            } );
-        }, 20000 );
+        // this.keepAlive = setInterval( () => {
+        //     this.message( { routing: { outgoing: `${EVENT_ROUTES.BACKEND}` } }, {
+        //         aps: { type: "keep-alive" },
+        //         content: {}
+        //     } );
+        // }, 20000 );
     }
 
     onBusClose(e) {
