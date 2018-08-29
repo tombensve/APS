@@ -54,7 +54,7 @@
       "id": "num",
       "name": "numeric",
       "type": "aps-number",
-      "min": 0.0,
+      "min": -10.0,
       "max": 10.0,
       "value": 2.5,
       "headers": {
