@@ -72,6 +72,9 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
                     case EVENT_ROUTES.ALL_CLIENTS:
                         break;
 
+                    case EVENT_ROUTES.NONE:
+                        break;
+
                     default:
                         // noinspection JSUnfilteredForInLoop
                         throw new Error( `APSLocalEventBusRouter: message(): Bad routing value: ${route}!` );
@@ -125,6 +128,9 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
                     case EVENT_ROUTES.ALL_CLIENTS:
                         break;
 
+                    case EVENT_ROUTES.NONE:
+                        break;
+
                     default:
                         // noinspection JSUnfilteredForInLoop
                         throw new Error( `APSLocalEventBusRouter: subscribe(): Bad routing value: ${route}!` );
@@ -173,6 +179,9 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
                         break;
 
                     case EVENT_ROUTES.ALL_CLIENTS:
+                        break;
+
+                    case EVENT_ROUTES.NONE:
                         break;
 
                     default:
