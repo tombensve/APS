@@ -18,7 +18,7 @@ import { FormControl, FormGroup } from 'react-bootstrap'
  * A greyed out placeholder for the component.
  *
  */
-class APSTextField extends APSComponent {
+export default class APSTextField extends APSComponent {
 
     constructor( props: {} ) {
         super( props );
@@ -88,6 +88,7 @@ class APSTextField extends APSComponent {
         }
         return <FormGroup id={this.props.guiProps.id + '_fg'} validationState={this.state.validationState}>
             <FormControl componentClass="input"
+                         type={""}
                          value={this.state.value}
                          id={this.props.guiProps.id}
                          placeholder={placeHolder}
@@ -98,5 +99,4 @@ class APSTextField extends APSComponent {
     }
 }
 
-// noinspection JSUnusedGlobalSymbols
-export default APSTextField;
+

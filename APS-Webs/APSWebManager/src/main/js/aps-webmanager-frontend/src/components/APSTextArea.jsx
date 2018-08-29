@@ -85,6 +85,7 @@ export default class APSTextArea extends APSComponent {
 
         // noinspection HtmlUnknownAttribute
         return <FormControl componentClass="textarea"
+                            type={"textarea"}
                             value={this.state.value}
                             id={this.props.guiProps.id}
                             rows={this.props.guiProps.rows}
