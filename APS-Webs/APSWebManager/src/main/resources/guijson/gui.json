@@ -14,7 +14,7 @@
       "headers": {
         "routing": {
           "outgoing": "client",
-          "incoming": "client"
+          "incoming": "none"
         }
       }
     },
@@ -29,7 +29,7 @@
       "headers": {
         "routing": {
           "outgoing": "client",
-          "incoming": "client"
+          "incoming": "none"
         }
       }
     },
@@ -60,7 +60,7 @@
       "headers": {
         "routing": {
           "outgoing": "client",
-          "incoming": "client"
+          "incoming": "none"
         }
       }
     },
@@ -73,6 +73,19 @@
         "routing": {
           "outgoing": "client,backend",
           "incoming": "client"
+        }
+      }
+    },
+    {
+      "id": "checkbox",
+      "name": "cb",
+      "type": "aps-check-box",
+      "value": "checked",
+      "label": "test",
+      "headers": {
+        "routing": {
+          "outgoing": "client",
+          "incoming": "none"
         }
       }
     }

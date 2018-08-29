@@ -28,7 +28,9 @@ export const EVENT_ROUTES = Object.freeze( {
 
     ALL_BACKENDS: "all:backend",
 
-    LOCAL: "local"
+    LOCAL: "local",
+
+    NONE: "none"
 } );
 
 //

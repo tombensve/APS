@@ -63,9 +63,9 @@ export default class APSEventBus {
      * @param params - Named parameters: { headers: ..., subscriber: ... }
      * @param jic - Just In Case something still uses (headers, subscriber).
      */
-    subscribe( params: { headers: { routing: { outgoing: string, incoming: string } }, subscriber: () => mixed }, jic: * = undefined) {
+    subscribe( params: { headers: { routing: { outgoing: string, incoming: string } }, subscriber: () => mixed }, jic: * = undefined ) {
         if ( jic !== undefined ) {
-            throw new Error("Old method call subscribe(headers, subscriber) done!")
+            throw new Error( "Old method call subscribe(headers, subscriber) done!" )
         }
 
         let pars = new NamedParams( params, "APSEventBus.subscribe" );
@@ -109,7 +109,7 @@ export default class APSEventBus {
      */
     message( params: { headers: { routing: { outgoing: string, incoming: string } }, message: { aps: {}, content?: {} } }, jic: * = undefined ) {
         if ( jic !== undefined ) {
-            throw new Error("Old method call message(headers, subscriber) done!")
+            throw new Error( "Old method call message(headers, subscriber) done!" )
         }
 
         let pars = new NamedParams( params, "APSEventBus.message" );
@@ -169,7 +169,8 @@ export default class APSEventBus {
                 routing.indexOf( EVENT_ROUTES.BACKEND ) >= 0 ||
                 routing.indexOf( EVENT_ROUTES.ALL ) >= 0 ||
                 routing.indexOf( EVENT_ROUTES.ALL_BACKENDS ) >= 0 ||
-                routing.indexOf( EVENT_ROUTES.ALL_CLIENTS ) >= 0
+                routing.indexOf( EVENT_ROUTES.ALL_CLIENTS ) >= 0 ||
+                routing.indexOf( EVENT_ROUTES.NONE ) >= 0
             )
         ) {
             // OK.
@@ -177,7 +178,7 @@ export default class APSEventBus {
         else {
             throw new Error( `Bad routing headers: ${routing} One or more of the following are valid: \
 ${EVENT_ROUTES.CLIENT} |& ${EVENT_ROUTES.BACKEND} |& ${EVENT_ROUTES.ALL} |& ${EVENT_ROUTES.ALL_CLIENTS} \
-|&" ${EVENT_ROUTES.ALL_BACKENDS}!` );
+|&" ${EVENT_ROUTES.ALL_BACKENDS} |& ${EVENT_ROUTES.NONE}!` );
         }
     }
 

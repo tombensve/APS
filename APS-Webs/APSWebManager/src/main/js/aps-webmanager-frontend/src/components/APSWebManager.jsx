@@ -10,6 +10,7 @@ import APSTextField from "./APSTextField"
 import APSTextArea from "./APSTextArea"
 import APSNumber from "./APSNumber"
 import APSDate from "./APSDate"
+import APSCheckBox from "./APSCheckBox"
 import { APP_NAME, EVENT_ROUTES } from "../Constants"
 import APSLogger from "../APSLogger"
 import APSBusAddress from "../APSBusAddress"
@@ -249,6 +250,14 @@ class APSWebManager extends Component {
                 content.push(
                     <APSDate key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
                              origin={this.busAddress.client}/>
+                );
+                break;
+
+            case 'aps-check-box':
+
+                content.push(
+                    <APSCheckBox key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                            origin={this.busAddress.client}/>
                 );
                 break;
 

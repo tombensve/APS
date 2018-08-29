@@ -100,14 +100,16 @@ class APSComponent extends Component {
      * This is so that collector components can get default values before user manipulates components.
      */
     sendDefaultValue() {
-        this.message(
-            this.changeEvent(
-                {
-                    componentType: this.componentType(),
-                    value: this.defaultValue
-                }
-            )
-        );
+        if (this.defaultValue) {
+            this.message(
+                this.changeEvent(
+                    {
+                        componentType: this.componentType(),
+                        value: this.defaultValue
+                    }
+                )
+            );
+        }
     }
 
     /**

@@ -152,6 +152,9 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                                 this.eventBus.publish( this.busAddress.allClients, message, headers );
                                 break;
 
+                            case EVENT_ROUTES.NONE:
+                                break;
+
                             default:
                                 // noinspection ExceptionCaughtLocallyJS
                                 throw new Error( `APSVertxEventBusRouter: message(): Bad routing value: ${route}!` );
@@ -241,6 +244,9 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                             this.eventBus.registerHandler( this.busAddress.allClients, headers, handler );
                             break;
 
+                        case EVENT_ROUTES.NONE:
+                            break;
+
                         default:
                             // noinspection JSUnfilteredForInLoop
                             throw new Error( `APSVertxEventBusRouter: subscribe(): Bad routing value: ${route}!` );
@@ -298,6 +304,9 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                         case EVENT_ROUTES.ALL_CLIENTS:
                             // noinspection JSUnresolvedFunction
                             this.eventBus.unregisterHandler( this.busAddress.allClients, handler );
+                            break;
+
+                        case EVENT_ROUTES.NONE:
                             break;
 
                         default:

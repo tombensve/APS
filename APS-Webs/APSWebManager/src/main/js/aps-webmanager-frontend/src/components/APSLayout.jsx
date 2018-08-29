@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Row } from 'react-bootstrap'
+//import { Row } from 'react-bootstrap'
 
 /**
  * ## Properties
@@ -15,9 +15,9 @@ export default class APSLayout extends Component {
         if ( this.props.guiProps.orientation === null || this.props.guiProps.orientation.startsWith( "horiz" ) ) {
 
             result = (
-                    <Row className="form-inline">
-                        {this.props.children}
-                    </Row>
+                <div className="form-inline">
+                    {this.props.children}
+                </div>
             )
         }
         else {
