@@ -154,14 +154,11 @@ export default class APSNumber extends APSComponent {
         // change value does not work on the mobiles.
         return <FormGroup id={this.props.guiProps.id + '_fg'} >
             <FormControl componentClass="input"
-                         min={this.props.guiProps.min}
-                         max={this.props.guiProps.max}
                          value={this.state.value}
                          id={this.props.guiProps.id}
                          placeholder={placeHolder}
                          onChange={this.handleEvent.bind( this )}
                          disabled={this.state.disabled}/>
-            <!--FormControl.Feedback/-->
         </FormGroup>
     }
 
