@@ -112,14 +112,14 @@ export default class APSEventBus {
             throw new Error( "Old method call message(headers, subscriber) done!" )
         }
 
-        let pars = new NamedParams( params, "APSEventBus.message" );
+        let pars = new NamedParams( params, "APSEventBus.message(...)" );
 
         let headers = APSEventBus.ensureHeaders( pars.param( "headers" ) );
         let message = pars.requiredParam( "message" );
 
         APSEventBus.validRoutingHeaders( headers.routing.outgoing );
 
-        this.logger.debug( `EventBus: sending( headers: ${headers}): ${message}` );
+        this.logger.debug( `EventBus: sending( headers: ${JSON.stringify(headers)}): ${JSON.stringify(message)}` );
 
         for ( let busRouter of this.busRouters ) {
 

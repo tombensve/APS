@@ -73,11 +73,13 @@ Components have indirect routing information passed to them by the creater of th
 Some components need to talk to each other locally, and some need to reach a backend. It is up to the code that creates the components to determine that by supplying a routing property of:
 
     {
-        outgoing: "client/backend/all/all:backend/all:client",
-        incoming: "client/all/all:client"
+        outgoing: "client/backend/all/all:backend/all:client/none",
+        incoming: "client/all/all:client/none"
     }
 
 Both outgoing and incomming can have more than one route. Routes are comma separated within the string. No spaces. 
+
+Do note the "none" at the end! Its more relevant for incoming than outgoing. It means what the word says. If a component does not react to any incoming messages, then there is no point in listening to incoming messages and the messaging code does not need to make an unceccesary call to a component that will do nothing with the provided message.
 
 ### Messages
 

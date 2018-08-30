@@ -4,6 +4,7 @@ import '../APSEventBus'
 import PropTypes from "prop-types"
 import APSLogger from "../APSLogger"
 import { APP_NAME, EVENT } from "../Constants"
+import APSAlerter from "../APSAlerter";
 
 /**
  * A common base component for all APS components.
@@ -35,6 +36,8 @@ class APSComponent extends Component {
 
             } );
         }
+
+        this.alerter = new APSAlerter(this.props.eventBus);
     }
 
     //
@@ -68,11 +71,11 @@ class APSComponent extends Component {
         this._hasValue = hasValue;
     }
 
-    get defaultValue() : * {
+    get defaultValue(): * {
         return this._defaultValue;
     }
 
-    set defaultValue(defaultValue: *) {
+    set defaultValue( defaultValue: * ) {
         this._defaultValue = defaultValue;
     }
 
@@ -100,7 +103,7 @@ class APSComponent extends Component {
      * This is so that collector components can get default values before user manipulates components.
      */
     sendDefaultValue() {
-        if (this.defaultValue) {
+        if ( this.defaultValue ) {
             this.message(
                 this.changeEvent(
                     {
@@ -132,6 +135,16 @@ class APSComponent extends Component {
     componentType(): string {
 
         return "APSComponent";
+    }
+
+    /**
+     * Updates and shows a specified APSAlert component.
+     *
+     * @param alerterId The id of the alert component to update.
+     * @param message The message to update with.
+     */
+    alert( alerterId: string, message: * ) {
+        this.alerter.alert(alerterId, message);
     }
 
     /**
@@ -195,9 +208,9 @@ class APSComponent extends Component {
                 managerId: this.props.mgrId,
                 componentId: this.props.guiProps.name,
                 componentName: this.props.guiProps.name,
-                empty:this.empty,
+                empty: this.empty,
                 hasValue: this.hasValue,
-                collected: Object.keys( this.collected ).length !== 0 ? this.collected: undefined
+                collected: Object.keys( this.collected ).length !== 0 ? this.collected : undefined
             } )
         };
     }
@@ -251,7 +264,7 @@ class APSComponent extends Component {
         try {
             this.logger.debug( `messageHandler > Received: ${JSON.stringify( message )}` );
         } catch ( e ) {
-            this.logger.error(`Failed logging: ${e}`);
+            this.logger.error( `Failed logging: ${e}` );
         }
 
         // If this component wants to collect values sent by other components, we

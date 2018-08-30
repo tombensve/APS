@@ -5,6 +5,18 @@
   "orientation": "horiz",
   "children": [
     {
+      "id": "aps-default-alert",
+      "name": "alert-comp",
+      "type": "aps-alert",
+      "bsType": "danger",
+      "headers": {
+        "routing": {
+          "outgoing": "none",
+          "incoming": "client"
+        }
+      }
+    },
+    {
       "id": "name",
       "name": "name-field",
       "group": "gpoc",
