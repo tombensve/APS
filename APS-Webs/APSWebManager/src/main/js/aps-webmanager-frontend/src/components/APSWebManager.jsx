@@ -10,10 +10,13 @@ import APSTextField from "./APSTextField"
 import APSTextArea from "./APSTextArea"
 import APSNumber from "./APSNumber"
 import APSDate from "./APSDate"
+import APSMarkdown from "./APSMarkdown"
+import APSAlert from "./APSAlert"
 import APSCheckBox from "./APSCheckBox"
 import { APP_NAME, EVENT_ROUTES } from "../Constants"
 import APSLogger from "../APSLogger"
 import APSBusAddress from "../APSBusAddress"
+import APSAlerter from "../APSAlerter"
 import uuid from "../APSUUID"
 
 /**
@@ -25,7 +28,7 @@ import uuid from "../APSUUID"
  * but may also come from the frontend. This component does not care in any way where the
  * JSON spec comes from.
  */
-class APSWebManager extends Component {
+export default class APSWebManager extends Component {
 
     //
     // Constructors
@@ -49,6 +52,8 @@ class APSWebManager extends Component {
         this.busAddress = new APSBusAddress( APP_NAME );
 
         this.apsEventBus = new APSEventBus();
+
+        this.alerter = new APSAlerter(this.apsEventBus);
     }
 
     //
@@ -61,7 +66,7 @@ class APSWebManager extends Component {
     componentDidMount() {
 
         this.apsEventBus.addBusRouter( new APSLocalEventBusRouter( this.busAddress ) );
-        this.apsEventBus.addBusRouter( new APSVertxEventBusRouter( this.busAddress ) );
+        this.apsEventBus.addBusRouter( new APSVertxEventBusRouter( this.busAddress, this.alerter ) );
 
         // Subscribe to eventbus for content events.
         this.apsEventBus.subscribe( {
@@ -261,6 +266,22 @@ class APSWebManager extends Component {
                 );
                 break;
 
+            case 'aps-markdown':
+
+                content.push(
+                    <APSMarkdown key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                            origin={this.busAddress.client}/>
+                );
+                break;
+
+            case 'aps-alert':
+
+                content.push(
+                    <APSAlert key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                                 origin={this.busAddress.client}/>
+                );
+                break;
+
             default:
                 console.error( "Bad 'type': " + type );
             //     throw "Bad type '" + type + "' in GUI specification JSON!"
@@ -269,7 +290,3 @@ class APSWebManager extends Component {
         return content;
     }
 }
-
-
-// noinspection JSUnusedGlobalSymbols
-export default APSWebManager

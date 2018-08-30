@@ -1,8 +1,9 @@
 import EventBus from 'vertx3-eventbus-client'
 import { EVENT_ROUTES, EVENT_ROUTING, ROUTE_INCOMING, ROUTE_OUTGOING } from "./Constants"
 import APSLogger from "./APSLogger"
-import APSEventBusRouter from "./APSEventBusRouter";
-import APSBusAddress from "./APSBusAddress";
+import APSEventBusRouter from "./APSEventBusRouter"
+import APSBusAddress from "./APSBusAddress"
+import APSAlerter from "./APSAlerter"
 
 /**
  * This represents a router and is responsible for sending and subscribing to messages.
@@ -12,9 +13,11 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
     /**
      * Creates a new LocalBusRouter.
      */
-    constructor( busAddress: APSBusAddress ) {
+    constructor( busAddress: APSBusAddress, alerter: APSAlerter ) {
 
         this.busAddress = busAddress;
+
+        this.alerter = alerter;
 
         this.logger = new APSLogger( "VertxEventBusRouter" );
 
@@ -45,14 +48,13 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
             this.onBusOpen();
         };
 
-        this.eventBus.onclose = (e) => {
-            this.onBusClose(e);
+        this.eventBus.onclose = ( e ) => {
+            this.onBusClose( e );
         };
 
-        this.eventBus.onerror = (err) => {
-            this.logger.error(err);
-        }
-
+        this.eventBus.onerror = ( err ) => {
+            this.logger.error( err );
+        };
     }
 
     re_startBus() {
@@ -94,6 +96,8 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
 
         this.sendMsgs = [];
 
+        this.alerter.hide( "aps-default-alert" );
+
         // this.keepAlive = setInterval( () => {
         //     this.message( { routing: { outgoing: `${EVENT_ROUTES.BACKEND}` } }, {
         //         aps: { type: "keep-alive" },
@@ -102,7 +106,10 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
         // }, 20000 );
     }
 
-    onBusClose(e) {
+    onBusClose( e ) {
+        this.logger.info( "The eventbus has been closed!" );
+        this.alerter.alert( "aps-default-alert", "## No contact with server!\n\nThe server can currently " +
+            "not be reached! Waiting for it to come up again ..." );
     }
 
     /**
@@ -115,7 +122,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
         this.tries = 0;
 
         try {
-            this.logger.debug( `Sending with headers: ${JSON.stringify(headers)} and message: ${JSON.stringify(message)}` );
+            this.logger.debug( `Sending with headers: ${JSON.stringify( headers )} and message: ${JSON.stringify( message )}` );
 
             if ( this.busReady ) {
 
@@ -180,8 +187,8 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                 message( headers, message );
             }
             else {
-                if (this.tries <= 3)
-                throw new Error( `Vert.x eventbus has failed: ${error}` )
+                if ( this.tries <= 3 )
+                    throw new Error( `Vert.x eventbus has failed: ${error}` )
             }
         }
     }

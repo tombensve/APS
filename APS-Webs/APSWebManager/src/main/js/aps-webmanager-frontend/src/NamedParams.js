@@ -23,7 +23,7 @@ export default class NamedParams {
      */
     requiredParam( name: string ) {
         let param = this.params[name];
-        if ( !param ) {
+        if ( param === null || param === undefined ) {
             throw new Error( `${this.what}Required parameter '${name}' is missing` );
         }
 
