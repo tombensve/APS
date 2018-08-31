@@ -1,7 +1,6 @@
 import React from 'react'
 import APSComponent from "./APSComponent"
 import { Checkbox } from 'react-bootstrap'
-import APSLogger from "../APSLogger";
 
 /**
  * ## Properties
@@ -23,8 +22,6 @@ export default class APSCheckBox extends APSComponent {
 
     constructor( props: {} ) {
         super( props );
-
-        this.logger = new APSLogger( "APSCheckBox" );
 
         this.defaultValue = "";
 

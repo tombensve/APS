@@ -108,8 +108,8 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
 
     onBusClose( e ) {
         this.logger.info( "The eventbus has been closed!" );
-        this.alerter.alert( "aps-default-alert", "## No contact with server!\n\nThe server can currently " +
-            "not be reached! Waiting for it to come up again ..." );
+        this.alerter.alert( "aps-default-alert", "## No contact!\n\nWe are currently alone! " +
+            "Waiting to connect to our universe again ..." );
     }
 
     /**

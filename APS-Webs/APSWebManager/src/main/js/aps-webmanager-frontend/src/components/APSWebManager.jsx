@@ -1,8 +1,19 @@
-// Flow syntax is used by this code!
+// @flow
+// React
 import React, { Component } from 'react'
+
+// Misc
+import { APP_NAME, EVENT_ROUTES } from "../Constants"
+
+// Functional / Classes
+import uuid from "../APSUUID"
 import APSEventBus from "../APSEventBus"
 import APSLocalEventBusRouter from "../APSLocalEventBusRouter"
 import APSVertxEventBusRouter from "../APSVertxEventBusRouter"
+import APSBusAddress from "../APSBusAddress"
+import APSAlerter from "../APSAlerter"
+
+// Components
 import APSLayout from "./APSLayout"
 import APSPanel from "./APSPanel"
 import APSButton from "./APSButton"
@@ -13,11 +24,8 @@ import APSDate from "./APSDate"
 import APSMarkdown from "./APSMarkdown"
 import APSAlert from "./APSAlert"
 import APSCheckBox from "./APSCheckBox"
-import { APP_NAME, EVENT_ROUTES } from "../Constants"
 import APSLogger from "../APSLogger"
-import APSBusAddress from "../APSBusAddress"
-import APSAlerter from "../APSAlerter"
-import uuid from "../APSUUID"
+
 
 /**
  * A component reading a JSON spec of components to render. The GuiMgr also creates a local

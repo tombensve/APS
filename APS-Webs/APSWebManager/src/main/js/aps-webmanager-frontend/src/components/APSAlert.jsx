@@ -2,7 +2,6 @@ import React from 'react'
 import { Alert } from 'react-bootstrap'
 import APSMarkdown from "./APSMarkdown"
 import APSComponent from "./APSComponent"
-import APSLogger from "../APSLogger"
 
 type Message = { aps: { type: string }, content: { targetId: string, markdown: string } }
 
@@ -10,8 +9,6 @@ export default class APSAlert extends APSComponent {
 
     constructor( props ) {
         super( props );
-
-        //this.logger = new APSLogger("APSAlert");
 
         this.state = { show: false, value: this.props.guiProps.value };
 
@@ -37,6 +34,10 @@ export default class APSAlert extends APSComponent {
                 });
             }
         });
+    }
+
+    componentType() {
+        return "aps-alert";
     }
 
     render() {
