@@ -1,0 +1,78 @@
+// Headers used when sending and subscribing to messages.
+type APSMessageHeaders = {
+    routing: {
+        incoming: string,
+        outgoing: string
+    }
+};
+
+// The "static" parts of all APS messages. The "content" part depends entirely on the value of aps.type.
+type APSMessageAPS = {
+    origin: string,
+    app: string,
+    type: string,
+    identity: {
+        userId: string,
+        userName: string,
+        auth: {
+            type: string
+            /*...*/
+        }
+    }
+};
+type APSMessage = {
+    aps: APSMessageAPS,
+    content: {}
+};
+
+//
+// More specific messages
+//
+
+// Common parts of the content: part of a message.
+type APSComponentContent = {
+    group?: string,
+    managerId: string,
+    componentId: string,
+    componentName: string,
+    empty: boolean,
+    hasValue: boolean
+};
+
+type APSComponentEventContent = {
+    group?: string,
+    managerId: string,
+    componentId: string,
+    componentName: string,
+    empty: boolean,
+    hasValue: boolean
+    eventType: string
+};
+
+// Base component event message.
+type APSComponentEventMessage = {
+    aps: APSMessageAPS,
+    content: APSComponentEventContent
+};
+
+// This is for components that are "tagged" as collector for a group. These collect received events from other
+// components in group, and pass the 'content:' part along under 'collected:' using component id as key.
+// This provides HTML form type functionality without requiring a form.
+type APSCollectorComponentEventMessage = {
+    aps: APSMessageAPS,
+    content: APSComponentEventContent & {
+        collected: {
+            [componentId: string]: APSComponentContent
+        }
+    }
+};
+
+// Action events.
+type APSActionEventMessage = APSComponentEventMessage & {
+    aps: APSMessageAPS,
+    content: APSComponentEventContent & {
+        eventType: "action",
+        action: string
+    }
+}
+

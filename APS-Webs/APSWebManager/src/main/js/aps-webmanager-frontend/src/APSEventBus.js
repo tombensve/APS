@@ -27,8 +27,53 @@ import APSLogger from "./APSLogger";
 import { EVENT_ROUTES } from "./Constants";
 import APSEventBusRouter from "./APSEventBusRouter";
 import NamedParams from "./NamedParams"
+import APSLocalEventBusRouter from "./APSLocalEventBusRouter";
+import APSVertxEventBusRouter from "./APSVertxEventBusRouter";
+import APSAlerter from "./APSAlerter";
+import APSBusAddress from "./APSBusAddress";
 
 export default class APSEventBus {
+
+    // noinspection SpellCheckingInspection
+    /**
+     * Holds created busses.
+     *
+     * @type {{}}
+     */
+    static busses = {};
+
+    /**
+     * Creates a new named bus.
+     *
+     * @param name The name of the bus to create.
+     * @param address The address of the bus to create.
+     */
+    static createBus( name: string, address: APSBusAddress ) {
+        if ( !name ) name = "default";
+        if ( !address ) throw new Error( "An address of type APSBusAddress must be supplied!" );
+        let bus = new APSEventBus();
+        let alerter = APSAlerter.getOrCreateAlerter( name, bus );
+        bus.addBusRouter( new APSLocalEventBusRouter() );
+        bus.addBusRouter( new APSVertxEventBusRouter( alerter ) );
+        bus.setBusAddress( address );
+
+        APSEventBus.busses[name] = bus;
+
+        return bus;
+    }
+
+    /**
+     * Returns a named bus. This so that other code can pick up the same bus.
+     *
+     * @param name The name of the bus to return.
+     *
+     * @returns {APSEventBus}
+     */
+    static getBus( name: string ): APSEventBus {
+        let bus = APSEventBus.busses[name];
+        if ( !bus ) throw new Error( `No bus named '${name}' exist!` );
+        return bus;
+    }
 
     /**
      * Creates a new LocalEventBus.
@@ -49,6 +94,20 @@ export default class APSEventBus {
          *               responsibility for other code.
          */
         this.busRouters = [];
+
+        this.busAddressSet = false;
+    }
+
+    /**
+     * Provides a bus address to all added routers. The bus cannot be used before this is done!
+     *
+     * @param busAddress The bus address to set.
+     */
+    setBusAddress( busAddress: APSBusAddress ) {
+        for ( let router of this.busRouters ) {
+            router.setBusAddress( busAddress );
+        }
+        this.busAddressSet = true;
     }
 
     // I though it was a good idea to use named parameters in the form of an object with named values.
@@ -64,6 +123,8 @@ export default class APSEventBus {
      * @param jic - Just In Case something still uses (headers, subscriber).
      */
     subscribe( params: { headers: { routing: { outgoing: string, incoming: string } }, subscriber: () => mixed }, jic: * = undefined ) {
+        if ( !this.busAddressSet ) throw new Error( "A required bus address [setBusAddress(address)] has not been done yet!" );
+
         if ( jic !== undefined ) {
             throw new Error( "Old method call subscribe(headers, subscriber) done!" )
         }
@@ -87,6 +148,7 @@ export default class APSEventBus {
      * @param params params - Named parameters: { headers: ..., subscriber: ... }
      */
     unsubscribe( params: { headers: { routing: { outgoing: string, incoming: string } }, subscriber: () => mixed } ) {
+        if ( !this.busAddressSet ) throw new Error( "A required bus address [setBusAddress(address)] has not been done yet!" );
 
         let pars = new NamedParams( params, "APSEventBus.unsubscribe" );
 
@@ -108,6 +170,8 @@ export default class APSEventBus {
      * @param jic - Just In Case something still uses (headers, subscriber).
      */
     message( params: { headers: { routing: { outgoing: string, incoming: string } }, message: { aps: {}, content?: {} } }, jic: * = undefined ) {
+        if ( !this.busAddressSet ) throw new Error( "A required bus address [setBusAddress(address)] has not been done yet!" );
+
         if ( jic !== undefined ) {
             throw new Error( "Old method call message(headers, subscriber) done!" )
         }
@@ -119,7 +183,7 @@ export default class APSEventBus {
 
         APSEventBus.validRoutingHeaders( headers.routing.outgoing );
 
-        this.logger.debug( `EventBus: sending( headers: ${JSON.stringify(headers)}): ${JSON.stringify(message)}` );
+        this.logger.debug( `EventBus: sending( headers: ${JSON.stringify( headers )}): ${JSON.stringify( message )}` );
 
         for ( let busRouter of this.busRouters ) {
 

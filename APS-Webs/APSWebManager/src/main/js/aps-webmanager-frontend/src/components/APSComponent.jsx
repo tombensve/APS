@@ -37,7 +37,7 @@ class APSComponent extends Component {
             } );
         }
 
-        this.alerter = new APSAlerter(this.props.eventBus);
+        this.alerter = new APSAlerter( this.props.eventBus );
     }
 
     //
@@ -144,7 +144,7 @@ class APSComponent extends Component {
      * @param message The message to update with.
      */
     alert( alerterId: string, message: * ) {
-        this.alerter.alert(alerterId, message);
+        this.alerter.alert( alerterId, message );
     }
 
     /**
@@ -191,12 +191,7 @@ class APSComponent extends Component {
      *
      * @returns {object} The passed and upgraded object as a JSON string.
      */
-    eventMsg( content: {
-        aps: { type: string }, content: {
-            group: string, managerId: string, componentId: string, componentName: string,
-            empty: boolean, hasValue: boolean
-        }
-    } ): {} {
+    eventMsg( content: APSComponentEventMessage ): APSCollectorComponentEventMessage {
         return {
             aps: {
                 origin: this.props.origin,
@@ -235,7 +230,7 @@ class APSComponent extends Component {
      *
      * @returns {Object} An updated message.
      */
-    actionEvent( msg: { aps: {}, content: { eventType: string, action: string } }, action: string ): {} {
+    actionEvent( msg: APSComponentEventMessage, action: string ): APSActionEventMessage {
         msg = this.eventMsg( msg );
         msg.content.eventType = "action";
         msg.content.action = action;
@@ -259,7 +254,7 @@ class APSComponent extends Component {
      * @param {object} message The actual message as JSON string.
      */
     // noinspection JSMethodCanBeStatic
-    messageHandler( message: { aps: { /*...*/ }, content: { /*...*/ } } ) {
+    messageHandler( message: APSMessage ) {
 
         try {
             this.logger.debug( `messageHandler > Received: ${JSON.stringify( message )}` );

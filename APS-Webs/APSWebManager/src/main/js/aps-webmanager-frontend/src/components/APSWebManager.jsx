@@ -1,8 +1,13 @@
-// Flow syntax is used by this code!
+// @flow
+// React
 import React, { Component } from 'react'
+// Misc
+import { APP_NAME, EVENT_ROUTES } from "../Constants"
+// Functional / Classes
+import uuid from "../APSUUID"
 import APSEventBus from "../APSEventBus"
-import APSLocalEventBusRouter from "../APSLocalEventBusRouter"
-import APSVertxEventBusRouter from "../APSVertxEventBusRouter"
+import APSBusAddress from "../APSBusAddress"
+// Components
 import APSLayout from "./APSLayout"
 import APSPanel from "./APSPanel"
 import APSButton from "./APSButton"
@@ -13,11 +18,9 @@ import APSDate from "./APSDate"
 import APSMarkdown from "./APSMarkdown"
 import APSAlert from "./APSAlert"
 import APSCheckBox from "./APSCheckBox"
-import { APP_NAME, EVENT_ROUTES } from "../Constants"
 import APSLogger from "../APSLogger"
-import APSBusAddress from "../APSBusAddress"
-import APSAlerter from "../APSAlerter"
-import uuid from "../APSUUID"
+
+const HEADERS = { routing: { incoming: `${EVENT_ROUTES.BACKEND},${EVENT_ROUTES.CLIENT},${EVENT_ROUTES.ALL},${EVENT_ROUTES.ALL_CLIENTS}` } };
 
 /**
  * A component reading a JSON spec of components to render. The GuiMgr also creates a local
@@ -50,10 +53,6 @@ export default class APSWebManager extends Component {
         };
 
         this.busAddress = new APSBusAddress( APP_NAME );
-
-        this.apsEventBus = new APSEventBus();
-
-        this.alerter = new APSAlerter(this.apsEventBus);
     }
 
     //
@@ -65,12 +64,13 @@ export default class APSWebManager extends Component {
      */
     componentDidMount() {
 
-        this.apsEventBus.addBusRouter( new APSLocalEventBusRouter( this.busAddress ) );
-        this.apsEventBus.addBusRouter( new APSVertxEventBusRouter( this.busAddress, this.alerter ) );
+        this.apsEventBus = APSEventBus.createBus( this.props.name, this.busAddress );
+
+        this.logger.debug(`APSEventBus: ${this.apsEventBus}`);
 
         // Subscribe to eventbus for content events.
         this.apsEventBus.subscribe( {
-            headers: { routing: { incoming: `${EVENT_ROUTES.BACKEND},${EVENT_ROUTES.CLIENT},${EVENT_ROUTES.ALL},${EVENT_ROUTES.ALL_CLIENTS}` } },
+            headers: HEADERS,
             subscriber: ( message ) => {
                 this.messageHandler( message );
             }
@@ -104,10 +104,10 @@ export default class APSWebManager extends Component {
             this.logger.debug( `>>>>>>>: message: ${JSON.stringify( message )}` );
         }
         catch ( e ) {
-            this.logger.error(`Failed to log: ${e}`);
+            this.logger.error( `Failed to log: ${e}` );
         }
 
-        if (message.aps) {
+        if ( message.aps ) {
             switch ( message.aps.type.toLowerCase() ) {
 
                 case "gui":
@@ -129,10 +129,12 @@ export default class APSWebManager extends Component {
     componentWillUnmount() {
 
         // Since we are going away, stop listening for events.
-        this.apsEventBus.unsubscribe( {
-            headers: { routing: this.subscribingRoute },
-            subscriber: this.messageHandler
-        } );
+        if (this.apsEventBus) {
+            this.apsEventBus.unsubscribe( {
+                headers: HEADERS,
+                subscriber: this.messageHandler
+            } );
+        }
     }
 
     /**
@@ -262,7 +264,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSCheckBox key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                            origin={this.busAddress.client}/>
+                                 origin={this.busAddress.client}/>
                 );
                 break;
 
@@ -270,7 +272,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSMarkdown key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                            origin={this.busAddress.client}/>
+                                 origin={this.busAddress.client}/>
                 );
                 break;
 
@@ -278,7 +280,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSAlert key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                                 origin={this.busAddress.client}/>
+                              origin={this.busAddress.client}/>
                 );
                 break;
 

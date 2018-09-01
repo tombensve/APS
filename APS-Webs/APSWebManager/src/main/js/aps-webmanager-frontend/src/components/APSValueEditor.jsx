@@ -1,5 +1,5 @@
 import React from 'react'
-import { ControlLabel, FormControl, FormGroup } from 'react-bootstrap'
+import { ControlLabel, FormGroup } from 'react-bootstrap'
 import APSComponent from "./APSComponent";
 import APSTextField from "./APSTextField"
 import APSTextArea from "./APSTextArea"

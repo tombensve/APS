@@ -1,9 +1,12 @@
+// React
 import React from 'react'
-import APSComponent from './APSComponent'
+// External
 import DayPickerInput from 'react-day-picker/DayPickerInput'
 import 'react-day-picker/lib/style.css'
-import APSLogger from '../APSLogger'
+// Utils
 import { isMobileDevice } from "../Utils";
+// Components
+import APSComponent from './APSComponent'
 
 /**
  * Date component based on DayPickerInput: http://react-day-picker.js.org/api/DayPickerInput/.
@@ -15,8 +18,6 @@ export default class APSDate extends APSComponent {
 
     constructor( props: { guiProps: { startValue: *, disabled: boolean } } ) {
         super( props );
-
-        this.logger = new APSLogger( "APSDate" );
 
         this.state = {
             value: props.guiProps.startValue,

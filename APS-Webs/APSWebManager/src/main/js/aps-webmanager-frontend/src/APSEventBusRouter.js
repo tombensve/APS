@@ -1,7 +1,17 @@
 /**
- * This defines an event bus router API, and is used as a fake interface.
+ * This defines an event bus router API, and is used as a fake interface. The "implementers"
+ * actually extend this. APSEventBus only works with this.
  */
 export default class APSEventBusRouter {
+
+    // noinspection ES6ModulesDependencies
+    /**
+     * Provides a bus address for the router.
+     *
+     * @param busAddress The bus address to provide.
+     */
+    setBusAddress( busAddress: APSBusAddress ) {
+    }
 
     /**
      * sends a message to all listeners.
@@ -9,7 +19,7 @@ export default class APSEventBusRouter {
      * @param headers The headers for the message.
      * @param message The message to send.
      */
-    message( headers: {}, message: {} ) {
+    message( headers: APSMessageHeaders, message: APSMessage ) {
     }
 
     /**
@@ -18,7 +28,7 @@ export default class APSEventBusRouter {
      * @param headers  - Relevant headers for subscription.
      * @param callback - Callback to call with messages.
      */
-    subscribe( headers: object, callback: func ) {
+    subscribe( headers: APSMessageHeaders, callback: () => mixed ) {
     }
 
     /**
@@ -27,7 +37,7 @@ export default class APSEventBusRouter {
      * @param headers - The headers used when subscribing.
      * @param callback - The callback to unsubscribe.
      */
-    unsubscribe( headers: {}, callback: {} ) {
+    unsubscribe( headers: APSMessageHeaders, callback: () => mixed ) {
     }
 }
 

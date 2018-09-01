@@ -11,13 +11,8 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
 
     /**
      * Creates a new LocalBusRouter.
-     *
-     * @param busAddress - The address for the app.
      */
-    constructor( busAddress: APSBusAddress ) {
-        //super();
-
-        this.busAddress = busAddress;
+    constructor(  ) {
 
         // noinspection JSValidateTypes
         /** @type {object.<string, function(object)>} subscribers */
@@ -27,12 +22,22 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
     }
 
     /**
+     * Provides a bus address for the router.
+     *
+     * @param busAddress The bus address to provide.
+     */
+    setBusAddress( busAddress: APSBusAddress ) {
+        this.busAddress= busAddress;
+    }
+
+    /**
      * sends a message to all listeners.
      *
      * @param headers The headers for the message.
      * @param message The message to send.
      */
     message( headers: {}, message: {} ) {
+        if (!this.busAddress) throw new Error("Required bus address not provided!");
 
         if ( headers[EVENT_ROUTING] != null ) {
             let routes = headers[EVENT_ROUTING][ROUTE_OUTGOING];
@@ -93,6 +98,7 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
      * @param callback - Callback to call with messages.
      */
     subscribe( headers: {}, callback: () => mixed ) {
+        if (!this.busAddress) throw new Error("Required bus address not provided!");
 
         if ( headers[EVENT_ROUTING] != null ) {
 
@@ -149,6 +155,7 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
      * @param callback - The callback to unsubscribe.
      */
     unsubscribe( headers: {}, callback: () => mixed ) {
+        if (!this.busAddress) throw new Error("Required bus address not provided!");
 
         if ( headers[EVENT_ROUTING] != null ) {
             let routes = headers[EVENT_ROUTING][ROUTE_INCOMING];
