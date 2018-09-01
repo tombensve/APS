@@ -4,6 +4,15 @@
  */
 export default class APSEventBusRouter {
 
+    // noinspection ES6ModulesDependencies
+    /**
+     * Provides a bus address for the router.
+     *
+     * @param busAddress The bus address to provide.
+     */
+    setBusAddress( busAddress: APSBusAddress ) {
+    }
+
     /**
      * sends a message to all listeners.
      *

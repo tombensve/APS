@@ -13,9 +13,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
     /**
      * Creates a new LocalBusRouter.
      */
-    constructor( busAddress: APSBusAddress, alerter: APSAlerter ) {
-
-        this.busAddress = busAddress;
+    constructor( alerter: APSAlerter ) {
 
         this.alerter = alerter;
 
@@ -55,6 +53,15 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
         this.eventBus.onerror = ( err ) => {
             this.logger.error( err );
         };
+    }
+
+    /**
+     * Provides a bus address for the router.
+     *
+     * @param busAddress The bus address to provide.
+     */
+    setBusAddress( busAddress: APSBusAddress ) {
+        this.busAddress = busAddress;
     }
 
     re_startBus() {
@@ -119,6 +126,8 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
      * @param message - The message to message.
      */
     message( headers: {}, message: {} ) {
+        if (!this.busAddress) throw new Error("Required bus address not provided!");
+
         this.tries = 0;
 
         try {
@@ -200,6 +209,8 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
      * @param callback - Callback to call with messages.
      */
     subscribe( headers: {}, callback: () => mixed ) {
+        if (!this.busAddress) throw new Error("Required bus address not provided!");
+
         this.logger.debug( `Subscribing with headers: ${headers}` );
 
         this.activeSubscribers.push( { headers: headers, callback: callback } );
@@ -277,6 +288,8 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
      * @param callback - The callback to unsubscribe.
      */
     unsubscribe( headers: {}, callback: () => mixed ) {
+        if (!this.busAddress) throw new Error("Required bus address not provided!");
+
         this.logger.debug( `Unsubscribing with headers: ${headers}` );
 
         // I expect the bus to be upp by the time this is done :-)
