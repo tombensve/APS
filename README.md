@@ -4,6 +4,8 @@ Copyright © 2013 Natusoft AB
 
 __Version:__ 1.0.0 (working up to ...)
 
+__License:__ [Apache 2.0](lics/Apache-2.0.md)
+
 __This project is currently work in progress and cannot be expected to be stable!!__
 
 Work is slow, whenever time permits.
