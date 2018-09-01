@@ -32,8 +32,6 @@ export default class APSTextField extends APSComponent {
             validationState: ""
         };
 
-        this.empty = true;
-
     }
 
     componentType(): string {
@@ -77,7 +75,7 @@ export default class APSTextField extends APSComponent {
     }
 
     componentDidMount() {
-        this.sendDefaultValue();
+
     }
 
     render() {

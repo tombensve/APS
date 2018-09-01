@@ -74,7 +74,7 @@ export default class APSTextArea extends APSComponent {
     }
 
     componentDidMount() {
-        this.sendDefaultValue();
+
     }
 
     render() {
