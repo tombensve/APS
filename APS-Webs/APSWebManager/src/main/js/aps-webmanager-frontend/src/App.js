@@ -6,7 +6,7 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <APSWebManager name={"default"}/>
+        <APSWebManager app={"demo"} name={"default"}/>
       </div>
     );
   }

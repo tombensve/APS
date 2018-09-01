@@ -29,7 +29,7 @@ class APSComponent extends Component {
         this._hasValue = true;
         this.collected = {};
 
-        if ( this.busMember ) {
+        if ( this._busMember ) {
             this.subscribe( ( message ) => {
 
                 this.messageHandler( message );
@@ -72,7 +72,7 @@ class APSComponent extends Component {
     }
 
     get defaultValue(): * {
-        return this._defaultValue;
+        return this._defaultValue ? this._defaultValue : "";
     }
 
     set defaultValue( defaultValue: * ) {
@@ -103,16 +103,14 @@ class APSComponent extends Component {
      * This is so that collector components can get default values before user manipulates components.
      */
     sendDefaultValue() {
-        if ( this.defaultValue ) {
-            this.message(
-                this.changeEvent(
-                    {
-                        componentType: this.componentType(),
-                        value: this.defaultValue
-                    }
-                )
-            );
-        }
+        this.message(
+            this.changeEvent(
+                {
+                    componentType: this.componentType(),
+                    value: this.defaultValue
+                }
+            )
+        );
     }
 
     /**
@@ -167,6 +165,8 @@ class APSComponent extends Component {
         if ( this.props.guiProps.headers != null ) {
 
             this.props.eventBus.subscribe( { headers: this.props.guiProps.headers, subscriber: subscriber } );
+
+            this.logger.debug( `%%%% Subscribed with headers: ${JSON.stringify( this.props.guiProps.headers )} and callback: ${subscriber}` )
         }
         else {
             throw new Error( `Tried to subscribe without guiProps.headers being available!` );
@@ -262,40 +262,50 @@ class APSComponent extends Component {
             this.logger.error( `Failed logging: ${e}` );
         }
 
-        // If this component wants to collect values sent by other components, we
-        // just save the whole message under 'collected' and using the components id as key.
-        // This is for submit type components. Rather than having all components publish
-        // all data over the network, submit type components collect their data and passes
-        // it along on a submit.
+        switch ( message.aps.type ) {
+            case "gui-created":
+                // Consider doing this only for group members!
+                this.sendDefaultValue();
+                break;
 
-        if ( message.content.hasValue && this.props.guiProps.collectGroups != null &&
-            this.props.guiProps.collectGroups.indexOf( message.content.group ) !== -1 ) {
+            case "gui-event":
+                // If this component wants to collect values sent by other components, we
+                // just save the whole message under 'collected' and using the components id as key.
+                // This is for submit type components. Rather than having all components publish
+                // all data over the network, submit type components collect their data and passes
+                // it along on a submit.
 
-            // Save message using the originating components id.
-            this.collected[message.content.componentId] = message.content;
+                if ( message.content.hasValue && this.props.guiProps.collectGroups != null &&
+                    this.props.guiProps.collectGroups.indexOf( message.content.group ) !== -1 ) {
 
-            //console.log(">>>> [" + this.props.guiProps.id + "] Collected: " + message)
+                    // Save message using the originating components id.
+                    this.collected[message.content.componentId] = message.content;
+
+                    this.logger.debug( "@@@@" + this.props.guiProps.id + "] Collected: " + JSON.stringify( message ) );
+                }
+
+                // Handle enable and disable of a component that have supplied a criteria for that.
+                if ( this.props.guiProps.enabled != null ) {
+
+                    let enableDisableParameters = this.props.guiProps.enabled.split( ':' );
+                    let _disable = true;
+
+                    if ( enableDisableParameters[0] === "groupNotEmpty" ) {
+                        _disable = !this.enableDisableOnGroupNotEmpty( enableDisableParameters[1] );
+                    }
+                    else if ( enableDisableParameters[0] === "namedComponentsNotEmpty" ) {
+                        _disable = !this.enableDisableOnNamedComponentsNotEmpty( enableDisableParameters[1] );
+                    }
+                    else {
+                        this.logger.error( `Unknown enable/disable property value: ${this.props.guiProps.enabled}` )
+                    }
+
+                    this.disabled = _disable;
+                }
+                break;
+
+            default:
         }
-
-        // Handle enable and disable of a component that have supplied a criteria for that.
-        if ( this.props.guiProps.enabled != null ) {
-
-            let enableDisableParameters = this.props.guiProps.enabled.split( ':' );
-            let _disable = true;
-
-            if ( enableDisableParameters[0] === "groupNotEmpty" ) {
-                _disable = !this.enableDisableOnGroupNotEmpty( enableDisableParameters[1] );
-            }
-            else if ( enableDisableParameters[0] === "namedComponentsNotEmpty" ) {
-                _disable = !this.enableDisableOnNamedComponentsNotEmpty( enableDisableParameters[1] );
-            }
-            else {
-                this.logger.error( `Unknown enable/disable property value: ${this.props.guiProps.enabled}` )
-            }
-
-            this.disabled = _disable;
-        }
-
     }
 
     /**

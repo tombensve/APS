@@ -26,7 +26,7 @@
       "headers": {
         "routing": {
           "outgoing": "client",
-          "incoming": "none"
+          "incoming": "client"
         }
       }
     },
@@ -41,7 +41,7 @@
       "headers": {
         "routing": {
           "outgoing": "client",
-          "incoming": "none"
+          "incoming": "client"
         }
       }
     },
@@ -57,7 +57,7 @@
       "enabled": "groupNotEmpty:gpoc",
       "headers": {
         "routing": {
-          "outgoing": "client,backend",
+          "outgoing": "backend",
           "incoming": "client"
         }
       }
@@ -72,7 +72,7 @@
       "headers": {
         "routing": {
           "outgoing": "client",
-          "incoming": "none"
+          "incoming": "client"
         }
       }
     },
@@ -97,7 +97,7 @@
       "headers": {
         "routing": {
           "outgoing": "client",
-          "incoming": "none"
+          "incoming": "client"
         }
       }
     }

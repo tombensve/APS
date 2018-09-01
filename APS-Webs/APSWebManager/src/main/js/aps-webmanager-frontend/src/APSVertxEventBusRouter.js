@@ -222,8 +222,6 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
             // this._logger.debug("CALLBACK: " + callback);
 
             if ( typeof message !== "undefined" ) {
-                // For some reason we get the full internal vertx eventbus message, not just
-                // the client relevant 'body' part.
                 callback( message['body'] );
             }
             else {

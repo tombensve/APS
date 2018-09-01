@@ -53,11 +53,26 @@ export default class APSWebManager extends Component {
         };
 
         this.busAddress = new APSBusAddress( APP_NAME );
+
+        this.apsEventBus = APSEventBus.createBus( this.props.name, this.busAddress );
+        this.logger.debug(`APSEventBus: ${this.apsEventBus}`);
     }
 
     //
     // Component Interactions
     //
+
+    getApp() {
+        let app;
+        if (this.props.guiProps && this.props.guiProps.app) {
+            app = this.props.guiProps.app;
+        }
+        else {
+            app = this.props.app;
+        }
+
+        return app;
+    }
 
     /**
      * React callback for when component is available.
@@ -84,7 +99,7 @@ export default class APSWebManager extends Component {
             message: {
                 aps: {
                     origin: this.busAddress.client,
-                    app: "aps-web-manager",
+                    app: this.getApp(),
                     type: "avail"
                 }
             }
@@ -166,6 +181,24 @@ export default class APSWebManager extends Component {
             gui: gui,
             comps: this.parseGui( gui, { key: 0 } )
         } );
+
+        // Tell all created components that all are created.
+        this.apsEventBus.message({
+            headers: {
+                routing: {
+                    incoming: "none",
+                    outgoing: "client"
+                }
+            },
+            message: {
+                aps: {
+                    origin: this.busAddress.client,
+                    app: this.getApp(),
+                    type: "gui-created"
+                },
+                content: {}
+            }
+        });
     }
 
     /**
