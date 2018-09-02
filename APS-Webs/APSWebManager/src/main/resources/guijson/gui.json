@@ -11,7 +11,7 @@
       "bsType": "danger",
       "headers": {
         "routing": {
-          "outgoing": "none",
+          "outgoing": "client",
           "incoming": "client"
         }
       }
@@ -21,6 +21,7 @@
       "name": "name-field",
       "group": "gpoc",
       "type": "aps-text-field",
+      "label": "Qwerty",
       "width": 20,
       "value": "",
       "headers": {

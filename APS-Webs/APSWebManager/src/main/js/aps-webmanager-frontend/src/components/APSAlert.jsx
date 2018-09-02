@@ -17,6 +17,9 @@ export default class APSAlert extends APSComponent {
         }
 
         this.subscribe((message : Message) => {
+
+            this.logger.debug(`Msg: ${JSON.stringify(message)}`);
+
             if (message.aps.type === "aps-alert" && message.content.targetId === this.props.guiProps.id) {
                 if ( !message.content.hide === true ) {
                     // this.logger.debug("About to show alert!");

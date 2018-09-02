@@ -96,6 +96,24 @@ class APSComponent extends Component {
     }
 
     /**
+     * If render() is not overridden bu subclass then this must be overridden! This is just a convenience.
+     *
+     * @param comps An initialized array to add components to.
+     */
+    doRender(comps) {}
+
+    /**
+     * The actual React render method.
+     *
+     * @returns {Array} The component(s) to render.
+     */
+    render() {
+        let comps = [];
+        this.doRender(comps);
+        return comps;
+    }
+
+    /**
      * Sends a message on the bus with the default value.
      *
      * Certain components wants to do this on componentDidMount(). this.defaultValue = value must be done first!

@@ -131,7 +131,6 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
         this.tries = 0;
 
         try {
-            this.logger.debug( `Sending with headers: ${JSON.stringify( headers )} and message: ${JSON.stringify( message )}` );
 
             if ( this.busReady ) {
 
@@ -149,21 +148,25 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                                 break;
 
                             case EVENT_ROUTES.BACKEND:
+                                this.logger.debug( `Sending to BACKEND with headers: ${JSON.stringify( headers )} and message: ${JSON.stringify( message )}` );
                                 // noinspection JSUnresolvedFunction
                                 this.eventBus.send( this.busAddress.backend, message, headers, null );
                                 break;
 
                             case EVENT_ROUTES.ALL:
+                                this.logger.debug( `Publishing to ALL with headers: ${JSON.stringify( headers )} and message: ${JSON.stringify( message )}` );
                                 // noinspection JSUnresolvedFunction
                                 this.eventBus.publish( this.busAddress.all, message, headers );
                                 break;
 
                             case EVENT_ROUTES.ALL_BACKENDS:
-                                // noinspection JSUnresolvedFunction
+                                this.logger.debug( `Publishing to ALL_BACKEND with headers: ${JSON.stringify( headers )} and message: ${JSON.stringify( message )}` );
+// noinspection JSUnresolvedFunction
                                 this.eventBus.publish( this.busAddress.allBackends, message, headers );
                                 break;
 
                             case EVENT_ROUTES.ALL_CLIENTS:
+                                this.logger.debug( `Publishing to ALL_CLIENTS with headers: ${JSON.stringify( headers )} and message: ${JSON.stringify( message )}` );
                                 // noinspection JSUnresolvedFunction
                                 this.eventBus.publish( this.busAddress.allClients, message, headers );
                                 break;
