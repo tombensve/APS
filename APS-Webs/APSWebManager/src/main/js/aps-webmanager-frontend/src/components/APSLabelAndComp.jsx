@@ -27,7 +27,7 @@ import APSNumber from "./APSNumber"
  *     }
  *
  */
-export class APSLabelComp extends APSComponent {
+export class APSLabelAndComp extends APSComponent {
 
     constructor( props: {} ) {
         super( props );
@@ -88,7 +88,7 @@ export class APSLabelComp extends APSComponent {
     }
 }
 
-APSLabelComp.propTypes = {
+APSLabelAndComp.propTypes = {
     disabled: PropTypes.bool,
     label: PropTypes.string,
     aveType: PropTypes.string,

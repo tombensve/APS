@@ -23,12 +23,12 @@ export default class APSTextField extends APSComponent {
     constructor( props: {} ) {
         super( props );
 
-        this.defaultValue = "";
+        this.defaultValue = this.props.guiProps.value ? this.props.guiProps.value : "";
 
         this.state = {
             disabled: false,
             // Note: The name of the state value has to match the component value name to be a "controlled" component!
-            value: this.props.guiProps.value,
+            value: this.defaultValue,
             validationState: ""
         };
 
