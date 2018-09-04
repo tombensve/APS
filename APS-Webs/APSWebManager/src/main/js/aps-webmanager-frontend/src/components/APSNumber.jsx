@@ -1,5 +1,5 @@
 import APSComponent from "./APSComponent"
-import { FormControl, FormGroup } from "react-bootstrap";
+import { ControlLabel, FormControl, FormGroup } from "react-bootstrap";
 import React from "react";
 
 /**
@@ -31,12 +31,15 @@ export default class APSNumber extends APSComponent {
 
         this.props.guiProps.placeholder = "0";
 
+        this.defaultValue = this.props.guiProps.value ? this.props.guiProps.value : "0";
+
         this.state = {
-            value: this.props.guiProps.value,
+            value: this.defaultValue,
             disabled: props.guiProps.disabled != null ? props.guiProps.disabled : false,
         };
         this.setState( this.state );
 
+        this.defaultValue = this.props.guiProps.value;
         this.min = Number( this.props.guiProps.min );
         this.max = Number( this.props.guiProps.max );
         this.empty = false;
@@ -136,11 +139,15 @@ export default class APSNumber extends APSComponent {
         }
     }
 
-    render() {
+    doRender( comps ) {
 
         let placeHolder = "";
         if ( this.props.guiProps.placeholder != null ) {
             placeHolder = this.props.guiProps.placeholder;
+        }
+
+        if ( this.props.guiProps.label ) {
+            comps.push( <ControlLabel>{this.props.guiProps.label}</ControlLabel> );
         }
 
         // Note that if type="number" is added then things turn to shit!
@@ -152,14 +159,12 @@ export default class APSNumber extends APSComponent {
         // But when I treat this as a text field and do my own filtering on accepted input and check the min and max
         // limits myself, then this works fine both on my Mac, my iPhone and my virtual android. The '>' and '<' to
         // change value does not work on the mobiles.
-        return <FormGroup id={this.props.guiProps.id + '_fg'} >
-            <FormControl componentClass="input"
-                         value={this.state.value}
-                         id={this.props.guiProps.id}
-                         placeholder={placeHolder}
-                         onChange={this.handleEvent.bind( this )}
-                         disabled={this.state.disabled}/>
-        </FormGroup>
+        comps.push( <FormControl componentClass="input"
+                                 value={this.state.value}
+                                 id={this.props.guiProps.id}
+                                 placeholder={placeHolder}
+                                 onChange={this.handleEvent.bind( this )}
+                                 disabled={this.state.disabled}/> );
     }
 
 }

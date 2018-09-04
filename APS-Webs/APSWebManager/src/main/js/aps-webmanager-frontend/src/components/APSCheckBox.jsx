@@ -23,13 +23,14 @@ export default class APSCheckBox extends APSComponent {
     constructor( props: {} ) {
         super( props );
 
-        this.defaultValue = "";
 
         let checked: boolean = false;
 
         if (this.props.guiProps.value && this.props.guiProps.value === "checked") {
             checked = true;
         }
+
+        this.defaultValue = checked;
 
         this.state = {
             disabled: false,
@@ -71,10 +72,11 @@ export default class APSCheckBox extends APSComponent {
     }
 
     componentDidMount() {
-        //this.sendDefaultValue();
+        this.sendDefaultValueLocalOnly();
     }
 
     render() {
+
         if (this.state.value === true) {
             return <Checkbox id={this.props.guiProps.id} onChange={this.handleEvent.bind( this )} checked>
                 {' '}{this.props.guiProps.label}

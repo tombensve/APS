@@ -27,7 +27,7 @@ import APSNumber from "./APSNumber"
  *     }
  *
  */
-export class APSValueEditor extends APSComponent {
+export class APSLabelAndComp extends APSComponent {
 
     constructor( props: {} ) {
         super( props );
@@ -40,6 +40,7 @@ export class APSValueEditor extends APSComponent {
         this.setState( this.state );
 
         this.hasValue = true;
+
     }
 
     componentType(): string {
@@ -50,11 +51,11 @@ export class APSValueEditor extends APSComponent {
         let toRender = [];
         let mgrId = this.props.mgrId != null ? this.props.mgrId : "";
 
-        if ( this.props.guiProps.meta.label != null ) {
-            toRender.push( <ControlLabel>{this.props.guiProps.meta.label}</ControlLabel> )
+        if ( this.props.guiProps.aveLabel != null ) {
+            toRender.push( <ControlLabel>{this.props.guiProps.aveLabel}</ControlLabel> )
         }
 
-        switch ( this.props.guiProps.meta.type ) {
+        switch ( this.props.guiProps.aveType ) {
             case "text":
                 toRender.push(
                     <APSTextField eventBus={this.props.eventBus} guiProps={this.props.guiProps} mgrId={mgrId} />
@@ -85,5 +86,11 @@ export class APSValueEditor extends APSComponent {
 
         return <FormGroup>{toRender}</FormGroup>;
     }
-
 }
+
+APSLabelAndComp.propTypes = {
+    disabled: PropTypes.bool,
+    label: PropTypes.string,
+    aveType: PropTypes.string,
+    aveLabel: PropTypes.string
+};

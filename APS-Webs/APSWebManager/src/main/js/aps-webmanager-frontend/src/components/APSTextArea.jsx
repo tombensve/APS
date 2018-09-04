@@ -1,6 +1,6 @@
 import React from 'react'
 import APSComponent from "./APSComponent"
-import { FormControl } from 'react-bootstrap'
+import { ControlLabel, FormControl } from 'react-bootstrap'
 
 /**
  * ## Properties
@@ -31,12 +31,12 @@ export default class APSTextArea extends APSComponent {
 
         super( props );
 
-        this.defaultValue = "";
+        this.defaultValue = this.props.guiProps.value != null ? this.props.guiProps.value : "";
 
         this.state = {
 
             disabled: false,
-            value: this.props.guiProps.value != null ? this.props.guiProps.value : ""
+            value: this.defaultValue
         };
 
         this.empty = true;
@@ -77,23 +77,27 @@ export default class APSTextArea extends APSComponent {
 
     }
 
-    render() {
+    doRender( comps ) {
         let placeHolder = "";
         if ( this.props.guiProps.placeholder != null ) {
             placeHolder = this.props.guiProps.placeholder;
         }
 
+        if ( this.props.guiProps.label ) {
+            comps.push( <ControlLabel>{this.props.guiProps.label}</ControlLabel> );
+        }
+
         // noinspection HtmlUnknownAttribute
-        return <FormControl componentClass="textarea"
-                            type={"textarea"}
-                            value={this.state.value}
-                            id={this.props.guiProps.id}
-                            rows={this.props.guiProps.rows}
-                            cols={this.props.guiProps.cols}
-                            placeHolder={placeHolder}
-                            onChange={this.handleEvent.bind( this )}
-                            disabled={this.state.disabled}
-        />
+        comps.push( <FormControl componentClass="textarea"
+                                 type={"textarea"}
+                                 value={this.state.value}
+                                 id={this.props.guiProps.id}
+                                 rows={this.props.guiProps.rows}
+                                 cols={this.props.guiProps.cols}
+                                 placeHolder={placeHolder}
+                                 onChange={this.handleEvent.bind( this )}
+                                 disabled={this.state.disabled}
+        /> );
     }
 }
 

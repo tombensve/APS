@@ -79,10 +79,6 @@ export default class APSWebManager extends Component {
      */
     componentDidMount() {
 
-        this.apsEventBus = APSEventBus.createBus( this.props.name, this.busAddress );
-
-        this.logger.debug(`APSEventBus: ${this.apsEventBus}`);
-
         // Subscribe to eventbus for content events.
         this.apsEventBus.subscribe( {
             headers: HEADERS,

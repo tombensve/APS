@@ -1,6 +1,6 @@
 import React from 'react'
 import APSComponent from "./APSComponent"
-import { FormControl, FormGroup } from 'react-bootstrap'
+import { ControlLabel, FormControl, FormGroup } from 'react-bootstrap'
 
 /**
  * ## Properties
@@ -23,12 +23,12 @@ export default class APSTextField extends APSComponent {
     constructor( props: {} ) {
         super( props );
 
-        this.defaultValue = "";
+        this.defaultValue = this.props.guiProps.value ? this.props.guiProps.value : "";
 
         this.state = {
             disabled: false,
             // Note: The name of the state value has to match the component value name to be a "controlled" component!
-            value: this.props.guiProps.value,
+            value: this.defaultValue,
             validationState: ""
         };
 
@@ -78,13 +78,18 @@ export default class APSTextField extends APSComponent {
 
     }
 
-    render() {
+    doRender( comps: [] ) {
 
         let placeHolder = "";
         if ( this.props.guiProps.placeholder != null ) {
             placeHolder = this.props.guiProps.placeholder;
         }
-        return <FormGroup id={this.props.guiProps.id + '_fg'} validationState={this.state.validationState}>
+
+        if ( this.props.guiProps.label ) {
+            comps.push( <ControlLabel>{this.props.guiProps.label}</ControlLabel> );
+        }
+
+        comps.push( <FormGroup id={this.props.guiProps.id + '_fg'} validationState={this.state.validationState}>
             <FormControl componentClass="input"
                          type={""}
                          value={this.state.value}
@@ -93,7 +98,7 @@ export default class APSTextField extends APSComponent {
                          onChange={this.handleEvent.bind( this )}
                          disabled={this.state.disabled}/>
             <FormControl.Feedback/>
-        </FormGroup>
+        </FormGroup> );
     }
 }
 

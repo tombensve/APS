@@ -7,6 +7,7 @@ import 'react-day-picker/lib/style.css'
 import { isMobileDevice } from "../Utils";
 // Components
 import APSComponent from './APSComponent'
+import { ControlLabel } from "react-bootstrap";
 
 /**
  * Date component based on DayPickerInput: http://react-day-picker.js.org/api/DayPickerInput/.
@@ -19,8 +20,10 @@ export default class APSDate extends APSComponent {
     constructor( props: { guiProps: { startValue: *, disabled: boolean } } ) {
         super( props );
 
+        this.defaultValue = props.guiProps.startValue ? props.guiProps.startValue : "";
+
         this.state = {
-            value: props.guiProps.startValue,
+            value: this.defaultValue,
             disabled: props.guiProps.disabled != null ? props.guiProps.disabled : false
         };
         this.setState( this.state );
@@ -62,7 +65,7 @@ export default class APSDate extends APSComponent {
         }
     }
 
-    valueChangedHandlerMobile( event : {} ) {
+    valueChangedHandlerMobile( event: {} ) {
 
         if ( event ) {
 
@@ -87,15 +90,18 @@ export default class APSDate extends APSComponent {
         }
     }
 
-    render() {
+    doRender( comps ) {
+        if ( this.props.guiProps.label ) {
+            comps.push( <ControlLabel>{this.props.guiProps.label}</ControlLabel> );
+        }
 
         if ( isMobileDevice().any() ) {
-            return <input id={this.props.guiProps.id} type={"date"} className={"form-control"}
-                          placeholder={"YYYY-MM-DD"}
-                          onChange={this.valueChangedHandlerMobile.bind( this )}/>
+            comps.push( <input id={this.props.guiProps.id} type={"date"} className={"form-control"}
+                               placeholder={"YYYY-MM-DD"}
+                               onChange={this.valueChangedHandlerMobile.bind( this )}/> );
         }
         else {
-            return <DayPickerInput
+            comps.push( <DayPickerInput
                 id={this.props.guiProps.id}
                 classNames={{
                     container: 'form-group',
@@ -115,7 +121,7 @@ export default class APSDate extends APSComponent {
                 onDayChange={this.valueChangedHandlerComputer.bind( this )}
 
                 disabled={this.state.disabled}
-            />
+            /> );
         }
     }
 }

@@ -44,6 +44,8 @@ class APSComponent extends Component {
     // Properties (subclasses should override or set these as needed)
     //
 
+    // Is this component part of the bus ? Most are.
+
     get busMember(): boolean {
         return this._busMember;
     }
@@ -63,6 +65,7 @@ class APSComponent extends Component {
     }
 
     // Component has a value to provide. Default is true, so a button for example should do this.hasValue = false.
+
     get hasValue(): boolean {
         return this._hasValue;
     }
@@ -70,6 +73,8 @@ class APSComponent extends Component {
     set hasValue( hasValue: boolean ) {
         this._hasValue = hasValue;
     }
+
+    // The default starting value of the component.
 
     get defaultValue(): * {
         return this._defaultValue ? this._defaultValue : "";
@@ -96,21 +101,46 @@ class APSComponent extends Component {
     }
 
     /**
-     * Sends a message on the bus with the default value.
+     * If render() is not overridden bu subclass then this must be overridden! This is just a convenience.
+     *
+     * @param comps An initialized array to add components to.
+     */
+    doRender( comps ) {
+    }
+
+    /**
+     * The actual React render method.
+     *
+     * @returns {Array} The component(s) to render.
+     */
+    render() {
+        let comps = [];
+        this.doRender( comps );
+        return comps;
+    }
+
+    /**
+     * Sends a message on the bus with the default value. This only sends within the client. This message
+     * is not relevant for anything else. The point of this is to initialize "collector" components with
+     * initial values. Most usually "collector" components are also routed to the backend for their events
+     * which will include collected data. But there can be other reasons for components to collect data
+     * from other components. In either case a collector component wants a default value before a user
+     * has manipulated a component. This supplies that.
      *
      * Certain components wants to do this on componentDidMount(). this.defaultValue = value must be done first!
-     *
-     * This is so that collector components can get default values before user manipulates components.
      */
-    sendDefaultValue() {
-        this.message(
-            this.changeEvent(
+    sendDefaultValueLocalOnly() {
+        this.props.eventBus.message( {
+            headers: {
+                outgoing: "client"
+            },
+            message: this.changeEvent(
                 {
                     componentType: this.componentType(),
                     value: this.defaultValue
                 }
             )
-        );
+        } );
     }
 
     /**
@@ -126,7 +156,7 @@ class APSComponent extends Component {
 
     /**
      * This should be overridden by subclasses to provide the name of the component. This is useful
-     * when doing debug logging.
+     * when doing logging.
      *
      * @returns {string}
      */
@@ -265,7 +295,7 @@ class APSComponent extends Component {
         switch ( message.aps.type ) {
             case "gui-created":
                 // Consider doing this only for group members!
-                this.sendDefaultValue();
+                this.sendDefaultValueLocalOnly();
                 break;
 
             case "gui-event":
@@ -285,6 +315,8 @@ class APSComponent extends Component {
                 }
 
                 // Handle enable and disable of a component that have supplied a criteria for that.
+                // Part of me wants to be more flexible and dynamic here, but that can also lead to
+                // security issues.
                 if ( this.props.guiProps.enabled != null ) {
 
                     let enableDisableParameters = this.props.guiProps.enabled.split( ':' );

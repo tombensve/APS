@@ -19,6 +19,7 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
         this.subscribers = {};
 
         this.logger = new APSLogger( 'APSLocalEventBusRouter' );
+        this.logger.debug("**>>>> Creating new APSLocalEventBusRouter! <<<<**");
     }
 
     /**
@@ -50,10 +51,12 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
                 switch ( route ) {
                     case EVENT_ROUTES.CLIENT:
                         let addressSubscribers = this.subscribers[this.busAddress.client];
+                        this.logger.debug(`In 'client' case! addressSubscribers: ${addressSubscribers}`);
 
                         if ( addressSubscribers ) {
 
                             for ( let callback of addressSubscribers ) {
+                                this.logger.debug(`Calling Subscriber: ${callback}`);
 
                                 if (callback !== undefined && callback != null) {
                                     callback( message );
@@ -120,6 +123,7 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
                         }
 
                         addressSubscribers.push( callback );
+                        this.logger.debug(`Subscribe: addressSubscribers: ${addressSubscribers}`);
                         break;
 
                     case EVENT_ROUTES.BACKEND:
