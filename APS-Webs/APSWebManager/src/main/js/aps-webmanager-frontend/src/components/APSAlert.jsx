@@ -2,6 +2,7 @@ import React from 'react'
 import { Alert } from 'react-bootstrap'
 import APSMarkdown from "./APSMarkdown"
 import APSComponent from "./APSComponent"
+import { apsObject } from "../Utils"
 
 type Message = { aps: { type: string }, content: { targetId: string, markdown: string } }
 
@@ -18,7 +19,7 @@ export default class APSAlert extends APSComponent {
 
         this.subscribe((message : Message) => {
 
-            this.logger.debug(`Msg: ${JSON.stringify(message)}`);
+            message = apsObject(message);
 
             if (message.aps.type === "aps-alert" && message.content.targetId === this.props.guiProps.id) {
                 if ( !message.content.hide === true ) {

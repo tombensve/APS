@@ -4,6 +4,7 @@ import APSLogger from "./APSLogger"
 import APSEventBusRouter from "./APSEventBusRouter"
 import APSBusAddress from "./APSBusAddress"
 import APSAlerter from "./APSAlerter"
+import { apsObject } from "./Utils"
 
 /**
  * This represents a router and is responsible for sending and subscribing to messages.
@@ -126,7 +127,10 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
      * @param message - The message to message.
      */
     message( headers: {}, message: {} ) {
-        if (!this.busAddress) throw new Error("Required bus address not provided!");
+        if ( !this.busAddress ) throw new Error( "Required bus address not provided!" );
+
+        headers = apsObject( headers );
+        message = apsObject( message );
 
         this.tries = 0;
 
@@ -148,25 +152,29 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                                 break;
 
                             case EVENT_ROUTES.BACKEND:
-                                this.logger.debug( `Sending to BACKEND with headers: ${JSON.stringify( headers )} and message: ${JSON.stringify( message )}` );
+                                // this.logger.debug( `Sending to BACKEND with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
+
                                 // noinspection JSUnresolvedFunction
                                 this.eventBus.send( this.busAddress.backend, message, headers, null );
                                 break;
 
                             case EVENT_ROUTES.ALL:
-                                this.logger.debug( `Publishing to ALL with headers: ${JSON.stringify( headers )} and message: ${JSON.stringify( message )}` );
+                                // this.logger.debug( `Publishing to ALL with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
+
                                 // noinspection JSUnresolvedFunction
                                 this.eventBus.publish( this.busAddress.all, message, headers );
                                 break;
 
                             case EVENT_ROUTES.ALL_BACKENDS:
-                                this.logger.debug( `Publishing to ALL_BACKEND with headers: ${JSON.stringify( headers )} and message: ${JSON.stringify( message )}` );
-// noinspection JSUnresolvedFunction
+                                // this.logger.debug( `Publishing to ALL_BACKEND with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
+
+                                // noinspection JSUnresolvedFunction
                                 this.eventBus.publish( this.busAddress.allBackends, message, headers );
                                 break;
 
                             case EVENT_ROUTES.ALL_CLIENTS:
-                                this.logger.debug( `Publishing to ALL_CLIENTS with headers: ${JSON.stringify( headers )} and message: ${JSON.stringify( message )}` );
+                                // this.logger.debug( `Publishing to ALL_CLIENTS with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
+
                                 // noinspection JSUnresolvedFunction
                                 this.eventBus.publish( this.busAddress.allClients, message, headers );
                                 break;
@@ -182,7 +190,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                 }
                 else {
                     // noinspection ExceptionCaughtLocallyJS
-                    throw new Error( `No 'routing:' entry in headers: ${headers}!` );
+                    throw new Error( `No 'routing:' entry in headers: ${headers.display()}!` );
                 }
             }
             else {
@@ -212,17 +220,21 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
      * @param callback - Callback to call with messages.
      */
     subscribe( headers: {}, callback: () => mixed ) {
-        if (!this.busAddress) throw new Error("Required bus address not provided!");
+        if ( !this.busAddress ) throw new Error( "Required bus address not provided!" );
 
-        this.logger.debug( `Subscribing with headers: ${headers}` );
+        headers = apsObject( headers );
+
+        // this.logger.debug( `Subscribing with headers: ${headers.display()}` );
 
         this.activeSubscribers.push( { headers: headers, callback: callback } );
 
         // This is a wrapper handler that extracts the 'body' part of the message and
         // forwards to the callback.
         let handler = ( alwaysNull, message ) => {
-            this.logger.debug( "RECEIVED: " + JSON.stringify( message ) );
-            // this._logger.debug("CALLBACK: " + callback);
+
+            message = apsObject( message );
+
+            // this.logger.debug( "RECEIVED: " + message.display() );
 
             if ( typeof message !== "undefined" ) {
                 callback( message['body'] );
@@ -289,9 +301,11 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
      * @param callback - The callback to unsubscribe.
      */
     unsubscribe( headers: {}, callback: () => mixed ) {
-        if (!this.busAddress) throw new Error("Required bus address not provided!");
+        if ( !this.busAddress ) throw new Error( "Required bus address not provided!" );
 
-        this.logger.debug( `Unsubscribing with headers: ${headers}` );
+        headers = apsObject( headers );
+
+        // this.logger.debug( `Unsubscribing with headers: ${headers.display()}` );
 
         // I expect the bus to be upp by the time this is done :-)
 
@@ -337,7 +351,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                 }
             }
             else {
-                throw new Error( `No 'routing:' entry in headers: ${headers}!` );
+                throw new Error( `No 'routing:' entry in headers: ${headers.display()}!` );
             }
         }
         else {
@@ -346,10 +360,13 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
 
         let newSubs = [];
         for ( let sub of this.activeSubscribers ) {
-            if ( sub.headers.incoming === headers.incoming && sub.headers.outgoing === headers.outgoing && sub.callback === callback ) {
+
+            if ( sub.headers.incoming === headers.incoming && sub.headers.outgoing === headers.outgoing &&
+                sub.callback === callback ) {
                 // Do nothing
             }
             else {
+
                 newSubs.push( sub );
             }
         }

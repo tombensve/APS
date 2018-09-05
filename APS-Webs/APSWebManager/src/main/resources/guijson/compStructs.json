@@ -1,0 +1,26 @@
+{
+  "simpleForm": {
+    "formLabel": "test",
+    "type": "border/jumbotron/plain",
+    "content": [
+      {
+        "id": "...",
+        "label": "<text>",
+        "type": "",
+        "value": ""
+      }
+    ]
+  },
+
+  "valueSet": {
+    "nodeName": "name",
+    "values": [
+      {
+        "type": "line/text/number/boolean/enum",
+        "description": "text",
+        "id": "id"
+      }
+    ],
+    "valueSet": {}
+  }
+}

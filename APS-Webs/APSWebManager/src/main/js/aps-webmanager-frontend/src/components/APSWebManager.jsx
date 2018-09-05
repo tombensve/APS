@@ -18,7 +18,9 @@ import APSDate from "./APSDate"
 import APSMarkdown from "./APSMarkdown"
 import APSAlert from "./APSAlert"
 import APSCheckBox from "./APSCheckBox"
+import APSRadioSet from "./APSRadioSet"
 import APSLogger from "../APSLogger"
+import { apsObject } from "../Utils"
 
 const HEADERS = { routing: { incoming: `${EVENT_ROUTES.BACKEND},${EVENT_ROUTES.CLIENT},${EVENT_ROUTES.ALL},${EVENT_ROUTES.ALL_CLIENTS}` } };
 
@@ -111,8 +113,10 @@ export default class APSWebManager extends Component {
      * @param message The received message.
      */
     messageHandler( message: {} ) {
+        message = apsObject(message);
+
         try {
-            this.logger.debug( `>>>>>>>: message: ${JSON.stringify( message )}` );
+            this.logger.debug( `>>>>>>>: message: ${message.display()}` );
         }
         catch ( e ) {
             this.logger.error( `Failed to log: ${e}` );
@@ -130,7 +134,7 @@ export default class APSWebManager extends Component {
             }
         }
         else {
-            this.logger.error( `RECEIVED MESSAGE OF UNKNOWN FORMAT: ${message}` )
+            this.logger.error( `RECEIVED MESSAGE OF UNKNOWN FORMAT: ${message.display()}` )
         }
     }
 
@@ -293,6 +297,14 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSCheckBox key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                                 origin={this.busAddress.client}/>
+                );
+                break;
+
+            case 'aps-radio-set':
+
+                content.push(
+                    <APSRadioSet key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
                                  origin={this.busAddress.client}/>
                 );
                 break;

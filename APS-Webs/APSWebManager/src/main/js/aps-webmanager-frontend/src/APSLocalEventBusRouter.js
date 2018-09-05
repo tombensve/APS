@@ -19,7 +19,6 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
         this.subscribers = {};
 
         this.logger = new APSLogger( 'APSLocalEventBusRouter' );
-        this.logger.debug("**>>>> Creating new APSLocalEventBusRouter! <<<<**");
     }
 
     /**
@@ -45,18 +44,16 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
 
             for ( let route of routes.split( ',' ) ) {
 
-                this.logger.debug( `route: ${route}` );
+                // this.logger.debug( `route: ${route}` );
 
                 // noinspection JSUnfilteredForInLoop
                 switch ( route ) {
                     case EVENT_ROUTES.CLIENT:
                         let addressSubscribers = this.subscribers[this.busAddress.client];
-                        this.logger.debug(`In 'client' case! addressSubscribers: ${addressSubscribers}`);
 
                         if ( addressSubscribers ) {
 
                             for ( let callback of addressSubscribers ) {
-                                this.logger.debug(`Calling Subscriber: ${callback}`);
 
                                 if (callback !== undefined && callback != null) {
                                     callback( message );
@@ -109,7 +106,7 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
 
             for ( let route: string of routes.split( ',' ) ) {
 
-                this.logger.debug( `Subscribe: route: ${route}` );
+                // this.logger.debug( `Subscribe: route: ${route}` );
 
                 // noinspection JSUnfilteredForInLoop
                 switch ( route ) {
@@ -123,7 +120,6 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
                         }
 
                         addressSubscribers.push( callback );
-                        this.logger.debug(`Subscribe: addressSubscribers: ${addressSubscribers}`);
                         break;
 
                     case EVENT_ROUTES.BACKEND:
@@ -165,7 +161,7 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
             let routes = headers[EVENT_ROUTING][ROUTE_INCOMING];
 
             for ( let route: string of routes.split( ',' ) ) {
-                this.logger.debug( ` subscribe: route: ${route}` );
+                // this.logger.debug( ` subscribe: route: ${route}` );
 
                 // noinspection JSUnfilteredForInLoop
                 switch ( route ) {
