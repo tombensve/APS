@@ -62,7 +62,7 @@ export async function sleep(time: number) {
  * @param {string} value The value to check.
  * @param {array.<string>} contains An array of valid strings for the value to contain. Any hit on these will return true.
  */
-export function containsAnyOrBlank(value: string, contains: string[]) {
+export function containsAnyOrBlank(value: string, contains: string[]): boolean {
     let found = false;
 
     if (value === "") {
@@ -78,4 +78,29 @@ export function containsAnyOrBlank(value: string, contains: string[]) {
     }
 
     return found;
+}
+
+/**
+ * Creates an Object that has an display() function on it to produce a printable version
+ * of content.
+ *
+ * @param existing If provided adds display() to that object, if null or undefined creates a new empty object.
+ */
+export function apsObject(existing : {}): {} {
+    let obj = {};
+
+    if (existing) {
+        obj = existing;
+    }
+
+    obj.display = function(): string {
+        try {
+            return JSON.stringify( this );
+        }
+        catch ( e ) {
+            return `Failed to 'stringify' object: ${this}! Top level keys are: ${Object.keys(this)}`;
+        }
+    };
+
+    return obj;
 }

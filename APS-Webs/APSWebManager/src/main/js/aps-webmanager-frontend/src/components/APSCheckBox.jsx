@@ -34,7 +34,6 @@ export default class APSCheckBox extends APSComponent {
 
         this.state = {
             disabled: false,
-            // Note: The name of the state value has to match the component value name to be a "controlled" component!
             value: checked
         };
 
@@ -63,8 +62,6 @@ export default class APSCheckBox extends APSComponent {
             this.changeEvent(
                 {
                     componentType: this.componentType(),
-                    // Our this.state.value is not yet updated here even though we have
-                    // called setState(...).
                     value: !this.state.value
                 }
             )
@@ -72,7 +69,6 @@ export default class APSCheckBox extends APSComponent {
     }
 
     componentDidMount() {
-        this.sendDefaultValueLocalOnly();
     }
 
     render() {

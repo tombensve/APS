@@ -31,6 +31,7 @@ import APSLocalEventBusRouter from "./APSLocalEventBusRouter";
 import APSVertxEventBusRouter from "./APSVertxEventBusRouter";
 import APSAlerter from "./APSAlerter";
 import APSBusAddress from "./APSBusAddress";
+import { apsObject } from "./Utils"
 
 export default class APSEventBus {
 
@@ -131,7 +132,7 @@ export default class APSEventBus {
 
         let pars = new NamedParams( params, "APSEventBus.subscribe" );
 
-        let headers = APSEventBus.ensureHeaders( pars.param( "headers" ) );
+        let headers = apsObject(APSEventBus.ensureHeaders( pars.param( "headers" ) ));
         let subscriber = pars.requiredParam( "subscriber" );
 
         APSEventBus.validRoutingHeaders( headers.routing.incoming );
@@ -152,7 +153,7 @@ export default class APSEventBus {
 
         let pars = new NamedParams( params, "APSEventBus.unsubscribe" );
 
-        let headers = APSEventBus.ensureHeaders( pars.param( "headers" ) );
+        let headers = apsObject(APSEventBus.ensureHeaders( pars.param( "headers" ) ));
         let subscriber = pars.requiredParam( "subscriber" );
 
         APSEventBus.validRoutingHeaders( headers.routing.incoming );
@@ -178,12 +179,12 @@ export default class APSEventBus {
 
         let pars = new NamedParams( params, "APSEventBus.message(...)" );
 
-        let headers = APSEventBus.ensureHeaders( pars.param( "headers" ) );
-        let message = pars.requiredParam( "message" );
+        let headers = apsObject(APSEventBus.ensureHeaders( pars.param( "headers" ) ));
+        let message = apsObject(pars.requiredParam( "message" ));
 
         APSEventBus.validRoutingHeaders( headers.routing.outgoing );
 
-        this.logger.debug( `EventBus: sending( headers: ${JSON.stringify( headers )}): ${JSON.stringify( message )}` );
+        // this.logger.debug( `EventBus: sending( headers: ${headers.display()}): ${message.display()}` );
 
         for ( let busRouter of this.busRouters ) {
 

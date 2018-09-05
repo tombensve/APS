@@ -101,6 +101,21 @@
           "incoming": "client"
         }
       }
+    },
+    {
+      "id": "radioset",
+      "name": "radios",
+      "type": "aps-radio-set",
+      "value": "two",
+      "radios": [
+        { "id": "one", "label": "One" },
+        { "id": "two", "label": "Two" },
+        { "id": "three", "label": "Three"}
+      ],
+      "headers": {
+        "outgoing": "client",
+        "incoming": "client"
+      }
     }
   ]
 }

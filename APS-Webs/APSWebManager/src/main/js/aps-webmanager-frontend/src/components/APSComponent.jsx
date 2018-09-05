@@ -4,7 +4,8 @@ import '../APSEventBus'
 import PropTypes from "prop-types"
 import APSLogger from "../APSLogger"
 import { APP_NAME, EVENT } from "../Constants"
-import APSAlerter from "../APSAlerter";
+import APSAlerter from "../APSAlerter"
+import { apsObject } from "../Utils"
 
 /**
  * A common base component for all APS components.
@@ -196,7 +197,7 @@ class APSComponent extends Component {
 
             this.props.eventBus.subscribe( { headers: this.props.guiProps.headers, subscriber: subscriber } );
 
-            this.logger.debug( `%%%% Subscribed with headers: ${JSON.stringify( this.props.guiProps.headers )} and callback: ${subscriber}` )
+            // this.logger.debug( `%%%% Subscribed with headers: ${JSON.stringify( this.props.guiProps.headers )} and callback: ${subscriber}` )
         }
         else {
             throw new Error( `Tried to subscribe without guiProps.headers being available!` );
@@ -286,11 +287,9 @@ class APSComponent extends Component {
     // noinspection JSMethodCanBeStatic
     messageHandler( message: APSMessage ) {
 
-        try {
-            this.logger.debug( `messageHandler > Received: ${JSON.stringify( message )}` );
-        } catch ( e ) {
-            this.logger.error( `Failed logging: ${e}` );
-        }
+        message = apsObject( message );
+
+        // this.logger.debug( `messageHandler > Received: ${message.display()}` );
 
         switch ( message.aps.type ) {
             case "gui-created":
@@ -311,7 +310,7 @@ class APSComponent extends Component {
                     // Save message using the originating components id.
                     this.collected[message.content.componentId] = message.content;
 
-                    this.logger.debug( "@@@@" + this.props.guiProps.id + "] Collected: " + JSON.stringify( message ) );
+                    // this.logger.debug( "@@@@" + this.props.guiProps.id + "] Collected: " +  message.display() );
                 }
 
                 // Handle enable and disable of a component that have supplied a criteria for that.
