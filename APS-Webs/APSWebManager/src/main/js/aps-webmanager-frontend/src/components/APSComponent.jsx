@@ -13,6 +13,18 @@ import { apsObject } from "../Utils"
  * It helps out with:
  * - Messaging.
  * - Declaring 'guiProps' containing the components original JSON spec.
+ *
+ * ## Requires the following props
+ *
+ * __eventBus (req)__: The eventbus to use.
+ *
+ * __mgrId (opt)__:    The id of the APSWebManager who created it.
+ *
+ * __guiProps (req)__: This is used by subclasses for their properties.
+ *
+ * __origin (req)__:   The local client bus address. This is for subscribing to. It is also sent with messages
+ *                     so that receivers can send messages back. This client address is used by the whole application.
+ *                     It is unique for each application.
  */
 class APSComponent extends Component {
 
