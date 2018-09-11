@@ -19,6 +19,7 @@ import APSMarkdown from "./APSMarkdown"
 import APSAlert from "./APSAlert"
 import APSCheckBox from "./APSCheckBox"
 import APSRadioSet from "./APSRadioSet"
+import APSSelect from "./APSSelect"
 import APSLogger from "../APSLogger"
 import { apsObject } from "../Utils"
 
@@ -306,6 +307,14 @@ export default class APSWebManager extends Component {
                 content.push(
                     <APSRadioSet key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
                                  origin={this.busAddress.client}/>
+                );
+                break;
+
+            case 'aps-select':
+
+                content.push(
+                    <APSSelect key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                               origin={this.busAddress.client}/>
                 );
                 break;
 

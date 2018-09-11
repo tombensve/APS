@@ -49,6 +49,42 @@ type APSComponentEventContent = {
     eventType: string
 };
 
+// guiProps
+type APSGuiProps = {
+    orientation: string,
+    id: string,
+    name: string,
+    group: string,
+    type: string,
+    value: any,
+    valueSort: string,
+    label: string,
+    class: string,
+    disabled: boolean,
+    collectGroups: string,
+    headers: APSMessageHeaders,
+    cols: number,
+    rows: number,
+    width: number,
+    options: {
+        value: string,
+        label: string
+    },
+    numRange: {
+        min: number,
+        max: number
+    },
+    children: [APSGuiProps]
+}
+
+// props
+type APSProps = {
+    eventBus: any,
+    mgrId: string,
+    guiProps: APSGuiProps,
+    origin: string
+}
+
 // Base component event message.
 type APSComponentEventMessage = {
     aps: APSMessageAPS,

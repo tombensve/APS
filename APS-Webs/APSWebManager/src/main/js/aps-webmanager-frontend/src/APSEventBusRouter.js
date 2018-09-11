@@ -1,6 +1,8 @@
 /**
- * This defines an event bus router API, and is used as a fake interface. The "implementers"
- * actually extend this. APSEventBus only works with this.
+ * This defines an event bus router API, and is used as a fake interface. Interestingly enough
+ * there is an implements keyword that babel compiles fine. You can not however skip the method
+ * bodies and just end with ';'. That fails compilation. Anyhow, APSEventBus only makes use of
+ * this, with the exception of the static createBus().
  */
 export default class APSEventBusRouter {
 
