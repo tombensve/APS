@@ -24,11 +24,6 @@ const safeStringify = function(obj) {
 /**
  * This class uses an JS object to represent JSON documents. This is ported from Groovy code.
  *
- * There is one difference in this code from the original Groovy code: For some reason I don't
- * understand, when looking at all keys and values in an JS object we get the following key/value
- * pair at the end: { 0: 1 }! It is not in the input. The code ignores a key of "0". I'm using
- * Object(obj).keys() to get the keys, and I use the key to get the value.
- *
  * This class is used to define the content of such objects (like a schema) and validates real such objects against it.
  *
  * Example (do not expect example to have realistic data):
