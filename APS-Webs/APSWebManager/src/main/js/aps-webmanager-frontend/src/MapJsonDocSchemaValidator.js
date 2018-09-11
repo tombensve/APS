@@ -1,155 +1,64 @@
-import { NUMBER, BOOLEAN, ENUMERATION, REGEXP } from "./MapJsonSchemaConst"
+import { SANE, saneTypeId } from "./SaneTypeId"
 
 //
 // PORTED FROM GROOVY (APSCoreLib)
 //
 
-/**
- * Converts the original map into 2 maps that is easier to work against.
- */
-class MapObject {
+// schema type identifiers.
+export const NUMBER = "#";
+export const BOOLEAN = "!";
+//export const STRING = " ";
+export const ENUMERATION = "|";
 
-    /**
-     * Creates a new MapObject.
-     *
-     * @param schemaMap The Map to wrap.
-     */
-    constructor( schemaMap: {} ) {
-        this.schemaMap = {};
-        this.required = {};
-        this.empty = false;
+export const REGEXP = "?";
 
-        if ( schemaMap.isEmpty() ) {
-            this.empty = true;
-        }
-        else {
-            for ( let key of Object.keys( this.schemaMap ) ) {
-                let value = this.schemaMap[key];
-                if ( MapObject.verifyKey( key, this.schemaMap ) ) {
-                    let realKey: string = MapObject._key( key );
-
-                    this.schemaMap[realKey] = value;
-                    this.required[realKey] = MapObject._required( key );
-                }
-
-            }
-        }
+const safeStringify = function(obj) {
+    try {
+        return JSON.stringify(obj);
     }
-
-    // /**
-    //  * @return The internal key set for looking up in.
-    //  */
-    // keySet(): [] {
-    //
-    //     return Object.keys( this.schemaMap );
-    // }
-
-    /**
-     * Returns an object for a specific key.
-     * @param key The key to get object for.
-     */
-    get( key: string ): {} {
-
-        return this.schemaMap[key];
+    catch ( e ) {
+        return obj;
     }
-
-    /**
-     * Returns true if the specified key points to a required object.
-     *
-     * @param key The key to check for required.
-     */
-    isRequired( key: string ): boolean {
-
-        return this.required[key];
-    }
-
-    /**
-     * @return true if the valid Map object is empty. In this case anything is allowed.
-     */
-    isEmpty(): boolean {
-        return this.empty;
-    }
-
-    /**
-     * Returns the key without formatting.
-     *
-     * @param mapKey The key to "plainify".
-     */
-    static _key( mapKey ) {
-
-        return mapKey.split( "_" )[0];
-    }
-
-    /**
-     * Returns true if the specified key indicates a required object.
-     *
-     * @param mapKey The key to check for required object.
-     */
-    static _required( mapKey: string ): boolean {
-
-        let parts = mapKey.split( "_" );
-
-        if ( parts.length >= 2 ) {
-
-            return parts[1] === "1";
-        }
-
-        return false;
-    }
-
-    /**
-     * Verifies that the key is correctly formatted.
-     *
-     * @param mapKey The key to verify.
-     * @param source The source of the key. Used for exception message to make things clearer.
-     */
-    static verifyKey( mapKey: string, source: {} ): boolean {
-
-        let parts: [string] = mapKey.split( "_" );
-        if ( parts.length >= 2 && ( parts[1] !== "0" && parts[1] !== "1" ) && parts[1] !== "?" ) {
-
-            throw new Error( "Bad key format! [$mapKey] Should be 'name' or 'name_0' or 'name_1'. ${ source }" );
-        }
-
-        return parts[1] !== '?';
-    }
-
-}
-
+};
 
 /**
- * This class uses `Map<String, Object>` to represent JSON documents (Vertx:s JsonObject supports mapping to/from this format).
+ * This class uses an JS object to represent JSON documents. This is ported from Groovy code.
+ *
+ * There is one difference in this code from the original Groovy code: For some reason I don't
+ * understand, when looking at all keys and values in an JS object we get the following key/value
+ * pair at the end: { 0: 1 }! It is not in the input. The code ignores a key of "0". I'm using
+ * Object(obj).keys() to get the keys, and I use the key to get the value.
  *
  * This class is used to define the content of such objects (like a schema) and validates real such objects against it.
  *
  * Example (do not expect example to have realistic data):
  *
- *    Map<String, Object> struct = [
+ *   let schema = {
  *       header_?: "The nessage header.",
- *       header_1: [
+ *       header_1: {
  *          type_1      : "service",
  *          address_1   : "aps.admin.web",
  *          classifier_0: "?public|private"
- *       ],
- *       body_1  : [
+ *       },
+ *       body_1  : {
  *          action_1: "get-webs"
- *       ],
- *       reply_0: [
+ *       },
+ *       reply_0: {
  *          webs_1: [
- *             [
+ *             {
  *                name_1: "?.*",
  *                url_0: "?^https?://.*",
  *                someNumber_0: "#0-100" // Also valid:  ">0" "<100" ">=0" "<=100"
- *             ]
+ *             }
  *          ]
- *       ],
- *       addrmap_1: [
- *          [
+ *       },
+ *       addrmap_1: {
+ *          {
  *             "name_1": "?[a-z,A-z,0-9,_]*",
  *             "value_1": "?[0-9,.]*"
- *          ]
- *       ]
- *   ]
+ *          }
+ *       }
+ *   }
  *
  *  ### Keys
  *
@@ -202,32 +111,15 @@ export default class MapJsonDocSchemaValidator {
     // Constructors
     //
 
-    constructor() {
+    constructor( validStructure: {} ) {
 
         /** A valid structure to validate against. */
-        this.validStructure = {};
+        this.validStructure = validStructure;
     }
 
     //
     // Methods
     //
-
-    /**
-     * This is for Java code which can't do a property constructor.
-     *
-     * Use:
-     *
-     *       new MapJsonDocSchemaValidator().validStructure(schema).validate(toValidate);
-     *
-     * @param schema The schema to use.
-     *
-     * @return this.
-     */
-    validStructure( schema: {} ): MapJsonDocSchemaValidator {
-
-        this.validStructure = schema;
-        return this;
-    }
 
     /**
      * Validates a Map structure against the structural definition of this object.
@@ -253,8 +145,8 @@ export default class MapJsonDocSchemaValidator {
      * @param errorSource For error message.
      */
     static validateBoolean( sourceValue: any, errorSource: any ) {
-        if ( !( typeof sourceValue === typeof true ) ) {
-            throw new Error( `Value '${ sourceValue }' must be a boolean! ${ errorSource }` );
+        if ( !( saneTypeId(sourceValue) === SANE.BOOLEAN ) ) {
+            throw new Error( `Value '${ sourceValue }' must be a boolean! ${ safeStringify(errorSource) }` );
         }
     }
 
@@ -271,10 +163,9 @@ export default class MapJsonDocSchemaValidator {
 
             let regExp: string = validValue.substring( 1 );
 
-            if ( !sourceValue.toString().match( regExp ) ) {
+            if ( sourceValue.toString().match( regExp ) === null ) {
 
-                throw new
-                Error( `Value '${ sourceValue }' does not match regular expression '${ regExp }'! ${ errorSource }` );
+                throw new Error( `Value '${ sourceValue }' does not match regular expression '${ regExp }'! ${ safeStringify(errorSource) }` );
             }
         }
         else {
@@ -372,7 +263,7 @@ export default class MapJsonDocSchemaValidator {
                     /*ok*/
                 }
                 else {
-                    throw new Error( `Value (${value}) must be >= ${fromD}! ${errorSource}` );
+                    throw new Error( `Value (${value}) must be >= ${fromD}! ${safeStringify(errorSource)}` );
                 }
             }
             else if ( from == null && to != null ) {
@@ -382,7 +273,7 @@ export default class MapJsonDocSchemaValidator {
                     /*ok*/
                 }
                 else {
-                    throw new Error( `Value (${value}) must be <= ${toD}! ${errorSource}` );
+                    throw new Error( `Value (${value}) must be <= ${toD}! ${safeStringify(errorSource)}` );
                 }
             }
             else {
@@ -394,7 +285,7 @@ export default class MapJsonDocSchemaValidator {
                     /*ok*/
                 }
                 else {
-                    throw new Error( `Value (${value}) must be >= ${fromD} && <= ${toD} ${errorSource}` );
+                    throw new Error( `Value (${value}) must be >= ${fromD} && <= ${toD} ${safeStringify(errorSource)}` );
                 }
             }
         }
@@ -408,7 +299,7 @@ export default class MapJsonDocSchemaValidator {
                     /*ok*/
                 }
                 else {
-                    throw new Error( `Value ($value) must be > ${fromD}! ${errorSource}` );
+                    throw new Error( `Value (${value}) must be > ${fromD}! ${safeStringify(errorSource)}` );
                 }
             }
             else if ( from == null && to != null ) {
@@ -419,7 +310,7 @@ export default class MapJsonDocSchemaValidator {
                     /*ok*/
                 }
                 else {
-                    throw new Error( `Value (${value}) must be < ${toD}! ${errorSource}` );
+                    throw new Error( `Value (${value}) must be < ${toD}! ${safeStringify(errorSource)}` );
                 }
             }
             else {
@@ -431,7 +322,7 @@ export default class MapJsonDocSchemaValidator {
                     /*ok*/
                 }
                 else {
-                    throw new Error( `Value ($value) must be >= ${fromD} && <= ${toD} ${errorSource}` )
+                    throw new Error( `Value (${value}) must be >= ${fromD} && <= ${toD} ${safeStringify(errorSource)}` );
                 }
             }
         }
@@ -453,13 +344,14 @@ export default class MapJsonDocSchemaValidator {
         for ( let key of Object.keys( toValidate ) ) {
             let value = toValidate[key];
 
-            let validStructureEntry = validMO[key];
+
+            let validStructureEntry = validMO.get( key );
 
             let doValidate: boolean = true;
 
             if (
                 validStructureEntry != null &&
-                validStructureEntry.constructor === Object &&
+                saneTypeId( validStructureEntry ) === SANE.OBJECT &&
                 Object.keys( validStructureEntry ).length === 0
             ) {
                 doValidate = false;
@@ -468,23 +360,24 @@ export default class MapJsonDocSchemaValidator {
             // An empty map as a value means accept anything there under. Thereby we don't
             // validate in that situation.
             if ( doValidate ) {
-                if ( !Object.keys( validMO ).includes( key ) ) {
 
-                    throw new Error( `Entry '${ key }' is not valid! $toValidate` );
+                if ( !validMO.containsKey( key ) ) {
+
+                    throw new Error( `Entry '${ key }' is not valid! ${JSON.stringify( toValidate )}` );
                 }
 
                 let sourceValue: {} = value;
 
-                if ( validMO.isRequired( key ) && sourceValue == null ) {
+                if ( validMO.isRequired( key ) && sourceValue === null ) {
 
-                    throw new Error( `'${ key }' is required! $toValidate` );
+                    throw new Error( `'${ key }' is required! ${JSON.stringify(toValidate)}` );
                 }
 
-                if ( typeof validStructureEntry === "string" ) {
+                if ( saneTypeId(validStructureEntry) === SANE.STRING ) {
 
-                    let validValue: string = validMO[key];
+                    let validValue: string = validMO.get( key );
 
-                    if ( validValue.trim() === BOOLEAN ) {
+                    if ( validValue.length > 0 && validValue[0] === BOOLEAN ) {
 
                         MapJsonDocSchemaValidator.validateBoolean( sourceValue, toValidate );
                     }
@@ -496,16 +389,14 @@ export default class MapJsonDocSchemaValidator {
                     }
 
                 }
-
-                else if ( typeof validStructureEntry === "object" ) {
+                else if ( saneTypeId( validStructureEntry ) === SANE.OBJECT ) {
 
                     // noinspection UnnecessaryLocalVariableJS
                     let toValidateMap: {} = sourceValue;
                     MapJsonDocSchemaValidator.validateMap( validStructureEntry, toValidateMap );
                 }
-
                 // If the 'array' part in this line is red marked, then you are using IDEA 2018.2!
-                else if ( validStructureEntry.constructor === Array ) {
+                else if ( saneTypeId( validStructureEntry ) === SANE.ARRAY ) {
 
                     // noinspection UnnecessaryLocalVariableJS
                     let toValidateList: [] = sourceValue;
@@ -514,10 +405,10 @@ export default class MapJsonDocSchemaValidator {
             }
         }
 
-        Object.keys( validMO ).forEach( key => {
+        validMO.keySet().forEach( key => {
             if ( validMO.isRequired( key ) && !Object.keys( toValidate ).includes( key ) ) {
 
-                throw new Error( `Missing entry for required '$key'! $toValidate` );
+                throw new Error( `Missing entry for required '${key}'! ${safeStringify(toValidate)}` );
             }
 
         } );
@@ -536,7 +427,7 @@ export default class MapJsonDocSchemaValidator {
 
         toValidate.forEach( ( sourceValue ) => {
 
-            if ( typeof validObject === "string" ) {
+            if ( saneTypeId(validObject) === SANE.STRING ) {
 
                 let validValue: string = validObject;
 
@@ -563,3 +454,132 @@ export default class MapJsonDocSchemaValidator {
 
     }
 }
+
+/**
+ * Converts the original map into 2 maps that is easier to work against. This is used internally
+ * to wrap the schema object. It is not exported and only used by MapJsonDocSchemaValidator.
+ */
+class MapObject {
+
+    /**
+     * Creates a new MapObject.
+     *
+     * @param schemaMap The Map to wrap.
+     */
+    constructor( schemaMap: {} ) {
+        this.schemaMap = {};
+        this.required = {};
+        this.empty = false;
+
+        if ( Object.keys( schemaMap ).length === 0 ) {
+            this.empty = true;
+        }
+        else {
+
+            Object.keys( schemaMap ).forEach( key => {
+                let value = schemaMap[key];
+
+                if ( MapObject.verifyKey( key, this.schemaMap ) ) {
+
+                    let realKey: string = MapObject._key( key );
+
+                    this.schemaMap[realKey] = value;
+                    this.required[realKey] = MapObject._required( key );
+                }
+            } );
+        }
+    }
+
+    /**
+     * Validates that key exists among valid keys.
+     *
+     * @param key The key to check for.
+     *
+     * @returns {boolean}
+     */
+    containsKey( key: string ): boolean {
+        return this.keySet().includes( key );
+    }
+
+    /**
+     * @return The internal key set for looking up in.
+     */
+    keySet(): [] {
+
+        return Object.keys( this.schemaMap );
+    }
+
+    /**
+     * Returns an object for a specific key.
+     * @param key The key to get object for.
+     */
+    get( key: string ): {} {
+
+        return this.schemaMap[key];
+    }
+
+    /**
+     * Returns true if the specified key points to a required object.
+     *
+     * @param key The key to check for required.
+     */
+    isRequired( key: string ): boolean {
+
+        return this.required[key];
+    }
+
+    /**
+     * @return true if the valid Map object is empty. In this case anything is allowed.
+     */
+    isEmpty(): boolean {
+        return this.empty;
+    }
+
+    /**
+     * Returns the key without formatting.
+     *
+     * @param mapKey The key to "plainify".
+     */
+    static _key( mapKey ) {
+
+        return mapKey.split( "_" )[0];
+    }
+
+    /**
+     * Returns true if the specified key indicates a required object.
+     *
+     * @param mapKey The key to check for required object.
+     */
+    static _required( mapKey: string ): boolean {
+
+        let parts = mapKey.split( "_" );
+
+        if ( parts.length >= 2 ) {
+
+            return parts[1] === "1";
+        }
+
+        return false;
+    }
+
+    /**
+     * Verifies that the key is correctly formatted.
+     *
+     * @param mapKey The key to verify.
+     * @param source The source of the key. Used for exception message to make things clearer.
+     */
+    static verifyKey( mapKey: string, source: {} ): boolean {
+
+        let parts: [string] = mapKey.split( "_" );
+
+        if ( parts.length >= 2 && ( parts[1] !== "0" && parts[1] !== "1" ) && parts[1] !== "?" ) {
+
+            throw new Error( `Bad key format! [$mapKey] Should be 'name' or 'name_0' or 'name_1'. ${ safeStringify(source) }` );
+        }
+
+
+        return parts[1] !== '?';
+    }
+
+}
+
