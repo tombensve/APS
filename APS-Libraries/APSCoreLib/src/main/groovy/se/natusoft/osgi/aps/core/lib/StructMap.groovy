@@ -292,6 +292,8 @@ class StructMap extends LinkedHashMap implements Map<String, Object> {
                     Object newValue = ""
 
                     if ( i < ( parts.length - 1 ) ) {
+                        // IDEA BUG: [] is an array, [:] is a Map, therefore not identical.
+                        //noinspection GroovyIfStatementWithIdenticalBranches
                         if ( parts[ i + 1 ].startsWith( "[" ) ) {
                             newValue = [ ]
                         }
@@ -301,6 +303,9 @@ class StructMap extends LinkedHashMap implements Map<String, Object> {
                     }
 
                     // The first should always be a Map!
+
+                    // IDEA BUG: oldCurrent is declared as Object above! And on top of that any object has a class.
+                    //noinspection GroovyAssignabilityCheck
                     if ( oldCurrent == null || Map.isAssignableFrom( oldCurrent.class ) ) {
                         ( oldCurrent as Map ).put( part, newValue )
                     }

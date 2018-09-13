@@ -2,7 +2,7 @@
   "id": "h-test-group",
   "name": "top",
   "type": "aps-layout",
-  "orientation": "horiz",
+  "orientation": "vertical",
   "children": [
     {
       "id": "aps-default-alert",
@@ -127,6 +127,50 @@
         { "value": "two", "label": "Two" },
         { "value": "three", "label": "Three" }
       ],
+      "headers": {
+        "outgoing": "client",
+        "incoming": "client"
+      }
+    },
+    {
+      "id": "tree",
+      "type": "aps-tree",
+      "node": {
+        "label": "one",
+        "id": "one",
+        "type": "branch",
+        "open": false,
+        "children": [
+          {
+            "label": "one.one",
+            "id": "one.one",
+            "type": "branch",
+            "open": false,
+            "children": [
+              {
+                "label": "one.one.one",
+                "id": "one.one.one",
+                "type": "leaf",
+                "open": false
+              }
+            ]
+          } ,
+          {
+            "label": "two",
+            "id": "two",
+            "type": "branch",
+            "open": false,
+            "children": [
+              {
+                "label": "two.one",
+                "id": "two.one",
+                "type": "leaf",
+                "open": false
+              }
+            ]
+          }
+        ]
+      },
       "headers": {
         "outgoing": "client",
         "incoming": "client"
