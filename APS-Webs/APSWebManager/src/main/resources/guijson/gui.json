@@ -2,7 +2,7 @@
   "id": "h-test-group",
   "name": "top",
   "type": "aps-layout",
-  "orientation": "vertical",
+  "orientation": "horizontal",
   "children": [
     {
       "id": "aps-default-alert",
