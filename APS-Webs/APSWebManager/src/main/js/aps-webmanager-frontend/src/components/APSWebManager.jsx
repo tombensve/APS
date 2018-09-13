@@ -20,6 +20,7 @@ import APSAlert from "./APSAlert"
 import APSCheckBox from "./APSCheckBox"
 import APSRadioSet from "./APSRadioSet"
 import APSSelect from "./APSSelect"
+import APSTree from "./APSTree"
 import APSLogger from "../APSLogger"
 import { apsObject } from "../Utils"
 
@@ -331,6 +332,13 @@ export default class APSWebManager extends Component {
                 content.push(
                     <APSAlert key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
                               origin={this.busAddress.client}/>
+                );
+                break;
+
+            case 'aps-tree':
+                content.push(
+                    <APSTree key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
+                             origin={this.busAddress.client}/>
                 );
                 break;
 

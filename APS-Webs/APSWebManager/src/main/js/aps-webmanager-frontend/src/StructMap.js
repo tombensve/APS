@@ -84,7 +84,7 @@ class StructMap {
 
         else if ( searchable.constructor === Array ) {
 
-            let subKey = path.down( "[${( searchable as List ).size()}]" )
+            let subKey = path.down( `[${searchable.length}]` );
 
             if ( searchable.length !== 0 ) {
 
