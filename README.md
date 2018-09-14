@@ -40,4 +40,4 @@ To my big surprise there are some people that have starred this project on githu
 
 Tommy
 
-Professinal Code Geek
+Professional Code Geek
