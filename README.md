@@ -34,7 +34,7 @@ React is a web component framework that follows my ideas of simplicity and small
 
 Vert.x I stumbled upon accidentally, and realized that this is "the shit" I'm been looking for! When I started out with this project (yes, its been a longtime playground) I felt stuck with the JEE web APIs. JEE was always problematic and worked agains my goals. Yes, I've worked a lot with JEE, since version 1.0. That one sucked! Really sucked! Every single EJB call was remote! We had a market research app and it took over 24 hours to analyze answers. We had to move the analyzing part to SQL and run it within the database, and that is probaby still the best option for such still today. JEE however got better over time, but has become a big fat thing that still keeps learning about reality, while others have run it by. I have worked a lot with JEE, I know JEE, but it is no longer "the shit", if it ever really was. Getting back on track, Vert.x fullfilled my needs and then some. And it is truly easy to set up a web server, etc. So Vert.x also fits within my goals of keeping things simple and codewise small.
 
-### <=== OSGi (out), Vert.x (new platform base) ===>
+##### <=== OSGi (out), Vert.x (new platform base) ===>
 
 I've decided to drop OSGi, and make a very much simpler base based on Vert.x directly, which provides everything that is neded. The modularity of OSGi makes handlng of 3rd party libraries of possibly different versions for different deployables very nice. But JDK 11 is alreay on it way and Java have modularity since 9, and that gives a good reason to go up past 8, which seemed problematic with OSGi.
 
