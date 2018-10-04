@@ -16,6 +16,8 @@ This project is now using 2 exceptional frameworks: __Vert.x & React__. These bo
 
 ---
 
+_This problem will go away when I drop OSGi (see below)!_
+
 __To build__ this you must first follow the instructions here: https://github.com/tombensve/maven-bundle-plugin/blob/master/README.md
 
 This because maven-bundle-plugins usage of bnd causes groovy code to confuse bnd into thinking there is code in default package. After a support discussion with bnd there are options in bnd for solving this, but those are not availabe when bnd is used via maven-bundle-plugin. bnd's own maven plugin is far more primitive however so switching is a big job.
