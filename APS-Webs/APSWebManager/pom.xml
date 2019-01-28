@@ -296,6 +296,26 @@
             </plugin>
 
             <!--
+                Build web content.
+            -->
+            <plugin>
+                <artifactId>exec-maven-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <executions>
+                    <execution>
+                        <id>build frontend</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${basedir}/src/main/js/aps-webmanager-frontend/build.sh</executable>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--
                 Copy web content
 
                 Note that the web who is in src/main/typescript. This job will copy the relevant js & html files
@@ -317,7 +337,7 @@
                             will install an empty src/main/resources/webContent before this copy occurs
                             if run during "process-resources".
                         -->
-                        <phase>generate-resources</phase>
+                        <phase>process-resources</phase>
                         <configuration>
                             <target>
                                 <!--
