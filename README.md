@@ -26,6 +26,8 @@ I started using OSGi (only the base 4 APIs) as a base platform because of the mo
 
 I tried to drop OSGi and use no container at all and use Javas ServiceLoader for simple  services. The idea was to make things simpler. It did not however get simpler, rather more difficult. I did not go java9+ modular due to using Groovy which at this moment is getting close to run on java 9+. Without the modularity and without the excellent OSGi service platform things got messier. I finally decided to stay with OSGi. The OSGi maintainers are workin on making it run on Java 9+ also. So OSGi is not going away. 
 
+**Do note:** that APS will run in any OSGi container (well, those I've tested at least). This said, I woudn't exactly call APS a straight OSGi platform. As said above APS started out a long time ago, and provides a lot of own solutions rather than official OSGi stadard solutions. It does its own thing, especially with APSActivator. It just uses base OSGi as a base. APS is also largely coded in Groovy. I am considering providing a minimalistic container implementation. It will implement only the basic OSGi functionality used by APS and will thus not run most other OSGi applications. Its only purpose will be to run APS applications. The base reason for this container is to provide a Spring Boot:ish jar that can be run with _java -jar ..._. Longterm I might drop OSGi (again :-)) when Groovy is 9+ compatible, and use java module system and OSGi alike service platform. My personal feeling hower is that the OSGi people have though a lot more than the JigSaw people have. I do hope I'm wrong. Anyhow, I like to finnish its basic functionallity and web support first before doing something like that. 
+
 --- 
 
 APS have always been about keeping things simple. Easy to use APIs providing only basic functionality with no configurational options API wise. My intentions is to encapsulate complexity and provide the easiest way possible to use for all other code. Each specific implementation is responsible for any configuration needed and I made a more structured configuraton service for other services to use. OSGi basically only gives you properties. My goal with configuration is to provide easy to understand structured configuration.
@@ -39,6 +41,10 @@ Vert.x fulfilled my needs and then some. And it is truly easy to set up an HTTP 
 APS adds a thin layer on top of Vert.x. In many cases Vert.x is used directly, but for messages there is an APS specific API that uses the concept of routes (not to be confused with http routes, 'route' has become a popular word :-)). Using the APS messaging API it is also possible to install other busses, like RabbitMQ for example accessible through same api, but different routes. It is actually possible to send the same message on multiple busses at the same time by specifying multiple, comma separated routes. If that is useful or not is a completely differnt question.
 
 Do note that APS needs a clustered Vert.x and will create/join such on startup. It can however be told to start a non clustered Vert.x by system property on start. This can be useful when running in test.
+
+About testing: APS provide a testing tool called APSOSGiTestTools. It actually implements a primitive APS level container but without classloading, using junit classpaths instead. So most tests run as they would in a real deployment and thus also starts Vert.x. This could cause problems if multiple builds are run concurrently on the same machine, like in a Jenking for example. But if Vert.x is run unclustered it would probably work if HTTP service tests and similar use random ports. There is no good support for that yet in APS. I'm also considering trying to run tests within docker containers.
+
+But lots of fun ideas, and far to little time ... 
 
 
 
