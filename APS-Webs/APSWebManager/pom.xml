@@ -52,7 +52,18 @@
     <name>APS Web Manager</name>
 
     <description>
-        This is a remake of old Vaadin APSAdminWeb made with Vert.x and Angular 2 instead.
+        Provides react components that joins a bus whose messages reach backend
+        through the Vert.x bus bridge. No event listeners, all events are sent
+        on the bus and are reacted to by both backend code and other components
+        in the GUI.
+
+        A JSON document can be sent on the bus to render a GUI. This document
+        includes routes for component messages. This allows backend code to make
+        a GUI without writing a GUI app. This is similar, but still quite different
+        to Vaadin.
+
+        Components can also be used like other react components in a more "common"
+        react app though the bus is still used.
     </description>
 
     <properties>
@@ -333,7 +344,7 @@
 
                         <id>copy-webContent</id>
                         <!--
-                            This has to be generate-resources or "mvn clean install" will fail since it
+                            This has to be process-resources or "mvn clean install" will fail since it
                             will install an empty src/main/resources/webContent before this copy occurs
                             if run during "process-resources".
                         -->
@@ -485,79 +496,5 @@
             </build>
         </profile>
 
-        <!--<profile>-->
-        <!--<id>frontend</id>-->
-
-        <!--<build>-->
-        <!--<plugins>-->
-        <!--&lt;!&ndash;-->
-        <!--This plugin from https://github.com/eirslett/frontend-maven-plugin-->
-        <!--&ndash;&gt;-->
-        <!--<plugin>-->
-        <!--<groupId>com.github.eirslett</groupId>-->
-        <!--<artifactId>frontend-maven-plugin</artifactId>-->
-        <!--&lt;!&ndash; Use the latest released version:-->
-        <!--https://repo1.maven.org/maven2/com/github/eirslett/frontend-maven-plugin/ &ndash;&gt;-->
-        <!--<version>1.5</version>-->
-
-        <!--<configuration>-->
-        <!--<nodeVersion>v6.10.3</nodeVersion>-->
-
-        <!--&lt;!&ndash; optional: with node version greater than 4.0.0 will use npm provided by node distribution &ndash;&gt;-->
-        <!--<npmVersion>5.3.0</npmVersion>-->
-        <!--<workingDirectory>src/main/typescript</workingDirectory>-->
-        <!--</configuration>-->
-
-        <!--<executions>-->
-        <!--<execution>-->
-        <!--&lt;!&ndash; optional: you don't really need execution ids, but it looks nice in your build log. &ndash;&gt;-->
-        <!--<id>install node and npm</id>-->
-        <!--<goals>-->
-        <!--<goal>install-node-and-npm</goal>-->
-        <!--</goals>-->
-        <!--&lt;!&ndash; optional: default phase is "generate-resources" &ndash;&gt;-->
-        <!--<phase>generate-resources</phase>-->
-        <!--</execution>-->
-
-        <!--<execution>-->
-        <!--<id>npm install</id>-->
-        <!--<goals>-->
-        <!--<goal>npm</goal>-->
-        <!--</goals>-->
-
-        <!--&lt;!&ndash; optional: default phase is "generate-resources" &ndash;&gt;-->
-        <!--<phase>generate-resources</phase>-->
-
-        <!--<configuration>-->
-        <!--&lt;!&ndash; optional: The default argument is actually-->
-        <!--"install", so unless you need to run some other npm command,-->
-        <!--you can remove this whole <configuration> section.-->
-        <!--&ndash;&gt;-->
-        <!--<arguments>install</arguments>-->
-        <!--</configuration>-->
-        <!--</execution>-->
-
-        <!--<execution>-->
-        <!--<id>webpack build</id>-->
-        <!--<goals>-->
-        <!--<goal>webpack</goal>-->
-        <!--</goals>-->
-
-        <!--&lt;!&ndash; optional: the default phase is "generate-resources" &ndash;&gt;-->
-        <!--<phase>generate-resources</phase>-->
-
-        <!--&lt;!&ndash;<configuration>&ndash;&gt;-->
-        <!--&lt;!&ndash;&lt;!&ndash; optional: if not specified, it will run webpack's default&ndash;&gt;-->
-        <!--&lt;!&ndash;build (and you can remove this whole <configuration> section.) &ndash;&gt;&ndash;&gt;-->
-        <!--&lt;!&ndash;<arguments>-p</arguments>&ndash;&gt;-->
-        <!--&lt;!&ndash;</configuration>&ndash;&gt;-->
-        <!--</execution>-->
-
-        <!--</executions>-->
-
-        <!--</plugin>-->
-        <!--</plugins>-->
-        <!--</build>-->
-        <!--</profile>-->
     </profiles>
 </project>
