@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="generated-by" content="MarkdownDoc"/>
-    <link href="/Users/tommy/Development/projects/OSGi/APS/APS-UserGuide/docs/docs.css" type="text/css" rel="stylesheet"/>
+    <link href="/Users/tommy/Development/projects/OSGi/revert/APS/APS-UserGuide/docs/docs.css" type="text/css" rel="stylesheet"/>
   </head>
   <body>
     <H1>Application Platform Services (APS)</H1>
@@ -1611,7 +1611,7 @@
       Complete javadocs can be found at <a href='http://apidoc.natusoft.se/APSJSONLib/' title=''>http://apidoc.natusoft.se/APSJSONLib/</a>.      
     </p>
     <p>
-      public <em>class</em> <strong>JSONConvertionException </strong> extends  RuntimeException    [se.natusoft.osgi.aps.json.tools] {      
+      public <em>class</em> <strong>JSONConvertionException </strong> extends  RuntimeException    [se.natusoft.osgi.aps.json] {      
     </p>
     <p>
       This exception is thrown on failure to convert from JSON to Java or Java to JSON.      
@@ -1652,6 +1652,67 @@
         <em>cause</em> - The cause of this exception.         
       </p>
     </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public JSONArray()</strong>      
+    </p>
+    <p>
+      Creates a new JSONArray for wrinting JSON output.      
+    </p>
+    <p>
+      <strong>public JSONArray(JSONErrorHandler errorHandler)</strong>      
+    </p>
+    <p>
+      Creates a new JSONArray for reading JSON input and writing JSON output.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>errorHandler</em> - The error handler to use.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public void addValue(JSONValue value)</strong>      
+    </p>
+    <p>
+      Adds a value to the array.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>value</em> - The value to add.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
     <p>
       }      
     </p>
@@ -1786,388 +1847,6 @@
         <em>JSONConvertionException</em> - if property does not exist.         
       </p>
     </blockquote>
-    <p>
-      }      
-    </p>
-    <hr/>    <p>
-                
-    </p>
-    <p>
-      public <em>class</em> <strong>CollectingErrorHandler </strong> implements  JSONErrorHandler    [se.natusoft.osgi.aps.json.tools] {      
-    </p>
-    <p>
-      Utility implementation of JSONErrorHandler.      
-    </p>
-    <p>
-      <strong>public CollectingErrorHandler(boolean printWarnings)</strong>      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>printWarnings</em> - If true warnings will be printed to stderr.         
-      </p>
-    </blockquote>
-    <p>
-            
-    </p>
-    <p>
-            
-    </p>
-    <p>
-      <strong>public boolean hasMessages()</strong>      
-    </p>
-    <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-        true if there are any messages.        
-      </p>
-    </blockquote>
-    <p>
-      <strong>public String toString()</strong>      
-    </p>
-    <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-        All messages as one string.        
-      </p>
-    </blockquote>
-    <p>
-      }      
-    </p>
-    <hr/>    <p>
-                
-    </p>
-    <p>
-            
-    </p>
-    <p>
-      <strong>public static JSONObject convertObject(Object javaBean) throws JSONConvertionException</strong>      
-    </p>
-    <p>
-      Converts a JavaBean object into a <em>JSONObject</em>.      
-    </p>
-    <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-        A JSONObject containing all values from the JavaBean.        
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>javaBean</em> - The JavaBean object to convert.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>JSONConvertionException</em> - on converting failure.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>public static JSONObject convertObject(JSONObject jsonObject, Object javaBean) throws JSONConvertionException</strong>      
-    </p>
-    <p>
-      Converts a JavaBean object into a <em>JSONObject</em>.      
-    </p>
-    <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-        A JSONObject containing all values from the JavaBean.        
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>jsonObject</em> - The jsonObject to convert the bean into or null for a new JSONObject.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>javaBean</em> - The JavaBean object to convert.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>JSONConvertionException</em> - on converting failure.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>public static JSONValue convertValue(Object value)</strong>      
-    </p>
-    <p>
-      Converts a value from a java value to a <em>JSONValue</em>.      
-    </p>
-    <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-        The converted JSONValue.        
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>value</em> - The java value to convert. It can be one of String, Number, Boolean, null, JavaBean, or an array of those.         
-      </p>
-    </blockquote>
-    <p>
-      }      
-    </p>
-    <hr/>    <p>
-                
-    </p>
-    <p>
-      public <em>class</em> <strong>JSONToJava </strong>   [se.natusoft.osgi.aps.json.tools] {      
-    </p>
-    <p>
-      Creates a JavaBean instance and copies data from a JSON value to it.      
-    </p>
-    <p>
-      The following mappings are made in addition to the expected ones:      
-    </p>
-    <ul>
-      <li>
-        <p>
-           <em>JSONArray</em> only maps to an array property.          
-        </p>
-      </li>
-      <li>
-        <p>
-           Date properties in bean are mapped from <em>JSONString</em> "yyyy-MM-dd HH:mm:ss".          
-        </p>
-      </li>
-      <li>
-        <p>
-           Enum properties in bean are mapped from <em>JSONString</em> which have to contain enum constant name.          
-        </p>
-      </li>
-    </ul>
-    <p>
-      <strong>public static &lt;T&gt; T convert(InputStream jsonStream, Class&lt;T&gt; javaClass) throws APSIOException, JSONConvertionException</strong>      
-    </p>
-    <p>
-      Returns an instance of a java class populated with data from a json object value read from a stream.      
-    </p>
-    <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-        A populated instance of javaClass.        
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>jsonStream</em> - The stream to read from.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>javaClass</em> - The java class to instantiate and populate.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>APSIOException</em> - on IO failures.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>JSONConvertionException</em> - On JSON to Java failures.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>public static &lt;T&gt; T convert(String json, Class&lt;T&gt; javaClass) throws APSIOException, JSONConvertionException</strong>      
-    </p>
-    <p>
-      Returns an instance of a java class populated with data from a json object value read from a String containing JSON.      
-    </p>
-    <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-        A populated instance of javaClass.        
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>json</em> - The String to read from.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>javaClass</em> - The java class to instantiate and populate.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>APSIOException</em> - on IO failures.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>JSONConvertionException</em> - On JSON to Java failures.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>public static &lt;T&gt; T convert(JSONValue json, Class&lt;T&gt; javaClass) throws JSONConvertionException</strong>      
-    </p>
-    <p>
-      Returns an instance of java class populated with data from json.      
-    </p>
-    <p>
-      <em>Returns</em>      
-    </p>
-    <blockquote>
-      <p>
-        A converted Java object.        
-      </p>
-    </blockquote>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>json</em> - The json to convert to java.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>javaClass</em> - The class of the java object to convert to.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>JSONConvertionException</em> - On failure to convert.         
-      </p>
-    </blockquote>
-    <p>
-            
-    </p>
-    <p>
-            
-    </p>
-    <p>
-            
-    </p>
-    <p>
-      }      
-    </p>
-    <hr/>    <p>
-                
-    </p>
-    <p>
-      public <em>class</em> <strong>SystemOutErrorHandler </strong> implements  JSONErrorHandler    [se.natusoft.osgi.aps.json.tools] {      
-    </p>
-    <p>
-      A simple implementation of <em>JSONErrorHandler</em> that simply displays messages on System.out and throws a <em>RuntimeException</em> on fail. This is used by the tests. In a non test case another implementation is probably preferred.      
-    </p>
-    <p>
-            
-    </p>
-    <p>
-            
-    </p>
-    <p>
-      }      
-    </p>
-    <hr/>    <p>
-                
-    </p>
-    <p>
-            
-    </p>
-    <p>
-            
-    </p>
-    <p>
-      <strong>public JSONArray()</strong>      
-    </p>
-    <p>
-      Creates a new JSONArray for wrinting JSON output.      
-    </p>
-    <p>
-      <strong>public JSONArray(JSONErrorHandler errorHandler)</strong>      
-    </p>
-    <p>
-      Creates a new JSONArray for reading JSON input and writing JSON output.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>errorHandler</em> - The error handler to use.         
-      </p>
-    </blockquote>
-    <p>
-            
-    </p>
-    <p>
-            
-    </p>
-    <p>
-      <strong>public void addValue(JSONValue value)</strong>      
-    </p>
-    <p>
-      Adds a value to the array.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>value</em> - The value to add.         
-      </p>
-    </blockquote>
-    <p>
-            
-    </p>
-    <p>
-            
-    </p>
-    <p>
-            
-    </p>
     <p>
       }      
     </p>
@@ -2601,6 +2280,57 @@
     <p>
             
     </p>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>CollectingErrorHandler </strong> implements  JSONErrorHandler    [se.natusoft.osgi.aps.json] {      
+    </p>
+    <p>
+      Utility implementation of JSONErrorHandler.      
+    </p>
+    <p>
+      <strong>public CollectingErrorHandler(boolean printWarnings)</strong>      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>printWarnings</em> - If true warnings will be printed to stderr.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      <strong>public boolean hasMessages()</strong>      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true if there are any messages.        
+      </p>
+    </blockquote>
+    <p>
+      <strong>public String toString()</strong>      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        All messages as one string.        
+      </p>
+    </blockquote>
     <p>
       }      
     </p>
@@ -3179,6 +2909,102 @@
             
     </p>
     <p>
+      <strong>public static JSONObject convertObject(Object javaBean) throws JSONConvertionException</strong>      
+    </p>
+    <p>
+      Converts a JavaBean object into a <em>JSONObject</em>.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A JSONObject containing all values from the JavaBean.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>javaBean</em> - The JavaBean object to convert.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>JSONConvertionException</em> - on converting failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static JSONObject convertObject(JSONObject jsonObject, Object javaBean) throws JSONConvertionException</strong>      
+    </p>
+    <p>
+      Converts a JavaBean object into a <em>JSONObject</em>.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A JSONObject containing all values from the JavaBean.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>jsonObject</em> - The jsonObject to convert the bean into or null for a new JSONObject.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>javaBean</em> - The JavaBean object to convert.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>JSONConvertionException</em> - on converting failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static JSONValue convertValue(Object value)</strong>      
+    </p>
+    <p>
+      Converts a value from a java value to a <em>JSONValue</em>.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        The converted JSONValue.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>value</em> - The java value to convert. It can be one of String, Number, Boolean, null, JavaBean, or an array of those.         
+      </p>
+    </blockquote>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+            
+    </p>
+    <p>
       <strong>public JSONNull()</strong>      
     </p>
     <p>
@@ -3479,6 +3305,180 @@
                 
     </p>
     <p>
+      public <em>class</em> <strong>JSONToJava </strong>   [se.natusoft.osgi.aps.json] {      
+    </p>
+    <p>
+      Creates a JavaBean instance and copies data from a JSON value to it.      
+    </p>
+    <p>
+      The following mappings are made in addition to the expected ones:      
+    </p>
+    <ul>
+      <li>
+        <p>
+           <em>JSONArray</em> only maps to an array property.          
+        </p>
+      </li>
+      <li>
+        <p>
+           Date properties in bean are mapped from <em>JSONString</em> "yyyy-MM-dd HH:mm:ss".          
+        </p>
+      </li>
+      <li>
+        <p>
+           Enum properties in bean are mapped from <em>JSONString</em> which have to contain enum constant name.          
+        </p>
+      </li>
+    </ul>
+    <p>
+      <strong>public static &lt;T&gt; T convert(InputStream jsonStream, Class&lt;T&gt; javaClass) throws APSIOException, JSONConvertionException</strong>      
+    </p>
+    <p>
+      Returns an instance of a java class populated with data from a json object value read from a stream.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A populated instance of javaClass.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>jsonStream</em> - The stream to read from.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>javaClass</em> - The java class to instantiate and populate.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>APSIOException</em> - on IO failures.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>JSONConvertionException</em> - On JSON to Java failures.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static &lt;T&gt; T convert(String json, Class&lt;T&gt; javaClass) throws APSIOException, JSONConvertionException</strong>      
+    </p>
+    <p>
+      Returns an instance of a java class populated with data from a json object value read from a String containing JSON.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A populated instance of javaClass.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>json</em> - The String to read from.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>javaClass</em> - The java class to instantiate and populate.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>APSIOException</em> - on IO failures.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>JSONConvertionException</em> - On JSON to Java failures.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>public static &lt;T&gt; T convert( JSONValue json, Class&lt;T&gt; javaClass) throws JSONConvertionException</strong>      
+    </p>
+    <p>
+      Returns an instance of java class populated with data from json.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        A converted Java object.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>json</em> - The json to convert to java.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>javaClass</em> - The class of the java object to convert to.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>JSONConvertionException</em> - On failure to convert.         
+      </p>
+    </blockquote>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>class</em> <strong>SystemOutErrorHandler </strong> implements  JSONErrorHandler    [se.natusoft.osgi.aps.json] {      
+    </p>
+    <p>
+      A simple implementation of <em>JSONErrorHandler</em> that simply displays messages on System.out and throws a <em>RuntimeException</em> on fail. This is used by the tests. In a non test case another implementation is probably preferred.      
+    </p>
+    <p>
+            
+    </p>
+    <p>
+            
+    </p>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
             
     </p>
     <p>
@@ -3565,10 +3565,7 @@
                 
     </p>
     <p>
-      public <em>class</em> <strong>JSONEOFException </strong> extends  APSIOException  }  [se.natusoft.osgi.aps.json] {      
-    </p>
-    <p>
-      Thrown if a JSON structure is tried to be read from a stream that has no more data.      
+            
     </p>
     <p>
       }      
@@ -4061,6 +4058,241 @@
     service-provider:     aps-vertx-event-bus-messaging-provider:publisher/sender/subscriber
       </code>
     </pre>
+    <H1>Web Manager</H1>
+    <H2>Components</H2>
+    <p>
+      The components are mostly based on React-Bootstrap components. The APS components wrap other components to provide components that connect to a common bus. All relevant component events are are sent as messages on the bus. No code has to attach listeners to specific components. Any code that wants to react to a component being triggered does so by joining the bus and listen to messages. So the code reacting on messages really has no direct association with any component, they just react to messages.      
+    </p>
+    <p>
+      All components has a listenTo and a sendTo property which points out and address to send or listen to. Most components only send messages.      
+    </p>
+    <p>
+      This separation of component rendering code and event handler code makes it rather easy to render components after a JSON specification. That is what WebManager does. It listens for a JSON GUI spec on the bus, and when it sees such, it renders it. When a user interacts with the rendered GUI messges will be sent on the bus.      
+    </p>
+    <H2>APSEventBus</H2>
+    <p>
+      On the frontend there is a local <code>APSEventBus</code> that is used to send and receive messages. This is basically a wrapper. It does not do anything other than pass on to 'EventBusRouter's. There are 2 'EventBusRouter's: <code>APSLocalEventBusRouter</code>and <code>APSVertxEventBusRouter</code>. These are both added to <code>APSEventBus</code>.      
+    </p>
+    <H3>APSLocalEventBusRouter</H3>
+    <p>
+      This looks at the header of a message and if <em>routing</em> contains <em>client</em> then it passes the message to all registered local subscribers. This never goes out on the network, it only works internatlly in the client. This is used to communicate between different components locally.      
+    </p>
+    <H3>APSVertxEventBusRouter</H3>
+    <p>
+      This looks at the header of a message and if <em>routing</em> contains <em>backend</em> it does a send on the Vert.x client event bus bridge. A send does a round robin to to listeners of specified address. If <em>routing</em> contains <em>cluster</em> it does a publish on the Vert.x client event bus bridge. This goes to all listeners of the address in the whole cluster, including other clients.      
+    </p>
+    <H2>Messaging</H2>
+    <p>
+      A note: <em>Vert.x uses Hazelcast by default to handle the cluster.</em><em> Hazelcast by default manages a cluster on the same subnet only,</em><em> by multicast.</em><em> Hazelcast can of course be configured to create larger clusters.</em><em> But that is a Hazelcast thing,</em><em> not APS nor Vert.x.</em>      
+    </p>
+    <H3>Addresses</H3>
+    <p>
+      Each message must be addressed! An address is just a string. It can be anything. If you send to an address it will be received if there is something also listening to exactly the same address. See an address as a group name as is common in other messaging solutions.      
+    </p>
+    <p>
+      As said above when a send is done on the Vert.x event bus it does a round robin between each listener of the "sent to" address. This to support load balancing.      
+    </p>
+    <H4>Address Strategy</H4>
+    <p>
+      Note: (app) refers to a specific application as a wildcard, and (UUID) refers to a generated UUID value.      
+    </p>
+    <p>
+      From <strong>client perspective</strong>:      
+    </p>
+    <ul>
+      <li>
+        <p>
+           Client          
+        </p>
+      </li>
+      <ul>
+        <li>
+          <p>
+             "aps:(app):client:(UUID)"            
+          </p>
+        </li>
+        <ul>
+          <li>
+            <p>
+               Network: listen              
+            </p>
+          </li>
+          <li>
+            <p>
+               Local: listen, send              
+            </p>
+          </li>
+        </ul>
+      </ul>
+      <li>
+        <p>
+           Backend          
+        </p>
+      </li>
+      <ul>
+        <li>
+          <p>
+             "aps:(app):backend"            
+          </p>
+        </li>
+        <ul>
+          <li>
+            <p>
+               Network: send              
+            </p>
+          </li>
+        </ul>
+      </ul>
+      <li>
+        <p>
+           Cluster          
+        </p>
+      </li>
+      <ul>
+        <li>
+          <p>
+             "aps:(app):all" : Every backend and client of (app).            
+          </p>
+        </li>
+        <ul>
+          <li>
+            <p>
+               Network: listen, send              
+            </p>
+          </li>
+        </ul>
+        <li>
+          <p>
+             "aps:(app):all:backend" : Every backend of (app).            
+          </p>
+        </li>
+        <ul>
+          <li>
+            <p>
+               Network: send              
+            </p>
+          </li>
+        </ul>
+        <li>
+          <p>
+             "aps:(app):all:client" : Every client of (app).            
+          </p>
+        </li>
+        <ul>
+          <li>
+            <p>
+               Network: listen, send              
+            </p>
+          </li>
+        </ul>
+      </ul>
+    </ul>
+    <p>
+      <strong>Note 1:</strong> Only clients have a unique address. They are the only ones that needs a unique address due to being the only unique thing.      
+    </p>
+    <p>
+      <strong>Note 2:</strong> Vert.x does a round robin on "send" to same address. Only backend messages are delivered with a send. All cluster messages are delived with a "publish" and will always go to every subscriber.      
+    </p>
+    <p>
+      <strong>Note 3:</strong> Both on client side and on backend, code is not interacting with the Vert.x bus, but local busses with message routers. So what messages are sent on the Vert.x bus and which message method is used is a routing question. Senders and receivers don't need to care.      
+    </p>
+    <H3>Routing Strategy</H3>
+    <p>
+      My first though was to hide routing as much as possible, but that creates a lot of limitations.      
+    </p>
+    <p>
+      Components have indirect routing information passed to them by the creater of the component, and in general all routing is handled by the <code>APSComponent</code> base class for the APS components. Individual components should ignore routing completely. They just send and possibly receive messages not caring about anything else than the message.      
+    </p>
+    <p>
+      Some components need to talk to each other locally, and some need to reach a backend. It is up to the code that creates the components to determine that by supplying a routing property of:      
+    </p>
+    <pre>
+      <code>
+    {
+        outgoing: "client/backend/all/all:backend/all:client/none",
+        incoming: "client/all/all:client/none"
+    }
+      </code>
+    </pre>
+    <p>
+      Both outgoing and incomming can have more than one route. Routes are comma separated within the string. No spaces.      
+    </p>
+    <p>
+      Do note the "none" at the end! Its more relevant for incoming than outgoing. It means what the word says. If a component does not react to any incoming messages, then there is no point in listening to incoming messages and the messaging code does not need to make an unceccesary call to a component that will do nothing with the provided message.      
+    </p>
+    <H3>Messages</H3>
+    <p>
+      When a message is sent, there is no from, there is only a to. My goal is that all code should only react to messages, and a reaction can possibly be a new message. But there should not be any specific reply message. A message might be reacted to by a client that updates something in a GUI, or it might be reacted to in the backend. Whatever sends the message sholdn't care. Where messages end upp is a routing question.      
+    </p>
+    <p>
+      The <code>content</code> part can be missing or empty depending on <code>type</code>.      
+    </p>
+    <p>
+      In the following specification any entry starting with '?' is optional.      
+    </p>
+    <H4>General</H4>
+    <pre>
+      <code>
+    {
+        "aps": { // To be moved to header instead ...
+            "origin": "(address)",
+            "app": "(app)",
+            "type": "(message type)",
+            "identity": {
+                userId: "(id)",
+                userName: "(name of user)",
+                auth: {
+                    "type": "(authentication type)",
+                    (authentication specific data)
+                }
+            }
+        },
+        content: { // Will probably go away when "aps" is moved to header.
+            ...message type specific data
+        }
+    }
+      </code>
+    </pre>
+    <H4>--&gt; Avail </H4>
+    <p>
+      Client tells a backend that it exists and are ready for a GUI JSON document.      
+    </p>
+    <p>
+      This is not a requirement, components can be created and a gui built with client code like any other React GUI. There are 2 components that works together and use this message: <code>APSPage</code> and <code>APSWebManager</code>. They will as default inform the backend that they are upp and running and the backend will send a JSON document with components to create. <code>APSWebMAnager</code> can however also be used with a property that tells it to not send the message, and only act as container, but create and supplying a common event bus to all children.      
+    </p>
+    <pre>
+      <code>
+    {
+        "aps": {
+            "origin": "(address)"
+            "app": "(app)",
+            "type": "avail"
+        }
+    }
+      </code>
+    </pre>
+    <H4>&lt;-- Gui</H4>
+    <p>
+      Client receives a gui, most probably from backend, but can really be send from anywhere including client itself.      
+    </p>
+    <p>
+      {  "aps": {  "origin": "(address)",  "app": "(app)",  "type": "gui"  },  "content": {  "id": "(comp id)",  "name": "(comp name)",  ?"group": "(name of group component belongs to if any.)",  "type": "(comp type)",  ?"class": "(class class ...)",  ?"disabled": true/false,  ?"enabled": "groupNotEmpty:(group)/namedComponentsNotEmpty:(names)"  "collectGroups": "(space separated list of groups to listen to and collect data from.)",  "(type specific)": "(...)",  ...,  "children": <a href='' title=''>  ...  </a>  } }      
+    </p>
+    <H4>--&gt; Create</H4>
+    <pre>
+      <code>
+    {
+        "aps": {
+            "origin": 'address'
+            "app": 'app',
+            "type": "create"
+        }
+        "content": {
+    
+        }
+    }
+      </code>
+    </pre>
     <H1>Licenses</H1>
     <!--
       Created by CodeLicenseManager
@@ -4095,6 +4327,11 @@
       The following third party products are using this license:      
     </p>
     <ul>
+      <li>
+        <p>
+           <a href='http://wiki.fasterxml.com/JacksonHome' title=''>jackson-jr-all-2.9.6</a>          
+        </p>
+      </li>
       <li>
         <p>
            <a href='http://groovy-lang.org' title=''>groovy-all-2.4.15</a>          

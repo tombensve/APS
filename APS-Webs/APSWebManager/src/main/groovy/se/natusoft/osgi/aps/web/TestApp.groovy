@@ -38,10 +38,6 @@ class TestApp {
 
             this.newClientConsumer = eventBus.consumer( "aps:aps-web-manager:backend" ) { Message message ->
 
-                // Since JsonObject from Vert.x only maps the current values to a Map, not the whole tree
-                // I'm currently producing a JSON string from JsonObject and then parse it again with
-                // Jackson Jr, which gives a full Map structure.
-                //Map<String, Object> received = APSJson.readObject( message.body(  ).toString(  ) )
                 Map<String, Object> received = new RecursiveJsonObjectMap(message.body(  ) as JsonObject)
                 String recv = received.toString(  )
                 this.logger.debug( ">>>>>Received from '${received["aps"]["origin"]}': ${ recv }" )

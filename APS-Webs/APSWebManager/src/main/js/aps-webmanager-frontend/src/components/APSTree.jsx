@@ -42,18 +42,15 @@ export default class APSTree extends APSComponent {
             this.setState( {
                 open: !this.state.open
             } );
-        }
-        else {
+        } else {
 
             this.logger.debug( `Node clicked: ${JSON.stringify( this.node )}` );
 
             if ( this.props.onLeafClick ) {
 
                 this.props.onLeafClick( this.node );
-            }
-            else {
+            } else {
                 this.message(
-
                     this.actionEvent( {
 
                         componentType: this.componentType(),
@@ -79,9 +76,12 @@ export default class APSTree extends APSComponent {
 
                 let nodeContent = [];
 
-                rend.push( <div><Glyphicon glyph="glyphicon glyphicon-triangle-bottom"
-                                           onClick={this.handleEvent.bind( this )}/><span
-                    onClick={this.handleEvent.bind( this )}>{' '}{this.node.label}</span></div> );
+                rend.push(
+                    <div>
+                        <Glyphicon glyph="glyphicon glyphicon-triangle-bottom" onClick={this.handleEvent.bind( this )}/>
+                        <span onClick={this.handleEvent.bind( this )}>{' '}{this.node.label}</span>
+                    </div>
+                );
 
                 for ( let cnode of this.node.children ) {
                     nodeContent.push( <APSTree eventBus={this.props.eventBus} mgrId={this.props.mgrId}
@@ -91,18 +91,21 @@ export default class APSTree extends APSComponent {
                                                onLeafClick={this.props.onLeafClick}/> );
                 }
                 rend.push( <div style={nodeStyle} className={divClass}>{nodeContent}</div> );
-            }
-            else {
+            } else {
 
-                rend.push( <div><Glyphicon glyph="glyphicon glyphicon-triangle-right"
-                                           onClick={this.handleEvent.bind( this )}/><span
-                    onClick={this.handleEvent.bind( this )}>{' '}{this.node.label}</span></div> );
+                rend.push(
+                    <div>
+                        <Glyphicon glyph="glyphicon glyphicon-triangle-right" onClick={this.handleEvent.bind( this )}/>
+                        <span onClick={this.handleEvent.bind( this )}>{' '}{this.node.label}</span>
+                    </div>
+                );
             }
-        }
-        else {
-            rend.push( <div><Glyphicon glyph="glyphicon glyphicon-leaf"
-                                       onClick={this.handleEvent.bind( this )}/><span
-                onClick={this.handleEvent.bind( this )}>{' '}{this.node.label}</span></div> );
+        } else {
+            rend.push(
+                <div>
+                    <Glyphicon glyph="glyphicon glyphicon-leaf" onClick={this.handleEvent.bind( this )}/>
+                    <span onClick={this.handleEvent.bind( this )}>{' '}{this.node.label}</span>
+                </div> );
         }
 
         return rend;
