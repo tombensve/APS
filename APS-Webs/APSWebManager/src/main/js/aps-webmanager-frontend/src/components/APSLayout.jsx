@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Box from 'react-layout-components'
 
 /**
  * ## Properties
@@ -6,25 +7,27 @@ import React, { Component } from 'react'
  * ### guiProps.orientation
  *
  * horizontal or vertical.
+ *
  */
 export default class APSLayout extends Component {
+
     render() {
         let result = null;
 
         if ( this.props.guiProps.orientation === null || this.props.guiProps.orientation.startsWith( "horiz" ) ) {
 
             result = (
-                <div className="form-inline">
+                <Box alignContent="flex-start" alignItems="space-between">
                     {this.props.children}
-                </div>
+                </Box>
             )
         }
         else {
 
             result = (
-                <div className="form-group">
+                <Box alignContent="flex-start" alignItems="space-between" column>
                     {this.props.children}
-                </div>
+                </Box>
             )
         }
 

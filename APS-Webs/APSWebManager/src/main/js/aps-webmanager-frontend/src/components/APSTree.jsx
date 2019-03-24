@@ -1,6 +1,7 @@
 import React from "react";
 import { Glyphicon } from "react-bootstrap";
 import APSComponent from "./APSComponent"
+import APSLayout from "./APSLayout"
 
 /**
  * ## Data
@@ -64,11 +65,7 @@ export default class APSTree extends APSComponent {
     render() {
         let rend = [];
 
-        let nodeStyle = {
-            marginLeft: 20
-        };
-
-        let divClass = this.props.child ? "" : "formGroup";
+        let nodeContentStyles = this.props.child ? "aps-tree-node" : "formGroup aps-tree-node";
 
         if ( this.node.type === "branch" ) {
 
@@ -77,7 +74,7 @@ export default class APSTree extends APSComponent {
                 let nodeContent = [];
 
                 rend.push(
-                    <div>
+                    <div className="aps-tree-branchleaf">
                         <Glyphicon glyph="glyphicon glyphicon-triangle-bottom" onClick={this.handleEvent.bind( this )}/>
                         <span onClick={this.handleEvent.bind( this )}>{' '}{this.node.label}</span>
                     </div>
@@ -90,11 +87,11 @@ export default class APSTree extends APSComponent {
                                                child={true} // This will avoid a new 'formGroup'.
                                                onLeafClick={this.props.onLeafClick}/> );
                 }
-                rend.push( <div style={nodeStyle} className={divClass}>{nodeContent}</div> );
+                rend.push( <div className={nodeContentStyles}>{nodeContent}</div> );
             } else {
 
                 rend.push(
-                    <div>
+                    <div className="aps-tree-branchleaf">
                         <Glyphicon glyph="glyphicon glyphicon-triangle-right" onClick={this.handleEvent.bind( this )}/>
                         <span onClick={this.handleEvent.bind( this )}>{' '}{this.node.label}</span>
                     </div>
@@ -102,12 +99,12 @@ export default class APSTree extends APSComponent {
             }
         } else {
             rend.push(
-                <div>
+                <div className="aps-tree-branchleaf">
                     <Glyphicon glyph="glyphicon glyphicon-leaf" onClick={this.handleEvent.bind( this )}/>
                     <span onClick={this.handleEvent.bind( this )}>{' '}{this.node.label}</span>
                 </div> );
         }
 
-        return rend;
+        return <APSLayout guiProps={{orientation: "vertical"}}>{rend}</APSLayout>;
     }
 }

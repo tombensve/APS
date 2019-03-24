@@ -22,7 +22,7 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *
  * My first solution was to do toString() on JsonObject and then parse that with
  * Jackson Jr into a Map. Even if it was less code to write for me it didn't
- * feel right. parse JSON -> regenerate3 JSON -> parse JSON. This class is just
+ * feel right. parse JSON -> regenerate JSON -> parse JSON. This class is just
  * a wrapper and uses the original JsonObject provided by Vert.x. So nothing is
  * reparsed again.
  *

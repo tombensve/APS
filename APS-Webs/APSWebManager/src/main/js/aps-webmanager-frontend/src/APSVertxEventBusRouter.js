@@ -8,11 +8,13 @@ import { apsObject } from "./Utils"
 
 /**
  * This represents a router and is responsible for sending and subscribing to messages.
+ *
+ * This specific router routes to the Vert.x event bus bridge (websocket).
  */
 export default class APSVertxEventBusRouter implements APSEventBusRouter {
 
     /**
-     * Creates a new LocalBusRouter.
+     * Creates a new APSVertxEventBusRouter.
      */
     constructor( alerter: APSAlerter ) {
 
@@ -84,6 +86,8 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
         console.info( "Vertx EventBuss is now connected!" );
 
         // This seem to help the problem of the bus shutting down after 2-4 minutes. It now takes 5-7 minutes!
+        // This problem is however only in Safari on OSX, other browsers handles websocket much better. Interestingly
+        // enough Safari on iOS does not suffer from this problem, only on OSX.
         // noinspection JSUnresolvedFunction
         this.eventBus.enableReconnect( true );
 
@@ -114,6 +118,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
         // }, 20000 );
     }
 
+    // noinspection JSUnusedLocalSymbols
     onBusClose( e ) {
         this.logger.info( "The eventbus has been closed!" );
         this.alerter.alert( "aps-default-alert", "## No contact!\n\nWe are currently alone! " +
@@ -144,6 +149,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
 
                 let routes = headers[EVENT_ROUTING];
 
+                // noinspection SuspiciousTypeOfGuard
                 if ( routes != null && routes !== undefined ) {
                     for ( let route: string of routes[ROUTE_OUTGOING].split( ',' ) ) {
 
@@ -250,6 +256,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
 
             let routes = headers[EVENT_ROUTING];
 
+            // noinspection SuspiciousTypeOfGuard
             if ( routes != null && routes !== undefined ) {
                 for ( let route: string of routes[ROUTE_INCOMING].split( ',' ) ) {
 
@@ -315,6 +322,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
         if ( this.busReady ) {
             let routes = headers[EVENT_ROUTING];
 
+            // noinspection SuspiciousTypeOfGuard
             if ( routes != null && routes !== undefined ) {
 
                 for ( let route: string of routes[ROUTE_INCOMING].split( ',' ) ) {

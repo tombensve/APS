@@ -113,6 +113,7 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
                     case EVENT_ROUTES.CLIENT:
                         let addressSubscribers = this.subscribers[this.busAddress.client];
 
+                        // noinspection SuspiciousTypeOfGuard
                         if ( addressSubscribers == null || addressSubscribers === undefined ) {
 
                             addressSubscribers = [];
@@ -169,6 +170,7 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
                     case EVENT_ROUTES.CLIENT:
                         let addressSubscribers = this.subscribers[this.busAddress.client];
 
+                        // noinspection SuspiciousTypeOfGuard
                         if ( addressSubscribers != null && addressSubscribers !== undefined ) {
 
                             let remix = addressSubscribers.indexOf( callback );

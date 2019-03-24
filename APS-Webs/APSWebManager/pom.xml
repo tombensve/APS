@@ -360,7 +360,7 @@
 
                                     Do note that if you have a very slow machine this might need increasing in value!
                                 -->
-                                <sleep milliseconds="3000"/>
+                                <sleep milliseconds="4000"/>
 
                                 <echo message="Installing web files under src/main/resources/webContent ..."/>
                                 <delete dir="${project.basedir}/src/main/resources/webContent"/>
@@ -373,7 +373,7 @@
                                 <!--
                                     We need maven/ant time to catch up here too.
                                 -->
-                                <sleep milliseconds="3000"/>
+                                <sleep milliseconds="4000"/>
 
                             </target>
                         </configuration>
