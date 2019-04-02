@@ -18,6 +18,14 @@ Do **note** that there is absolutely no security what so ever yet!
 
 The frontend code is [here](src/main/js/aps-webmanager-frontend).
 
+## How to use
+
+Due to limitations in react, or maybe just generic frontend package handling, the app page URL must be specified in package.json, which locks it to just one very specific path. So this projexct, APSWebManager should be seen as a template, which should be copied in whole and called something else, package.json updated with valid URL. APSWebManager itself just renders components in a row to test be able to test and verify.
+
+### Delivering GUI to web
+
+TBD 
+
 # Probably only builds on unixes!
 
 The pom calls a build.sh script to deal with frontend build. This might have problems if built on windows! On windows the git installation do include a bash. __However__ there is no guarantee that maven will use gits bash implementation when trying to execute _build.sh_. Possibly if the maven job is started from a git bash.

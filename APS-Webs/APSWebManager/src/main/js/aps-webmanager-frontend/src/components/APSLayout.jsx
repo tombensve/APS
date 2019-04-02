@@ -22,16 +22,9 @@ export default class APSLayout extends Component {
 
         let borderStyle = {};
 
-        // This works!
-        // let borderStyle = { border: "1px solid black" };
-
-        // In this case this.props.guiProps.borderStyle do contain "1px solid black", but this fails!
-        // The style is not applied!
-        // let borderStyle = { border: this.props.guiProps.borderStyle };
-
-        // For now I only support border or no border.
         if ( this.props.guiProps.border === true) {
-            borderStyle = { border: "1px solid black" };
+            borderStyle =
+                { border: this.props.guiProps.borderStyle !== null ? this.props.guiProps.borderStyle : "1px solid black" };
         }
 
         let result = null;
