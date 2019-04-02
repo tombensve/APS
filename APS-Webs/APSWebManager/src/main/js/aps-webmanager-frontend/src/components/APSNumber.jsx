@@ -1,5 +1,5 @@
 import APSComponent from "./APSComponent"
-import { ControlLabel, FormControl } from "react-bootstrap";
+import { ControlLabel, FormControl, FormGroup } from "react-bootstrap";
 import React from "react";
 
 /**
@@ -92,8 +92,7 @@ export default class APSNumber extends APSComponent {
             let validationNumber = null;
             if ( filteredValue.indexOf( '.' ) >= 0 ) {
                 validationNumber = Number.parseFloat( filteredValue );
-            }
-            else {
+            } else {
                 validationNumber = Number.parseInt( filteredValue, 10 );
             }
 
@@ -103,8 +102,7 @@ export default class APSNumber extends APSComponent {
                 if ( value.endsWith( ">" ) || value.endsWith( "+" ) ) {
                     validationNumber = validationNumber + 1;
                     filteredValue = validationNumber.toString( 10 );
-                }
-                else if ( value.endsWith( "<" ) || value.endsWith( "-" ) ) {
+                } else if ( value.endsWith( "<" ) || value.endsWith( "-" ) ) {
                     validationNumber = validationNumber - 1;
                     filteredValue = validationNumber.toString( 10 );
                 }
@@ -159,12 +157,14 @@ export default class APSNumber extends APSComponent {
         // But when I treat this as a text field and do my own filtering on accepted input and check the min and max
         // limits myself, then this works fine both on my Mac, my iPhone and my virtual android. The '>' and '<' to
         // change value does not work on the mobiles.
-        comps.push( <FormControl componentClass="input"
-                                 value={this.state.value}
-                                 id={this.props.guiProps.id}
-                                 placeholder={placeHolder}
-                                 onChange={this.handleEvent.bind( this )}
-                                 disabled={this.state.disabled}/> );
+        comps.push( <FormGroup id={this.props.guiProps.id + '_fg'} validationState={this.state.validationState}>
+            <FormControl componentClass="input"
+                         value={this.state.value}
+                         id={this.props.guiProps.id}
+                         placeholder={placeHolder}
+                         onChange={this.handleEvent.bind( this )}
+                         disabled={this.state.disabled}/>
+            </FormGroup> );
     }
 
 }

@@ -94,7 +94,7 @@ export default class APSWebManager extends Component {
         // Inform a backend that there is a new client available and provide clients unique address.
         this.apsEventBus.message( {
 
-            headers: { routing: { outgoing: `${EVENT_ROUTES.BACKEND}` } },
+            headers: { routing: { outgoing: EVENT_ROUTES.BACKEND } },
 
             message: {
                 aps: {

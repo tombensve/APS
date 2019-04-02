@@ -1,6 +1,6 @@
 import React from 'react'
 import APSComponent from "./APSComponent"
-import { ControlLabel, FormControl } from 'react-bootstrap'
+import { ControlLabel, FormControl, FormGroup } from 'react-bootstrap'
 
 /**
  * ## props
@@ -20,8 +20,8 @@ import { ControlLabel, FormControl } from 'react-bootstrap'
  */
 export default class APSSelect extends APSComponent {
 
-    constructor(props) {
-        super(props);
+    constructor( props ) {
+        super( props );
 
         this.defaultValue = this.props.guiProps.value;
 
@@ -35,11 +35,11 @@ export default class APSSelect extends APSComponent {
         return "aps-select";
     }
 
-    handleEvent(event: {}) {
+    handleEvent( event: {} ) {
 
-        this.setState({
+        this.setState( {
             value: event.target.value
-        });
+        } );
 
         this.message(
             this.changeEvent(
@@ -53,25 +53,26 @@ export default class APSSelect extends APSComponent {
 
     doRender( comps: [] ) {
 
-        if (this.props.guiProps.label) {
-            comps.push(<ControlLabel>{this.props.guiProps.label}</ControlLabel>);
+        if ( this.props.guiProps.label ) {
+            comps.push( <ControlLabel>{this.props.guiProps.label}</ControlLabel> );
         }
 
         let opts = [];
 
-        for (let opt: {value:string, label:string} of this.props.guiProps.options) {
-            if (opt.value === this.state.value) {
+        for ( let opt: { value: string, label: string } of this.props.guiProps.options ) {
+            if ( opt.value === this.state.value ) {
                 opts.push( <option selected value={opt.value}>{opt.label}</option> );
-            }
-            else {
+            } else {
                 opts.push( <option value={opt.value}>{opt.label}</option> );
             }
         }
 
         comps.push(
-            <FormControl componentClass={"select"} onChange={this.handleEvent.bind( this )}>
-                {opts}
-            </FormControl>
+            <FormGroup id={this.props.guiProps.id + '_fg'} validationState={this.state.validationState}>
+                <FormControl componentClass={"select"} onChange={this.handleEvent.bind( this )}>
+                    {opts}
+                </FormControl>
+            </FormGroup>
         );
     }
 }

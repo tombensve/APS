@@ -19,7 +19,10 @@ import se.natusoft.osgi.aps.util.APSLogger
 @SuppressWarnings( "unused" )
 @CompileStatic
 @TypeChecked
-class TestApp {
+class GUIProvider {
+
+    // In your web app copy of APSWebManager change this to your web app name.
+    private final String APS_WEB_APP_NAME="aps-web-manager"
 
     @Managed
     private APSLogger logger
@@ -36,7 +39,7 @@ class TestApp {
 
             this.logger.info( "An EventBus just became available!" )
 
-            this.newClientConsumer = eventBus.consumer( "aps:aps-web-manager:backend" ) { Message message ->
+            this.newClientConsumer = eventBus.consumer( "aps:${APS_WEB_APP_NAME}:backend" ) { Message message ->
 
                 Map<String, Object> received = new RecursiveJsonObjectMap(message.body(  ) as JsonObject)
                 String recv = received.toString(  )
@@ -53,14 +56,14 @@ class TestApp {
 
             }
 
-            this.logger.debug( "Waiting for messages ..." )
-
-            eventBus.consumer( "aps:aps-web-manager:backend:all" ) { Message message ->
-
-                Map<String, Object> testGuiMsg = ( message.body() as JsonObject ).getMap()
-                this.logger.debug( "aps:test-gui ==> ${ testGuiMsg }" )
-
-            }
+//            this.logger.debug( "Waiting for messages ..." )
+//
+//            eventBus.consumer( "aps:${APS_WEB_APP_NAME}:backend:all" ) { Message message ->
+//
+//                Map<String, Object> testGuiMsg = ( message.body() as JsonObject ).getMap()
+//                this.logger.debug( "aps:test-gui ==> ${ testGuiMsg }" )
+//
+//            }
         }
 
         this.eventBusTracker.onActiveServiceLeaving = { ServiceReference sref, Class api ->

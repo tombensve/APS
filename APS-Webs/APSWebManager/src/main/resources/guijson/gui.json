@@ -3,6 +3,8 @@
   "name": "page",
   "type": "aps-layout",
   "orientation": "vertical",
+  "borderStyle": "1px solid black",
+  "border": false,
   "children": [
     {
       "id": "aps-default-alert",
@@ -43,7 +45,7 @@
           "group": "gpoc",
           "type": "aps-text-area",
           "cols": 30,
-          "rows": 2,
+          "rows": 1,
           "value": "",
           "headers": {
             "routing": {
