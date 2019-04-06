@@ -46,6 +46,8 @@ Do note that APS needs a clustered Vert.x and will create/join such on startup. 
 
 About testing: APS provide a testing tool called APSOSGiTestTools. It actually implements a primitive APS level OSGi container but without classloading (as mentioned above), using junit classpaths instead. So most tests run as they would in a real deployment and thus also starts Vert.x. This could cause problems if multiple builds are run concurrently on the same machine, like in a Jenkins for example. But if Vert.x is run unclustered it would probably work if HTTP service tests and similar use random ports. There is no good support for that yet in APS. I'm also considering trying to run tests within docker containers.
 
+And yes, I'm aware of the security warnings in GitHub for this project. Since this is still a work in progress they are not that relevant yet. They will be taken care of in time.
+
 Lots of fun ideas, and far to little time ...
 
 Tommy
