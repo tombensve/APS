@@ -12,7 +12,7 @@ Work is slow, whenever time permits.
 
 To be very clear: **This is currently, and probably for a long time comming, a playground where I'm having fun.** 
 
-The __original (and still active) goal__ with this is to make a very easy to use web platform, currently based on Vert.x & React. In addition I also want to define super simple APIs for common service types like messaging with no config/option type parameters what so ever. Any such has to be configured for the published service, the usage should be super simple. OSGi allows multiple instances of same service with different config/setup and you can always via properties lookup the instance you want. The APSVertxProvider for example publishes several HTTP routers handling different routes and ports for which clients can register handlers for subroutes. Client just lookup a preconfigured instance and use it. So in general its about unflexible, but trivial simple APIs that only does the basic thing they should do, and from client perspective client shoudn't care abut anything else. Config should be done in services, and APS provides a configuration service using JSON documents allowing services to be configured with a more structured config than _Properties_. 
+The __original (and still active) goal__ with this is to make a very easy to use web platform, currently based on Vert.x & React. 
 
 This project is now using 2 exceptional frameworks: __Vert.x & React__. These both belong to the same category: Things that just work! I have the highest respect for the people behind both of these. These both also supply outstanding documentation (far from all does!).
 
@@ -30,7 +30,7 @@ This because maven-bundle-plugins usage of bnd causes groovy code to confuse bnd
 
 ---
 
-APS have always been about keeping things simple. Easy to use APIs providing only basic functionality with no configurational options API wise. My intentions is to encapsulate complexity and provide the easiest way possible to use for all other code. Each specific implementation is responsible for any configuration needed and I made a more structured configuraton service for other services to use. OSGi basically only gives you properties. My goal with configuration is to provide easy to understand structured configuration.
+APS have always been about keeping things simple. Easy to use APIs providing only basic functionality with no configurational options API wise. My intentions is to encapsulate complexity and provide the easiest way possible to use for all other code. APS also provides APIs for common things like messaging with very easy/basic APIs. Each specific implementation is responsible for any configuration needed and there is a more structured configuraton service using JSON for configuration data, for other services to use instead of the primitive properties provided by OSGi.
 
 React is a web component framework that follows my ideas of simplicity and small code to the extreme! Love at fist sight :-).
 
