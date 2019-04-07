@@ -13,8 +13,9 @@ export default class APSAlert extends APSComponent {
 
         this.state = { show: false, value: this.props.guiProps.value };
 
-        if ( !this.props.guiProps.bsType ) {
-            this.props.guiProps.bsType = "warning";
+        this.props.guiProps.bsType = "warning";
+        if (this.props.guiProps.alertType !== null) {
+            this.props.guiProps.bsType = this.props.guiProps.alertType;
         }
 
         this.subscribe((message : Message) => {

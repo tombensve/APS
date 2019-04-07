@@ -49,7 +49,7 @@ export default class APSEventBus {
      * @param name The name of the bus to create.
      * @param address The address of the bus to create.
      */
-    static createBus( name: string, address: APSBusAddress ) {
+    static createBus( name: string, address: APSBusAddress ): APSEventBus {
         if ( !name ) name = "default";
         if ( !address ) throw new Error( "An address of type APSBusAddress must be supplied!" );
         let bus = new APSEventBus();
@@ -105,10 +105,19 @@ export default class APSEventBus {
      * @param busAddress The bus address to set.
      */
     setBusAddress( busAddress: APSBusAddress ) {
+        this.busAddress = busAddress;
+
         for ( let router of this.busRouters ) {
             router.setBusAddress( busAddress );
         }
         this.busAddressSet = true;
+    }
+
+    /**
+     * Returns the address of this bus.
+     */
+    getBusAddress() {
+        return this.busAddress;
     }
 
     // I though it was a good idea to use named parameters in the form of an object with named values.

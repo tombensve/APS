@@ -56,10 +56,10 @@ public class APSWebManagerGUIBuilder {
     }
 
     /**
-     * Adds a name and value property to the component.
+     * Adds a name and value setProperty to the component.
      *
-     * @param name The name of the property.
-     * @param value The value of the property.
+     * @param name The name of the setProperty.
+     * @param value The value of the setProperty.
      *
      * @return The builder instance.
      */
@@ -73,7 +73,7 @@ public class APSWebManagerGUIBuilder {
     /**
      * Adds a set of children. Create them by creating a new builder.
      *
-     * @param children A list of child objects to add.
+     * @param children A list of child objects to setProperty.
      *
      * @return The builder instance.
      */

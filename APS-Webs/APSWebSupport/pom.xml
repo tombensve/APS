@@ -11,13 +11,13 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>aps-web-gui-builder</artifactId>
+    <artifactId>aps-web-support</artifactId>
     <packaging>bundle</packaging>
 
-    <name>APS Web Gui Builder</name>
+    <name>APS Web Support</name>
 
     <description>
-        A builder for APSWebManager GUIs.
+        General backend support for APSWebManager frontend.
     </description>
 
     <properties>
@@ -33,7 +33,8 @@
 
         <!-- The bundle packages to export. -->
         <osgi.export.package>
-            se.natusoft.osgi.aps.web
+            se.natusoft.osgi.aps.web;version="${project.version}",
+            se.natusoft.osgi.aps.web.backend.component.model;version="${project.version}"
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->

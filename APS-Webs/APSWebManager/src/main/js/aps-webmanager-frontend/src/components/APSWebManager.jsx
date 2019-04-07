@@ -6,7 +6,6 @@ import { APP_NAME, EVENT_ROUTES } from "../Constants"
 // Functional / Classes
 import uuid from "../APSUUID"
 import APSEventBus from "../APSEventBus"
-import APSBusAddress from "../APSBusAddress"
 // Components
 import APSLayout from "./APSLayout"
 import APSPanel from "./APSPanel"
@@ -56,10 +55,7 @@ export default class APSWebManager extends Component {
             comps: []
         };
 
-        this.busAddress = new APSBusAddress( APP_NAME );
-
-        this.apsEventBus = APSEventBus.createBus( this.props.name, this.busAddress );
-        this.logger.debug(`APSEventBus: ${this.apsEventBus}`);
+        this.apsEventBus = APSEventBus.getBus( "default" );
     }
 
     //
@@ -98,7 +94,7 @@ export default class APSWebManager extends Component {
 
             message: {
                 aps: {
-                    origin: this.busAddress.client,
+                    origin: this.apsEventBus.getBusAddress().client,
                     app: this.getApp(),
                     type: "avail"
                 }
@@ -194,7 +190,7 @@ export default class APSWebManager extends Component {
             },
             message: {
                 aps: {
-                    origin: this.busAddress.client,
+                    origin: this.apsEventBus.getBusAddress().client,
                     app: this.getApp(),
                     type: "gui-created"
                 },
@@ -239,7 +235,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSLayout key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                               origin={this.busAddress.client}>
+                               origin={this.apsEventBus.getBusAddress().client}>
                         {childContent}
                     </APSLayout>
                 );
@@ -249,7 +245,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSPanel key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                              origin={this.busAddress.client}>
+                              origin={this.apsEventBus.getBusAddress().client}>
                         {childContent}
                     </APSPanel>
                 );
@@ -259,7 +255,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSButton key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                               origin={this.busAddress.client}/>
+                               origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
@@ -267,7 +263,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSTextField key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                                  origin={this.busAddress.client}/>
+                                  origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
@@ -275,7 +271,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSTextArea key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                                 origin={this.busAddress.client}/>
+                                 origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
@@ -283,7 +279,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSNumber key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                               origin={this.busAddress.client}/>
+                               origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
@@ -291,7 +287,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSDate key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                             origin={this.busAddress.client}/>
+                             origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
@@ -299,7 +295,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSCheckBox key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                                 origin={this.busAddress.client}/>
+                                 origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
@@ -307,7 +303,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSRadioSet key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                                 origin={this.busAddress.client}/>
+                                 origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
@@ -315,7 +311,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSSelect key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                               origin={this.busAddress.client}/>
+                               origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
@@ -323,7 +319,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSMarkdown key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                                 origin={this.busAddress.client}/>
+                                 origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
@@ -331,14 +327,14 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSAlert key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                              origin={this.busAddress.client}/>
+                              origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
             case 'aps-tree':
                 content.push(
                     <APSTree key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                             origin={this.busAddress.client}/>
+                             origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
