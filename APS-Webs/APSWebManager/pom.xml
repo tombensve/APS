@@ -346,7 +346,7 @@
                         <!--
                             This has to be process-resources or "mvn clean install" will fail since it
                             will install an empty src/main/resources/webContent before this copy occurs
-                            if run during "process-resources".
+                            if run during "generate-resources".
                         -->
                         <phase>process-resources</phase>
                         <configuration>

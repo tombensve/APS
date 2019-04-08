@@ -97,6 +97,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
             this.logger.info( "Executing cached subscription!" );
             this.subscribe( sub.headers, sub.callback );
         }
+        this.cache.subscribers = [];
 
         this.subscribes = [];
 
@@ -105,6 +106,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
             // noinspection JSUnresolvedFunction
             this.message( msg.headers, msg.message );
         }
+        this.cache.messages = [];
 
         this.sendMsgs = [];
 
@@ -267,6 +269,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                             break;
 
                         case EVENT_ROUTES.BACKEND:
+                            // Note to self: We are on the frontend, should thereby not handle backend routes!!!
                             break;
 
                         case EVENT_ROUTES.ALL:
@@ -275,6 +278,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                             break;
 
                         case EVENT_ROUTES.ALL_BACKENDS:
+                            // Note to self: We are on the frontend, should thereby not handle backend routes!!!
                             break;
 
                         case EVENT_ROUTES.ALL_CLIENTS:

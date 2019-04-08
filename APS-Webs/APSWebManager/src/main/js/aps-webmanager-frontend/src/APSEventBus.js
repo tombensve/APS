@@ -123,7 +123,7 @@ export default class APSEventBus {
     // I though it was a good idea to use named parameters in the form of an object with named values.
     // This so that arguments wouldn't accidentally be passed in the wrong order. What I missed was the
     // extreme dynamicness (is that a word ?) of JS. It is still possible to misspell names, and even pass
-    // 2 separate argument rather than one object. Think happilly builds anyhow.
+    // 2 separate argument rather than one object. Things happily builds anyhow.
 
     /**
      * This adds a subscriber for an address. The first param can also be an object containing 3 keys for each
