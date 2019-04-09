@@ -156,9 +156,6 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                     for ( let route: string of routes[ROUTE_OUTGOING].split( ',' ) ) {
 
                         switch ( route ) {
-                            case EVENT_ROUTES.CLIENT:
-                                break;
-
                             case EVENT_ROUTES.BACKEND:
                                 // this.logger.debug( `Sending to BACKEND with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
 
@@ -187,12 +184,8 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                                 this.eventBus.publish( this.busAddress.allClients, message, headers );
                                 break;
 
-                            case EVENT_ROUTES.NONE:
-                                break;
-
                             default:
-                                // noinspection ExceptionCaughtLocallyJS
-                                throw new Error( `APSVertxEventBusRouter: message(): Bad routing value: ${route}!` );
+                                // OK
                         }
                     }
                 }
@@ -263,6 +256,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                 for ( let route: string of routes[ROUTE_INCOMING].split( ',' ) ) {
 
                     switch ( route ) {
+
                         case EVENT_ROUTES.CLIENT:
                             // noinspection JSUnresolvedFunction
                             this.eventBus.registerHandler( this.busAddress.client, headers, handler );
@@ -286,12 +280,8 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                             this.eventBus.registerHandler( this.busAddress.allClients, headers, handler );
                             break;
 
-                        case EVENT_ROUTES.NONE:
-                            break;
-
                         default:
-                            // noinspection JSUnfilteredForInLoop
-                            throw new Error( `APSVertxEventBusRouter: subscribe(): Bad routing value: ${route}!` );
+                            // OK.
                     }
                 }
             }
@@ -353,12 +343,8 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                             this.eventBus.unregisterHandler( this.busAddress.allClients, handler );
                             break;
 
-                        case EVENT_ROUTES.NONE:
-                            break;
-
                         default:
-                            // noinspection JSUnfilteredForInLoop
-                            throw new Error( `APSVertxEventBusRouter: unsubscribe(): Bad routing value: ${route}!` );
+                            // OK.
                     }
                 }
             }
@@ -384,4 +370,21 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
         }
         this.activeSubscribers = newSubs;
     }
+
+    static validRoutes = {
+        message: [ EVENT_ROUTES.BACKEND, EVENT_ROUTES.ALL, EVENT_ROUTES.ALL_BACKENDS, EVENT_ROUTES.ALL_CLIENTS ],
+        subscribe: [ EVENT_ROUTES.CLIENT, EVENT_ROUTES.ALL, EVENT_ROUTES.ALL_CLIENTS ],
+        unsubscribe: [ EVENT_ROUTES.CLIENT, EVENT_ROUTES.ALL, EVENT_ROUTES.ALL_CLIENTS ]
+    };
+
+    // noinspection JSMethodCanBeStatic
+    /**
+     * Returns a list of valid routes for the router.
+     */
+    getValidRoutes() : { message: [], subscribe: [], unsubscribe: [] } {
+
+        return APSVertxEventBusRouter.validRoutes;
+
+    }
+
 }

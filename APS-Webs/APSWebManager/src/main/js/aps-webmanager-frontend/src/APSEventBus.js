@@ -24,7 +24,6 @@
  * this.
  */
 import APSLogger from "./APSLogger";
-import { EVENT_ROUTES } from "./Constants";
 import APSEventBusRouter from "./APSEventBusRouter";
 import NamedParams from "./NamedParams"
 import APSLocalEventBusRouter from "./APSLocalEventBusRouter";
@@ -120,6 +119,39 @@ export default class APSEventBus {
         return this.busAddress;
     }
 
+    /**
+     * Validates that the operation is valid for this router based on header info.
+     *
+     * @param type - The type to validate: "message", "subscribe", "unsubscribe".
+     * @param routing - The routing string to check for validity.
+     *
+     * @throws Error on bad headers.
+     *
+     * @private
+     */
+    _validRoutingHeaders( type: string, routing: string ) {
+
+        let valid = false;
+        let invalid = "";
+
+        for ( let busRouter of this.busRouters ) {
+
+            this.logger.debug(`Valid routes: ${JSON.stringify(busRouter.getValidRoutes())}`);
+
+            for ( let route: string of routing.split( ',' ) ) {
+                if ( busRouter.getValidRoutes()[type].includes( route, 0 ) ) {
+                    valid = true;
+                }
+                else {
+                    invalid += ( " " + route );
+                }
+            }
+        }
+        if (!valid) {
+            throw new Error( `Routing values of "'${invalid.trim().replace(' ', ',')}'" is illegal for '${type}'!` );
+        }
+    }
+
     // I though it was a good idea to use named parameters in the form of an object with named values.
     // This so that arguments wouldn't accidentally be passed in the wrong order. What I missed was the
     // extreme dynamicness (is that a word ?) of JS. It is still possible to misspell names, and even pass
@@ -144,7 +176,7 @@ export default class APSEventBus {
         let headers = apsObject(APSEventBus.ensureHeaders( pars.param( "headers" ) ));
         let subscriber = pars.requiredParam( "subscriber" );
 
-        APSEventBus.validRoutingHeaders( headers.routing.incoming );
+        this._validRoutingHeaders( "subscribe",  headers.routing.incoming );
 
         for ( let busRouter of this.busRouters ) {
 
@@ -153,7 +185,7 @@ export default class APSEventBus {
     }
 
     /**
-     * Unsubscribes to a previously done subscription.
+     * Unsubscribes a previously done subscription.
      *
      * @param params params - Named parameters: { headers: ..., subscriber: ... }
      */
@@ -165,7 +197,7 @@ export default class APSEventBus {
         let headers = apsObject(APSEventBus.ensureHeaders( pars.param( "headers" ) ));
         let subscriber = pars.requiredParam( "subscriber" );
 
-        APSEventBus.validRoutingHeaders( headers.routing.incoming );
+        this._validRoutingHeaders( "unsubscribe", headers.routing.incoming );
 
         for ( let busRouter of this.busRouters ) {
 
@@ -191,7 +223,7 @@ export default class APSEventBus {
         let headers = apsObject(APSEventBus.ensureHeaders( pars.param( "headers" ) ));
         let message = apsObject(pars.requiredParam( "message" ));
 
-        APSEventBus.validRoutingHeaders( headers.routing.outgoing );
+        this._validRoutingHeaders( "message", headers.routing.outgoing );
 
         // this.logger.debug( `EventBus: sending( headers: ${headers.display()}): ${message.display()}` );
 
@@ -224,36 +256,6 @@ export default class APSEventBus {
         }
 
         return headers;
-    }
-
-    /**
-     * Validates that the operation is valid for this router based on header info.
-     *
-     * @param routing - The routing string to check for validity.
-     *
-     * @throws Error on bad headers.
-     *
-     * @private
-     */
-    static validRoutingHeaders( routing: string ) {
-
-        if (
-            routing != null && (
-                routing.indexOf( EVENT_ROUTES.CLIENT ) >= 0 ||
-                routing.indexOf( EVENT_ROUTES.BACKEND ) >= 0 ||
-                routing.indexOf( EVENT_ROUTES.ALL ) >= 0 ||
-                routing.indexOf( EVENT_ROUTES.ALL_BACKENDS ) >= 0 ||
-                routing.indexOf( EVENT_ROUTES.ALL_CLIENTS ) >= 0 ||
-                routing.indexOf( EVENT_ROUTES.NONE ) >= 0
-            )
-        ) {
-            // OK.
-        }
-        else {
-            throw new Error( `Bad routing headers: ${routing} One or more of the following are valid: \
-${EVENT_ROUTES.CLIENT} |& ${EVENT_ROUTES.BACKEND} |& ${EVENT_ROUTES.ALL} |& ${EVENT_ROUTES.ALL_CLIENTS} \
-|&" ${EVENT_ROUTES.ALL_BACKENDS} |& ${EVENT_ROUTES.NONE}!` );
-        }
     }
 
 

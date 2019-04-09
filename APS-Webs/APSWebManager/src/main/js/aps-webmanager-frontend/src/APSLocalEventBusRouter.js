@@ -46,7 +46,9 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
 
                 // this.logger.debug( `route: ${route}` );
 
-                // noinspection JSUnfilteredForInLoop
+                // I decided to still use the switch statement even though this router only have one
+                // single route ... currently!
+                // noinspection JSUnfilteredForInLoop,JSRedundantSwitchStatement
                 switch ( route ) {
                     case EVENT_ROUTES.CLIENT:
                         let addressSubscribers = this.subscribers[this.busAddress.client];
@@ -65,24 +67,8 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
                         }
                         break;
 
-                    case EVENT_ROUTES.BACKEND:
-                        break;
-
-                    case EVENT_ROUTES.ALL:
-                        break;
-
-                    case EVENT_ROUTES.ALL_BACKENDS:
-                        break;
-
-                    case EVENT_ROUTES.ALL_CLIENTS:
-                        break;
-
-                    case EVENT_ROUTES.NONE:
-                        break;
-
                     default:
-                        // noinspection JSUnfilteredForInLoop
-                        throw new Error( `APSLocalEventBusRouter: message(): Bad routing value: ${route}!` );
+                        // OK
                 }
             }
         }
@@ -108,7 +94,9 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
 
                 // this.logger.debug( `Subscribe: route: ${route}` );
 
-                // noinspection JSUnfilteredForInLoop
+                // I decided to still use the switch statement even though this router only have one
+                // single route ... currently!
+                // noinspection JSUnfilteredForInLoop,JSRedundantSwitchStatement
                 switch ( route ) {
                     case EVENT_ROUTES.CLIENT:
                         let addressSubscribers = this.subscribers[this.busAddress.client];
@@ -123,24 +111,8 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
                         addressSubscribers.push( callback );
                         break;
 
-                    case EVENT_ROUTES.BACKEND:
-                        break;
-
-                    case EVENT_ROUTES.ALL:
-                        break;
-
-                    case EVENT_ROUTES.ALL_BACKENDS:
-                        break;
-
-                    case EVENT_ROUTES.ALL_CLIENTS:
-                        break;
-
-                    case EVENT_ROUTES.NONE:
-                        break;
-
                     default:
-                        // noinspection JSUnfilteredForInLoop
-                        throw new Error( `APSLocalEventBusRouter: subscribe(): Bad routing value: ${route}!` );
+                        // OK.
                 }
             }
         }
@@ -164,7 +136,7 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
             for ( let route: string of routes.split( ',' ) ) {
                 // this.logger.debug( ` subscribe: route: ${route}` );
 
-                // noinspection JSUnfilteredForInLoop
+                // noinspection JSUnfilteredForInLoop,JSRedundantSwitchStatement
                 switch ( route ) {
 
                     case EVENT_ROUTES.CLIENT:
@@ -178,29 +150,28 @@ export default class APSLocalEventBusRouter implements APSEventBusRouter {
                         }
                         break;
 
-                    case EVENT_ROUTES.BACKEND:
-                        break;
-
-                    case EVENT_ROUTES.ALL:
-                        break;
-
-                    case EVENT_ROUTES.ALL_BACKENDS:
-                        break;
-
-                    case EVENT_ROUTES.ALL_CLIENTS:
-                        break;
-
-                    case EVENT_ROUTES.NONE:
-                        break;
-
                     default:
-                        // noinspection JSUnfilteredForInLoop
-                        throw new Error( `APSLocalEventBusRouter: unsubscribe(): Bad routing value: ${route}!` );
+                        // OK
                 }
             }
         }
         else {
             throw new Error( `No 'routing:' entry in headers: ${headers}!` );
         }
+    }
+
+    static validRoutes = {
+        message: [ EVENT_ROUTES.CLIENT ],
+        subscribe: [ EVENT_ROUTES.CLIENT ],
+        unsubscribe: [ EVENT_ROUTES.CLIENT ]
+    };
+
+    // noinspection JSMethodCanBeStatic
+    /**
+     * Returns a list of valid routes for the router.
+     */
+    getValidRoutes() : { message: [], subscribe: [], unsubscribe: [] } {
+
+        return APSLocalEventBusRouter.validRoutes;
     }
 }
