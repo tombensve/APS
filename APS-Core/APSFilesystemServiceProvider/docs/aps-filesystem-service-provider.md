@@ -16,98 +16,6 @@ The javadoc for the [APSFilesystemService](http://apidoc.natusoft.se/APS/se/natu
 
 ## The APIs for this service
 
-public _interface_ __APSDirectory__ extends  APSFile    [se.natusoft.osgi.aps.api.core.filesystem.model] {
-
-This represents a directory in an _APSFilesystem_.
-
-Use this to create or get directories and files and list contents of directories.
-
-Personal comment: I do prefer the term "folder" over "directory" since I think that is less ambiguous, but since Java uses the term "directory" I decided to stick with that name.
-
-__APSDirectory createDir(String name) throws IOException__
-
-Returns a newly created directory with the specified name.
-
-_Parameters_
-
-> _name_ - The name of the directory to create. 
-
-_Throws_
-
-> _IOException_ - on any failure. 
-
-__APSDirectory createDir(String name, String duplicateMessage) throws IOException__
-
-Returns a newly created directory with the specified name.
-
-_Parameters_
-
-> _name_ - The name of the directory to create. 
-
-> _duplicateMessage_ - The exception messaging if directory already exists. 
-
-_Throws_
-
-> _IOException_ - on any failure. 
-
-__APSFile createFile(String name) throws IOException__
-
-Creates a new file in the directory represented by the current _APSDirectory_.
-
-_Parameters_
-
-> _name_ - The name of the file to create. 
-
-_Throws_
-
-> _IOException_ - on failure. 
-
-__APSDirectory getDir(String dirname) throws FileNotFoundException__
-
-Returns the specified directory.
-
-_Parameters_
-
-> _dirname_ - The name of the directory to enter. 
-
-_Throws_
-
-> _FileNotFoundException_ - on failure 
-
-__APSFile getFile(String name)__
-
-Returns the named file in this directory.
-
-_Parameters_
-
-> _name_ - The name of the file to get. 
-
-__void recursiveDelete() throws IOException__
-
-Performs a recursive delete of the directory represented by this _APSDirectory_ and all subdirectories and files.
-
-_Throws_
-
-> _IOException_ - on any failure. 
-
-__String[] list()__
-
-_See_
-
-> java.io.File.list()
-
-__APSFile[] listFiles()__
-
-_See_
-
-> java.io.File.listFiles()
-
-}
-
-----
-
-    
-
 public _interface_ __APSFile__   [se.natusoft.osgi.aps.api.core.filesystem.model] {
 
 This represents a file in an _APSFilesystemService_ provided filesystem. It provides most of the API of _java.io.File_ but is not a _java.io.File_! It never discloses the full path in the host filesystem, only paths relative to its _APSFilesystem_ root.
@@ -252,6 +160,18 @@ _Parameters_
 
 > _name_ - The name to check. 
 
+__boolean existsAndNotEmpty(String name)__
+
+Checks if the named file exists and is not empty.
+
+_Returns_
+
+> true or false.
+
+_Parameters_
+
+> _name_ - The name of the file to check. 
+
 __boolean isDirectory()__
 
 _See_
@@ -345,6 +265,98 @@ _Parameters_
 __APSDirectory getRootDirectory()__
 
 Returns the root directory.
+
+}
+
+----
+
+    
+
+public _interface_ __APSDirectory__ extends  APSFile    [se.natusoft.osgi.aps.api.core.filesystem.model] {
+
+This represents a directory in an _APSFilesystem_.
+
+Use this to create or get directories and files and list contents of directories.
+
+Personal comment: I do prefer the term "folder" over "directory" since I think that is less ambiguous, but since Java uses the term "directory" I decided to stick with that name.
+
+__APSDirectory createDir(String name) throws IOException__
+
+Returns a newly created directory with the specified name.
+
+_Parameters_
+
+> _name_ - The name of the directory to create. 
+
+_Throws_
+
+> _IOException_ - on any failure. 
+
+__APSDirectory createDir(String name, String duplicateMessage) throws IOException__
+
+Returns a newly created directory with the specified name.
+
+_Parameters_
+
+> _name_ - The name of the directory to create. 
+
+> _duplicateMessage_ - The exception messaging if directory already exists. 
+
+_Throws_
+
+> _IOException_ - on any failure. 
+
+__APSFile createFile(String name) throws IOException__
+
+Creates a new file in the directory represented by the current _APSDirectory_.
+
+_Parameters_
+
+> _name_ - The name of the file to create. 
+
+_Throws_
+
+> _IOException_ - on failure. 
+
+__APSDirectory getDir(String dirname) throws FileNotFoundException__
+
+Returns the specified directory.
+
+_Parameters_
+
+> _dirname_ - The name of the directory to enter. 
+
+_Throws_
+
+> _FileNotFoundException_ - on failure 
+
+__APSFile getFile(String name)__
+
+Returns the named file in this directory.
+
+_Parameters_
+
+> _name_ - The name of the file to get. 
+
+__void recursiveDelete() throws IOException__
+
+Performs a recursive delete of the directory represented by this _APSDirectory_ and all subdirectories and files.
+
+_Throws_
+
+> _IOException_ - on any failure. 
+
+__String[] list()__
+
+_See_
+
+> java.io.File.list()
+
+__APSFile[] listFiles()__
+
+_See_
+
+> java.io.File.listFiles()
 
 }
 
