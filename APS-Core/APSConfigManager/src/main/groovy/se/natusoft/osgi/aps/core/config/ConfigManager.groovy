@@ -46,13 +46,13 @@ import se.natusoft.osgi.aps.activator.annotation.BundleStop
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.activator.annotation.OSGiService
-import se.natusoft.osgi.aps.types.APSLockable
 import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
 import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
 import se.natusoft.osgi.aps.api.messaging.APSMessage
-import se.natusoft.osgi.aps.api.messaging.APSMessagePublisher
+import se.natusoft.osgi.aps.api.messaging.APSMessageSender
 import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
+import se.natusoft.osgi.aps.types.APSLockable
 import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.types.APSUUID
 import se.natusoft.osgi.aps.types.ID
@@ -87,7 +87,7 @@ class ConfigManager {
     private APSLogger logger
 
     @OSGiService( additionalSearchCriteria = "(messaging-clustered=true)", nonBlocking = true )
-    private APSMessagePublisher<Map<String, Object>> messagePublisher
+    private APSMessageSender<Map<String, Object>> messageSender
 
     @OSGiService( additionalSearchCriteria = "(messaging-clustered=true)", nonBlocking = true )
     private APSMessageSubscriber<Map<String, Object>> messageSubscriber
@@ -263,7 +263,7 @@ class ConfigManager {
      */
     private void updateOtherNodesOfChangedConfig( APSConfiguration configProvider ) {
 
-        this.messagePublisher.publish(
+        this.messageSender.send(
 
                 APSConfig.CONFIG_EVENT_DESTINATION,
                 [

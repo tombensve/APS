@@ -110,13 +110,10 @@
       </p>
     </blockquote>
     <p>
-      public <em>static</em> <em>interface</em> <strong>APSJPAEntityManagerProvider </strong>   [se.natusoft.osgi.aps.api.data.jpa.service] {      
+            
     </p>
     <p>
-      Once you get this it is valid until the <em>APSJPAService</em> is stopped (which will happen if the service is redeployed!).      
-    </p>
-    <p>
-      <strong>public boolean isValid()</strong>      
+      <strong>boolean isValid()</strong>      
     </p>
     <p>
       Returns true if this instance is valid. If not call APSJPAService.initialize(...) again to get a new instance. It will be invalid if the APSJPAService provider have been restarted.      

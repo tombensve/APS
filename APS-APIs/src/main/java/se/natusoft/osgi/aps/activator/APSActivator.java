@@ -830,11 +830,6 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         OSGiServiceProvider serviceProvider = ( OSGiServiceProvider ) managedClass.getAnnotation( OSGiServiceProvider.class );
         if ( serviceProvider != null ) {
 
-            boolean externalizable = false;
-            if ( managedClass.getAnnotation( APSExternalizable.class ) != null || managedClass.getAnnotation( APSRemoteService.class ) != null ) {
-                externalizable = true;
-            }
-
             List<InstanceRepresentative> instanceReps = getManagedInstanceReps( managedClass );
 
             for ( InstanceRepresentative instRep : instanceReps ) {
@@ -848,9 +843,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     }
                     instRep.props.put( Constants.SERVICE_PID, managedClass.getName() );
                     instRep.props.put( Constants.BUNDLE_SYMBOLICNAME_ATTRIBUTE, context.getBundle().getSymbolicName() );
-                    if ( externalizable ) {
-                        instRep.props.put( "aps-externalizable", "true" );
-                    }
+
                     if ( !instRep.serviceAPIs.isEmpty() ) {
                         injectInstanceProps( instRep.instance, instRep.props );
                         for ( String svcAPI : instRep.serviceAPIs ) {
@@ -1933,7 +1926,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                         // We release our allocation on stop( BundleContext ) below.
                         this.ref = serviceReference;
                         APSConfig config = ( APSConfig ) context.getService( this.ref );
-                        method.invoke( instance, config );
+                        // TODO: This fails as of JDK 10!! Probably 9 too! There is no java.lang.reflect.Method!
+                        // The whole reflection API has been redone!
+                        this.method.invoke( this.instance, config );
                     }
             );
 

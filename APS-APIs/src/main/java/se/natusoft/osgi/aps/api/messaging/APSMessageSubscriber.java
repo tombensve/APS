@@ -57,7 +57,7 @@ public interface APSMessageSubscriber<Message> {
      *                       this is a name that will be looked up in some configuration for the real
      *                       destination, by the service rather than have the client pass a value from
      *                       its configuration.
-     * @param subscriptionId A unique ID used to later cancel the subscription. Use UUID or some other ID
+     * @param subscriptionId A unique ID used to later cancel the subscription. Use APSUUID or some other ID
      *                       implementation that is always unique.
      * @param result         The result of the call. Will throw an APSMessagingException on failure if value is null.
      * @param handler        The subscription handler.
