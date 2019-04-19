@@ -3,9 +3,10 @@ package se.natusoft.osgi.aps.net.vertx
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
-import se.natusoft.osgi.aps.api.messaging.APSMessagePublisher
+import se.natusoft.osgi.aps.api.messaging.APSMessageSender
 import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
 import se.natusoft.osgi.aps.api.messaging.APSMessage
+
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.StructMap
 import se.natusoft.osgi.aps.types.APSResult
@@ -107,7 +108,7 @@ class MsgSender {
     // This manages since on nonBlocking = true, the call to msgService is cached by the proxy until
     // the service is available, and then executed.
     @OSGiService( timeout = "15 sec", nonBlocking = true )
-    private APSMessagePublisher<Map<String, Object>> msgPublisher
+    private APSMessageSender<Map<String, Object>> msgSender
 
     @Managed( loggingFor = "msg-sender" )
     private APSLogger logger
@@ -116,14 +117,14 @@ class MsgSender {
     void init() {
         this.logger.info( "<<<<<< MsgSender >>>>>" )
 
-        // Note that we must do publish, not send here! send sends to one listening target member. If there
-        // are more it does a round robin, but it only goes to one in each case. Publish however always goes
-        // to everybody. Since the clustered version of vertx is used, this means that any cluster on the same
-        // subnet will receive the message, including other builds running at the same time. This is why we are
-        // sending an UUID and publish to everyone. The receiver will only react on the correct UUID and ignore
-        // the rest.
+        // Note that we must send to all listeners here. Without a prefix of all: the message will only go to
+        // one receiver. If there are more it does a round robin, but it only goes to one in each case. all:
+        // however will use Vert.x eventbus publish method which will always go to every listener. Since the
+        // clustered version of vertx is used, this means that any cluster on the same subnet will receive the
+        // message, including other builds running at the same time. This is why we are sending an UUID and
+        // publish to everyone. The receiver will only react on the correct UUID and ignore the rest.
 
-        this.msgPublisher.publish( "testaddr",
+        this.msgSender.send( "all:testaddr",
                 ["meta": ["test-message": true],
                  "id"  : APSVertXEventBusMessagingTest.UNIQUE_MESSAGE] as Map<String, Object> ) { APSResult res ->
             if ( !res.success() ) {
@@ -138,4 +139,3 @@ class MsgSender {
 
 
 }
-

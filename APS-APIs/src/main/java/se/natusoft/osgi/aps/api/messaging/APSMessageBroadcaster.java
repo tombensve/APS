@@ -41,12 +41,13 @@ import se.natusoft.osgi.aps.types.APSHandler;
 import se.natusoft.osgi.aps.types.APSResult;
 
 /**
- * This is a publisher which means that it publishes messages to multiple subscribers. See it as a
- * kind of broadcast.
+ * This is a broadcaster which means that it sends messages to multiple subscribers. The requirement
+ * for this is that the message provider used to implement this supports having multiple subscribers
+ * on the same destination/address, and that any message sent will reach all subscribers.
  *
  * @param <Message> The type of the message being published.
  */
-public interface APSMessagePublisher<Message> {
+public interface APSMessageBroadcaster<Message> {
 
     /**
      * Publishes a message.
@@ -58,7 +59,7 @@ public interface APSMessagePublisher<Message> {
      *
      * @throws APSMessagingException on any failure. Note that this is a RuntimeException!
      */
-    void publish(@NotNull String destination, @NotNull Message message) throws APSMessagingException;
+    void send(@NotNull String destination, @NotNull Message message) throws APSMessagingException;
 
     /**
      * Publishes a message receiving a result of success or failure. On Success there
@@ -71,5 +72,5 @@ public interface APSMessagePublisher<Message> {
      * @param message The message to publish.
      * @param result Callback providing the success or failure of the call.
      */
-    void publish(@NotNull String destination, @NotNull Message message, @NotNull APSHandler<APSResult<Message>> result);
+    void send(@NotNull String destination, @NotNull Message message, @NotNull APSHandler<APSResult<Message>> result);
 }
