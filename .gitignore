@@ -10,16 +10,10 @@ target/
 vagrant/deploy
 vagrant/filesystems
 .vertx
-APS-APIs/docs/aps-apis.html
-APS-APIs/docs/aps-apis.md
-APS-APIs/docs/aps-apis.pdf
-APS-Core/APSConfigManager/docs/aps-config-manager.html
-APS-Core/APSConfigManager/docs/aps-config-manager.md
-APS-Core/APSConfigManager/docs/aps-config-manager.pdf
-APS-Webs/APSWebManager/docs/aps-web-manager.html
-APS-Webs/APSWebManager/docs/aps-web-manager.md
-APS-Webs/APSWebManager/docs/aps-web-manager.pdf
-
+**/docs/*.html
+**/docs/*.md
+**/docs/*.pdf
+**/buildInfo.json
 .vagrant/
 lics/Apache License-2.0.md
 lics/Apache Software License-2.0.md
