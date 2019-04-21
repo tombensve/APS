@@ -151,41 +151,51 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
 
                 let routes = headers[EVENT_ROUTING];
 
-                // noinspection SuspiciousTypeOfGuard
-                if ( routes != null && routes !== undefined ) {
-                    for ( let route: string of routes[ROUTE_OUTGOING].split( ',' ) ) {
+                if (routes !== undefined && routes != null) {
 
-                        switch ( route ) {
-                            case EVENT_ROUTES.BACKEND:
-                                // this.logger.debug( `Sending to BACKEND with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
+                    // A route starting with 'address:' is not a route but a direct address. This allows for
+                    // components to have a direct and unique address handled by a direct counterpart on the
+                    // backend, rather than sending to a more generic handler receiving messages from multiple
+                    // components.
+                    if ( routes[ROUTE_OUTGOING].startsWith( "address:" ) ) {
+                        this.eventBus.send( routes.substring( 7 ), message, headers, null )
+                    }
+                    // noinspection SuspiciousTypeOfGuard
+                    else {
+                        for ( let route: string of routes[ROUTE_OUTGOING].split( ',' ) ) {
 
-                                // noinspection JSUnresolvedFunction
-                                this.eventBus.send( this.busAddress.backend, message, headers, null );
-                                break;
+                            switch ( route ) {
+                                case EVENT_ROUTES.BACKEND:
+                                    // this.logger.debug( `Sending to BACKEND with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
 
-                            case EVENT_ROUTES.ALL:
-                                // this.logger.debug( `Publishing to ALL with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
+                                    // noinspection JSUnresolvedFunction
+                                    this.eventBus.send( this.busAddress.backend, message, headers, null );
+                                    break;
 
-                                // noinspection JSUnresolvedFunction
-                                this.eventBus.publish( this.busAddress.all, message, headers );
-                                break;
+                                case EVENT_ROUTES.ALL:
+                                    // this.logger.debug( `Publishing to ALL with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
 
-                            case EVENT_ROUTES.ALL_BACKENDS:
-                                // this.logger.debug( `Publishing to ALL_BACKEND with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
+                                    // noinspection JSUnresolvedFunction
+                                    this.eventBus.publish( this.busAddress.all, message, headers );
+                                    break;
 
-                                // noinspection JSUnresolvedFunction
-                                this.eventBus.publish( this.busAddress.allBackends, message, headers );
-                                break;
+                                case EVENT_ROUTES.ALL_BACKENDS:
+                                    // this.logger.debug( `Publishing to ALL_BACKEND with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
 
-                            case EVENT_ROUTES.ALL_CLIENTS:
-                                // this.logger.debug( `Publishing to ALL_CLIENTS with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
+                                    // noinspection JSUnresolvedFunction
+                                    this.eventBus.publish( this.busAddress.allBackends, message, headers );
+                                    break;
 
-                                // noinspection JSUnresolvedFunction
-                                this.eventBus.publish( this.busAddress.allClients, message, headers );
-                                break;
+                                case EVENT_ROUTES.ALL_CLIENTS:
+                                    // this.logger.debug( `Publishing to ALL_CLIENTS with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
 
-                            default:
+                                    // noinspection JSUnresolvedFunction
+                                    this.eventBus.publish( this.busAddress.allClients, message, headers );
+                                    break;
+
+                                default:
                                 // OK
+                            }
                         }
                     }
                 }

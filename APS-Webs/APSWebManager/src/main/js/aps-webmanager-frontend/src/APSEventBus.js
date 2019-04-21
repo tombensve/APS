@@ -1,11 +1,6 @@
 /**
  * ## Types
  *
- * ### Address
- *
- * This is a target group for messages. A message sent to an address will only be received by
- * those listening to that address.
- *
  * ### Routers
  *
  * This class actually does nothing at all! It just provides an API to one or more "routers".
@@ -22,6 +17,56 @@
  * Also if at some later time I decided to use something else than Vert.x for example, then I only
  * need to change the router handling Vert.x. It will not affect the components which only uses
  * this.
+ *
+ * ### Routes / absolute address
+ *
+ * The bus routers in general works with "routes", which can be more than one, separated with a
+ * comma. A route is a more general than an address. A route can resolve to one specific receiver
+ * or many. Since this is completely message driven and no REST requests are ever done and this
+ * is using Vert.x EventBus bridge, routes can lead to:
+ *
+ * - A general GUI message handler on one node in a cluster, with round robin between nodes in
+ *   the cluster.
+ * - To a message listener on all backend nodes of the cluster (be careful).
+ * - To all clients of the application (be careful).
+ *
+ * Routes have simple names like 'backend', 'all:backend', 'client', 'all:client', ...
+ *
+ * This means that components doesn't have to know about anything else than these routes, and where
+ * they go is determined by the bus routers.
+ *
+ * This works well when the application has a generic GUI subscriber that checks the message and
+ * acts on it depending on what it is, which component sent it. Don't let all component send
+ * messages to backend! Most components should only send messages locally to interact with other
+ * components.
+ *
+ * APS is about simplicity and also flexibility. It thereby does not want to force how to handle
+ * interaction between GUI and backend, other than that the bus must be used in one way or another.
+ *
+ * There are several ways of handling the GUI on the frontend. These are either one or the other:
+ *
+ * - Make a React GUI using the APS components just like any other React app.
+ *
+ * - Use the APSWebManager component which listens for a JSON message describing the GUI to render,
+ *   and renders it. The JSON also contains routes for sending messages, and for subscribing to
+ *   messages. The JSON document then comes from the backend so the backend fully controls the
+ *   rendered GUI. This is what the demo "APSWebManager" project does.
+ *
+ * - Each of the APS React components have its representative in a backend class. The purpose of
+ *   this class is mostly to be configured and then generate its JSON data as part of the GUI
+ *   spec sent to the client. Some of these component representatives can take a listener. When
+ *   a listener is added then a unique address is generated with the unique client id, and and UUID.
+ *   This is then stored in the cluster store, and a subscription is setup by the representative
+ *   to receive direct messages from the component. ("address:"address) is then passed as route
+ *   to the bus, which will then use the address after the ':' instead of resolving routes. These
+ *   messages are then forwarded to the component representative subscriber. This then provides a
+ *   complete backend API that does not require any frontend coding. Similar, but very different
+ *   from Vaadin.
+ *
+ * You are thereby very free in how to use this. Note that the APSWebManager project has all the
+ * functionality, but GUI wise is only a demo and also used for testing components. To make your
+ * own web using this, copy the APSWebManager project and adapt to your needs. Do not ever deploy
+ * APSWebManager itself!
  */
 import APSLogger from "./APSLogger";
 import APSEventBusRouter from "./APSEventBusRouter";
@@ -101,7 +146,7 @@ export default class APSEventBus {
     /**
      * Provides a bus address to all added routers. The bus cannot be used before this is done!
      *
-     * @param busAddress The bus address to set.
+     * @param busAddress The bus address to set. NOTE that this is an APSBusAddress!!
      */
     setBusAddress( busAddress: APSBusAddress ) {
         this.busAddress = busAddress;
@@ -113,9 +158,9 @@ export default class APSEventBus {
     }
 
     /**
-     * Returns the address of this bus.
+     * Returns the address of this bus. NOTE that this is an APSBusAddress!!
      */
-    getBusAddress() {
+    getBusAddress() : APSBusAddress {
         return this.busAddress;
     }
 
@@ -134,19 +179,25 @@ export default class APSEventBus {
         let valid = false;
         let invalid = "";
 
-        for ( let busRouter of this.busRouters ) {
+        // Make an exception for absolute addresses. See class comment for more info.
+        if (routing.startsWith("address:")) {
+            valid = true;
+        }
+        else {
+            for ( let busRouter of this.busRouters ) {
 
-            this.logger.debug(`Valid routes: ${JSON.stringify(busRouter.getValidRoutes())}`);
+                //this.logger.debug(`Valid routes: ${JSON.stringify(busRouter.getValidRoutes())}`);
 
-            for ( let route: string of routing.split( ',' ) ) {
-                if ( busRouter.getValidRoutes()[type].includes( route, 0 ) ) {
-                    valid = true;
-                }
-                else {
-                    invalid += ( " " + route );
+                for ( let route: string of routing.split( ',' ) ) {
+                    if ( busRouter.getValidRoutes()[type].includes( route, 0 ) ) {
+                        valid = true;
+                    } else {
+                        invalid += ( " " + route );
+                    }
                 }
             }
         }
+
         if (!valid) {
             throw new Error( `Routing values of "'${invalid.trim().replace(' ', ',')}'" is illegal for '${type}'!` );
         }
@@ -158,8 +209,7 @@ export default class APSEventBus {
     // 2 separate argument rather than one object. Things happily builds anyhow.
 
     /**
-     * This adds a subscriber for an address. The first param can also be an object containing 3 keys for each
-     * parameter. In that case the other 2 are ignored.
+     * This adds a subscriber.
      *
      * @param params - Named parameters: { headers: ..., subscriber: ... }
      * @param jic - Just In Case something still uses (headers, subscriber).
