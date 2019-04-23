@@ -2,8 +2,14 @@ package se.natusoft.osgi.aps.web.backend.component.model;
 
 public class APSButton extends APSComponent<APSButton> {
 
+    @SuppressWarnings( "WeakerAccess" )
     public APSButton() {
         this.setProperty( "type", "aps-button" );
+    }
+
+    public APSButton(String componentAddress) {
+        this();
+        setComponentAddress( componentAddress );
     }
 
     public APSButton setLabel(String label) {

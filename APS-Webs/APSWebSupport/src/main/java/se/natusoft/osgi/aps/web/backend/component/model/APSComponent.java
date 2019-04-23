@@ -16,18 +16,34 @@ public class APSComponent<S> {
     /** Holds the properties for the model. */
     private Map<String, Object> props = new LinkedHashMap<>(  );
 
+    /** A unique address to the represented component. */
+    private String componentAddress;
+
     //
     // Methods
     //
+
+    protected void setComponentAddress(String componentAddress) {
+        this.componentAddress = componentAddress;
+    }
+
+    protected String getComponentAddress() {
+        return this.componentAddress;
+    }
 
     protected Map<String, Object> newMap() {
         return new LinkedHashMap<>(  );
     }
 
+    @SuppressWarnings( "UnusedReturnValue" )
     protected S setProperty( String name, Object value) {
         this.props.put(name, value);
 
         return (S)this;
+    }
+
+    protected Object getProperty(String name) {
+        return this.props.get( name );
     }
 
     protected S setHeader(String name, Object value ) {
