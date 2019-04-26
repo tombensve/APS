@@ -42,7 +42,7 @@ class StructMap {
     //
 
     /**
-     * Creates a new Mapo instance from a Map.
+     * Creates a new StructMap instance from a Map.
      *
      * @param map The map to work with.
      */

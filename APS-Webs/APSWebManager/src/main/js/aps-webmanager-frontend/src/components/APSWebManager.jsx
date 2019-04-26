@@ -2,7 +2,7 @@
 // React
 import React, { Component } from 'react'
 // Misc
-import { APP_NAME, EVENT_ROUTES } from "../Constants"
+import { EVENT_ROUTES } from "../Constants"
 // Functional / Classes
 import uuid from "../APSUUID"
 import APSEventBus from "../APSEventBus"
@@ -111,6 +111,7 @@ export default class APSWebManager extends Component {
      * @param message The received message.
      */
     messageHandler( message: {} ) {
+
         message = apsObject(message);
 
         try {
@@ -121,18 +122,12 @@ export default class APSWebManager extends Component {
         }
 
         if ( message.aps ) {
-            switch ( message.aps.type.toLowerCase() ) {
-
-                case "gui":
-                    this.updateGui( message.content );
-                    break;
-
-                // Unknown message are OK and expected. But a default: i required to not get a Babel warning.
-                default:
+            if ( message.aps.type.toLowerCase() === "gui" ) {
+                this.updateGui( message.content );
             }
         }
         else {
-            this.logger.error( `RECEIVED MESSAGE OF UNKNOWN FORMAT: ${message.display()}` )
+            this.logger.error( `RECEIVED MESSAGE OF UNKNOWN FORMAT: ${message.display()}` );
         }
     }
 
