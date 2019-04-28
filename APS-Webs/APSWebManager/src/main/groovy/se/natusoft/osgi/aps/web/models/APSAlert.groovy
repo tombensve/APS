@@ -1,5 +1,10 @@
-package se.natusoft.osgi.aps.web.models;
+package se.natusoft.osgi.aps.web.models
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+
+@CompileStatic
+@TypeChecked
 class APSAlert extends APSComponent {
 
     APSAlert() {

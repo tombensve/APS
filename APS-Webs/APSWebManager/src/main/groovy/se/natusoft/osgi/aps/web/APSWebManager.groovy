@@ -1,5 +1,8 @@
 package se.natusoft.osgi.aps.web
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+import se.natusoft.osgi.aps.activator.annotation.BundleStop
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.activator.annotation.OSGiService
@@ -30,6 +33,8 @@ import se.natusoft.osgi.aps.web.models.APSComponent
  */
 // @formatter:on
 @SuppressWarnings( "unused" )
+@CompileStatic
+@TypeChecked
 class APSWebManager {
 
     @Managed( loggingFor = "APSWebManager" )
@@ -104,6 +109,16 @@ class APSWebManager {
         }
     }
 
+    @BundleStop
+    void cleanup() {
+        this.subscriber.unsubscribe( this.subscriberId ) { APSResult res ->
+
+            res.onFailure(  ) { Exception e ->
+                this.logger.error( "Failed to unsubscribe!", e )
+            }
+        }
+    }
+
     /**
      * Registers a handler for when a new web client requests a GUI.
      *
@@ -141,7 +156,7 @@ class APSWebManager {
      */
     private void sendGUIToOrigin( String origin, Map<String, Object> gui ) {
 
-        this.logger.debug( "gui: ${ gui }" )
+//        this.logger.debug( "gui: ${ gui }" )
 
         Map<String, Object> reply = [
                 aps    : [
@@ -162,7 +177,7 @@ class APSWebManager {
             }
         }
 
-        this.logger.debug( "Sent: ${ reply } to ${ origin }" )
+//        this.logger.debug( "Sent: ${ reply } to ${ origin }" )
     }
 
     /**
@@ -173,7 +188,7 @@ class APSWebManager {
      * @param origin The unique client address.
      */
     void renderGUIJSON( String origin ) {
-        this.logger.debug( "In renderGUIJSON!" )
+//        this.logger.debug( "In renderGUIJSON!" )
 
         InputStream jsonStream =
                 new BufferedInputStream( this.class.classLoader.getResourceAsStream( "guijson/gui.json" ) )
@@ -200,6 +215,7 @@ class APSWebManager {
      */
     void renderGUI( String origin, APSComponent apsComponent ) {
 
+        sendGUIToOrigin( origin, apsComponent.componentProperties )
     }
 
     /**
@@ -211,6 +227,29 @@ class APSWebManager {
      * the component.
      */
     void updateGUIValues( String origin, Map<String, Object> values ) {
+
+//        this.logger.debug( "updated values: ${ values }" )
+
+        Map<String, Object> updatedValues = [
+                aps    : [
+                        origin: "aps:${ Config.APP_NAME }:backend",
+                        app   : "${ Config.APP_NAME }",
+                        type  : "updated-values"
+                ],
+                content: values
+        ] as Map<String, Object>
+
+
+        println "Thread: ${ Thread.currentThread().getName() }"
+
+        this.sender.send( origin, updatedValues ) { APSResult result ->
+
+            result.onFailure() { Exception e ->
+                this.logger.error( "Failed to send updated values to client!", e )
+            }
+        }
+
+//        this.logger.debug( "Sent: ${ updatedValues } to ${ origin }" )
 
     }
 }

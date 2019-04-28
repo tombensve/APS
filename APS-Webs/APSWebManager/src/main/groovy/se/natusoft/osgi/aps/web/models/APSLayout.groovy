@@ -1,6 +1,11 @@
-package se.natusoft.osgi.aps.web.models;
+package se.natusoft.osgi.aps.web.models
 
- class APSLayout extends APSContainerComponent {
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+
+@CompileStatic
+@TypeChecked
+class APSLayout extends APSContainerComponent {
 
     enum Orientation { vertical, horizontal }
 

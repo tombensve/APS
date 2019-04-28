@@ -1,4 +1,8 @@
 package se.natusoft.osgi.aps.web.models
+
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+
 /**
  * Common base class for all models.
  *
@@ -8,6 +12,8 @@ package se.natusoft.osgi.aps.web.models
  * currently have to create a new model and send via _APSWebManager_. This will rerender the complete GUI.
  */
 @SuppressWarnings( [ "unchecked", "WeakerAccess", "unused" ] )
+@CompileStatic
+@TypeChecked
 class APSComponent<Component> {
 
     //
