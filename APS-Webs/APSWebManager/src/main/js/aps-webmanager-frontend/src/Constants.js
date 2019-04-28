@@ -2,6 +2,7 @@
 // The following are routing values that are checked for in the guiProps.routing field.
 //
 
+// If this is a copy of the APSWebManager project then this name should be changed.
 export const APP_NAME = "aps-web-manager";
 
 //

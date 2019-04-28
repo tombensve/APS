@@ -98,6 +98,7 @@
         <!-- The private packages. -->
         <osgi.private.package>
             se.natusoft.osgi.aps.web;version="${project.version}",
+            se.natusoft.osgi.aps.web.models;version="${project.version}",
             webContent;version="${project.version}"
         </osgi.private.package>
 
