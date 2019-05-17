@@ -48,8 +48,9 @@ import se.natusoft.osgi.aps.activator.APSActivatorInteraction
 import se.natusoft.osgi.aps.activator.annotation.*
 import se.natusoft.osgi.aps.api.messaging.APSMessage
 import se.natusoft.osgi.aps.api.messaging.APSMessageSender
-import se.natusoft.osgi.aps.api.messaging.APSReplyableMessageSender
+
 import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.osgi.aps.exceptions.APSException
 import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
@@ -67,10 +68,10 @@ import se.natusoft.osgi.aps.json.JSON
                 @OSGiProperty( name = APS.Messaging.Protocol.Name, value = "vertx-eventbus" ),
                 @OSGiProperty( name = APS.Messaging.Persistent, value = APS.FALSE ),
                 @OSGiProperty( name = APS.Messaging.Clustered, value = APS.TRUE )
-        ]
+        ],
+        serviceAPIs = [ APSMessageSender.class ]
 )
-class MessageSenderProvider<MessageType> extends AddressResolver implements APSReplyableMessageSender<MessageType,
-        MessageType> {
+class MessageSenderProvider<MessageType> extends AddressResolver implements APSMessageSender<MessageType> {
 
     //
     // Private Members
@@ -119,10 +120,6 @@ class MessageSenderProvider<MessageType> extends AddressResolver implements APSR
     @Managed( name = "senderAI" )
     private APSActivatorInteraction activatorInteraction
 
-    //
-    // Private Members
-    //
-
     /** The current subscriber. */
     private APSHandler<APSMessage<MessageType>> reply
 
@@ -138,18 +135,24 @@ class MessageSenderProvider<MessageType> extends AddressResolver implements APSR
         // of changing state. This is however more future safe.
         this.activatorInteraction.setStateHandler( APSActivatorInteraction.State.READY ) {
             this.activatorInteraction.registerService( MessageSenderProvider.class, this.context, this.svcRegs )
+            this.logger.debug( ">>>> Registered MessageSenderProvider as service!" )
         }
         this.activatorInteraction.setStateHandler( APSActivatorInteraction.State.TEMP_UNAVAILABLE ) {
-            this.svcRegs.first().unregister()
+            this.svcRegs.first().unregister() // We only have one instance.
             this.svcRegs.clear()
+            this.logger.debug( ">>>> Unregistered MessageSenderProvider as service!" )
         }
 
         this.eventBusTracker.onActiveServiceAvailable { EventBus service, ServiceReference serviceReference ->
+            this.logger.debug( ">>>> received eventbus!" )
+
             this.eventBus = service
 
             this.activatorInteraction.state = APSActivatorInteraction.State.READY
         }
         this.eventBusTracker.onActiveServiceLeaving { ServiceReference service, Class serviceAPI ->
+            this.logger.debug( ">>>> Lost eventbus!" )
+
             this.eventBus = null
 
             this.activatorInteraction.state = APSActivatorInteraction.State.TEMP_UNAVAILABLE
@@ -157,16 +160,25 @@ class MessageSenderProvider<MessageType> extends AddressResolver implements APSR
     }
 
     /**
-     * Sends a message. This usually goes to one receiver. See implementation documentation for more information.
+     * Sends a message.
      *
+     * @param destination The destination to send to.
      * @param message The message to send.
      */
-    @Override
-    void send( String destination, MessageType message ) {
-        //        this.logger.error( "@@@@@@@@ THREAD: ${Thread.currentThread()}" )
+    private void doSend( String destination, MessageType message ) {
+
         String address = resolveAddress( destination )
 
         if ( this.reply != null ) {
+
+            // For replyable messages only send is valid. We still need to filter address.
+            if ( address.startsWith( "all:" ) ) {
+
+                throw new APSException(
+                        "A reply handler has been provided and the destination implies a publish! " +
+                        "This is an impossible combination."
+                )
+            }
 
             this.eventBus.send( address, TypeConv.apsToVertx( message ) ) { AsyncResult<Message<String>> reply ->
 
@@ -180,33 +192,35 @@ class MessageSenderProvider<MessageType> extends AddressResolver implements APSR
         }
         else {
 
-            this.eventBus.send( address, TypeConv.apsToVertx( message ) )
+            if ( address.startsWith( "all:" ) ) {
+                address = address.substring( 4 )
+                this.logger.debug( ">>>> Publishing to address: " + address )
+                this.eventBus.publish( address, TypeConv.apsToVertx( message ) )
+            }
+            else {
+                this.logger.debug( ">>>> Sending to address: " + address )
+                this.eventBus.send( address, TypeConv.apsToVertx( message ) )
+            }
         }
     }
 
     /**
      * Sends a message receiving a result of success or failure. On Success there
      * can be a result value and on failure there is an Exception describing the failure
-     * available. This variant never throws an Exception.
+     * available.
      *
-     * Providing this variant is optional. When not supported an APSResult containing an
-     * APSUnsupportedException and a success() value of false should be the result. That
-     * this is not supported should also be made very clear in the documentation of the
-     * providing implementation.
+     * If result is null then an APSException will be thrown instead on error.
      *
      * @param message The message to send.
      */
     @Override
     void send( String destination, MessageType message, APSHandler<APSResult> result ) {
-        //        this.logger.error( "@@@@@@@@ THREAD: ${Thread.currentThread()}" )
+
         try {
-            send( destination, message )
+            doSend( destination, message )
 
             if ( result != null ) {
                 result.handle( APSResult.success( null ) )
-            }
-            else {
-                this.logger.warn( "Call to send(message, resultHandler) was made without a result handler!" )
             }
         }
         catch ( Exception e ) {
@@ -215,6 +229,15 @@ class MessageSenderProvider<MessageType> extends AddressResolver implements APSR
             }
             else {
                 this.logger.error( e.message, e )
+
+                // Yes, in Groovy all exceptions are unchecked! But non Groovy code might call this
+                // so make sure we do throw a runtime exception, which all APS exceptions are.
+                if (e instanceof APSException) {
+                    throw e
+                }
+                else {
+                    throw new APSException(e.message, e)
+                }
             }
         }
     }

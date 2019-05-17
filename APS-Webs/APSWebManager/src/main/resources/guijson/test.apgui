@@ -1,0 +1,28 @@
+
+@localRouting(routing[outgoing="client", incoming="client"])
+@backendRouting(routing[outgoing="backend", incoming="client"])
+
+aps-layout(id="page", name="page", orientation=vertical) {
+
+    aps-layout(id="h-test-group-1", name="top", orientation="horizontal") {
+
+        aps-alert(id="aps-default-alert", name="alert-comp", bsType="danger",
+            headers[@localRouting])
+
+        aps-layout(id="h-test-group-1", name="top", orientation="horizontal") {
+
+            aps-text-field(id="name", name="name-field", group="gpoc", label="Qwerty", width=20, value="",
+                headers[@localRouting])
+
+            aps-text-area(id="description", name="descriptionField", group="gpoc", cols=30, rows=2, value="",
+                headers[@localRouting])
+
+            aps-button(id="submit", name="submitButton", group="gpoc", label="Save", class="btn btn-success",
+                disabled=true, collectGroups="gpoc", enabled="groupNotEmpty:gpoc",
+                headers[@backendRouting])
+
+
+        }
+    }
+}
+

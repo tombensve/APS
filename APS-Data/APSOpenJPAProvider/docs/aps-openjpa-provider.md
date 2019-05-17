@@ -74,11 +74,9 @@ _Parameters_
 
 > _props_ - Custom properties to configure database, etc. 
 
-public _static_ _interface_ __APSJPAEntityManagerProvider__   [se.natusoft.osgi.aps.api.data.jpa.service] {
 
-Once you get this it is valid until the _APSJPAService_ is stopped (which will happen if the service is redeployed!).
 
-__public boolean isValid()__
+__boolean isValid()__
 
 Returns true if this instance is valid. If not call APSJPAService.initialize(...) again to get a new instance. It will be invalid if the APSJPAService provider have been restarted.
 

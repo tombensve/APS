@@ -1,3 +1,48 @@
+/* 
+ * 
+ * PROJECT
+ *     Name
+ *         APS Web Manager
+ *     
+ *     Code Version
+ *         1.0.0
+ *     
+ *     Description
+ *         This project contains 2 parts:
+ *         
+ *         1. A frontend React web app.
+ *         2. A Vert.x based backend that serves the frontend web app using Vert.x http router.
+ *         
+ *         Vert.x eventbus is used to communicate between frontend and backend.
+ *         
+ *         This build thereby also builds the frontend by using maven-exec-plugin to run a bash
+ *         script that builds the frontend. The catch to that is that it will probably only build
+ *         on a unix machine.
+ *         
+ * COPYRIGHTS
+ *     Copyright (C) 2012 by Natusoft AB All rights reserved.
+ *     
+ * LICENSE
+ *     Apache 2.0 (Open Source)
+ *     
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *     
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *     
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *     
+ * AUTHORS
+ *     tommy ()
+ *         Changes:
+ *         2019-04-17: Created!
+ *         
+ */
 package se.natusoft.osgi.aps.web
 
 import groovy.transform.CompileStatic
@@ -19,7 +64,10 @@ import se.natusoft.osgi.aps.util.APSLogger
 @SuppressWarnings( "unused" )
 @CompileStatic
 @TypeChecked
-class TestApp {
+class GUIProvider {
+
+    // In your web app copy of APSWebManager change this to your web app name.
+    private final String APS_WEB_APP_NAME="aps-web-manager"
 
     @Managed
     private APSLogger logger
@@ -36,12 +84,8 @@ class TestApp {
 
             this.logger.info( "An EventBus just became available!" )
 
-            this.newClientConsumer = eventBus.consumer( "aps:aps-web-manager:backend" ) { Message message ->
+            this.newClientConsumer = eventBus.consumer( "aps:${APS_WEB_APP_NAME}:backend" ) { Message message ->
 
-                // Since JsonObject from Vert.x only maps the current values to a Map, not the whole tree
-                // I'm currently producing a JSON string from JsonObject and then parse it again with
-                // Jackson Jr, which gives a full Map structure.
-                //Map<String, Object> received = APSJson.readObject( message.body(  ).toString(  ) )
                 Map<String, Object> received = new RecursiveJsonObjectMap(message.body(  ) as JsonObject)
                 String recv = received.toString(  )
                 this.logger.debug( ">>>>>Received from '${received["aps"]["origin"]}': ${ recv }" )
@@ -57,14 +101,14 @@ class TestApp {
 
             }
 
-            this.logger.debug( "Waiting for messages ..." )
-
-            eventBus.consumer( "aps:aps-web-manager:backend:all" ) { Message message ->
-
-                Map<String, Object> testGuiMsg = ( message.body() as JsonObject ).getMap()
-                this.logger.debug( "aps:test-gui ==> ${ testGuiMsg }" )
-
-            }
+//            this.logger.debug( "Waiting for messages ..." )
+//
+//            eventBus.consumer( "aps:${APS_WEB_APP_NAME}:backend:all" ) { Message message ->
+//
+//                Map<String, Object> testGuiMsg = ( message.body() as JsonObject ).getMap()
+//                this.logger.debug( "aps:test-gui ==> ${ testGuiMsg }" )
+//
+//            }
         }
 
         this.eventBusTracker.onActiveServiceLeaving = { ServiceReference sref, Class api ->

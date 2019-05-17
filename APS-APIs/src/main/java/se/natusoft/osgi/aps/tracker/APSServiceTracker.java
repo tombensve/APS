@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
@@ -162,12 +162,12 @@ public class APSServiceTracker<Service> implements ServiceListener {
     /**
      * An optional logger.
      */
-    private APSLogger logger = null;
+    private APSLogger logger = new APSLogger( );
 
     /**
      * An optional debug logger.
      */
-    private APSLogger debugLogger = null;
+    private APSLogger debugLogger = new APSLogger( );
 
     /**
      * If true the active service instance is fetched and cached until it goes away.
@@ -506,6 +506,8 @@ public class APSServiceTracker<Service> implements ServiceListener {
     @Override
     public void serviceChanged( ServiceEvent event ) {
 
+        this.logger.debug( "@@@@ (" + this.active + " class=" + this.serviceClass + ") ServiceEvent received: " + event.getType() );
+
         switch ( event.getType() ) {
 
             case ServiceEvent.REGISTERED:
@@ -557,6 +559,9 @@ public class APSServiceTracker<Service> implements ServiceListener {
                     }
                 }
         }
+
+        this.logger.debug( "this.active=" + this.active );
+        this.logger.debug( "this.hasTrackedServcies=" +this.trackedServices.hasServices() );
     }
 
     /**
@@ -1353,6 +1358,8 @@ public class APSServiceTracker<Service> implements ServiceListener {
 
                         throw new RuntimeException( "Failed to get service from service reference: " + this.active );
                     }
+
+                    APSServiceTracker.this.logger.debug( ">>>>>> Active service: " + this.activeService );
                 }
                 else {
 
@@ -1503,6 +1510,10 @@ public class APSServiceTracker<Service> implements ServiceListener {
                 this.active = null;
                 this.activeService = null;
             }
+        }
+
+        public String toString() {
+            return "activeService: " + (this.activeService != null ? this.activeService : "none");
         }
     }
 

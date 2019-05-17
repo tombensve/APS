@@ -8,11 +8,13 @@ import { apsObject } from "./Utils"
 
 /**
  * This represents a router and is responsible for sending and subscribing to messages.
+ *
+ * This specific router routes to the Vert.x event bus bridge (websocket).
  */
 export default class APSVertxEventBusRouter implements APSEventBusRouter {
 
     /**
-     * Creates a new LocalBusRouter.
+     * Creates a new APSVertxEventBusRouter.
      */
     constructor( alerter: APSAlerter ) {
 
@@ -84,6 +86,8 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
         console.info( "Vertx EventBuss is now connected!" );
 
         // This seem to help the problem of the bus shutting down after 2-4 minutes. It now takes 5-7 minutes!
+        // This problem is however only in Safari on OSX, other browsers handles websocket much better. Interestingly
+        // enough Safari on iOS does not suffer from this problem, only on OSX.
         // noinspection JSUnresolvedFunction
         this.eventBus.enableReconnect( true );
 
@@ -93,6 +97,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
             this.logger.info( "Executing cached subscription!" );
             this.subscribe( sub.headers, sub.callback );
         }
+        this.cache.subscribers = [];
 
         this.subscribes = [];
 
@@ -101,6 +106,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
             // noinspection JSUnresolvedFunction
             this.message( msg.headers, msg.message );
         }
+        this.cache.messages = [];
 
         this.sendMsgs = [];
 
@@ -114,6 +120,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
         // }, 20000 );
     }
 
+    // noinspection JSUnusedLocalSymbols
     onBusClose( e ) {
         this.logger.info( "The eventbus has been closed!" );
         this.alerter.alert( "aps-default-alert", "## No contact!\n\nWe are currently alone! " +
@@ -144,47 +151,51 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
 
                 let routes = headers[EVENT_ROUTING];
 
-                if ( routes != null && routes !== undefined ) {
-                    for ( let route: string of routes[ROUTE_OUTGOING].split( ',' ) ) {
+                if (routes !== undefined && routes != null) {
 
-                        switch ( route ) {
-                            case EVENT_ROUTES.CLIENT:
-                                break;
+                    // A route starting with 'address:' is not a route but a direct address. This allows for
+                    // components to have a direct and unique address handled by a direct counterpart on the
+                    // backend, rather than sending to a more generic handler receiving messages from multiple
+                    // components.
+                    if ( routes[ROUTE_OUTGOING].startsWith( "address:" ) ) {
+                        this.eventBus.send( routes.substring( 7 ), message, headers, null )
+                    }
+                    // noinspection SuspiciousTypeOfGuard
+                    else {
+                        for ( let route: string of routes[ROUTE_OUTGOING].split( ',' ) ) {
 
-                            case EVENT_ROUTES.BACKEND:
-                                // this.logger.debug( `Sending to BACKEND with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
+                            switch ( route ) {
+                                case EVENT_ROUTES.BACKEND:
+                                    // this.logger.debug( `Sending to BACKEND with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
 
-                                // noinspection JSUnresolvedFunction
-                                this.eventBus.send( this.busAddress.backend, message, headers, null );
-                                break;
+                                    // noinspection JSUnresolvedFunction
+                                    this.eventBus.send( this.busAddress.backend, message, headers, null );
+                                    break;
 
-                            case EVENT_ROUTES.ALL:
-                                // this.logger.debug( `Publishing to ALL with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
+                                case EVENT_ROUTES.ALL:
+                                    // this.logger.debug( `Publishing to ALL with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
 
-                                // noinspection JSUnresolvedFunction
-                                this.eventBus.publish( this.busAddress.all, message, headers );
-                                break;
+                                    // noinspection JSUnresolvedFunction
+                                    this.eventBus.publish( this.busAddress.all, message, headers );
+                                    break;
 
-                            case EVENT_ROUTES.ALL_BACKENDS:
-                                // this.logger.debug( `Publishing to ALL_BACKEND with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
+                                case EVENT_ROUTES.ALL_BACKENDS:
+                                    // this.logger.debug( `Publishing to ALL_BACKEND with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
 
-                                // noinspection JSUnresolvedFunction
-                                this.eventBus.publish( this.busAddress.allBackends, message, headers );
-                                break;
+                                    // noinspection JSUnresolvedFunction
+                                    this.eventBus.publish( this.busAddress.allBackends, message, headers );
+                                    break;
 
-                            case EVENT_ROUTES.ALL_CLIENTS:
-                                // this.logger.debug( `Publishing to ALL_CLIENTS with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
+                                case EVENT_ROUTES.ALL_CLIENTS:
+                                    // this.logger.debug( `Publishing to ALL_CLIENTS with headers: ${headers.display()} and message: ${JSON.stringify( message )}` );
 
-                                // noinspection JSUnresolvedFunction
-                                this.eventBus.publish( this.busAddress.allClients, message, headers );
-                                break;
+                                    // noinspection JSUnresolvedFunction
+                                    this.eventBus.publish( this.busAddress.allClients, message, headers );
+                                    break;
 
-                            case EVENT_ROUTES.NONE:
-                                break;
-
-                            default:
-                                // noinspection ExceptionCaughtLocallyJS
-                                throw new Error( `APSVertxEventBusRouter: message(): Bad routing value: ${route}!` );
+                                default:
+                                // OK
+                            }
                         }
                     }
                 }
@@ -250,16 +261,19 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
 
             let routes = headers[EVENT_ROUTING];
 
+            // noinspection SuspiciousTypeOfGuard
             if ( routes != null && routes !== undefined ) {
                 for ( let route: string of routes[ROUTE_INCOMING].split( ',' ) ) {
 
                     switch ( route ) {
+
                         case EVENT_ROUTES.CLIENT:
                             // noinspection JSUnresolvedFunction
                             this.eventBus.registerHandler( this.busAddress.client, headers, handler );
                             break;
 
                         case EVENT_ROUTES.BACKEND:
+                            // Note to self: We are on the frontend, should thereby not handle backend routes!!!
                             break;
 
                         case EVENT_ROUTES.ALL:
@@ -268,6 +282,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                             break;
 
                         case EVENT_ROUTES.ALL_BACKENDS:
+                            // Note to self: We are on the frontend, should thereby not handle backend routes!!!
                             break;
 
                         case EVENT_ROUTES.ALL_CLIENTS:
@@ -275,12 +290,8 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                             this.eventBus.registerHandler( this.busAddress.allClients, headers, handler );
                             break;
 
-                        case EVENT_ROUTES.NONE:
-                            break;
-
                         default:
-                            // noinspection JSUnfilteredForInLoop
-                            throw new Error( `APSVertxEventBusRouter: subscribe(): Bad routing value: ${route}!` );
+                            // OK.
                     }
                 }
             }
@@ -315,6 +326,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
         if ( this.busReady ) {
             let routes = headers[EVENT_ROUTING];
 
+            // noinspection SuspiciousTypeOfGuard
             if ( routes != null && routes !== undefined ) {
 
                 for ( let route: string of routes[ROUTE_INCOMING].split( ',' ) ) {
@@ -341,12 +353,8 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
                             this.eventBus.unregisterHandler( this.busAddress.allClients, handler );
                             break;
 
-                        case EVENT_ROUTES.NONE:
-                            break;
-
                         default:
-                            // noinspection JSUnfilteredForInLoop
-                            throw new Error( `APSVertxEventBusRouter: unsubscribe(): Bad routing value: ${route}!` );
+                            // OK.
                     }
                 }
             }
@@ -372,4 +380,21 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
         }
         this.activeSubscribers = newSubs;
     }
+
+    static validRoutes = {
+        message: [ EVENT_ROUTES.BACKEND, EVENT_ROUTES.ALL, EVENT_ROUTES.ALL_BACKENDS, EVENT_ROUTES.ALL_CLIENTS ],
+        subscribe: [ EVENT_ROUTES.CLIENT, EVENT_ROUTES.ALL, EVENT_ROUTES.ALL_CLIENTS ],
+        unsubscribe: [ EVENT_ROUTES.CLIENT, EVENT_ROUTES.ALL, EVENT_ROUTES.ALL_CLIENTS ]
+    };
+
+    // noinspection JSMethodCanBeStatic
+    /**
+     * Returns a list of valid routes for the router.
+     */
+    getValidRoutes() : { message: [], subscribe: [], unsubscribe: [] } {
+
+        return APSVertxEventBusRouter.validRoutes;
+
+    }
+
 }

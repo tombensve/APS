@@ -1,9 +1,5 @@
 import { SANE, saneTypeId } from "./SaneTypeId"
 
-//
-// PORTED FROM GROOVY (APSCoreLib)
-//
-
 // schema type identifiers.
 export const NUMBER = "#";
 export const BOOLEAN = "!";
@@ -98,6 +94,10 @@ const safeStringify = function(obj) {
  * An empty object means any object, non validated. Do note that it is not possible to have validated objects
  * under a non validated object. When there is a non validated object, anything under it is also non validated.
  *
+ * ### Usage
+ * 
+ * In most cases you would call validate(jsonObject) which is actually and alias for validateMap(json). Where for JS "Map"
+ * refers to a JSON object. There is also validateList(jsonArray) where for JS "List" refers to an array.
  */
 export default class MapJsonDocSchemaValidator {
 

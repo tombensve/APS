@@ -1,8 +1,10 @@
 {
-  "id": "h-test-group",
-  "name": "top",
+  "id": "page",
+  "name": "page",
   "type": "aps-layout",
-  "orientation": "horizontal",
+  "orientation": "vertical",
+  "borderStyle": "1px solid black",
+  "border": false,
   "children": [
     {
       "id": "aps-default-alert",
@@ -17,164 +19,232 @@
       }
     },
     {
-      "id": "name",
-      "name": "name-field",
-      "group": "gpoc",
-      "type": "aps-text-field",
-      "label": "Qwerty",
-      "width": 20,
-      "value": "",
-      "headers": {
-        "routing": {
-          "outgoing": "client",
-          "incoming": "client"
-        }
-      }
-    },
-    {
-      "id": "description",
-      "name": "descriptionField",
-      "group": "gpoc",
-      "type": "aps-text-area",
-      "cols": 30,
-      "rows": 2,
-      "value": "",
-      "headers": {
-        "routing": {
-          "outgoing": "client",
-          "incoming": "client"
-        }
-      }
-    },
-    {
-      "id": "submit",
-      "name": "submitButton",
-      "group": "gpoc",
-      "type": "aps-button",
-      "label": "Save",
-      "class": "btn btn-success",
-      "disabled": true,
-      "collectGroups": "gpoc",
-      "enabled": "groupNotEmpty:gpoc",
-      "headers": {
-        "routing": {
-          "outgoing": "backend",
-          "incoming": "client"
-        }
-      }
-    },
-    {
-      "id": "num",
-      "name": "numeric",
-      "type": "aps-number",
-      "min": -10.0,
-      "max": 10.0,
-      "value": 2.5,
-      "headers": {
-        "routing": {
-          "outgoing": "client",
-          "incoming": "client"
-        }
-      }
-    },
-    {
-      "id": "date",
-      "name": "dateSelector",
-      "type": "aps-date",
-      "startValue": "2018-08-10",
-      "headers": {
-        "routing": {
-          "outgoing": "client,backend",
-          "incoming": "client"
-        }
-      }
-    },
-    {
-      "id": "checkbox",
-      "name": "cb",
-      "type": "aps-check-box",
-      "value": "checked",
-      "label": "test",
-      "headers": {
-        "routing": {
-          "outgoing": "client",
-          "incoming": "client"
-        }
-      }
-    },
-    {
-      "id": "radioset",
-      "name": "radios",
-      "type": "aps-radio-set",
-      "value": "two",
-      "radios": [
-        { "id": "one", "label": "One" },
-        { "id": "two", "label": "Two" },
-        { "id": "three", "label": "Three"}
-      ],
-      "headers": {
-        "outgoing": "client",
-        "incoming": "client"
-      }
-    },
-    {
-      "id": "select",
-      "name": "select",
-      "type": "aps-select",
-      "value": "two",
-      "options": [
-        { "value": "one", "label": "One" },
-        { "value": "two", "label": "Two" },
-        { "value": "three", "label": "Three" }
-      ],
-      "headers": {
-        "outgoing": "client",
-        "incoming": "client"
-      }
-    },
-    {
-      "id": "tree",
-      "type": "aps-tree",
-      "node": {
-        "label": "one",
-        "id": "one",
-        "type": "branch",
-        "open": false,
-        "children": [
-          {
-            "label": "one.one",
-            "id": "one.one",
-            "type": "branch",
-            "open": false,
-            "children": [
-              {
-                "label": "one.one.one",
-                "id": "one.one.one",
-                "type": "leaf",
-                "open": false
-              }
-            ]
-          } ,
-          {
-            "label": "two",
-            "id": "two",
-            "type": "branch",
-            "open": false,
-            "children": [
-              {
-                "label": "two.one",
-                "id": "two.one",
-                "type": "leaf",
-                "open": false
-              }
-            ]
+      "id": "h-test-group-1",
+      "name": "top",
+      "type": "aps-layout",
+      "orientation": "horizontal",
+      "children": [
+        {
+          "id": "name",
+          "name": "name-field",
+          "group": "gpoc",
+          "type": "aps-text-field",
+          "label": "Qwerty",
+          "width": 20,
+          "value": "",
+          "headers": {
+            "routing": {
+              "outgoing": "client",
+              "incoming": "client"
+            }
           }
-        ]
-      },
-      "headers": {
-        "outgoing": "client",
-        "incoming": "client"
-      }
+        },
+        {
+          "id": "description",
+          "name": "descriptionField",
+          "group": "gpoc",
+          "type": "aps-text-area",
+          "cols": 30,
+          "rows": 1,
+          "value": "",
+          "headers": {
+            "routing": {
+              "outgoing": "client",
+              "incoming": "client"
+            }
+          }
+        },
+        {
+          "id": "submit",
+          "name": "submitButton",
+          "group": "gpoc",
+          "type": "aps-button",
+          "label": "Save",
+          "class": "btn btn-success",
+          "disabled": true,
+          "collectGroups": "gpoc",
+          "enabled": "groupNotEmpty:gpoc",
+          "headers": {
+            "routing": {
+              "outgoing": "backend",
+              "incoming": "client"
+            }
+          }
+        },
+        {
+          "id": "num",
+          "name": "numeric",
+          "type": "aps-number",
+          "min": -10.0,
+          "max": 10.0,
+          "value": 2.5,
+          "headers": {
+            "routing": {
+              "outgoing": "client",
+              "incoming": "client"
+            }
+          }
+        },
+        {
+          "id": "date",
+          "name": "dateSelector",
+          "type": "aps-date",
+          "startValue": "2018-08-10",
+          "headers": {
+            "routing": {
+              "outgoing": "client,backend",
+              "incoming": "client"
+            }
+          }
+        },
+        {
+          "id": "checkbox",
+          "name": "cb",
+          "type": "aps-check-box",
+          "value": "checked",
+          "label": "test",
+          "headers": {
+            "routing": {
+              "outgoing": "client",
+              "incoming": "client"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "h-test-group-2",
+      "name": "top",
+      "type": "aps-layout",
+      "orientation": "horizontal",
+      "children": [
+        {
+          "id": "radioset",
+          "name": "radios",
+          "type": "aps-radio-set",
+          "value": "two",
+          "radios": [
+            {
+              "id": "one",
+              "label": "One"
+            },
+            {
+              "id": "two",
+              "label": "Two"
+            },
+            {
+              "id": "three",
+              "label": "Three"
+            }
+          ],
+          "headers": {
+            "outgoing": "client",
+            "incoming": "client"
+          }
+        },
+        {
+          "id": "select",
+          "name": "select",
+          "type": "aps-select",
+          "value": "two",
+          "options": [
+            {
+              "value": "one",
+              "label": "One"
+            },
+            {
+              "value": "two",
+              "label": "Two"
+            },
+            {
+              "value": "three",
+              "label": "Three"
+            }
+          ],
+          "headers": {
+            "outgoing": "client",
+            "incoming": "client"
+          }
+        },
+        {
+          "id": "tree",
+          "type": "aps-tree",
+          "node": {
+            "label": "one",
+            "id": "one",
+            "type": "branch",
+            "open": false,
+            "children": [
+              {
+                "label": "one.one",
+                "id": "one.one",
+                "type": "branch",
+                "open": false,
+                "children": [
+                  {
+                    "label": "one.one.one",
+                    "id": "one.one.one",
+                    "type": "leaf",
+                    "open": false
+                  }
+                ]
+              },
+              {
+                "label": "two",
+                "id": "two",
+                "type": "branch",
+                "open": false,
+                "children": [
+                  {
+                    "label": "two.one",
+                    "id": "two.one",
+                    "type": "leaf",
+                    "open": false
+                  }
+                ]
+              }
+            ]
+          },
+          "headers": {
+            "outgoing": "client",
+            "incoming": "client"
+          }
+        },
+        {
+          "id": "vert-layout",
+          "name": "vert-layout",
+          "type": "aps-layout",
+          "orientation": "vertical",
+          "children": [
+            {
+              "id": "num",
+              "name": "numeric",
+              "type": "aps-number",
+              "min": -10.0,
+              "max": 10.0,
+              "value": 2.5,
+              "headers": {
+                "routing": {
+                  "outgoing": "client",
+                  "incoming": "client"
+                }
+              }
+            },
+            {
+              "id": "date",
+              "name": "dateSelector",
+              "type": "aps-date",
+              "startValue": "2018-08-10",
+              "headers": {
+                "routing": {
+                  "outgoing": "client,backend",
+                  "incoming": "client"
+                }
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }

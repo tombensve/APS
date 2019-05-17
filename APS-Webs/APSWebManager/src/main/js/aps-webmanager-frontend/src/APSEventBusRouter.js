@@ -41,6 +41,12 @@ export default class APSEventBusRouter {
      */
     unsubscribe( headers: APSMessageHeaders, callback: () => mixed ) {
     }
+
+    /**
+     * Returns a list of valid routes for the router.
+     */
+    getValidRoutes() : { message: [], subscribe: [], unsubscribe: [] } {
+    }
 }
 
 
