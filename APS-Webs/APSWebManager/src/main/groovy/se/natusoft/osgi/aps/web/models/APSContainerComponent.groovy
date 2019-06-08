@@ -8,17 +8,27 @@ import groovy.transform.TypeChecked
  */
 @CompileStatic
 @TypeChecked
-class APSContainerComponent extends APSComponent {
+class APSContainerComponent<Component> extends APSComponent<Component> {
 
-    private List<APSComponent> children = []
+    private List<APSComponent> children = [ ]
 
     APSContainerComponent() {
 
-        this.componentProperties.children = children
+        this.componentProperties["children"] = children
     }
 
-    void addChild(APSComponent component) {
+    Component addChild( APSComponent component ) {
         this.children << component
+        return this as Component
+    }
+
+    Component leftShift( APSComponent component ) {
+        addChild( component )
+    }
+
+    Component content( Closure<APSComponent>[] content ) {
+        content.each { APSComponent comp -> addChild( comp ) }
+        return this as Component
     }
 
 }

@@ -3,9 +3,12 @@ package se.natusoft.osgi.aps.web.models
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
+/**
+ * Does layout of other components, either vertically or horizontally.
+ */
 @CompileStatic
 @TypeChecked
-class APSLayout extends APSContainerComponent {
+class APSLayout extends APSContainerComponent<APSLayout> {
 
     enum Orientation { vertical, horizontal }
 
