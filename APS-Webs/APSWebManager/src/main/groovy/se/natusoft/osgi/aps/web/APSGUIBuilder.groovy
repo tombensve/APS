@@ -29,7 +29,7 @@ class APSGUIBuilder {
 
     APSGUIBuilder children() {
         List<Map<String,Serializable>> children = []
-
+        this
     }
 
     APSGUIBuilder endChildren() {

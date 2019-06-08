@@ -8,7 +8,7 @@ import groovy.transform.TypeChecked
  */
 @CompileStatic
 @TypeChecked
-class APSPanel extends APSContainerComponent {
+class APSPanel extends APSContainerComponent<APSPanel> {
 
     APSPanel() {
         this.componentProperties.type = "aps-panel"

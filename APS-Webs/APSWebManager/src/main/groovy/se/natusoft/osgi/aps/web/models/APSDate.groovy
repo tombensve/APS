@@ -12,7 +12,7 @@ import java.time.temporal.TemporalAccessor
  */
 @CompileStatic
 @TypeChecked
-class APSDate extends APSComponent {
+class APSDate extends APSComponent<APSDate> {
 
     APSDate() {
         this.componentProperties.type = "aps-date"
@@ -23,13 +23,13 @@ class APSDate extends APSComponent {
         this
     }
 
-    APSDate setStartValue(Date date) {
+    APSDate setStartValueAsDate(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd")
         this.componentProperties.startValue = sdf.format( date )
         this
     }
 
-    APSDate setStartValue(TemporalAccessor ta) {
+    APSDate setStartValueAsTemporalAccessor(TemporalAccessor ta) {
         this.componentProperties.startValue = DateTimeFormatter.ISO_LOCAL_DATE.format( ta )
         this
     }

@@ -65,11 +65,24 @@ class APSComponent<Component> {
 
         def headers = this.props.headers
 
-        headers.( name ) = value
+        headers[ name ] = value
 
         ( Component ) this
     }
 
+    /**
+     * This completely replaces 'headers' with passed structure!!
+     *
+     * @param rawHeaders The new headers to set.
+     */
+    protected Component setHeadersRaw( Map<String, Object> rawHeaders ) {
+        this.props[ 'headers' ] = rawHeaders
+        ( Component ) this
+    }
+
+    /**
+     * Makes sure there are headers and returns them. The returned value can be added to!
+     */
     protected Map<String, Object> getHeaders() {
 
         if ( this.props[ 'headers' ] == null ) {
@@ -110,9 +123,9 @@ class APSComponent<Component> {
      */
     Component setRouting( String name, String value ) {
 
-        this.routing.(name) = value
+        this.routing.( name ) = value
 
-        return ( Component ) this
+        ( Component ) this
     }
 
     /**
@@ -147,7 +160,7 @@ class APSComponent<Component> {
      * @param routes The incoming routes to set.
      * @return The subclass. Provides builder pattern.
      */
-    Component setIncomingMessageRoutes( String... routes ) {
+    Component setIncomingMessageRoutes( List<String> routes ) {
         String comma = ""
         String value = ""
         for ( String route : routes ) {
@@ -155,9 +168,13 @@ class APSComponent<Component> {
             comma = ","
         }
 
-        this.routing.incomming = value
+        this.routing.incoming = value
 
         return ( Component ) this
+    }
+
+    Component setIncomingMessageRoutesAsArray( String... routes ) {
+        setIncomingMessageRoutes( Arrays.asList( routes ) )
     }
 
     /**
@@ -167,7 +184,7 @@ class APSComponent<Component> {
      * @param routes The outgoing routes to set.
      * @return The subclass. Provides builder pattern.
      */
-    Component setOutgoingMessageRoutes( String... routes ) {
+    Component setOutgoingMessageRoutes( List<String> routes ) {
         String comma = ""
         String value = ""
         for ( String route : routes ) {
@@ -178,6 +195,10 @@ class APSComponent<Component> {
         this.routing.outgoing = value
 
         return ( Component ) this
+    }
+
+    Component setOutgoingMessageRoutesAsArray( String... routes ) {
+        setOutgoingMessageRoutes( Arrays.asList( routes ) )
     }
 
     /**
@@ -224,7 +245,7 @@ class APSComponent<Component> {
         return ( Component ) this
     }
 
-    Map<String, Object> getJSON() {
+    Map<String, Object> toJSON() {
 
         return this.props
     }

@@ -9,7 +9,7 @@ import groovy.transform.TypeChecked
  */
 @CompileStatic
 @TypeChecked
-class APSNumber extends APSComponent {
+class APSNumber extends APSComponent<APSNumber> {
 
     APSNumber() {
         this.componentProperties.type = "aps-number"
