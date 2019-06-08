@@ -3,36 +3,35 @@ package se.natusoft.osgi.aps.web.models
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
+/**
+ * A button component.
+ */
 @CompileStatic
 @TypeChecked
 class APSButton extends APSComponent<APSButton> {
 
     @SuppressWarnings( "WeakerAccess" )
     APSButton() {
-        this.setProperty( "type", "aps-button" )
-    }
-
-    APSButton(String componentAddress) {
-        this()
+        this.componentProperties.type = "aps-button"
     }
 
     APSButton setLabel(String label) {
-        this.setProperty( "label", label )
-        return this
+        this.componentProperties.label = label
+        this
     }
 
     APSButton setDisabled(boolean disabled) {
-        this.setProperty( "disabled", disabled )
-        return this
+        this.componentProperties.disabled = disabled
+        this
     }
 
     APSButton setStyle(String bootstrapStyle) {
-        this.setProperty( "style", bootstrapStyle )
-        return this
+        this.componentProperties.style = bootstrapStyle
+        this
     }
 
     APSButton setClass(String clazz) {
-        this.setProperty( "class", clazz )
-        return this
+        this.componentProperties.class = clazz
+        this
     }
 }
