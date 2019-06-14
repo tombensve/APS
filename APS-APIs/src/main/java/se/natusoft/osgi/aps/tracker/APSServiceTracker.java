@@ -615,6 +615,13 @@ public class APSServiceTracker<Service> implements ServiceListener {
     }
 
     /**
+     * @return All currently tracked services.
+     */
+    public List<ServiceReference> getAllTrackedServices() {
+        return this.trackedServices.getServices();
+    }
+
+    /**
      * Provides this tracker with a logger.
      *
      * @param logger The logger to provide.
