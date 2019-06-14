@@ -14,9 +14,18 @@ import java.util.Map;
 
 /**
  * This is a simple bus API that is used by creating an instance and passing a BundleContext.
- * <p>
- * All calls will be passed to all the APSBusRouter implementations tracked. This means that if
- * no such implementations are deployed then this will do absolutely nothing!
+ *
+ * All calls will be passed to all the APSBusRouter implementations tracked.
+ *
+ * Note that even if there are no APSBusRouter services published, the APSLocalInMemoryBus,
+ * which is a router, is always available. It however only reacts on targets starting with "local:".
+ *
+ * There are 2 ways of making other buses available through APSBus:
+ * 1. Implement APSBusRouter and publish as OSGi service. In this case you should probably only
+ *    react on targets with a specific prefix or certain specific, configured targets. Probably
+ *    never everything.
+ * 2. Subscribe to "local:(mybus):(target)" or something that way and forward received messages
+ *    on your bus. Example: "local:amqp:..." and forward to a RabbitMQ.
  */
 public class APSBus {
 
@@ -26,9 +35,6 @@ public class APSBus {
 
     /** The currently known bus routers */
     private APSServiceTracker<APSBusRouter> routerTracker = null;
-
-    /** The bundle context of using bundle. */
-    private BundleContext bundleContext = null;
 
     //
     // Constructors
@@ -40,8 +46,8 @@ public class APSBus {
      * @param bundleContext The bundle context of the caller.
      */
     public APSBus( @NotNull BundleContext bundleContext ) {
-        this.bundleContext = bundleContext;
-        this.routerTracker = new APSServiceTracker<>( this.bundleContext, APSBusRouter.class );
+
+        this.routerTracker = new APSServiceTracker<>( bundleContext, APSBusRouter.class );
     }
 
     //
@@ -57,9 +63,13 @@ public class APSBus {
      */
     void send( @NotNull String target, @NotNull Map<String, Object> message, @Optional @Nullable APSHandler<APSResult<Void>> resultHandler ) {
 
+        APSLocalInMemoryBus.ROUTER.send( target, message, resultHandler );
+
         this.routerTracker.withAllAvailableServices( new WithService<APSBusRouter>() {
+
             @Override
             public void withService( APSBusRouter apsBusRouter, Object... args ) {
+
                 apsBusRouter.send( target, message, resultHandler );
             }
         } );
@@ -75,9 +85,13 @@ public class APSBus {
     void subscribe( @NotNull ID id, @NotNull String target, @Optional @Nullable APSHandler<APSResult> resultHandler,
                     @NotNull APSHandler<Map<String, Object>> messageHandler ) {
 
+        APSLocalInMemoryBus.ROUTER.subscribe( id, target, resultHandler, messageHandler );
+
         this.routerTracker.withAllAvailableServices( new WithService<APSBusRouter>() {
+
             @Override
             public void withService( APSBusRouter apsBusRouter, Object... args ) {
+
                 apsBusRouter.subscribe( id, target, resultHandler, messageHandler );
             }
         } );
@@ -89,9 +103,14 @@ public class APSBus {
      * @param subscriberId The ID returned by subscribe.
      */
     void unsubscribe( @NotNull ID subscriberId ) {
+
+        APSLocalInMemoryBus.ROUTER.unsubscribe( subscriberId );
+
         this.routerTracker.withAllAvailableServices( new WithService<APSBusRouter>() {
+
             @Override
             public void withService( APSBusRouter apsBusRouter, Object... args ) throws Exception {
+
                 apsBusRouter.unsubscribe( subscriberId );
             }
         } );
