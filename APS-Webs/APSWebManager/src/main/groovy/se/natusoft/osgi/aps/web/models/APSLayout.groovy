@@ -9,6 +9,13 @@ import groovy.transform.TypeChecked
 @CompileStatic
 @TypeChecked
 class APSLayout extends APSContainerComponent<APSLayout> {
+    static String ORIENTATION = "orientation"
+    static String ORIENTATION_VERTICAL = "vertical"
+    static String ORIENTATION_HORIZONTAL = "horizontal"
+    static String BORDER_STYLE = "borderStyle"
+    static String BORDER = "border"
+    static String BORDER_TRUE = "true"
+    static String BORDER_FALSE = "false"
 
     enum Orientation { vertical, horizontal }
 

@@ -1,6 +1,6 @@
 package se.natusoft.osgi.aps.web.models
 
-class APSRadioSet extends APSComponent {
+class APSRadioSet extends APSComponent<APSRadioSet> {
 
     private List radios = []
 

@@ -1,6 +1,6 @@
 package se.natusoft.osgi.aps.web.models
 
-class APSSelect extends APSComponent {
+class APSSelect extends APSComponent<APSSelect> {
 
     private List options = []
 
@@ -13,7 +13,7 @@ class APSSelect extends APSComponent {
         Map<String, Object> option = [:]
         option.value = value
         option.label = label
-        this.optoins << option
+        this.options << option
 
         this
     }

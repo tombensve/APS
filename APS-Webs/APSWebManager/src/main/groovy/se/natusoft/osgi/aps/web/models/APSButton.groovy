@@ -15,23 +15,23 @@ class APSButton extends APSComponent<APSButton> {
         this.componentProperties.type = "aps-button"
     }
 
-    APSButton setLabel(String label) {
+    APSButton setLabel( String label ) {
         this.componentProperties.label = label
         this
     }
 
-    APSButton setDisabled(boolean disabled) {
+    APSButton setDisabled( boolean disabled ) {
         this.componentProperties.disabled = disabled
         this
     }
 
-    APSButton setStyle(String bootstrapStyle) {
+    APSButton setStyle( String bootstrapStyle ) {
         this.componentProperties.style = bootstrapStyle
         this
     }
 
-    APSButton setClass(String clazz) {
-        this.componentProperties.class = clazz
+    APSButton setStyleClass( String clazz ) {
+        this.componentProperties[ "class" ] = clazz
         this
     }
 }

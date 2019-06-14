@@ -2,6 +2,7 @@ package se.natusoft.osgi.aps.web.models
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import se.natusoft.osgi.aps.api.messaging.APSMessage
 
 /**
  * This component displays markdown text.
@@ -23,7 +24,7 @@ import groovy.transform.TypeChecked
  */
 @CompileStatic
 @TypeChecked
-class APSMarkdown extends APSComponent {
+class APSMarkdown extends APSComponent<APSMarkdown> {
 
     APSMarkdown() {
         this.componentProperties.type = "aps-markdown"

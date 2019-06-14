@@ -22,17 +22,17 @@ import groovy.transform.TypeChecked
  */
 @CompileStatic
 @TypeChecked
-class APSAlert extends APSComponent {
+class APSAlert extends APSComponent<APSAlert> {
 
     APSAlert() {
         this.componentProperties.type = "aps-alert"
     }
 
     /**
-     * @param alertType "warning", "error", ...
+     * @param alertType "danger",  ...
      */
     APSAlert setAlertType(String alertType) {
-        this.componentProperties.alertType = alertType
+        this.componentProperties.bsType = alertType
         return this
     }
 
