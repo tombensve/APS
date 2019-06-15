@@ -2,9 +2,11 @@ package se.natusoft.osgi.aps.api.messaging;
 
 import se.natusoft.docutations.NotNull;
 import se.natusoft.docutations.Nullable;
+import se.natusoft.osgi.aps.exceptions.APSValidationException;
 import se.natusoft.osgi.aps.types.APSHandler;
 import se.natusoft.osgi.aps.types.APSResult;
 import se.natusoft.osgi.aps.types.ID;
+import se.natusoft.osgi.aps.util.APSLogger;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -31,6 +33,8 @@ public class APSLocalInMemoryBus implements APSBusRouter {
 
     private Map<String, Map<ID, List<APSHandler<Map<String, Object>>>>> subscribers = new ConcurrentHashMap<>();
 
+    private APSLogger logger = new APSLogger().setLoggingFor( "APSLocalInMemoryBus" );
+
     //
     // Methods
     //
@@ -46,17 +50,40 @@ public class APSLocalInMemoryBus implements APSBusRouter {
     public void send( @NotNull String target, @NotNull Map<String, Object> message,
                       @Nullable APSHandler<APSResult<Void>> resultHandler ) {
 
-        if (target.startsWith( FILTER )) {
+        if ( target.startsWith( FILTER ) ) {
 
             target = target.substring( FILTER.length() );
 
-            this.subscribers.computeIfAbsent( target, byId -> new LinkedHashMap<>() )
-                    .forEach( ( id, handlers ) -> handlers.forEach( handler -> handler.handle( message ) ) );
+            Map<ID, List<APSHandler<Map<String, Object>>>> subscribers =
+                    this.subscribers.computeIfAbsent( target, byId -> new LinkedHashMap<>() );
 
-            if ( resultHandler != null ) {
+            if ( !subscribers.isEmpty() ) {
 
-                resultHandler.handle( APSResult.success( null ) );
+                subscribers.forEach( ( ignore, handlers ) ->
+                        handlers.forEach( handler -> {
+                                    try {
+                                        handler.handle( message );
+                                    } catch ( Exception e ) {
+                                        this.logger.error( "Message handler threw illegal exception!", e );
+                                    }
+                                }
+                        )
+                );
+
+                if ( resultHandler != null ) {
+                    resultHandler.handle( APSResult.success( null ) );
+                }
             }
+            else if ( resultHandler != null ) {
+
+                resultHandler.handle( APSResult.failure( new APSValidationException( "No subscribers!" ) ) );
+            }
+        }
+        else if ( resultHandler != null ) {
+
+            resultHandler.handle(
+                    APSResult.failure( new APSValidationException( "'target' does not start with 'local:'!" ) )
+            );
         }
     }
 
@@ -69,10 +96,10 @@ public class APSLocalInMemoryBus implements APSBusRouter {
      * @param messageHandler The handler to call with messages sent to target.
      */
     @Override
-    public void subscribe( @NotNull ID id, @NotNull String target, @Nullable  APSHandler<APSResult> resultHandler,
+    public void subscribe( @NotNull ID id, @NotNull String target, @Nullable APSHandler<APSResult> resultHandler,
                            @NotNull APSHandler<Map<String, Object>> messageHandler ) {
 
-        if (target.startsWith( FILTER )) {
+        if ( target.startsWith( FILTER ) ) {
 
             target = target.substring( FILTER.length() );
 
@@ -83,6 +110,14 @@ public class APSLocalInMemoryBus implements APSBusRouter {
 
                 resultHandler.handle( APSResult.success( null ) );
             }
+        }
+        else if ( resultHandler != null ) {
+
+            resultHandler.handle(
+                    APSResult.failure(
+                            new APSValidationException( "'target' does not start with 'local:'!" )
+                    )
+            );
         }
     }
 
