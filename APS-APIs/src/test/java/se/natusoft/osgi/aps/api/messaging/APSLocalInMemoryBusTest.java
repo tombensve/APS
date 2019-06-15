@@ -14,11 +14,13 @@ public class APSLocalInMemoryBusTest {
     private boolean receivedMessageWork = false;
     private boolean receivedMessageFail = false;
 
+    private APSBus bus = new APSBus(  );
+
     @Test
     public void shouldWork() {
         ID subId = new APSUUID();
 
-        APSLocalInMemoryBus.ROUTER.subscribe( subId, "local:test", null, ( message ) -> {
+        this.bus.subscribe( subId, "local:test", null, ( message ) -> {
             this.receivedMessageWork = true;
 
             System.out.println( message.toString() );
@@ -41,9 +43,9 @@ public class APSLocalInMemoryBusTest {
 
         assertTrue( this.receivedMessageWork );
 
-        APSLocalInMemoryBus.ROUTER.unsubscribe( subId );
+        this.bus.unsubscribe( subId );
 
-        APSLocalInMemoryBus.ROUTER.send(
+        this.bus.send(
                 "local:test",
                 MapBuilder.map(
                         "msgType:", "no-receiver-test",
@@ -61,7 +63,7 @@ public class APSLocalInMemoryBusTest {
         ID subId = new APSUUID();
 
         // This will not receive anything since target does not start with "local:"!
-        APSLocalInMemoryBus.ROUTER.subscribe( subId, "test",
+        this.bus.subscribe( subId, "test",
                 ( res ) -> {
 
                     System.out.println( res.failure().toString() );
@@ -72,7 +74,7 @@ public class APSLocalInMemoryBusTest {
                 null // Will never ever be called in this case!
         );
 
-        APSLocalInMemoryBus.ROUTER.send(
+        this.bus.send(
                 "test",
                 MapBuilder.map(
                         "msgType:", "test",
