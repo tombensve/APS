@@ -4,6 +4,7 @@ import org.osgi.framework.BundleContext;
 import se.natusoft.docutations.NotNull;
 import se.natusoft.docutations.Nullable;
 import se.natusoft.docutations.Optional;
+import se.natusoft.docutations.Reactive;
 import se.natusoft.osgi.aps.tracker.APSServiceTracker;
 import se.natusoft.osgi.aps.types.APSHandler;
 import se.natusoft.osgi.aps.types.APSResult;
@@ -68,6 +69,7 @@ public class APSBus {
      * @param message       The message to send. Only JSON structures allowed and top level has to be an object.
      * @param resultHandler Receives the success or failure of the call.
      */
+    @Reactive
     void send( @NotNull String target, @NotNull Map<String, Object> message,
                @Optional @Nullable APSHandler<APSResult<Void>> resultHandler ) {
 
@@ -86,6 +88,7 @@ public class APSBus {
      * @param target         The target to subscribe to.
      * @param messageHandler The handler to call with messages sent to target.
      */
+    @Reactive
     void subscribe( @NotNull ID id, @NotNull String target, @Optional @Nullable APSHandler<APSResult> resultHandler,
                     @NotNull APSHandler<Map<String, Object>> messageHandler ) {
 
@@ -102,6 +105,7 @@ public class APSBus {
      *
      * @param subscriberId The ID returned by subscribe.
      */
+    @Reactive
     void unsubscribe( @NotNull ID subscriberId ) {
 
         APSLocalInMemoryBus.ROUTER.unsubscribe( subscriberId );

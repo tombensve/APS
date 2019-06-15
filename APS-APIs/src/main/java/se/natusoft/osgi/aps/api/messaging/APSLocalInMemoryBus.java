@@ -2,6 +2,7 @@ package se.natusoft.osgi.aps.api.messaging;
 
 import se.natusoft.docutations.NotNull;
 import se.natusoft.docutations.Nullable;
+import se.natusoft.docutations.Reactive;
 import se.natusoft.osgi.aps.exceptions.APSValidationException;
 import se.natusoft.osgi.aps.types.APSHandler;
 import se.natusoft.osgi.aps.types.APSResult;
@@ -46,6 +47,7 @@ public class APSLocalInMemoryBus implements APSBusRouter {
      * @param message The message to send. Only JSON structures allowed and top level has to be an object.
      * @param resultHandler The handler to call with result of operation. Can be null!
      */
+    @Reactive
     @Override
     public void send( @NotNull String target, @NotNull Map<String, Object> message,
                       @Nullable APSHandler<APSResult<Void>> resultHandler ) {
@@ -95,6 +97,7 @@ public class APSLocalInMemoryBus implements APSBusRouter {
      * @param resultHandler The result of the subscription.
      * @param messageHandler The handler to call with messages sent to target.
      */
+    @Reactive
     @Override
     public void subscribe( @NotNull ID id, @NotNull String target, @Nullable APSHandler<APSResult> resultHandler,
                            @NotNull APSHandler<Map<String, Object>> messageHandler ) {
@@ -126,6 +129,7 @@ public class APSLocalInMemoryBus implements APSBusRouter {
      *
      * @param subscriberId The ID returned by subscribe.
      */
+    @Reactive
     @Override
     public void unsubscribe( @NotNull ID subscriberId ) {
 

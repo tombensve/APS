@@ -3,6 +3,7 @@ package se.natusoft.osgi.aps.api.messaging;
 import se.natusoft.docutations.NotNull;
 import se.natusoft.docutations.Nullable;
 import se.natusoft.docutations.Optional;
+import se.natusoft.docutations.Reactive;
 import se.natusoft.osgi.aps.types.APSHandler;
 import se.natusoft.osgi.aps.types.APSResult;
 import se.natusoft.osgi.aps.types.ID;
@@ -26,6 +27,7 @@ public interface APSBusRouter {
      * @param message       The message to send. Only JSON structures allowed and top level has to be an object.
      * @param resultHandler The handler to call with result of operation. Can be null!
      */
+    @Reactive
     void send( @NotNull String target, @NotNull Map<String, Object> message,
                @Optional @Nullable APSHandler<APSResult<Void>> resultHandler );
 
@@ -37,6 +39,7 @@ public interface APSBusRouter {
      * @param resultHandler  The result of the subscription.
      * @param messageHandler The handler to call with messages sent to target.
      */
+    @Reactive
     void subscribe( @NotNull ID id, @NotNull String target, @Optional @Nullable APSHandler<APSResult> resultHandler,
                     @NotNull  APSHandler<Map<String, Object>> messageHandler );
 
@@ -45,5 +48,6 @@ public interface APSBusRouter {
      *
      * @param subscriberId The ID returned by subscribe.
      */
+    @Reactive
     void unsubscribe( @NotNull  ID subscriberId );
 }

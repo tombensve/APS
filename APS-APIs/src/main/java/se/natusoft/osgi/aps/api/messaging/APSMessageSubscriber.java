@@ -38,6 +38,7 @@ package se.natusoft.osgi.aps.api.messaging;
 
 import se.natusoft.docutations.NotNull;
 import se.natusoft.docutations.Nullable;
+import se.natusoft.docutations.Reactive;
 import se.natusoft.osgi.aps.types.APSHandler;
 import se.natusoft.osgi.aps.types.APSResult;
 import se.natusoft.osgi.aps.types.ID;
@@ -62,6 +63,7 @@ public interface APSMessageSubscriber<Message> {
      * @param result         The result of the call. Will throw an APSMessagingException on failure if value is null.
      * @param handler        The subscription handler.
      */
+    @Reactive
     void subscribe(@NotNull String destination, @NotNull ID subscriptionId, @Nullable APSHandler<APSResult> result,
                    @NotNull APSHandler<APSMessage<Message>> handler);
 
@@ -71,6 +73,7 @@ public interface APSMessageSubscriber<Message> {
      * @param subscriptionId The same id as passed to subscribe.
      * @param result The result of the unsubscribe. Will throw an APSMessagingException on failure if value is null.
      */
+    @Reactive
     void unsubscribe(@NotNull ID subscriptionId, @Nullable APSHandler<APSResult> result);
 
 }

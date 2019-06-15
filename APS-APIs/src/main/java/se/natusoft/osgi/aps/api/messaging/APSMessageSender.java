@@ -38,6 +38,7 @@ package se.natusoft.osgi.aps.api.messaging;
 
 import se.natusoft.docutations.NotNull;
 import se.natusoft.docutations.Nullable;
+import se.natusoft.docutations.Reactive;
 import se.natusoft.osgi.aps.exceptions.APSException;
 import se.natusoft.osgi.aps.types.APSHandler;
 import se.natusoft.osgi.aps.types.APSResult;
@@ -69,6 +70,7 @@ public interface APSMessageSender<Message> {
      * @param message The message to send.
      * @param result  The result of the send. If null an APSMessagingException will be thrown on failure.
      */
+    @Reactive
     void send(@NotNull String destination, @NotNull Message message, @Nullable APSHandler<APSResult> result);
 
     /**

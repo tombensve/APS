@@ -37,6 +37,7 @@
 package se.natusoft.osgi.aps.api.messaging;
 
 import se.natusoft.docutations.NotNull;
+import se.natusoft.docutations.Reactive;
 import se.natusoft.osgi.aps.types.APSHandler;
 import se.natusoft.osgi.aps.types.APSResult;
 
@@ -72,5 +73,6 @@ public interface APSMessageBroadcaster<Message> {
      * @param message The message to publish.
      * @param result Callback providing the success or failure of the call.
      */
+    @Reactive
     void send(@NotNull String destination, @NotNull Message message, @NotNull APSHandler<APSResult<Message>> result);
 }
