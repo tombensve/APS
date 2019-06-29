@@ -29,7 +29,7 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  * found as result of a get() then it is wrapped by a new instance of this
  * class and returned.
  *
- * You should always tread instances of this as Map<String, Object>, not
+ * You should always treat instances of this as Map<String, Object>, not
  * RecursiveJsonObjectMap! Example:
  *
  *     Map<String, Object> json = new RecursiveJsonObjectMap(jsonObject)
