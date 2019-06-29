@@ -133,6 +133,20 @@ class GUIProvider {
 
     }
 
+    /**
+     * This gets called when a new frontend announces itself with a message. The message contains
+     * the address the frontend is listening to. This is the second argument to this method.
+     *
+     * This needs to provide a GUI spec in JSON and send to the frontend, which will render it.
+     * All further communication with the frontend gui is done through event bus messages. The
+     * JSON GUI spec determines which components deliver messages to backend. Components can
+     * act as "collectors" of data from other components in GUI on the frontend. These will
+     * pass that data on to backend when they send messages. This simulates form behaviour, but
+     * in a more flexible way.
+     *
+     * @param eventBus Our event bus.
+     * @param address The frontend address to send GUI JSON spec to.
+     */
     private void provideGui( EventBus eventBus, String address ) {
         this.logger.debug( "In provideGui!" )
 
@@ -143,7 +157,7 @@ class GUIProvider {
                                 app   : "aps-web-manager",
                                 type  : "gui"
                         ],
-                        content: buildGUIUsingModels()//buildGUIUsingModels()
+                        content: buildGUIUsingModels()
                 ] as Map<String, Object>
         )
 
@@ -155,10 +169,22 @@ class GUIProvider {
 
     }
 
-    protected Map<String, Object> loadGUIFromJSONResource() {
+    // Below are 2 different methods that return a JSON structure as Map<String, Object>.
+    //
+    // One just reads a complete JSON document with the whole GUI and sends it to the
+    // frontend.
+    //
+    // The other uses models under se.natusoft.osgi.aps.web.models that models the frontend
+    // GUI components. This allows for building the GUI in a Groovy/Java way. With this variant
+    // return toJSON() of the root object to produce a complete, correct JSON of the GUI.
+
+    /**
+     * Reads GUI from classpath resource JSON file.
+     */
+    protected static Map<String, Object> loadGUIFromJSONResource() {
 
         InputStream jsonStream =
-                new BufferedInputStream( this.class.classLoader.getResourceAsStream( "guijson/gui.json" ) )
+                new BufferedInputStream( GUIProvider.class.classLoader.getResourceAsStream( "guijson/gui.json" ) )
 
         Map<String, Object> gui = null
 
@@ -172,7 +198,10 @@ class GUIProvider {
         gui
     }
 
-    protected Map<String, Object> buildGUIUsingModels() {
+    /**
+     * Builds GUI code wise using Groovy/Java models.
+     */
+    protected static Map<String, Object> buildGUIUsingModels() {
 
         APSComponent root = new APSLayout(
                 id: "id",
