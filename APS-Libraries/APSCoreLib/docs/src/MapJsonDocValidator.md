@@ -54,9 +54,9 @@ Note that when the key is a regexp (starts with '?') then there can be no more r
 
 #### Keys
 
-&lt;key&gt;\_0 - The key is optional.
+\<key\>\_0 - The key is optional.
 
-&lt;key&gt;\_1 - The key is required.
+\<key\>\_1 - The key is required.
 
 &lt;key&gt;\_? - A description of the key. MapJsonSchemaMeta extracts this information. It is intended for editors editing data of a file validated by a schema. This should provide help information about the value. Since APS uses the MapJsonDocSchemaValidator for configurations and is intended to have web guis for editing configuration this is intended to provide information about configuration fields.
 

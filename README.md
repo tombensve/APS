@@ -4,7 +4,7 @@ This code base do contain some react frontend code using javascript. Thereby __n
 (Node Package Manager) needs to be installed on the machine before this will fully
 build.
 
-Since Groovy is used instructions on the following page needs to be followed : https://github.com/tombensve/maven-bundle-plugin/blob/master/README.md.
+Since Groovy is used instructions on the following page needs to be followed : <https://github.com/tombensve/maven-bundle-plugin/blob/master/README.md>.
 
 This because maven-bundle-plugins usage of bnd causes groovy code to confuse bnd into thinking there is code in default package. After a support discussion with bnd there are options in bnd for solving this, but those are not availabe when bnd is used via maven-bundle-plugin. bnd's own maven plugin is far more primitive however so switching is a big job.
 
