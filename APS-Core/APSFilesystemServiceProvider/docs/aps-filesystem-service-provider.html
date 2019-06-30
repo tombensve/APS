@@ -26,167 +26,6 @@
     </p>
     <H2>The APIs for this service</H2>
     <p>
-      public <em>interface</em> <strong>APSDirectory </strong> extends  APSFile    [se.natusoft.osgi.aps.api.core.filesystem.model] {      
-    </p>
-    <p>
-      This represents a directory in an <em>APSFilesystem</em>.      
-    </p>
-    <p>
-      Use this to create or get directories and files and list contents of directories.      
-    </p>
-    <p>
-      Personal comment: I do prefer the term "folder" over "directory" since I think that is less ambiguous, but since Java uses the term "directory" I decided to stick with that name.      
-    </p>
-    <p>
-      <strong>APSDirectory createDir(String name) throws IOException</strong>      
-    </p>
-    <p>
-      Returns a newly created directory with the specified name.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>name</em> - The name of the directory to create.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>IOException</em> - on any failure.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>APSDirectory createDir(String name, String duplicateMessage) throws IOException</strong>      
-    </p>
-    <p>
-      Returns a newly created directory with the specified name.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>name</em> - The name of the directory to create.         
-      </p>
-    </blockquote>
-    <blockquote>
-      <p>
-        <em>duplicateMessage</em> - The exception messaging if directory already exists.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>IOException</em> - on any failure.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>APSFile createFile(String name) throws IOException</strong>      
-    </p>
-    <p>
-      Creates a new file in the directory represented by the current <em>APSDirectory</em>.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>name</em> - The name of the file to create.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>IOException</em> - on failure.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>APSDirectory getDir(String dirname) throws FileNotFoundException</strong>      
-    </p>
-    <p>
-      Returns the specified directory.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>dirname</em> - The name of the directory to enter.         
-      </p>
-    </blockquote>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>FileNotFoundException</em> - on failure         
-      </p>
-    </blockquote>
-    <p>
-      <strong>APSFile getFile(String name)</strong>      
-    </p>
-    <p>
-      Returns the named file in this directory.      
-    </p>
-    <p>
-      <em>Parameters</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>name</em> - The name of the file to get.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>void recursiveDelete() throws IOException</strong>      
-    </p>
-    <p>
-      Performs a recursive delete of the directory represented by this <em>APSDirectory</em> and all subdirectories and files.      
-    </p>
-    <p>
-      <em>Throws</em>      
-    </p>
-    <blockquote>
-      <p>
-        <em>IOException</em> - on any failure.         
-      </p>
-    </blockquote>
-    <p>
-      <strong>String[] list()</strong>      
-    </p>
-    <p>
-      <em>See</em>      
-    </p>
-    <blockquote>
-      <p>
-        java.io.File.list()        
-      </p>
-    </blockquote>
-    <p>
-      <strong>APSFile[] listFiles()</strong>      
-    </p>
-    <p>
-      <em>See</em>      
-    </p>
-    <blockquote>
-      <p>
-        java.io.File.listFiles()        
-      </p>
-    </blockquote>
-    <p>
-      }      
-    </p>
-    <hr/>    <p>
-                
-    </p>
-    <p>
       public <em>interface</em> <strong>APSFile </strong>   [se.natusoft.osgi.aps.api.core.filesystem.model] {      
     </p>
     <p>
@@ -443,6 +282,28 @@
       </p>
     </blockquote>
     <p>
+      <strong>boolean existsAndNotEmpty(String name)</strong>      
+    </p>
+    <p>
+      Checks if the named file exists and is not empty.      
+    </p>
+    <p>
+      <em>Returns</em>      
+    </p>
+    <blockquote>
+      <p>
+        true or false.        
+      </p>
+    </blockquote>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the file to check.         
+      </p>
+    </blockquote>
+    <p>
       <strong>boolean isDirectory()</strong>      
     </p>
     <p>
@@ -604,6 +465,167 @@
     <p>
       Returns the root directory.      
     </p>
+    <p>
+      }      
+    </p>
+    <hr/>    <p>
+                
+    </p>
+    <p>
+      public <em>interface</em> <strong>APSDirectory </strong> extends  APSFile    [se.natusoft.osgi.aps.api.core.filesystem.model] {      
+    </p>
+    <p>
+      This represents a directory in an <em>APSFilesystem</em>.      
+    </p>
+    <p>
+      Use this to create or get directories and files and list contents of directories.      
+    </p>
+    <p>
+      Personal comment: I do prefer the term "folder" over "directory" since I think that is less ambiguous, but since Java uses the term "directory" I decided to stick with that name.      
+    </p>
+    <p>
+      <strong>APSDirectory createDir(String name) throws IOException</strong>      
+    </p>
+    <p>
+      Returns a newly created directory with the specified name.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the directory to create.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on any failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSDirectory createDir(String name, String duplicateMessage) throws IOException</strong>      
+    </p>
+    <p>
+      Returns a newly created directory with the specified name.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the directory to create.         
+      </p>
+    </blockquote>
+    <blockquote>
+      <p>
+        <em>duplicateMessage</em> - The exception messaging if directory already exists.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on any failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSFile createFile(String name) throws IOException</strong>      
+    </p>
+    <p>
+      Creates a new file in the directory represented by the current <em>APSDirectory</em>.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the file to create.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSDirectory getDir(String dirname) throws FileNotFoundException</strong>      
+    </p>
+    <p>
+      Returns the specified directory.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>dirname</em> - The name of the directory to enter.         
+      </p>
+    </blockquote>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>FileNotFoundException</em> - on failure         
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSFile getFile(String name)</strong>      
+    </p>
+    <p>
+      Returns the named file in this directory.      
+    </p>
+    <p>
+      <em>Parameters</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>name</em> - The name of the file to get.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>void recursiveDelete() throws IOException</strong>      
+    </p>
+    <p>
+      Performs a recursive delete of the directory represented by this <em>APSDirectory</em> and all subdirectories and files.      
+    </p>
+    <p>
+      <em>Throws</em>      
+    </p>
+    <blockquote>
+      <p>
+        <em>IOException</em> - on any failure.         
+      </p>
+    </blockquote>
+    <p>
+      <strong>String[] list()</strong>      
+    </p>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.list()        
+      </p>
+    </blockquote>
+    <p>
+      <strong>APSFile[] listFiles()</strong>      
+    </p>
+    <p>
+      <em>See</em>      
+    </p>
+    <blockquote>
+      <p>
+        java.io.File.listFiles()        
+      </p>
+    </blockquote>
     <p>
       }      
     </p>

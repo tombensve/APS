@@ -22,9 +22,18 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *
  * My first solution was to do toString() on JsonObject and then parse that with
  * Jackson Jr into a Map. Even if it was less code to write for me it didn't
- * feel right. parse JSON -> regenerate3 JSON -> parse JSON. This class is just
+ * feel right. parse JSON -> regenerate JSON -> parse JSON. This class is just
  * a wrapper and uses the original JsonObject provided by Vert.x. So nothing is
- * reparsed again.
+ * reparsed again. This will also not convert the whole to a Map in one go,
+ * but rather do it on the way as content is accessed. When a JsonObject is
+ * found as result of a get() then it is wrapped by a new instance of this
+ * class and returned.
+ *
+ * You should always treat instances of this as Map<String, Object>, not
+ * RecursiveJsonObjectMap! Example:
+ *
+ *     Map<String, Object> json = new RecursiveJsonObjectMap(jsonObject)
+ *     println json[headers]
  *
  * This object is also read only! It will throw an APSValidationException on
  * any attempt to update the Map.

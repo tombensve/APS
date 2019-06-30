@@ -1,6 +1,6 @@
 import React from 'react'
 import APSComponent from "./APSComponent"
-import { ControlLabel, FormControl } from 'react-bootstrap'
+import { ControlLabel, FormControl, FormGroup } from 'react-bootstrap'
 
 /**
  * ## Properties
@@ -88,16 +88,17 @@ export default class APSTextArea extends APSComponent {
         }
 
         // noinspection HtmlUnknownAttribute
-        comps.push( <FormControl componentClass="textarea"
-                                 type={"textarea"}
-                                 value={this.state.value}
-                                 id={this.props.guiProps.id}
-                                 rows={this.props.guiProps.rows}
-                                 cols={this.props.guiProps.cols}
-                                 placeHolder={placeHolder}
-                                 onChange={this.handleEvent.bind( this )}
-                                 disabled={this.state.disabled}
-        /> );
+        comps.push( <FormGroup id={this.props.guiProps.id + '_fg'} validationState={this.state.validationState}>
+            <FormControl componentClass="textarea"
+                         type={"textarea"}
+                         value={this.state.value}
+                         id={this.props.guiProps.id}
+                         rows={this.props.guiProps.rows}
+                         cols={this.props.guiProps.cols}
+                         placeHolder={placeHolder}
+                         onChange={this.handleEvent.bind( this )}
+                         disabled={this.state.disabled}/>
+            </FormGroup> );
     }
 }
 

@@ -21,6 +21,5 @@
 
     <modules>
         <module>APSBundleArchetype</module>
-        <module>APSWarBundleArchetype</module>
     </modules>
 </project>

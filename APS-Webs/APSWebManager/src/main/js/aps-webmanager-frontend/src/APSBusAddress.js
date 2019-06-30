@@ -13,7 +13,7 @@ export default class APSBusAddress {
      *
      * @param {string} app - The name of the app the addresses are for.
      */
-    constructor(app: string) {
+    constructor( app: string ) {
         this.client = "aps:" + app + ":client:" + uuid();
         this.backend = "aps:" + app + ":backend";
         this.all = "aps:" + app + ":all";

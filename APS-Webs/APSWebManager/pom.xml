@@ -2,16 +2,22 @@
 <!--
     PROJECT
         Name
-            APS VertX Provider
+            APS Web Manager
 
         Code Version
             1.0.0
 
         Description
-            This service provides configured Vertx instances allowing multiple services to use the same Vertx instance.
+            This project contains 2 parts:
 
-            This service also provides for multiple instances of VertX by associating an instance with a name. Everyone
-            asking for the same name will get the same instance.
+            1. A frontend React web app.
+            2. A Vert.x based backend that serves the frontend web app using Vert.x http router.
+
+            Vert.x eventbus is used to communicate between frontend and backend.
+
+            This build thereby also builds the frontend by using maven-exec-plugin to run a bash
+            script that builds the frontend. The catch to that is that it will probably only build
+            on a unix machine.
 
     COPYRIGHTS
         Copyright (C) 2012 by Natusoft AB All rights reserved.
@@ -52,18 +58,16 @@
     <name>APS Web Manager</name>
 
     <description>
-        Provides react components that joins a bus whose messages reach backend
-        through the Vert.x bus bridge. No event listeners, all events are sent
-        on the bus and are reacted to by both backend code and other components
-        in the GUI.
+        This project contains 2 parts:
 
-        A JSON document can be sent on the bus to render a GUI. This document
-        includes routes for component messages. This allows backend code to make
-        a GUI without writing a GUI app. This is similar, but still quite different
-        to Vaadin.
+        1. A frontend React web app.
+        2. A Vert.x based backend that serves the frontend web app using Vert.x http router.
 
-        Components can also be used like other react components in a more "common"
-        react app though the bus is still used.
+        Vert.x eventbus is used to communicate between frontend and backend.
+
+        This build thereby also builds the frontend by using maven-exec-plugin to run a bash
+        script that builds the frontend. The catch to that is that it will probably only build
+        on a unix machine.
     </description>
 
     <properties>
@@ -94,6 +98,7 @@
         <!-- The private packages. -->
         <osgi.private.package>
             se.natusoft.osgi.aps.web;version="${project.version}",
+            se.natusoft.osgi.aps.web.models;version="${project.version}",
             webContent;version="${project.version}"
         </osgi.private.package>
 
@@ -256,7 +261,32 @@
     </dependencies>
 
     <build>
+        <resources>
+            <!--
+                These are needed to include these in final jar.
+            -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>guijson/*</include>
+                    <include>webContent/*</include>
+                    <include>webContent/static/css/*</include>
+                    <include>webContent/static/js/*</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/assembly/assembly.xml</descriptor>
+                    </descriptors>
+                </configuration>
+            </plugin>
 
             <!--
                 Force the jar plugin to use the maven-bundle-plugin generated manifest.
@@ -267,6 +297,14 @@
                     <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                     </archive>
+                    <includes>
+                        <include>webContent/static/js/*</include>
+                        <include>webContent/static/css/*</include>
+                        <include>webContent/*</include>
+                    </includes>
+                    <excludes>
+                        <exclude>webContent/.anchor</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
 
@@ -312,6 +350,7 @@
             <plugin>
                 <artifactId>exec-maven-plugin</artifactId>
                 <groupId>org.codehaus.mojo</groupId>
+                <version>1.6.0</version>
                 <executions>
                     <execution>
                         <id>build frontend</id>
@@ -346,7 +385,7 @@
                         <!--
                             This has to be process-resources or "mvn clean install" will fail since it
                             will install an empty src/main/resources/webContent before this copy occurs
-                            if run during "process-resources".
+                            if run during "generate-resources".
                         -->
                         <phase>process-resources</phase>
                         <configuration>
@@ -359,21 +398,49 @@
 
 
                                     Do note that if you have a very slow machine this might need increasing in value!
+
+                                    Consider building with "-T 1" as parameter to maven to disable parallel
+                                    execution.
                                 -->
-                                <sleep milliseconds="3000"/>
+                                <sleep milliseconds="4000"/>
 
                                 <echo message="Installing web files under src/main/resources/webContent ..."/>
-                                <delete dir="${project.basedir}/src/main/resources/webContent"/>
-                                <mkdir dir="${project.basedir}/src/main/resources/webContent"/>
+                                <!--
+                                    Note that we cannot delete the 'webContent' folder itself, only everything
+                                    below it. The webContent folder must exist on start of build. If it is created
+                                    after maven has started then it will not be seen, and thus not copied to target.
+                                -->
 
+                                <delete  dir="${project.basedir}/src/main/resources/webContent/static"/>
+                                <delete>
+                                    <fileset
+                                            dir="${project.basedir}/src/main/resources/webContent"
+                                            includes="*.*"
+                                            excludes=".anchor"
+                                    />
+                                </delete>
+
+                                <!--
+                                    For some reason we need to copy to both src/main/resources and target/classes.
+
+                                    If only one or the other is done the final jar file will not contain these!
+                                    The resource entries above is also needed for these to be included in jar
+                                    file. Note that they point to src/main/resources. This folder however does
+                                    not get copied to target/classes by maven, so we need to do that copy also
+                                    our self to get these files included. Very strange.
+                                -->
+                                <mkdir dir="${project.basedir}/src/main/resources/webContent"/>
                                 <copy todir="${project.basedir}/src/main/resources/webContent" >
+                                    <fileset dir="${project.basedir}/src/main/js/aps-webmanager-frontend/build" includes="**"/>
+                                </copy>
+                                <copy todir="${project.basedir}/target/classes/webContent" >
                                     <fileset dir="${project.basedir}/src/main/js/aps-webmanager-frontend/build" includes="**"/>
                                 </copy>
 
                                 <!--
                                     We need maven/ant time to catch up here too.
                                 -->
-                                <sleep milliseconds="3000"/>
+                                <sleep milliseconds="4000"/>
 
                             </target>
                         </configuration>
@@ -389,7 +456,20 @@
                         <configuration>
                             <target>
                                 <echo message="Cleaning ${project.basedir}/src/main/resources/webContent."/>
-                                <delete dir="${project.basedir}/src/main/resources/webContent"/>
+                                <!--
+                                    Note that we cannot delete the 'webContent' folder itself, only everything
+                                    below it. The webContent folder must exist on start of build. If it is created
+                                    after maven has started then it will not be seen, and thus not copied to target.
+                                -->
+                                <delete  dir="${project.basedir}/src/main/resources/webContent/static"/>
+                                <delete>
+                                    <fileset
+                                            dir="${project.basedir}/src/main/resources/webContent"
+                                            includes="*.*"
+                                            excludes=".anchor"
+                                    />
+                                </delete>
+
                                 <echo message="Cleaning ${project.basedir}/.vertx cache."/>
                                 <delete dir="${project.basedir}/.vertx"/>
                             </target>

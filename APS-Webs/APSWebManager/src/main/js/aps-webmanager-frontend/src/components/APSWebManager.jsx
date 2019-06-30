@@ -2,11 +2,10 @@
 // React
 import React, { Component } from 'react'
 // Misc
-import { APP_NAME, EVENT_ROUTES } from "../Constants"
+import { EVENT_ROUTES } from "../Constants"
 // Functional / Classes
 import uuid from "../APSUUID"
 import APSEventBus from "../APSEventBus"
-import APSBusAddress from "../APSBusAddress"
 // Components
 import APSLayout from "./APSLayout"
 import APSPanel from "./APSPanel"
@@ -56,10 +55,7 @@ export default class APSWebManager extends Component {
             comps: []
         };
 
-        this.busAddress = new APSBusAddress( APP_NAME );
-
-        this.apsEventBus = APSEventBus.createBus( this.props.name, this.busAddress );
-        this.logger.debug(`APSEventBus: ${this.apsEventBus}`);
+        this.apsEventBus = APSEventBus.getBus( "default" );
     }
 
     //
@@ -94,11 +90,11 @@ export default class APSWebManager extends Component {
         // Inform a backend that there is a new client available and provide clients unique address.
         this.apsEventBus.message( {
 
-            headers: { routing: { outgoing: `${EVENT_ROUTES.BACKEND}` } },
+            headers: { routing: { outgoing: EVENT_ROUTES.BACKEND } },
 
             message: {
                 aps: {
-                    origin: this.busAddress.client,
+                    origin: this.apsEventBus.getBusAddress().client,
                     app: this.getApp(),
                     type: "avail"
                 }
@@ -115,6 +111,7 @@ export default class APSWebManager extends Component {
      * @param message The received message.
      */
     messageHandler( message: {} ) {
+
         message = apsObject(message);
 
         try {
@@ -125,18 +122,12 @@ export default class APSWebManager extends Component {
         }
 
         if ( message.aps ) {
-            switch ( message.aps.type.toLowerCase() ) {
-
-                case "gui":
-                    this.updateGui( message.content );
-                    break;
-
-                // Unknown message are OK and expected. But a default: i required to not get a Babel warning.
-                default:
+            if ( message.aps.type.toLowerCase() === "gui" ) {
+                this.updateGui( message.content );
             }
         }
         else {
-            this.logger.error( `RECEIVED MESSAGE OF UNKNOWN FORMAT: ${message.display()}` )
+            this.logger.error( `RECEIVED MESSAGE OF UNKNOWN FORMAT: ${message.display()}` );
         }
     }
 
@@ -194,7 +185,7 @@ export default class APSWebManager extends Component {
             },
             message: {
                 aps: {
-                    origin: this.busAddress.client,
+                    origin: this.apsEventBus.getBusAddress().client,
                     app: this.getApp(),
                     type: "gui-created"
                 },
@@ -239,7 +230,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSLayout key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                               origin={this.busAddress.client}>
+                               origin={this.apsEventBus.getBusAddress().client}>
                         {childContent}
                     </APSLayout>
                 );
@@ -249,7 +240,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSPanel key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                              origin={this.busAddress.client}>
+                              origin={this.apsEventBus.getBusAddress().client}>
                         {childContent}
                     </APSPanel>
                 );
@@ -259,7 +250,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSButton key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                               origin={this.busAddress.client}/>
+                               origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
@@ -267,7 +258,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSTextField key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                                  origin={this.busAddress.client}/>
+                                  origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
@@ -275,7 +266,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSTextArea key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                                 origin={this.busAddress.client}/>
+                                 origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
@@ -283,7 +274,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSNumber key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                               origin={this.busAddress.client}/>
+                               origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
@@ -291,7 +282,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSDate key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                             origin={this.busAddress.client}/>
+                             origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
@@ -299,7 +290,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSCheckBox key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                                 origin={this.busAddress.client}/>
+                                 origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
@@ -307,7 +298,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSRadioSet key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                                 origin={this.busAddress.client}/>
+                                 origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
@@ -315,7 +306,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSSelect key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                               origin={this.busAddress.client}/>
+                               origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
@@ -323,7 +314,7 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSMarkdown key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                                 origin={this.busAddress.client}/>
+                                 origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
@@ -331,14 +322,14 @@ export default class APSWebManager extends Component {
 
                 content.push(
                     <APSAlert key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                              origin={this.busAddress.client}/>
+                              origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 
             case 'aps-tree':
                 content.push(
                     <APSTree key={++arrKeyCon.key} eventBus={this.apsEventBus} mgrId={mgrId} guiProps={gui}
-                             origin={this.busAddress.client}/>
+                             origin={this.apsEventBus.getBusAddress().client}/>
                 );
                 break;
 

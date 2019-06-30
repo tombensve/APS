@@ -13,7 +13,7 @@ Vagrant.configure(2) do |config|
   config.vm.define "karaf1" do |karaf1|
     karaf1.vm.box = "puphpet/ubuntu1604-x64"
     #karaf1.vm.synced_folder "vagrant-deploy/", "/srv/website"
-    karaf1.vm.network "public_network", ip: "192.168.1.60"
+    karaf1.vm.network "public_network", ip: "192.168.72.60"
     karaf1.vm.provision :shell, path: "vagrant/bin/bootstrap-n1.sh"
   end
 

@@ -15,6 +15,7 @@ import java.util.Map;
  * <p>
  * Current under the surface implementation is Jackson Jr.
  */
+@SuppressWarnings( "PackageAccessibility" )
 public class APSJson {
 
     /**
@@ -37,6 +38,7 @@ public class APSJson {
      * @param jsonStream The stream to read from.
      * @param handler    The handler to call with result.
      */
+    @SuppressWarnings( "unused" )
     public static void readObject( InputStream jsonStream, APSHandler<APSResult<Map<String, Object>>> handler ) {
         try {
             handler.handle( APSResult.success( readObject( jsonStream ) ) );
@@ -45,6 +47,7 @@ public class APSJson {
         }
     }
 
+    @SuppressWarnings( "unused" )
     public static Map<String, Object> readObject( String jsonString ) {
         try {
             InputStream is = new ByteArrayInputStream( jsonString.getBytes() );
@@ -56,6 +59,7 @@ public class APSJson {
         }
     }
 
+    @SuppressWarnings( "unused" )
     public static void readObject( String jsonString, APSHandler<APSResult<Map<String, Object>>> handler ) {
         try {
             InputStream bis = new ByteArrayInputStream( jsonString.getBytes() );
@@ -76,6 +80,7 @@ public class APSJson {
      * @param json       The JSON map object to write.
      * @param jsonStream The OutputStream to write to.
      */
+    @SuppressWarnings( "WeakerAccess" )
     public static void writeObject( Map<String, Object> json, OutputStream jsonStream ) {
         try {
             JSON.std.write( json, jsonStream );
@@ -91,6 +96,7 @@ public class APSJson {
      * @param jsonStream The OutputStream to write to.
      * @param handler    The handler to call with result.
      */
+    @SuppressWarnings( "unused" )
     public static void writeObject( Map<String, Object> json, OutputStream jsonStream, APSHandler<APSResult<Void>> handler ) {
         try {
             writeObject( json, jsonStream );
@@ -106,6 +112,7 @@ public class APSJson {
      * @param jsonStream The stream to read from.
      * @return A Map containing the read JSON.
      */
+    @SuppressWarnings( "WeakerAccess" )
     public static List<Object> readArray( InputStream jsonStream ) {
         try {
             Object[] array = JSON.std.arrayFrom( jsonStream );
@@ -121,6 +128,7 @@ public class APSJson {
      * @param jsonStream The stream to read from.
      * @param handler    The handler to call with result.
      */
+    @SuppressWarnings( "unused" )
     public static void readArray( InputStream jsonStream, APSHandler<APSResult<List<Object>>> handler ) {
         try {
             handler.handle( APSResult.success( readArray( jsonStream ) ) );
@@ -135,6 +143,7 @@ public class APSJson {
      * @param json       The JSON map object to write.
      * @param jsonStream The OutputStream to write to.
      */
+    @SuppressWarnings( "WeakerAccess" )
     public static void writeArray( List<Object> json, OutputStream jsonStream ) {
         try {
             JSON.std.write( json, jsonStream );
@@ -150,6 +159,7 @@ public class APSJson {
      * @param jsonStream The OutputStream to write to.
      * @param handler    The handler to call with result.
      */
+    @SuppressWarnings( "unused" )
     public static void writeArray( List<Object> json, OutputStream jsonStream, APSHandler<APSResult<Void>> handler ) {
         try {
             writeArray( json, jsonStream );

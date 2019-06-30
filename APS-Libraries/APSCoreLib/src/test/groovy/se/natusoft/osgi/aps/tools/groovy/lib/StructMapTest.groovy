@@ -33,7 +33,7 @@ class StructMapTest {
                             ]
                     ]
             ] as Map<String, Object>
-    ) as StructMap
+    )
 
     @Test
     void testKeys() throws Exception {

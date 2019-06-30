@@ -77,7 +77,7 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *       ]
  *   ]
  *
- *  ### Keys
+ * ### Keys
  *
  *  * __key\_1__ : This entry is required.
  *  * __key\_0__ : This entry is optional.

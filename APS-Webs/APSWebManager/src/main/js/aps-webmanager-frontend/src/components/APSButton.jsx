@@ -1,6 +1,6 @@
 import React from 'react'
 import APSComponent from "./APSComponent"
-import { Button } from 'react-bootstrap'
+import { Button, FormGroup } from 'react-bootstrap'
 
 /**
  * ## Properties
@@ -23,7 +23,7 @@ class APSButton extends APSComponent {
     }
 
     // Override
-    componentType():string {
+    componentType(): string {
         return "aps-button";
     }
 
@@ -47,12 +47,14 @@ class APSButton extends APSComponent {
     render() {
 
         // noinspection HtmlUnknownAttribute
-        return <Button bsStyle={this.props.guiProps.style != null ? this.props.guiProps.style : "success"}
-                       id={this.props.guiProps.id}
-                       onClick={this.handleEvent.bind( this )}
-                       disabled={this.state.disabled}>
-            {this.props.guiProps.label}
-        </Button>
+        return <FormGroup id={this.props.guiProps.id + '_fg'} validationState={this.state.validationState}>
+            <Button bsStyle={this.props.guiProps.style != null ? this.props.guiProps.style : "success"}
+                    id={this.props.guiProps.id}
+                    onClick={this.handleEvent.bind( this )}
+                    disabled={this.state.disabled}>
+                {this.props.guiProps.label}
+            </Button>
+        </FormGroup>
 
     }
 }

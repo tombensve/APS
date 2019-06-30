@@ -1,0 +1,160 @@
+<!--
+    PROJECT
+        Name
+            APS Web Manager
+        
+        Code Version
+            1.0.0
+        
+        Description
+            This project contains 2 parts:
+            
+            1. A frontend React web app.
+            2. A Vert.x based backend that serves the frontend web app using Vert.x http router.
+            
+            Vert.x eventbus is used to communicate between frontend and backend.
+            
+            This build thereby also builds the frontend by using maven-exec-plugin to run a bash
+            script that builds the frontend. The catch to that is that it will probably only build
+            on a unix machine.
+        
+    COPYRIGHTS
+        Copyright (C) 2012 by Natusoft AB All rights reserved.
+        
+    LICENSE
+        Apache 2.0 (Open Source)
+        
+        Licensed under the Apache License, Version 2.0 (the "License");
+        you may not use this file except in compliance with the License.
+        You may obtain a copy of the License at
+        
+          http://www.apache.org/licenses/LICENSE-2.0
+        
+        Unless required by applicable law or agreed to in writing, software
+        distributed under the License is distributed on an "AS IS" BASIS,
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        See the License for the specific language governing permissions and
+        limitations under the License.
+        
+    AUTHORS
+        tommy ()
+            Changes:
+            2019-04-17: Created!
+            
+    This is an XML version of gui.json. JSON is an excellent representation of data for sending and
+    receiving, but as a format for human input it is less than satisfactory. Designing a GUI with
+    a JSON document, especially the way JSON is formatted, makes it hard to read and see the overall
+    structure. The JSON format is excellent on the frontend side for extracting and rendering the
+    GUI design. This is a compromise. It uses the more familiar XML syntax for web development to
+    design a GUI. This must be parsed and a gui.json generated from this on building! In the end
+    it is only the gui.json that is used. This just makes it easier to design and read.
+
+    Also note that this and gui.json do produce a rather static GUI!! This does not work well in
+    many cases. The gui.json document can be produced with dynamic code. There is also a builder
+    library for building the gui.json dynamically.
+-->
+<aps-gui>
+    <!--
+        Provides reusable predefined header values.
+    -->
+    <header-defs>
+        <def name="local-routing">
+            <routing outgoing="client" incoming="client"/>
+        </def>
+        <def name="backend-routing">
+            <routing outgoing="backend" incoming="client"/>
+        </def>
+    </header-defs>
+    <gui>
+        <aps-layout id="page" name="page" orientation="vertical">
+
+            <aps-alert id="aps-default-alert" name="alert-comp" bsType="danger">
+                <message-headers>
+                    <def name="local-routing"/>
+                </message-headers>
+            </aps-alert>
+
+            <aps-layout id="h-test-group-1" name="top" orientation="horizontal">
+
+                <aps-text-field id="name" name="name-field" group="gpoc" label="Qwerty" width="20" value="">
+                    <!-- Alternative short version if no other headers. -->
+                    <message-headers def="local-routing"/>
+                </aps-text-field>
+
+                <aps-text-area id="description" name="descriptionField" group="gpoc" cols="30" rows="2" value="">
+                    <message-headers def="local-routing"/>
+                </aps-text-area>
+
+                <aps-button id="submit" name="submitButton" group="gpoc" label="Save" class="btn btn-success"
+                            disabled="true" collectGroups="gpoc" enabled="groupNotEmpty:gpoc">
+                    <message-headers def="backend-routing"/>
+                </aps-button>
+
+                <aps-number id="num" namme="numeric" min="-10.0" max="10.0" value="2.5">
+                    <mesage-headers def="local-routing"/>
+                </aps-number>
+
+                <aps-date id="date" name="dateSelector" startValue="2018-08-10">
+                    <mesage-headers>
+                        <routing outgoing="client,backend" incoming="client"/>
+                    </mesage-headers>
+                </aps-date>
+
+                <aps-check-box id="checkbox" name="cb" value="checked" label="test">
+                    <mesage-headers def="local-routing"/>
+                </aps-check-box>
+
+            </aps-layout>
+
+            <aps-layout id="h-test-group-2" name="below-top" orientation="horizontal">
+
+                <aps-radio-set id="radioset" name="radios" value="two">
+                    <list>
+                        <obj id="one" label="One"/>
+                        <obj id="two" label="Two"/>
+                        <obj id="three" label="Three"/>
+                    </list>
+                    <mesage-headers def="local-routing"/>
+                </aps-radio-set>
+
+                <aps-select id="select" name="select" value="two">
+                    <list>
+                        <obj value="one" label="One"/>
+                        <obj value="two" label="Two"/>
+                        <obj value="three" label="Three"/>
+                    </list>
+                    <mesage-headers def="local-routing"/>
+                </aps-select>
+
+                <aps-tree id="tree">
+                    <!-- name of "children" for children is default, but can be overridden with _children_. -->
+                    <obj name="node" _children_="children" label="one" id="one" type="branch" open="false">
+                        <obj label="one.one" id="one.one" type="branch" open="false">
+                            <obj label="one.one.one" id="one.one.one" type="leaf" open="false"/>
+                        </obj>
+                        <obj label="two" id="two" type="branch" open="false">
+                            <obj label="two.one" id="two.one" type="leaf" open="false"/>
+                        </obj>
+                    </obj>
+                    <mesage-headers def="local-routing"/>
+                </aps-tree>
+
+                <aps-layout id="vert-layout" name="vert-layout" orientation="vertical">
+
+                    <aps-number id="num" namme="numeric" min="-10.0" max="10.0" value="2.5">
+                        <mesage-headers def="local-routing"/>
+                    </aps-number>
+
+                    <aps-date id="date" name="dateSelector" startValue="2018-08-10">
+                        <mesage-headers>
+                            <routing outgoing="client,backend" incoming="client"/>
+                        </mesage-headers>
+                    </aps-date>
+
+                </aps-layout>
+
+            </aps-layout>
+
+        </aps-layout>
+    </gui>
+</aps-gui>

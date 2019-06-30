@@ -10,7 +10,9 @@ target/
 vagrant/deploy
 vagrant/filesystems
 .vertx
-
+**/docs/*.html
+**/docs/*.pdf
+**/buildInfo.json
 .vagrant/
 lics/Apache License-2.0.md
 lics/Apache Software License-2.0.md
@@ -21,3 +23,5 @@ lics/licenses.md
 
 ./APS-Network/APSVertXProvider/buildInfo.json
 ./APS-Webs/APSWebManager/buildInfo.json
+
+lics/

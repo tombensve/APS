@@ -1077,7 +1077,7 @@ _readJSON(...)_ in the __JSONValue__ base class now throws JSONEOFException (ext
 
 Complete javadocs can be found at [http://apidoc.natusoft.se/APSJSONLib/](http://apidoc.natusoft.se/APSJSONLib/).
 
-public _class_ __JSONConvertionException__ extends  RuntimeException    [se.natusoft.osgi.aps.json.tools] {
+public _class_ __JSONConvertionException__ extends  RuntimeException    [se.natusoft.osgi.aps.json] {
 
 This exception is thrown on failure to convert from JSON to Java or Java to JSON.
 
@@ -1100,6 +1100,46 @@ _Parameters_
 > _message_ - The exception message 
 
 > _cause_ - The cause of this exception. 
+
+}
+
+----
+
+    
+
+
+
+
+
+__public JSONArray()__
+
+Creates a new JSONArray for wrinting JSON output.
+
+__public JSONArray(JSONErrorHandler errorHandler)__
+
+Creates a new JSONArray for reading JSON input and writing JSON output.
+
+_Parameters_
+
+> _errorHandler_ - The error handler to use. 
+
+
+
+
+
+__public void addValue(JSONValue value)__
+
+Adds a value to the array.
+
+_Parameters_
+
+> _value_ - The value to add. 
+
+
+
+
+
+
 
 }
 
@@ -1178,228 +1218,6 @@ _Parameters_
 _Throws_
 
 > _JSONConvertionException_ - if property does not exist. 
-
-}
-
-----
-
-    
-
-public _class_ __CollectingErrorHandler__ implements  JSONErrorHandler    [se.natusoft.osgi.aps.json.tools] {
-
-Utility implementation of JSONErrorHandler.
-
-__public CollectingErrorHandler(boolean printWarnings)__
-
-_Parameters_
-
-> _printWarnings_ - If true warnings will be printed to stderr. 
-
-
-
-
-
-__public boolean hasMessages()__
-
-_Returns_
-
-> true if there are any messages.
-
-__public String toString()__
-
-_Returns_
-
-> All messages as one string.
-
-}
-
-----
-
-    
-
-
-
-__public static JSONObject convertObject(Object javaBean) throws JSONConvertionException__
-
-Converts a JavaBean object into a _JSONObject_.
-
-_Returns_
-
-> A JSONObject containing all values from the JavaBean.
-
-_Parameters_
-
-> _javaBean_ - The JavaBean object to convert. 
-
-_Throws_
-
-> _JSONConvertionException_ - on converting failure. 
-
-__public static JSONObject convertObject(JSONObject jsonObject, Object javaBean) throws JSONConvertionException__
-
-Converts a JavaBean object into a _JSONObject_.
-
-_Returns_
-
-> A JSONObject containing all values from the JavaBean.
-
-_Parameters_
-
-> _jsonObject_ - The jsonObject to convert the bean into or null for a new JSONObject. 
-
-> _javaBean_ - The JavaBean object to convert. 
-
-_Throws_
-
-> _JSONConvertionException_ - on converting failure. 
-
-__public static JSONValue convertValue(Object value)__
-
-Converts a value from a java value to a _JSONValue_.
-
-_Returns_
-
-> The converted JSONValue.
-
-_Parameters_
-
-> _value_ - The java value to convert. It can be one of String, Number, Boolean, null, JavaBean, or an array of those. 
-
-}
-
-----
-
-    
-
-public _class_ __JSONToJava__   [se.natusoft.osgi.aps.json.tools] {
-
-Creates a JavaBean instance and copies data from a JSON value to it.
-
-The following mappings are made in addition to the expected ones:
-
-*  _JSONArray_ only maps to an array property.
-
-*  Date properties in bean are mapped from _JSONString_ "yyyy-MM-dd HH:mm:ss".
-
-*  Enum properties in bean are mapped from _JSONString_ which have to contain enum constant name.
-
-__public static <T> T convert(InputStream jsonStream, Class<T> javaClass) throws APSIOException, JSONConvertionException__
-
-Returns an instance of a java class populated with data from a json object value read from a stream.
-
-_Returns_
-
-> A populated instance of javaClass.
-
-_Parameters_
-
-> _jsonStream_ - The stream to read from. 
-
-> _javaClass_ - The java class to instantiate and populate. 
-
-_Throws_
-
-> _APSIOException_ - on IO failures. 
-
-> _JSONConvertionException_ - On JSON to Java failures. 
-
-__public static <T> T convert(String json, Class<T> javaClass) throws APSIOException, JSONConvertionException__
-
-Returns an instance of a java class populated with data from a json object value read from a String containing JSON.
-
-_Returns_
-
-> A populated instance of javaClass.
-
-_Parameters_
-
-> _json_ - The String to read from. 
-
-> _javaClass_ - The java class to instantiate and populate. 
-
-_Throws_
-
-> _APSIOException_ - on IO failures. 
-
-> _JSONConvertionException_ - On JSON to Java failures. 
-
-__public static <T> T convert(JSONValue json, Class<T> javaClass) throws JSONConvertionException__
-
-Returns an instance of java class populated with data from json.
-
-_Returns_
-
-> A converted Java object.
-
-_Parameters_
-
-> _json_ - The json to convert to java. 
-
-> _javaClass_ - The class of the java object to convert to. 
-
-_Throws_
-
-> _JSONConvertionException_ - On failure to convert. 
-
-
-
-
-
-
-
-}
-
-----
-
-    
-
-public _class_ __SystemOutErrorHandler__ implements  JSONErrorHandler    [se.natusoft.osgi.aps.json.tools] {
-
-A simple implementation of _JSONErrorHandler_ that simply displays messages on System.out and throws a _RuntimeException_ on fail. This is used by the tests. In a non test case another implementation is probably preferred.
-
-
-
-
-
-}
-
-----
-
-    
-
-
-
-
-
-__public JSONArray()__
-
-Creates a new JSONArray for wrinting JSON output.
-
-__public JSONArray(JSONErrorHandler errorHandler)__
-
-Creates a new JSONArray for reading JSON input and writing JSON output.
-
-_Parameters_
-
-> _errorHandler_ - The error handler to use. 
-
-
-
-
-
-__public void addValue(JSONValue value)__
-
-Adds a value to the array.
-
-_Parameters_
-
-> _value_ - The value to add. 
-
-
-
-
-
-
 
 }
 
@@ -1636,6 +1454,38 @@ _Parameters_
 
 
 
+
+}
+
+----
+
+    
+
+public _class_ __CollectingErrorHandler__ implements  JSONErrorHandler    [se.natusoft.osgi.aps.json] {
+
+Utility implementation of JSONErrorHandler.
+
+__public CollectingErrorHandler(boolean printWarnings)__
+
+_Parameters_
+
+> _printWarnings_ - If true warnings will be printed to stderr. 
+
+
+
+
+
+__public boolean hasMessages()__
+
+_Returns_
+
+> true if there are any messages.
+
+__public String toString()__
+
+_Returns_
+
+> All messages as one string.
 
 }
 
@@ -1977,6 +1827,60 @@ _Parameters_
 
 
 
+__public static JSONObject convertObject(Object javaBean) throws JSONConvertionException__
+
+Converts a JavaBean object into a _JSONObject_.
+
+_Returns_
+
+> A JSONObject containing all values from the JavaBean.
+
+_Parameters_
+
+> _javaBean_ - The JavaBean object to convert. 
+
+_Throws_
+
+> _JSONConvertionException_ - on converting failure. 
+
+__public static JSONObject convertObject(JSONObject jsonObject, Object javaBean) throws JSONConvertionException__
+
+Converts a JavaBean object into a _JSONObject_.
+
+_Returns_
+
+> A JSONObject containing all values from the JavaBean.
+
+_Parameters_
+
+> _jsonObject_ - The jsonObject to convert the bean into or null for a new JSONObject. 
+
+> _javaBean_ - The JavaBean object to convert. 
+
+_Throws_
+
+> _JSONConvertionException_ - on converting failure. 
+
+__public static JSONValue convertValue(Object value)__
+
+Converts a value from a java value to a _JSONValue_.
+
+_Returns_
+
+> The converted JSONValue.
+
+_Parameters_
+
+> _value_ - The java value to convert. It can be one of String, Number, Boolean, null, JavaBean, or an array of those. 
+
+}
+
+----
+
+    
+
+
+
 __public JSONNull()__
 
 Creates a new JSONNull instance for writing JSON output.
@@ -2159,6 +2063,102 @@ _Parameters_
 
     
 
+public _class_ __JSONToJava__   [se.natusoft.osgi.aps.json] {
+
+Creates a JavaBean instance and copies data from a JSON value to it.
+
+The following mappings are made in addition to the expected ones:
+
+*  _JSONArray_ only maps to an array property.
+
+*  Date properties in bean are mapped from _JSONString_ "yyyy-MM-dd HH:mm:ss".
+
+*  Enum properties in bean are mapped from _JSONString_ which have to contain enum constant name.
+
+__public static <T> T convert(InputStream jsonStream, Class<T> javaClass) throws APSIOException, JSONConvertionException__
+
+Returns an instance of a java class populated with data from a json object value read from a stream.
+
+_Returns_
+
+> A populated instance of javaClass.
+
+_Parameters_
+
+> _jsonStream_ - The stream to read from. 
+
+> _javaClass_ - The java class to instantiate and populate. 
+
+_Throws_
+
+> _APSIOException_ - on IO failures. 
+
+> _JSONConvertionException_ - On JSON to Java failures. 
+
+__public static <T> T convert(String json, Class<T> javaClass) throws APSIOException, JSONConvertionException__
+
+Returns an instance of a java class populated with data from a json object value read from a String containing JSON.
+
+_Returns_
+
+> A populated instance of javaClass.
+
+_Parameters_
+
+> _json_ - The String to read from. 
+
+> _javaClass_ - The java class to instantiate and populate. 
+
+_Throws_
+
+> _APSIOException_ - on IO failures. 
+
+> _JSONConvertionException_ - On JSON to Java failures. 
+
+__public static <T> T convert( JSONValue json, Class<T> javaClass) throws JSONConvertionException__
+
+Returns an instance of java class populated with data from json.
+
+_Returns_
+
+> A converted Java object.
+
+_Parameters_
+
+> _json_ - The json to convert to java. 
+
+> _javaClass_ - The class of the java object to convert to. 
+
+_Throws_
+
+> _JSONConvertionException_ - On failure to convert. 
+
+
+
+
+
+
+
+}
+
+----
+
+    
+
+public _class_ __SystemOutErrorHandler__ implements  JSONErrorHandler    [se.natusoft.osgi.aps.json] {
+
+A simple implementation of _JSONErrorHandler_ that simply displays messages on System.out and throws a _RuntimeException_ on fail. This is used by the tests. In a non test case another implementation is probably preferred.
+
+
+
+
+
+}
+
+----
+
+    
+
 
 
 
@@ -2213,9 +2213,7 @@ _Returns_
 
     
 
-public _class_ __JSONEOFException__ extends  APSIOException  }  [se.natusoft.osgi.aps.json] {
 
-Thrown if a JSON structure is tried to be read from a stream that has no more data.
 
 }
 
@@ -2566,11 +2564,13 @@ A good suggestion is to always use JSON or XML as content.
 
 ## aps-vertx-event-bus-messaging-provider
 
-This publishes 3 services: `MessagePublisher`, `MessageSender`, and `MessageSubscriber`.
+This publishes 2 services: `MessageSender`, and `MessageSubscriber`.
 
-Each of these use Vertx EventBus under the surface. These messages are not persistent and are sent within a Vertx cluster.
+Each of these use Vertx EventBus under the surface. These messages are not persistent and are sent within a Vert.x cluster.
 
-The difference between publisher and sender is that publisher sends to everyone listening on the destination, while sender only sends to one. Vertx uses round robin for sender to spread out to nodes in the cluster.
+Vert.x has a send() method that sends to one subscriber. If there are more than one subscriber on the address it does a round robin on the subscribers. Vert.x also has a publish() method that always send to all subscribers.
+
+The APS API does not reflect the Vert.x API. To do a publish the (possibly resolved) destination must start with "all:".
 
 The aps-vertx-provider also publishes the EventBus instance as a service, which is what this implementation is using. The EventBus can of course be used directly instead of this service. This service uses the official APS messaging API and thus all kinds of messaging can be done in the same way. It is also in general a good idea encapsulate the real implementation so that it is easy to change to something else if needed/wanted in the future. This service provides that.
 
@@ -2578,14 +2578,165 @@ For more information on Vertx see: [http://vertx.io/docs/vertx-core/groovy/](htt
 
 ### Lookup
 
-This properties for all 3 services contains:
+This properties for both services contains:
 
         aps-protocol-name:    vertx-eventbus
         service-category:     network
         service-function:     messaging
         messaging-persistent: false
         messaging-clustered:  true
-        service-provider:     aps-vertx-event-bus-messaging-provider:publisher/sender/subscriber
+        service-provider:     aps-vertx-event-bus-messaging-provider:sender/subscriber
+
+# Web Manager
+
+## Components
+
+The components are mostly based on React-Bootstrap components. The APS components wrap other components to provide components that connect to a common bus. All relevant component events are are sent as messages on the bus. No code has to attach listeners to specific components. Any code that wants to react to a component being triggered does so by joining the bus and listen to messages. So the code reacting on messages really has no direct association with any component, they just react to messages.
+
+All components has a listenTo and a sendTo property which points out and address to send or listen to. Most components only send messages.
+
+This separation of component rendering code and event handler code makes it rather easy to render components after a JSON specification. That is what WebManager does. It listens for a JSON GUI spec on the bus, and when it sees such, it renders it. When a user interacts with the rendered GUI messges will be sent on the bus.
+
+## APSEventBus
+
+On the frontend there is a local `APSEventBus` that is used to send and receive messages. This is basically a wrapper. It does not do anything other than pass on to 'EventBusRouter's. There are 2 'EventBusRouter's: `APSLocalEventBusRouter`and `APSVertxEventBusRouter`. These are both added to `APSEventBus`.
+
+### APSLocalEventBusRouter
+
+This looks at the header of a message and if _routing_ contains _client_ then it passes the message to all registered local subscribers. This never goes out on the network, it only works internatlly in the client. This is used to communicate between different components locally.
+
+### APSVertxEventBusRouter
+
+This looks at the header of a message and if _routing_ contains _backend_ it does a send on the Vert.x client event bus bridge. A send does a round robin to to listeners of specified address. If _routing_ contains _cluster_ it does a publish on the Vert.x client event bus bridge. This goes to all listeners of the address in the whole cluster, including other clients.
+
+## Messaging
+
+A note: _Vert.x uses Hazelcast by default to handle the cluster.__Hazelcast by default manages a cluster on the same subnet only,__by multicast.__Hazelcast can of course be configured to create larger clusters.__But that is a Hazelcast thing,__not APS nor Vert.x._
+
+### Addresses
+
+Each message must be addressed! An address is just a string. It can be anything. If you send to an address it will be received if there is something also listening to exactly the same address. See an address as a group name as is common in other messaging solutions.
+
+As said above when a send is done on the Vert.x event bus it does a round robin between each listener of the "sent to" address. This to support load balancing.
+
+#### Address Strategy
+
+Note: (app) refers to a specific application as a wildcard, and (UUID) refers to a generated UUID value.
+
+From __client perspective__:
+
+*  Client
+
+   *  "aps:(app):client:(UUID)"
+
+      *  Network: listen
+
+      *  Local: listen, send
+
+*  Backend
+
+   *  "aps:(app):backend"
+
+      *  Network: send
+
+*  Cluster
+
+   *  "aps:(app):all" : Every backend and client of (app).
+
+      *  Network: listen, send
+
+   *  "aps:(app):all:backend" : Every backend of (app).
+
+      *  Network: send
+
+   *  "aps:(app):all:client" : Every client of (app).
+
+      *  Network: listen, send
+
+__Note 1:__ Only clients have a unique address. They are the only ones that needs a unique address due to being the only unique thing.
+
+__Note 2:__ Vert.x does a round robin on "send" to same address. Only backend messages are delivered with a send. All cluster messages are delived with a "publish" and will always go to every subscriber.
+
+__Note 3:__ Both on client side and on backend, code is not interacting with the Vert.x bus, but local busses with message routers. So what messages are sent on the Vert.x bus and which message method is used is a routing question. Senders and receivers don't need to care.
+
+### Routing Strategy
+
+My first though was to hide routing as much as possible, but that creates a lot of limitations.
+
+Components have indirect routing information passed to them by the creater of the component, and in general all routing is handled by the `APSComponent` base class for the APS components. Individual components should ignore routing completely. They just send and possibly receive messages not caring about anything else than the message.
+
+Some components need to talk to each other locally, and some need to reach a backend. It is up to the code that creates the components to determine that by supplying a routing property of:
+
+        {
+            outgoing: "client/backend/all/all:backend/all:client/none",
+            incoming: "client/all/all:client/none"
+        }
+
+Both outgoing and incomming can have more than one route. Routes are comma separated within the string. No spaces.
+
+Do note the "none" at the end! Its more relevant for incoming than outgoing. It means what the word says. If a component does not react to any incoming messages, then there is no point in listening to incoming messages and the messaging code does not need to make an unceccesary call to a component that will do nothing with the provided message.
+
+### Messages
+
+When a message is sent, there is no from, there is only a to. My goal is that all code should only react to messages, and a reaction can possibly be a new message. But there should not be any specific reply message. A message might be reacted to by a client that updates something in a GUI, or it might be reacted to in the backend. Whatever sends the message sholdn't care. Where messages end upp is a routing question.
+
+The `content` part can be missing or empty depending on `type`.
+
+In the following specification any entry starting with '?' is optional.
+
+#### General
+
+        {
+            "aps": { // To be moved to header instead ...
+                "origin": "(address)",
+                "app": "(app)",
+                "type": "(message type)",
+                "identity": {
+                    userId: "(id)",
+                    userName: "(name of user)",
+                    auth: {
+                        "type": "(authentication type)",
+                        (authentication specific data)
+                    }
+                }
+            },
+            content: { // Will probably go away when "aps" is moved to header.
+                ...message type specific data
+            }
+        }
+
+#### --> Avail 
+
+Client tells a backend that it exists and are ready for a GUI JSON document.
+
+This is not a requirement, components can be created and a gui built with client code like any other React GUI. There are 2 components that works together and use this message: `APSPage` and `APSWebManager`. They will as default inform the backend that they are upp and running and the backend will send a JSON document with components to create. `APSWebMAnager` can however also be used with a property that tells it to not send the message, and only act as container, but create and supplying a common event bus to all children.
+
+        {
+            "aps": {
+                "origin": "(address)"
+                "app": "(app)",
+                "type": "avail"
+            }
+        }
+
+#### <-- Gui
+
+Client receives a gui, most probably from backend, but can really be send from anywhere including client itself.
+
+{  "aps": {  "origin": "(address)",  "app": "(app)",  "type": "gui"  },  "content": {  "id": "(comp id)",  "name": "(comp name)",  ?"group": "(name of group component belongs to if any.)",  "type": "(comp type)",  ?"class": "(class class ...)",  ?"disabled": true/false,  ?"enabled": "groupNotEmpty:(group)/namedComponentsNotEmpty:(names)"  "collectGroups": "(space separated list of groups to listen to and collect data from.)",  "(type specific)": "(...)",  ...,  "children": [  ...  ]()  } }
+
+#### --> Create
+
+        {
+            "aps": {
+                "origin": 'address'
+                "app": 'app',
+                "type": "create"
+            }
+            "content": {
+        
+            }
+        }
 
 # Licenses
 
@@ -2609,6 +2760,8 @@ The following third party products are using this license:
 [Apache Software License version 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 The following third party products are using this license:
+
+*  [jackson-jr-all-2.9.6](http://wiki.fasterxml.com/JacksonHome)
 
 *  [groovy-all-2.4.15](http://groovy-lang.org)
 

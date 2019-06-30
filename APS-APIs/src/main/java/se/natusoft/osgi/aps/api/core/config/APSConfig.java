@@ -59,7 +59,7 @@ import java.util.Map;
 public interface APSConfig extends Map<String, Object> {
 
     /** Cluster event address to use for config events. */
-    String CONFIG_EVENT_DESTINATION = "aps.config.events";
+    String CONFIG_EVENT_DESTINATION = "all:aps.config.events";
 
     /**
      * Calls the provided handler for each value path in the map.
