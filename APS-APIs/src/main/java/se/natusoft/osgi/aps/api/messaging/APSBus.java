@@ -22,10 +22,10 @@ import java.util.Map;
  *
  * There are 2 ways of making other buses available through APSBus:
  * 1. Implement APSBusRouter and publish as OSGi service. In this case you should probably only
- *    react on targets with a specific prefix or certain specific, configured targets. Probably
- *    never everything.
+ * react on targets with a specific prefix or certain specific, configured targets. Probably
+ * never everything.
  * 2. Subscribe to "local:(mybus):(target)" or something that way and forward received messages
- *    on your bus. Example: "local:amqp:..." and forward to a RabbitMQ.
+ * on your bus. Example: "local:amqp:..." and forward to a RabbitMQ.
  */
 @SuppressWarnings( "unused" )
 public class APSBus {
@@ -35,7 +35,8 @@ public class APSBus {
     //
 
     /** The currently known bus routers */
-    @Nullable private APSServiceTracker<APSBusRouter> routerTracker = null;
+    @Nullable
+    private APSServiceTracker<APSBusRouter> routerTracker = null;
 
     //
     // Constructors
@@ -56,7 +57,8 @@ public class APSBus {
      * one rotuer, APSLocalInMemoryBus. This is intended for testing.
      */
     @SuppressWarnings( "WeakerAccess" )
-    public APSBus() {}
+    public APSBus() {
+    }
 
     //
     // Methods
@@ -65,8 +67,8 @@ public class APSBus {
     /**
      * Sends a message.
      *
-     * @param target        The target to send to. How to interpret this is up to implementation.
-     * @param message       The message to send. Only JSON structures allowed and top level has to be an object.
+     * @param target The target to send to. How to interpret this is up to implementation.
+     * @param message The message to send. Only JSON structures allowed and top level has to be an object.
      * @param resultHandler Receives the success or failure of the call.
      */
     @Reactive
@@ -84,8 +86,8 @@ public class APSBus {
     /**
      * Subscribes to messages to a target.
      *
-     * @param id             A unique ID to associate subscription with. Also used to unsubscribe.
-     * @param target         The target to subscribe to.
+     * @param id A unique ID to associate subscription with. Also used to unsubscribe.
+     * @param target The target to subscribe to.
      * @param messageHandler The handler to call with messages sent to target.
      */
     @Reactive
@@ -94,7 +96,7 @@ public class APSBus {
 
         APSLocalInMemoryBus.ROUTER.subscribe( id, target, resultHandler, messageHandler );
 
-        if (this.routerTracker != null) {
+        if ( this.routerTracker != null ) {
             this.routerTracker.withAllAvailableServices( ( apsBusRouter, args ) ->
                     apsBusRouter.subscribe( id, target, resultHandler, messageHandler ) );
         }
@@ -110,7 +112,7 @@ public class APSBus {
 
         APSLocalInMemoryBus.ROUTER.unsubscribe( subscriberId );
 
-        if (this.routerTracker != null) {
+        if ( this.routerTracker != null ) {
             this.routerTracker.withAllAvailableServices( ( apsBusRouter, args ) ->
                     apsBusRouter.unsubscribe( subscriberId ) );
         }

@@ -114,6 +114,23 @@ public interface APSResult<T> {
     }
 
     /**
+     * Convenience failure handler caller that do catch Exceptions thrown by called handler.
+     *
+     * @param handler The handler to call.
+     * @param e The exception that indicated the fail.
+     * @param <T> The result type.
+     */
+    static <T> void failure( APSHandler<T> handler, Throwable e) {
+        try {
+            //noinspection unchecked
+            handler.handle( (T)new Provider( e ) );
+        }
+        catch ( Throwable t ){
+            t.printStackTrace( System.err );
+        }
+    }
+
+    /**
      * A failure result handling method. This will call the handler with exception in result
      * if handler is non null. If handler is null the exception will be throws instead.
      *
