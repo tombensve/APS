@@ -60,12 +60,4 @@ public interface APSNodeInfoService {
      * @param handler The handler to receive the local node info.
      */
     void localNode(APSHandler<APSValue<NodeInfo>> handler);
-
-    /**
-     * Delivers info about the master node.
-     *
-     * @param handler The handler to receive the master node info.
-     */
-    void masterNode(APSHandler<APSValue<NodeInfo>> handler);
-
 }

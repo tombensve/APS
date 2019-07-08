@@ -2,14 +2,15 @@ package se.natusoft.osgi.aps.api.messaging;
 
 import se.natusoft.docutations.NotNull;
 import se.natusoft.docutations.Nullable;
+import se.natusoft.docutations.Optional;
 import se.natusoft.docutations.Reactive;
 import se.natusoft.osgi.aps.exceptions.APSValidationException;
 import se.natusoft.osgi.aps.types.APSHandler;
 import se.natusoft.osgi.aps.types.APSResult;
+import se.natusoft.osgi.aps.types.APSUUID;
 import se.natusoft.osgi.aps.types.ID;
 import se.natusoft.osgi.aps.util.APSLogger;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -26,13 +27,14 @@ public class APSLocalInMemoryBus implements APSBusRouter {
     @SuppressWarnings( "WeakerAccess" )
     public static final APSBusRouter ROUTER = new APSLocalInMemoryBus();
 
-    private static final String FILTER = "local:";
+    /** We only support targets starting with "local:"! */
+    private static final String TARGET_FILTER = "local:";
 
     //
     // Private Members
     //
 
-    private Map<String, Map<ID, List<APSHandler<Map<String, Object>>>>> subscribers = new ConcurrentHashMap<>();
+    private Map<String/*target*/, Map<ID, List<APSHandler<Map<String, Object>>>>> subscribers = new ConcurrentHashMap<>();
 
     private APSLogger logger = new APSLogger().setLoggingFor( "APSLocalInMemoryBus" );
 
@@ -52,12 +54,12 @@ public class APSLocalInMemoryBus implements APSBusRouter {
     public void send( @NotNull String target, @NotNull Map<String, Object> message,
                       @Nullable APSHandler<APSResult<Void>> resultHandler ) {
 
-        if ( target.startsWith( FILTER ) ) {
+        if ( target.startsWith( TARGET_FILTER ) ) {
 
-            target = target.substring( FILTER.length() );
+            target = target.substring( TARGET_FILTER.length() );
 
             Map<ID, List<APSHandler<Map<String, Object>>>> subscribers =
-                    this.subscribers.computeIfAbsent( target, byId -> new LinkedHashMap<>() );
+                    this.subscribers.computeIfAbsent( target, byId -> new ConcurrentHashMap<>() );
 
             if ( !subscribers.isEmpty() ) {
 
@@ -102,11 +104,11 @@ public class APSLocalInMemoryBus implements APSBusRouter {
     public void subscribe( @NotNull ID id, @NotNull String target, @Nullable APSHandler<APSResult> resultHandler,
                            @NotNull APSHandler<Map<String, Object>> messageHandler ) {
 
-        if ( target.startsWith( FILTER ) ) {
+        if ( target.startsWith( TARGET_FILTER ) ) {
 
-            target = target.substring( FILTER.length() );
+            target = target.substring( TARGET_FILTER.length() );
 
-            this.subscribers.computeIfAbsent( target, byId -> new LinkedHashMap<>() )
+            this.subscribers.computeIfAbsent( target, byId -> new ConcurrentHashMap<>() )
                     .computeIfAbsent( id, handlers -> new LinkedList<>() ).add( messageHandler );
 
             if ( resultHandler != null ) {

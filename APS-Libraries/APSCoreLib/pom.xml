@@ -67,7 +67,8 @@
 
         <!-- The bundle packages to export. -->
         <osgi.export.package>
-            se.natusoft.osgi.aps.core.lib;version="${project.version}"
+            se.natusoft.osgi.aps.core.lib;version="${project.version}",
+            se.natusoft.osgi.aps.core.lib.messages;version="${project.version}"
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->
@@ -89,7 +90,7 @@
         <!-- The default for embedding dependencies in bundle. -->
         <osgi.embed.dependency>*;scope=system</osgi.embed.dependency>
 
-        <!-- The directory whose content should be embeded into the bundle jar. -->
+        <!-- The directory whose setContent should be embeded into the bundle jar. -->
         <osgi.embed.directory>lib</osgi.embed.directory>
 
         <!--

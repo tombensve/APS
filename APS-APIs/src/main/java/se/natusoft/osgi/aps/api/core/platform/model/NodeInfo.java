@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
@@ -44,12 +44,6 @@ public class NodeInfo {
     //
     // Private Members
     //
-
-    /** Is this the master node ?  */
-    private boolean master = false;
-
-    /** The address of the cluster master. */
-    private String masterAddress;
 
     /** The address to send events to this node. */
     private String address;
@@ -79,40 +73,6 @@ public class NodeInfo {
     //
     // Methods
     //
-
-    /**
-     * @return true if this is the master node.
-     */
-    public boolean isMaster() {
-        return this.master;
-    }
-
-    /**
-     * Sets if this is the master node or not.
-     *
-     * @param master The master node state to set.
-     */
-    public NodeInfo setMaster(boolean master) {
-        this.master = master;
-        return this;
-    }
-
-    /**
-     * @return The master address.
-     */
-    public String getMasterAddress() {
-        return this.masterAddress;
-    }
-
-    /**
-     * Sets the master address.
-     *
-     * @param masterAddress The master address to set-
-     */
-    public NodeInfo setMasterAddress(String masterAddress) {
-        this.masterAddress = masterAddress;
-        return this;
-    }
 
     /**
      * @return The node address.

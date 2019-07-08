@@ -86,6 +86,7 @@
         <clm.version>2.2.1</clm.version>
         <ftpPlugin.version>1.0.1</ftpPlugin.version>
         <markdownDoc.version>2.1.0</markdownDoc.version>
+        <!-- Later version like 2.4.17 causes failure in VertxProvider test! -->
         <groovy.version>2.4.15</groovy.version>
         <vertx.version>3.5.3</vertx.version>
         <!--
@@ -171,9 +172,18 @@
                 <version>${project.version}</version>
                 <scope>compile</scope>
             </dependency>
+            <!--
             <dependency>
                 <groupId>org.codehaus.groovy</groupId>
                 <artifactId>groovy-all</artifactId>
+                <version>${groovy.version}</version>
+                <scope>compile</scope>
+                <classifier>indy</classifier>
+            </dependency>
+            -->
+            <dependency>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy</artifactId>
                 <version>${groovy.version}</version>
                 <scope>compile</scope>
                 <classifier>indy</classifier>

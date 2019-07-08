@@ -20,12 +20,9 @@ import java.util.Map;
  * Note that even if there are no APSBusRouter services published, the APSLocalInMemoryBus,
  * which is a router, is always available. It however only reacts on targets starting with "local:".
  *
- * There are 2 ways of making other buses available through APSBus:
- * 1. Implement APSBusRouter and publish as OSGi service. In this case you should probably only
- * react on targets with a specific prefix or certain specific, configured targets. Probably
- * never everything.
- * 2. Subscribe to "local:(mybus):(target)" or something that way and forward received messages
- * on your bus. Example: "local:amqp:..." and forward to a RabbitMQ.
+ * To make other buses available through APSBus:
+ * - Implement APSBusRouter and publish as OSGi service. You should probably only react on targets with
+ *   a specific prefix or certain specific, configured targets. Probably never everything.
  */
 @SuppressWarnings( "unused" )
 public class APSBus {
@@ -77,7 +74,7 @@ public class APSBus {
 
         APSLocalInMemoryBus.ROUTER.send( target, message, resultHandler );
 
-        if (this.routerTracker != null) {
+        if ( this.routerTracker != null ) {
             this.routerTracker.withAllAvailableServices( ( apsBusRouter, args ) ->
                     apsBusRouter.send( target, message, resultHandler ) );
         }

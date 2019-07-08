@@ -171,7 +171,7 @@ class APSVertxClusterDataStoreServiceProvider implements APSLockableDataStoreSer
      * @param valueRes The value result.
      * @param result The final result handler to call with result.
      */
-    private void handleValueResult( String key, AsyncResult<Object> valueRes, APSHandler<APSResult<Object>> result ) {
+    private void handleValueResult( String key, AsyncResult valueRes, APSHandler<APSResult> result ) {
         if ( valueRes.failed() ) {
 
             try {

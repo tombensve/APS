@@ -62,6 +62,5 @@
     <modules>
         <module>APSConfigManager</module>
         <module>APSFilesystemServiceProvider</module>
-        <module>APSNodeInfoProvider</module>
     </modules>
 </project>

@@ -14,7 +14,7 @@ public class APSLocalInMemoryBusTest {
     private boolean receivedMessageWork = false;
     private boolean receivedMessageFail = false;
 
-    private APSBus bus = new APSBus(  );
+    private APSBus bus = new APSBus();
 
     @Test
     public void shouldWork() {
@@ -30,7 +30,7 @@ public class APSLocalInMemoryBusTest {
 
         } );
 
-        APSLocalInMemoryBus.ROUTER.send(
+        this.bus.send(
                 "local:test",
                 MapBuilder.map(
                         "msgType:", "test",

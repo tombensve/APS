@@ -36,6 +36,7 @@ package se.natusoft.osgi.aps.core.config
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.osgi.framework.Bundle
+import se.natusoft.docutations.IDEAFail
 import se.natusoft.docutations.Implements
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
@@ -55,7 +56,17 @@ import se.natusoft.osgi.aps.types.APSSerializableData
 import se.natusoft.osgi.aps.util.APSLogger
 
 /**
- * This class represents one individual configuration.*/
+ * This class represents one individual configuration.
+ */
+@IDEAFail(
+        // This class have groovy auto java bean properties and extends a Map! IDEA 2019.1.3 is not
+        // capable of telling the difference between a java bean property access and a Map key
+        // reference! It tends to assume the latter, which gives an error on method calls of what it
+        // sees as a java.lang.Object. So in 'logger.error(...)' it will error mark 'error(...)'
+        // seeing logger as an Object return from Map rather than the java bean property 'logger'
+        // of type APSLogger. The code compiles fine and correctly! This is only an IDEA problem.
+        // I have made some unnecessary casts to make IDEA happy since I hate red markings!
+)
 @CompileStatic
 @TypeChecked
 class APSConfiguration extends StructMap implements APSConfig, APSSerializableData {
@@ -262,7 +273,8 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
                 doCode( configDir )
             }
             else {
-                this.logger.error( res.failure().message, res.failure() )
+                // See @IDEAFail above!
+                ( ( APSLogger ) this.logger ).error( res.failure().message, res.failure() )
             }
         }
 
@@ -342,7 +354,9 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
         catch ( IOException ioe ) {
 
             this.logger.error(
-                    "(configId:${ this.apsConfigId }):Failed to load default configuration from bundle: ${ this.owner.symbolicName }!", ioe )
+                    """(configId:${ this.apsConfigId }):Failed to load default configuration from bundle: ${
+                        ( ( Bundle ) this.owner ).symbolicName
+                    }!""", ioe )
 
             this.defaultConfig = null
         }
@@ -376,7 +390,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
                             JSON.readJSONAsMap(
 
                                     configDir.getFile( "${ this.apsConfigId }.json" ).createInputStream(),
-                                    this.jsonErrorHandler
+                                    ( JSONErrorHandler ) this.jsonErrorHandler
                             )
                     )
 
@@ -386,8 +400,10 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
                 }
                 catch ( IOException ioe ) {
 
-                    throw new APSIOException( "Failed to load configuration for bundle ${ this.owner.symbolicName }!",
-                            ioe )
+                    throw new APSIOException(
+                            """Failed to load configuration for bundle ${ ( ( Bundle ) this.owner ).symbolicName }!""",
+                            ioe
+                    )
                 }
                 finally {
 
@@ -418,7 +434,9 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
             }
             catch ( IOException ioe ) {
 
-                throw new APSIOException( "Failed to save configuration for bundle ${ this.owner.symbolicName }!", ioe )
+                throw new APSIOException( """Failed to save configuration for bundle ${
+                    ( ( Bundle ) this.owner ).symbolicName
+                }!""", ioe )
             }
             finally {
 
