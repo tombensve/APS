@@ -3,6 +3,7 @@ package se.natusoft.osgi.aps.core.lib.messages
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.core.lib.MapJsonDocSchemaValidator
+
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import static SchemaConstants.*
 
@@ -18,6 +19,8 @@ import static SchemaConstants.*
 @TypeChecked
 class WellDefinedMessage<SubClass> implements Map<String, Object> {
 
+    static final WellDefinedMessage<WellDefinedMessage> INSTANCE = new WellDefinedMessage<>()
+
     //
     // Private Members
     //
@@ -31,7 +34,7 @@ class WellDefinedMessage<SubClass> implements Map<String, Object> {
 
     /**
      * Provides base schema.
-´     */
+´    */
     Map<String, Object> getSchema() {
         [
                 header_1: [
@@ -67,8 +70,8 @@ class WellDefinedMessage<SubClass> implements Map<String, Object> {
     /**
      * Creates a new WellDefinedMessage instance.
      */
-    protected WellDefinedMessage( ) {
-        this.schemaValidator = new MapJsonDocSchemaValidator( validStructure: schema )
+    WellDefinedMessage( ) {
+        this.schemaValidator = new MapJsonDocSchemaValidator( validStructure: schema as Map<String, Object> )
     }
 
     //
@@ -81,6 +84,7 @@ class WellDefinedMessage<SubClass> implements Map<String, Object> {
     /**
      * Turns on validation of messages.
      */
+    @SuppressWarnings( "unused" )
     SubClass enableValidation() {
 
         this.validate = true
@@ -105,6 +109,17 @@ class WellDefinedMessage<SubClass> implements Map<String, Object> {
     }
 
     /**
+     * Convenience method to validate external message. Preferably used in conjunction with static INSTANCE.
+     *
+     * @param message The message to validate.
+     *
+     * @throws APSValidationException
+     */
+    void validate(Map<String, Object> message) {
+        this.schemaValidator.validate(message)
+    }
+
+    /**
      * Returns the message.
      */
     Map<String, Object> getMessage() {
@@ -124,7 +139,7 @@ class WellDefinedMessage<SubClass> implements Map<String, Object> {
 
         try {
 
-            this.schemaValidator.validate( this.message )
+            this.schemaValidator.validate( this.message as Map<String, Object> )
         }
         catch ( APSValidationException validationException ) {
 

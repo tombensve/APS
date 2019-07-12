@@ -3,9 +3,9 @@ package se.natusoft.osgi.aps.core.lib.messages
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.docutations.IDEAFail
-
-import static SchemaConstants.*
 import se.natusoft.osgi.aps.exceptions.APSValidationException
+
+import static se.natusoft.osgi.aps.core.lib.messages.SchemaConstants.*
 
 @CompileStatic
 @TypeChecked
@@ -25,19 +25,22 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
 class NodeInfoMsg extends WellDefinedMessage<NodeInfoMsg> {
 
     Map<String, Object> getSchema() {
-        Map<String, Object> schema = super.getSchema(  )
-        schema.headers_1 << (
+        Map<String, Object> schema = super.getSchema()
+        ( schema.headers_1 as Map<String, Object> ) << (
                 [
-                        type_1: "NodeInfo",
+                        type_1   : "NodeInfo",
                         version_1: "#<=1.0"
-                ] as Map<String, Object>)
-        schema.content_1 <<  ([
-                id_1     : _UUID,
-                name_0   : TEXT_NUM_DOT,
-                address_0: IP_ADDRESS,
-                busAddress_0: BUS_ADDRESS,
-                uptime_0 : NUM_DOT
-        ] as Map<String, Object>)
+                ] as Map<String, Object> )
+        ( schema.content_1 as Map<String, Object> ) << (
+                [
+                        id_1        : _UUID,
+                        name_0      : TEXT_NUM_DOT,
+                        address_0   : IP_ADDRESS,
+                        busAddress_0: BUS_ADDRESS,
+                        uptime_0    : NUM_DOT
+                ] as Map<String, Object> )
+
+        schema
     }
 
     /**
@@ -47,7 +50,7 @@ class NodeInfoMsg extends WellDefinedMessage<NodeInfoMsg> {
      *
      * @throws APSValidationException on invalid message.
      */
-    @IDEAFail("IDEA sees this.message as a Map key rather than JB property in base class. The compiler treats this correctly.")
+    @IDEAFail( "IDEA sees this.message as a Map key rather than JB property in base class. The compiler treats this correctly." )
     NodeInfoMsg( Map<String, Object> message ) {
         this.setMessage( message )
     }

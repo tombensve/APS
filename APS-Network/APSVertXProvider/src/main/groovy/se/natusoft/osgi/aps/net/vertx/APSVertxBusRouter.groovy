@@ -4,12 +4,15 @@ import io.vertx.core.eventbus.EventBus
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
 import se.natusoft.docutations.Optional
-import se.natusoft.osgi.aps.api.messaging.APSBusRouter
+import se.natusoft.osgi.aps.core.lib.messaging.APSBusRouter
+import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.types.ID
 
 class APSVertxBusRouter implements APSBusRouter {
+
+    private static final FILTER = " cluster:"
 
     //
     // Groovy JB Properties
@@ -21,6 +24,17 @@ class APSVertxBusRouter implements APSBusRouter {
     // Methods
     //
 
+    private boolean validTarget( String target, APSHandler<APSResult> resultHandler, Closure go) {
+        if ( target.startsWith( FILTER ) ) {
+            target = target.substring( FILTER.length(  ) )
+
+            go.call( target )
+        }
+        else {
+            resultHandler.handle( APSResult.failure( new APSValidationException( "'target' must start with ${ FILTER } !" ) ) )
+        }
+    }
+
     /**
      * Sends a message.
      *
@@ -29,8 +43,13 @@ class APSVertxBusRouter implements APSBusRouter {
      * @param resultHandler The handler to call with result of operation. Can be null!
      */
     @Override
-    void send( @NotNull String target, @NotNull Map<String, Object> message, @Optional @Nullable APSHandler<APSResult<Void>> resultHandler ) {
-        this.eventBus.sender(  )
+    void send( @NotNull String target, @NotNull Map<String, Object> message, @Optional @Nullable APSHandler<APSResult> resultHandler ) {
+
+        validTarget( target, resultHandler ) { String realTarget ->
+
+            this.eventBus.sender(realTarget).send(  )
+
+        }
     }
 
     /**
