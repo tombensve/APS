@@ -69,6 +69,7 @@
         <osgi.export.package>
             se.natusoft.osgi.aps.core.lib;version="${project.version}",
             se.natusoft.osgi.aps.core.lib.messages;version="${project.version}"
+            se.natusoft.osgi.aps.core.lib.messaging;version="${project.version}"
         </osgi.export.package>
 
         <!-- The packages to import for the bundle. -->

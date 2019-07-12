@@ -15,12 +15,6 @@
 
     <dependencies>
         <dependency>
-            <artifactId>aps-tools-lib</artifactId>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>javax.persistence</artifactId>
             <scope>test</scope>

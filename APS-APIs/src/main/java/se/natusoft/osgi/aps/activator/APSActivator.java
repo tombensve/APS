@@ -1376,7 +1376,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     }
 
     /**
-     * Handles listener methods, settingthem up to be called on relevant events.
+     * Handles listener methods, setting them up to be called on relevant events.
      *
      * @param method       The method to check for ServiceListener annotation.
      * @param managedClass The class of the method.
