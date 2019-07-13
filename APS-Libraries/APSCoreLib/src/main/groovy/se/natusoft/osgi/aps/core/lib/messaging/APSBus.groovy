@@ -131,7 +131,6 @@ class APSBus {
         }
     }
 
-    @Reactive
     /**
      * Sends a message and expects to get a response message back.
      *
@@ -153,6 +152,7 @@ class APSBus {
      * @param resultHandler optional handler to receive result of send.
      * @param responseMessage A message that is a response of the sent message.
      */
+    @Reactive
     void request( @NotNull String target, @NotNull Map<String, Object> message,
                   @Nullable @Optional APSHandler<APSResult> resultHandler,
                   @NotNull APSHandler<Map<String, Object>> responseMessage ) {
