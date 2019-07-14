@@ -40,7 +40,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.osgi.framework.ServiceReference;
 import se.natusoft.osgi.aps.activator.APSActivator;
-import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools;
+import se.natusoft.osgi.aps.test.tools.APSOSGIServiceTestTools;
 import se.natusoft.osgi.aps.test.tools.TestBundle;
 import se.natusoft.osgi.aps.tools.services.SearchCriteriaProviderTestService;
 import se.natusoft.osgi.aps.tools.services.TestService;
@@ -52,7 +52,7 @@ public class APSActivatorServiceLookupTest {
 
     @Test
     public void searchCriteriaProviderTest() throws Exception {
-        OSGIServiceTestTools testTools = new OSGIServiceTestTools();
+        APSOSGIServiceTestTools testTools = new APSOSGIServiceTestTools();
         TestBundle testBundle = testTools.createBundle("test-bundle");
         testBundle.addEntryPaths(
                 "/se/natusoft/osgi/aps/tools/services/ServicesSetupProviderTestService.class",

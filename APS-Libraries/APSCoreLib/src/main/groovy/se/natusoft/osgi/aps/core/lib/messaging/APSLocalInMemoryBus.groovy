@@ -6,6 +6,9 @@ import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
 import se.natusoft.docutations.Optional
 import se.natusoft.docutations.Reactive
+import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
+import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
+import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult
@@ -23,10 +26,15 @@ import java.util.concurrent.ConcurrentHashMap
 @CompileStatic
 @TypeChecked
 @SuppressWarnings( "UnnecessaryQualifiedReference" )
+@OSGiServiceProvider(
+        properties = [
+                @OSGiProperty(name = APS.Service.Provider, value = "aps-local-in-memory-bus"),
+                @OSGiProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Communication),
+                @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Messaging),
+        ]
+)
 class APSLocalInMemoryBus implements APSBusRouter {
 
-    @SuppressWarnings( "WeakerAccess" )
-    public static final APSBusRouter ROUTER = new APSLocalInMemoryBus()
 
     /** We only support targets starting with "local:"! */
     private static final APSTargetSpec targetSpec = new APSTargetSpec( id: "local" )
@@ -59,12 +67,12 @@ class APSLocalInMemoryBus implements APSBusRouter {
 
             APSTargetSpec sendTargetSpec = new APSTargetSpec( target )
 
-            Map<ID, List<APSHandler<Map<String, Object>>>> _subscribers =
+            Map<ID, List<APSHandler<Map<String, Object>>>> subs =
                     this.subscribers.computeIfAbsent( sendTargetSpec.address ) { Map<String, Object> byId -> new ConcurrentHashMap<>() }
 
-            if ( !_subscribers.isEmpty() ) {
+            if ( !subs.isEmpty() ) {
 
-                _subscribers.each { ID id, List<APSHandler<Map<String, Object>>> handlers ->
+                subs.each { ID id, List<APSHandler<Map<String, Object>>> handlers ->
 
                     handlers.each { APSHandler<Map<String, Object>> handler ->
 

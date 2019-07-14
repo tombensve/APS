@@ -2,20 +2,16 @@ package se.natusoft.osgi.aps.web
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import org.junit.Ignore
 import org.junit.Test
-import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
+import se.natusoft.osgi.aps.test.tools.APSOSGIServiceTestTools
 import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.util.APSLogger
 
-import static java.util.concurrent.TimeUnit.HOURS
-import static java.util.concurrent.TimeUnit.MILLISECONDS
-import static java.util.concurrent.TimeUnit.MINUTES
 import static java.util.concurrent.TimeUnit.SECONDS
 
 @CompileStatic
 @TypeChecked
-class APSAPSWebManagerBooterTest extends OSGIServiceTestTools {
+class APSAPSWebManagerBooterTest extends APSOSGIServiceTestTools {
 
     private static APSLogger logger = new APSLogger( APSLogger.PROP_LOGGING_FOR, "WebContentServerTest" )
 

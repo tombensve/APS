@@ -39,7 +39,7 @@ package se.natusoft.osgi.aps.tools;
 import org.junit.Assert;
 import org.junit.Test;
 import se.natusoft.osgi.aps.activator.APSActivator;
-import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools;
+import se.natusoft.osgi.aps.test.tools.APSOSGIServiceTestTools;
 import se.natusoft.osgi.aps.test.tools.TestBundle;
 import se.natusoft.osgi.aps.tools.services.SimpleService;
 import se.natusoft.osgi.aps.tools.services.TestService;
@@ -54,7 +54,7 @@ public class APSActivatorServiceRegTest {
 
     @Test
     public void simpleTest() throws Exception {
-        OSGIServiceTestTools testTools = new OSGIServiceTestTools();
+        APSOSGIServiceTestTools testTools = new APSOSGIServiceTestTools();
         TestBundle testBundle = testTools.createBundle("test-bundle");
         testBundle.addEntryPaths(
                 "/se/natusoft/osgi/aps/tools/services/SimpleService.class",
@@ -80,7 +80,7 @@ public class APSActivatorServiceRegTest {
 
     @Test
     public void serviceSetupProviderTest() throws Exception {
-        OSGIServiceTestTools testTools = new OSGIServiceTestTools();
+        APSOSGIServiceTestTools testTools = new APSOSGIServiceTestTools();
         TestBundle testBundle = testTools.createBundle("test-bundle");
         testBundle.addEntryPaths(
                 "/se/natusoft/osgi/aps/tools/services/ServicesSetupProviderTestService.class"

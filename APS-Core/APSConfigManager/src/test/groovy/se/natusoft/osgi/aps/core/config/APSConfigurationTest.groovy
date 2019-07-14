@@ -8,7 +8,7 @@ import se.natusoft.osgi.aps.activator.annotation.ConfigListener
 import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
-import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools
+import se.natusoft.osgi.aps.test.tools.APSOSGIServiceTestTools
 import se.natusoft.osgi.aps.util.APSExecutor
 import se.natusoft.osgi.aps.util.APSLogger
 
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
 
 @CompileStatic
 @TypeChecked
-class APSConfigurationTest extends OSGIServiceTestTools {
+class APSConfigurationTest extends APSOSGIServiceTestTools {
 
     static boolean ok = false
 

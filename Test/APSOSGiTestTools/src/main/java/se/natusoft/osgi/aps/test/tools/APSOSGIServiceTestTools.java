@@ -42,6 +42,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import se.natusoft.osgi.aps.activator.APSActivator;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
+import se.natusoft.osgi.aps.exceptions.APSException;
 import se.natusoft.osgi.aps.test.tools.internal.ServiceRegistry;
 
 import java.io.File;
@@ -88,7 +89,7 @@ import java.util.concurrent.TimeUnit;
  * deploy( "moon-whale-service").with( new APSActivator() ).from( "APS-Core/APSConfigManager/target/test-classes");
  */
 @SuppressWarnings( "WeakerAccess" )
-public class OSGIServiceTestTools {
+public class APSOSGIServiceTestTools {
     //
     // Private Members
     //
@@ -396,6 +397,7 @@ public class OSGIServiceTestTools {
     }
 
     public class Wait {
+        private boolean exceptionOnTimeout = false;
         private long maxTime = 5;
         private TimeUnit timeUnit = TimeUnit.SECONDS;
         private Callable<Boolean> condition;
@@ -420,7 +422,13 @@ public class OSGIServiceTestTools {
             return this;
         }
 
-        public void go() {
+        public Wait exceptionOnTimeout( boolean exceptionOnTimeout ) {
+            this.exceptionOnTimeout = exceptionOnTimeout;
+            return this;
+        }
+
+        public void go() throws APSException {
+
             try {
                 if ( this.condition != null ) {
                     int maxCount = ( int ) ( TimeUnit.MILLISECONDS.convert( this.maxTime, this.timeUnit ) / 200 );
@@ -430,13 +438,27 @@ public class OSGIServiceTestTools {
                             wait( 200 );
                         }
                         ++count;
-                        if ( count > maxCount ) break;
+                        if ( count > maxCount ) {
+                            if (this.exceptionOnTimeout) {
+                                throw new APSException( "The current hold() timed out!" );
+                            }
+                            else {
+                                System.err.println( "WARNING: APSOSGiServiceTestTools.hold() exited due to timeout!!" );
+                            }
+                            break;
+                        }
                     }
                 }
                 else {
                     Thread.sleep( TimeUnit.MILLISECONDS.convert( this.maxTime, this.timeUnit ) );
                 }
-            } catch ( Exception ignore ) {
+            } catch ( Exception mostlyIgnore ) {
+                if (mostlyIgnore.getClass() == APSException.class && mostlyIgnore.getMessage().equals( "The current hold() timed out!" )) {
+                    throw (APSException)mostlyIgnore;
+                }
+
+                System.err.println("WARNING: The following Exception did occur, but will not break test!");
+                mostlyIgnore.printStackTrace( System.err );
             }
         }
     }

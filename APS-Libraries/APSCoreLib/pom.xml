@@ -138,6 +138,11 @@
             <artifactId>docutations</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-osgi-test-tools</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 

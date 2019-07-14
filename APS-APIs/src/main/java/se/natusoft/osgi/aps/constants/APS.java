@@ -98,6 +98,7 @@ public interface APS {
     interface Value {
         interface Service {
             interface Category {
+                String Communication = "communication";
                 String Network = "network";
                 String Web = "web";
                 String Storage = "storage";

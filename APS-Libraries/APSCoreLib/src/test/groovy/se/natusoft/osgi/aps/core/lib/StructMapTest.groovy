@@ -1,4 +1,4 @@
-package se.natusoft.osgi.aps.tools.groovy.lib
+package se.natusoft.osgi.aps.core.lib
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked

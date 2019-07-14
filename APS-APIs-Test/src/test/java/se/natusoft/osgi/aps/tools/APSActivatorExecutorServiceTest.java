@@ -39,7 +39,7 @@ package se.natusoft.osgi.aps.tools;
 import org.junit.Assert;
 import org.junit.Test;
 import se.natusoft.osgi.aps.activator.APSActivator;
-import se.natusoft.osgi.aps.test.tools.OSGIServiceTestTools;
+import se.natusoft.osgi.aps.test.tools.APSOSGIServiceTestTools;
 import se.natusoft.osgi.aps.tools.services.TestService;
 import se.natusoft.osgi.aps.tracker.APSServiceTracker;
 
@@ -48,7 +48,7 @@ import static org.junit.Assert.assertEquals;
 /**
  *
  */
-public class APSActivatorExecutorServiceTest extends OSGIServiceTestTools {
+public class APSActivatorExecutorServiceTest extends APSOSGIServiceTestTools {
 
 
     @Test
