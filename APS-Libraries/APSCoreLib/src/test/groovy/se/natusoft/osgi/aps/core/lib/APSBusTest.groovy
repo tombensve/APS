@@ -7,7 +7,7 @@ import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.OSGiService
 import se.natusoft.osgi.aps.core.lib.messages.WellDefinedMessage
-import se.natusoft.osgi.aps.core.lib.messaging.APSBus
+import se.natusoft.osgi.aps.api.messaging.APSBus
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.test.tools.APSOSGIServiceTestTools
 import se.natusoft.osgi.aps.test.tools.APSTestResults

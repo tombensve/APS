@@ -1,14 +1,14 @@
-package se.natusoft.osgi.aps.core.lib.messaging
+package se.natusoft.osgi.aps.api.messaging;
 
-import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
-import se.natusoft.docutations.NotNull
-import se.natusoft.docutations.Nullable
-import se.natusoft.docutations.Optional
-import se.natusoft.docutations.Reactive
-import se.natusoft.osgi.aps.types.APSHandler
-import se.natusoft.osgi.aps.types.APSResult
-import se.natusoft.osgi.aps.types.ID
+import se.natusoft.docutations.NotNull;
+import se.natusoft.docutations.Nullable;
+import se.natusoft.docutations.Optional;
+import se.natusoft.docutations.Reactive;
+import se.natusoft.osgi.aps.types.APSHandler;
+import se.natusoft.osgi.aps.types.APSResult;
+import se.natusoft.osgi.aps.types.ID;
+
+import java.util.Map;
 
 /**
  * This should be implemented and published as a service for different messaging
@@ -41,9 +41,7 @@ import se.natusoft.osgi.aps.types.ID
  * is possible! In most cases it would not make sense to do so. But there might be a special
  * case where it would make sense.
  */
-@CompileStatic
-@TypeChecked
-interface APSBusRouter {
+public interface APSBusRouter {
 
     /**
      * Sends a message.
@@ -56,7 +54,7 @@ interface APSBusRouter {
      */
     @Reactive
     void send( @NotNull String target, @NotNull Map<String, Object> message,
-               @Optional @Nullable APSHandler<APSResult> resultHandler )
+               @Optional @Nullable APSHandler<APSResult> resultHandler );
 
     /**
      * Subscribes to messages to a target.
@@ -69,7 +67,7 @@ interface APSBusRouter {
     @Reactive
     void subscribe( @NotNull ID id, @NotNull String target,
                     @Optional @Nullable APSHandler<APSResult> resultHandler,
-                    @NotNull APSHandler<Map<String, Object>> messageHandler )
+                    @NotNull APSHandler<Map<String, Object>> messageHandler );
 
     /**
      * Releases a subscription.
@@ -77,6 +75,6 @@ interface APSBusRouter {
      * @param subscriberId The ID returned by subscribe.
      */
     @Reactive
-    void unsubscribe( @NotNull ID subscriberId )
+    void unsubscribe( @NotNull ID subscriberId );
 
 }

@@ -1,4 +1,4 @@
-package se.natusoft.osgi.aps.core.lib.messaging
+package se.natusoft.osgi.aps.core.lib.service
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
@@ -8,6 +8,8 @@ import se.natusoft.docutations.*
 import se.natusoft.osgi.aps.activator.APSActivatorInteraction
 import se.natusoft.osgi.aps.activator.annotation.*
 import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.osgi.aps.api.messaging.APSBus
+import se.natusoft.osgi.aps.api.messaging.APSBusRouter
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult

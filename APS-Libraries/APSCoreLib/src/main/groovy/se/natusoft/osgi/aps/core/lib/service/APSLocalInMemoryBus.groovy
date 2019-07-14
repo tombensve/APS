@@ -1,4 +1,4 @@
-package se.natusoft.osgi.aps.core.lib.messaging
+package se.natusoft.osgi.aps.core.lib.service
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
@@ -9,6 +9,8 @@ import se.natusoft.docutations.Reactive
 import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
 import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
 import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.osgi.aps.api.messaging.APSBusRouter
+import se.natusoft.osgi.aps.api.messaging.APSTargetSpec
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult
@@ -25,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap
  */
 @CompileStatic
 @TypeChecked
-@SuppressWarnings( "UnnecessaryQualifiedReference" )
+@SuppressWarnings( [ "UnnecessaryQualifiedReference", "unused" ] )
 @OSGiServiceProvider(
         properties = [
                 @OSGiProperty(name = APS.Service.Provider, value = "aps-local-in-memory-bus"),

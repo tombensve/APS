@@ -1,14 +1,16 @@
-package se.natusoft.osgi.aps.core.lib.messaging
+package se.natusoft.osgi.aps.api.messaging;
 
-import se.natusoft.docutations.NotNull
-import se.natusoft.docutations.Nullable
-import se.natusoft.docutations.Optional
-import se.natusoft.docutations.Reactive
-import se.natusoft.osgi.aps.types.APSHandler
-import se.natusoft.osgi.aps.types.APSResult
-import se.natusoft.osgi.aps.types.ID
+import se.natusoft.docutations.NotNull;
+import se.natusoft.docutations.Nullable;
+import se.natusoft.docutations.Optional;
+import se.natusoft.docutations.Reactive;
+import se.natusoft.osgi.aps.types.APSHandler;
+import se.natusoft.osgi.aps.types.APSResult;
+import se.natusoft.osgi.aps.types.ID;
 
-interface APSBus {
+import java.util.Map;
+
+public interface APSBus {
 
     /**
      * Sends a message.
@@ -20,7 +22,7 @@ interface APSBus {
      */
     @Reactive
     void send( @NotNull String target, @NotNull Map<String, Object> message,
-               @Optional @Nullable APSHandler<APSResult> resultHandler )
+               @Optional @Nullable APSHandler<APSResult> resultHandler );
 
     /**
      * Subscribes to messages to a target.
@@ -31,7 +33,7 @@ interface APSBus {
      */
     @Reactive
     void subscribe( @NotNull ID id, @NotNull String target, @Optional @Nullable APSHandler<APSResult> resultHandler,
-                    @NotNull APSHandler<Map<String, Object>> messageHandler )
+                    @NotNull APSHandler<Map<String, Object>> messageHandler );
 
     /**
      * Releases a subscription.
@@ -39,7 +41,7 @@ interface APSBus {
      * @param subscriberId The ID returned by subscribe.
      */
     @Reactive
-    void unsubscribe( @NotNull ID subscriberId )
+    void unsubscribe( @NotNull ID subscriberId );
 
     /**
      * Sends a message and expects to get a response message back.
@@ -65,5 +67,5 @@ interface APSBus {
     @Reactive
     void request( @NotNull String target, @NotNull Map<String, Object> message,
                   @Nullable @Optional APSHandler<APSResult> resultHandler,
-                  @NotNull APSHandler<Map<String, Object>> responseMessage )
+                  @NotNull APSHandler<Map<String, Object>> responseMessage );
 }
