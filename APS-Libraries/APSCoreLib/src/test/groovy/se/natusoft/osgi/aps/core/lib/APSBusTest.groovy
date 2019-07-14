@@ -4,6 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
 import se.natusoft.osgi.aps.activator.APSActivator
+import se.natusoft.osgi.aps.activator.annotation.BundleStop
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.OSGiService
 import se.natusoft.osgi.aps.core.lib.messages.WellDefinedMessage
@@ -33,6 +34,10 @@ class APSBusTest extends APSOSGIServiceTestTools {
 
         hold() whilst { testCount < 3 } maxTime 4 unit TimeUnit.SECONDS exceptionOnTimeout true go()
 
+        undeploy( "aps-core-lib-test" )
+        undeploy( "aps-core-lib" )
+
+        // There will be no messages if testResult.testOK is true!
         testResults.printMessages(  )
 
         assert testResults.testOK
@@ -146,14 +151,14 @@ class TestRequest {
     @OSGiService( nonBlocking = true )
     private APSBus bus
 
+    private ID subId = new APSUUID()
+
     @Initializer
     void toTest() {
 
         // Setup a service to call.
 
-        ID subId = new APSUUID()
-
-        this.bus.subscribe( subId, "local:testService", null ) { Map<String, Object> message ->
+        this.bus.subscribe( this.subId, "local:testService", null ) { Map<String, Object> message ->
 
             //assert new WellDefinedMessage( message ).isValid(  )
             WellDefinedMessage.INSTANCE.validate( message )
@@ -204,20 +209,18 @@ class TestRequest {
             assert result.success()
         } { Map<String, Object> response ->
 
-
             APSBusTest.testResults.trAssertTrue response[ 'content' ][ 'response' ] == "Something important!"
-
-            // This is of course not a normal thing to do!! But since this is
-            // a test and we don't want to remove the subscriber before we called
-            // it, we have to wait until now to do it.
-            //
-            // In real life this would be done on bundle shutdown of bundle providing
-            // service.
-            this.bus.unsubscribe( subId )
         }
 
         APSBusTest.testCount++
         println "TestRequest: testCount: ${ APSBusTest.testCount }"
 
+    }
+
+    @BundleStop
+    void shutdown() {
+        println ">>>>>>>>>>>>>>>>>>> Stopping bundle <<<<<<<<<<<<<<<<<<<<"
+
+        this.bus.unsubscribe( subId )
     }
 }
