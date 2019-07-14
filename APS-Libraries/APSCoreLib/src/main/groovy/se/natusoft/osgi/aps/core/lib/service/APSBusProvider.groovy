@@ -91,7 +91,7 @@ class APSBusProvider implements APSBus {
      */
     @BundleStop
     void shutdown() {
-        if (!this.svcRegs.empty) this.svcRegs.first(  ).unregister(  )
+        if ( !this.svcRegs.empty ) this.svcRegs.first().unregister()
     }
 
     /**
@@ -109,7 +109,7 @@ class APSBusProvider implements APSBus {
         target.split( "," ).each { String _target ->
 
             this.routerTracker.withAllAvailableServices() { APSBusRouter apsBusRouter, @NotUsed Object[] args ->
-                apsBusRouter.send( target, message, resultHandler )
+                apsBusRouter.send( _target.trim(), message, resultHandler )
             }
         }
     }
@@ -125,8 +125,11 @@ class APSBusProvider implements APSBus {
     void subscribe( @NotNull ID id, @NotNull String target, @Optional @Nullable APSHandler<APSResult> resultHandler,
                     @NotNull APSHandler<Map<String, Object>> messageHandler ) {
 
-        this.routerTracker.withAllAvailableServices() { APSBusRouter apsBusRouter, @NotUsed Object[] args ->
-            apsBusRouter.subscribe( id, target, resultHandler, messageHandler )
+        target.split( "," ).each { String _target ->
+
+            this.routerTracker.withAllAvailableServices() { APSBusRouter apsBusRouter, @NotUsed Object[] args ->
+                apsBusRouter.subscribe( id, _target.trim(), resultHandler, messageHandler )
+            }
         }
     }
 
