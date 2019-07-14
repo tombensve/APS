@@ -34,8 +34,8 @@ class APSBusTest extends APSOSGIServiceTestTools {
 
         hold() whilst { testCount < 3 } maxTime 4 unit TimeUnit.SECONDS exceptionOnTimeout true go()
 
-        undeploy( "aps-core-lib-test" )
-        undeploy( "aps-core-lib" )
+        undeploy 'aps-core-lib-test'
+        undeploy 'aps-core-lib'
 
         // There will be no messages if testResult.testOK is true!
         testResults.printMessages(  )
@@ -63,10 +63,10 @@ class ShouldWork {
 
             this.receivedMessageWork = true
 
-            System.out.println( message.toString() )
+            System.out.println message.toString()
 
-            APSBusTest.testResults.trAssertEquals( "test", message[ 'msgType' ] )
-            APSBusTest.testResults.trAssertEquals( "qaz", message[ 'value' ] )
+            APSBusTest.testResults.trAssertEquals "test", message[ 'msgType' ]
+            APSBusTest.testResults.trAssertEquals "qaz", message[ 'value' ]
         }
 
         this.bus.send(
@@ -83,7 +83,7 @@ class ShouldWork {
         // which does not thread!! THAT IS IN GENERAL NOT AN EXPECTATION THAT CAN BE MADE!!
         // But in this case the subscribe handler will be called before send returns.
 
-        APSBusTest.testResults.trAssertTrue( this.receivedMessageWork )
+        APSBusTest.testResults.trAssertTrue this.receivedMessageWork
 
         this.bus.unsubscribe( subId )
 
@@ -121,8 +121,8 @@ class ShouldFail {
 
             //System.out.println( res.failure().toString() )
 
-            APSBusTest.testResults.trAssertSame( res.failure().getClass(), APSValidationException.class )
-            APSBusTest.testResults.trAssertEquals( "'target' does not start with 'local'!", res.failure().getMessage() )
+            APSBusTest.testResults.trAssertSame res.failure().getClass(), APSValidationException.class
+            APSBusTest.testResults.trAssertEquals "'target' does not start with 'local'!", res.failure().getMessage()
         },
                 null // Will never ever be called in this case!
         )
@@ -134,8 +134,8 @@ class ShouldFail {
                         value: "qaz"
                 ] as Map<String, Object>
         ) { res ->
-            APSBusTest.testResults.trAssertFalse( res.success() )
-            APSBusTest.testResults.trAssertEquals( "'target' does not start with 'local'!", res.failure().getMessage() )
+            APSBusTest.testResults.trAssertFalse res.success()
+            APSBusTest.testResults.trAssertEquals "'target' does not start with 'local'!", res.failure().getMessage()
         }
 
         APSBusTest.testCount++
