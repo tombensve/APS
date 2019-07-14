@@ -6,6 +6,7 @@ import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
 import se.natusoft.docutations.Optional
 import se.natusoft.docutations.Reactive
+import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
 import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
 import se.natusoft.osgi.aps.constants.APS
@@ -38,7 +39,7 @@ import java.util.concurrent.ConcurrentHashMap
 class APSLocalInMemoryBus implements APSBusRouter {
 
 
-    /** We only support targets starting with "local:"! */
+    /** We only support targets with id "local"! */
     private static final APSTargetSpec targetSpec = new APSTargetSpec( id: "local" )
 
     //
@@ -47,7 +48,8 @@ class APSLocalInMemoryBus implements APSBusRouter {
 
     private Map<String/*target*/, Map<ID, List<APSHandler<Map<String, Object>>>>> subscribers = new ConcurrentHashMap<>()
 
-    private APSLogger logger = new APSLogger().setLoggingFor( "APSLocalInMemoryBus" )
+    @Managed(loggingFor = "APSLocalInMemoryBus")
+    private APSLogger logger
 
     //
     // Methods
