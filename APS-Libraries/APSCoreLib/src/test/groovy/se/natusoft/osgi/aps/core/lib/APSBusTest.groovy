@@ -38,7 +38,7 @@ class APSBusTest extends APSOSGIServiceTestTools {
         undeploy 'aps-core-lib'
 
         // There will be no messages if testResult.testOK is true!
-        testResults.printMessages(  )
+        testResults.printMessages()
 
         assert testResults.testOK
     }
@@ -46,7 +46,8 @@ class APSBusTest extends APSOSGIServiceTestTools {
 
 @CompileStatic
 @TypeChecked
-@SuppressWarnings( "unused" ) // Instantiated and injected via reflection by APSActivator
+@SuppressWarnings( "unused" )
+// Instantiated and injected via reflection by APSActivator
 class ShouldWork {
 
     private boolean receivedMessageWork = false
@@ -65,15 +66,15 @@ class ShouldWork {
 
             System.out.println message.toString()
 
-            APSBusTest.testResults.trAssertEquals "test", message[ 'msgType' ]
-            APSBusTest.testResults.trAssertEquals "qaz", message[ 'value' ]
+            APSBusTest.testResults.trAssertEquals( "test", message[ 'msgType' ] )
+            APSBusTest.testResults.trAssertEquals( "qaz", message[ 'value' ] )
         }
 
         this.bus.send(
                 "local:test",
                 [
                         msgType: "test",
-                        value: "qaz"
+                        value  : "qaz"
                 ] as Map<String, Object>
         ) { APSResult res ->
             APSBusTest.testResults.trAssertTrue( res.success() )
@@ -83,7 +84,7 @@ class ShouldWork {
         // which does not thread!! THAT IS IN GENERAL NOT AN EXPECTATION THAT CAN BE MADE!!
         // But in this case the subscribe handler will be called before send returns.
 
-        APSBusTest.testResults.trAssertTrue this.receivedMessageWork
+        APSBusTest.testResults.trAssertTrue( this.receivedMessageWork )
 
         this.bus.unsubscribe( subId )
 
@@ -91,7 +92,7 @@ class ShouldWork {
                 "local:test",
                 [
                         msgType: "no-receiver-test",
-                        value: "zaq"
+                        value  : "zaq"
                 ] as Map<String, Object>
         ) { APSResult res ->
             APSBusTest.testResults.trAssertFalse( res.success() )
@@ -105,7 +106,8 @@ class ShouldWork {
 
 @CompileStatic
 @TypeChecked
-@SuppressWarnings( "unused" ) // Instantiated and injected via reflection by APSActivator
+@SuppressWarnings( "unused" )
+// Instantiated and injected via reflection by APSActivator
 class ShouldFail {
 
     @OSGiService( nonBlocking = true )
@@ -121,8 +123,8 @@ class ShouldFail {
 
             //System.out.println( res.failure().toString() )
 
-            APSBusTest.testResults.trAssertSame res.failure().getClass(), APSValidationException.class
-            APSBusTest.testResults.trAssertEquals "'target' does not start with 'local'!", res.failure().getMessage()
+            APSBusTest.testResults.trAssertSame( res.failure().getClass(), APSValidationException.class )
+            APSBusTest.testResults.trAssertEquals( "'target' does not start with 'local'!", res.failure().getMessage() )
         },
                 null // Will never ever be called in this case!
         )
@@ -131,11 +133,11 @@ class ShouldFail {
                 "test",
                 [
                         msgType: "test",
-                        value: "qaz"
+                        value  : "qaz"
                 ] as Map<String, Object>
         ) { res ->
-            APSBusTest.testResults.trAssertFalse res.success()
-            APSBusTest.testResults.trAssertEquals "'target' does not start with 'local'!", res.failure().getMessage()
+            APSBusTest.testResults.trAssertFalse( res.success() )
+            APSBusTest.testResults.trAssertEquals( "'target' does not start with 'local'!", res.failure().getMessage() )
         }
 
         APSBusTest.testCount++
@@ -145,7 +147,8 @@ class ShouldFail {
 
 @CompileStatic
 @TypeChecked
-@SuppressWarnings( "unused" ) // Instantiated and injected via reflection by APSActivator
+@SuppressWarnings( "unused" )
+// Instantiated and injected via reflection by APSActivator
 class TestRequest {
 
     @OSGiService( nonBlocking = true )
@@ -184,13 +187,13 @@ class TestRequest {
                     content: [
                             response: data
                     ]
-            ] as Map<String, Object>)
+            ] as Map<String, Object> )
 
-            APSBusTest.testResults.trAssertTrue respMsg.isValid()
+            APSBusTest.testResults.trAssertTrue( respMsg.isValid() )
 
             this.bus.send( replyAddress, respMsg ) { APSResult result ->
 
-                APSBusTest.testResults.trAssertTrue result.success()
+                APSBusTest.testResults.trAssertTrue( result.success() )
             }
 
         }
@@ -209,7 +212,7 @@ class TestRequest {
             assert result.success()
         } { Map<String, Object> response ->
 
-            APSBusTest.testResults.trAssertTrue response[ 'content' ][ 'response' ] == "Something important!"
+            APSBusTest.testResults.trAssertTrue( response[ 'content' ][ 'response' ] == "Something important!" )
         }
 
         APSBusTest.testCount++
