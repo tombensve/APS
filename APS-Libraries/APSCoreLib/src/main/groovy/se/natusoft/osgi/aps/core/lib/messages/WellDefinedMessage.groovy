@@ -124,7 +124,7 @@ class WellDefinedMessage<SubClass> implements Map<String, Object> {
      */
     Map<String, Object> getMessage() {
 
-        return this.message
+        this.message
     }
 
 
