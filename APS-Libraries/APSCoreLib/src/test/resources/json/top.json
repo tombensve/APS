@@ -1,0 +1,5 @@
+{
+  "title": "Test file",
+  "include": "!@INCLUDE@:json/include.json",
+  "Something": 22
+}
