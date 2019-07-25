@@ -47,6 +47,11 @@ public class APSJson {
         }
     }
 
+    /**
+     * Reads a JSON object from a String of JSON.
+     *
+     * @param jsonString The JSON string to parse as JSON.
+     */
     @SuppressWarnings( "unused" )
     public static Map<String, Object> readObject( String jsonString ) {
         try {
@@ -59,6 +64,11 @@ public class APSJson {
         }
     }
 
+    /**
+     * Reactive API version. Reads a JSON object from a String of JSON.
+     *
+     * @param jsonString The JSON string to parse as JSON.
+     */
     @SuppressWarnings( "unused" )
     public static void readObject( String jsonString, APSHandler<APSResult<Map<String, Object>>> handler ) {
         try {

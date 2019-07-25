@@ -332,7 +332,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
             }
             catch ( IOException ioe ) {
 
-                this.logger.error( "Failed to load configuration schema! Config will not be verified!", ioe )
+                this.logger.error( "Failed to loadMapJson configuration schema! Config will not be verified!", ioe )
             }
             finally {
 
@@ -354,7 +354,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
         catch ( IOException ioe ) {
 
             this.logger.error(
-                    """(configId:${ this.apsConfigId }):Failed to load default configuration from bundle: ${
+                    """(configId:${ this.apsConfigId }):Failed to loadMapJson default configuration from bundle: ${
                         ( ( Bundle ) this.owner ).symbolicName
                     }!""", ioe )
 
@@ -375,7 +375,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
         // have it until next save.
         putAll( this.defaultConfig )
 
-        // Try load local config.
+        // Try loadMapJson local config.
 
         // IMPORTANT: This closure can potentially be run at a later time if the APSFilesytemService is not
         //            available yet!
@@ -401,7 +401,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
                 catch ( IOException ioe ) {
 
                     throw new APSIOException(
-                            """Failed to load configuration for bundle ${ ( ( Bundle ) this.owner ).symbolicName }!""",
+                            """Failed to loadMapJson configuration for bundle ${ ( ( Bundle ) this.owner ).symbolicName }!""",
                             ioe
                     )
                 }

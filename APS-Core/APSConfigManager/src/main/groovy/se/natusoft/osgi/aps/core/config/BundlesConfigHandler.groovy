@@ -141,7 +141,7 @@ class BundlesConfigHandler {
                     }
                     catch ( Exception e ) {
 
-                        this.logger.error( "Failed to load config from: ${ schemaResourcePath } / ${ defaultResourcePath } " +
+                        this.logger.error( "Failed to loadMapJson config from: ${ schemaResourcePath } / ${ defaultResourcePath } " +
                                 "for bundle '${ bundle.symbolicName }'!", e )
                     }
                 }

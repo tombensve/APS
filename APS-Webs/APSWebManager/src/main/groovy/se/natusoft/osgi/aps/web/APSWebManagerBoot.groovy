@@ -90,7 +90,7 @@ class APSWebManagerBoot {
             // Also note that since this is OSGi and vertx is provided by another bundle
             // it has another ClassLoader and thus also another classpath and will not see
             // our files. Thereby we need to provide our ClassLoader for StaticHandler to
-            // be able to load our files.
+            // be able to loadMapJson our files.
             router.route( "/apsweb/*" )
                     .handler( StaticHandler.create( "webContent", this.class.classLoader )
                     .setCachingEnabled( false ) )

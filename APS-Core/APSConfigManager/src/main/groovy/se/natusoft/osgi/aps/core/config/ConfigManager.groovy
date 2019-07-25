@@ -230,7 +230,7 @@ class ConfigManager {
         }
         catch ( Exception e ) {
 
-            this.logger.error( "Failed to load config '${ configId }' for bundle '${ owner.symbolicName }'!", e )
+            this.logger.error( "Failed to loadMapJson config '${ configId }' for bundle '${ owner.symbolicName }'!", e )
         }
     }
 
@@ -283,7 +283,7 @@ class ConfigManager {
     }
 
     /**
-     * Initializes the configuration by trying to load from cluster and save locally, and if that fails
+     * Initializes the configuration by trying to loadMapJson from cluster and save locally, and if that fails
      * loading from local and store in cluster.
      *
      * @param configId The id of the configuration to initialize.
@@ -304,7 +304,7 @@ class ConfigManager {
     /**
      * Loads the local config and stores it in the cluster.
      *
-     * @param configId The id of the configuration to load.
+     * @param configId The id of the configuration to loadMapJson.
      */
     private void loadClusterFromLocal( @NotNull String configId ) {
 
