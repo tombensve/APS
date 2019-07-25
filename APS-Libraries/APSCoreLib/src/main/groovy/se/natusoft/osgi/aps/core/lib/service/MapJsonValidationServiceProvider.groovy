@@ -46,7 +46,7 @@ import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
 import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
-import se.natusoft.osgi.aps.core.lib.MapJsonDocSchemaValidator
+import se.natusoft.osgi.aps.core.lib.MapJsonSchemaValidator
 
 /**
  * Yes, this is a library type bundle that exports everything. But sometimes a service is more useful
@@ -64,7 +64,7 @@ import se.natusoft.osgi.aps.core.lib.MapJsonDocSchemaValidator
 )
 @CompileStatic
 @TypeChecked
-class MapJsonDocValidationServiceProvider implements APSMapJsonValidationService {
+class MapJsonValidationServiceProvider implements APSMapJsonValidationService {
 
     /**
      * Validates a Map JSON structure against a schema as defined by APSToolsGroovyLib/MapJsonDocSchemaValidator.
@@ -77,6 +77,6 @@ class MapJsonDocValidationServiceProvider implements APSMapJsonValidationService
     @Override
     void validate(APSMapJson toValidate, APSMapJsonSchema schema) throws APSValidationException {
 
-        new MapJsonDocSchemaValidator(validStructure: schema).validate(toValidate)
+        new MapJsonSchemaValidator(validStructure: schema).validate(toValidate)
     }
 }

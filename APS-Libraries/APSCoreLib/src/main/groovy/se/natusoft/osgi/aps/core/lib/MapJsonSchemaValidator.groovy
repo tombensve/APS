@@ -40,7 +40,6 @@ package se.natusoft.osgi.aps.core.lib
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import se.natusoft.docutations.Nullable
-import se.natusoft.osgi.aps.exceptions.APSOptOutException
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 
 /**
@@ -123,7 +122,7 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  */
 @CompileStatic
 @TypeChecked
-class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
+class MapJsonSchemaValidator implements MapJsonSchemaConst {
 
     /**
      * Converts the original map into 2 maps that is easier to work against.
@@ -260,7 +259,7 @@ class MapJsonDocSchemaValidator implements MapJsonSchemaConst {
      * @return this.
      */
     @SuppressWarnings( "GroovyUnusedDeclaration" )
-    MapJsonDocSchemaValidator validStructure( Map<String, Object> schema ) {
+    MapJsonSchemaValidator validStructure( Map<String, Object> schema ) {
 
         this.validStructure = schema
         return this

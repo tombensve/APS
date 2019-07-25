@@ -3,14 +3,11 @@ package se.natusoft.osgi.aps.core.lib
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
-import se.natusoft.osgi.aps.core.lib.MapJsonDocSchemaValidator
-import se.natusoft.osgi.aps.core.lib.MapJsonSchemaEntry
-import se.natusoft.osgi.aps.core.lib.MapJsonSchemaMeta
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 
 @CompileStatic
 @TypeChecked
-class MapJsonDocSchemaValidatorTest {
+class MapJsonSchemaValidatorTest {
 
     private Map<String, Object> schema = [
             "header_?": "Description",
@@ -37,7 +34,7 @@ class MapJsonDocSchemaValidatorTest {
             ]
     ] as Map<String, Object>
 
-    private MapJsonDocSchemaValidator verifier = new MapJsonDocSchemaValidator( validStructure: schema )
+    private MapJsonSchemaValidator verifier = new MapJsonSchemaValidator( validStructure: schema )
 
     @Test
     void testSchema() throws Exception {

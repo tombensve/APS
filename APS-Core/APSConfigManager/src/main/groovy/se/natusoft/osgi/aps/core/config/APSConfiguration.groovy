@@ -44,7 +44,7 @@ import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSDirectory
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
-import se.natusoft.osgi.aps.core.lib.MapJsonDocSchemaValidator
+import se.natusoft.osgi.aps.core.lib.MapJsonSchemaValidator
 import se.natusoft.osgi.aps.core.lib.StructMap
 import se.natusoft.osgi.aps.exceptions.APSConfigException
 import se.natusoft.osgi.aps.exceptions.APSIOException
@@ -115,7 +115,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
     private Map<String, Object> configSchema = null
 
     /** A validator for validating agains configSchema. */
-    private MapJsonDocSchemaValidator configValidator
+    private MapJsonSchemaValidator configValidator
 
     /** The default config. */
     private StructMap defaultConfig
@@ -326,7 +326,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
             try {
 
                 this.configSchema = JSON.readJSONAsMap( schemaStream, this.jsonErrorHandler )
-                this.configValidator = new MapJsonDocSchemaValidator( validStructure: configSchema )
+                this.configValidator = new MapJsonSchemaValidator( validStructure: configSchema )
                 this.logger.info "Loaded schema: ${ this.configSchema }"
 
             }

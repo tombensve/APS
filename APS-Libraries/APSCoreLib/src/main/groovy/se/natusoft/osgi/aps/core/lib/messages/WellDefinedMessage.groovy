@@ -2,7 +2,7 @@ package se.natusoft.osgi.aps.core.lib.messages
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.core.lib.MapJsonDocSchemaValidator
+import se.natusoft.osgi.aps.core.lib.MapJsonSchemaValidator
 
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import static SchemaConstants.*
@@ -26,7 +26,7 @@ class WellDefinedMessage<SubClass> implements Map<String, Object> {
     //
 
     /** The validator for our structure. */
-    private MapJsonDocSchemaValidator schemaValidator
+    private MapJsonSchemaValidator schemaValidator
 
     //
     // Groovy JB Properties
@@ -71,7 +71,7 @@ class WellDefinedMessage<SubClass> implements Map<String, Object> {
      * Creates a new WellDefinedMessage instance.
      */
     WellDefinedMessage( ) {
-        this.schemaValidator = new MapJsonDocSchemaValidator( validStructure: schema as Map<String, Object> )
+        this.schemaValidator = new MapJsonSchemaValidator( validStructure: schema as Map<String, Object> )
     }
 
     //
