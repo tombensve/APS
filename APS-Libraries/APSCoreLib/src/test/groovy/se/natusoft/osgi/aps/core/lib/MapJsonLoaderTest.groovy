@@ -1,7 +1,11 @@
 package se.natusoft.osgi.aps.core.lib
 
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
 import org.junit.Test
 
+@CompileStatic
+@TypeChecked
 class MapJsonLoaderTest {
 
     @Test
@@ -13,5 +17,8 @@ class MapJsonLoaderTest {
 
         // Recursive include
         assert json['include']['qazwsx']['qaz'] == "QWERTY"
+
+        // Verify expansion of named rule reference.
+        assert json['Named rule'] == "?[a-zA-Z 0-9.]*\$"
     }
 }

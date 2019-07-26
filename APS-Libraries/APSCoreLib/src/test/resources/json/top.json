@@ -1,5 +1,6 @@
 {
   "title": "Test file",
   "include": "!@INCLUDE@:json/include.json",
-  "Something": 22
+  "Something": 22,
+  "Named rule": "NamedRule:TEXT_NUM_DOT"
 }

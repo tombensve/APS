@@ -7,7 +7,6 @@ import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.activator.annotation.BundleStop
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.OSGiService
-import se.natusoft.osgi.aps.core.lib.messages.WellDefinedMessage
 import se.natusoft.osgi.aps.api.messaging.APSBus
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.test.tools.APSOSGIServiceTestTools
@@ -156,6 +155,24 @@ class TestRequest {
 
     private ID subId = new APSUUID()
 
+    private MapJsonSchemaValidator schemaValidator = new MapJsonSchemaValidator(
+            validStructure: MapJsonLoader.loadMapJson( "aps/messages/APSMessageSchema.json", this.class.classLoader )
+    )
+
+    private boolean validateMessage(Map<String, Object> message) {
+        boolean valid = true
+        try {
+            this.schemaValidator.validate( message )
+        }
+        catch ( APSValidationException ve ) {
+            ve.printStackTrace( System.err )
+
+            valid = false
+        }
+
+        valid
+    }
+
     @Initializer
     void toTest() {
 
@@ -163,8 +180,8 @@ class TestRequest {
 
         this.bus.subscribe( this.subId, "local:testService", null ) { Map<String, Object> message ->
 
-            //assert new WellDefinedMessage( message ).isValid(  )
-            WellDefinedMessage.INSTANCE.validate( message )
+            //assert that message is valid.
+            APSBusTest.testResults.trAssertTrue( validateMessage( message ) )
 
             String data = message[ 'content' ][ 'data' ]
 
@@ -179,7 +196,7 @@ class TestRequest {
 
             String replyAddress = message[ 'header' ][ 'replyAddress' ]
 
-            WellDefinedMessage respMsg = new WellDefinedMessage( validate: true, message: [
+            Map<String, Object> respMsg = [
                     header : [
                             type   : "serviceResponse",
                             version: 1.0
@@ -187,9 +204,9 @@ class TestRequest {
                     content: [
                             response: data
                     ]
-            ] as Map<String, Object> )
+            ] as Map<String, Object>
 
-            APSBusTest.testResults.trAssertTrue( respMsg.isValid() )
+            APSBusTest.testResults.trAssertTrue( validateMessage( respMsg ) )
 
             this.bus.send( replyAddress, respMsg ) { APSResult result ->
 

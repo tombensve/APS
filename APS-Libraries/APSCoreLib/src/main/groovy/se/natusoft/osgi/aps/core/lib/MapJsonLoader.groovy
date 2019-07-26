@@ -17,6 +17,23 @@ import se.natusoft.osgi.aps.util.APSJson
 class MapJsonLoader {
 
     /**
+     * Values of "==>key" will be replaced with value of key.
+     *
+     * These will be loaded from messages/NamedRules.json on first use.
+     */
+    private static Map<String, String> STATIC_RULES = null
+
+    private static void loadNamedRules(ClassLoader classLoader) {
+        try {
+            STATIC_RULES =
+                    APSJson.readObject( classLoader.getResourceAsStream( "aps/messages/NamedRules.json" ) ) as Map<String, String>
+        }
+        catch ( Exception e ) {
+            e.printStackTrace( System.err )
+        }
+    }
+
+    /**
      * Loads a full schema including !@INCUDE@: referenced files.
      *
      * @param resourcePath The full resource path of the schema to loadMapJson.
@@ -24,7 +41,7 @@ class MapJsonLoader {
      *
      * @return Fully loaded schema.
      */
-    static Map<String, Object> loadMapJson( String resourcePath, ClassLoader classLoader) {
+    static Map<String, Object> loadMapJson( String resourcePath, ClassLoader classLoader ) {
 
         Map<String, Object> json = APSJson.readObject( classLoader.getResourceAsStream( resourcePath ) )
 
@@ -39,19 +56,31 @@ class MapJsonLoader {
      * @param map The Map to scan for includes.
      * @param classLoader The ClassLoader used for loading included resources.
      */
-    private static void scanMapForIncludes(Map<String, Object> map, ClassLoader classLoader) {
+    private static void scanMapForIncludes( Map<String, Object> map, ClassLoader classLoader ) {
 
-        map.each { String key , Object value ->
+        map.each { String key, Object value ->
 
-            if (value instanceof String && (value as String).startsWith( "!@INCLUDE@:" )) {
+            if ( value instanceof String && ( value as String ).startsWith( "!@INCLUDE@:" ) ) {
 
-                String path = (value as String).substring( 11 )
+                String path = ( value as String ).substring( 11 )
                 Map<String, Object> include = loadMapJson( path, classLoader )
-                map[key] = include
+                map[ key ] = include
             }
-            else if (value instanceof Map) {
+            else if ( value instanceof String && ( value as String ).startsWith( "NamedRule:" ) ) {
 
-                scanMapForIncludes( map[key] as Map<String, Object>, classLoader )
+                if (STATIC_RULES == null) {
+                    loadNamedRules( classLoader )
+                }
+
+                value = value.substring( 10 )
+                value = STATIC_RULES[ value ]
+                if (value != null) {
+                    map[ key ] = value
+                }
+            }
+            else if ( value instanceof Map ) {
+
+                scanMapForIncludes( map[ key ] as Map<String, Object>, classLoader )
             }
         }
     }
