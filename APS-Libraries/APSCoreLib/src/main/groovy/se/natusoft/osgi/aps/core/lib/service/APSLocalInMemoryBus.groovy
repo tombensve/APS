@@ -11,7 +11,7 @@ import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
 import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.api.messaging.APSBusRouter
-import se.natusoft.osgi.aps.api.messaging.APSTargetSpec
+import se.natusoft.osgi.aps.core.lib.ValidTargetTrait
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult
@@ -36,20 +36,23 @@ import java.util.concurrent.ConcurrentHashMap
                 @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Messaging),
         ]
 )
-class APSLocalInMemoryBus implements APSBusRouter {
+class APSLocalInMemoryBus implements APSBusRouter, ValidTargetTrait {
 
-
-    /** We only support targets with id "local"! */
-    private static final APSTargetSpec targetSpec = new APSTargetSpec( id: "local" )
+    private static final String TARGET_ID = "local"
 
     //
     // Private Members
     //
 
-    private Map<String/*target*/, Map<ID, List<APSHandler<Map<String, Object>>>>> subscribers = new ConcurrentHashMap<>()
+    private Map<String/*target*/, Map<ID, List<APSHandler<Map<String, Object>>>>> subscribers =
+            new ConcurrentHashMap<>()
 
     @Managed(loggingFor = "APSLocalInMemoryBus")
     private APSLogger logger
+
+    APSLocalInMemoryBus() {
+        this.validTargetTrait_targetId = TARGET_ID
+    }
 
     //
     // Methods
@@ -67,12 +70,10 @@ class APSLocalInMemoryBus implements APSBusRouter {
     void send( @NotNull String target, @NotNull Map<String, Object> message,
                @Nullable APSHandler<APSResult> resultHandler ) {
 
-        if ( this.targetSpec.valid( target ) ) {
-
-            APSTargetSpec sendTargetSpec = new APSTargetSpec( target )
+        validTarget( target ) { String realTarget ->
 
             Map<ID, List<APSHandler<Map<String, Object>>>> subs =
-                    this.subscribers.computeIfAbsent( sendTargetSpec.address ) { Map<String, Object> byId -> new ConcurrentHashMap<>() }
+                    this.subscribers.computeIfAbsent( realTarget ) { Map<String, Object> byId -> new ConcurrentHashMap<>() }
 
             if ( !subs.isEmpty() ) {
 
@@ -97,12 +98,6 @@ class APSLocalInMemoryBus implements APSBusRouter {
                 resultHandler.handle( APSResult.failure( new APSValidationException( "No subscribers!" ) ) )
             }
         }
-        else if ( resultHandler != null ) {
-
-            resultHandler.handle(
-                    APSResult.failure( new APSValidationException( "'target' does not start with '${this.targetSpec.id}'!" ) )
-            )
-        }
     }
 
     /**
@@ -119,11 +114,9 @@ class APSLocalInMemoryBus implements APSBusRouter {
                     @Nullable @Optional APSHandler<APSResult> resultHandler,
                     @NotNull APSHandler<Map<String, Object>> messageHandler ) {
 
-        if ( this.targetSpec.valid( target ) ) {
+        validTarget( target ) { String realTarget ->
 
-            APSTargetSpec subscribeTargetSpec = new APSTargetSpec( target )
-
-            this.subscribers.computeIfAbsent( subscribeTargetSpec.address ) { new ConcurrentHashMap<>() }
+            this.subscribers.computeIfAbsent( realTarget ) { new ConcurrentHashMap<>() }
                     .computeIfAbsent( id ) { new LinkedList<>() }
                     .add( messageHandler )
 
@@ -131,14 +124,6 @@ class APSLocalInMemoryBus implements APSBusRouter {
 
                 resultHandler.handle( APSResult.success( null ) )
             }
-        }
-        else if ( resultHandler != null ) {
-
-            resultHandler.handle(
-                    APSResult.failure(
-                            new APSValidationException( "'target' does not start with '${this.targetSpec.id}'!" )
-                    )
-            )
         }
     }
 
@@ -151,7 +136,9 @@ class APSLocalInMemoryBus implements APSBusRouter {
     @Override
     void unsubscribe( @NotNull ID subscriberId ) {
 
-        this.subscribers.each { String key, Map<ID, List<APSHandler<Map<String, Object>>>> value ->
+        // Note that we don't have a target here, and thus tries to remove from all targets.
+        // The subscriberId should be unique so only one will be removed.
+        this.subscribers.each { String target, Map<ID, List<APSHandler<Map<String, Object>>>> value ->
 
             value.remove( subscriberId )
         }
