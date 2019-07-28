@@ -1,11 +1,11 @@
 {
-  "TEXT_NUM_DOT"           : "?[a-zA-Z 0-9.]*$",
+  "TEXT_NUM_DOT"           : "?[\\.a-zA-Z 0-9]*$",
   "TEXT_NUM_DASH"          : "?[a-zA-Z 0-9-]*$",
-  "TEXT_NUM_DASH_DOT"      : "?[a-zA-Z 0-9-.]*$",
+  "TEXT_NUM_DASH_DOT"      : "?[\\.a-zA-Z 0-9-]*$",
   "TEXT_NUM_DASH_DOT_COLON": "?[a-zA-Z 0-9-.:]*$",
   "TEXT_DOT"               : "?[a-zA-Z .]*$",
   "TEXT"                   : "?.*",
   "NUM_DOT"                : "?[0-9.]*$",
   "NUMBERS_DECIMAL"        : "?[0-9.]*$",
-  "BUS_ADDRESS"            : "?[a-zA-Z0-9:-.]*$"
+  "BUS_ADDRESS"            : "?[\\.a-zA-Z0-9:-]*$"
 }

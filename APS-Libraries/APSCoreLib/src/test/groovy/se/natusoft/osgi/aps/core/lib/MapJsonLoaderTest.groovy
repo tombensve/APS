@@ -19,6 +19,7 @@ class MapJsonLoaderTest {
         assert json['include']['qazwsx']['qaz'] == "QWERTY"
 
         // Verify expansion of named rule reference.
-        assert json['Named rule'] == "?[a-zA-Z 0-9.]*\$"
+        //println "Named rule: '${json['Named rule']}'"
+        assert json['Named rule'] == "?[\\.a-zA-Z 0-9]*\$"
     }
 }
