@@ -12,3 +12,4 @@ So for serving web pages vert.x is used directly. APS however provides some ease
 
 But for web in general Vert.x is hardcoded into APS.
 
+NO LONGER ENTIRELY TRUE

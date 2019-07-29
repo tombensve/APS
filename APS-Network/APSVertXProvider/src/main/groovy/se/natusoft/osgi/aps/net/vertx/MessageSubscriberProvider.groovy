@@ -38,43 +38,49 @@ package se.natusoft.osgi.aps.net.vertx
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import io.vertx.core.AsyncResult
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.eventbus.Message
+import io.vertx.core.eventbus.MessageConsumer
+import io.vertx.core.json.JsonObject
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceReference
 import org.osgi.framework.ServiceRegistration
+import se.natusoft.docutations.NotNull
+import se.natusoft.docutations.Nullable
 import se.natusoft.osgi.aps.activator.APSActivatorInteraction
 import se.natusoft.osgi.aps.activator.annotation.*
 import se.natusoft.osgi.aps.api.messaging.APSMessage
-import se.natusoft.osgi.aps.api.messaging.APSMessageSender
-
+import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
 import se.natusoft.osgi.aps.constants.APS
-import se.natusoft.osgi.aps.exceptions.APSException
+import se.natusoft.osgi.aps.exceptions.APSIOException
+import se.natusoft.osgi.aps.exceptions.APSValidationException
+import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
+import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult
-import se.natusoft.osgi.aps.tracker.APSServiceTracker
+import se.natusoft.osgi.aps.types.ID
 import se.natusoft.osgi.aps.util.APSLogger
-import se.natusoft.osgi.aps.json.JSON
 
 @SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
 @TypeChecked
 @OSGiServiceProvider(
+        // Possible criteria for client lookups. ex: "(aps-messaging-protocol=vertx-eventbus)" In most cases clients
+        // won't care.
         properties = [
-                @OSGiProperty( name = APS.Service.Provider, value = "aps-vertx-event-bus-messaging-provider:sender" ),
+                @OSGiProperty( name = APS.Service.Provider, value =
+                        "aps-vertx-event-bus-messaging-provider:subscriber" ),
                 @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Network ),
                 @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
                 @OSGiProperty( name = APS.Messaging.Protocol.Name, value = "vertx-eventbus" ),
                 @OSGiProperty( name = APS.Messaging.Persistent, value = APS.FALSE ),
                 @OSGiProperty( name = APS.Messaging.Clustered, value = APS.TRUE )
-        ],
-        serviceAPIs = [ APSMessageSender.class ]
+        ]
 )
-class MessageSenderProvider<MessageType> extends AddressResolver implements APSMessageSender<MessageType> {
+class MessageSubscriberProvider implements APSMessageSubscriber<Message> {
 
     //
-    // Private Members
+    // Private members
     //
 
     /**
@@ -99,10 +105,10 @@ class MessageSenderProvider<MessageType> extends AddressResolver implements APSM
      * All this of course assumes that a service goes away only because it is being restarted / upgraded, and
      * will rather quickly be available again.
      **/
-    private List<ServiceRegistration> svcRegs = [ ]
+    private List<ServiceRegistration> svcRegs = []
 
-    /** For logging. */
-    @Managed( name = "sender", loggingFor = "aps-vertx-event-bus-messaging-provider:sender" )
+    /** The logger for this class. */
+    @Managed( name = "subscriber", loggingFor = "aps-vertx-eventbus-messaging:subscriber" )
     private APSLogger logger
 
     /** Our bundles context. */
@@ -111,147 +117,122 @@ class MessageSenderProvider<MessageType> extends AddressResolver implements APSM
 
     /**
      * This tracks the EventBus. init() will setup an onActiveServiceAvailable callback handler which
-     * will provide the eventBus instance.*/
+     * will provide the eventBus instance.
+     **/
     @OSGiService( additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "30 sec" )
     private APSServiceTracker<EventBus> eventBusTracker
     private EventBus eventBus
 
     /** Used to delay service registration. */
-    @Managed( name = "senderAI" )
+    @Managed( name = "subscriberAI" )
     private APSActivatorInteraction activatorInteraction
 
-    /** The current subscriber. */
-    private APSHandler<APSMessage<MessageType>> reply
+    /** Active subscribers are stored here. */
+    private Map<ID, MessageConsumer> subscribers = [:]
 
     //
-    // Methods
+    // Startup / shutdown
     //
 
     /**
-     * This is run by APSActivator when all @Managed & @OSGiService annotated fields have been injected.*/
+     * This is run by APSActivator when all @Managed & @OSGiService annotated fields have been injected.
+     **/
     @Initializer
     void init() {
         // Yes, what these handlers do could be done directly below in onActiveServiceAvailable {...} instead
         // of changing state. This is however more future safe.
         this.activatorInteraction.setStateHandler( APSActivatorInteraction.State.READY ) {
-            this.activatorInteraction.registerService( MessageSenderProvider.class, this.context, this.svcRegs )
-            this.logger.debug( ">>>> Registered MessageSenderProvider as service!" )
+            this.activatorInteraction.registerService( MessageSubscriberProvider.class, this.context, this.svcRegs )
         }
         this.activatorInteraction.setStateHandler( APSActivatorInteraction.State.TEMP_UNAVAILABLE ) {
-            this.svcRegs.first().unregister() // We only have one instance.
+            this.svcRegs.first().unregister()
             this.svcRegs.clear()
-            this.logger.debug( ">>>> Unregistered MessageSenderProvider as service!" )
         }
 
         this.eventBusTracker.onActiveServiceAvailable { EventBus service, ServiceReference serviceReference ->
-            this.logger.debug( ">>>> received eventbus!" )
-
             this.eventBus = service
 
             this.activatorInteraction.state = APSActivatorInteraction.State.READY
         }
         this.eventBusTracker.onActiveServiceLeaving { ServiceReference service, Class serviceAPI ->
-            this.logger.debug( ">>>> Lost eventbus!" )
-
             this.eventBus = null
 
             this.activatorInteraction.state = APSActivatorInteraction.State.TEMP_UNAVAILABLE
         }
     }
 
+    //
+    // Methods
+    //
+
     /**
-     * Sends a message.
+     * Adds a subscriber.
      *
-     * @param destination The destination to send to.
-     * @param message The message to send.
+     * @param destination The destination to subscribe to.
+     *                    This is up to the implementation, but it is strongly recommended that
+     *                    this is a name that will be looked up in some configuration for the real
+     *                    destination, by the service rather than have the client pass a value from
+     *                    its configuration.
+     * @param subscriptionId A unique id for this subscription. Use the same to unsubscribe.
+     * @param result The result of the call callback. Will always return success. Can be null.
+     * @param handler The subscription handler.
      */
-    private void doSend( String destination, MessageType message ) {
+    @Override
+    void subscribe( @NotNull String destination, @NotNull ID subscriptionId, @Nullable APSHandler<APSResult> result,
+                    @NotNull APSHandler<APSMessage> handler ) {
+        //        this.logger.error( "@@@@@@@@ THREAD: ${Thread.currentThread()}" )
 
-        String address = resolveAddress( destination )
+        String address = destination
 
-        if ( this.reply != null ) {
+        MessageConsumer consumer = this.eventBus.consumer( address ) { Message<JsonObject> msg ->
 
-            // For replyable messages only send is valid. We still need to filter address.
-            if ( address.startsWith( "all:" ) ) {
+            Map<String, Object> message = new RecursiveJsonObjectMap( msg.body() as JsonObject )
 
-                throw new APSException(
-                        "A reply handler has been provided and the destination implies a publish! " +
-                        "This is an impossible combination."
-                )
-            }
+            handler.handle( new APSMessageProvider( message: message, vertxMsg: msg ) )
 
-            this.eventBus.send( address, TypeConv.apsToVertx( message ) ) { AsyncResult<Message<String>> reply ->
+        }
 
-                if ( reply.succeeded() ) {
-
-                    Map<String, Object> msg = JSON.stringToMap( reply.result().body() )
-                    this.reply.handle( new APSMessageProvider<Map<String, Object>>( message: msg, vertxMsg: reply
-                            .result() ) )
-                }
+        if ( consumer == null ) {
+            if ( result != null ) {
+                result.handle( APSResult.failure( new APSIOException( "Failed to create consumer!" ) ) )
             }
         }
         else {
-
-            if ( address.startsWith( "all:" ) ) {
-                address = address.substring( 4 )
-                this.logger.debug( ">>>> Publishing to address: " + address )
-                this.eventBus.publish( address, TypeConv.apsToVertx( message ) )
-            }
-            else {
-                this.logger.debug( ">>>> Sending to address: " + address )
-                this.eventBus.send( address, TypeConv.apsToVertx( message ) )
-            }
-        }
-    }
-
-    /**
-     * Sends a message receiving a result of success or failure. On Success there
-     * can be a result value and on failure there is an Exception describing the failure
-     * available.
-     *
-     * If result is null then an APSException will be thrown instead on error.
-     *
-     * @param message The message to send.
-     */
-    @Override
-    void send( String destination, MessageType message, APSHandler<APSResult> result ) {
-
-        try {
-            doSend( destination, message )
+            this.subscribers[ subscriptionId ] = consumer
 
             if ( result != null ) {
                 result.handle( APSResult.success( null ) )
             }
         }
-        catch ( Exception e ) {
+    }
+
+    /**
+     * Cancel a subscription.
+     *
+     * @param subscriptionId The same id as passed to subscribe.
+     * @param result The result of the call. Can be null.
+     */
+    @Override
+    void unsubscribe( @NotNull ID subscriptionId, @Nullable APSHandler<APSResult> result ) {
+        //        this.logger.error( "@@@@@@@@ THREAD: ${Thread.currentThread()}" )
+
+        MessageConsumer consumer = this.subscribers[ subscriptionId ]
+
+        if ( consumer != null ) {
+            consumer.unregister()
+
+            if ( result != null ) {
+                result.handle( APSResult.success( null ) )
+            }
+        }
+        else {
+            Exception e = new APSValidationException( "No subscription with id '${ subscriptionId }' exists!" )
             if ( result != null ) {
                 result.handle( APSResult.failure( e ) )
             }
             else {
-                this.logger.error( e.message, e )
-
-                // Yes, in Groovy all exceptions are unchecked! But non Groovy code might call this
-                // so make sure we do throw a runtime exception, which all APS exceptions are.
-                if (e instanceof APSException) {
-                    throw e
-                }
-                else {
-                    throw new APSException(e.message, e)
-                }
+                throw e
             }
         }
     }
-
-    /**
-     * This must be called before send(...). send will use the last supplied reply subscriber.
-     *
-     * @param reply the subscriber to receive reply.
-     */
-    @Override
-    APSMessageSender<MessageType> replyTo( APSHandler<APSMessage<MessageType>> _reply ) {
-        this.reply = _reply
-
-        this
-    }
-
 }

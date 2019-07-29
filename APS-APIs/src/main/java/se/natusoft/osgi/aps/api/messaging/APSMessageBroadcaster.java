@@ -41,26 +41,25 @@ import se.natusoft.docutations.Reactive;
 import se.natusoft.osgi.aps.types.APSHandler;
 import se.natusoft.osgi.aps.types.APSResult;
 
+import java.util.Map;
+
 /**
  * This is a broadcaster which means that it sends messages to multiple subscribers. The requirement
  * for this is that the message provider used to implement this supports having multiple subscribers
  * on the same destination/address, and that any message sent will reach all subscribers.
- *
- * @param <Message> The type of the message being published.
  */
-public interface APSMessageBroadcaster<Message> {
+public interface APSMessageBroadcaster {
 
     /**
      * Publishes a message.
      *
      * @param destination The destination of the message. Preferably this is something that the
-     *                    service looks up to get a real destination, rather than an absolute
-     *                    destination.
+     * service looks up to get a real destination, rather than an absolute
+     * destination.
      * @param message The message to publish.
-     *
-     * @throws APSMessagingException on any failure. Note that this is a RuntimeException!
+     * @exception APSMessagingException on any failure. Note that this is a RuntimeException!
      */
-    void send(@NotNull String destination, @NotNull Message message) throws APSMessagingException;
+    void send( @NotNull String destination, @NotNull Map<String, Object> message ) throws APSMessagingException;
 
     /**
      * Publishes a message receiving a result of success or failure. On Success there
@@ -68,11 +67,11 @@ public interface APSMessageBroadcaster<Message> {
      * available. This variant never throws an Exception.
      *
      * @param destination The destination of the message. Preferably this is something that the
-     *                    service looks up to get a real destination, rather than an absolute
-     *                    destination.
+     * service looks up to get a real destination, rather than an absolute
+     * destination.
      * @param message The message to publish.
      * @param result Callback providing the success or failure of the call.
      */
     @Reactive
-    void send(@NotNull String destination, @NotNull Message message, @NotNull APSHandler<APSResult<Message>> result);
+    void send( @NotNull String destination, @NotNull Map<String, Object> message, @NotNull APSHandler<APSResult<Map<String, Object>>> result );
 }

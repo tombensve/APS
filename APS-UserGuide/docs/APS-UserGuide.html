@@ -4014,53 +4014,6 @@
     <hr/>    <p>
                 
     </p>
-    <H1>APS RabbitMQ Message Service Provider</H1>
-    <p>
-      This service provides an implementation of APSMessageService using <a href='http://www.rabbitmq.com/' title=''>RabbitMQ</a>.      
-    </p>
-    <p>
-      <strong>Note:</strong> This implementation does not support <em>contentType</em> in the API. When sending messages the <em>contentType</em> will be ignored, and when messages are received the <em>contentType</em> will always be "UNKNOWN".      
-    </p>
-    <p>
-      A good suggestion is to always use JSON or XML as content.      
-    </p>
-    <H2>APSMessageService API</H2>
-    <p>
-      <a href='http://apidoc.natusoft.se/APS/se/natusoft/osgi/aps/api/net/messaging/service/APSMessageService.html' title=''>Javadoc</a>      
-    </p>
-    <H2>aps-vertx-event-bus-messaging-provider</H2>
-    <p>
-      This publishes 2 services: <code>MessageSender</code>, and <code>MessageSubscriber</code>.      
-    </p>
-    <p>
-      Each of these use Vertx EventBus under the surface. These messages are not persistent and are sent within a Vert.x cluster.      
-    </p>
-    <p>
-      Vert.x has a send() method that sends to one subscriber. If there are more than one subscriber on the address it does a round robin on the subscribers. Vert.x also has a publish() method that always send to all subscribers.      
-    </p>
-    <p>
-      The APS API does not reflect the Vert.x API. To do a publish the (possibly resolved) destination must start with "all:".      
-    </p>
-    <p>
-      The aps-vertx-provider also publishes the EventBus instance as a service, which is what this implementation is using. The EventBus can of course be used directly instead of this service. This service uses the official APS messaging API and thus all kinds of messaging can be done in the same way. It is also in general a good idea encapsulate the real implementation so that it is easy to change to something else if needed/wanted in the future. This service provides that.      
-    </p>
-    <p>
-      For more information on Vertx see: <a href='http://vertx.io/docs/vertx-core/groovy/' title=''>http://vertx.io/docs/vertx-core/groovy/</a>      
-    </p>
-    <H3>Lookup</H3>
-    <p>
-      This properties for both services contains:      
-    </p>
-    <pre>
-      <code>
-    aps-protocol-name:    vertx-eventbus
-    service-category:     network
-    service-function:     messaging
-    messaging-persistent: false
-    messaging-clustered:  true
-    service-provider:     aps-vertx-event-bus-messaging-provider:sender/subscriber
-      </code>
-    </pre>
     <H1>Web Manager</H1>
     <H2>Components</H2>
     <p>
@@ -4347,12 +4300,12 @@
       </li>
       <li>
         <p>
-           <a href='http://rubygems-proxy.torquebox.org/releases' title=''>vertx-auth-common-3.5.3</a>          
+           <a href='http://www.apache.org/licenses/LICENSE-2.0.txt' title=''>vertx-lang-groovy-3.5.3</a>          
         </p>
       </li>
       <li>
         <p>
-           <a href='http://www.apache.org/licenses/LICENSE-2.0.txt' title=''>vertx-lang-groovy-3.5.3</a>          
+           <a href='http://rubygems-proxy.torquebox.org/releases' title=''>vertx-auth-common-3.5.3</a>          
         </p>
       </li>
       <li>

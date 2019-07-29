@@ -39,38 +39,36 @@ package se.natusoft.osgi.aps.api.messaging;
 import se.natusoft.docutations.NotNull;
 import se.natusoft.osgi.aps.types.APSValue;
 
+import java.util.Map;
+
 /**
  * This is a message container that wrap actual received messages. This to support reply-ability
  * per message. This in turn is due to that is how the Vert.x eventbus works. This supports that
  * and other. To support miscellaneous messaging apis the received messages must be wrapped.
- *
- * @param <Message> The type of the content.
  */
 @SuppressWarnings("unused")
-public interface APSMessage<Message> extends APSValue<Message> {
+public interface APSMessage extends APSValue<Map<String, Object>> {
 
     /**
      * Replies to message.
      *
      * @param reply The message to reply with.
      */
-    default void reply(@NotNull Message reply) {
+    default void reply(@NotNull Map<String, Object> reply) {
         throw new APSMessagingException( "This message cannot be replied to!" );
     }
 
     /**
      * Provides a simple default implementation. This should probably be extended.
-     *
-     * @param <Message> The type of the content.
      */
-    class Provider<Message> extends APSValue.Provider<Message> implements APSMessage<Message> {
+    class Provider extends APSValue.Provider<Map<String, Object>> implements APSMessage {
 
         /**
          * Creates a new Provider instance.
          *
          * @param content The message content.
          */
-        public Provider(Message content) {
+        public Provider(Map<String, Object> content) {
             super(content);
         }
 

@@ -75,7 +75,7 @@ import se.natusoft.osgi.aps.types.APSObject
  * List entries. An index of [*] and nothing more after that will return the number of entries in that list
  * as an int.
  */
-@SuppressWarnings("SpellCheckingInspection")
+@SuppressWarnings( "SpellCheckingInspection" )
 @CompileStatic
 @TypeChecked
 class StructMap extends LinkedHashMap implements Map<String, Object> {
@@ -87,7 +87,7 @@ class StructMap extends LinkedHashMap implements Map<String, Object> {
     /**
      * Default constructor.
      */
-    @SuppressWarnings("GroovyUnusedDeclaration")
+    @SuppressWarnings( "GroovyUnusedDeclaration" )
     StructMap() {}
 
     /**
@@ -96,7 +96,14 @@ class StructMap extends LinkedHashMap implements Map<String, Object> {
      * @param map The map to work with.
      */
     StructMap( Map<String, Object> map ) {
-        this.putAll( map )
+        // Hmm, doing this.putAll(map) seems to copy internally not using public methods.
+        // When the passed Map is a RecursiveJsonObjectMap from APSVertxProvider which
+        // on get(key) wraps any child Map with RecursiveJsonObjectMap, it doesn't get called.
+        // This however solves that using get() for original value.
+        map.keySet().each { String key ->
+            Object value = map.get( key )
+            this.put( key, value )
+        }
     }
 
     //
@@ -141,7 +148,7 @@ class StructMap extends LinkedHashMap implements Map<String, Object> {
         }
         else if ( searchable instanceof List ) {
 
-            StructPath subKey = path.down( "[${( searchable as List ).size()}]" )
+            StructPath subKey = path.down( "[${ ( searchable as List ).size() }]" )
 
             if ( !( searchable as List ).isEmpty() ) {
 
@@ -187,17 +194,17 @@ class StructMap extends LinkedHashMap implements Map<String, Object> {
             if ( Map.class.isAssignableFrom( current.class ) ) {
 
                 Object next = ( current as Map ).get( part )
-                if (next != null) {
+                if ( next != null ) {
                     current = next
                 }
                 else {
-                    throw new APSValidationException("Bad path [${structPath}]! Failed on '${part}'")
+                    throw new APSValidationException( "Bad path [${ structPath }]! Failed on '${ part }'" )
                 }
             }
             else if ( List.class.isAssignableFrom( current.class ) ) {
 
                 if ( !part.startsWith( "[" ) ) {
-                    throw new APSValidationException( "Expected a list index here, got: '${part}'" )
+                    throw new APSValidationException( "Expected a list index here, got: '${ part }'" )
                 }
 
                 String ixStr = part.replace( "[", "" ).replace( "]", "" )
@@ -265,7 +272,7 @@ class StructMap extends LinkedHashMap implements Map<String, Object> {
 
                         int index = Integer.valueOf( part.replace( "[", "" ).replace( "]", "" ) )
                         while ( index > ( ( current as List<Object> ).size() - 1 ) ) {
-                            ( current as List<Object> ).add( [ : ] )
+                            ( current as List<Object> ).add( [:] )
                         }
                         ( current as List<Object> ).set( index, value )
                     }
@@ -277,12 +284,12 @@ class StructMap extends LinkedHashMap implements Map<String, Object> {
                 else if ( List.class.isAssignableFrom( current.class ) ) {
 
                     if ( !part.startsWith( "[" ) ) {
-                        throw new APSValidationException( "Expected a list index here, got: '${part}'" )
+                        throw new APSValidationException( "Expected a list index here, got: '${ part }'" )
                     }
 
                     int index = Integer.valueOf( part.replace( "[", "" ).replace( "]", "" ) )
                     while ( ( current as List ).size() < ( index + 1 ) ) {
-                        ( current as List ).add( [ : ] )
+                        ( current as List ).add( [:] )
                     }
                     current = ( current as List ).get( index )
                 }
@@ -295,10 +302,10 @@ class StructMap extends LinkedHashMap implements Map<String, Object> {
                         // IDEA BUG: [] is an array, [:] is a Map, therefore not identical.
                         //noinspection GroovyIfStatementWithIdenticalBranches
                         if ( parts[ i + 1 ].startsWith( "[" ) ) {
-                            newValue = [ ]
+                            newValue = []
                         }
                         else {
-                            newValue = [ : ]
+                            newValue = [:]
                         }
                     }
 

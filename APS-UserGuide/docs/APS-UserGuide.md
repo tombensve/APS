@@ -2550,43 +2550,6 @@ Be very careful what you do with this! It is managed by this service!
 
     
 
-# APS RabbitMQ Message Service Provider
-
-This service provides an implementation of APSMessageService using [RabbitMQ](http://www.rabbitmq.com/).
-
-__Note:__ This implementation does not support _contentType_ in the API. When sending messages the _contentType_ will be ignored, and when messages are received the _contentType_ will always be "UNKNOWN".
-
-A good suggestion is to always use JSON or XML as content.
-
-## APSMessageService API
-
-[Javadoc](http://apidoc.natusoft.se/APS/se/natusoft/osgi/aps/api/net/messaging/service/APSMessageService.html)
-
-## aps-vertx-event-bus-messaging-provider
-
-This publishes 2 services: `MessageSender`, and `MessageSubscriber`.
-
-Each of these use Vertx EventBus under the surface. These messages are not persistent and are sent within a Vert.x cluster.
-
-Vert.x has a send() method that sends to one subscriber. If there are more than one subscriber on the address it does a round robin on the subscribers. Vert.x also has a publish() method that always send to all subscribers.
-
-The APS API does not reflect the Vert.x API. To do a publish the (possibly resolved) destination must start with "all:".
-
-The aps-vertx-provider also publishes the EventBus instance as a service, which is what this implementation is using. The EventBus can of course be used directly instead of this service. This service uses the official APS messaging API and thus all kinds of messaging can be done in the same way. It is also in general a good idea encapsulate the real implementation so that it is easy to change to something else if needed/wanted in the future. This service provides that.
-
-For more information on Vertx see: [http://vertx.io/docs/vertx-core/groovy/](http://vertx.io/docs/vertx-core/groovy/)
-
-### Lookup
-
-This properties for both services contains:
-
-        aps-protocol-name:    vertx-eventbus
-        service-category:     network
-        service-function:     messaging
-        messaging-persistent: false
-        messaging-clustered:  true
-        service-provider:     aps-vertx-event-bus-messaging-provider:sender/subscriber
-
 # Web Manager
 
 ## Components
@@ -2767,9 +2730,9 @@ The following third party products are using this license:
 
 *  [vertx-core-3.4.2](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-*  [vertx-auth-common-3.5.3](http://rubygems-proxy.torquebox.org/releases)
-
 *  [vertx-lang-groovy-3.5.3](http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+*  [vertx-auth-common-3.5.3](http://rubygems-proxy.torquebox.org/releases)
 
 *  [vertx-web-3.5.3](http://rubygems-proxy.torquebox.org/releases)
 

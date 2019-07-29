@@ -45,10 +45,8 @@ import se.natusoft.osgi.aps.types.ID;
 
 /**
  * Provides functionality for clients wanting to receive messages.
- *
- * @param <Message> The message type.
  */
-public interface APSMessageSubscriber<Message> {
+public interface APSMessageSubscriber {
 
     /**
      * Adds a subscriber.
@@ -65,7 +63,7 @@ public interface APSMessageSubscriber<Message> {
      */
     @Reactive
     void subscribe(@NotNull String destination, @NotNull ID subscriptionId, @Nullable APSHandler<APSResult> result,
-                   @NotNull APSHandler<APSMessage<Message>> handler);
+                   @NotNull APSHandler<APSMessage> handler);
 
     /**
      * Cancel a subscription.

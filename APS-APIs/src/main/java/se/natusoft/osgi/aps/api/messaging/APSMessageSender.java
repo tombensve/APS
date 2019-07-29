@@ -43,6 +43,8 @@ import se.natusoft.osgi.aps.exceptions.APSException;
 import se.natusoft.osgi.aps.types.APSHandler;
 import se.natusoft.osgi.aps.types.APSResult;
 
+import java.util.Map;
+
 /**
  * This is a sender that sends a message to zero or one subscribers. If there are more than one subscriber
  * to the destination then it is up to the implementation who gets the message.
@@ -50,10 +52,8 @@ import se.natusoft.osgi.aps.types.APSResult;
  * For a Vertx eventbus based implementation it would do a round robin when there are more than one
  * subscriber for example. But this is entirely up to what is supported by the message solution used
  * by the implementation.
- *
- * @param <Message> The type of the message being sent.
  */
-public interface APSMessageSender<Message> {
+public interface APSMessageSender {
 
     /**
      * Sends a message receiving a result of success or failure. On Success there
@@ -71,7 +71,7 @@ public interface APSMessageSender<Message> {
      * @param result  The result of the send. If null an APSMessagingException will be thrown on failure.
      */
     @Reactive
-    void send(@NotNull String destination, @NotNull Message message, @Nullable APSHandler<APSResult> result);
+    void send( @NotNull String destination, @NotNull Map<String, Object> message, @Nullable APSHandler<APSResult> result);
 
     /**
      * This must be called before send(...). send will use the last supplied reply subscriber.
@@ -82,7 +82,7 @@ public interface APSMessageSender<Message> {
      * @param handler the handler of the reply.
      */
     @SuppressWarnings("unused")
-    default APSMessageSender<Message> replyTo(APSHandler<APSMessage<Message>> handler) {
+    default APSMessageSender replyTo(APSHandler<APSMessage> handler) {
         throw new APSException( "replyTo(...) is not supported by this implementation!" );
     }
 

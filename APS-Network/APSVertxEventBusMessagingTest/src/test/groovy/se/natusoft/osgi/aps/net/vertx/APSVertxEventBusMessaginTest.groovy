@@ -63,7 +63,7 @@ class APSVertXEventBusMessagingTest extends APSOSGIServiceTestTools {
 class MsgReceiver {
 
     @OSGiService( timeout = "15 sec", nonBlocking = true )
-    private APSMessageSubscriber<Map<String, Object>> msgSubscriber
+    private APSMessageSubscriber msgSubscriber
 
     @Managed( loggingFor = "msg-receiver" )
     private APSLogger logger
@@ -75,7 +75,7 @@ class MsgReceiver {
         ID subscriptionId = new APSUUID()
 
         this.msgSubscriber.subscribe( "testaddr", subscriptionId, APS.MSG_NO_RESULT ) {
-            APSMessage<Map<String, Object>> messageValue ->
+            APSMessage messageValue ->
 
                 this.logger.info( ">>>>>> Received message!" )
 
@@ -108,7 +108,7 @@ class MsgSender {
     // This manages since on nonBlocking = true, the call to msgService is cached by the proxy until
     // the service is available, and then executed.
     @OSGiService( timeout = "15 sec", nonBlocking = true )
-    private APSMessageSender<Map<String, Object>> msgSender
+    private APSMessageSender msgSender
 
     @Managed( loggingFor = "msg-sender" )
     private APSLogger logger
