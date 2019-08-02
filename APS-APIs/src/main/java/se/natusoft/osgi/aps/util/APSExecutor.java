@@ -44,7 +44,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * This creates an ExecutorService with the same amount of threads as there are processor cores in the machine.
+ * This creates an ExecutorService with the amount of threads as there are processor cores in the machine * 4.
  * <p>
  * Submitted jobs are forwarded to the ExecutorService.
  */
@@ -61,7 +61,7 @@ public class APSExecutor {
     private static APSExecutor apsExecInst;
 
     //
-    // Constructors
+    // Static Methods
     //
 
     /**
@@ -110,7 +110,7 @@ public class APSExecutor {
      */
     private APSExecutor() {
         this.executor =
-                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), new APSThreadFactory("aps-executor-"));
+                Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 4, new APSThreadFactory("aps-executor-"));
     }
 
     //

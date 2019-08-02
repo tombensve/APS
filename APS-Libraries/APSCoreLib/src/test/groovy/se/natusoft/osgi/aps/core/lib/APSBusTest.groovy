@@ -40,6 +40,8 @@ class APSBusTest extends APSOSGIServiceTestTools {
         testResults.printMessages()
 
         assert testResults.testOK
+
+        shutdown(  )
     }
 }
 

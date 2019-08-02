@@ -150,7 +150,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     /**
      * This is used for certain variants of specifying instances.
      */
-    private class InstanceRepresentative {
+    private static class InstanceRepresentative {
         private boolean service = true;
         private Object instance;
         private Properties props;
