@@ -8,5 +8,23 @@
         "addressesRegex": "aps.*"
       }
     }
-  ]
+  ],
+  "amqpBridge": {
+    "enabled": false,
+    "host": "localhost",
+    "port": 5672,
+    "username": "",
+    "password": "",
+    "bridgeOptions": {
+      "ssl": false,
+      "pfxTrustOptions":{
+        "path":"path/to/pkcs12.truststore",
+        "password":"password"
+      },
+      "pfxKeyCertOptions": {
+        "path":"path/to/pkcs12.keystore",
+        "password":"password"
+      }
+    }
+  }
 }

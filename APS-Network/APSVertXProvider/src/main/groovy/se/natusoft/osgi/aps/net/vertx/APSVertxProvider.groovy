@@ -41,12 +41,15 @@ package se.natusoft.osgi.aps.net.vertx
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import io.vertx.amqpbridge.AmqpBridge
+import io.vertx.amqpbridge.AmqpBridgeOptions
 import io.vertx.core.AsyncResult
 import io.vertx.core.Handler
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.http.HttpServer
+import io.vertx.core.json.JsonObject
 import io.vertx.core.shareddata.SharedData
 import io.vertx.ext.bridge.PermittedOptions
 import io.vertx.ext.web.Router
@@ -56,6 +59,8 @@ import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceRegistration
 import se.natusoft.osgi.aps.activator.annotation.ConfigListener
 import se.natusoft.osgi.aps.api.core.config.APSConfig
+import se.natusoft.osgi.aps.api.messaging.APSBusRouter
+import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.exceptions.APSException
 import se.natusoft.osgi.aps.exceptions.APSStartException
 import se.natusoft.osgi.aps.util.APSLogger
@@ -89,17 +94,19 @@ class APSVertxProvider {
     @Managed( loggingFor = "aps-vertx-provider" )
     private APSLogger logger
 
-    /** The vertx instance. */
     private Vertx vertx
 
-    /** The vertx service registration. */
     private ServiceRegistration vertxSvcReg
-
-    /** Service registration for event bus. */
     private ServiceRegistration eventBusSvcReg
-
-    /** Service registration for shared data. */
     private ServiceRegistration shareDataSvcReg
+    private ServiceRegistration amqpBridgeSvcRg
+    private ServiceRegistration amqpBridgeBusRouterSvcReg
+
+    /** We handle and register this manually since it is optional based on config. */
+    private AmqpBridge amqpBridge
+
+    /** We handle and register this manually since it is optional based on config. */
+    private APSAmqpBridgeBusRouter amqpBridgeBusRouter
 
     /** A map of HTTP servers per service port. These are internal to this bundle. */
     private Map<Integer, HttpServer> httpServerByPort = [:]
@@ -309,14 +316,18 @@ class APSVertxProvider {
      * Start all Vertx sub services.
      */
     void startVertxServices() {
+
         startHttpServices()
+        startAMQPBridge()
     }
 
     /**
      * Stop all Vertx sub services.
      */
     void stopVertxServices() {
+
         stopHttpServices()
+        stopAMQPBridge()
     }
 
     /**
@@ -349,7 +360,7 @@ class APSVertxProvider {
      */
     private void startHttpService( String name, int port, Map<String, Object> eventBusBridge ) {
 
-        if ( port != null ) {
+        if ( port != 0 ) {
 
             // We keep a server for each listened to port.
             HttpServer httpServer = httpServerByPort[ port ] // TODO: Currently single threaded server!!
@@ -402,47 +413,47 @@ class APSVertxProvider {
 
         def bridgeOptions = new BridgeOptions()
 
-        if ( ebConf[ "addresses" ] != null ) {
-            ( ebConf[ "addresses" ] as String ).split( "," ).each { String addr ->
+        if ( ebConf[ 'addresses' ] != null ) {
+            ( ebConf[ 'addresses' ] as String ).split( "," ).each { String addr ->
                 PermittedOptions permitted = new PermittedOptions()
 
                 if ( addr.startsWith( "in:" ) ) {
                     permitted.address = addr.substring( 3 )
                     bridgeOptions.inboundPermitteds << permitted
-                    this.logger.debug("Permitted inbound address: '${permitted.address}'")
+                    this.logger.debug( "Permitted inbound address: '${ permitted.address }'" )
                 }
                 else if ( addr.startsWith( "out:" ) ) {
                     permitted.address = addr.substring( 4 )
                     bridgeOptions.outboundPermitteds << permitted
-                    this.logger.debug("Permitted outbound address: '${permitted.address}'")
+                    this.logger.debug( "Permitted outbound address: '${ permitted.address }'" )
                 }
                 else {
                     permitted.address = addr
                     bridgeOptions.inboundPermitteds << permitted
                     bridgeOptions.outboundPermitteds << permitted
-                    this.logger.debug("Permitted both inbound and outbound address: '${permitted.address}'")
+                    this.logger.debug( "Permitted both inbound and outbound address: '${ permitted.address }'" )
                 }
             }
         }
-        if ( ebConf[ "addressesRegex" ] != null ) {
-            ( ebConf[ "addressesRegex" ] as String ).split( "," ).each { String addr ->
+        if ( ebConf[ 'addressesRegex' ] != null ) {
+            ( ebConf[ 'addressesRegex' ] as String ).split( "," ).each { String addr ->
                 PermittedOptions permitted = new PermittedOptions()
 
                 if ( addr.startsWith( "in:" ) ) {
                     permitted.addressRegex = addr.substring( 3 )
                     bridgeOptions.inboundPermitteds << permitted
-                    this.logger.debug("Permitted inbound addressRegex: '${permitted.addressRegex}'")
+                    this.logger.debug( "Permitted inbound addressRegex: '${ permitted.addressRegex }'" )
                 }
                 else if ( addr.startsWith( "out:" ) ) {
                     permitted.addressRegex = addr.substring( 4 )
                     bridgeOptions.outboundPermitteds << permitted
-                    this.logger.debug("Permitted outbound addressRegex: '${permitted.addressRegex}'")
+                    this.logger.debug( "Permitted outbound addressRegex: '${ permitted.addressRegex }'" )
                 }
                 else {
                     permitted.addressRegex = addr
                     bridgeOptions.inboundPermitteds << permitted
                     bridgeOptions.outboundPermitteds << permitted
-                    this.logger.debug("Permitted both inbound and outbound addressRegex: '${permitted.addressRegex}'")
+                    this.logger.debug( "Permitted both inbound and outbound addressRegex: '${ permitted.addressRegex }'" )
                 }
             }
         }
@@ -461,13 +472,13 @@ class APSVertxProvider {
      */
     private void stopHttpServices() {
 
-        List<Map<String, Object>> httpConfs = ( List<Map<String, Object>> ) this.config[ "http" ]
+        List<Map<String, Object>> httpConfs = ( List<Map<String, Object>> ) this.config[ 'http' ]
 
         httpConfs?.each { Map<String, Object> http ->
 
-            String name = http[ "name" ] as String
-            Integer port = http[ "port" ] as Integer
-            boolean eventBus = http[ "eventBusBridge" ] as boolean
+            String name = http[ 'name' ] as String
+            Integer port = http[ 'port' ] as Integer
+            boolean eventBus = http[ 'eventBusBridge' ] as boolean
 
             stopHttpService( name, port )
         }
@@ -498,6 +509,64 @@ class APSVertxProvider {
             else {
 
                 this.logger.error( "Stopping http service '${ name }' failed!", res.cause() )
+            }
+        }
+    }
+
+    private void startAMQPBridge() {
+
+        Map<String, Object> amqpBridgeConfig = this.config[ 'amqpBridge' ] as Map<String, Object>
+
+        if ( amqpBridgeConfig != null && amqpBridgeConfig[ 'enabled' ] ) {
+
+            if ( amqpBridgeConfig[ 'username' ] == null ) {
+                this.amqpBridge = AmqpBridge.create( this.vertx, amqpBridgeConfig[ 'bridgeOptions' ] as AmqpBridgeOptions )
+                this.amqpBridge.start( amqpBridgeConfig[ 'host' ] as String, amqpBridgeConfig[ 'port' ] as int ) {
+                    AsyncResult<AmqpBridge> res ->
+
+                        if ( res.succeeded() ) {
+                            this.logger.info( "AmqpBridge successfully started!" )
+
+                            this.amqpBridgeSvcRg = this.context.registerService( AmqpBridge.class.name, amqpBridge, [
+                                    "service-provider": "aps-vertx-provider",
+                                    "service-category": "network",
+                                    "service-function": "Messaging",
+                                    "vertx-object"    : "AmqpBridge"
+                            ] as Properties )
+
+                            this.amqpBridgeBusRouter =
+                                    new APSAmqpBridgeBusRouter( logger: this.logger, amqpBridge: this.amqpBridge )
+
+                            this.amqpBridgeBusRouterSvcReg =
+                                    this.context.registerService( APSBusRouter.class.name, this.amqpBridgeBusRouter,
+                                            [
+                                                    "service-provider": "aps-vertx-provider",
+                                                    "service-category": "network",
+                                                    "service-function": "Messaging",
+                                                    "aps-object"    : "APSAmqpBridgeBusRouter",
+                                                    "aps-messaging-protocol": "AMQP"
+                                            ] as Properties )
+                        }
+                        else {
+                            this.logger.error( "AmqpBridge failed!", res.cause() )
+                        }
+                }
+            }
+        }
+    }
+
+    private void stopAMQPBridge() {
+
+        this.amqpBridgeSvcRg.unregister()
+        this.amqpBridgeBusRouterSvcReg.unregister(  )
+        this.amqpBridgeBusRouter.shutdown(  )
+
+        this.amqpBridge.close() { AsyncResult res ->
+            if ( res.succeeded() ) {
+                this.logger.info( "AmqpBridge successfully shutdown." )
+            }
+            else {
+                this.logger.error( "Failed to shutdown AmqpBridge!", res.cause() )
             }
         }
     }

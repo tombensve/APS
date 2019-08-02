@@ -70,7 +70,7 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-vertx-provider</artifactId>
-            <version>1.0.0</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

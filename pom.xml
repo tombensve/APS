@@ -88,7 +88,7 @@
         <markdownDoc.version>2.1.0</markdownDoc.version>
         <!-- Later version like 2.4.17 causes failure in VertxProvider test! -->
         <groovy.version>2.4.15</groovy.version>
-        <vertx.version>3.5.3</vertx.version>
+        <vertx.version>3.8.0</vertx.version>
         <!--
             NOTE: Vertx 3.3.3 requires netty 4.1.6, fails with 4.1.9!! This is nettys fault since they
             have changed APIs!! That should never be done when only the third digit of the version number

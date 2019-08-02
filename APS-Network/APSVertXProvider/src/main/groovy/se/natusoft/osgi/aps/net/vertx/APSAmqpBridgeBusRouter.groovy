@@ -1,0 +1,189 @@
+package se.natusoft.osgi.aps.net.vertx
+
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
+import io.vertx.amqpbridge.AmqpBridge
+import io.vertx.core.AsyncResult
+import io.vertx.core.eventbus.Message
+import io.vertx.core.eventbus.MessageConsumer
+import io.vertx.core.eventbus.MessageProducer
+import io.vertx.core.json.JsonObject
+import se.natusoft.docutations.NotNull
+import se.natusoft.docutations.Nullable
+import se.natusoft.docutations.Optional
+import se.natusoft.osgi.aps.api.messaging.APSBusRouter
+import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
+import se.natusoft.osgi.aps.types.APSHandler
+import se.natusoft.osgi.aps.types.APSResult
+import se.natusoft.osgi.aps.types.ID
+import se.natusoft.osgi.aps.util.APSLogger
+
+/**
+ * Provides and APSBusRouter implementation using Vert.x EventBus for communication.
+ *
+ * This uses "cluster:" as target id. When calling send(...) however an additional "all:"
+ * can be added before address to do a publish rather than send.
+ */
+@CompileStatic
+@TypeChecked
+@SuppressWarnings( "unused" )
+class APSAmqpBridgeBusRouter implements APSBusRouter {
+
+    private static final String TARGET_ID = "amqp:"
+
+    //
+    // Private members
+    //
+
+    /** For logging. */
+    APSLogger logger
+
+    /** The bridge to use for messaging. */
+    AmqpBridge amqpBridge
+
+    private Map<String, MessageProducer> producers = [:]
+
+    private Map<String, MessageConsumer> consumers = [:]
+
+    /** The current subscriptions */
+    private Map<ID, MessageConsumer> subscriptions = [:]
+
+    //
+    // Methods
+    //
+
+    /**
+     * This checks if provided target is valid and if so proceeds with the operation.
+     *
+     * @param target Target to validate.
+     * @param go Closure to call on valid target.
+     */
+    @SuppressWarnings( "DuplicatedCode" )
+    private static void validTarget( String target, Closure go ) {
+        if ( target.startsWith( TARGET_ID ) ) {
+            target = target.substring( TARGET_ID.length() )
+
+            go.call( target )
+        }
+        else if ( target.startsWith( "all:" ) ) {
+            target = target.substring( 4 )
+
+            go.call( target )
+        }
+        // Note that since APSBus will call all APSBusRouter implementations found, receiving
+        // and invalid target is nothing strange. We should only react on those that we recognize.
+    }
+
+    /**
+     * Sends a message.
+     *
+     * @param target The target to send to. In this case it should start with cluster: and what comes after
+     *               that is taken as the Vert.x EventBus address. If the target starts with
+     *               "cluster:all:" then the "all:" part is also removed and the messages is published
+     *               rather than sent.
+     * @param message The message to send. Only JSON structures allowed and top level has to be an object.
+     * @param resultHandler The handler to call with result of operation. Can be null!
+     */
+    @Override
+    void send( @NotNull String target, @NotNull Map<String, Object> message, @Optional @Nullable APSHandler<APSResult> resultHandler ) {
+
+        validTarget( target ) { String realTarget ->
+
+            // We cannot support this, so we ignore it.
+            if ( realTarget.startsWith( "all:" ) ) {
+
+                realTarget = realTarget.substring( 4 )
+            }
+            try {
+
+                MessageProducer messageProducer = producers[ realTarget ]
+                if ( messageProducer == null ) {
+                    messageProducer = this.amqpBridge.createProducer( realTarget )
+                    producers[ realTarget ] = messageProducer
+                }
+
+                messageProducer.write( new JsonObject( message ) ) { AsyncResult res ->
+                    if ( res.failed() ) {
+                        logger.error( "Failed to send AMQP message!", res.cause() )
+
+                        if ( resultHandler != null ) resultHandler.handle( APSResult.failure( res.cause() ) )
+                    }
+                }
+
+                if ( resultHandler != null ) resultHandler.handle( APSResult.success( null ) )
+            }
+            catch ( IllegalStateException ise ) {
+                this.logger.error( "Failed to send AMQP message!", ise )
+
+                if ( resultHandler != null ) resultHandler.handle( APSResult.failure( ise ) )
+            }
+        }
+    }
+
+    /**
+     * Subscribes to messages to a target.
+     *
+     * @param id A unique ID to associate subscription with. Also used to unsubscribe.
+     * @param target The target to subscribe to.
+     * @param resultHandler The result of the subscription.
+     * @param messageHandler The handler to call with messages sent to target.
+     */
+    @Override
+    void subscribe( @NotNull ID id, @NotNull String target, @Optional @Nullable APSHandler<APSResult> resultHandler, @NotNull APSHandler<Map<String, Object>> messageHandler ) {
+
+        validTarget( target ) { String realTarget ->
+
+            try {
+                MessageConsumer consumer = consumers[ realTarget ]
+                if ( consumer == null ) {
+                    consumer = this.amqpBridge.createConsumer( realTarget )
+                    consumers[ realTarget ] = consumer
+                }
+
+                consumer.handler() { Message<JsonObject> msg ->
+                    messageHandler.handle( new RecursiveJsonObjectMap( msg.body() ) )
+                }
+
+                subscriptions[ id ] = consumer
+
+                if ( resultHandler != null ) resultHandler.handle( APSResult.success( null ) )
+            }
+            catch ( IllegalStateException ise ) {
+                if ( resultHandler != null ) resultHandler.handle( APSResult.failure( ise ) )
+            }
+        }
+    }
+
+    /**
+     * Releases a subscription.
+     *
+     * @param subscriberId The ID returned by subscribe.
+     */
+    @Override
+    void unsubscribe( @NotNull ID subscriberId ) {
+        MessageConsumer consumer = this.subscriptions[ subscriberId ]
+        consumer.unregister()
+    }
+
+    void shutdown() {
+        // This is not an excuse for clients to not clean up after themselves! And this will not be done
+        // until we shut down.
+        this.subscriptions.keySet().each { ID key ->
+            this.subscriptions[ key ].unregister()
+        }
+        this.subscriptions.clear()
+
+        this.consumers.each { String address, MessageConsumer consumer ->
+            consumer.unregister()
+        }
+        this.consumers.clear()
+
+        this.producers.each { String address, MessageProducer producer ->
+
+            producer.close()
+            producer.end()
+        }
+        this.producers.clear()
+    }
+
+}

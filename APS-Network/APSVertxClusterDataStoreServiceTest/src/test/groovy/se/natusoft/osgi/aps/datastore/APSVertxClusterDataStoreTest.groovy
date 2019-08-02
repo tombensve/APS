@@ -29,7 +29,7 @@ class APSVertxClusterDataStoreTest extends APSOSGIServiceTestTools {
     public static String retrieved = null
 
     // For clarity, not pointless!!!
-    @SuppressWarnings("GroovyPointlessBoolean")
+    @SuppressWarnings( "GroovyPointlessBoolean" )
     @Test
     void clusterStoreTest() throws Exception {
         // Most of the unfamiliar constructs here are provided by OSGiServiceTestTools and groovy DSL features.
@@ -44,6 +44,18 @@ class APSVertxClusterDataStoreTest extends APSOSGIServiceTestTools {
                     deploy 'aps-vertx-cluster-data-store-provider' with new APSActivator() from 'se.natusoft.osgi.aps', 'aps-vertx-cluster-datastore-service-provider', '1.0.0'
                 }
         )
+
+        // As of version 3.8.0 of Vert.x something have happened. When the ClusterStoreTestClient class
+        // gets deployed and run for some very, very weird reason the read lock and read of value gets
+        // done before the write lock and write of value! And a sleep between the write and read do solve
+        // the problem, but the really, really super weird thing is that this sleep also solves the problem!
+        // Note that this is before "ClusterStoreTestClient" is even deployed! The only explanation I can
+        // come up with is that Vert.x now threads off and returns before everything is upp and running.
+
+        hold() maxTime 6 unit SECONDS go() // Support really slow machines.
+
+        // This do actually fail every now and then!! Should be failsafe!!
+        //hold() whilst { ClusterStoreTestClient.stored == true } maxTime 8L unit SECONDS go()
 
         deploy 'producer' with new APSActivator() using '/se/natusoft/osgi/aps/datastore/ClusterStoreTestClient.class'
 
@@ -65,20 +77,23 @@ class APSVertxClusterDataStoreTest extends APSOSGIServiceTestTools {
 
 }
 
-@SuppressWarnings("GroovyUnusedDeclaration")
+@SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
 @TypeChecked
 class ClusterStoreTestClient {
 
-    @OSGiService(additionalSearchCriteria = "(service-persistence-scope=clustered)",
-            nonBlocking = true)
+    public static boolean stored = false
+
+    @OSGiService( additionalSearchCriteria = "(service-persistence-scope=clustered)",
+            nonBlocking = true )
     private APSLockableDataStoreService dataStoreService
 
-    @Managed(loggingFor = "ClusterStoreTestClient")
+    @Managed( loggingFor = "ClusterStoreTestClient" )
     APSLogger logger
 
     @Initializer
     void init() {
+
         this.dataStoreService.lock( "test.someId" ) { APSResult<APSLockable.APSLock> lockRes ->
 
             if ( lockRes.success() ) {
@@ -86,24 +101,29 @@ class ClusterStoreTestClient {
                 this.dataStoreService.store( "test.someId", APSVertxClusterDataStoreTest.id ) { APSResult<Void> storeRes ->
 
                     APSVertxClusterDataStoreTest.stored = storeRes.success()
-                    this.logger.info( "Stored value with result: ${storeRes.success()}" )
+                    this.logger.info( "Stored value with result: ${ storeRes.success() }" )
 
-                    this.logger.info( "Current lock: ${lockRes.result().content()}" )
+                    this.logger.info( "Current lock for writing: ${ lockRes.result().content() }" )
+
+                    stored = true
                 }
             }
         }
+
 
         // Note that this retrieval directly after the store which is done in a callback on a Vertx event loop thread
         // works due to that the service always performs a lock on the value stored or fetched.
 
         this.dataStoreService.lock( "test.someId" ) { APSResult<APSLockable.APSLock> lockRes ->
 
+            this.logger.info( "Current lock for reading: ${ lockRes.result().content() }" )
+
             this.dataStoreService.retrieve( "test.someId" ) { APSResult<UUID> result ->
 
                 if ( result.success() ) {
 
                     APSVertxClusterDataStoreTest.retrieved = result.result().content()
-                    this.logger.info( "Retrieved stored value: ${result.result().content()}" )
+                    this.logger.info( "Retrieved stored value: ${ result.result().content() }" )
                 }
                 else {
 

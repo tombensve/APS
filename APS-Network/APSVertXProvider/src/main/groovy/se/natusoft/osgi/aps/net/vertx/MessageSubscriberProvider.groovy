@@ -77,7 +77,7 @@ import se.natusoft.osgi.aps.util.APSLogger
                 @OSGiProperty( name = APS.Messaging.Clustered, value = APS.TRUE )
         ]
 )
-class MessageSubscriberProvider implements APSMessageSubscriber<Message> {
+class MessageSubscriberProvider implements APSMessageSubscriber {
 
     //
     // Private members

@@ -255,6 +255,11 @@
             <classifier>client</classifier>
             <type>js</type>
         </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-amqp-bridge</artifactId>
+            <version>${vertx.version}</version>
+        </dependency>
 
         <!-- Clusters -->
 

@@ -453,7 +453,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                         "." + shutdownMethod.t1.getName() + "() for bundle: " +
                         context.getBundle().getSymbolicName() + "!" );
             } catch (InvocationTargetException e) {
-                e.printStackTrace(System.err);
+                //e.printStackTrace(System.err);
             } catch ( Exception e ) {
                 this.activatorLogger.error( "Shutdown methods: Bundle stop problem!", e );
                 failures.addException( e );

@@ -87,10 +87,10 @@ class ConfigManager {
     private APSLogger logger
 
     @OSGiService( additionalSearchCriteria = "(messaging-clustered=true)", nonBlocking = true )
-    private APSMessageSender<Map<String, Object>> messageSender
+    private APSMessageSender messageSender
 
     @OSGiService( additionalSearchCriteria = "(messaging-clustered=true)", nonBlocking = true )
-    private APSMessageSubscriber<Map<String, Object>> messageSubscriber
+    private APSMessageSubscriber messageSubscriber
 
     /** Filesystem access that won't go away on redeploy. */
     @OSGiService( timeout = "15 sec", nonBlocking = true )

@@ -42,11 +42,11 @@ class APSWebManager {
 
     @OSGiService( additionalSearchCriteria = "(aps-messaging-protocol=vertx-eventbus)",
             timeout = "10 seconds", nonBlocking = true )
-    private APSMessageSubscriber<Map<String, Object>> subscriber
+    private APSMessageSubscriber subscriber
 
     @OSGiService( additionalSearchCriteria = "(aps-messaging-protocol=vertx-eventbus)",
             timeout = "10 seconds", nonBlocking = true )
-    private APSMessageSender<Map<String, Object>> sender
+    private APSMessageSender sender
 
     private APSUUID subscriberId = new APSUUID()
 

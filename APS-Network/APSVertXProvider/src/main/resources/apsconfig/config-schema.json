@@ -21,11 +21,20 @@
       }
     }
   ],
+  "amqpBridge_?": "Enable/disable of bridge and options documented at https://vertx.io/docs/vertx-amqp-bridge/groovy/",
+  "amqpBridge_0": {
+    "enabled_1": "!",
+    "host_1": "?([a-z]|[A-Z]|[0-9]|\\.)+",
+    "port_1": "?[0-9]+",
+    "username_0": "?.*",
+    "password_0": "?.*",
+    "bridgeOptions_0": {}
+  },
   "tcp_?": "This maps a name to a port. Each entry will have a vertx TCP server listening on it.",
   "tcp_0": [
     {
       "name_1": "?([a-z]|[A-Z]|[0-9]|_|-)+",
-      "address_1": "?[0-9]+"
+      "address_1": "?([a-z]|[A-Z]|[0-9]|\\.)+"
     }
   ]
 }
