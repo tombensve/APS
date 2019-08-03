@@ -13,17 +13,20 @@ import groovy.transform.TypeChecked
 trait ValidTargetTrait {
 
     /** The target id to validate against. Should be set in constructor. */
-    String validTargetTrait_targetId
+    String vttTargetId
+
+    /** Set this to true to support "all:" target id. */
+    boolean vttSupportsAll = false
 
     /**
      * Sets the target id making sure it ends with ":".
      *
      * @param id The id to set with or without ending ":".
      */
-    void setValidTargetTrait_targetId(String id) {
-        this.validTargetTrait_targetId = id
-        if (!this.validTargetTrait_targetId.endsWith( ":" )) {
-            this.validTargetTrait_targetId += ":"
+    void setVttTargetId( String id) {
+        this.vttTargetId = id
+        if (!this.vttTargetId.endsWith( ":" )) {
+            this.vttTargetId += ":"
         }
     }
 
@@ -35,12 +38,12 @@ trait ValidTargetTrait {
      */
     @SuppressWarnings( "DuplicatedCode" )
     void validTarget( String target, Closure go ) {
-        if ( target.startsWith( this.validTargetTrait_targetId ) ) {
-            target = target.substring( this.validTargetTrait_targetId.length() )
+        if ( target.startsWith( this.vttTargetId ) ) {
+            target = target.substring( this.vttTargetId.length() )
 
             go.call( target )
         }
-        else if (target.startsWith( "all:" )) {
+        else if (this.vttSupportsAll && target.startsWith( "all:" )) {
             target = target.substring( 4 )
 
             go.call( target )

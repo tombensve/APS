@@ -51,7 +51,8 @@ class APSLocalInMemoryBus implements APSBusRouter, ValidTargetTrait {
     private APSLogger logger
 
     APSLocalInMemoryBus() {
-        this.validTargetTrait_targetId = TARGET_ID
+        this.vttTargetId = TARGET_ID
+        this.vttSupportsAll = true
     }
 
     //
