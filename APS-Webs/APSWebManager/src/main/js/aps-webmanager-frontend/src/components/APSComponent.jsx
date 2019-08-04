@@ -411,7 +411,6 @@ class APSComponent extends Component {
 
 // Workarounds like this is why I don't like typeless languages! You end up faking types in different ways anyhow.
 APSComponent.propTypes = {
-    // The eventbus we message messages when needed.
     eventBus: PropTypes.object,
     // The unique id of the GuiMgr creating the component.
     mgrId: PropTypes.string,
