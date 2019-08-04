@@ -113,15 +113,6 @@ class GUIProvider {
                 }
 
             }
-
-//            this.logger.debug( "Waiting for messages ..." )
-//
-//            eventBus.consumer( "aps:${APS_WEB_APP_NAME}:backend:all" ) { Message message ->
-//
-//                Map<String, Object> testGuiMsg = ( message.body() as JsonObject ).getMap()
-//                this.logger.debug( "aps:test-gui ==> ${ testGuiMsg }" )
-//
-//            }
         }
 
         this.eventBusTracker.onActiveServiceLeaving = { ServiceReference sref, Class api ->
