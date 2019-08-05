@@ -12,24 +12,6 @@ For (1) there is of course nothing to stop it from being treated as (2) :-).
 
 The aps-apis bundle also contains some base functionallity like a better service tracker and a generic bundle activator that does depenendy injections. These were previously (\<1.0.0) in a separate bundle called aps-tools-lib, but the relationships between that bundle and this finally became too circular so I merged aps-tools-lib into aps-apis.
 
-## Exceptions
-
-APS defines the folowing base exceptions:
-
-* _APSException_ - The base exception extended by all other APS exceptions. This is a RuntimeException! APS uses no checked exceptions.
-* _APSConfigException_ - Thrown on configuration problems.
-* _APSIOException_ - General IO problems.
-* _APSIOTimeoutException_ - IO timeouts.
-* _APSPersistenceException_ - Persistence problems.
-* _APSResourceNotFoundException_ - Resource problems.
-* _APSStartException_ - Bundle startup problems.
-* _APSUnsupportedException_ - Thrown when something is not supported by a bundle or API implementation. Should be clearly documented.
-* _APSValidationException_ - Thrown on validation failures.
-
-The reason for these are to be able to separate APS specific exceptions from other exceptions if needed.
-
-Also note that much of the APS APIs are reactive with a result callback to an `APSHandler`. These do not throw exceptions, but provides an exception instance in a failure result.
-
 ## Tools
 
 ### APSServiceTracker

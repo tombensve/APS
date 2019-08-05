@@ -40,41 +40,7 @@
            A filesystem service that provides a persistent filesystem outside of the OSGi server. The configuration service makes use of this to store configurations. Each client can get its own filesystem area, and can´t access anything outside of its area.          
         </p>
       </li>
-      <li>
-        <p>
-           A platform service that simply identifies the local installation and provides a description of it. It is basically a read only service that provides configured information about the installation.          
-        </p>
-      </li>
-      <li>
-        <p>
-           A JPA service that is easier and more clearly defined than the osgi-ee JPA API, and allows for multiple JPA contexts. It works as an extender picking up persistence.xml whose defined persistence unit name can then be looked up using the service. A client can only lookup its own persistence units. It is based on OpenJPA.          
-        </p>
-      </li>
-      <li>
-        <p>
-           An administration web service to which administration web applications can register themselves with an url and thus be available in the .../apsadminweb admin gui.          
-        </p>
-      </li>
     </ul>
-    <H3>Planned</H3>
-    <ul>
-      <li>
-        <p>
-           An implementation of the standard OSGi LogService since not all servers provide one.          
-        </p>
-      </li>
-      <li>
-        <p>
-           A log veiwer web application supporting reqular expression filters on log information and a live log view.          
-        </p>
-      </li>
-      <li>
-        <p>
-           Anything else relevant I come up with and consider fun to do :-).          
-        </p>
-      </li>
-    </ul>
-    <H3>What is new in </H3>
     <H2>Pre Setup</H2>
     <p>
       The Filesystem service is part of the core and used by other services. It should preferably have its filesystem root outside of the server installation. The BundleContext.getDataFile(String) returns a path within the deploy cache and is only valid for as long a a bundle is deployed. The point with the FilesystemService is to have a more permanent filesystem outside of the application server installation. To provide the FilesystemService root the following system property have to be set and available in the JVM instance:      
@@ -117,63 +83,6 @@
     </p>
     <p>
       The aps-apis bundle also contains some base functionallity like a better service tracker and a generic bundle activator that does depenendy injections. These were previously (&lt;1.0.0) in a separate bundle called aps-tools-lib, but the relationships between that bundle and this finally became too circular so I merged aps-tools-lib into aps-apis.      
-    </p>
-    <H2>Exceptions</H2>
-    <p>
-      APS defines the folowing base exceptions:      
-    </p>
-    <ul>
-      <li>
-        <p>
-           <em>APSException</em> - The base exception extended by all other APS exceptions. This is a RuntimeException! APS uses no checked exceptions.          
-        </p>
-      </li>
-      <li>
-        <p>
-           <em>APSConfigException</em> - Thrown on configuration problems.          
-        </p>
-      </li>
-      <li>
-        <p>
-           <em>APSIOException</em> - General IO problems.          
-        </p>
-      </li>
-      <li>
-        <p>
-           <em>APSIOTimeoutException</em> - IO timeouts.          
-        </p>
-      </li>
-      <li>
-        <p>
-           <em>APSPersistenceException</em> - Persistence problems.          
-        </p>
-      </li>
-      <li>
-        <p>
-           <em>APSResourceNotFoundException</em> - Resource problems.          
-        </p>
-      </li>
-      <li>
-        <p>
-           <em>APSStartException</em> - Bundle startup problems.          
-        </p>
-      </li>
-      <li>
-        <p>
-           <em>APSUnsupportedException</em> - Thrown when something is not supported by a bundle or API implementation. Should be clearly documented.          
-        </p>
-      </li>
-      <li>
-        <p>
-           <em>APSValidationException</em> - Thrown on validation failures.          
-        </p>
-      </li>
-    </ul>
-    <p>
-      The reason for these are to be able to separate APS specific exceptions from other exceptions if needed.      
-    </p>
-    <p>
-      Also note that much of the APS APIs are reactive with a result callback to an <code>APSHandler</code>. These do not throw exceptions, but provides an exception instance in a failure result.      
     </p>
     <H2>Tools</H2>
     <H3>APSServiceTracker</H3>
@@ -4330,17 +4239,17 @@
       </li>
       <li>
         <p>
-           <a href='https://github.com/FasterXML/jackson-core' title=''>jackson-core-2.7.4</a>          
+           <a href='https://github.com/FasterXML/jackson-core' title=''>jackson-core-2.10.0.pr1</a>          
         </p>
       </li>
       <li>
         <p>
-           <a href='http://github.com/FasterXML/jackson' title=''>jackson-annotations-2.7.0</a>          
+           <a href='http://github.com/FasterXML/jackson' title=''>jackson-annotations-2.10.0.pr1</a>          
         </p>
       </li>
       <li>
         <p>
-           <a href='http://github.com/FasterXML/jackson' title=''>jackson-databind-2.7.4</a>          
+           <a href='http://github.com/FasterXML/jackson' title=''>jackson-databind-2.10.0.pr1</a>          
         </p>
       </li>
       <li>

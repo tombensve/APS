@@ -20,22 +20,6 @@ APS is made using basic OSGi functionality and is not using blueprint and other 
 
 *  A filesystem service that provides a persistent filesystem outside of the OSGi server. The configuration service makes use of this to store configurations. Each client can get its own filesystem area, and can´t access anything outside of its area.
 
-*  A platform service that simply identifies the local installation and provides a description of it. It is basically a read only service that provides configured information about the installation.
-
-*  A JPA service that is easier and more clearly defined than the osgi-ee JPA API, and allows for multiple JPA contexts. It works as an extender picking up persistence.xml whose defined persistence unit name can then be looked up using the service. A client can only lookup its own persistence units. It is based on OpenJPA.
-
-*  An administration web service to which administration web applications can register themselves with an url and thus be available in the .../apsadminweb admin gui.
-
-### Planned
-
-*  An implementation of the standard OSGi LogService since not all servers provide one.
-
-*  A log veiwer web application supporting reqular expression filters on log information and a live log view.
-
-*  Anything else relevant I come up with and consider fun to do :-).
-
-### What is new in 
-
 ## Pre Setup
 
 The Filesystem service is part of the core and used by other services. It should preferably have its filesystem root outside of the server installation. The BundleContext.getDataFile(String) returns a path within the deploy cache and is only valid for as long a a bundle is deployed. The point with the FilesystemService is to have a more permanent filesystem outside of the application server installation. To provide the FilesystemService root the following system property have to be set and available in the JVM instance:
@@ -61,32 +45,6 @@ The project does provide a lot of implementations of the APIs. They are in 2 cat
 For (1) there is of course nothing to stop it from being treated as (2) :-).
 
 The aps-apis bundle also contains some base functionallity like a better service tracker and a generic bundle activator that does depenendy injections. These were previously (<1.0.0) in a separate bundle called aps-tools-lib, but the relationships between that bundle and this finally became too circular so I merged aps-tools-lib into aps-apis.
-
-## Exceptions
-
-APS defines the folowing base exceptions:
-
-*  _APSException_ - The base exception extended by all other APS exceptions. This is a RuntimeException! APS uses no checked exceptions.
-
-*  _APSConfigException_ - Thrown on configuration problems.
-
-*  _APSIOException_ - General IO problems.
-
-*  _APSIOTimeoutException_ - IO timeouts.
-
-*  _APSPersistenceException_ - Persistence problems.
-
-*  _APSResourceNotFoundException_ - Resource problems.
-
-*  _APSStartException_ - Bundle startup problems.
-
-*  _APSUnsupportedException_ - Thrown when something is not supported by a bundle or API implementation. Should be clearly documented.
-
-*  _APSValidationException_ - Thrown on validation failures.
-
-The reason for these are to be able to separate APS specific exceptions from other exceptions if needed.
-
-Also note that much of the APS APIs are reactive with a result callback to an `APSHandler`. These do not throw exceptions, but provides an exception instance in a failure result.
 
 ## Tools
 
@@ -2742,11 +2700,11 @@ The following third party products are using this license:
 
 *  [hazelcast-3.6.3](http://www.hazelcast.com/)
 
-*  [jackson-core-2.7.4](https://github.com/FasterXML/jackson-core)
+*  [jackson-core-2.10.0.pr1](https://github.com/FasterXML/jackson-core)
 
-*  [jackson-annotations-2.7.0](http://github.com/FasterXML/jackson)
+*  [jackson-annotations-2.10.0.pr1](http://github.com/FasterXML/jackson)
 
-*  [jackson-databind-2.7.4](http://github.com/FasterXML/jackson)
+*  [jackson-databind-2.10.0.pr1](http://github.com/FasterXML/jackson)
 
 *  [netty-codec-4.1.6.Final](http://netty.io/)
 

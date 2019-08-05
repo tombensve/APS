@@ -214,9 +214,9 @@
         [23] - io.vertx.codec-dns - 4.1.1.Final
         [24] - io.vertx.resolver - 4.1.1.Final
         [25] - io.vertx.resolver-dns - 4.1.1.Final
-        [26] - com.fasterxml.jackson.core.jackson-core - 2.7.4
-        [27] - com.fasterxml.jackson.core.jackson-databind - 2.7.4
-        [28] - com.fasterxml.jackson.core.jackson-annotations - 2.7.0
+        [26] - com.fasterxml.jackson.core.jackson-core - [2.9.9.2,)
+        [27] - com.fasterxml.jackson.core.jackson-databind - [2.9.9.2,)
+        [28] - com.fasterxml.jackson.core.jackson-annotations - [2.9.9.2,)
         [29] - vertx-web - 3.3.3
         [30] - vertx-auth-common - 3.3.3
         [31] - vertx-jdbc-client - 3.3.3
@@ -285,19 +285,19 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.7.4</version>
+            <version>[2.9.9.2,)</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.7.0</version>
+            <version>[2.9.9.2,)</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.7.4</version>
+            <version>[2.9.9.2,)</version>
             <scope>provided</scope>
         </dependency>
 
