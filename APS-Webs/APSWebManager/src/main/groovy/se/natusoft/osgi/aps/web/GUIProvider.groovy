@@ -55,8 +55,13 @@ import org.osgi.framework.ServiceReference
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.osgi.aps.api.messaging.APSBus
 import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
+import se.natusoft.osgi.aps.types.APSHandler
+import se.natusoft.osgi.aps.types.APSResult
+import se.natusoft.osgi.aps.types.APSUUID
+import se.natusoft.osgi.aps.types.ID
 import se.natusoft.osgi.aps.util.APSJson
 import se.natusoft.osgi.aps.util.APSLogger
 import se.natusoft.osgi.aps.web.models.APSAlert
@@ -85,40 +90,51 @@ class GUIProvider {
     @Managed
     private APSLogger logger
 
-    @OSGiService( additionalSearchCriteria = "(vertx-object=EventBus)" )
-    private APSServiceTracker<EventBus> eventBusTracker
+    @OSGiService
+    private APSServiceTracker<APSBus> apsBusTracker
+    private APSBus apsBus
 
-    private MessageConsumer newClientConsumer
+    //private MessageConsumer newClientConsumer
+    private ID clientConsumerId
 
     @Initializer
     void init() {
 
-        this.eventBusTracker.onActiveServiceAvailable = { EventBus eventBus, ServiceReference sref ->
+        this.apsBusTracker.onActiveServiceAvailable = { APSBus _apsBus, ServiceReference sref ->
 
-            this.logger.info( "An EventBus just became available!" )
+            this.apsBus = _apsBus
+            this.logger.info( "The underlaying Vert.x EventBus just became available!" )
 
-            this.newClientConsumer = eventBus.consumer( "aps:${ APS_WEB_APP_NAME }:backend" ) { Message message ->
+            this.clientConsumerId = new APSUUID()
+            apsBus.subscribe(
+                    this.clientConsumerId,
+                    "cluster:aps:${ APS_WEB_APP_NAME }:backend"
+            ) { APSResult result ->
 
-                Map<String, Object> received = new RecursiveJsonObjectMap( message.body() as JsonObject )
+                if ( !result.success() ) {
+                    this.logger.error( result.failure().message, result.failure() )
+                }
+            } { Map<String, Object> received ->
+
+                this.logger.debug( "§§§§§§§§§§ Received: ${received}" )
+
                 String recv = received.toString()
                 this.logger.debug( ">>>>>Received from '${ received[ "aps" ][ "origin" ] }': ${ recv }" )
 
+                // Note: Since we are called by the bus, it must still be available!
                 try {
                     if ( received[ "aps" ][ "type" ] == "avail" ) {
-                        provideGui( eventBus, received[ "aps" ][ "origin" ] as String )
+                        provideGui( apsBus, received[ "aps" ][ "origin" ] as String )
                     }
                 }
                 catch ( Exception e ) {
                     this.logger.error( e.getMessage(), e )
                 }
-
             }
         }
 
-        this.eventBusTracker.onActiveServiceLeaving = { ServiceReference sref, Class api ->
-
-            this.newClientConsumer.unregister()
-
+        this.apsBusTracker.onActiveServiceLeaving = { ServiceReference sref, Class api ->
+            this.apsBus = null
             this.logger.info( "EventBus going away!" )
         }
 
@@ -138,10 +154,10 @@ class GUIProvider {
      * @param eventBus Our event bus.
      * @param address The frontend address to send GUI JSON spec to.
      */
-    private void provideGui( EventBus eventBus, String address ) {
+    private void provideGui( APSBus apsBus, String address ) {
         this.logger.debug( "In provideGui!" )
 
-        JsonObject reply = new JsonObject(
+        Map<String, Object> reply =
                 [
                         aps    : [
                                 origin: "aps:aps-web-manager:backend",
@@ -150,13 +166,15 @@ class GUIProvider {
                         ],
                         content: buildGUIUsingModels()
                 ] as Map<String, Object>
-        )
 
-        println "Thread: ${ Thread.currentThread().getName() }"
+        apsBus.send( "cluster:${address}", reply ) { APSResult res ->
 
-        eventBus.send( address, reply )
+            if ( !res.success() ) {
+                this.logger.error( res.failure().message, res.failure() )
+            }
+        }
 
-        this.logger.debug( "Sent: ${ reply } to ${ address }" )
+        this.logger.debug( "Sent: ${ reply } to cluster:${ address }" )
 
     }
 
