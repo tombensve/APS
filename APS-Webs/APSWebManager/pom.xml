@@ -181,6 +181,10 @@
             <exclusions>
                 <exclusion>
                     <groupId>org.codehaus.groovy</groupId>
+                    <artifactId>groovy</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.codehaus.groovy</groupId>
                     <artifactId>groovy-all</artifactId>
                 </exclusion>
             </exclusions>
@@ -208,9 +212,9 @@
         <!-- Unfortunately needed since IDEA can't see the mixin and keep removing groovy if added manually in IDEA. -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
+            <artifactId>groovy</artifactId>
             <scope>provided</scope>
-            <classifier>indy</classifier>
+<!--            <classifier>indy</classifier>-->
             <version>${groovy.version}</version>
         </dependency>
 

@@ -6,7 +6,6 @@ import io.vertx.core.AsyncResult
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.eventbus.Message
 import io.vertx.core.eventbus.MessageConsumer
-import io.vertx.core.eventbus.MessageProducer
 import io.vertx.core.json.JsonObject
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceReference
@@ -118,28 +117,29 @@ class APSVertxBusRouter implements APSBusRouter {
         // Yes, what these handlers do could be done directly below in onActiveServiceAvailable {...} instead
         // of changing state. This is however more future safe.
         this.activatorInteraction.setStateHandler( APSActivatorInteraction.State.READY ) {
-            this.activatorInteraction.registerService( APSVertxBusRouter.class, this.context, this.svcRegs )
-            this.logger.debug( ">>>> Registered ${ APSVertxBusRouter.class.simpleName } as service!" )
+            activatorInteraction.registerService( APSVertxBusRouter.class, context, svcRegs )
+            logger.debug( ">>>> Registered ${ APSVertxBusRouter.class.simpleName } as service!" )
         }
         this.activatorInteraction.setStateHandler( APSActivatorInteraction.State.TEMP_UNAVAILABLE ) {
-            this.svcRegs.first().unregister() // We only have one instance.
-            this.svcRegs.clear()
-            this.logger.debug( ">>>> Unregistered ${ APSVertxBusRouter.class.simpleName } as service!" )
+            svcRegs.first().unregister() // We only have one instance.
+            svcRegs.clear()
+            logger.debug( ">>>> Unregistered ${ APSVertxBusRouter.class.simpleName } as service!" )
         }
 
         this.eventBusTracker.onActiveServiceAvailable { EventBus service, ServiceReference serviceReference ->
-            this.logger.debug( ">>>> received eventbus!" )
 
-            this.eventBus = service
+            logger.debug( ">>>> received eventbus!" )
 
-            this.activatorInteraction.state = APSActivatorInteraction.State.READY
+            eventBus = service
+
+            activatorInteraction.state = APSActivatorInteraction.State.READY
         }
         this.eventBusTracker.onActiveServiceLeaving { ServiceReference service, Class serviceAPI ->
-            this.logger.debug( ">>>> Lost eventbus!" )
+            logger.debug( ">>>> Lost eventbus!" )
 
-            this.eventBus = null
+            eventBus = null
 
-            this.activatorInteraction.state = APSActivatorInteraction.State.TEMP_UNAVAILABLE
+            activatorInteraction.state = APSActivatorInteraction.State.TEMP_UNAVAILABLE
         }
     }
 
@@ -194,13 +194,13 @@ class APSVertxBusRouter implements APSBusRouter {
             if ( realTarget.startsWith( "all:" ) ) {
 
                 String pubTarget = realTarget.substring( 4 )
-                this.eventBus.publisher( pubTarget ).write( new JsonObject( message ) ) { AsyncResult res ->
+                eventBus.publisher( pubTarget ).write( new JsonObject( message ) ) { AsyncResult res ->
 
                     internalResultHandler( res )
                 }.close()
             }
             else {
-                this.eventBus.sender( realTarget ).write( new JsonObject( message ) ) { AsyncResult res ->
+                eventBus.sender( realTarget ).write( new JsonObject( message ) ) { AsyncResult res ->
 
                     internalResultHandler( res )
                 }.close()
@@ -222,11 +222,11 @@ class APSVertxBusRouter implements APSBusRouter {
         this.logger.debug( "§§§§ Subscribing to '${target}'" )
         validTarget( target ) { String realTarget ->
 
-            MessageConsumer consumer = this.eventBus.consumer( realTarget ) { Message<JsonObject> msg ->
+            MessageConsumer consumer = eventBus.consumer( realTarget ) { Message<JsonObject> msg ->
 
-                this.logger.debug("§§§§ Received raw: ${msg}")
+                logger.debug("§§§§ Received raw: ${msg}")
                 Map<String, Object> message = new RecursiveJsonObjectMap( msg.body() )
-                this.logger.debug( "§§§§: Received wrapped: ${message}")
+                logger.debug( "§§§§: Received wrapped: ${message}")
                 messageHandler.handle( message )
             }
 

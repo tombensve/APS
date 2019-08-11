@@ -9,7 +9,7 @@ import se.natusoft.osgi.aps.core.lib.StructMap
 @TypeChecked
 class StructMapTest {
 
-    private StructMap structMap = new StructMap<>(
+    private StructMap structMap = new StructMap(
             [
                     header: [
                             type      : "service",

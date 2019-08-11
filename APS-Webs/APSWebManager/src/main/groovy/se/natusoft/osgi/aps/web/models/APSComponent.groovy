@@ -123,7 +123,7 @@ class APSComponent<Component> {
      */
     Component setRouting( String name, String value ) {
 
-        this.routing.( name ) = value
+        this.routing.put( name, value )
 
         ( Component ) this
     }

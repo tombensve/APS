@@ -172,9 +172,9 @@
         <!-- Unfortunately needed since IDEA can't see the mixin and keep removing groovy if added manually in IDEA. -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
+            <artifactId>groovy</artifactId>
             <scope>provided</scope>
-            <classifier>indy</classifier>
+<!--            <classifier>indy</classifier>-->
             <version>${groovy.version}</version>
         </dependency>
 
@@ -191,6 +191,10 @@
             <scope>compile</scope>
             <!-- This pulls in an older version of groovy causing problems when running tests. -->
             <exclusions>
+                <exclusion>
+                    <groupId>org.codehaus.groovy</groupId>
+                    <artifactId>groovy</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>org.codehaus.groovy</groupId>
                     <artifactId>groovy-all</artifactId>
@@ -750,7 +754,7 @@
                                         -->
                                         <deployable>
                                             <sourceFile>
-                                                ~/.m2/repository/org/codehaus/groovy/groovy-all/${groovy.version}/groovy-all-${groovy.version}-indy.jar
+                                                ~/.m2/repository/org/codehaus/groovy/groovy/${groovy.version}/groovy-${groovy.version}.jar
                                             </sourceFile>
                                             <destPath>${aps.root.dir}/vagrant/deploy/</destPath>
                                         </deployable>

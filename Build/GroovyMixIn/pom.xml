@@ -55,9 +55,9 @@
     <dependencies>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
+            <artifactId>groovy</artifactId>
             <scope>provided</scope>
-            <classifier>indy</classifier>
+<!--            <classifier>indy</classifier>-->
             <version>${groovy.version}</version>
         </dependency>
     </dependencies>
@@ -122,10 +122,17 @@
                 <dependencies>
                     <dependency>
                         <groupId>org.codehaus.groovy</groupId>
-                        <artifactId>groovy-all</artifactId>
+                        <artifactId>groovy</artifactId>
                         <version>${groovy.version}</version>
                         <scope>compile</scope>
-                        <classifier>indy</classifier>
+<!--                        <classifier>indy</classifier>-->
+                    </dependency>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-ant</artifactId>
+                        <version>${groovy.version}</version>
+                        <scope>compile</scope>
+                        <!--                        <classifier>indy</classifier>-->
                     </dependency>
                 </dependencies>
 

@@ -55,9 +55,9 @@
     <dependencies>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
+            <artifactId>groovy</artifactId>
             <scope>provided</scope>
-            <classifier>indy</classifier>
+<!--            <classifier>indy</classifier>-->
             <version>${groovy.version}</version>
         </dependency>
     </dependencies>
