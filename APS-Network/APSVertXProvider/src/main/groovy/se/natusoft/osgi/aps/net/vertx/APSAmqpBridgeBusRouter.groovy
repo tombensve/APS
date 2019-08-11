@@ -21,8 +21,7 @@ import se.natusoft.osgi.aps.util.APSLogger
 /**
  * Provides and APSBusRouter implementation using Vert.x EventBus for communication.
  *
- * This uses "cluster:" as target id. When calling send(...) however an additional "all:"
- * can be added before address to do a publish rather than send.
+ * This uses "amqp:" as target id.
  */
 @CompileStatic
 @TypeChecked
@@ -65,11 +64,12 @@ class APSAmqpBridgeBusRouter implements APSBusRouter {
 
             go.call( target )
         }
-        else if ( target.startsWith( "all:" ) ) {
-            target = target.substring( 4 )
-
-            go.call( target )
-        }
+        // Can't decide if this is an acceptable or very bad idea.
+//        else if ( target.startsWith( "all:" ) ) {
+//            target = target.substring( 4 )
+//
+//            go.call( target )
+//        }
         // Note that since APSBus will call all APSBusRouter implementations found, receiving
         // and invalid target is nothing strange. We should only react on those that we recognize.
     }
@@ -77,10 +77,9 @@ class APSAmqpBridgeBusRouter implements APSBusRouter {
     /**
      * Sends a message.
      *
-     * @param target The target to send to. In this case it should start with cluster: and what comes after
-     *               that is taken as the Vert.x EventBus address. If the target starts with
-     *               "cluster:all:" then the "all:" part is also removed and the messages is published
-     *               rather than sent.
+     * @param target The target to send to. In this case it should start with amqp: and what comes after
+     *               that is taken as the AMQP address.
+     *
      * @param message The message to send. Only JSON structures allowed and top level has to be an object.
      * @param resultHandler The handler to call with result of operation. Can be null!
      */
@@ -89,11 +88,6 @@ class APSAmqpBridgeBusRouter implements APSBusRouter {
 
         validTarget( target ) { String realTarget ->
 
-            // We cannot support this, so we ignore it.
-            if ( realTarget.startsWith( "all:" ) ) {
-
-                realTarget = realTarget.substring( 4 )
-            }
             try {
 
                 MessageProducer messageProducer = producers[ realTarget ]
@@ -163,6 +157,14 @@ class APSAmqpBridgeBusRouter implements APSBusRouter {
     void unsubscribe( @NotNull ID subscriberId ) {
         MessageConsumer consumer = this.subscriptions[ subscriberId ]
         consumer.unregister()
+    }
+
+    /**
+     * @return true if the implementation is a required, non optional provider.
+     */
+    @Override
+    boolean required() {
+        return false
     }
 
     void shutdown() {

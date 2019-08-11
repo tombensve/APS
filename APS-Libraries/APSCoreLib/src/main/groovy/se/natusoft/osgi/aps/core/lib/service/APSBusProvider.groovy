@@ -15,6 +15,7 @@ import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.types.APSUUID
 import se.natusoft.osgi.aps.types.ID
+import se.natusoft.osgi.aps.util.APSLogger
 
 /**
  * This is a simple bus API that is used by creating an instance and passing a BundleContext.
@@ -37,6 +38,9 @@ class APSBusProvider implements APSBus {
     //
     // Private Members
     //
+
+    @Managed( loggingFor = "aps-bus-provider" )
+    private APSLogger logger
 
     private List<ServiceRegistration> svcRegs = []
 
@@ -78,9 +82,14 @@ class APSBusProvider implements APSBus {
 
         // Make sure this service is not made available until we have at least one bus router.
         Thread.start {
+
+            this.logger.debug( "§§§§ Waiting for an APSBusRouter ..." )
+
             while ( this.routerTracker.trackedServiceCount == 0 ) {
                 Thread.sleep( 1000 )
             }
+
+            this.logger.debug( "§§§§ Got an APSBusRouter!" )
 
             this.activatorInteraction.state = APSActivatorInteraction.State.READY
         }
@@ -128,6 +137,7 @@ class APSBusProvider implements APSBus {
         target.split( "," ).each { String _target ->
 
             this.routerTracker.withAllAvailableServices() { APSBusRouter apsBusRouter, @NotUsed Object[] args ->
+
                 apsBusRouter.subscribe( id, _target.trim(), resultHandler, messageHandler )
             }
         }

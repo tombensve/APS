@@ -2,9 +2,11 @@ package se.natusoft.osgi.aps.net.vertx
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import io.vertx.core.AsyncResult
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.eventbus.Message
 import io.vertx.core.eventbus.MessageConsumer
+import io.vertx.core.eventbus.MessageProducer
 import io.vertx.core.json.JsonObject
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceReference
@@ -148,6 +150,7 @@ class APSVertxBusRouter implements APSBusRouter {
      * @param go Closure to call on valid target.
      */
     private static void validTarget( String target, Closure go ) {
+
         if ( target.startsWith( TARGET_ID ) ) {
             target = target.substring( TARGET_ID.length() )
 
@@ -175,18 +178,33 @@ class APSVertxBusRouter implements APSBusRouter {
     @Override
     void send( @NotNull String target, @NotNull Map<String, Object> message, @Optional @Nullable APSHandler<APSResult> resultHandler ) {
 
+        this.logger.debug( "Sending to target -> '${target}'" )
+
         validTarget( target ) { String realTarget ->
+
+            def internalResultHandler = { AsyncResult res ->
+                if ( res.succeeded() ) {
+                    resultHandler.handle( APSResult.success( null ) )
+                }
+                else {
+                    resultHandler.handle( APSResult.failure( res.cause() ) )
+                }
+            }
 
             if ( realTarget.startsWith( "all:" ) ) {
 
                 String pubTarget = realTarget.substring( 4 )
-                this.eventBus.publish( pubTarget, new JsonObject( message ) )
+                this.eventBus.publisher( pubTarget ).write( new JsonObject( message ) ) { AsyncResult res ->
+
+                    internalResultHandler( res )
+                }.close()
             }
             else {
-                this.eventBus.send( realTarget, new JsonObject( message ) )
-            }
+                this.eventBus.sender( realTarget ).write( new JsonObject( message ) ) { AsyncResult res ->
 
-            resultHandler.handle( APSResult.success( null ) )
+                    internalResultHandler( res )
+                }.close()
+            }
         }
     }
 
@@ -201,11 +219,14 @@ class APSVertxBusRouter implements APSBusRouter {
     @Override
     void subscribe( @NotNull ID id, @NotNull String target, @Optional @Nullable APSHandler<APSResult> resultHandler, @NotNull APSHandler<Map<String, Object>> messageHandler ) {
 
+        this.logger.debug( "§§§§ Subscribing to '${target}'" )
         validTarget( target ) { String realTarget ->
 
-            MessageConsumer consumer = this.eventBus.consumer( target ) { Message<JsonObject> msg ->
+            MessageConsumer consumer = this.eventBus.consumer( realTarget ) { Message<JsonObject> msg ->
 
+                this.logger.debug("§§§§ Received raw: ${msg}")
                 Map<String, Object> message = new RecursiveJsonObjectMap( msg.body() )
+                this.logger.debug( "§§§§: Received wrapped: ${message}")
                 messageHandler.handle( message )
             }
 
@@ -229,8 +250,16 @@ class APSVertxBusRouter implements APSBusRouter {
      */
     @Override
     void unsubscribe( @NotNull ID subscriberId ) {
-        MessageConsumer consumer = this.subscriptions[ subscriberId ]
-        consumer.unregister()
+        MessageConsumer consumer = this.subscriptions.remove subscriberId
+        if ( consumer != null ) consumer.unregister()
+    }
+
+    /**
+     * @return true if the implementation is a required, non optional provider.
+     */
+    @Override
+    boolean required() {
+        return true
     }
 
     @BundleStop

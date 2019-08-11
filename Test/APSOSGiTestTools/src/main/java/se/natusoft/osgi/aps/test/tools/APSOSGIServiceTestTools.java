@@ -284,6 +284,12 @@ public class APSOSGIServiceTestTools {
                 "1.0.0"
         );
 
+        deploy( "aps-core-lib" ).with( new APSActivator() ).from(
+                "se.natusoft.osgi.aps",
+                "aps-core-lib",
+                "1.0.0"
+        );
+
         Runnable vertxDeployer = altDeployers != null ? altDeployers.get("vertxDeployer") : null;
         if (vertxDeployer == null) {
             deploy( "aps-vertx-provider" ).with( new APSActivator() ).from(

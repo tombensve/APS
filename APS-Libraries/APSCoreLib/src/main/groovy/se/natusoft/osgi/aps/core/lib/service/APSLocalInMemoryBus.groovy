@@ -145,4 +145,11 @@ class APSLocalInMemoryBus implements APSBusRouter, ValidTargetTrait {
         }
     }
 
+    /**
+     * @return true if the implementation is a required, non optional provider.
+     */
+    @Override
+    boolean required() {
+        return true
+    }
 }
