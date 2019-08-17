@@ -2,13 +2,14 @@
  *
  * PROJECT
  *     Name
- *         APS APIs
+ *         APS APIs Tests
  *     
  *     Code Version
  *         1.0.0
  *     
  *     Description
- *         Provides the APIs for the application platform services.
+ *         APS (Application Platform Services) - A smörgåsbord of OSGi application/platform type services intended for
+ *         web applications. Currently based on Vert.x for backend and React for frontend (its own web admin apps).
  *         
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
