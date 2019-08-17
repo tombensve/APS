@@ -214,7 +214,6 @@
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
             <scope>provided</scope>
-<!--            <classifier>indy</classifier>-->
             <version>${groovy.version}</version>
         </dependency>
 
@@ -334,11 +333,11 @@
                             <artifactId>groovy-mixin</artifactId>
                             <version>${project.version}</version>
                         </mixin>
-                        <mixin>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>deploy-bundle-mixin</artifactId>
-                            <version>${project.version}</version>
-                        </mixin>
+<!--                        <mixin>-->
+<!--                            <groupId>${project.groupId}</groupId>-->
+<!--                            <artifactId>deploy-bundle-mixin</artifactId>-->
+<!--                            <version>${project.version}</version>-->
+<!--                        </mixin>-->
                         <mixin>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>build-number-mixin</artifactId>

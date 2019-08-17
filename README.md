@@ -16,6 +16,8 @@ __Version:__ 1.0.0 (working up to ...)
 
 __License:__ [Apache 2.0](lics/Apache-2.0.md)
 
+__JDK Level:__ This now builds with all tests working on JDK 11! No, there is no JPMS usage yet! And it is also using a beta of Groovy 3.0. Have not run into any problem with Groovy being beta so far. The big question is what to do now ? Stick with OSGi ? or leave OSGi and adapt to JPMS ? They are quite different, and OSGi are in many ways better. But Vert.x will drop OSGi support in next major version. That means that the Vert.x jars will no longer deploy as bundles. JPMS / Jigsaw is what it is. I've seen some dissatisfaction with how JPMS have been implemented online. See here for example: <https://developer.jboss.org/blogs/scott.stark/2017/04/14/critical-deficiencies-in-jigsawjsr-376-java-platform-module-system-ec-member-concerns?_sscc=t>. But it is what it is, and are probably not going to be dropped and be completely redesigned! We have to live with it. Thereby I have decided to eat the dog biscuit and move from OSGi to JPMS for modularity, and adapt services to using ServiceLoader. I have no illusions that this will be easy!
+
 __This project is currently work in progress and cannot be expected to be stable!!__
 
 Work is slow, whenever time permits.
@@ -26,9 +28,8 @@ The __original (and still active) goal__ with this is to make a very easy to use
 
 This project is now using 2 exceptional frameworks: __Vert.x & React__. These both belong to the same category: Things that just work! I have the highest respect for the people behind both of these. These both also supply outstanding documentation (far from all does!).
 
-I started using OSGi (only the base 4 APIs) as a base platform because of the modularity of OSGi. I wanted small individual deployments of functionality and a nice clean way of interacting. OSGi provided that. I did for a short while try to drop OSGi but it actually made things more complicated, so OSGi stays. The OSGi maintainers are working on making it run on Java 9+ also. So OSGi is not going away, and there is not an '==' between Java 9+ and OSGi!! Java9+ only provides modularity, not the eminent service platform of OSGi.
 
-**Do note:** that APS will run in any OSGi container (well, felix, Karaf, Knopplerfish, Virgo (not sure this is still kicking)). That said, I woudn't exactly call APS a straight OSGi platform. APS started out a long time ago, and provides a lot of own solutions rather than official OSGi stadard solutions. It does its own thing, especially with APSActivator (looks though all bundle classes and instantiates and dependency injects based on APS annotations). It just uses base OSGi as a base. APS is also largely coded in Groovy.
+**Currently ...** APS will run in any OSGi container (well, felix, Karaf, Knopplerfish, Virgo (not sure this is still kicking)). That said, I woudn't exactly call APS a straight OSGi platform. APS started out a long time ago, and provides a lot of own solutions rather than official OSGi stadard solutions. It does its own thing, especially with APSActivator (looks though all bundle classes and instantiates and dependency injects based on APS annotations). It just uses base OSGi as a base. APS is also largely coded in Groovy.
 
 The _APSOSGiTestTools_ maven module is actually an implementation of the 4 basic OSGi APIs, but without the classloading. It uses the JUnit classpath. This makes it trivially easy to test bundles and interaction between bundles. 
 
@@ -50,22 +51,11 @@ APS adds a thin layer on top of Vert.x. In many cases Vert.x is used directly, b
 
 Note that all APS messages are required to be JSON!! This is a limitation, but keeps things simple. On the backend a JSON object is represented as Map<String, Object>, and a JSON array as List<Object>. On the frontend it of course becomes JS objects and arrays. Note that APS is mostly written in Groovy which allows you to interact with Maps and Lists in a very similar way as JS, and it also allows for static Maps, not just arrays. `[ key: value ]` is a Groovy Map. `[value, value, ...]` is a Groovy list. Map can be referenced as `jsonMap['body']['type']`.   
 
-
 The general architecture of an APS app is then intended to be message driven, requireing well defined messages, and with very loose coupling mostly only having dependencies between functionallity and the messages it works with, making the messages central. This offers a high level of flexibility, and I'm counting on less code. The frontend code and the backend code will then also look quite similar working with messages. I also beleive that resuing the same messages over the whole application is something to strive for, but requires very well though trough messages that can be both reusable and specific for a specific message. APS includes a very simple but useful JSON schema definition and a validator that validates a JSON structure against a schema. The schema forces simple JSON structures which I think is a good thing. It will both document the messages and provide validation of them.
 
 Do note that APS needs a clustered Vert.x and will create/join such on startup. It can however be told to start a non clustered Vert.x by system property on start. This can be useful when running in test.
 
 About testing: APS provide a testing tool called APSOSGiTestTools. It actually implements a primitive APS level OSGi container but without classloading (as mentioned above), using junit classpaths instead. So most tests run as they would in a real deployment and thus also starts Vert.x. This could cause problems if multiple builds are run concurrently on the same machine, like in a Jenkins for example. But if Vert.x is run unclustered it would probably work if HTTP service tests and similar use random ports. There is no good support for that yet in APS. I'm also considering trying to run tests within docker containers.
-
-## Moving away from OSGi and to Java 9+
-
-The current situation is not without problems:
-
-- Need a patched BND due to Groovy code wich confuses BND to thing there is code in default package.
-
-- OSGi does not work with JDK 9+. It is my belief that it will take quite some time for the OSGi people to decide how to adapt to JDK 9+. 
-
-So I'm planning to move away from OSGi. APS doesn't really need separately deployable modules. It does want the modularity, which JDK 9+ can provide. So I'm considering basing services on the old JDK ServiceLoader instead. Then what is available is just a matter of what you pack into a fat jar. I will keep and adapt APSActivator which does a lot of nice stuff. It might however be a bit too simple, and if so I'll consider keeping the OSGi service handling, without the rest, and no longer OSGi compatible.
 
 ## Why all these relatively long readme.md files ?
 

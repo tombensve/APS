@@ -284,28 +284,28 @@
             <!--
                 Deploy plugins
             -->
-            <plugin>
-                <groupId>se.natusoft.maven.plugin</groupId>
-                <artifactId>ftp-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>upload</id>
-                        <goals>
-                            <goal>upload</goal>
-                        </goals>
-                        <phase>deploy</phase>
-                        <configuration>
-                            <files>**/.*</files>
-                            <targetHost>${javadoc.upload}</targetHost>
-                            <targetPort>21</targetPort>
-                            <userName>${web.server.user}</userName>
-                            <password>${web.server.pw}</password>
-                            <targetPath>${javadoc.base.path}/APS</targetPath>
-                            <baseDir>${basedir}/target/site/apidocs</baseDir>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>se.natusoft.maven.plugin</groupId>-->
+<!--                <artifactId>ftp-maven-plugin</artifactId>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>upload</id>-->
+<!--                        <goals>-->
+<!--                            <goal>upload</goal>-->
+<!--                        </goals>-->
+<!--                        <phase>deploy</phase>-->
+<!--                        <configuration>-->
+<!--                            <files>**/.*</files>-->
+<!--                            <targetHost>${javadoc.upload}</targetHost>-->
+<!--                            <targetPort>21</targetPort>-->
+<!--                            <userName>${web.server.user}</userName>-->
+<!--                            <password>${web.server.pw}</password>-->
+<!--                            <targetPath>${javadoc.base.path}/APS</targetPath>-->
+<!--                            <baseDir>${basedir}/target/site/apidocs</baseDir>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
 
     </build>

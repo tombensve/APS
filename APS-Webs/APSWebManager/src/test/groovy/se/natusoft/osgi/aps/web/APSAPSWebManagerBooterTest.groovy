@@ -72,13 +72,29 @@ class APSAPSWebManagerBooterTest extends APSOSGIServiceTestTools {
     }
 
     private static void getAndVerify( String serverFile, String localFile ) throws Exception {
+        // Since System.getResourceAsStream() no longer works like before we need to resolve the path to
+        // our maven project to locate the source files the http running at localhost:8880 now serves
+        // to compare then with what is downloaded. We do that by finding the path of our test class!
+        // I really wish there were a better way of doing this!! Relative to CWD will produce different
+        // result depending on where build is started. THIS REALLY SUCKS!
+        File projRoot = new File(
+                APSAPSWebManagerBooterTest.class.getResource(
+                        "APSAPSWebManagerBooterTest.class"
+                ).toString().substring( 5 )
+        ).parentFile.parentFile.parentFile.parentFile.parentFile.parentFile.parentFile.parentFile
+
+        logger.debug( "##################### ${ projRoot } #########################" )
+
+        logger.debug( "CWD: ${ new File( "." ).absolutePath }" )
         try {
             URL url = new URL( "http://localhost:8880/apsweb/${ serverFile }" )
             logger.debug( "URL: '${ url }'" )
             String fileFromServer = loadFromStream( url.openStream() )
             if ( localFile != null ) {
+                String localPath = "${ projRoot }/src/main/resources/webContent/${ localFile }"
+
                 String fileFromLocal =
-                        loadFromStream( System.getResourceAsStream( "/webContent/${ localFile }" ) )
+                        loadFromStream( new FileInputStream( localPath ) )
 
                 logger.info( "server: ${ fileFromServer }" )
                 logger.info( "local: ${ fileFromLocal }" )
