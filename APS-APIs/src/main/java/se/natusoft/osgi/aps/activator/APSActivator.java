@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -117,7 +117,7 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Most methods are protected making it easy to subclass this class and expand on its functionality.
  */
-@SuppressWarnings( "WeakerAccess" )
+@SuppressWarnings( { "WeakerAccess", "UnregisteredActivator" } )
 public class APSActivator implements BundleActivator, OnServiceAvailable, OnTimeout, APSActivatorPlugin.ActivatorInteraction {
 
     //
@@ -293,10 +293,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * This method must complete and return to its caller in a timely manner.
      *
      * @param context The execution context of the bundle being started.
-     * @throws Exception If this method throws an exception, this
-     *                   bundle is marked as stopped and the Framework will remove this
-     *                   bundle's listeners, unregister all services registered by this
-     *                   bundle, and release all services used by this bundle.
+     * @exception Exception If this method throws an exception, this
+     * bundle is marked as stopped and the Framework will remove this
+     * bundle's listeners, unregister all services registered by this
+     * bundle, and release all services used by this bundle.
      */
     @Override
     public void start( BundleContext context ) throws Exception {
@@ -412,10 +412,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * This method must complete and return to its caller in a timely manner.
      *
      * @param context The execution context of the bundle being stopped.
-     * @throws Exception If this method throws an exception, the
-     *                   bundle is still marked as stopped, and the Framework will remove
-     *                   the bundle's listeners, unregister all services registered by the
-     *                   bundle, and release all services used by the bundle.
+     * @exception Exception If this method throws an exception, the
+     * bundle is still marked as stopped, and the Framework will remove
+     * the bundle's listeners, unregister all services registered by the
+     * bundle, and release all services used by the bundle.
      */
     @SuppressWarnings( "RedundantThrows" )
     @Override
@@ -444,7 +444,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         this.listeners = null;
 
         this.shutdownMethods.forEach( shutdownMethod -> {
-            this.activatorLogger.info("Shutting down method: " + shutdownMethod.t1 + ", instance:" + shutdownMethod.t2);
+            this.activatorLogger.info( "Shutting down method: " + shutdownMethod.t1 + ", instance:" + shutdownMethod.t2 );
             try {
                 //noinspection RedundantArrayCreation
                 shutdownMethod.t1.invoke( shutdownMethod.t2, new Object[ 0 ] );
@@ -452,7 +452,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 this.activatorLogger.info( "Called bundle shutdown method '" + shutdownMethod.t2.getClass() +
                         "." + shutdownMethod.t1.getName() + "() for bundle: " +
                         context.getBundle().getSymbolicName() + "!" );
-            } catch (InvocationTargetException e) {
+            } catch ( InvocationTargetException e ) {
                 //e.printStackTrace(System.err);
             } catch ( Exception e ) {
                 this.activatorLogger.error( "Shutdown methods: Bundle stop problem!", e );
@@ -525,7 +525,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * and client injections.
      *
      * @param managedClass The manages class to create instances of.
-     * @throws Exception on failure.
+     * @exception Exception on failure.
      */
     protected void collectInjecteeAndServiceInstancesToManage( Class managedClass ) throws Exception {
         OSGiServiceProvider serviceProvider = ( OSGiServiceProvider ) managedClass.getAnnotation( OSGiServiceProvider.class );
@@ -540,9 +540,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     /**
      * Handle collection of services to manage.
      *
-     * @param managedClass    The managed class to inspect.
+     * @param managedClass The managed class to inspect.
      * @param serviceProvider The found @OSGiServiceProvider annotation on managedClass.
-     * @throws Exception pass exceptions upward.
+     * @exception Exception pass exceptions upward.
      */
     protected void collectServiceInstancesToManage( Class managedClass, OSGiServiceProvider serviceProvider ) throws Exception {
         if ( managedClass.getInterfaces().length == 0 ) {
@@ -636,7 +636,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     protected void handleAnnotationInstanceFactoryServiceInstances( Class managedClass, OSGiServiceProvider serviceProvider ) throws Exception {
         InstanceFactory instanceFactory = ( InstanceFactory ) getManagedInstanceRep( serviceProvider.instanceFactoryClass() ).instance;
         if ( instanceFactory == null ) {
-            instanceFactory = serviceProvider.instanceFactoryClass().newInstance();
+            instanceFactory = serviceProvider.instanceFactoryClass().getDeclaredConstructor().newInstance();
         }
         for ( Properties props : instanceFactory.getPropertiesPerInstance() ) {
             InstanceRepresentative ir = new InstanceRepresentative( createInstance( managedClass ) );
@@ -653,7 +653,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     }
 
     protected void handleAnnotationServiceSetupProviderServiceInstances( Class managedClass, OSGiServiceProvider serviceProvider ) throws Exception {
-        APSActivatorServiceSetupProvider setupProvider = serviceProvider.serviceSetupProvider().newInstance();
+        APSActivatorServiceSetupProvider setupProvider = serviceProvider.serviceSetupProvider().getDeclaredConstructor().newInstance();
         for ( ServiceSetup setup : setupProvider.provideServiceInstancesSetup() ) {
             InstanceRepresentative ir = new InstanceRepresentative( setup.getServiceInstance() );
             ir.props = setup.getProps();
@@ -683,6 +683,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param managedClass The managed class to inspect.
      */
     protected void collectInjecteeInstancesToManage( Class managedClass ) {
+        // A bug here, se below.
         done:
         for ( Method method : managedClass.getDeclaredMethods() ) {
             for ( Annotation methodAnn : method.getDeclaredAnnotations() ) {
@@ -700,12 +701,12 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     }
 
     private static final Class[] methodAnnotations = {
-            BundleListener.class,
+            BundleListener.class, // No effect! Maybe solution is to just remove!
             BundleStart.class,
             BundleStop.class,
-            FrameworkListener.class,
+            FrameworkListener.class, // No effect! Maybe solution is to just remove!
             Initializer.class,
-            ServiceListener.class,
+            ServiceListener.class, // No effect! Maybe solution is to just remove!
             Schedule.class
     };
 
@@ -716,8 +717,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * services times out.
      *
      * @param managedClass The managed service class to instantiate and register as a service.
-     * @param context      The bundles context.
-     * @throws Exception pass exceptions upward.
+     * @param context The bundles context.
+     * @exception Exception pass exceptions upward.
      */
     protected void doServiceRegistrationsOfManagedServiceInstances( final Class managedClass, final BundleContext context ) throws Exception {
         OSGiServiceProvider serviceProvider = ( OSGiServiceProvider ) managedClass.getAnnotation( OSGiServiceProvider.class );
@@ -742,9 +743,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * this method on first service becoming available. When all required services are available the delayed
      * service will be published.
      *
-     * @param service          The received service.
+     * @param service The received service.
      * @param serviceReference The reference to the received service.
-     * @throws Exception pass exceptions upward.
+     * @exception Exception pass exceptions upward.
      */
     @Override
     public void onServiceAvailable( Object service, ServiceReference serviceReference ) throws Exception {
@@ -783,7 +784,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * services that have a requirement on the timed out service. The service will be republished later when
      * it becomes available again by onServiceAvailable() above.
      *
-     * @throws RuntimeException pass exceptions upward.
+     * @exception RuntimeException pass exceptions upward.
      */
     @Override
     public void onTimeout() throws RuntimeException {
@@ -822,9 +823,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * Registers/publishes services annotated with @OSGiServiceProvider.
      *
      * @param managedClass The managed class to instantiate and register as an OSGi service.
-     * @param context      The bundle context.
-     * @param serviceRegs  The list to save all service registrations to for later deregistration.
-     * @throws Exception pass exceptions upward.
+     * @param context The bundle context.
+     * @param serviceRegs The list to save all service registrations to for later deregistration.
+     * @exception Exception pass exceptions upward.
      */
     protected void registerServiceInstances( Class managedClass, BundleContext context, List<ServiceRegistration> serviceRegs ) throws Exception {
         OSGiServiceProvider serviceProvider = ( OSGiServiceProvider ) managedClass.getAnnotation( OSGiServiceProvider.class );
@@ -872,8 +873,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * Injects properties into the first member of Properties type found if any.
      *
      * @param instance The instance to inject into.
-     * @param props    The properties to inject.
-     * @throws Exception as always!
+     * @param props The properties to inject.
+     * @exception Exception as always!
      */
     protected void injectInstanceProps( Object instance, Properties props ) throws Exception {
         for ( Field field : instance.getClass().getDeclaredFields() ) {
@@ -891,7 +892,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * This handles all field injections by delegating to handlers of specific types of field injections.
      *
      * @param managedClass The managed class to inject into.
-     * @param context      The bundles context.
+     * @param context The bundles context.
      */
     protected Map<Class, Object> doFieldInjectionsIntoManagedInstances( Class managedClass, BundleContext context ) {
         Map<Class, Object> result = new HashMap<>();
@@ -924,9 +925,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * Tracks and injects APSServiceTracker directly or as wrapped service instance using the tracker to
      * call the service depending on the field type.
      *
-     * @param field        The field to inject.
+     * @param field The field to inject.
      * @param managedClass Used to lookup or create an instance of this class to inject into.
-     * @param context      The bundle context.
+     * @param context The bundle context.
      */
     protected void doServiceInjection( Field field, Class managedClass, BundleContext context ) {
         OSGiService service = field.getAnnotation( OSGiService.class );
@@ -952,7 +953,11 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                                                 .createSearchCriteriaProvider();
                             }
                             else {
-                                searchCriteriaProvider = searchCriteriaProviderClass.newInstance();
+                                try {
+                                    searchCriteriaProvider = searchCriteriaProviderClass.getDeclaredConstructor().newInstance();
+                                } catch ( NoSuchMethodException | InvocationTargetException nsme ) {
+                                    throw new APSActivatorException( nsme.getMessage(), nsme );
+                                }
                             }
                             searchCriteria = searchCriteriaProvider.provideSearchCriteria();
 
@@ -1018,9 +1023,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     /**
      * Handles injections of APSLogger, BundleContext, or other class types with default constructor.
      *
-     * @param field        The field to inject into.
+     * @param field The field to inject into.
      * @param managedClass Used to lookup or create an instance of this class to inject into.
-     * @param context      The bundle context.
+     * @param context The bundle context.
      * @return A Map of special handling objects keyed on class. Currently APSActivatorInteraction.
      */
     protected Map<Class, Object> doInstanceInjection( Field field, Class managedClass, BundleContext context ) {
@@ -1204,9 +1209,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     /**
      * Schedules Runnable field instances using an ScheduledExecutorService.
      *
-     * @param field          The field to possibly schedule in an ScheduledExecutionService.
+     * @param field The field to possibly schedule in an ScheduledExecutionService.
      * @param inspectedClass The class the field belongs to.
      */
+    @SuppressWarnings( "ConstantConditions" )
     protected void scheduleTask( Field field, Class inspectedClass ) {
 
         if ( Runnable.class.isAssignableFrom( field.getType() ) ) {
@@ -1286,8 +1292,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * Handles annotated methods.
      *
      * @param managedClass Used to lookup or create an instance of this class containing the method to call.
-     * @param context      The bundle context.
-     * @param initMethods  The init methods container to add any found init methods to.
+     * @param context The bundle context.
+     * @param initMethods The init methods container to add any found init methods to.
      */
     protected void handleMethodInvocationsOnManagedInstances( Class managedClass, BundleContext context, InitMethods initMethods ) {
         for ( Method method : managedClass.getDeclaredMethods() ) {
@@ -1301,9 +1307,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     /**
      * Handles methods annotated with @APSBundleStartup.
      *
-     * @param method       The annotated method to call.
+     * @param method The annotated method to call.
      * @param managedClass Used to lookup or create an instance of this class containing the method to call.
-     * @param context      The bundle context.
+     * @param context The bundle context.
      */
     protected void doStartupMethodInvocations( final Method method, final Class managedClass, final BundleContext context ) {
         BundleStart bundleStart = method.getAnnotation( BundleStart.class );
@@ -1313,46 +1319,21 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                         managedClass.getName() + "." + method.getName() + "(?)]" );
             }
 
-            if ( bundleStart.thread() ) {
-                new Thread( () -> {
-                    try {
-                        Object managedInstance = null;
-                        if ( !Modifier.isStatic( method.getModifiers() ) ) {
-                            managedInstance = getManagedInstanceRep( managedClass ).instance;
-                        }
-                        method.invoke( managedInstance );
-
-                        APSActivator.this.activatorLogger.info( "Called bundle start method '" + managedClass.getName() +
-                                "." + method.getName() + "()' for bundle: " + context.getBundle().getSymbolicName() + "!" );
-                    } catch ( IllegalAccessException iae ) {
-                        APSActivator.this.activatorLogger.error( "Failed to call start method! [" +
-                                managedClass.getName() + "." + method.getName() + "()]", iae );
-                    } catch ( InvocationTargetException ite ) {
-                        APSActivator.this.activatorLogger.error( "Failed to call start method! [" +
-                                managedClass.getName() + "." + method.getName() + "()]", ite.getCause() );
-                    } catch ( Exception e ) {
-                        APSActivator.this.activatorLogger.error( "Failed to call start method! [" +
-                                managedClass.getName() + "." + method.getName() + "()]", e );
-                    }
-                } ).start();
-            }
-            else {
-                try {
-                    Object managedInstance = null;
-                    if ( !Modifier.isStatic( method.getModifiers() ) ) {
-                        managedInstance = getManagedInstanceRep( managedClass ).instance;
-                    }
-                    method.invoke( managedInstance );
-
-                    this.activatorLogger.info( "Called bundle start method '" + managedClass.getName() +
-                            "." + method.getName() + "()' for bundle: " + context.getBundle().getSymbolicName() + "!" );
-                } catch ( IllegalAccessException iae ) {
-                    throw new APSActivatorException( "Failed to call start method! [" +
-                            managedClass.getName() + "." + method.getName() + "()]", iae );
-                } catch ( InvocationTargetException ite ) {
-                    throw new APSActivatorException( "Failed to call start method! [" +
-                            managedClass.getName() + "." + method.getName() + "()]", ite.getCause() );
+            try {
+                Object managedInstance = null;
+                if ( !Modifier.isStatic( method.getModifiers() ) ) {
+                    managedInstance = getManagedInstanceRep( managedClass ).instance;
                 }
+                method.invoke( managedInstance );
+
+                this.activatorLogger.info( "Called bundle start method '" + managedClass.getName() +
+                        "." + method.getName() + "()' for bundle: " + context.getBundle().getSymbolicName() + "!" );
+            } catch ( IllegalAccessException iae ) {
+                throw new APSActivatorException( "Failed to call start method! [" +
+                        managedClass.getName() + "." + method.getName() + "()]", iae );
+            } catch ( InvocationTargetException ite ) {
+                throw new APSActivatorException( "Failed to call start method! [" +
+                        managedClass.getName() + "." + method.getName() + "()]", ite.getCause() );
             }
         }
     }
@@ -1360,7 +1341,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     /**
      * Handles methods annotated with @BundleStop.
      *
-     * @param method       The annotated method to call.
+     * @param method The annotated method to call.
      * @param managedClass Used to lookup or create an instance of this class containing the method to call.
      */
     protected void collectShutdownMethods( Method method, Class managedClass ) {
@@ -1378,9 +1359,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     /**
      * Handles listener methods, setting them up to be called on relevant events.
      *
-     * @param method       The method to check for ServiceListener annotation.
+     * @param method The method to check for ServiceListener annotation.
      * @param managedClass The class of the method.
-     * @param context      The bundle context.
+     * @param context The bundle context.
      */
     protected void registerListenerMethodWrappers( Method method, Class managedClass, BundleContext context ) {
         se.natusoft.osgi.aps.activator.annotation.ServiceListener serviceListener =
@@ -1443,10 +1424,10 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * Step 1 of initializer methods. These should be called after everything else is done and everything
      * is instantiated and injected. Therefore we only collect them now, and call them in callInitMethods().
      *
-     * @param method       The method to check for Initializer annotation.
+     * @param method The method to check for Initializer annotation.
      * @param managedClass The class of the method.
-     * @param context      The bundle context.
-     * @param initMethods  The init methods container to add any found init methods to.
+     * @param context The bundle context.
+     * @param initMethods The init methods container to add any found init methods to.
      */
     @SuppressWarnings( "UnusedParameters" )
     protected void collectInitMethods( Method method, Class managedClass, BundleContext context, InitMethods initMethods ) {
@@ -1460,7 +1441,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * Step 2: Calls all initializer methods.
      *
      * @param initMethods The init methods to call.
-     * @throws Exception Any exceptions thrown by initializers are forwarded upp.
+     * @exception Exception Any exceptions thrown by initializers are forwarded upp.
      */
     protected void callInitMethods( InitMethods initMethods ) throws Exception {
         if ( !initMethods.isEmpty() ) {
@@ -1518,7 +1499,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     /**
      * Adds a managed instance representative.
      *
-     * @param managedClass           The class of the managed instance.
+     * @param managedClass The class of the managed instance.
      * @param instanceRepresentative The instance representative to add.
      */
     protected void addManagedInstanceRep( Class managedClass, InstanceRepresentative instanceRepresentative ) {
@@ -1540,8 +1521,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         Object instance;
 
         try {
-            instance = managedClass.newInstance();
-        } catch ( InstantiationException | IllegalAccessException e ) {
+            //noinspection unchecked
+            instance = managedClass.getDeclaredConstructor().newInstance();
+        } catch ( InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e ) {
             throw new APSActivatorException( "Failed to instantiate managed class! [" + e.getMessage() + "]", e );
         }
 
@@ -1553,7 +1535,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      *
      * @param injectTo The instance to inject into.
      * @param toInject The instance to inject.
-     * @param field    The field to inject to.
+     * @param field The field to inject to.
      */
     protected void injectObject( Object injectTo, Object toInject, Field field ) {
         try {
@@ -1618,7 +1600,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         /**
          * Sets a handler for a state.
          *
-         * @param state   The state to set handler for.
+         * @param state The state to set handler for.
          * @param handler The handler to set.
          */
         @Override
@@ -1630,8 +1612,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
          * Registers the _managedClass_ as an OSGi service.
          *
          * @param managedClass The class of the managed instance.
-         * @param context      The bundle context.
-         * @param serviceRegs  The registrations of all instances will be returned in this list.
+         * @param context The bundle context.
+         * @param serviceRegs The registrations of all instances will be returned in this list.
          */
         @Override
         public void registerService( final Class managedClass, final BundleContext context, List<ServiceRegistration> serviceRegs ) {
@@ -1926,8 +1908,6 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                         // We release our allocation on stop( BundleContext ) below.
                         this.ref = serviceReference;
                         APSConfig config = ( APSConfig ) context.getService( this.ref );
-                        // TODO: This fails as of JDK 10!! Probably 9 too! There is no java.lang.reflect.Method!
-                        // The whole reflection API has been redone!
                         this.method.invoke( this.instance, config );
                     }
             );
