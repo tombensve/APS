@@ -8,6 +8,8 @@ Since Groovy is used instructions on the following page needs to be followed : <
 
 This because maven-bundle-plugins usage of bnd causes groovy code to confuse bnd into thinking there is code in default package. After a support discussion with bnd there are options in bnd for solving this, but those are not availabe when bnd is used via maven-bundle-plugin. bnd's own maven plugin is far more primitive however so switching is a big job.
 
+Some sub modules runs a bash script to build frontend stuff. On Windows this might cause a problem if not build under the Git Bash shell or some other bash windows port. The important thing is that when "_exec-maven-plugin_" runs "_${basedir}/src/main/js/aps-webmanager-frontend/build.sh_" then "_/bin/sh_" must be found. 
+
 # Application Platform Services (APS)
 
 Copyright © 2013 Natusoft AB
