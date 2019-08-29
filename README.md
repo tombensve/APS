@@ -50,7 +50,7 @@ The _APSOSGiTestTools_ maven module is actually an implementation of the 4 basic
 
 APS have always been about keeping things simple. Easy to use APIs providing only basic functionality with no configurational options API wise. My intentions is to encapsulate complexity and provide the easiest way possible to use for all other code. APS also provides APIs for common things like messaging with very easy/basic APIs. Each specific implementation is responsible for any configuration needed and there is a more structured configuraton service using JSON for configuration data, for other services to use instead of the primitive properties provided by OSGi.
 
-React is a web component framework that follows my ideas of simplicity and small code to the extreme! Love at fist sight :-).
+React is a web component framework that follows my ideas of simplicity and small code! 
 
 Vert.x I stumbled upon accidentally, and realized that this is "the shit" I'm been looking for! When I started out with this project (yes, its been a longtime) I felt stuck with the JEE web APIs. The requirement of a web container felt limiting, and rather heavyweight.
 
