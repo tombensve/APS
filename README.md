@@ -20,18 +20,6 @@ __License:__ [Apache 2.0](lics/Apache-2.0.md)
 
 __JDK Level:__ This now builds with all tests working on JDK 11! No, there is no JPMS usage! And it is also using a beta of Groovy 3.0. Have not run into any problem with Groovy being beta so far. 
 
-----
-
-As the JDK has run forward at a rather quick pace now (at least compared to before) and there are things to consider. I've been thinking, thinking, and thinking, and done some test shots. 
-
-One big question is _Going with JPMS or stick to OSGi ?_. I have now come to the conslusion that JPMS really sucks in comparison to what OSGi provides. I have found information on the net that are critical to JPMS (<https://developer.jboss.org/blogs/scott.stark/2017/04/14/critical-deficiencies-in-jigsawjsr-376-java-platform-module-system-ec-member-concerns?_sscc=t>) and I can agree with them in much. My personal reflection is that the old ServiceLoader (appeared in Java 6) is not even close to the OSGi service model. Much more limited, for many of the APS services the actual service returend by the ServiceLoader would have to be a factory that also sets upp the service if not already done and then provides it. ServiceLoader doesn't really support prerequisites for being able to deliver a service. In OSGi you can do the setup you want/need and when you have an instance ready for use by others, you can publish it. This is far more flexible.
-
-The other probem with JPMS is that APS uses Groovy quite a lot and Groovy unfortunately is not ready for JPMS yet. Groovy 3.0 beta seems to compile and run on JKD 11 without problems. But it does not support JPMS. There is no _module-info.groovy_! The Groovy people say it will not be available until version 4.0. I tried a _src/main/groovy/..._ and a _src/main/java/module-info.java_ but that requires all packages references in _module-info.java_ to be available under _src/main/java/..._ and on top of that there must be at least one _whatever.java_ file in the package when compiling. That would require dummy java classes that then needs to be filtered out when building jar. Just ugly and messy.   
-
-I have now decided to stick with OSGi for APS but make it build and run on JDK 9+. It is going to be interesting to see what the OSGi people will do. Indifferent from OSGi JPMS does not seem to support private in-module third party library dependencies, while OSGi even supports exporting packages from private internal dependencies. And this does not require these external jars to be provided externally. Just deploy your bundle and they will be available.
-
-----
-
 ## This project is currently work in progress and cannot be expected to be completely stable!!
 
 Work is slow, whenever time permits.
@@ -74,9 +62,15 @@ Do note that APS needs a clustered Vert.x and will create/join such on startup. 
 
 About testing: APS provide a testing tool called APSOSGiTestTools. It actually implements a primitive APS level OSGi container but without classloading (as mentioned above), using junit classpaths instead. So most tests run as they would in a real deployment and thus also starts Vert.x. This could cause problems if multiple builds are run concurrently on the same machine, like in a Jenkins for example. But if Vert.x is run unclustered it would probably work if HTTP service tests and similar use random ports. There is no good support for that yet in APS. I'm also considering trying to run tests within docker containers, but that would require a Docker installation on the machine you are building on.
 
-## Why all these relatively long readme.md files ?
+----
 
-Well, they are of course to explain what this project does, but also quite importantly for myself! It sometimes takes long time between working with this. Having relatively detailed thoughts documented helps myself remember how my thinking went last time I worked on it.
+As the JDK has run forward at a rather quick pace now (at least compared to before) and there are things to consider. I've been thinking, thinking, and thinking, and done some test shots. 
+
+One big question is _Going with JPMS or stick to OSGi ?_. I have now come to the conslusion that JPMS really sucks in comparison to what OSGi provides. I have found information on the net that are critical to JPMS (<https://developer.jboss.org/blogs/scott.stark/2017/04/14/critical-deficiencies-in-jigsawjsr-376-java-platform-module-system-ec-member-concerns?_sscc=t>) and I can agree with them in much. My personal reflection is that the old ServiceLoader (appeared in Java 6) is not even close to the OSGi service model. Much more limited, for many of the APS services the actual service returend by the ServiceLoader would have to be a factory that also sets upp the service if not already done and then provides it. ServiceLoader doesn't really support prerequisites for being able to deliver a service. In OSGi you can do the setup you want/need and when you have an instance ready for use by others, you can publish it. This is far more flexible.
+
+The other probem with JPMS is that APS uses Groovy quite a lot and Groovy unfortunately is not ready for JPMS yet. Groovy 3.0 beta seems to compile and run on JKD 11 without problems. But it does not support JPMS. There is no _module-info.groovy_! The Groovy people say it will not be available until version 4.0. I tried a _src/main/groovy/..._ and a _src/main/java/module-info.java_ but that requires all packages references in _module-info.java_ to be available under _src/main/java/..._ and on top of that there must be at least one _whatever.java_ file in the package when compiling. That would require dummy java classes that then needs to be filtered out when building jar. Just ugly and messy.   
+
+I have now decided to stick with OSGi for APS but make it build and run on JDK 9+. It is going to be interesting to see what the OSGi people will do. Indifferent from OSGi JPMS does not seem to support private in-module third party library dependencies, while OSGi even supports exporting packages from private internal dependencies. And this does not require these external jars to be provided externally. Just deploy your bundle and they will be available.
 
 ----
 
@@ -85,3 +79,6 @@ Lots of fun ideas, and far to little time ...
 Tommy
 
 Professional Code Geek
+
+
+
