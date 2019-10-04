@@ -30,12 +30,6 @@ Do **note** that there is absolutely no security what so ever yet!
 
 The frontend code is [here](src/main/js/aps-webmanager-frontend).
 
-## Current architectural thinking
-
-The current rendering is a bit primitive and mixes gui and data!! This is work in progress and I do QD:s to test concepts.
-
-My current plan is to create a model "_service_" (for the lack of a better name). It will hold a set of JSON data structures whose values can be set, and fetched via bus messages. GUI components will refer to the id of the model entry containing data to handle by the component. Components will also listen to model changes. The model will have a synchronized copy on the backend. I am considering routing all model change events to both front and backend independently of origin. That will allow for great flexibility and require less messages. I currently cannot come up with any gotchas for that, but is fully aware that there might be such. My general thinking is to use clear, flexibile and reusable messages that many functionalitys can listen/react to. I am however not entirely convinced that in the end that whishful thinking will work for all cases.
-
 ## How to use
 
 Due to limitations in react, or maybe just generic frontend package handling, the app page URL must be specified in package.json, which locks it to just one very specific path. So this projexct, APSWebManager should be seen as a template, which should be copied in whole and called something else, package.json updated with valid URL. APSWebManager itself just renders components in a row to be able to test and verify.
