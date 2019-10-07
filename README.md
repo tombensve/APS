@@ -1,18 +1,6 @@
-# Prerequsites
-
-This code base do contain some react frontend code using javascript. Thereby __npm__
-(Node Package Manager) needs to be installed on the machine before this will fully
-build.
-
-Since Groovy is used instructions on the following page needs to be followed : <https://github.com/tombensve/maven-bundle-plugin/blob/master/README.md>.
-
-This because maven-bundle-plugins usage of bnd causes groovy code to confuse bnd into thinking there is code in default package. After a support discussion with bnd there are options in bnd for solving this, but those are not availabe when bnd is used via maven-bundle-plugin. bnd's own maven plugin is far more primitive however so switching is a big job.
-
-Some sub modules runs a bash script to build frontend stuff. On Windows this might cause a problem if not build under the Git Bash shell or some other bash windows port. The important thing is that when "_exec-maven-plugin_" runs "_${basedir}/src/main/js/aps-webmanager-frontend/build.sh_" then "_/bin/sh_" must be found. 
-
 # Application Platform Services (APS)
 
-Copyright © 2013 Natusoft AB
+Copyright © 2019 Natusoft AB
 
 __Version:__ 1.0.0 (working up to ...)
 
@@ -29,6 +17,14 @@ To be very clear: **This is currently, and probably for a long time comming, a p
 The __original (and still active) goal__ with this is to make a very easy to use web platform, currently based on Vert.x & React.
 
 This project is now using 2 exceptional frameworks: __Vert.x & React__. These both belong to the same category: Things that just work! I have the highest respect for the people behind both of these. These both also supply outstanding documentation (which is not always the case with all frameworks and libraries!).
+
+### Prerequsites
+
+This code base do contain some react frontend code using javascript. Thereby __npm__
+(Node Package Manager) needs to be installed on the machine before this will fully
+build.
+
+Some sub modules runs a bash script to build frontend stuff. On Windows this might cause a problem if not build under the Git Bash shell or some other bash windows port. The important thing is that when "_exec-maven-plugin_" runs "_${basedir}/src/main/js/aps-webmanager-frontend/build.sh_" then "_/bin/sh_" must be found. 
 
 ---- 
 
@@ -66,11 +62,13 @@ About testing: APS provide a testing tool called APSOSGiTestTools. It actually i
 
 As the JDK has run forward at a rather quick pace now (at least compared to before) and there are things to consider. I've been thinking, thinking, and thinking, and done some test shots. 
 
-One big question is _Going with JPMS or stick to OSGi ?_. I have now come to the conslusion that JPMS really sucks in comparison to what OSGi provides. I have found information on the net that are critical to JPMS (<https://developer.jboss.org/blogs/scott.stark/2017/04/14/critical-deficiencies-in-jigsawjsr-376-java-platform-module-system-ec-member-concerns?_sscc=t>) and I can agree with them in much. My personal reflection is that the old ServiceLoader (appeared in Java 6) is not even close to the OSGi service model. Much more limited, for many of the APS services the actual service returend by the ServiceLoader would have to be a factory that also sets upp the service if not already done and then provides it. ServiceLoader doesn't really support prerequisites for being able to deliver a service. In OSGi you can do the setup you want/need and when you have an instance ready for use by others, you can publish it. This is far more flexible.
+One big question is _Going with JPMS or stick to OSGi ?_. I have now come to the conslusion that JPMS really sucks in comparison to what OSGi provides. I have found information on the net that are critical to JPMS (<https://developer.jboss.org/blogs/scott.stark/2017/04/14/critical-deficiencies-in-jigsawjsr-376-java-platform-module-system-ec-member-concerns?\_sscc=t>) and I can agree with them in much. My personal reflection is that the old ServiceLoader (appeared in Java 6) is not even close to the OSGi service model. Much more limited, for many of the APS services the actual service returend by the ServiceLoader would have to be a factory that also sets upp the service if not already done and then provides it. ServiceLoader doesn't really support prerequisites for being able to deliver a service. In OSGi you can do the setup you want/need and when you have an instance ready for use by others, you can publish it. This is far more flexible. The OSGi people clearly sat down and did some thinking before comming up with a solution. I don't feel that JPMS people took that step. 
 
-The other probem with JPMS is that APS uses Groovy quite a lot and Groovy unfortunately is not ready for JPMS yet. Groovy 3.0 beta seems to compile and run on JKD 11 without problems. But it does not support JPMS. There is no _module-info.groovy_! The Groovy people say it will not be available until version 4.0. I tried a _src/main/groovy/..._ and a _src/main/java/module-info.java_ but that requires all packages references in _module-info.java_ to be available under _src/main/java/..._ and on top of that there must be at least one _whatever.java_ file in the package when compiling. That would require dummy java classes that then needs to be filtered out when building jar. Just ugly and messy.   
+The next problem with JPMS is that if you are adding `module-info.java` making your code into a module then all dependencies must also be JPMS modules!! Here is where I take to the word "insanity"! This is just crazy. Someone realized the problem with this and made __Moditect__(<https://github.com/moditect/moditect>). This will convert your non JPMS dependencies into JPMS modules. This seams rather extreme! So you can no longer have direct dependencies to maven artifacts, but have to run a job that downloads and converts them somewhere locally. At least it looks like it is possible to export all packages (`*`). Comparing to OSGi, with OSGi any jar file can just have a few extra OSGi MANIFEST.MF entries to be able to be dropped into an OSGi container. This will not affect any other use of the jar file. But when your jar file gets a _Module-info_ class into it then it is no longer just a jar file! 
 
-I have now decided to stick with OSGi for APS but make it build and run on JDK 9+. It is going to be interesting to see what the OSGi people will do. Indifferent from OSGi JPMS does not seem to support private in-module third party library dependencies, while OSGi even supports exporting packages from private internal dependencies. And this does not require these external jars to be provided externally. Just deploy your bundle and they will be available.
+My guess is that it is going to take a very long time before most 3rd party dependencies out there are JPMS enabled. When they are it means they are compiled by a JDK 9+ compiler and will not run on JDK 8 anymore. Maybe it is possible to downcompile to JDK 8 but I woudn't bet on it. Then the question is, if you are not using JPMS yourself, can you use the dependency ? From what information I've been able to gather so far, the answer is no, even if you are running on a jdk9+ JVM.
+
+I have now decided to stick with OSGi for APS but make it build and run on JDK 9+ (It currently runs on JDK 11). It is going to be interesting to see what the OSGi people will do. Indifferent from OSGi JPMS does not seem to support private in-module third party library dependencies, while OSGi even supports exporting packages from private internal dependencies. And this does not require these external jars to be provided externally. Just deploy your bundle and they will be available.
 
 ----
 

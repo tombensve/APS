@@ -1,39 +1,39 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Core Lib
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         This library is made in Groovy and thus depends on Groovy, and contains functionality that
  *         makes sense for Groovy, but not as much for Java.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
  *         2018-05-23: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.core.lib
 
@@ -78,7 +78,7 @@ class MapJsonSchemaMeta implements MapJsonSchemaConst {
     //
 
     /** The schema we will parse. */
-    private Map<String, Object> schema
+    private Map<String, Object> schema = null
 
     //
     // Constructors
@@ -104,8 +104,8 @@ class MapJsonSchemaMeta implements MapJsonSchemaConst {
      *
      * @param schema The schema to provide meta data for.
      */
-    static MapJsonSchemaMeta from(Map<String, Object> schema) {
-        new MapJsonSchemaMeta(schema)
+    static MapJsonSchemaMeta from( Map<String, Object> schema ) {
+        new MapJsonSchemaMeta( schema )
     }
 
     /**
@@ -129,10 +129,11 @@ class MapJsonSchemaMeta implements MapJsonSchemaConst {
      * @param value Current Map value
      * @param entryKey Current entry key.
      */
-    private void parseValue( String key, Object value, String entryKey, Map<String, Object>  map) {
+    private void parseValue( String key, Object value, String entryKey, Map<String, Object> map ) {
+
         String[] parts = key.split( "_" )
 
-        if (!entryKey.isEmpty(  )) {
+        if ( !entryKey.isEmpty() ) {
 
             entryKey += "."
         }
@@ -146,7 +147,7 @@ class MapJsonSchemaMeta implements MapJsonSchemaConst {
             Object obj = ( (List)value )[ 0 ]
             parseValue( "${parts[NAME]}.[]", obj, "${entryKey}", map )
         }
-        else if ( value instanceof String || value instanceof Number || value instanceof boolean || value instanceof Boolean) {
+        else if ( value instanceof String || value instanceof Number || value instanceof Boolean ) {
 
             if ( parts.length >= 2 ) {
                 String descKey = "${key.split( "_" )[0]}_?"
@@ -156,10 +157,11 @@ class MapJsonSchemaMeta implements MapJsonSchemaConst {
                         name: "${entryKey}${parts[ NAME ]}",
                         required: parts[ REQUIRED ] == "1",
                         constraints: value.toString(),
-                        type: typeConv( value.toString() ),
+                        //type: typeConv( value.toString() ),
                         description: desc
                 )
             }
+
         }
     }
 
@@ -253,9 +255,9 @@ class MapJsonSchemaEntry implements MapJsonSchemaConst {
      *
      * @param constraints The constraints to set.
      */
-    void setConstraints(String constraints) {
-        if (constraints.startsWith(ENUMERATION)) {
-            constraints = constraints.substring(1)
+    void setConstraints( String constraints ) {
+        if ( constraints.startsWith( ENUMERATION ) ) {
+            constraints = constraints.substring( 1 )
         }
         this.constraints = constraints
     }
@@ -266,8 +268,8 @@ class MapJsonSchemaEntry implements MapJsonSchemaConst {
     @SuppressWarnings( "GroovyUnusedDeclaration" )
     List<String> getEnumValues() {
         List<String> enumValues = null
-        if (this.constraints.startsWith("?")) {
-            enumValues = Arrays.asList(this.constraints.substring(1).split("\\|"))
+        if ( this.constraints.startsWith( "?" ) ) {
+            enumValues = Arrays.asList( this.constraints.substring( 1 ).split( "\\|" ) )
         }
 
         enumValues
@@ -277,14 +279,15 @@ class MapJsonSchemaEntry implements MapJsonSchemaConst {
      * @return A string representation of this.
      */
     String toString() {
-        "{ name: ${name}, required: ${required}, type: ${type}, constraints: ${constraints}, description: ${description} }"
+        "{ name: ${name}, required: ${required}, type: ${type}, constraints: ${constraints}, description: " +
+                "${description} }"
     }
 
     /**
      * @return as MapJson object.
      */
     Map<String, Object> toMapJson() {
-        Map<String, Object> entry = [:]
+        Map<String, Object> entry = [ : ]
         entry.name = this.name
         entry.reqired = this.required
         entry.type = type.name()

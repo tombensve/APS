@@ -3,34 +3,34 @@
  * PROJECT
  *     Name
  *         APS VertX Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         This service provides configured Vertx instances allowing multiple services to use the same Vertx instance.
- *         
+ *
  *         This service also provides for multiple instances of VertX by associating an instance with a name. Everyone
  *         asking for the same name will get the same instance.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -49,7 +49,6 @@ import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.http.HttpServer
-import io.vertx.core.json.JsonObject
 import io.vertx.core.shareddata.SharedData
 import io.vertx.ext.bridge.PermittedOptions
 import io.vertx.ext.web.Router
@@ -57,16 +56,15 @@ import io.vertx.ext.web.handler.sockjs.BridgeOptions
 import io.vertx.ext.web.handler.sockjs.SockJSHandler
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceRegistration
+import se.natusoft.osgi.aps.activator.annotation.BundleStop
 import se.natusoft.osgi.aps.activator.annotation.ConfigListener
+import se.natusoft.osgi.aps.activator.annotation.Initializer
+import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.messaging.APSBusRouter
-import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.exceptions.APSException
 import se.natusoft.osgi.aps.exceptions.APSStartException
 import se.natusoft.osgi.aps.util.APSLogger
-import se.natusoft.osgi.aps.activator.annotation.BundleStop
-import se.natusoft.osgi.aps.activator.annotation.Initializer
-import se.natusoft.osgi.aps.activator.annotation.Managed
 
 /**
  * Provides Vertx by publishing Vertx and other Vertx related objects some by configuration as OSGi services.

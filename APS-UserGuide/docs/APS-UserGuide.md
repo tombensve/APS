@@ -2706,11 +2706,11 @@ The following third party products are using this license:
 
 *  [hazelcast-3.6.3](http://www.hazelcast.com/)
 
-*  [jackson-core-2.10.0.pr1](https://github.com/FasterXML/jackson-core)
+*  [jackson-core-2.10.0.pr3](https://github.com/FasterXML/jackson-core)
 
-*  [jackson-annotations-2.10.0.pr1](http://github.com/FasterXML/jackson)
+*  [jackson-annotations-2.10.0.pr3](http://github.com/FasterXML/jackson)
 
-*  [jackson-databind-2.10.0.pr1](http://github.com/FasterXML/jackson)
+*  [jackson-databind-2.10.0.pr3](http://github.com/FasterXML/jackson)
 
 *  [netty-codec-4.1.19.Final](http://netty.io/)
 
