@@ -1,5 +1,13 @@
 # Application Platform Services (APS)
 
+----
+
+Please note that this project have been going on for quite some time and have changed architecture on the way. This mostly due to limited time working on it, and partly to being a playground.
+
+The documentation is put together from multiple sources in different maven sub modules. A lot of this documentation is currently quite out of date. There are for example code examples done before lambdas! There are also maven modules that will be removed due to no longer being relevant for the current architecture, like JPA (which I originally did just to have something that worked on any OSGi container, rather than a container specific integrated solution). JPA is not compatible with current architecture which mostly works with JSON data.
+
+----
+
 OSGi Application Platform Services - A "smorgasbord" of OSGi services that focuses on ease of use and good enough functionality for many but wont fit all. It can be seen as osgi-ee-light-and-easy. The services are of platform type: configuration, database, JPA, etc, with companion web applications for administration.
 
 All services that require some form of administration have an admin web application for that, that plugs into the general apsadminweb admin web application.

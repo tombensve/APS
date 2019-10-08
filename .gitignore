@@ -11,6 +11,7 @@ vagrant/deploy
 vagrant/filesystems
 .vertx
 **/docs/*.html
+**/docs/*.md
 **/docs/*.pdf
 **/buildInfo.json
 .vagrant/
