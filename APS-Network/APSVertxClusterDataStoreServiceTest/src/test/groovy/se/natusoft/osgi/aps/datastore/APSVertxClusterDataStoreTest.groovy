@@ -34,6 +34,13 @@ class APSVertxClusterDataStoreTest extends APSOSGIServiceTestTools {
     void clusterStoreTest() throws Exception {
         // Most of the unfamiliar constructs here are provided by OSGiServiceTestTools and groovy DSL features.
 
+        // For now we have to make sure we are running Vert.x clustered. This will not work with
+        // unclustered vertx instance.
+        String vertxClustered = System.getProperty( "aps.vertx.clustered" )
+        if (vertxClustered != null && vertxClustered == "false") {
+            return
+        }
+
         println "============================================================================"
         println "DO NOTE: All the RED colored output comes from Vertx! It is not something "
         println "that have failed! Vertx have just chosen this color for their log output!"

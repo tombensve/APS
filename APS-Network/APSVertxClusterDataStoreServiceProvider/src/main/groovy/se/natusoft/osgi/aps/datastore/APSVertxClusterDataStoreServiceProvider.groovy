@@ -1,56 +1,55 @@
-/* 
- * 
+/*
+ *
  * PROJECT
  *     Name
  *         APS Vertx Cluster DataStore Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
  *         2019-08-17: Created!
- *         
+ *
  */
 package se.natusoft.osgi.aps.datastore
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import io.vertx.core.AsyncResult
-import io.vertx.core.Handler
 import io.vertx.core.shareddata.AsyncMap
 import io.vertx.core.shareddata.Lock
 import io.vertx.core.shareddata.SharedData
-import se.natusoft.osgi.aps.types.APSLockable
-import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
-import se.natusoft.osgi.aps.types.APSHandler
-import se.natusoft.osgi.aps.types.APSResult
-import se.natusoft.osgi.aps.constants.APS
-import se.natusoft.osgi.aps.exceptions.APSValidationException
-import se.natusoft.osgi.aps.util.APSLogger
 import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
 import se.natusoft.osgi.aps.activator.annotation.OSGiService
 import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
+import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
+import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.osgi.aps.exceptions.APSValidationException
+import se.natusoft.osgi.aps.types.APSHandler
+import se.natusoft.osgi.aps.types.APSLockable
+import se.natusoft.osgi.aps.types.APSResult
+import se.natusoft.osgi.aps.util.APSLogger
 
 @SuppressWarnings("GroovyUnusedDeclaration")
 @OSGiServiceProvider(
@@ -78,38 +77,6 @@ class APSVertxClusterDataStoreServiceProvider implements APSLockableDataStoreSer
     //
     // Methods
     //
-
-    private void showISEMessage() {
-        this.logger.info("#####################################################################")
-        this.logger.info("IllegalStateException was thrown! This is OK. Its because our Vert.x ")
-        this.logger.info("instance is non clustered! This is done by many tests to not cause")
-        this.logger.info("problems during tests in building since multiple simultaneous jobs")
-        this.logger.info("might find each other and thus cause behavior changes for the test.")
-        this.logger.info("APSConfigProvider is using the cluster data store for config data.")
-        this.logger.info("The tests however provide their own default config values, and if ")
-        this.logger.info("these cannot be stored in the cluster, that is OK. It will not affect")
-        this.logger.info("the test.")
-        this.logger.info("#####################################################################")
-    }
-
-    private void handleISE(IllegalStateException ise) {
-        String clusterProp = System.getProperty( "aps.vertx.clustered" )
-        if (clusterProp.trim().equals( "false" )) {
-            showISEMessage(  )
-        }
-        else {
-            throw ise
-        }
-    }
-
-    private <K, V> void getClusterWideMap( String name, Handler<AsyncResult<AsyncMap<K, V>>> resultHandler) {
-        try {
-            this.sharedData.getClusterWideMap(  name, resultHandler )
-        }
-        catch ( IllegalStateException ise ) {
-            handleISE( ise )
-        }
-    }
 
     /**
      * Stores a value in the store.
@@ -250,8 +217,8 @@ class APSVertxClusterDataStoreServiceProvider implements APSLockableDataStoreSer
                     resultHandler.handle( APSResult.success( (APSLock) new VxLock( lock: lock ) ) )
                 }
                 catch ( IllegalStateException ise ) {
-                    showISEMessage(  )
-                    handleISE( ise )
+                    //handleISE( ise )
+                    resultHandler.handle( APSResult.failure( ise ) )
                 }
                 finally {
 

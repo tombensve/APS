@@ -18,6 +18,13 @@ class APSNTPTimeServiceProviderTest extends APSOSGIServiceTestTools {
     @Test
     void testNTPTimeService() throws Exception {
 
+        // For now we have to make sure we are running Vert.x clustered. This will not work with
+        // unclustered vertx instance.
+        String vertxClustered = System.getProperty( "aps.vertx.clustered" )
+        if (vertxClustered != null && vertxClustered == "false") {
+            return
+        }
+
         deployConfigAndVertxPlusDeps(  )
 
         // The actual code to test
