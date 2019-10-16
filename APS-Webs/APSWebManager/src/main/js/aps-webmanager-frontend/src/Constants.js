@@ -3,7 +3,7 @@
 //
 
 // If this is a copy of the APSWebManager project then this name should be changed.
-export const APP_NAME = "aps-web-manager";
+export const APP_NAME = "web-demo";
 
 //
 // ROUTING
