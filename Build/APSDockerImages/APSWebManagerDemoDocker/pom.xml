@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>APS-DockerImages</artifactId>
+        <groupId>se.natusoft.osgi.aps</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>APSWebManagerDemoDocker</artifactId>
+
+    <dependencies>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!--
+                I have decided to simply use maven-exec-plugin to run the docker command to build and run
+                image. If needed I wrap it in a bash script.
+
+                This way docker is used with Dockerfile rather than a Java / Maven specific setup. It feels
+                more right. I do the same to build the frontend with a bash script, using npm rather than
+                some maven plugin API.
+
+                A pure frontend person not understanding maven will understand how the frontend is built.
+
+                Someone who understand docker will understand how this docker image is built.
+
+                On top of that I will be familiar with how to build a frontend and a docker image that is
+                independent of anything else rather than a coerced maven variant of it.
+
+                I have never been a believer of encapsulating things for people who don't understand /
+                know about what is being encapsulated. Much better to learn and comprehend the real thing.
+            -->
+            <plugin>
+                <artifactId>exec-maven-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <id>build frontend</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>bin/setup-base-felix.sh</executable>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.31.0</version>
+
+                <configuration>
+                    <images>
+                        <image>
+                        </image>
+                    </images>
+                </configuration>
+
+                !- Connect start/stop to pre- and
+                     post-integration-test phase, respectively if you want to start
+                     your docker containers during integration tests -
+                <executions>
+                    <execution>
+                        <id>start</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            !- "build" should be used to create the images with the
+                                 artifact -
+                            <goal>build</goal>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            -->
+        </plugins>
+    </build>
+
+</project>
