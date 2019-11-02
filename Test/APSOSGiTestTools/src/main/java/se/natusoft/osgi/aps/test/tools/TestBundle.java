@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS OSGi Test Tools
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides tools for testing OSGi services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -277,9 +277,23 @@ public class TestBundle implements Bundle {
         jarFile = new File( jarFile, version );
         jarFile = new File( jarFile, artifact + "-" + version + classifier + ".jar" );
 
+        loadEntryPathsFromJar( jarFile );
+    }
+
+    /**
+     * This provides simulated content by reading the content list of a real jar in the local maven repository.
+     * <p>
+     * To be **very clear** this does not load nor use the actual files in the specified jar! It just provides
+     * the paths that the real jar has. When running the real jar must be available on the classpath. The specified
+     * jar is again **not added** to the classpath! So any jar provided here must either be the jar of the project
+     * being tested or be added as a test dependency.
+     *
+     * @param jarFile A path to a jar file.
+     */
+    public void loadEntryPathsFromJar( File jarFile ) throws IOException {
+
         if ( !jarFile.exists() )
-            throw new IllegalArgumentException( "GAV '" + group + ":" + artifact + ":" + version + classifier +
-                    " does not exist!" );
+            throw new IllegalArgumentException( "File '" + jarFile + "'  does not exist!" );
 
         try ( final JarFile jar = new JarFile( jarFile ) ) {
             System.out.println( "Loading the following paths:" );
