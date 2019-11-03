@@ -55,6 +55,9 @@
         Common properties
     -->
     <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
         <!--
             The version of this project. Run the set-version profile to update all poms with this version.
         -->
@@ -381,6 +384,7 @@
             <!--
                 Setup for java 11.
             -->
+<!--
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
@@ -388,6 +392,7 @@
                     <release>11</release>
                 </configuration>
             </plugin>
+-->
 
             <!--
                 Define project assemblies.

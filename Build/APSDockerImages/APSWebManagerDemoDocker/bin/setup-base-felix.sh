@@ -18,7 +18,8 @@ if [ ! -d ${felixunpack} ]; then
 fi
 
 dl=$(dirname $0)/../../../bin/downloadJar.sh
-target=$(dirname $0)/../imgsrc/felix-framework-${felixver}/bundle
+#target=$(dirname $0)/../imgsrc/felix-framework-${felixver}/bundle
+target=$(dirname $0)/../imgsrc/classpath
 
 #${dl} io.vertx                   vertx-core          ${vertxver}              ${target}
 #${dl} io.vertx                   vertx-auth-common   ${vertxver}              ${target}
@@ -57,7 +58,7 @@ ${dl} com.fasterxml.jackson.core jackson-databind    ${jacksoncorever}        ${
 
 ${dl} com.fasterxml.jackson.jr   jackson-jr-all      2.9.6                    ${target}
 
-#${dl} org.osgi org.osgi.core 4.2.0 ${target}
-#${dl} org.osgi org.osgi.compendium 4.2.0 ${target}
+${dl} org.osgi org.osgi.core 4.2.0 ${target}
+${dl} org.osgi org.osgi.compendium 4.2.0 ${target}
 
 #${dl}  $(dirname $0)/../imgsrc/felix-framework-${felixver}/bundle

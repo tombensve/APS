@@ -2588,7 +2588,7 @@ The following third party products are using this license:
 
 *  [jackson-jr-all-2.9.6](http://wiki.fasterxml.com/JacksonHome)
 
-*  [groovy-3.0.0-beta-3](https://groovy-lang.org)
+*  [groovy-2.5.7](https://groovy-lang.org)
 
 *  [vertx-core-3.8.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
@@ -2599,6 +2599,8 @@ The following third party products are using this license:
 *  [vertx-web-3.8.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 *  [vertx-amqp-bridge-3.8.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+*  [vertx-amqp-client-3.8.0](git@github.com:vert-x3/vertx-ext-parent.git)
 
 *  [vertx-hazelcast-3.8.0](git@github.com:vert-x3/vertx-ext-parent.git)
 
