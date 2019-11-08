@@ -88,7 +88,7 @@ class APSBusProvider implements APSBus {
     @Managed( loggingFor = "aps-bus-provider" )
     private APSLogger logger
 
-    private List<ServiceRegistration> svcRegs = []
+    private List<ServiceRegistration> svcRegs = [ ]
 
     @Managed
     private BundleContext context
@@ -129,16 +129,62 @@ class APSBusProvider implements APSBus {
         // Make sure this service is not made available until we have at least one bus router.
         Thread.start {
 
-            this.logger.debug( "§§§§ Waiting for an APSBusRouter ..." )
 
-            while ( this.routerTracker.trackedServiceCount == 0 ) {
+            // Due to the possibility of this being published before all bus routers are
+            // available, we make sure we have all of the bus routers before we make our
+            // self available.
+            //
+            // This is done by having each bus router implementation added one per line to
+            //
+            //     aps/bus/routers
+            //
+            // file of the bundle/jar containing the implementation(s).
+
+            List<String> busRouters = resolveBusRouters(  )
+
+            this.logger.info( "Discovering APSBusRouter providers ..." )
+
+            busRouters.each {String router ->
+                this.logger.info( "Found bus router: ${router}" )
+            }
+            this.logger.info( "Total of ${busRouters.size(  )} bus routers found!" )
+
+            while ( this.routerTracker.trackedServiceCount < busRouters.size(  ) ) {
                 Thread.sleep( 1000 )
             }
 
-            this.logger.debug( "§§§§ Got an APSBusRouter!" )
-
             this.activatorInteraction.state = APSActivatorInteraction.State.READY
         }
+    }
+
+    /**
+     * Returns List of entries in aps/bus/routers files findable as resources. Each entry in such
+     * files should provide a name of a bus router. The name is actually only used in logs, but
+     * helps troubleshooting, so provide clear names.
+     *
+     * @return A List of names of bus routers.
+     */
+    private List<String> resolveBusRouters() {
+
+        Map<String, String> busRouters = [ : ]
+        this.getClass().getClassLoader().getResources( "aps/bus/routers" ).each { URL url ->
+
+            BufferedReader reader = new BufferedReader( new InputStreamReader( url.openStream() ) )
+            reader.lines(  ).each { String line ->
+                if (line.trim(  ).length(  ) > 0) {
+                    busRouters[line] = line
+                }
+            }
+
+            reader.close(  )
+        }
+
+        List<String> routers = []
+        busRouters.keySet(  ).each { String router ->
+            routers << router.trim(  )
+        }
+
+        routers
     }
 
     /**
@@ -146,7 +192,9 @@ class APSBusProvider implements APSBus {
      */
     @BundleStop
     void shutdown() {
-        if ( !this.svcRegs.empty ) this.svcRegs.first().unregister()
+        if ( !this.svcRegs.empty ) {
+            this.svcRegs.first().unregister()
+        }
     }
 
     /**

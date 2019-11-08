@@ -11,8 +11,47 @@
 
     <artifactId>APSWebManagerDemoDocker</artifactId>
 
+    <!--
+        These to ensure dependencies are built before this is run.
+    -->
     <dependencies>
-
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-apis</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-config-manager</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-core-lib</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-json-lib</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-vertx-provider</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-web-manager</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+<!--
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId></artifactId>
+            <version>1.0.0</version>
+        </dependency>
+-->
     </dependencies>
 
     <build>
@@ -41,13 +80,23 @@
                 <version>1.6.0</version>
                 <executions>
                     <execution>
-                        <id>build frontend</id>
+                        <id>setup-deployment</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>bin/setup-base-felix.sh</executable>
+                            <executable>${basedir}/bin/setup-deployment.sh</executable>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>setup-docker</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${basedir}/bin/run-docker.sh</executable>
                         </configuration>
                     </execution>
                 </executions>

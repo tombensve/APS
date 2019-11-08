@@ -7,6 +7,12 @@
 ##  $2 : artifact
 ##  $3 : version
 ##  $4 : target dir
+##  $5 : (optional) "shaded"
+
+shaded=""
+if [[ "${5}" != "" ]]; then
+    shaded="-${5}"
+fi
 
 if [[ "${4}" == "" ]]; then
     cat ${0} | egrep "^##" | sed -e 's/##//g'
@@ -19,8 +25,8 @@ else
         # Try local ~/.m2 first!
         #ls -l ~/.m2/repository/$(echo $1 | sed -e 's/\./\//g')/${2}/${3}/${2}-${3}.jar
 
-        if [ -f ~/.m2/repository/$(echo $1 | sed -e 's/\./\//g')/${2}/${3}/${2}-${3}.jar ]; then
-            cp ~/.m2/repository/$(echo $1 | sed -e 's/\./\//g')/${2}/${3}/${2}-${3}.jar ${4}/${2}-${3}.jar
+        if [ -f ~/.m2/repository/$(echo $1 | sed -e 's/\./\//g')/${2}/${3}/${2}-${3}${shaded}.jar ]; then
+            cp ~/.m2/repository/$(echo $1 | sed -e 's/\./\//g')/${2}/${3}/${2}-${3}${shaded}.jar ${4}/${2}-${3}.jar
         else
             url="https://jcenter.bintray.com/$(echo $1 | sed -e 's/\./\//g')/${2}/${3}/${2}-${3}.jar"
             echo ${url}

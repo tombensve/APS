@@ -343,7 +343,7 @@ class APSVertxProvider {
             def port = http[ "port" ] as Integer
             def eventBusBridge = http[ "eventBusBridge" ] as Map<String, Object>
 
-            this.logger.debug( ">>>> ${ name } / ${ port }: eventBusBridge: ${ eventBusBridge }" )
+            this.logger.info( "${ name } / ${ port }: eventBusBridge: ${ eventBusBridge }" )
 
             startHttpService( name, port, eventBusBridge )
         }

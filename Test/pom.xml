@@ -58,7 +58,6 @@
 
     <modules>
         <module>APSOSGiTestTools</module>
-        <module>APSPlatformBooter</module>
     </modules>
 
 </project>

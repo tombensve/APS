@@ -52,16 +52,6 @@ public class APSPlatformBooter {
             }
         }
 
-/*
-        dependenciesUrls.trimToSize();
-        URL[] depUrls = new URL[ dependenciesUrls.size() ];
-        dependenciesUrls.toArray( depUrls );
-        dependenciesClassLoader = new URLClassLoader( depUrls, APSPlatformBooter.class.getClassLoader() );
-*/
-
-
-        //ArrayList<URL> bundleUrls = new ArrayList<>();
-
         // noinspection ConstantConditions
         @SuppressWarnings("DuplicatedCode")
         File bundleDir = new File( bundlesDir );
@@ -84,8 +74,6 @@ public class APSPlatformBooter {
         System.out.println("" + test);
 
         Class stage2 = bundlesClassLoader.loadClass( "se.natusoft.osgi.aps.platform.APSPlatformBooterStage2" );
-
-        System.out.println( ">>>> Stage 1: Stage2 classloader: " + bundlesClassLoader );
 
         @SuppressWarnings("unchecked")
         Method bootMethod = stage2.getMethod( "boot", java.io.File.class );

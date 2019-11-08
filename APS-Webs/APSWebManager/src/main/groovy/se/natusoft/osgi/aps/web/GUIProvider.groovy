@@ -119,7 +119,7 @@ class GUIProvider {
                 this.logger.debug( "§§§§§§§§§§ Received: ${received}" )
 
                 String recv = received.toString()
-                this.logger.debug( ">>>>>Received from '${ received[ "aps" ][ "origin" ] }': ${ recv }" )
+                this.logger.info( "Received from '${ received[ "aps" ][ "origin" ] }': ${ recv }" )
 
                 // Note: Since we are called by the bus, it must still be available!
                 try {

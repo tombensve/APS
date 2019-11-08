@@ -115,7 +115,7 @@ export default class APSWebManager extends Component {
         message = apsObject(message);
 
         try {
-            this.logger.debug( `>>>>>>>: message: ${message.display()}` );
+            this.logger.debug( `message: ${message.display()}` );
         }
         catch ( e ) {
             this.logger.error( `Failed to log: ${e}` );

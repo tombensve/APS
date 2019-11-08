@@ -316,6 +316,7 @@ public class APSOSGIServiceTestTools {
             dataStoreServiceDeployer.run();
         }
 
+/*
         Runnable busMessagingDeployer = altDeployers != null ? altDeployers.get("busMessagingDeployer") : null;
         if (busMessagingDeployer == null) {
             deploy( "aps-vertx-event-bus-messaging-provider" ).with( new APSActivator() ).from(
@@ -327,6 +328,7 @@ public class APSOSGIServiceTestTools {
         else {
             busMessagingDeployer.run();
         }
+*/
 
         deploy( "aps-filesystem-service-provider" ).with( new APSActivator() ).from(
                 "se.natusoft.osgi.aps",

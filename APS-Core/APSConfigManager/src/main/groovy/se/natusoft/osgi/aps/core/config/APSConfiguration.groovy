@@ -318,7 +318,7 @@ class APSConfiguration extends StructMap implements APSConfig, APSSerializableDa
         // Load config schema from bundle.
         this.logger.info "(configId:${ this.apsConfigId }):Loading schema: ${ this.schemaPath }"
         URL schemaUrl = this.owner.getResource( this.schemaPath )
-        this.logger.debug ">>>> schemaUrl: ${ schemaUrl }"
+        this.logger.info "SchemaUrl: ${ schemaUrl }"
 
         InputStream schemaStream = schemaUrl.openStream()
 

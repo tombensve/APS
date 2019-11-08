@@ -70,7 +70,6 @@ class MsgReceiver {
 
     @Initializer
     void init() {
-        this.logger.info( "<<<<<< MsgReceiver >>>>>" )
 
         ID subscriptionId = new APSUUID()
 

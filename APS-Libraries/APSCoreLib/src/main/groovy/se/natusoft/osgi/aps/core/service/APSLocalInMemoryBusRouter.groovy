@@ -72,7 +72,7 @@ import java.util.concurrent.ConcurrentHashMap
                 @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
         ]
 )
-class APSLocalInMemoryBus implements APSBusRouter {
+class APSLocalInMemoryBusRouter implements APSBusRouter {
 
     private static final String TARGET_ID = "local:"
 
@@ -88,7 +88,7 @@ class APSLocalInMemoryBus implements APSBusRouter {
     @Managed( loggingFor = "APSLocalInMemoryBus" )
     private APSLogger logger
 
-    APSLocalInMemoryBus() {
+    APSLocalInMemoryBusRouter() {
     }
 
     //

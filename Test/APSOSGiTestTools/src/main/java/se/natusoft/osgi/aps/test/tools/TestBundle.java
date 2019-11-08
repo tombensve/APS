@@ -123,9 +123,9 @@ public class TestBundle implements Bundle {
                 mfAttrs = mf.getMainAttributes();
             }
 
-            System.out.println("    MANIFEST.MF entries:");
+            //System.out.println("    MANIFEST.MF entries:");
             for ( Map.Entry<Object, Object> entry : mfAttrs.entrySet() ) {
-                System.out.println("        "+ entry.getKey() + ": " + entry.getValue());
+                //System.out.println("        "+ entry.getKey() + ": " + entry.getValue());
                 this.headers.put( entry.getKey().toString(), entry.getValue().toString() );
             }
             System.out.println();
@@ -296,14 +296,14 @@ public class TestBundle implements Bundle {
             throw new IllegalArgumentException( "File '" + jarFile + "'  does not exist!" );
 
         try ( final JarFile jar = new JarFile( jarFile ) ) {
-            System.out.println( "Loading the following paths:" );
+            //System.out.println( "Loading the following paths:" );
             jar.stream().forEach( jarEntry -> {
                 if ( !jarEntry.getName().endsWith( "/" ) ) {
                     addEntryPath( new BundleEntryPath( jar, File.separator + jarEntry.getName() ) );
                     if (jarEntry.getName().startsWith( "lib/aps" )) {
                         System.err.println("WARNING: This bundle seems to contain another aps bundle!");
                     }
-                    System.out.println( "    " + File.separator + jarEntry.getName() );
+                    //System.out.println( "    " + File.separator + jarEntry.getName() );
                 }
             } );
         }
@@ -324,13 +324,13 @@ public class TestBundle implements Bundle {
      * @param root The root of the file scan.
      */
     public void loadEntryPathsFromDirScan( File root ) {
-        System.out.println( "Loading the following paths:" );
+        //System.out.println( "Loading the following paths:" );
         new DirScanner( root ).stream().forEach( path -> {
             addEntryPath( path );
             if (path.toString().startsWith( "/lib/aps" )) {
                 System.err.println("WARNING: This bundle seems to contain another aps bundle!");
             }
-            System.out.println( "    " + path );
+            //System.out.println( "    " + path );
         } );
     }
 
