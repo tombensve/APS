@@ -475,7 +475,7 @@
         -->
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-osgi-test-tools</artifactId>
+            <artifactId>aps-runtime</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -492,7 +492,7 @@
 
         <!--
             These are for being able to run aps-config-manager and dependent bundles in unit tests
-            using aps-osgi-test-tools. It feels better running the real thing rather than fake config.
+            using aps-runtime. It feels better running the real thing rather than fake config.
         -->
 
         <dependency>
@@ -516,6 +516,12 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-config-manager</artifactId>
+            <version>1.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-runtime</artifactId>
             <version>1.0.0</version>
             <scope>test</scope>
         </dependency>

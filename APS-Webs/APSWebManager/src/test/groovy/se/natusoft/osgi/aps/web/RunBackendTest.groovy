@@ -4,15 +4,22 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
 import se.natusoft.osgi.aps.activator.APSActivator
-import se.natusoft.osgi.aps.test.tools.APSOSGIServiceTestTools
+import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.util.APSLogger
 
 import static java.util.concurrent.TimeUnit.HOURS
 import static java.util.concurrent.TimeUnit.SECONDS
 
+/**
+ * This is basically the same as deploying APSWebManager in APSRuntime along with dependencies.
+ *
+ * Note that this test is only run if the "run-backend" profile is active! Also note that run
+ * never exits!! It should thereby never be run in any build. This isn't really a test but a
+ * simple quick way to get the webb upp and running for playing with it.
+ */
 @CompileStatic
 @TypeChecked
-class RunBackendTest extends APSOSGIServiceTestTools {
+class RunBackendTest extends APSRuntime {
 
     private static APSLogger logger = new APSLogger( APSLogger.PROP_LOGGING_FOR, "WebContentServerTest" )
 

@@ -12,7 +12,7 @@ import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.activator.annotation.OSGiService
-import se.natusoft.osgi.aps.test.tools.APSOSGIServiceTestTools
+import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.util.APSLogger
 
@@ -20,7 +20,7 @@ import static java.util.concurrent.TimeUnit.SECONDS
 
 @CompileStatic
 @TypeChecked
-class APSVertxProviderTest extends APSOSGIServiceTestTools {
+class APSVertxProviderTest extends APSRuntime {
 
     public static Vertx vertx = null
     public static Router router = null

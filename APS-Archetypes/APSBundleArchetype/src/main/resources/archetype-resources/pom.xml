@@ -107,14 +107,14 @@
         -->
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-osgi-test-tools</artifactId>
+            <artifactId>aps-runtime</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 
         <!--
             These are for being able to run aps-config-manager and dependent bundles in unit tests
-            using aps-osgi-test-tools. It feels better running the real thing rather than fake config.
+            using aps-runtime. It feels better running the real thing rather than fake config.
         -->
         <!-- REMOVE THESE IF YOU ARE NOT USING aps-config-manager TO MANAGE CONFIGURATION!
         <dependency>

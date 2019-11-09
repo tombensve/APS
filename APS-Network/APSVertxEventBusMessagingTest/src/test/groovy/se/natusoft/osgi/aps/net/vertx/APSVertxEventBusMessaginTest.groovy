@@ -9,9 +9,9 @@ import se.natusoft.osgi.aps.api.messaging.APSMessage
 
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.StructMap
+import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.types.ID
-import se.natusoft.osgi.aps.test.tools.APSOSGIServiceTestTools
 import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.util.APSLogger
 import se.natusoft.osgi.aps.activator.annotation.Initializer
@@ -22,7 +22,7 @@ import static java.util.concurrent.TimeUnit.SECONDS
 
 @CompileStatic
 @TypeChecked
-class APSVertXEventBusMessagingTest extends APSOSGIServiceTestTools {
+class APSVertXEventBusMessagingTest extends APSRuntime {
 
     static final String UNIQUE_MESSAGE = UUID.randomUUID().toString()
 

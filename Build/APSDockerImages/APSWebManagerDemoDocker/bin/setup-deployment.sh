@@ -52,26 +52,25 @@ ${dl} com.fasterxml.jackson.core jackson-databind    ${jacksoncorever}        ${
 
 ${dl} com.fasterxml.jackson.jr   jackson-jr-all      2.9.6                    ${deps}
 
-${dl} org.jline                  jline               3.7.0                    ${deps}
-${dl} org.fusesource.jansi       jansi               1.17.1                   ${deps}
+#${dl} org.jline                  jline               3.7.0                    ${deps}
+#${dl} org.fusesource.jansi       jansi               1.17.1                   ${deps}
 
 ${dl} org.osgi                   org.osgi.core       4.2.0                    ${deps}
 ${dl} org.osgi                   org.osgi.compendium 4.2.0                    ${deps}
 
-${dl} org.apache.geronimo.specs geronimo-jta_1.1_spec 1.1.1                   ${deps}
+#${dl} org.apache.geronimo.specs geronimo-jta_1.1_spec 1.1.1                   ${deps}
 
-${dl} se.natusoft.osgi.aps       aps-osgi-test-tools 1.0.0                    ${deps}
-
+${dl} se.natusoft.osgi.aps       aps-runtime         1.0.0                    ${deps}
 ${dl} se.natusoft.osgi.aps       aps-platform-booter 1.0.0                    ${bin} shaded
 
 # APS stuff (these do not exist in jcenter! This works due to these being built before
-# this is run, and thus existing in ~/.mw/repository which is looked in before trying
+# this is run, and thus existing in ~/.mvn/repository which is looked in before trying
 # to download from jcenter).
-${dl} se.natusoft.osgi.aps       aps-apis            1.0.0                    ${bundles}
-${dl} se.natusoft.osgi.aps       aps-config-manager   1.0.0                    ${bundles}
-${dl} se.natusoft.osgi.aps       aps-core-lib        1.0.0                    ${bundles}
-${dl} se.natusoft.osgi.aps       aps-json-lib        1.0.0                    ${bundles}
-${dl} se.natusoft.osgi.aps       aps-vertx-provider  1.0.0                    ${bundles}
-${dl} se.natusoft.osgi.aps       aps-vertx-cluster-datastore-service-provider  1.0.0                    ${bundles}
-${dl} se.natusoft.osgi.aps       aps-filesystem-service-provider  1.0.0        ${bundles}
-${dl} se.natusoft.osgi.aps       aps-web-manager     1.0.0                    ${bundles}
+${dl} se.natusoft.osgi.aps       aps-apis                                     1.0.0  ${bundles}
+${dl} se.natusoft.osgi.aps       aps-config-manager                            1.0.0  ${bundles}
+${dl} se.natusoft.osgi.aps       aps-core-lib                                 1.0.0  ${bundles}
+${dl} se.natusoft.osgi.aps       aps-json-lib                                 1.0.0  ${bundles}
+${dl} se.natusoft.osgi.aps       aps-vertx-provider                           1.0.0  ${bundles}
+${dl} se.natusoft.osgi.aps       aps-vertx-cluster-datastore-service-provider 1.0.0  ${bundles}
+${dl} se.natusoft.osgi.aps       aps-filesystem-service-provider               1.0.0  ${bundles}
+${dl} se.natusoft.osgi.aps       aps-web-manager                              1.0.0  ${bundles}

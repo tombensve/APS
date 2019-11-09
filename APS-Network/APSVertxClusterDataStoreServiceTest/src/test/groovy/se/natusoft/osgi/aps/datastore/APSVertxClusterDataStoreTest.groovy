@@ -7,10 +7,10 @@ import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.types.APSLockable
 import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
 import se.natusoft.osgi.aps.types.APSResult
-import se.natusoft.osgi.aps.test.tools.APSOSGIServiceTestTools
 import se.natusoft.osgi.aps.util.APSLogger
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
@@ -18,7 +18,7 @@ import static java.util.concurrent.TimeUnit.SECONDS
 
 @CompileStatic
 @TypeChecked
-class APSVertxClusterDataStoreTest extends APSOSGIServiceTestTools {
+class APSVertxClusterDataStoreTest extends APSRuntime {
 
     // Note that since we use a clustered vertx there is a possibility of another build running
     // at the same time on the same subnet, joining the same cluster. That is why we store a

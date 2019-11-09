@@ -203,16 +203,16 @@
                 <artifactId>docutations</artifactId>
                 <version>2.5</version>
             </dependency>
+            <dependency>
+                <groupId>se.natusoft.osgi.aps</groupId>
+                <artifactId>aps-runtime</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
 
             <!--
                 Test Dependencies.
             -->
-            <dependency>
-                <groupId>se.natusoft.osgi.aps</groupId>
-                <artifactId>aps-osgi-test-tools</artifactId>
-                <version>${project.version}</version>
-                <scope>test</scope>
-            </dependency>
             <dependency>
                 <groupId>se.natusoft.osgi.aps</groupId>
                 <artifactId>aps-service-test-support</artifactId>
@@ -268,12 +268,11 @@
         <module>APS-Libraries</module>
         <module>APS-Network</module>
         <module>APS-Data</module>
+        <module>APSRuntime</module>
         <module>Build</module>
         <module>APS-UserGuide</module>
         <module>APS-Archetypes</module>
-        <module>Test</module>
         <module>APS-APIs-Test</module>
-        <!--<module>Test</module>-->
     </modules>
 
     <!--
@@ -850,7 +849,7 @@
             <dependencies>
                 <dependency>
                     <groupId>se.natusoft.osgi.aps</groupId>
-                    <artifactId>aps-osgi-test-tools</artifactId>
+                    <artifactId>aps-runtime</artifactId>
                     <version>${project.version}</version>
                     <scope>test</scope>
                 </dependency>

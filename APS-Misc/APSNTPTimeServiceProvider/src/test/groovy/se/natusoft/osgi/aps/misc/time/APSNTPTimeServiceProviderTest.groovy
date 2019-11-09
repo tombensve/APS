@@ -4,14 +4,14 @@ import org.junit.Test
 import org.osgi.framework.BundleContext
 import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.api.misc.time.APSTimeService
-import se.natusoft.osgi.aps.test.tools.APSOSGIServiceTestTools
+import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.util.APSLogger
 
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 
-class APSNTPTimeServiceProviderTest extends APSOSGIServiceTestTools {
+class APSNTPTimeServiceProviderTest extends APSRuntime {
 
     private APSLogger logger = new APSLogger()
 

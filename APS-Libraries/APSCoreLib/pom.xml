@@ -139,7 +139,7 @@
 -->
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-osgi-test-tools</artifactId>
+            <artifactId>aps-runtime</artifactId>
             <scope>test</scope>
         </dependency>
 

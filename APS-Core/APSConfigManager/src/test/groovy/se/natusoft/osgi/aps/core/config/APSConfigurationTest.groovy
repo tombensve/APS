@@ -8,7 +8,7 @@ import se.natusoft.osgi.aps.activator.annotation.ConfigListener
 import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
-import se.natusoft.osgi.aps.test.tools.APSOSGIServiceTestTools
+import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.util.APSExecutor
 import se.natusoft.osgi.aps.util.APSLogger
 
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
 
 @CompileStatic
 @TypeChecked
-class APSConfigurationTest extends APSOSGIServiceTestTools {
+class APSConfigurationTest extends APSRuntime {
 
     static boolean ok = false
 
@@ -25,9 +25,8 @@ class APSConfigurationTest extends APSOSGIServiceTestTools {
 
         // Note that when testing you only need to deploy bundles that publishes services.
         // Pure libraries (all packages exported) are available anyhow in the JUnit classpath
-        // since the OSGIServiceTestTools does not provide separate class loaders for each
-        // bundle. This is intentional. Otherwise the test OSGi container behaves as any
-        // OSGi container.
+        // since the APSRuntime does not provide separate class loaders for each
+        // bundle. This is intentional.
 
         deploy 'aps-vertx-provider' with new APSActivator() from(
                 'se.natusoft.osgi.aps',
