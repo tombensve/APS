@@ -262,9 +262,8 @@ public class APSBundleContext implements BundleContext {
     /**
      * Not supported!
      */
-    @SuppressWarnings("RedundantThrows")
     @Override
     public Filter createFilter( String filter ) throws InvalidSyntaxException {
-        throw new RuntimeException( "Not supported!" );
+        return FrameworkUtil.createFilter(filter);
     }
 }

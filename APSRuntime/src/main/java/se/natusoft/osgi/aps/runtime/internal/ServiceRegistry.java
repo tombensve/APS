@@ -42,7 +42,7 @@ import se.natusoft.osgi.aps.runtime.APSServiceRegistration;
 import java.util.*;
 
 /**
- * Handles all registered services for a TestBundle.
+ * Handles all registered services for APSBundle.
  */
 public class ServiceRegistry {
 
@@ -66,10 +66,10 @@ public class ServiceRegistry {
     //
 
     /** Holds all listeners */
-    private Map<String/*service API*/, List<ListenerEntry>> serviceListenerMap = Collections.synchronizedMap(new HashMap<String, List<ListenerEntry>>());
+    private Map<String/*service API*/, List<ListenerEntry>> serviceListenerMap = Collections.synchronizedMap( new HashMap<>());
 
     /** Holds registered services. */
-    private Map<APSServiceRegistration, Object> services = Collections.synchronizedMap(new HashMap<APSServiceRegistration, Object>());
+    private Map<APSServiceRegistration, Object> services = Collections.synchronizedMap( new HashMap<>());
 
     //
     // Methods
@@ -102,7 +102,7 @@ public class ServiceRegistry {
                 }
             }
         }
-        catch (InvalidSyntaxException ise) {
+        catch ( InvalidSyntaxException ise) {
             throw new IllegalArgumentException("Bad filter syntax!", ise);
         }
     }

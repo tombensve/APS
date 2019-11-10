@@ -45,7 +45,7 @@
     </parent>
 
     <artifactId>aps-apis</artifactId>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
 
     <name>APS APIs</name>
 
@@ -57,95 +57,6 @@
         -->
         <aps.root.dir>${basedir}/..</aps.root.dir>
 
-        <!--
-            Bundle properties
-        -->
-
-        <!-- The symbolic name of the bundle. Defaults to the artifact id, but can be overriden. -->
-        <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
-
-        <!-- The bundle activator class -->
-        <!--suppress CheckTagEmptyBody -->
-        <osgi.bundle.activator></osgi.bundle.activator>
-
-        <!-- The bundle packages to export. -->
-        <osgi.export.package>
-            se.natusoft.osgi.aps.annotations;version="${project.version}",
-            se.natusoft.osgi.aps.api;version="${project.version}",
-
-            se.natusoft.osgi.aps.activator;version="${project.version}",
-            se.natusoft.osgi.aps.activator.annotation;version="${project.version}",
-
-            se.natusoft.osgi.aps.annotations;version="${project.version}",
-
-            se.natusoft.osgi.aps.api.core;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.config;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.filesystem;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.filesystem.model;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.filesystem.service;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.platform;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.platform.model;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.platform.service;version="${project.version}",
-            se.natusoft.osgi.aps.api.core.store;version="${project.version}",
-
-            se.natusoft.osgi.aps.api.data;version="${project.version}",
-            se.natusoft.osgi.aps.api.data.jdbc;version="${project.version}",
-            se.natusoft.osgi.aps.api.data.jdbc.model;version="${project.version}",
-            se.natusoft.osgi.aps.api.data.jdbc.service;version="${project.version}",
-
-            se.natusoft.osgi.aps.api.data.jpa.service;version="${project.version}",
-
-            se.natusoft.osgi.aps.api.messaging;version="${project.version}",
-
-            se.natusoft.osgi.aps.api.misc;version="${project.version}",
-            se.natusoft.osgi.aps.api.misc.json;version="${project.version}",
-            se.natusoft.osgi.aps.api.misc.json.model;version="${project.version}",
-            se.natusoft.osgi.aps.api.misc.json.service;version="${project.version}",
-            se.natusoft.osgi.aps.api.misc.time;version="${project.version}",
-
-            se.natusoft.osgi.aps.api.web;version="${project.version}",
-
-            se.natusoft.osgi.aps.constants;version="${project.version}",
-            se.natusoft.osgi.aps.exceptions;version="${project.version}",
-            se.natusoft.osgi.aps.tracker;version="${project.version}",
-            se.natusoft.osgi.aps.tuples;version="${project.version}",
-            se.natusoft.osgi.aps.types;version="${project.version}",
-            se.natusoft.osgi.aps.util;version="${project.version}"
-
-        </osgi.export.package>
-
-        <!-- The packages to import for the bundle. -->
-        <osgi.import.package>*</osgi.import.package>
-
-        <!-- The private packages. -->
-        <osgi.private.package>
-        </osgi.private.package>
-
-        <!-- The packages to export from dependent & embeded jars -->
-        <osgi.export.dependency.package>
-        </osgi.export.dependency.package>
-
-        <!-- Resources to include -->
-        <osgi.include.resource>
-
-        </osgi.include.resource>
-
-        <!-- The default for embedding dependencies in bundle. -->
-        <osgi.embed.dependency>*;scope=compile</osgi.embed.dependency>
-
-        <!-- The directory whose content should be embeded into the bundle jar. -->
-        <osgi.embed.directory>lib</osgi.embed.directory>
-
-
-        <!--
-            Misc properties
-        -->
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <!--
-            Deploy bundle.
-        -->
-        <deploy-bundle>true</deploy-bundle>
     </properties>
 
     <dependencies>
@@ -184,17 +95,6 @@
     <build>
         <plugins>
 
-            <!--
-                Force the jar plugin to use the maven-bundle-plugin generated manifest.
-            -->
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
-                </configuration>
-            </plugin>
 
             <!--
                 Mixins
@@ -204,11 +104,13 @@
                 <artifactId>mixin-maven-plugin</artifactId>
                 <configuration>
                     <mixins>
+<!--
                         <mixin>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>deploy-bundle-mixin</artifactId>
                             <version>${project.version}</version>
                         </mixin>
+-->
                     </mixins>
                 </configuration>
             </plugin>
@@ -216,42 +118,6 @@
             <!--
                 OSGi bundle handling.
             -->
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <supportedProjectTypes>
-                        <supportedProjectType>jar</supportedProjectType>
-                        <supportedProjectType>bundle</supportedProjectType>
-                    </supportedProjectTypes>
-                    <archive>
-                        <manifestEntries>
-                            <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
-                        </manifestEntries>
-                    </archive>
-                    <instructions>
-                        <Export-Package>${osgi.export.package}</Export-Package>
-                        <Import-Package>${osgi.import.package}</Import-Package>
-                        <_exportcontents>${osgi.export.dependency.package}</_exportcontents>
-                        <Private-Package>${osgi.private.package}</Private-Package>
-                        <Include-Resource>${osgi.include.resource}</Include-Resource>
-                        <Bundle-SymbolicName>${osgi.bundle.symbolic.name}</Bundle-SymbolicName>
-                        <Bundle-Activator>${osgi.bundle.activator}</Bundle-Activator>
-                        <Embed-Directory>${osgi.embed.directory}</Embed-Directory>
-                        <Embed-Dependency>${osgi.embed.dependency}</Embed-Dependency>
-                    </instructions>
-                </configuration>
-            </plugin>
 
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
