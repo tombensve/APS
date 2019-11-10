@@ -43,7 +43,8 @@ import se.natusoft.docutations.Nullable
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 
 /**
- * This class uses `Map<String, Object>` to represent JSON documents (Vertx:s JsonObject supports mapping to/from this format).
+ * This class uses `Map<String, Object>` to represent JSON documents (Vertx:s JsonObject supports mapping to/from
+ * this format).
  *
  * This class is used to define the content of such objects (like a schema) and validates real such objects against it.
  *
@@ -88,7 +89,8 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *
  * #### "?regexp"
  *
- * The '?' indicates that the rest of the value is a regular expression. This regular expression will be applied to each value.
+ * The '?' indicates that the rest of the value is a regular expression. This regular expression will be applied to
+ * each value.
  *
  * #### "\#range"
  *
@@ -119,6 +121,7 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  * An empty object means any object, non validated. Do note that it is not possible to have validated objects
  * under a non validated object. When there is a non validated object, anything under it is also non validated.
  *
+ * WARNING: THIS DOES NOT HOLD FOR DYNAMIC BUT SPECIFIC SUB CONTENT!!!
  */
 @CompileStatic
 @TypeChecked
@@ -129,8 +132,8 @@ class MapJsonSchemaValidator implements MapJsonSchemaConst {
      */
     private static class MapObject {
 
-        private Map<String, Object> schemaMap = [:]
-        private Map<String, Boolean> required = [:]
+        private Map<String, Object> schemaMap = [ : ]
+        private Map<String, Boolean> required = [ : ]
         private boolean empty = false
 
         /**
@@ -202,7 +205,8 @@ class MapJsonSchemaValidator implements MapJsonSchemaConst {
 
             if ( parts.length >= 2 && ( parts[ 1 ] != '0' && parts[ 1 ] != '1' ) && parts[ 1 ] != '?' ) {
 
-                throw new APSValidationException( "Bad key format! [$mapKey] Should be 'name' or 'name_0' or 'name_1'. ${ source }" )
+                throw new APSValidationException( "Bad key format! [$mapKey] Should be 'name' or 'name_0' or 'name_1'" +
+                        ". ${source}" )
             }
 
             return parts[ 1 ] != '?'
@@ -237,11 +241,31 @@ class MapJsonSchemaValidator implements MapJsonSchemaConst {
     }
 
     //
+    // Private Members
+    //
+
+    private Map<String, Map<String, Object>> namedStructures = [ : ]
+
+    //
     // Properties
     //
 
     /** A valid structure to validate against. */
     Map<String, Object> validStructure
+
+    void setValidStructure( Map<String, Object> validStructure ) {
+        this.validStructure = validStructure
+
+        Map<String, Object> named = this.validStructure.get( "!@@Named" ) as Map<String, Object>
+        if ( named != null ) {
+
+            named.keySet().each { String key ->
+                this.namedStructures.put( key, named.get( key ) as Map<String, Object> )
+            }
+
+            this.validStructure.remove( "!@@Named" )
+        }
+    }
 
     //
     // Methods
@@ -261,7 +285,7 @@ class MapJsonSchemaValidator implements MapJsonSchemaConst {
     @SuppressWarnings( "GroovyUnusedDeclaration" )
     MapJsonSchemaValidator validStructure( Map<String, Object> schema ) {
 
-        this.validStructure = schema
+        this.setValidStructure( schema )
         return this
     }
 
@@ -289,8 +313,9 @@ class MapJsonSchemaValidator implements MapJsonSchemaConst {
      * @param errorSource For error message.
      */
     private static void validateBoolean( Object sourceValue, Object errorSource ) {
-        if ( !Boolean.class.isAssignableFrom( sourceValue.class ) && !boolean.class.isAssignableFrom( sourceValue.class ) ) {
-            throw new APSValidationException( "Value '${ sourceValue }' must be a boolean! ${ errorSource }" )
+        if ( !Boolean.class.isAssignableFrom( sourceValue.class ) && !boolean.class.isAssignableFrom( sourceValue
+                .class ) ) {
+            throw new APSValidationException( "Value '${sourceValue}' must be a boolean! ${errorSource}" )
         }
     }
 
@@ -309,7 +334,8 @@ class MapJsonSchemaValidator implements MapJsonSchemaConst {
 
             if ( !sourceValue.toString().matches( regExp ) ) {
 
-                throw new APSValidationException( "Value '${ sourceValue }' does not match regular expression '${ regExp }'! ${ errorSource }" )
+                throw new APSValidationException( "Value '${sourceValue}' does not match regular expression " +
+                        "'${regExp}'! ${errorSource}" )
             }
         }
         else {
@@ -395,7 +421,8 @@ class MapJsonSchemaValidator implements MapJsonSchemaConst {
      * @param from The from in the range.
      * @param to The to in the range.
      * @param errorSource For error messages.
-     * @param fromString A closure that converts a value from a String to a Number. Different conversions needed for floating point
+     * @param fromString A closure that converts a value from a String to a Number. Different conversions needed for
+     * floating point
      *                   numbers and integers.
      */
     private static void validateNumberAsJavaLangNumber( Number sourceValue, boolean equals,
@@ -487,63 +514,77 @@ class MapJsonSchemaValidator implements MapJsonSchemaConst {
 
         MapObject validMO = new MapObject( validStructure )
 
-        if ( validMO.isEmpty() ) return
+        if ( validMO.isEmpty() ) {
+            return
+        }
 
         // validate children
         toValidate.each { String key, Object value ->
 
             Object validStructureEntry = validMO.get( key )
 
-            boolean doValidate = true
-
-            if ( validStructureEntry != null && validStructureEntry instanceof Map ) {
-                if ( ( validStructureEntry as Map ).isEmpty() ) doValidate = false
-            }
-
-            // An empty map as a value means accept anything there under. Thereby we don't
-            // validate in that situation.
-            if ( doValidate ) {
-
-                if ( !validMO.keySet().contains( key ) ) {
-
-                    throw new APSValidationException( "Entry '${ key }' is not valid! $toValidate" )
-                }
+            if ( validStructureEntry.toString().startsWith( "!@@" ) ) {
 
                 Object sourceValue = value
+                Map<String, Object> toValidateMap = sourceValue as Map<String, Object>
+                String name = validStructureEntry.toString().substring( 3 )
 
-                if ( validMO.isRequired( key ) && sourceValue == null ) {
+                validateMap( this.namedStructures[ name ], toValidateMap )
+            }
+            else {
+                boolean doValidate = true
 
-                    throw new APSValidationException( "'${ key }' is required! $toValidate" )
+                if ( validStructureEntry != null && validStructureEntry instanceof Map ) {
+                    if ( ( validStructureEntry as Map ).isEmpty() ) {
+                        doValidate = false
+                    }
                 }
 
-                if ( validStructureEntry instanceof String ) {
+                // An empty map as a value means accept anything there under. Thereby we don't
+                // validate in that situation.
+                if ( doValidate ) {
 
-                    String validValue = validMO.get( key ) as String
+                    if ( !validMO.keySet().contains( key ) || key.startsWith( "!@@" ) ) {
 
-                    if ( validValue.trim() == BOOLEAN ) {
-
-                        validateBoolean( sourceValue, toValidate )
+                        throw new APSValidationException( "Entry '${key}' is not valid! $toValidate" )
                     }
-                    else {
-                        if ( !validateNumber( validValue, sourceValue, toValidate ) ) {
 
-                            validateString( validValue, sourceValue, toValidate )
+                    Object sourceValue = value
+
+                    if ( validMO.isRequired( key ) && sourceValue == null ) {
+
+                        throw new APSValidationException( "'${key}' is required! $toValidate" )
+                    }
+
+                    if ( validStructureEntry instanceof String ) {
+
+                        String validValue = validMO.get( key ) as String
+
+                        if ( validValue.trim() == BOOLEAN ) {
+
+                            validateBoolean( sourceValue, toValidate )
                         }
+                        else {
+                            if ( !validateNumber( validValue, sourceValue, toValidate ) ) {
+
+                                validateString( validValue, sourceValue, toValidate )
+                            }
+                        }
+
                     }
 
-                }
+                    else if ( validStructureEntry instanceof Map ) {
 
-                else if ( validStructureEntry instanceof Map ) {
+                        Map<String, Object> toValidateMap = sourceValue as Map<String, Object>
+                        validateMap( validStructureEntry as Map<String, Object>, toValidateMap )
+                    }
 
-                    Map<String, Object> toValidateMap = sourceValue as Map<String, Object>
-                    validateMap( validStructureEntry as Map<String, Object>, toValidateMap )
-                }
+                    // If the 'array' part in this line is red marked, then you are using IDEA 2018.2!
+                    else if ( validStructureEntry instanceof List || validStructureEntry.class.array ) {
 
-                // If the 'array' part in this line is red marked, then you are using IDEA 2018.2!
-                else if ( validStructureEntry instanceof List || validStructureEntry.class.array ) {
-
-                    List<Object> toValidateList = sourceValue as List<Object>
-                    validateList( validStructureEntry as List<Object>, toValidateList )
+                        List<Object> toValidateList = sourceValue as List<Object>
+                        validateList( validStructureEntry as List<Object>, toValidateList )
+                    }
                 }
             }
         }
@@ -566,31 +607,38 @@ class MapJsonSchemaValidator implements MapJsonSchemaConst {
      */
     private void validateList( List<Object> validList, List<Object> toValidate ) {
 
-        Object validObject = validList[ 0 ] // All entries in a list must currently be identical.
+        Object validObject = validList[ 0 ]
+        if (validObject.toString(  ).startsWith( "!@@" )) {
+            String name = validObject.toString(  ).substring( 3 )
+            validateMap( this.namedStructures[name], toValidate[0] as Map<String, Object> )
+        }
+        else {
+            // All entries in a list must currently be identical.
 
-        toValidate.each { Object sourceValue ->
+            toValidate.each { Object sourceValue ->
 
-            if ( validObject instanceof String ) {
+                if ( validObject instanceof String ) {
 
-                String validValue = validObject as String
+                    String validValue = validObject as String
 
-                if ( validValue.trim() == BOOLEAN ) {
-                    validateBoolean( sourceValue, toValidate )
-                }
-                else {
-                    if ( !validateNumber( validValue, sourceValue, toValidate ) ) {
+                    if ( validValue.trim() == BOOLEAN ) {
+                        validateBoolean( sourceValue, toValidate )
+                    }
+                    else {
+                        if ( !validateNumber( validValue, sourceValue, toValidate ) ) {
 
-                        validateString( validValue, sourceValue, toValidate )
+                            validateString( validValue, sourceValue, toValidate )
+                        }
                     }
                 }
-            }
-            else if ( validObject instanceof Map ) {
+                else if ( validObject instanceof Map ) {
 
-                validateMap( validObject as Map<String, Object>, sourceValue as Map<String, Object> )
-            }
-            else if ( validObject instanceof List || validObject.class.array ) {
+                    validateMap( validObject as Map<String, Object>, sourceValue as Map<String, Object> )
+                }
+                else if ( validObject instanceof List || validObject.class.array ) {
 
-                validateList( validObject as List<Object>, sourceValue as List<Object> )
+                    validateList( validObject as List<Object>, sourceValue as List<Object> )
+                }
             }
         }
 
