@@ -81,6 +81,10 @@ Partly supported.
 
 Fully supported. 
 
+## Why
 
-    
-    
+So why this and not a full OSGi container ? 
+
+APS started with a full OSGi container. But it is also heavily dependent on Vert.x. The previous version of Vert.x where deployable in an OSGi container with only a _relatively_ small set of dependencies that could be deployed as OSGi bundles. With versin 3.8.0 I spent 3 days trying to find and resolve all dependencies required to deploy in Felix. After 3 days I gave up. For each jar deployed there were 2-5 more required. It just never ended. APS is not using 100% of everything in Vert.x, but when deploying now 100% of all dependencies seemed to be needed. Deploying in APSRuntime I have a lot fewer dependencies required to run, more or less what I compile with.
+
+I'm not a fan of JPMS, I think OSGi is much better. But JPMS is now the Java standard and Vert.x hints at adopting it, and APSRuntime can co-exist with JPMS, not so with full OSGi. Its probably going to be rather slow, but in the long run more java code are going to adopt JPMS. APSRuntime still uses the OSGi service model which is much nicer than the old ServiceLoader based service model used by JPMS. OSGi is rather brilliant in allowing a set of properties to be associated with a service registration, and then allowing a query on those properties when looking up a service. This provides a flexibility ServiceLoader doesn't have. 
