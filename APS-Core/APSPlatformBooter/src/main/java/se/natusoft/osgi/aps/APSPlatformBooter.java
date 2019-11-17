@@ -1,10 +1,14 @@
 package se.natusoft.osgi.aps;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class APSPlatformBooter {
 
@@ -18,6 +22,7 @@ public class APSPlatformBooter {
 
         String depsDir = null;
         String bundlesDir = null;
+        List<String> bundleOrder = null;
 
         int param = 0;
         while ( param < args.length ) {
@@ -27,6 +32,9 @@ public class APSPlatformBooter {
                 depsDir = args[ param++ ];
             } else if ( arg.equals( "--bundlesDir" ) ) {
                 bundlesDir = args[ param++ ];
+            }
+            else if ( arg.equals( "--order" )) {
+                bundleOrder = new LinkedList<>( Arrays.asList( args[ param++ ].split( "," ) ) );
             }
         }
 
@@ -76,8 +84,8 @@ public class APSPlatformBooter {
         Class stage2 = bundlesClassLoader.loadClass( "se.natusoft.osgi.aps.platform.APSPlatformBooterStage2" );
 
         @SuppressWarnings("unchecked")
-        Method bootMethod = stage2.getMethod( "boot", java.io.File.class );
+        Method bootMethod = stage2.getMethod( "boot", java.io.File.class, java.util.List.class );
 
-        bootMethod.invoke( null, bundleDir );
+        bootMethod.invoke( null, bundleDir, bundleOrder );
     }
 }

@@ -55,6 +55,12 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <!--
                 I have decided to simply use maven-exec-plugin to run the docker command to build and run
@@ -89,6 +95,7 @@
                             <executable>${basedir}/bin/setup-deployment.sh</executable>
                         </configuration>
                     </execution>
+<!--
                     <execution>
                         <id>setup-docker</id>
                         <phase>generate-resources</phase>
@@ -99,6 +106,7 @@
                             <executable>${basedir}/bin/run-docker.sh</executable>
                         </configuration>
                     </execution>
+-->
                 </executions>
             </plugin>
 

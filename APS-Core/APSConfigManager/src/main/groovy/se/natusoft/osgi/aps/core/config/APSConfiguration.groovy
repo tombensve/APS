@@ -58,15 +58,13 @@ import se.natusoft.osgi.aps.util.APSLogger
 /**
  * This class represents one individual configuration.
  */
-@IDEAFail(
-        // This class have groovy auto java bean properties and extends a Map! IDEA 2019.1.3 is not
-        // capable of telling the difference between a java bean property access and a Map key
-        // reference! It tends to assume the latter, which gives an error on method calls of what it
-        // sees as a java.lang.Object. So in 'logger.error(...)' it will error mark 'error(...)'
-        // seeing logger as an Object return from Map rather than the java bean property 'logger'
-        // of type APSLogger. The code compiles fine and correctly! This is only an IDEA problem.
-        // I have made some unnecessary casts to make IDEA happy since I hate red markings!
-)
+// This class have groovy auto java bean properties and extends a Map! IDEA 2019.1.3 is not
+// capable of telling the difference between a java bean property access and a Map key
+// reference! It tends to assume the latter, which gives an error on method calls of what it
+// sees as a java.lang.Object. So in 'logger.error(...)' it will error mark 'error(...)'
+// seeing logger as an Object return from Map rather than the java bean property 'logger'
+// of type APSLogger. The code compiles fine and correctly! This is only an IDEA problem.
+// I have made some unnecessary casts to make IDEA happy since I hate red markings!
 @CompileStatic
 @TypeChecked
 class APSConfiguration extends StructMap implements APSConfig, APSSerializableData {

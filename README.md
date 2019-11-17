@@ -6,7 +6,7 @@ __Version:__ 1.0.0 (working up to ...)
 
 __License:__ [Apache 2.0](lics/Apache-2.0.md)
 
-__JDK Level:__ This now builds with all tests working on JDK 11! No, there is no JPMS usage! And it is also using a beta of Groovy 3.0. Have not run into any problem with Groovy being beta so far. 
+__JDK Level:__ This now builds with all tests working on JDK 11. No, there is no JPMS usage! And it is also using a beta of Groovy 3.0. Have not run into any problem with Groovy being beta so far. 
 
 ## This project is currently work in progress and cannot be expected to be completely stable!!
 
@@ -24,13 +24,19 @@ This code base do contain some react frontend code using javascript. Thereby __n
 (Node Package Manager) needs to be installed on the machine before this will fully
 build.
 
-Some sub modules runs a bash script to build frontend stuff. On Windows this might cause a problem if not build under the Git Bash shell or some other bash windows port. The important thing is that when "_exec-maven-plugin_" runs "_${basedir}/src/main/js/aps-webmanager-frontend/build.sh_" then "_/bin/sh_" must be found. 
+Some sub modules runs a bash script to build frontend stuff. On Windows this might cause a problem if not build under the Git Bash shell or some other bash windows port. The important thing is that when "_exec-maven-plugin_" runs "_${basedir}/src/main/js/aps-webmanager-frontend/build.sh_" then "_/bin/bash_" must be found. 
+
+It now also builds a Docker container and thus Docker must be installed for it to build.
 
 ---- 
 
-APS will run in any OSGi container (well, felix, Karaf, Knopplerfish, Virgo (not sure this is still kicking)). That said, I woudn't exactly call APS a straight OSGi platform. APS started out a long time ago, and provides a lot of own solutions rather than official OSGi stadard solutions. It does its own thing, especially with APSActivator (looks though all bundle classes and instantiates and dependency injects based on APS annotations). It just uses base OSGi as a base. APS is also largely coded in Groovy.
+APS no longer runs in an OSGi container due to Vertx 3.8.0 which have too many transitive dependencies actually not used by APS, but must be deployed in OSGi container to make it happy. I spend 3 days trying to resolve those and get it running in Felix, but for every new bundle jar deployed several more were required, so I finally gave up. Any why deploy a lot of code that is really not used ? 
 
-The _APSRuntime_ maven module is actually an implementation of the 4 basic OSGi APIs, but without the classloading. It uses the JUnit classpath. This makes it trivially easy to test bundles and interaction between bundles. It has a flexible Groovy deploy DSL. Note that this supports only the parts of the 4 base OSGi APIs used by APS!
+I have not adapted and renamed APSOSGiTestTool to aps-runtime and added an aps-platform-booter which loads all jars using URLClassLoader, and deploys those of bundle type. No modularisation now! This does however not conflict with JPMS in other ways than JPMS requireing everything to be JPMS modularized, which APS currently isn't due to the ton of work required to make it so. As said above APS is no longer full OSGi, but still uses the OSGi service model, and thus some parts of the OSGi APIs. 
+
+APS started out a long time ago, and provides a lot of own solutions. It does its own thing, especially with APSActivator (looks though all bundle classes and instantiates and dependency injects based on APS annotations). It just uses base OSGi as a base. APS is also largely coded in Groovy.
+
+The _APSRuntime_ maven module is actually an implementation of the 4 basic OSGi APIs, but without the classloading. It uses the JUnit classpath when used in tests. This makes it trivially easy to test bundles and interaction between bundles. It has a flexible Groovy deploy DSL. Note that this supports only the parts of the 4 base OSGi APIs used by APS!
 
 APS have always been about keeping things simple. Easy to use APIs providing only basic functionality with no configurational options API wise. My intentions is to encapsulate complexity and provide the easiest way possible to use for all other code. APS also provides APIs for common things like messaging with very easy/basic APIs. Each specific implementation is responsible for any configuration needed and there is a more structured configuraton service using JSON for configuration data, for other services to use instead of the primitive properties provided by OSGi.
 
@@ -46,7 +52,7 @@ APS adds a thin layer on top of Vert.x. In many cases Vert.x is used directly, b
 
 - "cluster" - This uses Vert.x EventBus for messages. If the next part of target is "all:" then a publish is done, otherwise a send. For publish the "all:" part is removed and the rest is used as address. This is provided by the APSVertxProvider bundle.
 
-- "amqp" - This currenlty uses Vert.x AMQP bridge, which apparently will be removed in the next major version of Vert.x. So this will need to be redone using the Java client for RabbitMQ. This is currently provided by APSVertxProvider bundle.
+- "amqp" - This currenlty uses Vert.x AMQP bridge, which apparently will be removed in the next major version of Vert.x. So this will need to be redone using some other client. This is currently provided by APSVertxProvider bundle.
 
 - No support for JMS, but all that is needed is to publish an implementation of APSBusRouter that uses JMS APIs.
 
@@ -60,13 +66,11 @@ Note that for the GUI, If the web just uses the APSWebManager component then a J
 
 Do note that APS needs a clustered Vert.x and will create/join such on startup. It can however be told to start a non clustered Vert.x by system property on start. This can be useful when running in test. Some of the APS tests actually does this (VertxProvider bundle do some things that requires a cluster, and will thus produce a warnig when Vert.x is started in unclusetered mode. Those functions are however not used by the test in that case, but you get the warning). 
 
-About testing: APS provide a testing tool called APSRuntime. It actually implements a primitive APS level OSGi container but without classloading (as mentioned above), using junit classpaths instead. So most tests run as they would in a real deployment and thus also starts Vert.x. This could cause problems if multiple builds are run concurrently on the same machine, like in a Jenkins for example. But if Vert.x is run unclustered it would probably work if HTTP service tests and similar use random ports. There is no good support for that yet in APS. I'm also considering trying to run tests within docker containers, but that would require a Docker installation on the machine you are building on.
+APSRuntime is also used for unit tests. It actually implements a primitive APS level OSGi container but without classloading (as mentioned above), using junit classpaths instead when used for testing. So most tests run as they would in a real deployment and thus also starts Vert.x. This could cause problems if multiple builds are run concurrently on the same machine, like in a Jenkins for example. But if Vert.x is run unclustered it would probably work if HTTP service tests and similar use random ports. There is no good support for that yet in APS. 
 
 ----
 
 [JPMS](JPMS.md)
-
-I have decided to stick with OSGi for APS but make it build and run on JDK 9+ (It currently runs on JDK 11). It is going to be interesting to see what the OSGi people will do (probably nothing since JPMS is simply not compatible with OSGi). Indifferent from OSGi, JPMS does not seem to support private in-module third party library dependencies, while OSGi even supports exporting packages from private internal dependencies. And this does not require these external jars to be provided externally. Just deploy your bundle and they will be available.
 
 ----
 
@@ -74,7 +78,7 @@ Lots of fun ideas, and far to little time ...
 
 Tommy
 
-Professional Code Geek, working with Java since the beginning, C & C++ before that. Have also done Motorola 6809 and Motorola 68000 assember code.
+Professional Code Geek, working with Java since the beginning, C & C++ before that. 
 
 
 

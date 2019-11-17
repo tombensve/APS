@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 
+# This will download and install all dependencies, the APS runtime, and bundles to deploy.
+# under imgsrc which is then used as the source for the docker image.
+#
+# Yes, it is possible to have the Dockerfile copy each artifact directly to target folder,
+# but more messy.
+
 vertxver=3.8.0
 nettyver=4.1.19.Final
-groovyver=2.5.7 #3.0.0-beta-3
+groovyver=3.0.0-beta-3 #2.5.7
 hazelcastver=3.12.4
 jacksonannotationsver=2.9.0
 jacksoncorever=2.9.0
@@ -12,6 +18,7 @@ bundles=$(dirname $0)/../imgsrc/aps-platform-deployment/bundles
 deps=$(dirname $0)/../imgsrc/aps-platform-deployment/dependencies
 bin=$(dirname $0)/../imgsrc/aps-platform-deployment/bin
 
+# === Dependencies ===
 # Base
 ${dl} io.vertx                   vertx-core          ${vertxver}              ${deps}
 ${dl} io.vertx                   vertx-web           ${vertxver}              ${deps}
@@ -58,14 +65,14 @@ ${dl} com.fasterxml.jackson.jr   jackson-jr-all      2.9.6                    ${
 ${dl} org.osgi                   org.osgi.core       4.2.0                    ${deps}
 ${dl} org.osgi                   org.osgi.compendium 4.2.0                    ${deps}
 
-#${dl} org.apache.geronimo.specs geronimo-jta_1.1_spec 1.1.1                   ${deps}
-
+# === Runtime stuff ===
 ${dl} se.natusoft.osgi.aps       aps-runtime         1.0.0                    ${deps}
 ${dl} se.natusoft.osgi.aps       aps-platform-booter 1.0.0                    ${bin} shaded
 
-# APS stuff (these do not exist in jcenter! This works due to these being built before
+# === Bundles to deploy ===
+# These do not exist in jcenter! This works due to these being built before
 # this is run, and thus existing in ~/.mvn/repository which is looked in before trying
-# to download from jcenter).
+# to download from jcenter.
 ${dl} se.natusoft.osgi.aps       aps-apis                                     1.0.0  ${bundles}
 ${dl} se.natusoft.osgi.aps       aps-config-manager                            1.0.0  ${bundles}
 ${dl} se.natusoft.osgi.aps       aps-core-lib                                 1.0.0  ${bundles}
