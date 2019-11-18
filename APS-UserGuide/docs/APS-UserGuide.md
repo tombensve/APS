@@ -2596,7 +2596,7 @@ The following third party products are using this license:
 
 *  [jackson-jr-all-2.9.6](http://wiki.fasterxml.com/JacksonHome)
 
-*  [groovy-2.5.7](https://groovy-lang.org)
+*  [groovy-3.0.0-beta-3](https://groovy-lang.org)
 
 *  [vertx-core-3.8.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
@@ -2614,11 +2614,11 @@ The following third party products are using this license:
 
 *  [hazelcast-3.6.3](http://www.hazelcast.com/)
 
-*  [jackson-core-2.10.0.pr3](https://github.com/FasterXML/jackson-core)
+*  [jackson-core-2.10.1](https://github.com/FasterXML/jackson-core)
 
-*  [jackson-annotations-2.10.0.pr3](http://github.com/FasterXML/jackson)
+*  [jackson-annotations-2.10.1](http://github.com/FasterXML/jackson)
 
-*  [jackson-databind-2.10.0.pr3](http://github.com/FasterXML/jackson)
+*  [jackson-databind-2.10.1](http://github.com/FasterXML/jackson)
 
 *  [netty-codec-4.1.19.Final](http://netty.io/)
 

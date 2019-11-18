@@ -153,13 +153,6 @@
 
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-admin-web-service-provider</artifactId>
-            <version>1.0.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-vertx-provider</artifactId>
             <version>1.0.0</version>
             <scope>provided</scope>
@@ -213,8 +206,8 @@
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
-            <scope>provided</scope>
             <version>${groovy.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!--
@@ -223,11 +216,6 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-runtime</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-service-test-support</artifactId>
             <scope>test</scope>
         </dependency>
 
