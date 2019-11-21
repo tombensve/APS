@@ -284,6 +284,7 @@ public class APSRuntime {
         );
 
         Runnable vertxDeployer = altDeployers != null ? altDeployers.get("vertxDeployer") : null;
+        System.err.println("vertxDeployer: " + vertxDeployer);
         if (vertxDeployer == null) {
             deploy( "aps-vertx-provider" ).with( new APSActivator() ).from(
                     "se.natusoft.osgi.aps",
@@ -308,20 +309,6 @@ public class APSRuntime {
         else {
             dataStoreServiceDeployer.run();
         }
-
-/*
-        Runnable busMessagingDeployer = altDeployers != null ? altDeployers.get("busMessagingDeployer") : null;
-        if (busMessagingDeployer == null) {
-            deploy( "aps-vertx-event-bus-messaging-provider" ).with( new APSActivator() ).from(
-                    "se.natusoft.osgi.aps",
-                    "aps-vertx-event-bus-messaging-provider",
-                    "1.0.0"
-            );
-        }
-        else {
-            busMessagingDeployer.run();
-        }
-*/
 
         deploy( "aps-filesystem-service-provider" ).with( new APSActivator() ).from(
                 "se.natusoft.osgi.aps",
@@ -534,6 +521,39 @@ public class APSRuntime {
         }
 
         /**
+         * Provides a MANIFEST.MF for test bundle.
+         *
+         * @param testClass The test class requesting the MANIFEST.MF. It will be loaded using this
+         *                  class ClassLoader.
+         *
+         * @return itself.
+         */
+        public BundleBuilder manifest_from( Class testClass) {
+            manifest_from( testClass, null );
+            return this;
+        }
+
+        /**
+         * Provides a MANIFEST.MF for test bundle.
+         *
+         * @param testClass The test class requesting the MANIFEST.MF. It will be loaded using this
+         *                  class ClassLoader.
+         * @param name The name of the MANIFEST.MF file to use. Defaults to MANIFEST.MF if null or blank.
+         *
+         * @return itself.
+         */
+        @SuppressWarnings("UnusedReturnValue")
+        public BundleBuilder manifest_from( Class testClass, String name) {
+            if (name == null || name.equals( "" )) {
+                name = "MANIFEST.MF";
+            }
+            String _name = "/forTest/META-INF/" + name;
+            this.bundle.loadManifest( testClass.getResourceAsStream( _name ) );
+
+            return this;
+        }
+
+        /**
          * Provides bundle content by reading maven artifact.
          *
          * @param group    The artifact group
@@ -593,10 +613,12 @@ public class APSRuntime {
          */
         public BundleBuilder using( String[] paths ) throws Exception {
             for ( String path : paths ) {
+/*
                 if ( !path.startsWith( "/" ) ) {
                     path = "/" + path;
                 }
-                this.bundle.addEntryPaths( new BundleEntryPath( path ) );
+*/
+                this.bundle.addEntryPath( path );
             }
             return start();
         }

@@ -61,10 +61,10 @@ public class APSBundle implements Bundle {
     //
 
     private ServiceRegistry serviceRegistry;
-    private Dictionary<Object, Object> headers = new Properties(  );
+    private Dictionary<Object, Object> headers = new Properties();
     private long id;
     private APSBundleContext bundleContext = new APSBundleContext( this );
-    private Version version = new Version( 1, 2, 3 );
+    private Version version = new Version( 1, 0, 0 );
     private String symbolicName;
     private List<String> entryPaths = new LinkedList<>();
     private ClassLoader bundleClassLoader;
@@ -108,18 +108,80 @@ public class APSBundle implements Bundle {
      * @param manifestPath The source of the MANIFEST.MF file to read. Must either provide a JarFile or a full path.
      */
     private void loadManifest( BundleEntryPath manifestPath ) {
-        try {
-            Attributes mfAttrs;
 
-            if ( manifestPath.getJarFile() != null ) {
-                JarFile jarFile = manifestPath.getJarFile();
+        if ( manifestPath.getJarFile() != null ) {
+            JarFile jarFile = manifestPath.getJarFile();
+            loadManifest( jarFile );
+        } else {
+            loadManifest( manifestPath.getFullPath() );
+        }
+    }
+
+    /**
+     * Loads a MANIFEST.MF file using a JarFile.
+     *
+     * @param jarFile The JarFile to get the MANIFEST.MF from.
+     */
+    @SuppressWarnings("WeakerAccess")
+    void loadManifest( JarFile jarFile ) {
+        _loadManifest( jarFile );
+    }
+
+    /**
+     * Loads a MANIFEST.MF file using a string path.
+     *
+     * @param jarFilePath The path to the
+     */
+    @SuppressWarnings("WeakerAccess")
+    void loadManifest( String jarFilePath ) {
+        _loadManifest( jarFilePath );
+    }
+
+    /**
+     * Loads a MANIFEST.MF file using an InputStream (which will be closed!).
+     *
+     * @param manifestStream The stream to load manifest from.
+     */
+    void loadManifest(InputStream manifestStream) {
+        _loadManifest( manifestStream );
+    }
+
+    /**
+     * Loads a Manifest using a JarFile or a String path.
+     *
+     * @param manifestResource The resource to load manifest from.
+     */
+    private void _loadManifest( Object manifestResource ) {
+        Attributes mfAttrs;
+
+        try {
+            if ( manifestResource instanceof JarFile ) {
+
+                JarFile jarFile = (JarFile) manifestResource;
                 Manifest mf = jarFile.getManifest();
                 mfAttrs = mf.getMainAttributes();
-            } else {
-                InputStream is = new FileInputStream( manifestPath.getFullPath() );
+
+            } else if ( manifestResource instanceof String ) {
+
+                InputStream is = new FileInputStream( (String) manifestResource );
                 Manifest mf = new Manifest( is );
                 is.close();
                 mfAttrs = mf.getMainAttributes();
+
+            } else if (manifestResource instanceof InputStream) {
+
+                InputStream is = (InputStream)manifestResource;
+                Manifest mf = new Manifest( is );
+                is.close();
+                mfAttrs = mf.getMainAttributes();
+
+            } else {
+                Object errResource = "null";
+                if (manifestResource != null) {
+                    errResource = manifestResource.getClass();
+                }
+                throw new RuntimeException( "loadManifest(resource) received object of unknown type: " +
+                        errResource );
             }
 
             //System.out.println("    MANIFEST.MF entries:");
@@ -128,9 +190,19 @@ public class APSBundle implements Bundle {
                 this.headers.put( entry.getKey().toString(), entry.getValue().toString() );
             }
             System.out.println();
-        } catch ( IOException ioe ) {
-            throw new RuntimeException( "Failed to load bundle MANIFEST.MF", ioe );
+
+        } catch ( Exception e ) {
+            throw new RuntimeException( "Failed to load bundle MANIFEST.MF", e );
         }
+    }
+
+    /**
+     * Adds an entry to the bundle.
+     *
+     * @param entryPath The entry to add.
+     */
+    void addEntryPath( String entryPath ) {
+        addEntryPath( new BundleEntryPath( entryPath ) );
     }
 
     /**
@@ -214,7 +286,7 @@ public class APSBundle implements Bundle {
      */
     public void addEntryPaths( String... paths ) {
         for ( String path : paths ) {
-            addEntryPath(new BundleEntryPath( path, path ) );
+            addEntryPath( new BundleEntryPath( path ) );
         }
     }
 
@@ -297,10 +369,10 @@ public class APSBundle implements Bundle {
         try ( final JarFile jar = new JarFile( jarFile ) ) {
             //System.out.println( "Loading the following paths:" );
             jar.stream().forEach( jarEntry -> {
-                if ( !jarEntry.getName().endsWith( "/" ) ) {
+                if ( !jarEntry.getName().trim().endsWith( "/" ) ) {
                     addEntryPath( new BundleEntryPath( jar, File.separator + jarEntry.getName() ) );
-                    if (jarEntry.getName().startsWith( "lib/aps" )) {
-                        System.err.println("WARNING: This bundle seems to contain another aps bundle!");
+                    if ( jarEntry.getName().startsWith( "lib/aps" ) ) {
+                        System.err.println( "WARNING: This bundle seems to contain another aps bundle!" );
                     }
                     //System.out.println( "    " + File.separator + jarEntry.getName() );
                 }
@@ -324,14 +396,7 @@ public class APSBundle implements Bundle {
      */
     @SuppressWarnings("WeakerAccess")
     public void loadEntryPathsFromDirScan( File root ) {
-        //System.out.println( "Loading the following paths:" );
-        new DirScanner( root ).stream().forEach( path -> {
-            addEntryPath( path );
-            if (path.toString().startsWith( "/lib/aps" )) {
-                System.err.println("WARNING: This bundle seems to contain another aps bundle!");
-            }
-            //System.out.println( "    " + path );
-        } );
+        new DirScanner( root ).stream().forEach( this::addEntryPath );
     }
 
     /**

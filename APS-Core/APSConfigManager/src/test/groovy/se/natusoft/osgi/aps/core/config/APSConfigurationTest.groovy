@@ -42,12 +42,6 @@ class APSConfigurationTest extends APSRuntime {
                 '1.0.0'
         )
 
-        deploy 'aps-vertx-event-bus-messaging-provider' with new APSActivator() from(
-                'se.natusoft.osgi.aps',
-                'aps-vertx-event-bus-messaging-provider',
-                '1.0.0'
-        )
-
         System.setProperty( APSFilesystemService.CONF_APS_FILESYSTEM_ROOT, "target/config" )
 
         deploy 'aps-filesystem-service-provider' with new APSActivator() from(

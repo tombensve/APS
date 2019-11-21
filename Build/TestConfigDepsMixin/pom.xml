@@ -72,12 +72,6 @@
         </dependency>
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-vertx-event-bus-messaging-provider</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-filesystem-service-provider</artifactId>
             <version>1.0.0</version>
             <scope>test</scope>

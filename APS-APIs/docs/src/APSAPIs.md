@@ -10,7 +10,7 @@ The project does provide a lot of implementations of the APIs. They are in 2 cat
 
 For (1) there is of course nothing to stop it from being treated as (2) :-).
 
-The aps-apis bundle also contains some base functionallity like a better service tracker and a generic bundle activator that does depenendy injections. These were previously (\<1.0.0) in a separate bundle called aps-tools-lib, but the relationships between that bundle and this finally became too circular so I merged aps-tools-lib into aps-apis.
+The aps-apis bundle also contains some base functionality like a better service tracker and a generic bundle activator that does dependency injections. 
 
 ## Tools
 

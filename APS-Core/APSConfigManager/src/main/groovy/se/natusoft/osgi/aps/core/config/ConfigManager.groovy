@@ -129,7 +129,7 @@ class ConfigManager {
 
         } {
 
-            APSMessage<Map<String, Object>> message ->
+            APSMessage message ->
 
                 Map<String, Object> content = message.content()
 

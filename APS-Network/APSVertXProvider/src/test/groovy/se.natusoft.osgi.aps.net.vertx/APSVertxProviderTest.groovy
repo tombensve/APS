@@ -29,11 +29,36 @@ class APSVertxProviderTest extends APSRuntime {
 
     @Test
     void reactiveAPITest() throws Exception {
-        // Most of the unfamiliar constructs here are provided by OSGiServiceTestTools and groovy DSL features.
+        // Most of the unfamiliar constructs here are provided by APSRuntime and groovy DSL features.
 
-        deployConfigAndVertxPlusDeps( vertxDeployer( null ) {
-            deploy 'aps-vertx-provider' with new APSActivator() from 'APS-Network/APSVertxProvider/target/classes'
-        } )
+        try {
+
+            // Instead of reading from content of jar file on disk we provide the same result hardcoded.
+
+            // Instead of reading bundle content from target/classes we provide hardcoded paths here
+            // due to that the docker filesystem lags behind, probably due to its versioning filesystem,
+            // so when this is executed in a docker container the target/classes path is empty. But
+            // with this hardcoded content of bundle we get around that.
+            //
+            // This however have the downside of having to update this if content is changed in the jar.
+
+            deployConfigAndVertxPlusDeps( vertxDeployer( null ) {
+                deploy 'aps-vertx-provider' with new APSActivator() manifest_from this.getClass(  ) using'/se/natusoft/osgi/aps/net/vertx/APSAmqpBridgeBusRouter.class',
+                '/se/natusoft/osgi/aps/net/vertx/APSVertxProvider.class',
+                '/se/natusoft/osgi/aps/net/vertx/MessageSenderProvider.class',
+                '/se/natusoft/osgi/aps/net/vertx/MessageSubscriberProvider.class',
+                '/se/natusoft/osgi/aps/net/vertx/APSMessageProvider.class',
+                '/se/natusoft/osgi/aps/net/vertx/APSVertxBusRouter.class',
+                '/se/natusoft/osgi/aps/net/vertx/APSVertxProvider$1.class',
+                '/se/natusoft/osgi/aps/net/vertx/util/RecursiveJsonObjectMap.class'
+
+            } )
+
+
+        }
+        catch ( Exception e ) {
+            e.printStackTrace( System.err )
+        }
 
         hold() maxTime 2L unit SECONDS go()
 
@@ -86,14 +111,18 @@ class VertxClient {
     void init() {
         this.logger.info "In VertxClient.init()!"
 
-        // Non blocking way of getting a service. If we inject it as a proxy of Vertx instead of the tracker
-        // then the first call might block if the service is not yet available. This can cause deadlocks if it
-        // is done on bundle startup in an @Initializer method!
+        // Non blocking way of getting a service.
+        //
+        // One way not demonstrated here is to add nonBlocking=true to the @OSGiService
+        // annotation. This also requires a reactive API for the service, that is void
+        // return and callbacks for any result. In this case calls are cached until service
+        // becomes available and executed then.
 
+        // This demonstrates one way of handling callbacks. This coerces method reference to interface impl.
         this.vertxTracker.onActiveServiceAvailable = this.&onVertxAvailable
         this.vertxTracker.onActiveServiceLeaving = this.&onVertxLeaving
 
-        // Here we listen to the active, which ever works.
+        // This demonstrates another using a closure.
         this.routerTracker.onActiveServiceAvailable { Router router, ServiceReference routerRef ->
 
             APSVertxProviderTest.router = router
@@ -104,13 +133,15 @@ class VertxClient {
             this.logger.info "Router leaving!"
         }
 
-        this.eventBusTracker.onActiveServiceAvailable { EventBus eventBus, ServiceReference busRef ->
+        // If you think this looks better, it is also possible! This is actually the same as this.vertxTracker
+        // above, but with a closure instead.
+        this.eventBusTracker.onActiveServiceAvailable = { EventBus eventBus, ServiceReference busRef ->
 
             APSVertxProviderTest.eventBus = eventBus
             this.logger.info "Got event bus!"
         }
 
-        this.sharedDataTracker.onActiveServiceAvailable { SharedData sharedData, ServiceReference busRef ->
+        this.sharedDataTracker.onActiveServiceAvailable = { SharedData sharedData, ServiceReference busRef ->
 
             APSVertxProviderTest.sharedData = sharedData
             this.logger.info "Got shared data!"

@@ -31,12 +31,7 @@ class APSVertXEventBusMessagingTest extends APSRuntime {
     @Test
     void runTest() throws Exception {
 
-        deployConfigAndVertxPlusDeps(
-                // Override default deployment from ~/.m2/... of our self and use the just built code instead.
-                busMessagingDeployer( null ) {
-                    deploy 'aps-vertx-event-bus-messaging-provider' with new APSActivator() from 'se.natusoft.osgi.aps','aps-vertx-event-bus-messaging-provider','1.0.0'
-                }
-        )
+        deployConfigAndVertxPlusDeps()
 
         deploy 'msg-receiver' with new APSActivator() using '/se/natusoft/osgi/aps/net/vertx/MsgReceiver.class'
 

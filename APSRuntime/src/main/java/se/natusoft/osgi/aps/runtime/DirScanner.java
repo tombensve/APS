@@ -80,6 +80,9 @@ class DirScanner {
     private void scanDir( File dir ) {
         if ( dir == null ) throw new IllegalArgumentException( "dir cannot be null!" );
 
+        if (!dir.isDirectory()) {
+            throw new IllegalArgumentException( "Non directory path passed to DirScanner.scanDir(File file)! (path: " + dir.toString() + ")" );
+        }
         if ( this.rootDirLength == 0 ) {
             this.rootDirLength = dir.getAbsolutePath().length();
         }

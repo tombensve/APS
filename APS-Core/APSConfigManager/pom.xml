@@ -118,11 +118,6 @@
         </dependency>
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-tools-lib</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-json-lib</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -270,18 +265,7 @@
                 </dependency>
                 <dependency>
                     <groupId>se.natusoft.osgi.aps</groupId>
-                    <artifactId>aps-service-test-support</artifactId>
-                    <scope>test</scope>
-                </dependency>
-                <dependency>
-                    <groupId>se.natusoft.osgi.aps</groupId>
                     <artifactId>aps-vertx-cluster-datastore-service-provider</artifactId>
-                    <version>1.0.0</version>
-                    <scope>test</scope>
-                </dependency>
-                <dependency>
-                    <groupId>se.natusoft.osgi.aps</groupId>
-                    <artifactId>aps-vertx-event-bus-messaging-provider</artifactId>
                     <version>1.0.0</version>
                     <scope>test</scope>
                 </dependency>

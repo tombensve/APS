@@ -60,11 +60,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-tools-lib</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
             <version>${vertx.version}</version>
@@ -102,11 +97,6 @@
         </dependency>
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-service-test-support</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-vertx-provider</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -139,12 +129,6 @@
             These are for being able to run aps-config-manager and dependent bundles in unit tests
             using aps-runtime. It feels better running the real thing rather than fake config.
         -->
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-vertx-event-bus-messaging-provider</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-filesystem-service-provider</artifactId>

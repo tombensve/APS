@@ -36,7 +36,6 @@ package se.natusoft.osgi.aps.core.config
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.osgi.framework.Bundle
-import se.natusoft.docutations.IDEAFail
 import se.natusoft.docutations.Implements
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable

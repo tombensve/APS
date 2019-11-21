@@ -91,11 +91,6 @@
             <artifactId>aps-apis</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-tools-lib</artifactId>
-            <scope>provided</scope>
-        </dependency>
 
         <!--
             ${artifactId} dependencies
@@ -114,7 +109,7 @@
 
         <!--
             These are for being able to run aps-config-manager and dependent bundles in unit tests
-            using aps-runtime. It feels better running the real thing rather than fake config.
+            using aps-runtime. Uncomment if needed or delete otherwise.
         -->
         <!-- REMOVE THESE IF YOU ARE NOT USING aps-config-manager TO MANAGE CONFIGURATION!
         <dependency>
@@ -126,12 +121,6 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-vertx-cluster-datastore-service-provider</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-vertx-event-bus-messaging-provider</artifactId>
             <version>1.0.0</version>
             <scope>test</scope>
         </dependency>

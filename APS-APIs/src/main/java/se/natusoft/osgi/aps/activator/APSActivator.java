@@ -326,6 +326,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         ExecutorService waitedForExecutorService = Executors.newSingleThreadExecutor();
         ExecutorService executorService;
 
+        // The init methods are empty at start and populated later.
         final InitMethods parallelInitMethods = new InitMethods();
         final InitMethods waitedForInitMethods = new InitMethods();
         InitMethods initMethods;
@@ -370,7 +371,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         int waitInMinutes = 1;
         String waitProp = System.getProperty( "aps.activator.start.timeout" );
         if ( waitProp != null ) {
-            waitInMinutes = Integer.valueOf( waitProp );
+            waitInMinutes = Integer.parseInt( waitProp );
         }
         waitedForExecutorService.awaitTermination( waitInMinutes, TimeUnit.MINUTES );
     }
@@ -1655,9 +1656,18 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
         private Class entryClass;
         private BundleContext context;
+
+        /** This is potentially populated! */
         private InitMethods initMethods;
 
-        public PerClassWorkRunnable( Class entryClass, BundleContext context, InitMethods initMethods ) {
+        /**
+         * Creates a new PerClassWrokRunnable.
+         *
+         * @param entryClass The class to potentially inject.
+         * @param context The current bundles context.
+         * @param initMethods Will be populated with potential methods found.
+         */
+        public PerClassWorkRunnable( Class entryClass, BundleContext context, InitMethods initMethods) {
             this.entryClass = entryClass;
             this.context = context;
             this.initMethods = initMethods;

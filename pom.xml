@@ -150,12 +150,6 @@
             </dependency>
             <dependency>
                 <groupId>se.natusoft.osgi.aps</groupId>
-                <artifactId>aps-tools-lib</artifactId>
-                <version>${project.version}</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>se.natusoft.osgi.aps</groupId>
                 <artifactId>aps-core-lib</artifactId>
                 <version>${project.version}</version>
                 <scope>compile</scope>
@@ -207,12 +201,6 @@
             <!--
                 Test Dependencies.
             -->
-            <dependency>
-                <groupId>se.natusoft.osgi.aps</groupId>
-                <artifactId>aps-service-test-support</artifactId>
-                <version>${project.version}</version>
-                <scope>test</scope>
-            </dependency>
 
         </dependencies>
 
@@ -857,12 +845,6 @@
                 <dependency>
                     <groupId>se.natusoft.osgi.aps</groupId>
                     <artifactId>aps-vertx-cluster-datastore-service-provider</artifactId>
-                    <version>1.0.0</version>
-                    <scope>test</scope>
-                </dependency>
-                <dependency>
-                    <groupId>se.natusoft.osgi.aps</groupId>
-                    <artifactId>aps-vertx-event-bus-messaging-provider</artifactId>
                     <version>1.0.0</version>
                     <scope>test</scope>
                 </dependency>
