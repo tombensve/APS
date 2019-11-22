@@ -39,6 +39,12 @@ if [[ ! -d apache-maven ]]; then
     echo "Done."
 fi
 
+# We also need node.js / npm to build the frontend. Haven't found any base image
+# that contains both a JDK and Node.js ...
+if [[ ! -d node-v12.13.1-linux-x64 ]]; then
+    curl https://nodejs.org/dist/v12.13.1/node-v12.13.1-linux-x64.tar.xz | tar xvf -
+fi
+
 # Shutdown instance if running
 if [[ $(docker ps | grep ${image_name}) ]]; then
     echo "Shutting down running image ..."
@@ -54,12 +60,21 @@ if [[ $(docker images | grep ${image_name}) ]]; then
     echo "Done."
 fi
 
+# Start with a clean image.
+mvn clean
+
 # Create a new image.
 echo "Building image ..."
 docker build -t ${image_name} .
 echo "Done building image."
 
-# Clean the temporary maven installation copy.
+# Clean the temporary dirs
+
 echo "Cleaning temp apache-maven ..."
 rm -rf ./apache-maven
 echo "Done."
+
+echo "Cleaning temp node.js"
+rm -rf node-v12.13.1-linux-x64
+echo "Done."
+

@@ -74,7 +74,7 @@
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <aps.clustered.vertx.for.tests>false</aps.clustered.vertx.for.tests>
+        <aps.clustered.vertx.for.tests>true</aps.clustered.vertx.for.tests>
 
         <!--
             Other properties

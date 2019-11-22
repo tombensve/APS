@@ -108,7 +108,6 @@
         -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-<!--        <aps.clustered.vertx.for.tests>false</aps.clustered.vertx.for.tests>-->
     </properties>
 
     <dependencies>
@@ -136,7 +135,6 @@
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
             <scope>provided</scope>
-<!--            <classifier>indy</classifier>-->
             <version>${groovy.version}</version>
         </dependency>
 
@@ -273,7 +271,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <systemPropertyVariables>
-                        <aps.vertx.clustered>${aps.clustered.vertx.for.tests}</aps.vertx.clustered>
+                        <aps.vertx.clustered>true</aps.vertx.clustered>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>

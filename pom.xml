@@ -84,7 +84,7 @@
             If true then Vert.x instances started by tests will be clustered. For some tests
             this is required and if false then those tests will not run.
         -->
-        <aps.clustered.vertx.for.tests>false</aps.clustered.vertx.for.tests>
+        <aps.clustered.vertx.for.tests>true</aps.clustered.vertx.for.tests>
 
         <!--
             Dependency versions

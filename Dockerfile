@@ -1,9 +1,8 @@
-FROM openjdk:8
-#ADD m2 m2/
-##ADD apache-maven apache-maven/
+FROM openjdk:11
 
 COPY /docker-build/files/settings.xml /root/.m2/settings.xml
 COPY /apache-maven /apache-maven/
+COPY /node-v12.13.1-linux-x64 /node-v12.13.1-linux-x64/
 COPY / /source-code/
 
 RUN mkdir /m2repo
