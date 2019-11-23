@@ -45,6 +45,11 @@ if [[ ! -d node-v12.13.1-linux-x64 ]]; then
     curl https://nodejs.org/dist/v12.13.1/node-v12.13.1-linux-x64.tar.xz | tar xvf -
 fi
 
+if [[ ! -d aps-container-tools ]]; then
+    mkdir aps-container-tools
+    cp docker-build/bin/container/make-m2-repo-links.sh aps-container-tools/
+fi
+
 # Shutdown instance if running
 if [[ $(docker ps | grep ${image_name}) ]]; then
     echo "Shutting down running image ..."
@@ -61,7 +66,7 @@ if [[ $(docker images | grep ${image_name}) ]]; then
 fi
 
 # Start with a clean image.
-mvn clean
+# mvn clean
 
 # Create a new image.
 echo "Building image ..."
@@ -76,5 +81,9 @@ echo "Done."
 
 echo "Cleaning temp node.js"
 rm -rf node-v12.13.1-linux-x64
+echo "Done."
+
+echo "Cleaning /aps-container-tools/ ..."
+rm -rf aps-container-tools
 echo "Done."
 

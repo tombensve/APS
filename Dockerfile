@@ -1,3 +1,8 @@
+# This default version of the build in container Dockerfile requires a rerun
+# of docker-build/bin/create-build-image.sh after source has been modified.
+# This build takes about 11 minutes on my machine. The 'Dockerfile-build-local-fs-in-container'
+# sounds like something you would want to do. Such a build however takes an hour.
+# So recreateing image saves almost 50 minutes.
 FROM openjdk:11
 
 COPY /docker-build/files/settings.xml /root/.m2/settings.xml
