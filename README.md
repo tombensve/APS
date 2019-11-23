@@ -50,7 +50,7 @@ Citations:
 
 ----
 
-I decided to not use a maven plugin for Docker and run Docker commands directly in bash scripts instead.
+I decided to not use a maven plugin for Docker and run Docker commands directly in bash scripts via maven-exec-plugin instead.
 
 ## Runtime of the APS kind
 
