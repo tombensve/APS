@@ -40,7 +40,7 @@ This is run with maven-exec-plugin and a bash script.
 
 ----
 
-[Using a maven plugin for Docker is not a given!](https://medium.com/containers-101/using-docker-from-maven-and-maven-from-docker-1494238f1cf6). 
+[Using a maven plugin for Docker is not a given!](https://medium.com/containers-101/using-docker-from-maven-and-maven-from-docker-1494238f1cf6) 
 
 Citations:
 
