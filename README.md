@@ -34,7 +34,7 @@ There is now also a [docker-build](docker-build/) folder in the root. It contain
 
 _Build/APSDockerImages/APSWebManagerDemoDocker_ builds a Docker container running the web demo, exposing port 8880. When it is running http://localhost:8880/apsweb/ will give you a page showing a test of components. 
 
-This is run with maven-exec-plugin and a bash script. 
+This image is built using maven-exec-plugin and a bash script. 
 
 ----
 
