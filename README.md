@@ -22,9 +22,9 @@ This code base do contain some react frontend code using javascript. Thereby __n
 (Node Package Manager) needs to be installed on the machine before this will fully
 build.
 
-Bash scripts are run with maven-exec-plugin! If this will work with the Git bash shell on Windows or not I don't know. I don't have a windows machine to test on. 
+Bash scripts are run with maven-exec-plugin! If this will work with the Git bash shell on Windows or not I don't know. I don't have a windows machine to test on. On windows 10 it is possible to install a Linux concurrently with Windows. That is the safest bet to build on windows. 
 
-On windows 10 it is possible to install a Linux concurrently with Windows. That is the safest bet to build on windows. 
+At least one Docker container is built so Docker must also be available.
 
 ### Docker build
 
