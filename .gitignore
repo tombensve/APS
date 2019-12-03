@@ -5,6 +5,7 @@
 .DS_Store?
 ._.DS_Store
 _idea_old/
+.idea/
 target/
 !vagrant/deploy/git.anchor
 vagrant/deploy
