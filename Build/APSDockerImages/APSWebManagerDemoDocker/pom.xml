@@ -95,6 +95,16 @@
                             <executable>${basedir}/bin/setup-deployment.sh</executable>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>build-docker-image</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${basedir}/bin/build-docker-image.sh</executable>
+                        </configuration>
+                    </execution>
 <!--
                     <execution>
                         <id>setup-docker</id>

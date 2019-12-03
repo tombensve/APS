@@ -9,5 +9,7 @@ check=$(docker images | grep ${name})
 if [[ "${check}" == "" ]]; then
     docker build -t ${name} $(dirname $0)/..
 else
-    echo "Docker image '${name}' already exists!"
+    echo "Docker image '${name}' already exists! Removing old first!"
+    docker image rm --force ${name}
+    docker build -t ${name} $(dirname $0)/..
 fi

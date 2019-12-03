@@ -18,6 +18,13 @@ bundles=$(dirname $0)/../imgsrc/aps-platform-deployment/bundles
 deps=$(dirname $0)/../imgsrc/aps-platform-deployment/dependencies
 bin=$(dirname $0)/../imgsrc/aps-platform-deployment/bin
 
+if [[ ! -d ${bundles} ]]; then
+    mkdir ${bundles}
+fi
+if [[ ! -d ${deps} ]]; then
+    mkdir ${deps}
+fi
+
 # === Dependencies ===
 # Base
 ${dl} io.vertx                   vertx-core          ${vertxver}              ${deps}
