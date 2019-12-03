@@ -12,7 +12,7 @@
  * directly. One that uses the Vert.x eventbus JS client over the eventbus bridge to the Vert.x server
  * side. Most of the messages sent and received are only between the local components and it would be
  * a waste to message them out on the network and back again. Some of the messages we want to go to the
- * backend. This will also allow different clients to indirectly communicate with each other.
+ * backend.
  *
  * Also if at some later time I decided to use something else than Vert.x for example, then I only
  * need to change the router handling Vert.x. It will not affect the components which only uses
@@ -27,8 +27,11 @@
  *
  * - A general GUI message handler on one node in a cluster, with round robin between nodes in
  *   the cluster.
- * - To a message listener on all backend nodes of the cluster (be careful).
- * - To all clients of the application (be careful).
+ * - To a message listener on all backend nodes of the cluster (*1).
+ * - To all clients of the application (*1).
+ *
+ * (*1): Be very, very careful of this! Yes, it is physically possible to do, but in general
+ *       probably a very bad idea. I might inhibit this flexibility in the future.
  *
  * Routes have simple names like 'backend', 'all:backend', 'client', 'all:client', ...
  *
@@ -36,9 +39,10 @@
  * they go is determined by the bus routers.
  *
  * This works well when the application has a generic GUI subscriber that checks the message and
- * acts on it depending on what it is, which component sent it. Don't let all component send
- * messages to backend! Most components should only send messages locally to interact with other
- * components.
+ * acts on it depending on what it is. Don't let all component send messages to backend! Most
+ * components should only send messages locally to interact with other components. A nicer way
+ * is to have local services that listens to messages from components and those services then
+ * interact with backend, rather than components going directly to backend.
  *
  * APS is about simplicity and also flexibility. It thereby does not want to force how to handle
  * interaction between GUI and backend, other than that the bus must be used in one way or another.
@@ -50,23 +54,19 @@
  * - Use the APSWebManager component which listens for a JSON message describing the GUI to render,
  *   and renders it. The JSON also contains routes for sending messages, and for subscribing to
  *   messages. The JSON document then comes from the backend so the backend fully controls the
- *   rendered GUI. This is what the demo "APSWebManager" project does.
+ *   rendered GUI. This is what the demo "APSWebManager" project does. It works for relatively
+ *   static GUIs.
  *
- * - Each of the APS React components have its representative in a backend class. The purpose of
- *   this class is mostly to be configured and then generate its JSON data as part of the GUI
- *   spec sent to the client. Some of these component representatives can take a listener. When
- *   a listener is added then a unique address is generated with the unique client id, and and UUID.
- *   This is then stored in the cluster store, and a subscription is setup by the representative
- *   to receive direct messages from the component. ("address:"address) is then passed as route
- *   to the bus, which will then use the address after the ':' instead of resolving routes. These
- *   messages are then forwarded to the component representative subscriber. This then provides a
- *   complete backend API that does not require any frontend coding. Similar, but very different
- *   from Vaadin.
+ *   Each of the APS React components have its representative in a backend class. The purpose of
+ *   these classes are mostly to be configured and then generate JSON data as part of the GUI
+ *   spec sent to the client. This then provides a backend API that does not require any frontend
+ *   coding. Similar, but very different from Vaadin. These backend GUI classes are ONLY used to
+ *   create a GUI!! They are not used thereafter! When the GUI is upp all communication is done
+ *   via bus messages. They can be seen as a utility.
  *
- * You are thereby very free in how to use this. Note that the APSWebManager project has all the
+ * You are thereby very free in how to use this. Note that the APSWebTemplate project has all the
  * functionality, but GUI wise is only a demo and also used for testing components. To make your
- * own web using this, copy the APSWebManager project and adapt to your needs. Do not ever deploy
- * APSWebManager itself!
+ * own web using this, copy the APSWebTemplate project and adapt to your needs.
  */
 import APSLogger from "./APSLogger";
 import APSEventBusRouter from "./APSEventBusRouter";

@@ -116,12 +116,11 @@ class GUIProvider {
                 }
             } { Map<String, Object> received ->
 
-                this.logger.debug( "§§§§§§§§§§ Received: ${received}" )
+                //this.logger.debug( "§§§§§§§§§§ Received: ${received}" )
 
                 String recv = received.toString()
                 this.logger.info( "Received from '${ received[ "aps" ][ "origin" ] }': ${ recv }" )
 
-                // Note: Since we are called by the bus, it must still be available!
                 try {
                     if ( received[ "aps" ][ "type" ] == "avail" ) {
                         provideGui( apsBus, received[ "aps" ][ "origin" ] as String )

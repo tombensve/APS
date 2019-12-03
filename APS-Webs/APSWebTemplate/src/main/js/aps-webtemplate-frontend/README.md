@@ -12,7 +12,7 @@ The goal of this web project isto make components that communicate on a local ev
 
 - Components can also listen to messages on the bus and adapt.
 
-- Bus messages can be routed as "client", "backend", "all", "all:backend", "all:client. Vert.x EventBus client is used for "backend" and "all". The LocalEventBus does nothing else that pass on to all added EventBusRouter:s. There is a router for local messages, and one for Vert.x messages.
+- Bus messages can be routed as "client", "backend", "all", "all:backend", "all:client. Vert.x EventBus client is used for "backend" and "all". The LocalEventBus just passes messages directly to all subscribers and is used for "client".
 
 - Components can belong to a group, by having a common group name. Any component can be a "collector", which means that is will listen to and save messages received from other components in the group. This type of component is optimal for having routing "backend" and will then work like a submit function. This type of component will pass along is collected information in its own message.
 
@@ -20,7 +20,7 @@ The goal of this web project isto make components that communicate on a local ev
 
 -  This also allows for a special component: `APSWebManager`. This creates an `LocalEventBus` internally, creates a unique adress for itself, and then sends a message to "aps:(app):backend" address containing its unique address and an apsWebMgrId that needs to be a property of the component. This is routed to "client,backend". Any code listening to this message should check the _apsWebMgrId_ to see if it is for that code to use. If it is a JSON document of guiProps (including component names) is sent to the specified address. When `APSWebManager` sees this message it will render the components. This works because the _guiProps_ contains routing information and all components just sends messages. This component is in no way required to be used. The other components can be used as any other React component, but with the slight oddity of having to provide an `guiProps` object will all component settings.
 
-This is currently a work in progress and when run and you open <http://localhost:8880/apsweb/> you will only see most of the currently available components rendered horizontally in a row. This for testing each component. They are rendered from .../resources/guijson/gui.json.
+This is currently a work in progress and when run and you open <http://localhost:8880/apsweb/> you will only see most of the currently available components rendered horizontally in a row. This for visually testing each component.
 
 When done the components will either be used as any other React components or used via the `APSWebManager` component and sending a JSON document on the eventbus.
 
