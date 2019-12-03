@@ -24,6 +24,10 @@ This is currently a work in progress and when run and you open <http://localhost
 
 When done the components will either be used as any other React components or used via the `APSWebManager` component and sending a JSON document on the eventbus.
 
+In the demo web app there are 2 text fields which needs text for the following button to become active. This is handled automatically by component properties and the button in this case reacting on local messages. The calendar component have been configured to immediately send to backend. 
+
+Note however that components must not send directly to backend! Each component can be told how to route its messages (client, backend). If GUI is deliverd as JSON from backend then it makes sense to have certain components talk directly to backend. But if a more traditional react app is made then let the components only send locally and have local services that listens to them and who communicate with backend.   
+
 ---
 
 __I decided to keep the impressive React documentation I got automatically from ~create-react:__
