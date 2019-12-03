@@ -6,7 +6,7 @@ See <https://flow.org/en/docs/types/> for Flow types.
 
 ----
 
-The goal of this web project isto make components that communicate on a local eventbus. These are React components, and build upon mostly React-bootstrap components.
+The goal of this web project is to make components that communicate on a local eventbus. These are React components, and build upon mostly React-bootstrap components.
 
 - All relevant events of a component are sent as a message on the bus, always including current _value_, and component id, etc.
 
