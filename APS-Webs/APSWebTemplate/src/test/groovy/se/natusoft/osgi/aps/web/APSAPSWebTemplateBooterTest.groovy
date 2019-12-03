@@ -11,7 +11,7 @@ import static java.util.concurrent.TimeUnit.SECONDS
 
 @CompileStatic
 @TypeChecked
-class APSAPSWebManagerBooterTest extends APSRuntime {
+class APSAPSWebTemplateBooterTest extends APSRuntime {
 
     private static APSLogger logger = new APSLogger( APSLogger.PROP_LOGGING_FOR, "WebContentServerTest" )
 
@@ -20,7 +20,7 @@ class APSAPSWebManagerBooterTest extends APSRuntime {
 
         hold() maxTime 2L unit SECONDS go()
 
-        deploy 'aps-web-manager' with new APSActivator() from 'APS-Webs/APSWebManager/target/classes'
+        deploy 'aps-web-manager' with new APSActivator() from 'APS-Webs/APSWebTemplate/target/classes'
 
         // Unfortunately we have to wait a while here for the services to completely start up.
         // If you build on a really slow computer, this might not be enough.
@@ -67,7 +67,7 @@ class APSAPSWebManagerBooterTest extends APSRuntime {
         }
         finally {
             shutdown()
-            hold() maxTime 1 unit SECONDS go() // Give Vertx time to shut down.
+            hold() maxTime 1 unit SECONDS go() // Give Vert.x time to shut down.
         }
     }
 
@@ -78,8 +78,8 @@ class APSAPSWebManagerBooterTest extends APSRuntime {
         // I really wish there were a better way of doing this!! Relative to CWD will produce different
         // result depending on where build is started. THIS REALLY SUCKS!
         File projRoot = new File(
-                APSAPSWebManagerBooterTest.class.getResource(
-                        "APSAPSWebManagerBooterTest.class"
+                APSAPSWebTemplateBooterTest.class.getResource(
+                        "APSAPSWebTemplateBooterTest.class"
                 ).toString().substring( 5 )
         ).parentFile.parentFile.parentFile.parentFile.parentFile.parentFile.parentFile.parentFile
 

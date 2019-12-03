@@ -12,7 +12,7 @@
     <artifactId>APS-DockerImages</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>APSWebManagerDemoDocker</module>
+        <module>APSWebTemplateDemoDocker</module>
     </modules>
 
 </project>

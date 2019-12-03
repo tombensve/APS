@@ -52,10 +52,10 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>aps-web-manager</artifactId>
+    <artifactId>aps-web-template</artifactId>
     <packaging>bundle</packaging>
 
-    <name>APS Web Manager</name>
+    <name>APS Web Template</name>
 
     <description>
         This project contains 2 parts:
@@ -263,6 +263,7 @@
 
         <plugins>
 
+<!--
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.1.1</version>
@@ -272,6 +273,7 @@
                     </descriptors>
                 </configuration>
             </plugin>
+-->
 
             <!--
                 Force the jar plugin to use the maven-bundle-plugin generated manifest.
@@ -344,7 +346,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>${basedir}/src/main/js/aps-webmanager-frontend/build.sh</executable>
+                            <executable>${basedir}/src/main/js/aps-webtemplate-frontend/build.sh</executable>
                         </configuration>
                     </execution>
                 </executions>
@@ -416,10 +418,10 @@
                                 -->
                                 <mkdir dir="${project.basedir}/src/main/resources/webContent"/>
                                 <copy todir="${project.basedir}/src/main/resources/webContent" >
-                                    <fileset dir="${project.basedir}/src/main/js/aps-webmanager-frontend/build" includes="**"/>
+                                    <fileset dir="${project.basedir}/src/main/js/aps-webtemplate-frontend/build" includes="**"/>
                                 </copy>
                                 <copy todir="${project.basedir}/target/classes/webContent" >
-                                    <fileset dir="${project.basedir}/src/main/js/aps-webmanager-frontend/build" includes="**"/>
+                                    <fileset dir="${project.basedir}/src/main/js/aps-webtemplate-frontend/build" includes="**"/>
                                 </copy>
 
                                 <!--

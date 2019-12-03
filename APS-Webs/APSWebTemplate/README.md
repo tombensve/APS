@@ -6,7 +6,7 @@ Currently a lot of what is written in README.md files are for myself since I can
 
 Since this project also contains javascript code that is built via maven-exec-plugin __npm__
 (Node Package Manager) must be installed before this project can build. The called on
-`src/main/js/aps-webmanaged-frontend/build.sh` script checks for node_modules directory and
+`src/main/js/aps-webtemplate-frontend/build.sh` script checks for node_modules directory and
 does and `npm install` if it does not exist. This and general building of js code requires
 _npm_ to be installed on the machine building on.
 
@@ -28,7 +28,7 @@ There is a component actually called `APSWebManager`, if this is used it is the 
 
 Do **note** that there is absolutely no security what so ever yet!
 
-The frontend code is [here](src/main/js/aps-webmanager-frontend).
+The frontend code is [here](src/main/js/aps-webtemplate-frontend).
 
 ## How to use
 

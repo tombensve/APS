@@ -20,7 +20,7 @@ rm -f target/classes/webContent/static/js/*
 # Damn it!!!! This does not work either!! Even though I rebuild the frontend before even running the
 # maven build which copies and includes the frontend code under src/main/resources/webContent, it gets
 # the previous build, not this one!!!!!!! 1 + 1 does not even come anywhere close to 2 here ...
-# src/main/js/aps-webmanager-frontend/build.sh
+# src/main/js/aps-webtemplate-frontend/build.sh
 
 # Do run maven test with 'run-backend' profile. The -T 1 is to limit build to one thread, but doesn't
 # seem to help. The jar with web content still gets the previous web content before frontend rebuild.

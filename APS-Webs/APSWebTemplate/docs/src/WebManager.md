@@ -114,7 +114,7 @@ In the following specification any entry starting with '?' is optional.
 
 Client tells a backend that it exists and are ready for a GUI JSON document. 
 
-This is not a requirement, components can be created and a gui built with client code like any other React GUI. There are 2 components that works together and use this message: `APSPage` and `APSWebManager`. They will as default inform the backend that they are upp and running and the backend will send a JSON document with components to create. `APSWebMAnager` can however also be used with a property that tells it to not send the message, and only act as container, but create and supplying a common event bus to all children. 
+This is not a requirement, components can be created and a gui built with client code like any other React GUI. There are 2 components that works together and use this message: `APSPage` and `APSWebManager`. They will as default inform the backend that they are upp and running and the backend will send a JSON document with components to create. `APSWebManager` can however also be used with a property that tells it to not send the message, and only act as container, but create and supplying a common event bus to all children. 
 
     {
         "aps": {

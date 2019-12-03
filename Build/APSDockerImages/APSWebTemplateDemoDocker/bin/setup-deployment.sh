@@ -87,4 +87,4 @@ ${dl} se.natusoft.osgi.aps       aps-json-lib                                 1.
 ${dl} se.natusoft.osgi.aps       aps-vertx-provider                           1.0.0  ${bundles}
 ${dl} se.natusoft.osgi.aps       aps-vertx-cluster-datastore-service-provider 1.0.0  ${bundles}
 ${dl} se.natusoft.osgi.aps       aps-filesystem-service-provider               1.0.0  ${bundles}
-${dl} se.natusoft.osgi.aps       aps-web-manager                              1.0.0  ${bundles}
+${dl} se.natusoft.osgi.aps       aps-web-template                             1.0.0  ${bundles}

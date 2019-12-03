@@ -7,7 +7,7 @@
 cd $(dirname $0)
 
 # This needs doing the first time after checkout.
-if [ ! -d ./node_modules ]; then
+if [[ ! -d ./node_modules ]]; then
     npm install
 fi
 
