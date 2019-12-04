@@ -78,7 +78,7 @@ Where dependencies dir contains all dependency jars, and budlesdir contains all 
 
 `Build/APSDockerImages/APSWebTemplateDemoDocker/imgsrc/aps-platform-deployment/`contains a sample deployment structure.
 
-Lots of fun ideas, to little time ...
+Lots of fun ideas, too little time ...
 
 Tommy
 
