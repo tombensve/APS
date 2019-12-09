@@ -466,6 +466,7 @@ public class APSBundle implements Bundle {
     /**
      * Returns the added headers.
      */
+    @SuppressWarnings("rawtypes")
     @Override
     public Dictionary getHeaders() {
         return this.headers;
@@ -533,6 +534,7 @@ public class APSBundle implements Bundle {
      *
      * @param locale This is completely ignored.
      */
+    @SuppressWarnings("rawtypes")
     @Override
     public Dictionary getHeaders( String locale ) {
         return this.headers;
@@ -553,6 +555,7 @@ public class APSBundle implements Bundle {
      *
      * @throws ClassNotFoundException on failure to find class.
      */
+    @SuppressWarnings("rawtypes")
     @Override
     public Class loadClass( String name ) throws ClassNotFoundException {
         if ( name.startsWith( "/" ) || name.startsWith( "." ) ) {
@@ -570,6 +573,7 @@ public class APSBundle implements Bundle {
      *
      * @throws IOException on any IO problems.
      */
+    @SuppressWarnings("rawtypes")
     @Override
     public Enumeration getResources( String name ) throws IOException {
         if ( name.startsWith( "/" ) ) {
@@ -587,6 +591,7 @@ public class APSBundle implements Bundle {
      *
      * @param path Only returns paths starting with this.
      */
+    @SuppressWarnings("rawtypes")
     @Override
     public Enumeration getEntryPaths( String path ) {
         Vector<String> paths = new Vector<>();
@@ -603,6 +608,7 @@ public class APSBundle implements Bundle {
      *
      * @param path The start path of the entry to get.
      */
+    @SuppressWarnings("rawtypes")
     @Override
     public URL getEntry( String path ) {
         Enumeration enumeration = getEntryPaths( path );
@@ -627,6 +633,7 @@ public class APSBundle implements Bundle {
     /**
      * Currently not supported. Will just return getEntryPaths(path).
      */
+    @SuppressWarnings("rawtypes")
     @Override
     public Enumeration findEntries( String path, String filePattern, boolean recurse ) {
         return getEntryPaths( path );
@@ -643,6 +650,7 @@ public class APSBundle implements Bundle {
     /**
      * Not supported! Returns null!
      */
+    @SuppressWarnings("rawtypes")
     @Override
     public Map getSignerCertificates( int signersType ) {
         return null;

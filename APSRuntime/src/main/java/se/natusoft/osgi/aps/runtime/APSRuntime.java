@@ -82,15 +82,17 @@ import java.util.concurrent.TimeUnit;
  */
 @SuppressWarnings({ "WeakerAccess", "SpellCheckingInspection" })
 public class APSRuntime {
+
     //
     // Private Members
     //
 
+    /** Wee need to keep track of all created Bundles. */
+    private static final List<APSBundle> bundles = new LinkedList<>();
+
     private long idGen = 0;
 
     private ServiceRegistry serviceRegistry = new ServiceRegistry();
-
-    private List<APSBundle> bundles = new LinkedList<>();
 
     private Map<String, APSBundle> bundleByName = new HashMap<>();
 
@@ -109,9 +111,16 @@ public class APSRuntime {
      * @param type   The type of the event.
      */
     private void bundleEvent( Bundle bundle, int type ) {
-        for ( APSBundle apsBundle : this.bundles ) {
+        for ( APSBundle apsBundle : bundles ) {
             ( (APSBundleContext) apsBundle.getBundleContext() ).bundleEvent( bundle, type );
         }
+    }
+
+    /**
+     * For internal use.
+     */
+    public static List<APSBundle> getInternalBundles() {
+        return bundles;
     }
 
     /**
@@ -121,11 +130,11 @@ public class APSRuntime {
      */
     public APSBundle createBundle( String symbolicName ) {
         APSBundle bundle = new APSBundle( ++idGen, symbolicName, this.serviceRegistry );
-        this.bundles.add( bundle );
+        bundles.add( bundle );
         this.bundleByName.put( symbolicName, bundle );
         this.bundleById.put( bundle.getBundleId(), bundle );
 
-        for ( APSBundle apsBundle : this.bundles ) {
+        for ( APSBundle apsBundle : bundles ) {
             ( (APSBundleContext) apsBundle.getBundleContext() ).bundleEvent( bundle, BundleEvent.INSTALLED );
         }
 
@@ -138,11 +147,11 @@ public class APSRuntime {
      * @param bundle The bundle to remove.
      */
     public void removeBundle( APSBundle bundle ) {
-        this.bundles.remove( bundle );
+        bundles.remove( bundle );
         this.bundleByName.remove( bundle.getSymbolicName() );
         this.bundleById.remove( bundle.getBundleId() );
 
-        for ( APSBundle apsBundle : this.bundles ) {
+        for ( APSBundle apsBundle : bundles ) {
             ( (APSBundleContext) apsBundle.getBundleContext() ).bundleEvent( bundle, BundleEvent.UNINSTALLED );
         }
     }
@@ -161,7 +170,7 @@ public class APSRuntime {
      * Returns all created bundles.
      */
     public List<APSBundle> getBundles() {
-        return this.bundles;
+        return bundles;
     }
 
     /**
@@ -528,6 +537,7 @@ public class APSRuntime {
          *
          * @return itself.
          */
+        @SuppressWarnings("rawtypes")
         public BundleBuilder manifest_from( Class testClass) {
             manifest_from( testClass, null );
             return this;
@@ -542,7 +552,7 @@ public class APSRuntime {
          *
          * @return itself.
          */
-        @SuppressWarnings("UnusedReturnValue")
+        @SuppressWarnings({ "UnusedReturnValue", "rawtypes" })
         public BundleBuilder manifest_from( Class testClass, String name) {
             if (name == null || name.equals( "" )) {
                 name = "MANIFEST.MF";

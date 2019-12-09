@@ -133,11 +133,12 @@ public class APSBundleContext implements BundleContext {
     }
 
     /**
-     * Not supported!
+     * Returns an array of all bundles.
      */
     @Override
     public Bundle[] getBundles() {
-        return new Bundle[]{ this.bundle };
+        int size = APSRuntime.getInternalBundles().size();
+        return APSRuntime.getInternalBundles().toArray( new Bundle[ size ] );
     }
 
     @SuppressWarnings("RedundantThrows") // It is expected by the BundleContext API!
