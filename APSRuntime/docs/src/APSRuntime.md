@@ -1,6 +1,8 @@
 # APS Runtime
 
-This is an implementation of the parts of the 4 base OSGi APIs used by APS. It reads nothing from the manifest and does not support modularisation. This can work in conjunction with JPMS, but it is not modularised at all right now. 
+This is an implementation of the parts of the 4 base OSGi APIs used by APS. It reads nothing from the manifest and does not support modularisation. It deploys all bundles on start, and currently have no stop / shutdown feature. Unlike OSGi new bundles cannot be deployed / redeployed runtime! Each deployment is a "node" in a cluster! If you want to change the contents of a node then deploy a new node with the contents wanted, and then take down the old one. 
+
+APSRuntime can theoretically work in conjunction with JPMS.
 
 The **APSRuntime** class is the core of this. It provides both the runtime and is used for running tests. Most tests extends this class and use its deployment DSL looking like this:
 
@@ -29,7 +31,7 @@ APSActivator also allows for _@Initializer_ annotations on parameter free method
 
 The _aps-platfrom-booter-1.0.0.jar_ will put all jars in _--dependenciesDir_ on the classpath and all jars in _--bundlesDir_ will also be added to classpath and then deployed as described above. That is the difference between the 2 directories. Theoretically all jars can be put in the bundle dir, it will just be slightly slower due to scanning all jars for annotations which will only exist in bundle type jars.
 
-APSActivator is fully documented elsewhere in the full documentation.
+APSActivator is documented elsewhere in the full documentation.
 
 
 ## (Un)supported OSGi APIs
@@ -66,7 +68,7 @@ Partly supported.
 - addFrameworkListener( FrameworkListener listener )
 - removeFrameworkListener( FrameworkListener listener ) 
 - ungetService( ServiceReference reference ) -- does nothing, always returns true.
-- getDataFile( String filename ) -- Throws RuntimeException.
+- getDataFile( String filename ) -- Throws RuntimeException. (APS has a file system service!)
 
 ### ServiceReference
 
@@ -88,3 +90,9 @@ So why this and not a full OSGi container ?
 APS started with a full OSGi container. But it is also heavily dependent on Vert.x. The previous version of Vert.x where deployable in an OSGi container with only a _relatively_ small set of dependencies that could be deployed as OSGi bundles. With versin 3.8.0 I spent 3 days trying to find and resolve all dependencies required to deploy in Felix. After 3 days I gave up. For each jar deployed there were 2-5 more required. It just never ended. APS is not using 100% of everything in Vert.x, but when deploying now 100% of all dependencies seemed to be needed. Deploying in APSRuntime I have a lot fewer dependencies required to run, more or less what I compile with.
 
 I'm not a fan of JPMS, I think OSGi is much better. But JPMS is now the Java standard and Vert.x hints at adopting it, and APSRuntime can co-exist with JPMS, not so with full OSGi. Its probably going to be rather slow, but in the long run more java code are going to adopt JPMS. APSRuntime still uses the OSGi service model which is much nicer than the old ServiceLoader based service model used by JPMS. OSGi is rather brilliant in allowing a set of properties to be associated with a service registration, and then allowing a query on those properties when looking up a service. This provides a flexibility ServiceLoader doesn't have. 
+
+## TODO
+
+- Add some way of nicely shutting down an APSRuntime node, rather than just killing process.
+
+-  Consider the possibility of building a fat jar including runtime, dependencies, and selected bundles that can be run with java -jar. 
