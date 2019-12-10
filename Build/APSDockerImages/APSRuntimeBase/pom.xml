@@ -9,18 +9,12 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>APSWebTemplateDemoDocker</artifactId>
+    <artifactId>APSRuntimeBase</artifactId>
 
     <!--
         These to ensure dependencies are built before this is run.
     -->
     <dependencies>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>APSRuntimeBase</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-<!--
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-apis</artifactId>
@@ -51,25 +45,17 @@
             <artifactId>aps-web-manager</artifactId>
             <version>1.0.0</version>
         </dependency>
--->
-<!--
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId></artifactId>
-            <version>1.0.0</version>
-        </dependency>
--->
     </dependencies>
 
     <build>
-<!--
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
--->
+        <!--
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <filtering>true</filtering>
+                    </resource>
+                </resources>
+        -->
         <plugins>
             <!--
                 I have decided to simply use maven-exec-plugin to run the docker command to build and run
@@ -126,44 +112,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!--
-            <plugin>
-                <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>0.31.0</version>
-
-                <configuration>
-                    <images>
-                        <image>
-                        </image>
-                    </images>
-                </configuration>
-
-                !- Connect start/stop to pre- and
-                     post-integration-test phase, respectively if you want to start
-                     your docker containers during integration tests -
-                <executions>
-                    <execution>
-                        <id>start</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            !- "build" should be used to create the images with the
-                                 artifact -
-                            <goal>build</goal>
-                            <goal>start</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>stop</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
         </plugins>
     </build>
 

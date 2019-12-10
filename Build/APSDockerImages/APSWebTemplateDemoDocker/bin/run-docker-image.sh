@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
+# This is a convenience to run the container. This is never called during build.
 
-DNS=192.168.72.1 # Needs to be modified!
-IMAGE=aps-runtime-java11
+imageName=$(cat $(dirname $0)/../ImageName)
 
-docker run -p 8880:8880 --dns ${DNS} ${IMAGE} aps-platform/bin/run.sh
+$(dirname $0)/../../bin/run-docker-image.sh "${imageName}" "aps-web-template-demo" "8880:8880"

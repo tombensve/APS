@@ -1,15 +1,6 @@
 #!/usr/bin/env bash
-name=aps-runtime-java11
+# This is executed on maven build of project.
 
-if [[ $1 == "--replace" ]]; then
-    docker rmi --force ${name}
-fi
+imageName=$(cat $(dirname $0)/../ImageName)
 
-check=$(docker images | grep ${name})
-if [[ "${check}" == "" ]]; then
-    docker build -t ${name} $(dirname $0)/..
-else
-    echo "Docker image '${name}' already exists! Removing old first!"
-    docker image rm --force ${name}
-    docker build -t ${name} $(dirname $0)/..
-fi
+$(dirname $0)/../../bin/build-docker-image.sh "${imageName}" $(dirname $0)/..
