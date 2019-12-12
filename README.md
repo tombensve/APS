@@ -18,6 +18,8 @@ This project is now using 2 exceptional frameworks: __Vert.x & React__. These bo
 
 **Note**: To be very clear, as said above "this is a playground where I'm having fun", and that status will remain even when I feel this is done! Why ? Because it really cannot have any other status! If anyone thinks what I'm doing here is interesting then clone it and do what you want with it, but you are on your own! 
 
+There is currently no real web app, only components demo. I'm working on comming up with a an idea for a more real web app to do with it as a more real test of if this is a good idea or not. Maybe a configuration app for all configurations handled by the APSConfigService.
+
 ## Building
 
 This code base do contain some react frontend code using javascript. Thereby __npm__
