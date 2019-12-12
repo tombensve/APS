@@ -2,6 +2,10 @@
 
 Currently a lot of what is written in README.md files are for myself since I can only work on this sporadically I need to document a lot to remind myself. When done I will cleanup a lot of these texts.
 
+## TODO
+
+This currenlty provides both frontend and backend in same maven module and same jar file when built. These should be separated and run in separate Docker containers to make it more representative in how it is indended to be used.
+
 # Prerequisites
 
 Since this project also contains javascript code that is built via maven-exec-plugin __npm__
@@ -37,3 +41,5 @@ Due to limitations in react, or maybe just generic frontend package handling, th
 # Probably only builds on unixes!
 
 The pom calls a build.sh script to deal with frontend build. This might have problems if built on windows! On windows the git installation do include a bash. __However__ there is no guarantee that maven will use gits bash implementation when trying to execute _build.sh_. Possibly if the maven job is started from a git bash. A windows 10 with a coexisting Linux should work.
+
+Note that it is also possible to build in a Docker container! This is slower than building locally, but should work the same everywhere. See `docker-build/` folder in root.

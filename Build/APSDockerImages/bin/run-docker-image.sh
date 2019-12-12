@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash -x
 # Common version to be reused. Do the following in sub projects:
 # ---------------------------------------------------------------
 # imageName=$(cat $(dirname $0)/../ImageName)
@@ -11,4 +11,8 @@ expose=$3
 
 DNS=$($(dirname $0)/resolve-dns.sh)
 
-docker run -p ${expose} --dns ${DNS} --name ${containerName} ${imageName} aps-platform/bin/run.sh
+if [[ $(docker container ls --all | grep "${containerName}") ]]; then
+	docker container restart ${containerName}
+else
+    docker run -p ${expose} --dns ${DNS} --name ${containerName} ${imageName} aps-platform/bin/run.sh
+fi
