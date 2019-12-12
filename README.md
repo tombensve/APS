@@ -16,6 +16,8 @@ The __original (and still active) goal__ with this is to make a very easy to use
 
 This project is now using 2 exceptional frameworks: __Vert.x & React__. These both belong to the same category: Things that just work! I have the highest respect for the people behind both of these. These both also supply outstanding documentation (which is not always the case with all frameworks and libraries!).
 
+**Note**: To be very clear, as said above "this is a playground where I'm having fun", and that status will remain even when I feel this is done! Why ? Because it really cannot have any other status! If anyone thinks what I'm doing here is interesting then clone it and do what you want with it, but you are on your own! 
+
 ## Building
 
 This code base do contain some react frontend code using javascript. Thereby __npm__
