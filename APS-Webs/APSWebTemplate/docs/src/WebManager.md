@@ -47,28 +47,30 @@ From **client perspective**:
     - "aps:(app):backend" 
        - Network: send
 
-- Cluster
+- Cluster (**warning** potentially dangerous, consider possible consequences! )
 
-    - "aps:(app):all" : Every backend and client of (app).
-       - Network: listen, send 
+    - _"aps:(app):all" : Every backend and client of (app)._ (Dont make much sense)
+       - _Network: listen, send _
 
-    - "aps:(app):all:backend" : Every backend of (app). 
-       - Network: send 
+    - _"aps:(app):all:backend" : Every backend of (app)._ (Dont make much sense)
+       - _Network: send_
 
-    - "aps:(app):all:client" : Every client of (app).
+    - "aps:(app):all:client" : Every client of (app). (Always via backend)
         - Network: listen, send
+
+** Notes:**
    
-**Note 1:**  Only clients have a unique address. They are the only ones that needs a unique address due to being the only unique thing. 
+- Only clients have a unique address. They are the only ones that needs a unique address due to being the only unique thing. 
 
-**Note 2:**  Vert.x does a round robin on "send" to same address. Only backend messages are delivered with a send. All cluster messages are delived with a "publish" and will always go to every subscriber.
+- Vert.x does a round robin on "send" to same address. Only backend messages are delivered with a send. All cluster messages are delived with a "publish" and will always go to every subscriber.
 
-**Note 3:** Both on client side and on backend, code is not interacting with the Vert.x bus, but local busses with message routers. So what messages are sent on the Vert.x bus and which message method is used is a routing question. Senders and receivers don't need to care. 
+- Both on client side and on backend, code is not interacting with the Vert.x bus, but local busses with message routers. So what messages are sent on the Vert.x bus and which message method is used is a routing question. Senders and receivers don't need to care. 
 
 ### Routing Strategy
 
 My first though was to hide routing as much as possible, but that creates a lot of limitations. 
 
-Components have indirect routing information passed to them by the creater of the component, and in general all routing is handled by the `APSComponent` base class for the APS components. Individual components should ignore routing completely. They just send and possibly receive messages not caring about anything else than the message.
+Components have indirect routing information passed to them by the creator of the component, and in general all routing is handled by the `APSComponent` base class for the APS components. Individual components should ignore routing completely. They just send and possibly receive messages not caring about anything else than the message.
 
 Some components need to talk to each other locally, and some need to reach a backend. It is up to the code that creates the components to determine that by supplying a routing property of:
 
@@ -87,25 +89,18 @@ When a message is sent, there is no from, there is only a to. My goal is that al
 
 The `content` part can be missing or empty depending on `type`.
 
-In the following specification any entry starting with '?' is optional. 
+In the following specification any entry starting with '?' is optional.
 
 #### General
 
     {
-        "aps": { // To be moved to header instead ...
+        "aps": { 
             "origin": "(address)",
             "app": "(app)",
             "type": "(message type)",
-            "identity": {
-                userId: "(id)",
-                userName: "(name of user)",
-                auth: {
-                    "type": "(authentication type)",
-                    (authentication specific data)
-                }
             }
         },
-        content: { // Will probably go away when "aps" is moved to header.
+        content: { 
             ...message type specific data
         }
     }
@@ -114,7 +109,7 @@ In the following specification any entry starting with '?' is optional.
 
 Client tells a backend that it exists and are ready for a GUI JSON document. 
 
-This is not a requirement, components can be created and a gui built with client code like any other React GUI. There are 2 components that works together and use this message: `APSPage` and `APSWebManager`. They will as default inform the backend that they are upp and running and the backend will send a JSON document with components to create. `APSWebManager` can however also be used with a property that tells it to not send the message, and only act as container, but create and supplying a common event bus to all children. 
+This is not a requirement, components can be created and a gui built with client code like any other React GUI. There is one component that use this message: `APSWebManager`. It will as default inform the backend that it is upp and running and the backend will send a JSON document with components to create. `APSWebManager` can however also be used with a property that tells it to not send the message, and only act as container, but create and supplying a common event bus to all children. 
 
     {
         "aps": {
