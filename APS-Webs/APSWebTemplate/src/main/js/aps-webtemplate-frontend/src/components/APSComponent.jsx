@@ -1,4 +1,5 @@
-// This code uses Flow syntax!
+// This code uses Flow syntax! There are definitions in APSTypes.flow, but it depends on IDEA version and
+// machine run on, longitude / latitude of machine, degree from north, what day it is, if IDEA picks up on this.
 import { Component } from 'react'
 import '../APSEventBus'
 import PropTypes from "prop-types"
@@ -16,7 +17,7 @@ import { apsObject } from "../Utils"
  *
  * ## Requires the following props
  *
- * __eventBus (req)__: The eventbus to use.
+ * __eventBus (req)__: The event bus to use.
  *
  * __mgrId (opt)__:    The id of the APSWebManager who created it.
  *
@@ -189,7 +190,8 @@ class APSComponent extends Component {
     }
 
     /**
-     * Helper to message messages from event handlers. This gets everything but the message from the gui spec JSON.
+     * Helper to send messages from event handlers. This gets everything (properties) but the message from the gui
+     * spec JSON.
      *
      * @param {object} message The message to message. Should be a string of JSON. Use eventMessage() as input to this.
      */
@@ -199,7 +201,7 @@ class APSComponent extends Component {
     }
 
     /**
-     * Helper to subscribe to messages. This gets everything else from the gui spec JSON.
+     * Helper to subscribe to messages. This gets everything else (properties) from the gui spec JSON.
      *
      * @param {function(string, string)} subscriber The function to call with messages.
      */

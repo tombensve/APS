@@ -261,7 +261,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
 
             let routes = headers[EVENT_ROUTING];
 
-            // noinspection SuspiciousTypeOfGuard
+            // noinspection SuspiciousTypeOfGuard,PointlessBooleanExpressionJS
             if ( routes != null && routes !== undefined ) {
                 for ( let route: string of routes[ROUTE_INCOMING].split( ',' ) ) {
 
@@ -326,7 +326,7 @@ export default class APSVertxEventBusRouter implements APSEventBusRouter {
         if ( this.busReady ) {
             let routes = headers[EVENT_ROUTING];
 
-            // noinspection SuspiciousTypeOfGuard
+            // noinspection SuspiciousTypeOfGuard,PointlessBooleanExpressionJS
             if ( routes != null && routes !== undefined ) {
 
                 for ( let route: string of routes[ROUTE_INCOMING].split( ',' ) ) {
