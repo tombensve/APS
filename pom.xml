@@ -140,6 +140,17 @@
         <url>https://github.com/tombensve/APS/issues</url>
     </issueManagement>
 
+    <!--
+        Make sure we have access to JCenter!!
+    -->
+    <repositories>
+        <repository>
+            <id>jcenter</id>
+            <name>jcenter</name>
+            <url>https://jcenter.bintray.com</url>
+        </repository>
+    </repositories>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -269,17 +280,6 @@
     <!--
         This makes my bintray repository available for dependencies not in jcenter.
     -->
-    <repositories>
-<!--        <repository>-->
-<!--            <snapshots>-->
-<!--                <enabled>true</enabled>-->
-<!--            </snapshots>-->
-<!--            <id>bintray-tommy-maven</id>-->
-<!--            <name>bintray</name>-->
-<!--            <url> http://jcenter.bintray.com</url>-->
-<!--        </repository>-->
-    </repositories>
-
     <build>
         <extensions>
             <!-- Enabling the use of FTP -->
