@@ -68,21 +68,19 @@ APS is intended to be a fullstack web application platform, with microservice ar
 
 (<https://github.com/tombensve/APS/tree/master/APS-Webs/APSWebTemplate/src/main/js/aps-webtemplate-frontend>)
 
-APS makes use of React for frontend, but are not totally locked into React. It however do use ES6 code. I don't think it would be impossible to adapt to Vue.js. What is central for APS frontend is the _APSEventBus_, that is all components are connected to APSEventBus and communication over it. The frontend is message driven just like the backend. There is one _oddidy_ in the APS frontend: It talks to backend over the bus by sending messages! In other words, no REST! There is however support for form behavior, just not an HTML form. Components can interact with each other using messages and many do via inherited functionality from APSComponent base component class. They don't have to have specific knowlede of each other, just be on the same bus.
+APS makes use of React for frontend, but are not totally locked into React. It however do use ES6 code. I don't think it would be impossible to adapt to Vue.js. What is central for APS frontend is the _APSEventBus_, that is all components are connected to APSEventBus and communication over it. The frontend is message driven just like the backend. There is one _oddidy_ in the APS frontend: It talks to backend over the bus by sending messages! In other words, no REST! There is however support for form behavior, just not an HTML form. Components can interact with each other using messages and many do via inherited functionality from APSComponent base component class. They don't have to have specific knowlede of each other, just be on the same bus. APSEventBus on the frontend works more or less the same as APSBus on the backend having routers. There is one local router and one that uses Vert.x EventBus to reach backend. 
 
 ## Backend
 
 The backend and the bridge between frontend and backend is handled by [Vert.x](https://vertx.io/). APS however provides a thin abstraction layer over Vert.x and other code for some things. One central such is APSBus. This have a slighly different adressing scheme than the frontend counterpart APSEventBus, but otherwise behave very similarly by requiring APSBusRouter implementations as Services. For this level of services the OSGi service model is used to provide APSBusRouter implementations. There is one implementation that sends messages locally within JVM. There is one that uses Vert.x EventBus. There is one that sends messages over AMQP (via Vert.x). APSBus forwards calls to found implementations of APSBusRouter to handle. Deploy those implementations wanted. The backend bus has an adress scheme called _target_ in the form of "id:address" where id can be "local", "cluster", whatever there is an APSBusRouter implementation supporting. What the "address" part is depends on the implementation. For "cluster" and "local" it is just a unique name that an application service subscribes to and a client sends to.   
 
-Backend is based on OSGi light, only parts of the 4 base OSGi APIs. APS currently runs on its own simple backend (APSRuntime) implementing these base OSGi APIs, but currenlty without any modularity.  The runtime is started with:
+Backend is based on OSGi light, only parts of the 4 base OSGi APIs. APS currently runs on its own simple backend (APSRuntime) implementing these base OSGi APIs, but without any modularity.  The runtime is started with:
 
     java -jar aps-platform-booter-1.0.0.jar --dependenciesDir path/to/dependenciesdir --bundlesDir path/to/bundlesdir 
 
 Where dependencies dir contains all dependency jars, and budlesdir contains all bundles to deploy.
 
-`Build/APSDockerImages/APSWebTemplateDemoDocker/imgsrc/aps-platform-deployment/`contains a sample deployment structure.
-
-(TODO: Make code examples and then provide link to them here ...) 
+(TODO: Add usage examples) 
 
 Lots of fun ideas, too little time ...
 
