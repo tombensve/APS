@@ -63,9 +63,22 @@
         <module>DocumentationMixIn</module>
         <module>BuildNumberMixIn</module>
         <module>TestConfigDepsMixin</module>
-        <module>APSDockerImages</module>
+        <!--module>APSDockerImages</module-->
 
     </modules>
 
+    <profiles>
+        <!--
+            Don't build docker container by default. These will of course fail when
+            built under docker (/docker-build).
+        -->
+        <profile>
+            <id>build-docker-containers</id>
+            <modules>
+                <module>APSDockerImages</module>
+            </modules>
+        </profile>
+
+    </profiles>
 
 </project>
