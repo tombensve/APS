@@ -47,7 +47,7 @@
     <packaging>pom</packaging>
     <version>1.0.0</version>
 
-    <name>OSGi Application Platform Services</name>
+    <name>Application Platform Services</name>
 
     <url>https://github.com/tombensve/APS</url>
 
@@ -365,7 +365,6 @@
             <!--
                 Setup for java 11.
             -->
-<!--
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
@@ -373,7 +372,6 @@
                     <release>11</release>
                 </configuration>
             </plugin>
--->
 
             <!--
                 Define project assemblies.
