@@ -317,11 +317,6 @@
                             <artifactId>groovy-mixin</artifactId>
                             <version>${project.version}</version>
                         </mixin>
-<!--                        <mixin>-->
-<!--                            <groupId>${project.groupId}</groupId>-->
-<!--                            <artifactId>deploy-bundle-mixin</artifactId>-->
-<!--                            <version>${project.version}</version>-->
-<!--                        </mixin>-->
                         <mixin>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>build-number-mixin</artifactId>
@@ -339,6 +334,7 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <version>1.6.0</version>
                 <executions>
+
                     <execution>
                         <id>build frontend</id>
                         <phase>generate-resources</phase>
@@ -349,6 +345,18 @@
                             <executable>${basedir}/src/main/js/aps-webtemplate-frontend/build.sh</executable>
                         </configuration>
                     </execution>
+
+                    <execution>
+                        <id>build-docker-image</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${basedir}/docker/bin/build-docker-image.sh</executable>
+                        </configuration>
+                    </execution>
+
                 </executions>
             </plugin>
 
@@ -527,7 +535,7 @@
                 <version>2.22.0</version>
                 <configuration>
                     <excludes>
-                        <exclude>**/RunBackendTest</exclude>
+                        <exclude>**/RunBackend</exclude>
                     </excludes>
                 </configuration>
             </plugin>
@@ -555,7 +563,7 @@
                                 <exclude>**/APSWebBooterTest</exclude>
                             </excludes>
                             <includes>
-                                <include>**/RunBackendTest</include>
+                                <include>**/RunBackend</include>
                             </includes>
                         </configuration>
                     </plugin>

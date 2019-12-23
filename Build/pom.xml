@@ -58,6 +58,7 @@
     </properties>
 
     <modules>
+        <module>APSRuntimeBase</module>
         <module>DeployBundleMixIn</module>
         <module>GroovyMixIn</module>
         <module>DocumentationMixIn</module>

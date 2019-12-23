@@ -508,12 +508,6 @@
             <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-runtime</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
 
     </dependencies>
 
