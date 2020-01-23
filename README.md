@@ -80,6 +80,8 @@ Backend is based on OSGi light, only parts of the 4 base OSGi APIs. APS currentl
 
 Where dependencies dir contains all dependency jars, and budlesdir contains all bundles to deploy.
 
+I was contacted by someone who had seen this repo and asked about APSRuntime as used in unit tests to deploy and run services. Since APSRuntime is a bit bound to APS I decided to break it out into a separate repo that has no dependencies on APS: [OSGishTestRunner](https://github.com/tombensve/OSGishTestRunner). 
+
 (TODO: Add usage examples) 
 
 Lots of fun ideas, too little time ...
