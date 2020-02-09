@@ -44,24 +44,23 @@ import org.osgi.framework.ServiceRegistration
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.NotUsed
 import se.natusoft.docutations.Nullable
-import se.natusoft.docutations.Reactive
 import se.natusoft.docutations.Optional
 import se.natusoft.osgi.aps.activator.APSActivatorInteraction
-import se.natusoft.osgi.aps.activator.annotation.BundleStop
-import se.natusoft.osgi.aps.activator.annotation.Initializer
-import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
-import se.natusoft.osgi.aps.activator.annotation.OSGiService
-import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
-import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.osgi.aps.activator.annotation.*
 import se.natusoft.osgi.aps.api.messaging.APSBus
 import se.natusoft.osgi.aps.api.messaging.APSBusRouter
+import se.natusoft.osgi.aps.api.messaging.APSMessagingException
+import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.osgi.aps.exceptions.APSInvalidException
+import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.types.APSUUID
 import se.natusoft.osgi.aps.types.ID
 import se.natusoft.osgi.aps.util.APSLogger
+
+import java.time.Instant
 
 /**
  * This is a simple bus API that is used by creating an instance and passing a BundleContext.
@@ -140,16 +139,16 @@ class APSBusProvider implements APSBus {
             //
             // file of the bundle/jar containing the implementation(s).
 
-            List<String> busRouters = resolveBusRouters(  )
+            List<String> busRouters = resolveBusRouters()
 
             this.logger.info( "Discovering APSBusRouter providers ..." )
 
-            busRouters.each {String router ->
+            busRouters.each { String router ->
                 this.logger.info( "Found bus router: ${router}" )
             }
-            this.logger.info( "Total of ${busRouters.size(  )} bus routers found!" )
+            this.logger.info( "Total of ${busRouters.size()} bus routers found!" )
 
-            while ( this.routerTracker.trackedServiceCount < busRouters.size(  ) ) {
+            while ( this.routerTracker.trackedServiceCount < busRouters.size() ) {
                 Thread.sleep( 1000 )
             }
 
@@ -170,18 +169,18 @@ class APSBusProvider implements APSBus {
         this.getClass().getClassLoader().getResources( "aps/bus/routers" ).each { URL url ->
 
             BufferedReader reader = new BufferedReader( new InputStreamReader( url.openStream() ) )
-            reader.lines(  ).each { String line ->
-                if (line.trim(  ).length(  ) > 0) {
-                    busRouters[line] = line
+            reader.lines().each { String line ->
+                if ( line.trim().length() > 0 ) {
+                    busRouters[ line ] = line
                 }
             }
 
-            reader.close(  )
+            reader.close()
         }
 
-        List<String> routers = []
-        busRouters.keySet(  ).each { String router ->
-            routers << router.trim(  )
+        List<String> routers = [ ]
+        busRouters.keySet().each { String router ->
+            routers << router.trim()
         }
 
         routers
@@ -197,23 +196,50 @@ class APSBusProvider implements APSBus {
         }
     }
 
+    private static boolean validateBaseMessageStructure( Map<String, Object> message ) {
+        if ( message[ 'aps' ] != null && message[ 'content' ] != null ) {
+            true
+        }
+        else {
+            false
+        }
+    }
+
+    private static validationFail( APSHandler<APSResult<?>> resultHandler ) {
+        resultHandler.handle(
+                APSResult.failure(
+                        new APSValidationException( "Bad message structure! 'aps' and 'content' keys need to be in " +
+                                "root!" )
+                )
+        )
+    }
+
     /**
      * Sends a message.
      *
-     * @param target The target to send to. Note that for send you can give multiple, comma separated
-     *        targets to send same message to multiple places.
+     * @param target The target to send to.
      * @param message The message to send. Only JSON structures allowed and top level has to be an object.
      * @param resultHandler Receives the success or failure of the call.
      */
-    @Reactive
     void send( @NotNull String target, @NotNull Map<String, Object> message,
-               @Optional @Nullable APSHandler<APSResult> resultHandler ) {
+               @Optional @Nullable APSHandler<APSResult<?>> resultHandler ) {
 
-        target.split( "," ).each { String _target ->
+        if ( validateBaseMessageStructure( message ) ) {
+
+            boolean valid = false
 
             this.routerTracker.withAllAvailableServices() { APSBusRouter apsBusRouter, @NotUsed Object[] args ->
-                apsBusRouter.send( _target.trim(), message, resultHandler )
+                if ( apsBusRouter.send( target.trim(), message, resultHandler ) ) {
+                    valid = true
+                }
             }
+
+            if ( !valid ) {
+                resultHandler.handle( APSResult.failure( new APSMessagingException( "No routers accepted target!" ) ) )
+            }
+        }
+        else {
+            validationFail( resultHandler )
         }
     }
 
@@ -224,26 +250,29 @@ class APSBusProvider implements APSBus {
      * @param target The target to subscribe to.
      * @param messageHandler The handler to call with messages sent to target.
      */
-    @Reactive
-    void subscribe( @NotNull ID id, @NotNull String target, @Optional @Nullable APSHandler<APSResult> resultHandler,
+    void subscribe( @NotNull ID id, @NotNull String target, @Optional @Nullable APSHandler<APSResult<?>>
+            resultHandler,
                     @NotNull APSHandler<Map<String, Object>> messageHandler ) {
 
-        target.split( "," ).each { String _target ->
+        boolean valid = false
 
-            this.routerTracker.withAllAvailableServices() { APSBusRouter apsBusRouter, @NotUsed Object[] args ->
+        this.routerTracker.withAllAvailableServices() { APSBusRouter apsBusRouter, @NotUsed Object[] args ->
 
-                apsBusRouter.subscribe( id, _target.trim(), resultHandler, messageHandler )
+            if ( apsBusRouter.subscribe( id, target.trim(), resultHandler, messageHandler ) ) {
+                valid = true
             }
         }
-    }
 
+        if ( !valid ) {
+            resultHandler.handle( APSResult.failure( new APSMessagingException( "No routers accepted target!" ) ) )
+        }
+    }
 
     /**
      * Releases a subscription.
      *
      * @param subscriberId The ID returned by subscribe.
      */
-    @Reactive
     void unsubscribe( @NotNull ID subscriberId ) {
 
         this.routerTracker.withAllAvailableServices() {
@@ -252,6 +281,7 @@ class APSBusProvider implements APSBus {
                 apsBusRouter.unsubscribe( subscriberId )
         }
     }
+
 
     /**
      * Sends a message and expects to get a response message back.
@@ -274,18 +304,49 @@ class APSBusProvider implements APSBus {
      * @param resultHandler optional handler to receive result of send.
      * @param responseMessage A message that is a response of the sent message.
      */
-    @Reactive
     void request( @NotNull String target, @NotNull Map<String, Object> message,
-                  @Nullable @Optional APSHandler<APSResult> resultHandler,
+                  @Nullable @Optional APSHandler<APSResult<?>> resultHandler,
+                  @NotNull APSHandler<Map<String, Object>> responseMessage ) {
+        request( target, message, 15, resultHandler, responseMessage )
+    }
+
+    /**
+     * Sends a message and expects to get a response message back.
+     *
+     * This is not forwarded to a APSBusRouter! This is locally implemented
+     * and does the following:
+     *
+     * - Generates a unique reply address.
+     * - Subscribes to address.
+     *   - After reply message is received and forwarded to handler, the
+     *     message subscription is unsubscribed.
+     * - Updates message header.replyAddress with address
+     * - Sends message.
+     *
+     * This should theoretically work for any APSBusRouter implementation. For
+     * some it might not make sense however.
+     *
+     * @param target The target to send to.
+     * @param message The message to send.
+     * @param timeOutSec The number of seconds to wait for a reply before failing.
+     * @param resultHandler optional handler to receive result of send.
+     * @param responseMessage A message that is a response of the sent message.
+     */
+    void request( @NotNull String target, @NotNull Map<String, Object> message, int timeOutSec,
+                  @Nullable @Optional APSHandler<APSResult<?>> resultHandler,
                   @NotNull APSHandler<Map<String, Object>> responseMessage ) {
 
-        try {
-            String replyAddr = "local:" + new APSUUID().toString()
-            message[ 'header' ][ 'replyAddress' ] = replyAddr
+        Instant requestTime = Instant.now()
+
+        if ( validateBaseMessageStructure( message ) ) {
+
+            String replyTarget = "${target.split( ":" )[ 0 ]}:" + new APSUUID().toString()
+            message[ 'aps' ][ 'replyTarget' ] = replyTarget
 
             ID subID = new APSUUID()
 
-            this.subscribe( subID, replyAddr ) { APSResult res ->
+            this.subscribe( subID, replyTarget ) { APSResult res ->
+
 
                 if ( resultHandler != null ) {
                     resultHandler.handle( res )
@@ -293,22 +354,45 @@ class APSBusProvider implements APSBus {
 
             } { Map<String, Object> reply ->
 
-                try {
-                    responseMessage.handle( reply )
-                }
-                finally {
-                    this.unsubscribe( subID )
-                }
+                this.unsubscribe( subID )
+                responseMessage.handle( reply )
             }
 
             send( target, message, resultHandler )
         }
-        catch ( Exception e ) {
-            if ( resultHandler != null ) {
-                resultHandler.handle( APSResult.failure( e ) )
-            }
+        else {
+            validationFail( resultHandler )
         }
 
     }
 
+    /**
+     * Replies to a received message.
+     *
+     * @param replyTo The received message to reply to.
+     * @param reply The reply.
+     * @param resultHandler The result of sending reply.
+     */
+    void reply( @NotNull Map<String, Object> replyTo, @NotNull Map<String, Object> reply,
+                @Nullable APSHandler<APSResult<?>> resultHandler ) {
+
+        if ( validateBaseMessageStructure( reply ) ) {
+            String replyTarget = replyTo[ 'aps' ][ 'replyTarget' ]
+            if ( replyTarget != null ) {
+                send( replyTarget, reply, resultHandler )
+            }
+            else {
+                if ( resultHandler != null ) {
+                    resultHandler.handle(
+                            APSResult.failure(
+                                    new APSValidationException( "No {aps: {replyAddress: ... }} found! in replyTo!" )
+                            )
+                    )
+                }
+            }
+        }
+        else {
+            validationFail( resultHandler )
+        }
+    }
 }
