@@ -98,7 +98,7 @@ class APSVertxBusRouter implements APSBusRouter {
     //
 
     /** For logging. */
-    @Managed( name = "logger", loggingFor = "aps-vertx-bus-router" )
+    @Managed( name = "aps-vertx-bus-router-logger", loggingFor = "aps-vertx-bus-router" )
     private APSLogger logger
 
     /** The current subscriptions */
@@ -192,13 +192,19 @@ class APSVertxBusRouter implements APSBusRouter {
 
             go.call( target )
         }
+
+        // Note to self: This "all:" check is for root "all:"! The one below in send() is "cluster:all"!!!
+        // As a side effect all:all will currently also work the same as "cluster:all"! DONT EVER USE THAT!
+
+        // The fist "all:", that is the one checked here is for "all protocols". The second "all:" below is
+        // for sending to all listeners of address rather than the normal round robin that Vert.x does.
         else if ( target.startsWith( "all:" ) ) {
             target = target.substring( 4 )
 
             go.call( target )
         }
         // Note that since APSBus will call all APSBusRouter implementations found, receiving
-        // and invalid target is nothing strange. We should only react on those that we recognize.
+        // an invalid target is nothing strange. We should only react on those that we recognize.
     }
 
     /**
@@ -214,7 +220,7 @@ class APSVertxBusRouter implements APSBusRouter {
     @Override
     void send( @NotNull String target, @NotNull Map<String, Object> message, @Optional @Nullable APSHandler<APSResult> resultHandler ) {
 
-        this.logger.debug( "Sending to target -> '${target}'" )
+        this.logger.debug( "§§§§ Sending to target -> '${target}'" )
 
         validTarget( target ) { String realTarget ->
 
@@ -275,6 +281,8 @@ class APSVertxBusRouter implements APSBusRouter {
                 // The value is available to the closure, you just cannot make an absolute
                 // failsafe reference to it.
                 subscriptions[ id ] = consumer
+
+                resultHandler.handle( APSResult.success( null ) )
             }
         }
     }

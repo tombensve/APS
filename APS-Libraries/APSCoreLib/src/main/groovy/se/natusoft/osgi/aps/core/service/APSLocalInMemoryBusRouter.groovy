@@ -46,8 +46,10 @@ import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
 import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
 import se.natusoft.osgi.aps.api.messaging.APSBusRouter
+import se.natusoft.osgi.aps.api.messaging.APSMessagingException
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.ValidTarget
+import se.natusoft.osgi.aps.exceptions.APSInvalidException
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult
@@ -103,13 +105,13 @@ class APSLocalInMemoryBusRouter implements APSBusRouter {
      * @param resultHandler The handler to call with result of operation. Can be null!
      */
     @Override
-    void send( @NotNull String target, @NotNull Map<String, Object> message,
+    boolean send( @NotNull String target, @NotNull Map<String, Object> message,
                @Nullable APSHandler<APSResult> resultHandler ) {
 
-        ValidTarget.onValid( SUPPORTED_TARGET, target ) { String realTarget ->
+        return ValidTarget.onValid( SUPPORTED_TARGET, target ) { String address ->
 
             Map<ID, List<APSHandler<Map<String, Object>>>> subs =
-                    this.subscribers.computeIfAbsent( realTarget ) { Map<String, Object> byId ->
+                    this.subscribers.computeIfAbsent( address ) { Map<String, Object> byId ->
                         new ConcurrentHashMap<>()
                     }
 
@@ -148,13 +150,13 @@ class APSLocalInMemoryBusRouter implements APSBusRouter {
      * @param messageHandler The handler to call with messages sent to target.
      */
     @Override
-    void subscribe( @NotNull ID id, @NotNull String target,
+    boolean subscribe( @NotNull ID id, @NotNull String target,
                     @Nullable @Optional APSHandler<APSResult> resultHandler,
                     @NotNull APSHandler<Map<String, Object>> messageHandler ) {
 
-        ValidTarget.onValid( SUPPORTED_TARGET, target ) { String realTarget ->
+        return ValidTarget.onValid( SUPPORTED_TARGET, target ) { String address ->
 
-            this.subscribers.computeIfAbsent( realTarget ) { new ConcurrentHashMap<>() }
+            this.subscribers.computeIfAbsent( address ) { new ConcurrentHashMap<>() }
                     .computeIfAbsent( id ) { new LinkedList<>() }
                     .add( messageHandler )
 

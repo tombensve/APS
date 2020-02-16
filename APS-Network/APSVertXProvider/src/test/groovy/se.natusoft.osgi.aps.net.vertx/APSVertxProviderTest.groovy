@@ -65,10 +65,10 @@ class APSVertxProviderTest extends APSRuntime {
         deploy 'vertx-client' with new APSActivator() using '/se/natusoft/osgi/aps/net/vertx/VertxClient.class'
 
         try {
-            hold() whilst { vertx == null } maxTime 6L unit SECONDS go()
-            hold() whilst { router == null } maxTime 6L unit SECONDS go()
-            hold() whilst { eventBus == null } maxTime 6L unit SECONDS go()
-            hold() whilst { sharedData == null } maxTime 6L unit SECONDS go()
+
+            hold() whilst {
+                vertx == null || router == null || eventBus == null || sharedData == null
+            } maxTime 10L unit SECONDS go()
 
             assert vertx != null
             println ">>>> Got Vertx!"

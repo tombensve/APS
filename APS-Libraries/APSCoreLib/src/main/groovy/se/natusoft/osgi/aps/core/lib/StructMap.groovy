@@ -272,7 +272,8 @@ class StructMap extends LinkedHashMap<String, Object> implements Map<String, Obj
 
                         int index = Integer.valueOf( part.replace( "[", "" ).replace( "]", "" ) )
                         while ( index > ( ( current as List<Object> ).size() - 1 ) ) {
-                            ( current as List<Object> ).add( [:] )
+                            // (1): Think this is a Groovy bug! LinkedHashMap is an Object!!
+                            ( current as List<Object> ).add( [:] as Object /*(1)*/)
                         }
                         ( current as List<Object> ).set( index, value )
                     }

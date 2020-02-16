@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -70,7 +70,7 @@ public class APSTrackerWrapper {
      * @return A facade object implementing the service interface passed to the specified tracker.
      */
     public static <Service> Service wrap( APSServiceTracker<Service> tracker ) {
-        Class[] interfaces = new Class[ 1 ];
+        Class<?>[] interfaces = new Class[ 1 ];
         interfaces[ 0 ] = tracker.getServiceClass();
 
         FacadeHandler handler = new FacadeHandler( tracker );
@@ -95,7 +95,7 @@ public class APSTrackerWrapper {
      * @return A facade object implementing the service interface passed to the specified tracker.
      */
     public static <Service> Service wrap( APSServiceTracker<Service> tracker, boolean cacheCallsOnNoServiceAvailable ) {
-        Class[] interfaces = new Class[ 1 ];
+        Class<?>[] interfaces = new Class[ 1 ];
         interfaces[ 0 ] = tracker.getServiceClass();
 
         FacadeHandler handler = new FacadeHandler( tracker, cacheCallsOnNoServiceAvailable );
@@ -120,7 +120,7 @@ public class APSTrackerWrapper {
         /**
          * The service tracker tracking our service.
          */
-        private APSServiceTracker tracker = null;
+        private APSServiceTracker<?> tracker;
 
         private boolean cacheCalls = false;
 
@@ -140,7 +140,7 @@ public class APSTrackerWrapper {
          * @param tracker The tracker of the service to facade.
          */
         @SuppressWarnings( "WeakerAccess" )
-        public FacadeHandler( APSServiceTracker tracker ) {
+        public FacadeHandler( APSServiceTracker<?> tracker ) {
 
             this.tracker = tracker;
             this.tracker.onActiveServiceAvailable( ( service, serviceRef ) -> {
@@ -154,7 +154,7 @@ public class APSTrackerWrapper {
 
             if ( cacheLimitValue != null ) {
 
-                this.cacheSizeLimit = Integer.valueOf( cacheLimitValue );
+                this.cacheSizeLimit = Integer.parseInt( cacheLimitValue );
             }
         }
 
@@ -165,7 +165,7 @@ public class APSTrackerWrapper {
          * @param cacheCallsOnNoServiceAvailable Set to true to have calls to the service cached until service is available.
          */
         @SuppressWarnings( "WeakerAccess" )
-        public FacadeHandler( APSServiceTracker tracker, boolean cacheCallsOnNoServiceAvailable ) {
+        public FacadeHandler( APSServiceTracker<?> tracker, boolean cacheCallsOnNoServiceAvailable ) {
             this( tracker );
 
             this.cacheCalls = cacheCallsOnNoServiceAvailable;
@@ -201,7 +201,6 @@ public class APSTrackerWrapper {
                             // waiting for anything to be returned nor thrown. The use of this feature required
                             // reactive APIs where any eventual result is handled by calling a supplied callback.
 
-                            //noinspection TryWithIdenticalCatches
                             try {
                                 method.invoke( this.tracker.allocateService(), args );
 

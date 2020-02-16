@@ -63,7 +63,7 @@ class ValidTarget {
      * @param go Closure to call on valid target.
      */
     @SuppressWarnings( "DuplicatedCode" )
-    static void onValid( Map<String, Object> config, String target, Closure go ) {
+    static boolean onValid( Map<String, Object> config, String target, Closure go ) {
         boolean supportsAll = false
         if (config[SUPPORTS_ALL] != null) {
             supportsAll = config[SUPPORTS_ALL]
@@ -79,7 +79,7 @@ class ValidTarget {
      * @param go Closure to call on valid target.
      */
     @SuppressWarnings( "DuplicatedCode" )
-    static void onValid( String supportedTargetId, String target, Closure go ) {
+    static boolean onValid( String supportedTargetId, String target, Closure go ) {
         onValid( supportedTargetId, false, target, go )
     }
 
@@ -92,17 +92,20 @@ class ValidTarget {
      * @param go Closure to call on valid target.
      */
     @SuppressWarnings( "DuplicatedCode" )
-    static void onValid( String supportedTargetId, boolean supportsAll, String target, Closure go ) {
+    static boolean onValid( String supportedTargetId, boolean supportsAll, String target, Closure go ) {
+        boolean valid = false
 
         if ( target.startsWith( supportedTargetId ) ) {
             target = target.substring( supportedTargetId.length() )
-
+            valid = true
             go.call( target )
         }
         else if (supportsAll && target.startsWith( "all:" )) {
             target = target.substring( 4 )
-
+            valid = true
             go.call( target )
         }
+
+        valid
     }
 }

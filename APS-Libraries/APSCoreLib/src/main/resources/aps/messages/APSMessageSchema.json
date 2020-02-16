@@ -1,9 +1,9 @@
 {
-  "header_1": {
+  "aps_1": {
     "type_1": "NamedRule:TEXT_NUM_DASH_DOT",
     "version_1": "#>=0.0",
     "sender_0": "NamedRule:TEXT_NUM_DOT",
-    "replyAddress_0": "NamedRule:BUS_ADDRESS"
+    "replyTarget_0": "NamedRule:BUS_ADDRESS"
   },
   "content_1": {
   }

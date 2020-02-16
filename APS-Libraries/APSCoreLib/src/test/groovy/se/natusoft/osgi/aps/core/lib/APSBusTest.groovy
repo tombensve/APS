@@ -6,20 +6,24 @@ import org.junit.Test
 import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.activator.annotation.BundleStop
 import se.natusoft.osgi.aps.activator.annotation.Initializer
+import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.activator.annotation.OSGiService
 import se.natusoft.osgi.aps.api.messaging.APSBus
+import se.natusoft.osgi.aps.api.messaging.APSMessagingException
 import se.natusoft.osgi.aps.exceptions.APSValidationException
-import se.natusoft.osgi.aps.tools.APSRuntime
-import se.natusoft.osgi.aps.tools.APSTestResults
+import se.natusoft.osgi.aps.runtime.APSRuntime
+import se.natusoft.osgi.aps.runtime.APSTestResults
 import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.types.APSUUID
 import se.natusoft.osgi.aps.types.ID
+import se.natusoft.osgi.aps.util.APSLogger
 
+import static se.natusoft.osgi.aps.util.APSExecutor.submit as parallel
 import java.util.concurrent.TimeUnit
 
 @CompileStatic
 @TypeChecked
-class APSBusTest extends APSOSGIServiceTestTools {
+class APSBusTest extends APSRuntime {
 
     public static int testCount = 0
 
@@ -41,7 +45,7 @@ class APSBusTest extends APSOSGIServiceTestTools {
 
         assert testResults.testOK
 
-        shutdown(  )
+        shutdown()
     }
 }
 
@@ -67,15 +71,19 @@ class ShouldWork {
 
             System.out.println message.toString()
 
-            APSBusTest.testResults.trAssertEquals( "test", message[ 'msgType' ] )
-            APSBusTest.testResults.trAssertEquals( "qaz", message[ 'value' ] )
+            APSBusTest.testResults.trAssertEquals( "test", message[ 'content' ][ 'msgType' ] )
+            APSBusTest.testResults.trAssertEquals( "qaz", message[ 'content' ][ 'value' ] )
         }
 
         this.bus.send(
                 "local:test",
                 [
-                        msgType: "test",
-                        value  : "qaz"
+                        aps    : [
+                        ],
+                        content: [
+                                msgType: "test",
+                                value  : "qaz"
+                        ]
                 ] as Map<String, Object>
         ) { APSResult res ->
             APSBusTest.testResults.trAssertTrue( res.success() )
@@ -92,8 +100,12 @@ class ShouldWork {
         this.bus.send(
                 "local:test",
                 [
-                        msgType: "no-receiver-test",
-                        value  : "zaq"
+                        aps    : [
+                        ],
+                        content: [
+                                msgType: "no-receiver-test",
+                                value  : "zaq"
+                        ]
                 ] as Map<String, Object>
         ) { APSResult res ->
             APSBusTest.testResults.trAssertFalse( res.success() )
@@ -101,7 +113,7 @@ class ShouldWork {
         }
 
         APSBusTest.testCount++
-        println "ShouldWork: testCount: ${ APSBusTest.testCount }"
+        println "ShouldWork: testCount: ${APSBusTest.testCount}"
     }
 }
 
@@ -124,8 +136,8 @@ class ShouldFail {
 
             //System.out.println( res.failure().toString() )
 
-            APSBusTest.testResults.trAssertSame( res.failure().getClass(), APSValidationException.class )
-            APSBusTest.testResults.trAssertEquals( "'target' does not start with 'local'!", res.failure().getMessage() )
+            APSBusTest.testResults.trAssertSame( res.failure().getClass(), APSMessagingException.class )
+            APSBusTest.testResults.trAssertEquals( "No routers accepted target!", res.failure().getMessage() )
         },
                 null // Will never ever be called in this case!
         )
@@ -133,16 +145,19 @@ class ShouldFail {
         this.bus.send(
                 "test",
                 [
-                        msgType: "test",
-                        value  : "qaz"
+                        aps    : [ ],
+                        content: [
+                                msgType: "test",
+                                value  : "qaz"
+                        ]
                 ] as Map<String, Object>
-        ) { res ->
+        ) { APSResult<?> res ->
             APSBusTest.testResults.trAssertFalse( res.success() )
-            APSBusTest.testResults.trAssertEquals( "'target' does not start with 'local'!", res.failure().getMessage() )
+            APSBusTest.testResults.trAssertEquals( "No routers accepted target!", res.failure().getMessage() )
         }
 
         APSBusTest.testCount++
-        println "ShouldFail: testCount: ${ APSBusTest.testCount }"
+        println "ShouldFail: testCount: ${APSBusTest.testCount}"
     }
 }
 
@@ -155,13 +170,16 @@ class TestRequest {
     @OSGiService( nonBlocking = true )
     private APSBus bus
 
+    @Managed( loggingFor = "TestRequest" )
+    private APSLogger logger
+
     private ID subId = new APSUUID()
 
     private MapJsonSchemaValidator schemaValidator = new MapJsonSchemaValidator(
             validStructure: MapJsonLoader.loadMapJson( "aps/messages/APSMessageSchema.json", this.class.classLoader )
     )
 
-    private boolean validateMessage(Map<String, Object> message) {
+    private boolean validateMessage( Map<String, Object> message ) {
         boolean valid = true
         try {
             this.schemaValidator.validate( message )
@@ -178,8 +196,29 @@ class TestRequest {
     @Initializer
     void toTest() {
 
-        // Setup a service to call.
+        // Call service
 
+        this.logger.info ">>>>>>>>>> ABOUT TO REQUEST!"
+        this.bus.request( "local:testService", [
+                aps    : [
+                        type   : "serviceRequest",
+                        version: 1.0
+                ],
+                content: [
+                        data: "Something important!"
+                ]
+        ] as Map<String, Object> ) { APSResult result ->
+            APSBusTest.testResults.trAssertTrue( result.success() )
+        } { Map<String, Object> response ->
+
+            APSBusTest.testResults.trAssertTrue( response[ 'content' ][ 'response' ] == "Something important!" )
+        }
+
+        //Thread.sleep( 5000 )
+
+        // Setup service
+
+        // Let the service be slow in starting!
         this.bus.subscribe( this.subId, "local:testService", null ) { Map<String, Object> message ->
 
             //assert that message is valid.
@@ -187,19 +226,10 @@ class TestRequest {
 
             String data = message[ 'content' ][ 'data' ]
 
-            // NOTE: Groovy allows you to use dot access on Map:s, like: 'message.content'. The
-            // problem with this is that the Map is defined as Map<String, Object>, so the return
-            // type of content is 'Object' so you cannot continue to reference even tough it is really
-            // a Map. But Groovy has another variant: ['name']. This seems to assume Map since with
-            // this you can continue to reference down the Map. You will however not get any compiler
-            // support. It will fail runtime if you make a bad reference! I think Javascript objects
-            // can be referenced with a similar syntax. Maybe the Groovy guys picked inspiration from
-            // JS :-).
-
-            String replyAddress = message[ 'header' ][ 'replyAddress' ]
+            this.logger.info "<<<<<<<<<< Received: ${data} >>>>>>>>>>"
 
             Map<String, Object> respMsg = [
-                    header : [
+                    aps    : [
                             type   : "serviceResponse",
                             version: 1.0
                     ],
@@ -210,32 +240,19 @@ class TestRequest {
 
             APSBusTest.testResults.trAssertTrue( validateMessage( respMsg ) )
 
-            this.bus.send( replyAddress, respMsg ) { APSResult result ->
+            this.bus.reply( message, respMsg ) { APSResult result ->
 
                 APSBusTest.testResults.trAssertTrue( result.success() )
             }
 
         }
+        this.logger.info "<<<<<<<<<< SUBSCRIBED!"
 
-        // Call service
-
-        this.bus.request( "local:testService", [
-                header : [
-                        type   : "serviceRequest",
-                        version: 1.0
-                ],
-                content: [
-                        data: "Something important!"
-                ]
-        ] as Map<String, Object> ) { APSResult result ->
-            assert result.success()
-        } { Map<String, Object> response ->
-
-            APSBusTest.testResults.trAssertTrue( response[ 'content' ][ 'response' ] == "Something important!" )
-        }
+        // Have to wait a little for the subscription to be received.
+        Thread.sleep( 1000 )
 
         APSBusTest.testCount++
-        println "TestRequest: testCount: ${ APSBusTest.testCount }"
+        println "TestRequest: testCount: ${APSBusTest.testCount}"
 
     }
 
