@@ -85,8 +85,9 @@ public interface APSBusRouter {
      * @param target The target to send to. How to interpret this is up to implementation.
      * @param message The message to send. Only JSON structures allowed and top level has to
      * be an object.
-     *
      * @param resultHandler The handler to call with result of operation. Can be null!
+     *
+     * @return true if target is valid for this router, false otherwise.
      */
     @Reactive
     boolean send( @NotNull String target, @NotNull Map<String, Object> message,
@@ -99,6 +100,8 @@ public interface APSBusRouter {
      * @param target The target to subscribe to.
      * @param resultHandler The result of the subscription.
      * @param messageHandler The handler to call with messages sent to target.
+     *
+     * @return true if target is valid for this router, false otherwise.
      */
     @Reactive
     boolean subscribe( @NotNull ID id, @NotNull String target,

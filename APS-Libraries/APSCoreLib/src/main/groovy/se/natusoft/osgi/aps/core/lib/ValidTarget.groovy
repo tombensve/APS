@@ -63,7 +63,7 @@ class ValidTarget {
      * @param go Closure to call on valid target.
      */
     @SuppressWarnings( "DuplicatedCode" )
-    static boolean onValid( Map<String, Object> config, String target, Closure go ) {
+    static boolean onValidWithConfig( Map<String, Object> config, String target, Closure go ) {
         boolean supportsAll = false
         if (config[SUPPORTS_ALL] != null) {
             supportsAll = config[SUPPORTS_ALL]

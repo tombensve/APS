@@ -75,8 +75,6 @@ import java.util.concurrent.ConcurrentLinkedQueue
 )
 class APSLocalInMemoryBusRouter implements APSBusRouter {
 
-    private static final String TARGET_ID = "local:"
-
     //
     // Private Members
     //
@@ -107,7 +105,7 @@ class APSLocalInMemoryBusRouter implements APSBusRouter {
     boolean send( @NotNull String target, @NotNull Map<String, Object> message,
                   @Nullable APSHandler<APSResult> resultHandler ) {
 
-        ValidTarget.onValid( SUPPORTED_TARGET, target ) { String address ->
+        return ValidTarget.onValid( SUPPORTED_TARGET, target ) { String address ->
 
             // First tried computeIfAbsent, but it does not seem to play well with Groovy Closures.
             Map<ID, Queue<APSHandler<Map<String, Object>>>> addressSubscribers = subscribers[ address ]

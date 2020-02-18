@@ -62,6 +62,7 @@ import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
 import se.natusoft.osgi.aps.api.messaging.APSBusRouter
 import se.natusoft.osgi.aps.api.messaging.APSMessagingException
 import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.osgi.aps.core.lib.ValidTarget
 import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.types.APSHandler
@@ -91,7 +92,7 @@ import se.natusoft.osgi.aps.util.APSLogger
 )
 class APSVertxBusRouter implements APSBusRouter {
 
-    private static final String TARGET_ID = "cluster:"
+    private static final String SUPPORTED_TARGET_ID = "cluster"
 
     //
     // Private members
@@ -180,34 +181,6 @@ class APSVertxBusRouter implements APSBusRouter {
     }
 
     /**
-     * This checks if provided target is valid and if so proceeds with the operation.
-     *
-     * @param target Target to validate.
-     * @param go Closure to call on valid target.
-     */
-    private static void validTarget( String target, Closure go ) {
-
-        if ( target.startsWith( TARGET_ID ) ) {
-            target = target.substring( TARGET_ID.length() )
-
-            go.call( target )
-        }
-
-        // Note to self: This "all:" check is for root "all:"! The one below in send() is "cluster:all"!!!
-        // As a side effect all:all will currently also work the same as "cluster:all"! DONT EVER USE THAT!
-
-        // The fist "all:", that is the one checked here is for "all protocols". The second "all:" below is
-        // for sending to all listeners of address rather than the normal round robin that Vert.x does.
-        else if ( target.startsWith( "all:" ) ) {
-            target = target.substring( 4 )
-
-            go.call( target )
-        }
-        // Note that since APSBus will call all APSBusRouter implementations found, receiving
-        // an invalid target is nothing strange. We should only react on those that we recognize.
-    }
-
-    /**
      * Sends a message.
      *
      * @param target The target to send to. In this case it should start with cluster: and what comes after
@@ -218,11 +191,11 @@ class APSVertxBusRouter implements APSBusRouter {
      * @param resultHandler The handler to call with result of operation. Can be null!
      */
     @Override
-    void send( @NotNull String target, @NotNull Map<String, Object> message, @Optional @Nullable APSHandler<APSResult> resultHandler ) {
+    boolean send( @NotNull String target, @NotNull Map<String, Object> message, @Optional @Nullable APSHandler<APSResult> resultHandler ) {
 
         this.logger.debug( "§§§§ Sending to target -> '${target}'" )
 
-        validTarget( target ) { String realTarget ->
+        return ValidTarget.onValid(SUPPORTED_TARGET_ID, true, target ) { String realTarget ->
 
             def internalResultHandler = { AsyncResult res ->
                 if ( res.succeeded() ) {
@@ -233,10 +206,11 @@ class APSVertxBusRouter implements APSBusRouter {
                 }
             }
 
-            if ( realTarget.startsWith( "all:" ) ) {
+            // Note that we have to check passed target here, not realTarget, which will have the "all:" part
+            // removed! The realTarget will be valid for the publisher and sender.
+            if ( target.startsWith( "all:" ) ) {
 
-                String pubTarget = realTarget.substring( 4 )
-                eventBus.publisher( pubTarget ).write( new JsonObject( message ) ) { AsyncResult res ->
+                eventBus.publisher( realTarget ).write( new JsonObject( message ) ) { AsyncResult res ->
 
                     internalResultHandler( res )
                 }.close()
@@ -259,16 +233,13 @@ class APSVertxBusRouter implements APSBusRouter {
      * @param messageHandler The handler to call with messages sent to target.
      */
     @Override
-    void subscribe( @NotNull ID id, @NotNull String target, @Optional @Nullable APSHandler<APSResult> resultHandler, @NotNull APSHandler<Map<String, Object>> messageHandler ) {
+    boolean subscribe( @NotNull ID id, @NotNull String target, @Optional @Nullable APSHandler<APSResult> resultHandler, @NotNull APSHandler<Map<String, Object>> messageHandler ) {
 
-        this.logger.debug( "§§§§ Subscribing to '${target}'" )
-        validTarget( target ) { String realTarget ->
+        return ValidTarget.onValid(SUPPORTED_TARGET_ID, false, target ) { String realTarget ->
 
             MessageConsumer consumer = eventBus.consumer( realTarget ) { Message<JsonObject> msg ->
 
-                logger.debug("§§§§ Received raw: ${msg}")
                 Map<String, Object> message = new RecursiveJsonObjectMap( msg.body() )
-                logger.debug( "§§§§: Received wrapped: ${message}")
                 messageHandler.handle( message )
             }
 
