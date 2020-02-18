@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -75,6 +75,12 @@ public interface APSResult<T> {
     APSValue<T> result();
 
     /**
+     * @return Returns an optional indicator of what this result comes from.
+     */
+    @SuppressWarnings("unused")
+    String resultProvider();
+
+    /**
      * A success result factory method. Java have great problems calling this due to not being able to figure out T.
      * Use successj(...) instead for Java. Groovy handles this one fine.
      *
@@ -85,6 +91,20 @@ public interface APSResult<T> {
      */
     static <T> APSResult<T> success( T value ) {
         return new Provider<>( new APSValue.Provider<>( value ) );
+    }
+
+    /**
+     * A success result factory method. Java have great problems calling this due to not being able to figure out T.
+     * Use successj(...) instead for Java. Groovy handles this one fine.
+     *
+     * @param value The result value.
+     * @param <T>   The result type.
+     *
+     * @return An APSResult instance holding a success status and the provided value.
+     */
+    @SuppressWarnings("unused")
+    static <T> APSResult<T> successp( T value, String provider ) {
+        return new Provider<>( new APSValue.Provider<>( value ), provider );
     }
 
     /**
@@ -102,6 +122,20 @@ public interface APSResult<T> {
     }
 
     /**
+     * A success result factory method for Java. The above one works fine for Groovy.
+     *
+     * @param value The result value.
+     * @param <T>   The result type.
+     *
+     * @return An APSResult instance holding a success status and the provided value.
+     */
+    @SuppressWarnings("unused")
+    static <T> APSResult<T> successjp( Object value, String provider ) {
+        //noinspection unchecked
+        return new Provider<>( new APSValue.Provider<>( (T) value ), provider );
+    }
+
+    /**
      * A failure result factory method.
      *
      * @param e   The Exception that caused the failure.
@@ -114,6 +148,18 @@ public interface APSResult<T> {
     }
 
     /**
+     * A failure result factory method.
+     *
+     * @param e   The Exception that caused the failure.
+     * @param <T> The result type.
+     *
+     * @return An APSResult instance holding a failure status and the provided Exception.
+     */
+    static <T> APSResult<T> failure( Throwable e, String provider ) {
+        return new Provider<>( e , provider );
+    }
+
+    /**
      * Convenience failure handler caller that do catch Exceptions thrown by called handler.
      *
      * @param handler The handler to call.
@@ -123,7 +169,7 @@ public interface APSResult<T> {
     static <T> void failure( APSHandler<T> handler, Throwable e) {
         try {
             //noinspection unchecked
-            handler.handle( (T)new Provider( e ) );
+            handler.handle( (T)new Provider<T>( e ) );
         }
         catch ( Throwable t ){
             t.printStackTrace( System.err );
@@ -138,6 +184,7 @@ public interface APSResult<T> {
      * @param e       The exception that is the result.
      * @param <T>     The type of the result value, which in this case in not provided (null) due to failure.
      */
+    @SuppressWarnings("unused")
     static <T> void failureResult( @Nullable APSHandler<APSResult<T>> handler, @NotNull APSException e ) {
         if ( handler != null ) {
             handler.handle( APSResult.failure( e ) );
@@ -155,6 +202,7 @@ public interface APSResult<T> {
 
         private APSValue<T> result;
         private Exception exception;
+        private String provider;
 
         /**
          * Provide a success result.
@@ -179,6 +227,33 @@ public interface APSResult<T> {
         }
 
         /**
+         * Provide a success result.
+         *
+         * @param result The success result value.
+         * @param provider Where the result comes from.
+         */
+        public Provider( APSValue<T> result, String provider ) {
+            this.result = result;
+            this.provider = provider;
+        }
+
+        /**
+         * Provide a failure result.
+         *
+         * @param exception The Exception that caused the failure.
+         * @param provider Where the result comes from.
+         */
+        public Provider( Throwable exception, String provider ) {
+            if ( Exception.class.isAssignableFrom( exception.getClass() ) ) {
+                this.exception = (Exception) exception;
+            } else {
+                this.exception = new APSException( exception.getMessage(), exception );
+            }
+
+            this.provider = provider;
+        }
+
+        /**
          * @return true on success, false otherwise. If false then failure() should return an Exception.
          */
         @Override
@@ -200,6 +275,13 @@ public interface APSResult<T> {
         @Override
         public APSValue<T> result() {
             return this.result;
+        }
+
+        /**
+         * @return Returns an optional indicator of what this result comes from.
+         */
+        public String resultProvider() {
+            return this.provider;
         }
 
         /**

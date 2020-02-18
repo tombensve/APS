@@ -28,13 +28,16 @@ public class APSPlatformBooter {
         while ( param < args.length ) {
             String arg = args[ param++ ];
 
-            if ( arg.equals( "--dependenciesDir" ) ) {
-                depsDir = args[ param++ ];
-            } else if ( arg.equals( "--bundlesDir" ) ) {
-                bundlesDir = args[ param++ ];
-            }
-            else if ( arg.equals( "--order" )) {
-                bundleOrder = new LinkedList<>( Arrays.asList( args[ param++ ].split( "," ) ) );
+            switch ( arg ) {
+                case "--dependenciesDir":
+                    depsDir = args[ param++ ];
+                    break;
+                case "--bundlesDir":
+                    bundlesDir = args[ param++ ];
+                    break;
+                case "--order":
+                    bundleOrder = new LinkedList<>( Arrays.asList( args[ param++ ].split( "," ) ) );
+                    break;
             }
         }
 
@@ -78,10 +81,10 @@ public class APSPlatformBooter {
 
         Thread.currentThread().setContextClassLoader( bundlesClassLoader );
 
-        Class test = bundlesClassLoader.loadClass( "se.natusoft.osgi.aps.activator.APSActivator" );
-        System.out.println("" + test);
+        //Class<?> test = bundlesClassLoader.loadClass( "se.natusoft.osgi.aps.activator.APSActivator" );
+        //System.out.println("" + test);
 
-        Class stage2 = bundlesClassLoader.loadClass( "se.natusoft.osgi.aps.platform.APSPlatformBooterStage2" );
+        Class<?> stage2 = bundlesClassLoader.loadClass( "se.natusoft.osgi.aps.platform.APSPlatformBooterStage2" );
 
         @SuppressWarnings("unchecked")
         Method bootMethod = stage2.getMethod( "boot", java.io.File.class, java.util.List.class );

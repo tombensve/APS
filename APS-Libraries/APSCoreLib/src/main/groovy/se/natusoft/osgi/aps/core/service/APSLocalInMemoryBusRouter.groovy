@@ -55,6 +55,7 @@ import se.natusoft.osgi.aps.types.ID
 import se.natusoft.osgi.aps.util.APSLogger
 
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedQueue
 
 /**
  * A very simple little bus that will call handler of any subscriber subscribing to same target
@@ -82,7 +83,7 @@ class APSLocalInMemoryBusRouter implements APSBusRouter {
 
     private static final String SUPPORTED_TARGET = "local"
 
-    private Map<String /*target*/, Map<ID, List<APSHandler<Map<String, Object>>>>> subscribers =
+    private Map<String /*target*/, Map<ID, Queue<APSHandler<Map<String, Object>>>>> subscribers =
             new ConcurrentHashMap<>()
 
     @Managed( loggingFor = "APSLocalInMemoryBus" )
@@ -103,24 +104,27 @@ class APSLocalInMemoryBusRouter implements APSBusRouter {
      * @param resultHandler The handler to call with result of operation. Can be null!
      */
     @Override
-    void send( @NotNull String target, @NotNull Map<String, Object> message,
-               @Nullable APSHandler<APSResult> resultHandler ) {
+    boolean send( @NotNull String target, @NotNull Map<String, Object> message,
+                  @Nullable APSHandler<APSResult> resultHandler ) {
 
-        ValidTarget.onValid( SUPPORTED_TARGET, target ) { String realTarget ->
+        ValidTarget.onValid( SUPPORTED_TARGET, target ) { String address ->
 
-            Map<ID, List<APSHandler<Map<String, Object>>>> subs =
-                    this.subscribers.computeIfAbsent( realTarget ) { Map<String, Object> byId ->
-                        new ConcurrentHashMap<>()
-                    }
+            // First tried computeIfAbsent, but it does not seem to play well with Groovy Closures.
+            Map<ID, Queue<APSHandler<Map<String, Object>>>> addressSubscribers = subscribers[ address ]
+            if ( addressSubscribers == null ) {
+                addressSubscribers = new ConcurrentHashMap<>()
+                subscribers[ address ] = addressSubscribers
+            }
 
-            if ( !subs.isEmpty() ) {
+            if ( !addressSubscribers.isEmpty() ) {
 
-                subs.each { ID id, List<APSHandler<Map<String, Object>>> handlers ->
+                addressSubscribers.each { ID id, Queue<APSHandler<Map<String, Object>>> handlers ->
 
                     handlers.each { APSHandler<Map<String, Object>> handler ->
 
                         try {
-                            handler.handle( message )
+                            //handler.handle( message )
+                            APSHandler.doHandle( handler, message )
                         }
                         catch ( Exception e ) {
                             this.logger.error( "Message handler threw illegal exception!", e )
@@ -129,12 +133,14 @@ class APSLocalInMemoryBusRouter implements APSBusRouter {
                 }
 
                 if ( resultHandler != null ) {
-                    resultHandler.handle( APSResult.success( null ) )
+                    //resultHandler.handle( APSResult.success( null ) )
+                    APSHandler.doHandle( resultHandler, APSResult.success( null ) )
                 }
             }
             else if ( resultHandler != null ) {
 
-                resultHandler.handle( APSResult.failure( new APSValidationException( "No subscribers!" ) ) )
+                //resultHandler.handle( APSResult.failure( new APSValidationException( "No subscribers!" ) ) )
+                APSHandler.doHandle( resultHandler, APSResult.failure( new APSValidationException( "No subscribers!" ) ) )
             }
         }
     }
@@ -148,15 +154,24 @@ class APSLocalInMemoryBusRouter implements APSBusRouter {
      * @param messageHandler The handler to call with messages sent to target.
      */
     @Override
-    void subscribe( @NotNull ID id, @NotNull String target,
-                    @Nullable @Optional APSHandler<APSResult> resultHandler,
-                    @NotNull APSHandler<Map<String, Object>> messageHandler ) {
+    boolean subscribe( @NotNull ID id, @NotNull String target,
+                       @Nullable @Optional APSHandler<APSResult> resultHandler,
+                       @NotNull APSHandler<Map<String, Object>> messageHandler ) {
 
-        ValidTarget.onValid( SUPPORTED_TARGET, target ) { String realTarget ->
+        return ValidTarget.onValid( SUPPORTED_TARGET, target ) { String address ->
 
-            this.subscribers.computeIfAbsent( realTarget ) { new ConcurrentHashMap<>() }
-                    .computeIfAbsent( id ) { new LinkedList<>() }
-                    .add( messageHandler )
+            Map<ID, Queue<APSHandler<Map<String, Object>>>> addressSubscribers = subscribers[ address ]
+            if ( addressSubscribers == null ) {
+                addressSubscribers = new ConcurrentHashMap<>()
+                subscribers[ address ] = addressSubscribers
+            }
+
+            Queue<APSHandler<Map<String, Object>>> handlers = addressSubscribers[ id ]
+            if ( handlers == null ) {
+                handlers = new ConcurrentLinkedQueue<>()
+                addressSubscribers[ id ] = handlers
+            }
+            handlers << messageHandler
 
             if ( resultHandler != null ) {
 
@@ -176,9 +191,9 @@ class APSLocalInMemoryBusRouter implements APSBusRouter {
 
         // Note that we don't have a target here, and thus tries to remove from all targets.
         // The subscriberId should be unique so only one will be removed.
-        this.subscribers.each { String target, Map<ID, List<APSHandler<Map<String, Object>>>> value ->
+        this.subscribers.each { String address, Map<ID, Queue<APSHandler<Map<String, Object>>>> subscriptionHandlers ->
 
-            value.remove( subscriberId )
+            subscriptionHandlers.remove( subscriberId )
         }
     }
 

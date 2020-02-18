@@ -97,35 +97,35 @@ public class APSTestResults {
     public void trAssertEquals( boolean expected, boolean value ) {
         if ( value != expected ) {
             this.testOK = false;
-            this.testMessages.add( "Equals: expected '${ expected }', got '" + value + "'! : " + stackTrace( new Exception().getStackTrace() ) );
+            this.testMessages.add( "Equals: expected '" + expected + "', got '" + value + "'! : " + stackTrace( new Exception().getStackTrace() ) );
         }
     }
 
     public void trAssertEquals( String expected, String value ) {
         if ( !value.equals( expected ) ) {
             this.testOK = false;
-            this.testMessages.add( "Equals: expected '${ expected }', got '" + value + "'! : " + stackTrace( new Exception().getStackTrace() ) );
+            this.testMessages.add( "Equals: expected '" + expected + "', got '" + value + "'! : " + stackTrace( new Exception().getStackTrace() ) );
         }
     }
 
     public void trAssertEquals( Number expected, Number value ) {
         if ( !value.equals( expected ) ) {
             this.testOK = false;
-            this.testMessages.add( "Equals: expected '${ expected }', got '" + value + "'! : " + stackTrace( new Exception().getStackTrace() ) );
+            this.testMessages.add( "Equals: expected '" + expected + "', got '" + value + "'! : " + stackTrace( new Exception().getStackTrace() ) );
         }
     }
 
     public void trAssertEquals( Object expected, Object value ) {
         if ( !value.equals( expected ) ) {
             this.testOK = false;
-            this.testMessages.add( "Equals: Expected '${ expected }', got '" + value + "'! : " + stackTrace( new Exception().getStackTrace() ) );
+            this.testMessages.add( "Equals: Expected '" + expected + "', got '" + value + "'! : " + stackTrace( new Exception().getStackTrace() ) );
         }
     }
 
     public void trAssertSame( Object expected, Object value ) {
         if ( value != expected ) {
             this.testOK = false;
-            this.testMessages.add( "Same: Expected '${ expected }', got '" + value + "'! : " + stackTrace( new Exception().getStackTrace() ) );
+            this.testMessages.add( "Same: Expected '" + expected + "', got '" + value + "'! : " + stackTrace( new Exception().getStackTrace() ) );
         }
     }
 

@@ -41,6 +41,7 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceRegistration
+import se.natusoft.docutations.Concurrent
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.NotUsed
 import se.natusoft.docutations.Nullable
@@ -51,7 +52,7 @@ import se.natusoft.osgi.aps.api.messaging.APSBus
 import se.natusoft.osgi.aps.api.messaging.APSBusRouter
 import se.natusoft.osgi.aps.api.messaging.APSMessagingException
 import se.natusoft.osgi.aps.constants.APS
-import se.natusoft.osgi.aps.exceptions.APSInvalidException
+import se.natusoft.osgi.aps.core.lib.Sporadic
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.types.APSHandler
@@ -59,7 +60,9 @@ import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.types.APSUUID
 import se.natusoft.osgi.aps.types.ID
 import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.osgi.aps.util.SyncedValue
 
+import static se.natusoft.osgi.aps.util.APSExecutor.submit as concurrent
 import java.time.Instant
 
 /**
@@ -229,6 +232,7 @@ class APSBusProvider implements APSBus {
             boolean valid = false
 
             this.routerTracker.withAllAvailableServices() { APSBusRouter apsBusRouter, @NotUsed Object[] args ->
+
                 if ( apsBusRouter.send( target.trim(), message, resultHandler ) ) {
                     valid = true
                 }
@@ -307,7 +311,7 @@ class APSBusProvider implements APSBus {
     void request( @NotNull String target, @NotNull Map<String, Object> message,
                   @Nullable @Optional APSHandler<APSResult<?>> resultHandler,
                   @NotNull APSHandler<Map<String, Object>> responseMessage ) {
-        request( target, message, 15, resultHandler, responseMessage )
+        request( target, message, 20, resultHandler, responseMessage )
     }
 
     /**
@@ -326,17 +330,21 @@ class APSBusProvider implements APSBus {
      * This should theoretically work for any APSBusRouter implementation. For
      * some it might not make sense however.
      *
+     * Note that due to different services and clients might not start in the optimal order
+     * a client might try to send a request to a service that is not yet listening to
+     * messages. To solve that in an easy way request(...) do wait up to 30 seconds for
+     * a reply, and while waiting it repeats the request message every 5 seconds. This
+     * situation should only happen at startup!
+     *
      * @param target The target to send to.
      * @param message The message to send.
      * @param timeOutSec The number of seconds to wait for a reply before failing.
      * @param resultHandler optional handler to receive result of send.
-     * @param responseMessage A message that is a response of the sent message.
+     * @param responseHandler A handler for message that is a response of the sent message.
      */
     void request( @NotNull String target, @NotNull Map<String, Object> message, int timeOutSec,
                   @Nullable @Optional APSHandler<APSResult<?>> resultHandler,
-                  @NotNull APSHandler<Map<String, Object>> responseMessage ) {
-
-        Instant requestTime = Instant.now()
+                  @NotNull APSHandler<Map<String, Object>> responseHandler ) {
 
         if ( validateBaseMessageStructure( message ) ) {
 
@@ -345,25 +353,85 @@ class APSBusProvider implements APSBus {
 
             ID subID = new APSUUID()
 
-            this.subscribe( subID, replyTarget ) { APSResult res ->
+            //boolean keepSending = true
+            SyncedValue<Boolean> keepSending = new SyncedValue<>( true )
 
+            this.subscribe( subID, replyTarget ) { APSResult subRes ->
 
-                if ( resultHandler != null ) {
-                    resultHandler.handle( res )
+                if ( subRes.success() ) {
+
+                    // Subscription on reply successful so send request.
+                    concurrent { sendRequest( target, message, timeOutSec, keepSending, resultHandler ) }
+                }
+                else {
+                    APSHandler.doHandle( resultHandler, subRes )
                 }
 
             } { Map<String, Object> reply ->
+                // Reply subscription receiver
 
+                keepSending.value = false
                 this.unsubscribe( subID )
-                responseMessage.handle( reply )
+                APSHandler.doHandle( responseHandler, reply )
             }
 
-            send( target, message, resultHandler )
         }
         else {
             validationFail( resultHandler )
         }
 
+    }
+
+    /**
+     * Continuation of request after success of reply subscription. Please note that the call to this
+     * is submitted to thread pool (APSExecutor).
+     *
+     * @param target The target to send to.
+     * @param message The message to send.
+     * @param timeoutSec The number of seconds to wait for a reply before failing.
+     * @param keepSending As long as this flag is true and timeout has not been reached, this method
+     *                    will keep resending message at 2 second intervals.
+     * @param resultHandler The handler to call on success and failure with the result.
+     */
+    @Concurrent( Concurrent.Type.THREAD_POOL )
+    private void sendRequest( @NotNull String target, @NotNull Map<String, Object> message, int timeOutSec,
+                              SyncedValue<Boolean> keepSending, APSHandler<APSResult<?>> resultHandler ) {
+
+        Instant timeOut = Instant.now().plusSeconds( timeOutSec )
+
+        Exception sendFail = null
+        Sporadic.until { keepSending.value && Instant.now().isBefore( timeOut ) }.
+                interval( 2 ).
+                exec {
+                    System.err.println "################## DOING SEND! ##################"
+                    System.err.println "Target: ${target}"
+                    send( target, message ) { APSResult<?> sendRes ->
+                        if ( sendRes.success() ) {
+                            sendFail = null
+                            keepSending.value = false
+                        }
+                        else {
+                            sendFail = sendRes.failure()
+                        }
+                    }
+                }
+
+        if ( sendFail != null ) {
+            logger.error( "Failed to send message! ", sendFail )
+            resultHandler.handle( APSResult.failure( sendFail ) )
+        }
+        else {
+            if ( !keepSending.value || Instant.now().isBefore( timeOut ) ) {
+                resultHandler.handle( APSResult.success( null ) )
+            }
+            else {
+                resultHandler.handle(
+                        APSResult.failure(
+                                new APSMessagingException( "Timed out waiting for reply to request!" )
+                        )
+                )
+            }
+        }
     }
 
     /**

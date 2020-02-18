@@ -89,7 +89,7 @@ public interface APSBusRouter {
      * @param resultHandler The handler to call with result of operation. Can be null!
      */
     @Reactive
-    void send( @NotNull String target, @NotNull Map<String, Object> message,
+    boolean send( @NotNull String target, @NotNull Map<String, Object> message,
                @Optional @Nullable APSHandler<APSResult> resultHandler );
 
     /**
@@ -101,7 +101,7 @@ public interface APSBusRouter {
      * @param messageHandler The handler to call with messages sent to target.
      */
     @Reactive
-    void subscribe( @NotNull ID id, @NotNull String target,
+    boolean subscribe( @NotNull ID id, @NotNull String target,
                     @Optional @Nullable APSHandler<APSResult> resultHandler,
                     @NotNull APSHandler<Map<String, Object>> messageHandler );
 

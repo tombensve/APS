@@ -97,7 +97,7 @@
         <clm.version>2.2.1</clm.version>
         <ftpPlugin.version>1.0.1</ftpPlugin.version>
         <markdownDoc.version>2.1.0</markdownDoc.version>
-        <groovy.version>3.0.0-beta-3</groovy.version>
+        <groovy.version>3.0.1</groovy.version>
         <!--groovy.version>2.5.7</groovy.version-->
         <vertx.version>3.8.0</vertx.version>
         <netty.version>4.1.19.Final</netty.version>
@@ -200,7 +200,7 @@
             <dependency>
                 <groupId>se.natusoft.annotation</groupId>
                 <artifactId>docutations</artifactId>
-                <version>2.5</version>
+                <version>2.7</version>
             </dependency>
             <dependency>
                 <groupId>se.natusoft.osgi.aps</groupId>

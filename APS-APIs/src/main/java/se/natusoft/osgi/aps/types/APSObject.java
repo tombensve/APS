@@ -3,31 +3,31 @@
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -91,7 +91,7 @@ public class APSObject<T> implements APSValue<T> {
         return this.object == null;
     }
 
-    public Class type() {
+    public Class<T> type() {
         return getType();
     }
 
@@ -167,7 +167,7 @@ public class APSObject<T> implements APSValue<T> {
         return content();
     }
 
-    public APSObject onBoolean(APSHandler<Boolean> handler) {
+    public APSObject<T> onBoolean(APSHandler<Boolean> handler) {
         if(isBoolean()) {
             handler.handle(getBoolean());
         }
@@ -175,7 +175,7 @@ public class APSObject<T> implements APSValue<T> {
         return this;
     }
 
-    public APSObject onTrue(APSHandler<Boolean> handler) {
+    public APSObject<T> onTrue(APSHandler<Boolean> handler) {
         if (isBoolean() && getBoolean()) {
             handler.handle(getBoolean());
         }
@@ -183,7 +183,7 @@ public class APSObject<T> implements APSValue<T> {
         return this;
     }
 
-    public APSObject onFalse(APSHandler<Boolean> handler) {
+    public APSObject<T> onFalse(APSHandler<Boolean> handler) {
         if (isBoolean() && !getBoolean()) {
             handler.handle(getBoolean());
         }
@@ -191,7 +191,7 @@ public class APSObject<T> implements APSValue<T> {
         return this;
     }
 
-    public APSObject onString(APSHandler<String> handler) {
+    public APSObject<T> onString(APSHandler<String> handler) {
         if (isString()) {
             handler.handle(getString());
         }
@@ -199,7 +199,7 @@ public class APSObject<T> implements APSValue<T> {
         return this;
     }
 
-    public APSObject onNumber(APSHandler<Number> handler) {
+    public APSObject<T> onNumber(APSHandler<Number> handler) {
         if (isNumber()) {
             handler.handle(getNumber());
         }
@@ -207,7 +207,7 @@ public class APSObject<T> implements APSValue<T> {
         return this;
     }
 
-    public APSObject onDecimals(APSHandler<Double> handler) {
+    public APSObject<T> onDecimals(APSHandler<Double> handler) {
         if (isDouble() || isFloat()) {
             handler.handle((Double)this.object);
         }
@@ -215,7 +215,7 @@ public class APSObject<T> implements APSValue<T> {
         return this;
     }
 
-    public APSObject onIntegers(APSHandler<Long> handler) {
+    public APSObject<T> onIntegers(APSHandler<Long> handler) {
         if (isInt() || isLong()) {
             handler.handle((Long)this.object);
         }
@@ -223,7 +223,7 @@ public class APSObject<T> implements APSValue<T> {
         return this;
     }
 
-    public APSObject onUnknownObject(APSHandler<Object> handler) {
+    public APSObject<T> onUnknownObject(APSHandler<Object> handler) {
         if (isUnknownObject()) {
             handler.handle(this.object);
         }
@@ -231,7 +231,7 @@ public class APSObject<T> implements APSValue<T> {
         return this;
     }
 
-    public APSObject onAvailable(APSHandler<T> handler) {
+    public APSObject<T> onAvailable(APSHandler<T> handler) {
         if (this.object != null) {
             handler.handle(this.object);
         }
@@ -239,7 +239,7 @@ public class APSObject<T> implements APSValue<T> {
         return this;
     }
 
-    public APSObject onNull(APSHandler<T> handler) {
+    public APSObject<T> onNull(APSHandler<T> handler) {
         if (this.object == null) {
             handler.handle(null);
         }

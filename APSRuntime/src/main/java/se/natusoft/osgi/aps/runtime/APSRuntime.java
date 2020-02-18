@@ -44,10 +44,13 @@ import se.natusoft.osgi.aps.activator.APSActivator;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
 import se.natusoft.osgi.aps.exceptions.APSException;
 import se.natusoft.osgi.aps.runtime.internal.ServiceRegistry;
+import se.natusoft.osgi.aps.types.APSResult;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -66,19 +69,19 @@ import java.util.concurrent.TimeUnit;
  *
  * ## Groovy Example
  *
- *     deploy 'aps-vertx-provider' with new APSActivator() from('se.natusoft.osgi.aps','aps-vertx-provider','1.0.0')
+ * deploy 'aps-vertx-provider' with new APSActivator() from('se.natusoft.osgi.aps','aps-vertx-provider','1.0.0')
  *
- *     deploy 'aps-config-manager' with new APSActivator() from 'APS-Core/APSConfigManager/target/classes'
+ * deploy 'aps-config-manager' with new APSActivator() from 'APS-Core/APSConfigManager/target/classes'
  *
- *     deploy 'moon-whale-service' with new APSActivator() from 'APS-Core/APSConfigManager/target/test-classes'
+ * deploy 'moon-whale-service' with new APSActivator() from 'APS-Core/APSConfigManager/target/test-classes'
  *
  * ## Java Example
  *
- *     deploy("aps-vertx-provider").with(new APSActivator()).from("se.natusoft.osgi.aps","aps-vertx-provider","1.0.0");
+ * deploy("aps-vertx-provider").with(new APSActivator()).from("se.natusoft.osgi.aps","aps-vertx-provider","1.0.0");
  *
- *     deploy( "aps-config-manager").with( new APSActivator() ).from( "APS-Core/APSConfigManager/target/classes");
+ * deploy( "aps-config-manager").with( new APSActivator() ).from( "APS-Core/APSConfigManager/target/classes");
  *
- *     deploy( "moon-whale-service").with( new APSActivator() ).from( "APS-Core/APSConfigManager/target/test-classes");
+ * deploy( "moon-whale-service").with( new APSActivator() ).from( "APS-Core/APSConfigManager/target/test-classes");
  */
 @SuppressWarnings({ "WeakerAccess", "SpellCheckingInspection" })
 public class APSRuntime {
@@ -161,7 +164,7 @@ public class APSRuntime {
      *
      * @param bundleContext The context of the bundle to remove.
      */
-    @SuppressWarnings( "unused" )
+    @SuppressWarnings("unused")
     public void removeBundle( APSBundleContext bundleContext ) {
         removeBundle( (APSBundle) bundleContext.getBundle() );
     }
@@ -178,7 +181,7 @@ public class APSRuntime {
      *
      * @param name The name of the bundle to get.
      */
-    @SuppressWarnings( "unused" )
+    @SuppressWarnings("unused")
     public APSBundle getBundleBySymbolicName( String name ) {
         return this.bundleByName.get( name );
     }
@@ -188,7 +191,7 @@ public class APSRuntime {
      *
      * @param id The id of the bundle to get.
      */
-    @SuppressWarnings( "unused" )
+    @SuppressWarnings("unused")
     public APSBundle getBundleById( long id ) {
         return this.bundleById.get( id );
     }
@@ -207,12 +210,15 @@ public class APSRuntime {
      * <p>
      * Usage:
      * <p>
-     * BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from("proj root relative bundle root path.");
-     * BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from(new File("proj root relative bundle root path."));
+     * BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from("proj root relative bundle root
+     * path.");
+     * BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from(new File("proj root relative bundle
+     * root path."));
      * BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from("group", "artifact", "version");
      * BundleContext ctx = deployBundle("test-bundle).with(new APSActivator()).from("bundle content path", ...);
      *
      * @param name The name of the bundle to create and deploy.
+     *
      * @return An intermediate BundleManager that handles the with() and from() giving you a BundleContext in the end.
      */
     public BundleBuilder deploy( String name ) {
@@ -226,7 +232,7 @@ public class APSRuntime {
      *
      * @param name The name of the bundle to undeploy.
      */
-    @SuppressWarnings( "unused" )
+    @SuppressWarnings("unused")
     public void undeploy( String name ) {
         BundleBuilder bb = this.bundleBuilders.stream().filter( b -> b.getName().equals( name ) ).findFirst().orElse( null );
         if ( bb != null ) {
@@ -235,10 +241,8 @@ public class APSRuntime {
         }
     }
 
-    // ---- Helpers for unit tests ---- //
-
     @SuppressWarnings("unused")
-    public void deployConfigAndVertxPlusDeps()  throws Exception {
+    public void deployConfigAndVertxPlusDeps() throws Exception {
         deployConfigAndVertxPlusDeps( null );
     }
 
@@ -247,23 +251,23 @@ public class APSRuntime {
     public static final String BUS_MESSAGING_DEPLOYER = "busMessagingDeployer";
 
     @SuppressWarnings("unused")
-    public static Map<String, Runnable> vertxDeployer( Map<String, Runnable> depMap, Runnable deployer) {
-        if (depMap == null) depMap = new LinkedHashMap<>(  );
-        depMap.put(VERTX_DEPLOYER, deployer);
+    public static Map<String, Runnable> vertxDeployer( Map<String, Runnable> depMap, Runnable deployer ) {
+        if ( depMap == null ) depMap = new LinkedHashMap<>();
+        depMap.put( VERTX_DEPLOYER, deployer );
         return depMap;
     }
 
     @SuppressWarnings("unused")
-    public static Map<String, Runnable> dataStoreServiceDeployer( Map<String, Runnable> depMap, Runnable deployer) {
-        if (depMap == null) depMap = new LinkedHashMap<>(  );
-        depMap.put(DATASTORE_SERVICE_DEPLOYER, deployer);
+    public static Map<String, Runnable> dataStoreServiceDeployer( Map<String, Runnable> depMap, Runnable deployer ) {
+        if ( depMap == null ) depMap = new LinkedHashMap<>();
+        depMap.put( DATASTORE_SERVICE_DEPLOYER, deployer );
         return depMap;
     }
 
     @SuppressWarnings("unused")
-    public static Map<String, Runnable> busMessagingDeployer( Map<String, Runnable> depMap, Runnable deployer) {
-        if (depMap == null) depMap = new LinkedHashMap<>(  );
-        depMap.put(BUS_MESSAGING_DEPLOYER, deployer);
+    public static Map<String, Runnable> busMessagingDeployer( Map<String, Runnable> depMap, Runnable deployer ) {
+        if ( depMap == null ) depMap = new LinkedHashMap<>();
+        depMap.put( BUS_MESSAGING_DEPLOYER, deployer );
         return depMap;
     }
 
@@ -276,7 +280,7 @@ public class APSRuntime {
      *
      * @throws Exception on any failure to deploy.
      */
-    public void deployConfigAndVertxPlusDeps( Map<String, Runnable> altDeployers) throws Exception {
+    public void deployConfigAndVertxPlusDeps( Map<String, Runnable> altDeployers ) throws Exception {
 
         System.setProperty( APSFilesystemService.CONF_APS_FILESYSTEM_ROOT, "target/config" );
 
@@ -292,30 +296,28 @@ public class APSRuntime {
                 "1.0.0"
         );
 
-        Runnable vertxDeployer = altDeployers != null ? altDeployers.get("vertxDeployer") : null;
-        System.err.println("vertxDeployer: " + vertxDeployer);
-        if (vertxDeployer == null) {
+        Runnable vertxDeployer = altDeployers != null ? altDeployers.get( "vertxDeployer" ) : null;
+        System.err.println( "vertxDeployer: " + vertxDeployer );
+        if ( vertxDeployer == null ) {
             deploy( "aps-vertx-provider" ).with( new APSActivator() ).from(
                     "se.natusoft.osgi.aps",
                     "aps-vertx-provider",
                     "1.0.0"
             );
-        }
-        else {
+        } else {
             vertxDeployer.run();
         }
 
         hold().maxTime( 2 ).unit( TimeUnit.SECONDS ).go();
 
-        Runnable dataStoreServiceDeployer = altDeployers != null ? altDeployers.get("dataStoreServiceDeployer") : null;
-        if (dataStoreServiceDeployer == null) {
+        Runnable dataStoreServiceDeployer = altDeployers != null ? altDeployers.get( "dataStoreServiceDeployer" ) : null;
+        if ( dataStoreServiceDeployer == null ) {
             deploy( "aps-vertx-cluster-datastore-service-provider" ).with( new APSActivator() ).from(
                     "se.natusoft.osgi.aps",
                     "aps-vertx-cluster-datastore-service-provider",
                     "1.0.0"
             );
-        }
-        else {
+        } else {
             dataStoreServiceDeployer.run();
         }
 
@@ -341,6 +343,7 @@ public class APSRuntime {
      *
      * @param name       The name of the bundle.
      * @param withBundle The code to run.
+     *
      * @throws Throwable Any exception is forwarded.
      */
     public void with_new_bundle( String name, WithBundle withBundle ) throws Throwable {
@@ -355,6 +358,7 @@ public class APSRuntime {
      * Provides a delay so that concurrent things can finish before checking results.
      *
      * @param milliseconds The number of milliseconds to wait.
+     *
      * @throws InterruptedException If interrupted.
      */
     public void delay( int milliseconds ) throws InterruptedException {
@@ -365,14 +369,14 @@ public class APSRuntime {
      * Provides a delay so that concurrent things can finish before checking results.
      *
      * @param delay A string. 'long' ==> 10000ms, 'very small' ==> 500ms, anything else ==> 1000ms.
+     *
      * @throws InterruptedException if interrupted.
      */
     public void delay( String delay ) throws InterruptedException {
         int ms = 1000;
         if ( delay.startsWith( "long" ) ) {
             ms = 10000;
-        }
-        else if ( delay.startsWith( "very small" ) ) {
+        } else if ( delay.startsWith( "very small" ) ) {
             ms = 500;
         }
         delay( ms );
@@ -432,7 +436,7 @@ public class APSRuntime {
 
             try {
                 if ( this.condition != null ) {
-                    int maxCount = ( int ) ( TimeUnit.MILLISECONDS.convert( this.maxTime, this.timeUnit ) / 200 );
+                    int maxCount = (int) ( TimeUnit.MILLISECONDS.convert( this.maxTime, this.timeUnit ) / 200 );
                     int count = 0;
                     while ( this.condition.call() ) {
                         synchronized ( this ) {
@@ -440,32 +444,31 @@ public class APSRuntime {
                         }
                         ++count;
                         if ( count > maxCount ) {
-                            if (this.exceptionOnTimeout) {
+                            if ( this.exceptionOnTimeout ) {
                                 throw new APSException( "The current hold() timed out!" );
-                            }
-                            else {
+                            } else {
                                 System.err.println( "WARNING: APSOSGiServiceTestTools.hold() exited due to timeout!!" );
                             }
                             break;
                         }
                     }
-                }
-                else {
+                } else {
                     Thread.sleep( TimeUnit.MILLISECONDS.convert( this.maxTime, this.timeUnit ) );
                 }
             } catch ( Exception mostlyIgnore ) {
-                if (mostlyIgnore.getClass() == APSException.class && mostlyIgnore.getMessage().equals( "The current hold() timed out!" )) {
-                    throw (APSException)mostlyIgnore;
+                if ( mostlyIgnore.getClass() == APSException.class && mostlyIgnore.getMessage().equals( "The current hold() timed out!" ) ) {
+                    throw (APSException) mostlyIgnore;
                 }
 
-                System.err.println("WARNING: The following Exception did occur, but will not break test!");
+                System.err.println( "WARNING: The following Exception did occur, but will not break test!" );
                 mostlyIgnore.printStackTrace( System.err );
             }
         }
     }
 
     /**
-     * Inner class to support primitive DSL. Looks better when called from Groovy where you can skip chars like '.' and '()' :-).
+     * Inner class to support primitive DSL. Looks better when called from Groovy where you can skip chars like '.' and
+     * '()' :-).
      */
     public class BundleBuilder {
 
@@ -495,6 +498,7 @@ public class APSRuntime {
          * Private support method that actually starts the bundle using its BundleActivator.
          *
          * @return itself.
+         *
          * @throws Exception Any exceptions are forwarded.
          */
         private BundleBuilder start() throws Exception {
@@ -522,6 +526,7 @@ public class APSRuntime {
          * not call it yet.
          *
          * @param bundleActivator The BundleActivator to provide.
+         *
          * @return itself
          */
         public BundleBuilder with_activator( BundleActivator bundleActivator ) {
@@ -538,7 +543,7 @@ public class APSRuntime {
          * @return itself.
          */
         @SuppressWarnings("rawtypes")
-        public BundleBuilder manifest_from( Class testClass) {
+        public BundleBuilder manifest_from( Class testClass ) {
             manifest_from( testClass, null );
             return this;
         }
@@ -548,13 +553,13 @@ public class APSRuntime {
          *
          * @param testClass The test class requesting the MANIFEST.MF. It will be loaded using this
          *                  class ClassLoader.
-         * @param name The name of the MANIFEST.MF file to use. Defaults to MANIFEST.MF if null or blank.
+         * @param name      The name of the MANIFEST.MF file to use. Defaults to MANIFEST.MF if null or blank.
          *
          * @return itself.
          */
         @SuppressWarnings({ "UnusedReturnValue", "rawtypes" })
-        public BundleBuilder manifest_from( Class testClass, String name) {
-            if (name == null || name.equals( "" )) {
+        public BundleBuilder manifest_from( Class testClass, String name ) {
+            if ( name == null || name.equals( "" ) ) {
                 name = "MANIFEST.MF";
             }
             String _name = "/forTest/META-INF/" + name;
@@ -569,7 +574,9 @@ public class APSRuntime {
          * @param group    The artifact group
          * @param artifact The artifact.
          * @param version  The artifact version
+         *
          * @return itself
+         *
          * @throws Exception Forwards exceptions
          */
         public BundleBuilder from( String group, String artifact, String version ) throws Exception {
@@ -581,11 +588,13 @@ public class APSRuntime {
          * Provides bundle content by reading a jar file.
          *
          * @param file The jar file to read.
+         *
          * @return itself.
+         *
          * @throws Exception Forwards exception.
          */
         @SuppressWarnings("UnusedReturnValue") // This is upp to the caller, not this API!
-        public BundleBuilder fromJar( File file) throws Exception {
+        public BundleBuilder fromJar( File file ) throws Exception {
             this.bundle.loadEntryPathsFromJar( file );
             return start();
         }
@@ -594,7 +603,9 @@ public class APSRuntime {
          * Provides bundle content by scanning files under a root directory.
          *
          * @param dirScan The root diretory to scan.
+         *
          * @return itself
+         *
          * @throws Exception Forwards exceptions
          */
         public BundleBuilder from( String dirScan ) throws Exception {
@@ -606,7 +617,9 @@ public class APSRuntime {
          * Provides bundle content by scanning files under a root directory using a File object to specify root.
          *
          * @param dirScan The root to start scanning at.
+         *
          * @return itself
+         *
          * @throws Exception Forwards exceptions
          */
         public BundleBuilder from( File dirScan ) throws Exception {
@@ -618,7 +631,9 @@ public class APSRuntime {
          * Provides bundle content by providing content paths as an array.
          *
          * @param paths The paths to provide.
+         *
          * @return itself
+         *
          * @throws Exception Forwards exceptions
          */
         public BundleBuilder using( String[] paths ) throws Exception {
@@ -636,7 +651,7 @@ public class APSRuntime {
         /**
          * Terminates this builder and returns a BundleContext representing the result.
          */
-        @SuppressWarnings( "unused" )
+        @SuppressWarnings("unused")
         public BundleContext as_context() {
             return this.bundle.getBundleContext();
         }
@@ -644,7 +659,7 @@ public class APSRuntime {
         /**
          * Terminates this builder and returns a Bundle representing the result.
          */
-        @SuppressWarnings( "unused" )
+        @SuppressWarnings("unused")
         public Bundle as_bundle() {
             return this.bundle;
         }
