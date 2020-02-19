@@ -66,7 +66,7 @@ import java.util.Map;
  *
  * The general format of target is 'id:address'. The APSTarget class supports that. The 'id'
  * part should be constant for each implementation. It identifies a specific implementation,
- * for example, the _APSLocal*InMemoryBus_ uses 'local' as id. The APSVertxBusRouter
+ * for example, the _APSLocalInMemoryBus_ uses 'local' as id. The APSVertxBusRouter
  * (APSVertxProvider) uses 'cluster' as id. So users of APSBus can steer messages to different
  * buses by providing target specification using different target ids. This makes things very
  * easy.
@@ -76,6 +76,10 @@ import java.util.Map;
  * can be sent via different busses at the same time. I'm only pointing this out since it
  * is possible! In most cases it would not make sense to do so. But there might be a special
  * case where it would make sense.
+ *
+ * A note about the boolean return value of send(...) and subscribe(...): The return value
+ * of these are used by APSBusProvider to resolve that none of the APSBusRouter implementations
+ * called handled the call. In this case it returns an error.
  */
 public interface APSBusRouter {
 
