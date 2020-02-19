@@ -234,6 +234,12 @@ class APSBusProvider implements APSBus {
             this.routerTracker.withAllAvailableServices() { APSBusRouter apsBusRouter, @NotUsed Object[] args ->
 
                 if ( apsBusRouter.send( target.trim(), message, resultHandler ) ) {
+                    //                                                ^
+                    //                                                |
+                    //                                     This is now identical to
+                    //                                     what APSBusRouter.send(...)
+                    //                                     declares that it expects, but
+                    //                                     will fail to compile.
                     valid = true
                 }
             }

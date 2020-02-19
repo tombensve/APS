@@ -36,10 +36,7 @@
  */
 package se.natusoft.osgi.aps.api.messaging;
 
-import se.natusoft.docutations.NotNull;
-import se.natusoft.docutations.Nullable;
-import se.natusoft.docutations.Optional;
-import se.natusoft.docutations.Reactive;
+import se.natusoft.docutations.*;
 import se.natusoft.osgi.aps.types.APSHandler;
 import se.natusoft.osgi.aps.types.APSResult;
 import se.natusoft.osgi.aps.types.ID;
@@ -93,9 +90,24 @@ public interface APSBusRouter {
      *
      * @return true if target is valid for this router, false otherwise.
      */
-    @Reactive
+    @Issue(
+            id="?",
+            description = {
+                    "APSHandler<APSResult> should be APSHandler<APSResult<?>>",
+                    "but that will make groovy fail compilation even though this",
+                    "is identical to what is passed, while not having the <?> part",
+                    "is not. The <?> is put in here as a demonstration that APSBusProvider",
+                    "will not build then! Also as an example it is left out in subscribe",
+                    "since that will not fail as it is now even though it is an",
+                    "APSHandler<APSResult<?>> that is passed!"
+            },
+            see = ""
+            )
     boolean send( @NotNull String target, @NotNull Map<String, Object> message,
-               @Optional @Nullable APSHandler<APSResult> resultHandler );
+               @Optional @Nullable APSHandler<APSResult<?>> resultHandler );
+    //                                                  ^
+    //                                                  |
+    //                                                  +--- Fail point.
 
     /**
      * Subscribes to messages to a target.
@@ -107,7 +119,6 @@ public interface APSBusRouter {
      *
      * @return true if target is valid for this router, false otherwise.
      */
-    @Reactive
     boolean subscribe( @NotNull ID id, @NotNull String target,
                     @Optional @Nullable APSHandler<APSResult> resultHandler,
                     @NotNull APSHandler<Map<String, Object>> messageHandler );
@@ -117,7 +128,6 @@ public interface APSBusRouter {
      *
      * @param subscriberId The ID returned by subscribe.
      */
-    @Reactive
     void unsubscribe( @NotNull ID subscriberId );
 
     /**
