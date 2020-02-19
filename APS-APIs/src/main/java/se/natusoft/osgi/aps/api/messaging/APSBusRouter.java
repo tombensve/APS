@@ -36,10 +36,7 @@
  */
 package se.natusoft.osgi.aps.api.messaging;
 
-import se.natusoft.docutations.NotNull;
-import se.natusoft.docutations.Nullable;
-import se.natusoft.docutations.Optional;
-import se.natusoft.docutations.Reactive;
+import se.natusoft.docutations.*;
 import se.natusoft.osgi.aps.types.APSHandler;
 import se.natusoft.osgi.aps.types.APSResult;
 import se.natusoft.osgi.aps.types.ID;
@@ -86,31 +83,39 @@ public interface APSBusRouter {
     /**
      * Sends a message.
      *
-     * @param target The target to send to. How to interpret this is up to implementation.
-     * @param message The message to send. Only JSON structures allowed and top level has to
-     * be an object.
+     * @param target        The target to send to. How to interpret this is up to implementation.
+     * @param message       The message to send. Only JSON structures allowed and top level has to
+     *                      be an object.
      * @param resultHandler The handler to call with result of operation. Can be null!
      *
      * @return true if target is valid for this router, false otherwise.
      */
-    @Reactive
+    @Issue(id = "GROOVY-9413",
+            description = {
+                    "Adding <?> to APSResult will make Groovy code calling this fail to compile!"
+            },
+            url = "https://issues.apache.org/jira/browse/GROOVY-9413")
     boolean send( @NotNull String target, @NotNull Map<String, Object> message,
-               @Optional @Nullable APSHandler<APSResult> resultHandler );
+                  @Optional @Nullable APSHandler<APSResult/*<?>*/> resultHandler );
 
     /**
      * Subscribes to messages to a target.
      *
-     * @param id A unique ID to associate subscription with. Also used to unsubscribe.
-     * @param target The target to subscribe to.
-     * @param resultHandler The result of the subscription.
+     * @param id             A unique ID to associate subscription with. Also used to unsubscribe.
+     * @param target         The target to subscribe to.
+     * @param resultHandler  The result of the subscription.
      * @param messageHandler The handler to call with messages sent to target.
      *
      * @return true if target is valid for this router, false otherwise.
      */
-    @Reactive
+    @Issue(id = "GROOVY-9413",
+            description = {
+                    "Adding <?> to APSResult will make Groovy code calling this fail to compile!"
+            },
+            url = "https://issues.apache.org/jira/browse/GROOVY-9413")
     boolean subscribe( @NotNull ID id, @NotNull String target,
-                    @Optional @Nullable APSHandler<APSResult> resultHandler,
-                    @NotNull APSHandler<Map<String, Object>> messageHandler );
+                       @Optional @Nullable APSHandler<APSResult/*<?>*/> resultHandler,
+                       @NotNull APSHandler<Map<String, Object>> messageHandler );
 
     /**
      * Releases a subscription.

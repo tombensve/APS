@@ -1,4 +1,4 @@
-package se.natusoft.osgi.aps.core.lib
+package se.natusoft.osgi.aps.core.service
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
@@ -10,6 +10,8 @@ import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.activator.annotation.OSGiService
 import se.natusoft.osgi.aps.api.messaging.APSBus
 import se.natusoft.osgi.aps.api.messaging.APSMessagingException
+import se.natusoft.osgi.aps.core.lib.MapJsonLoader
+import se.natusoft.osgi.aps.core.lib.MapJsonSchemaValidator
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.runtime.APSTestResults
@@ -18,7 +20,6 @@ import se.natusoft.osgi.aps.types.APSUUID
 import se.natusoft.osgi.aps.types.ID
 import se.natusoft.osgi.aps.util.APSLogger
 
-import static se.natusoft.osgi.aps.util.APSExecutor.submit as parallel
 import java.util.concurrent.TimeUnit
 
 @CompileStatic
@@ -248,9 +249,6 @@ class TestRequest {
 
         }
         this.logger.info "<<<<<<<<<< SUBSCRIBED!"
-
-        // Have to wait a little for the subscription to be received.
-        Thread.sleep( 1000 )
 
         APSBusTest.testCount++
         println "TestRequest: testCount: ${APSBusTest.testCount}"
