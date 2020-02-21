@@ -19,6 +19,7 @@ import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.types.APSUUID
 import se.natusoft.osgi.aps.types.ID
+import se.natusoft.osgi.aps.util.APSExecutor
 import se.natusoft.osgi.aps.util.APSLogger
 
 import java.util.concurrent.TimeUnit
@@ -202,24 +203,32 @@ class TestRequest {
 
         // Call service
 
-        this.logger.info ">>>>>>>>>> ABOUT TO REQUEST!"
-        this.bus.request( "local:testService", [
-                aps    : [
-                        type   : "serviceRequest",
-                        version: 1.0
-                ],
-                content: [
-                        data: "Something important!"
-                ]
-        ] as Map<String, Object> ) { APSResult result ->
-            APSBusTest.testResults.trAssertTrue( result.success() )
-        } { Map<String, Object> response ->
+        // We submit this to run in parallel since in a real situation the called service and the calling
+        // client will not be on same thread, maybe even not on same machine!
+        APSExecutor.submit {
 
-            APSBusTest.testResults.trAssertTrue( response[ 'content' ][ 'response' ] == "Something important!" )
+            this.logger.info ">>>>>>>>>> ABOUT TO REQUEST!"
+            this.bus.request( "local:testService", [
+                    aps    : [
+                            type   : "serviceRequest",
+                            version: 1.0
+                    ],
+                    content: [
+                            data: "Something important!"
+                    ]
+            ] as Map<String, Object> ) { APSResult result ->
+
+                APSBusTest.testResults.trAssertTrue( result.success() )
+
+            } { Map<String, Object> response ->
+
+                this.logger.info "#### GOT RESPONSE! ####"
+                APSBusTest.testResults.trAssertTrue( response[ 'content' ][ 'response' ] == "Something important!" )
+            }
         }
 
         // Simulate delay for subscribing service to start.
-        Thread.sleep( 5000 )
+        Thread.sleep( 4000 )
 
         // Setup service
 
@@ -252,6 +261,10 @@ class TestRequest {
 
         }
         this.logger.info "<<<<<<<<<< SUBSCRIBED!"
+
+        // We have to wait a little bit for the request to have time to call subscribe and
+        // get a result.
+        Thread.sleep( 3000 )
 
         APSBusTest.testCount++
         println "TestRequest: testCount: ${APSBusTest.testCount}"

@@ -351,28 +351,31 @@ class APSBusProvider implements APSBus {
             String replyTarget = "${target.split( ":" )[ 0 ]}:" + new APSUUID().toString()
             message[ 'aps' ][ 'replyTarget' ] = replyTarget
 
-            ID subID = new APSUUID()
+            ID replySubscriptionId = new APSUUID()
 
-            //boolean keepSending = true
+            // We are not on different threads, but this value is also passed to
+            // sendRequest(...) and will be modified in this method further down
+            // in reply, so having value boxed so that value change reflects in
+            // sendRequest(...) is a requirement.
             SyncedValue<Boolean> keepSending = new SyncedValue<>( true )
 
-            this.subscribe( subID, replyTarget ) { APSResult subRes ->
+            this.subscribe( replySubscriptionId, replyTarget ) { APSResult subRes ->
 
                 if ( subRes.success() ) {
 
                     // Subscription on reply successful so send request.
-                    concurrent { sendRequest( target, message, timeOutSec, keepSending, resultHandler ) }
+                    sendRequest( target, message, timeOutSec, keepSending, resultHandler )
                 }
                 else {
-                    APSHandler.result( resultHandler, subRes )
+                    resultHandler.handle( subRes )
                 }
 
             } { Map<String, Object> reply ->
                 // Reply subscription receiver
 
                 keepSending.value = false
-                this.unsubscribe( subID )
-                APSHandler.result( responseHandler, reply )
+                this.unsubscribe( replySubscriptionId )
+                responseHandler.handle( reply )
             }
 
         }
@@ -383,8 +386,7 @@ class APSBusProvider implements APSBus {
     }
 
     /**
-     * Continuation of request after success of reply subscription. Please note that the call to this
-     * is submitted to thread pool (APSExecutor).
+     * Continuation of request after success of reply subscription.
      *
      * @param target The target to send to.
      * @param message The message to send.
@@ -393,7 +395,6 @@ class APSBusProvider implements APSBus {
      *                    will keep resending message at 2 second intervals.
      * @param resultHandler The handler to call on success and failure with the result.
      */
-    @Concurrent( Concurrent.Type.THREAD_POOL )
     private void sendRequest( @NotNull String target, @NotNull Map<String, Object> message, int timeOutSec,
                               SyncedValue<Boolean> keepSending, APSHandler<APSResult<?>> resultHandler ) {
 

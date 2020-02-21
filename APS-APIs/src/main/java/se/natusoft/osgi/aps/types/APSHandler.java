@@ -37,10 +37,36 @@
 package se.natusoft.osgi.aps.types;
 
 import se.natusoft.docutations.Nullable;
-import se.natusoft.osgi.aps.util.APSExecutor;
 
 /**
- * Generic handler api inspired by Vertx.
+ * Generic handler api inspired by Vert.x.
+ *
+ * ====================================================================================
+ * Note to self (and possibly others):
+ * I tried to be smart and add inner class and static methods to automatically
+ * submit callbacks to APSExecutor thread pool. That actually wasn't smart at all!!
+ * It was rather stupid. Most implementations are done in Groovy. Result handlers
+ * are in general coerced Groovy closures. When the closure gets executed on another
+ * thread is has lost some context and can no longer reference things outside of
+ * the closure. Indifferent from Java, Groovy can reference internal method variables.
+ * These fail when executed from another thread.
+ *
+ * Having client passed code (lambda / closure) submitted to a thread pool is a very
+ * bad idea! A service should never make such decisions for clients!!
+ *
+ * When `handler.handle(result)` is done the call stack depth will increase and the
+ * callback will execute before service method call returns. If that is problematic
+ * for the calling code then it, when in the callback and having result, should
+ * submit some work code to APSExecutor and let callback return, which will also
+ * make service call return. Depending on what you need to do with the received
+ * result, the result could be passed to internal method variable of same type,
+ * without submitting to thread pool, and when service call returns the value
+ * is there and code can continue work with it.
+ *
+ * If you absolutely never need to do the call in a threaded situation then
+ * dont use a callback handler, just return result in method call. There is
+ * no requirement to always use handler callbacks when there is no need!
+ * ====================================================================================
  *
  * @param <T> The type of a potential value to handle.
  */
@@ -53,88 +79,4 @@ public interface APSHandler<T> {
      */
     void handle( @Nullable T value );
 
-    /**
-     * Provides a wrapped handler that by default will submit handler to APSExecutor.
-     *
-     * If you want the handler to be executed directly, just pass handler without using
-     * this utility method, or do: APSHandler.handler( res -> { ... } ).direct() from java
-     * or APSHandler.handler { res -> ... }.direct() from Groovy.
-     *
-     * Do note that this is intended to be used by the caller that provides the handler
-     * callback, not the callee calling the handler.
-     *
-     * @param handler The actual handler to execute with result.
-     * @param <T>     The type of the value to handle.
-     *
-     * @return A wrapped handler that in most cases will submit the handler call
-     * to APSExecutor thread pool.
-     */
-    static <T> InternalHandlerWrapper<T> provide( APSHandler<T> handler ) {
-        return new InternalHandlerWrapper<>( handler );
-    }
-
-    /**
-     * This is for code having received an APSHandler to call back. This will check if
-     * the handler is already wrapped to submit callback to APSExecutor and if not wrap it
-     * and then call the handler. Note that this will not happen if the caller have said no
-     * to thread pool. This allows the caller to choose.
-     *
-     * @param handler The handler to call.
-     * @param value The value to pass to handler.
-     * @param <T> The type of the value.
-     */
-    static <T> void result( APSHandler<T> handler, T value ) {
-        InternalHandlerWrapper<T> ihw =
-                handler instanceof APSHandler.InternalHandlerWrapper ? (InternalHandlerWrapper<T>) handler : provide( handler );
-        ihw.handle( value );
-    }
-
-    /**
-     * This wraps an actual APSHandler implementing APSHandler API itself.
-     *
-     * By default this will push the handler call to APSExecutor thread pool
-     * on `handle(value)` call. But doing `new HandlerMgr(handler).direct()`
-     * the passed handler will just be called directly on handle(). This is
-     * supported just to be consistent in usage, but not wrapping the handler
-     * with this is also a valid choice when you don't want it to be submitted
-     * to APSExecutor.
-     *
-     * @param <T> The type of the value for the handler call.
-     */
-    class InternalHandlerWrapper<T> implements APSHandler<T> {
-
-        private APSHandler<T> handler;
-
-        private boolean concurrent = true;
-
-        public InternalHandlerWrapper( APSHandler<T> handler ) {
-            this.handler = handler;
-        }
-
-        @SuppressWarnings("unused")
-        public InternalHandlerWrapper<T> direct() {
-            this.concurrent = false;
-            return this;
-        }
-
-        @SuppressWarnings("unused")
-        public InternalHandlerWrapper<T> concurrent() {
-            this.concurrent = true;
-            return this;
-        }
-
-        /**
-         * Does the handling.
-         *
-         * @param value A value to handle.
-         */
-        @Override
-        public void handle( T value ) {
-            if ( this.concurrent ) {
-                APSExecutor.submit( () -> this.handler.handle( value ) );
-            } else {
-                this.handler.handle( value );
-            }
-        }
-    }
 }
