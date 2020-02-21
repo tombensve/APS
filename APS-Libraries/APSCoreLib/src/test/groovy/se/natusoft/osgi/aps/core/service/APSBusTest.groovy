@@ -15,6 +15,7 @@ import se.natusoft.osgi.aps.core.lib.MapJsonSchemaValidator
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.runtime.APSTestResults
+import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.types.APSUUID
 import se.natusoft.osgi.aps.types.ID
@@ -95,6 +96,8 @@ class ShouldWork {
         // But in this case the subscribe handler will be called before send returns.
 
         APSBusTest.testResults.trAssertTrue( this.receivedMessageWork )
+
+        // Unsubscribe and send again. send should fail!
 
         this.bus.unsubscribe( subId )
 

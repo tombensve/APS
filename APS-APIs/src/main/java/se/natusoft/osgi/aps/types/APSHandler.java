@@ -46,8 +46,6 @@ import se.natusoft.osgi.aps.util.APSExecutor;
  */
 public interface APSHandler<T> {
 
-    boolean defaultSubmit = true;
-
     /**
      * Does the handling.
      *
@@ -56,61 +54,73 @@ public interface APSHandler<T> {
     void handle( @Nullable T value );
 
     /**
-     * Submits handler to APSExecutor thread pool.
+     * Provides a wrapped handler that by default will submit handler to APSExecutor.
      *
-     * WARNING: This has side effects when referencing values outside of executed closure! The closure
-     * is no longer in the same context!
+     * If you want the handler to be executed directly, just pass handler without using
+     * this utility method, or do: APSHandler.handler( res -> { ... } ).direct() from java
+     * or APSHandler.handler { res -> ... }.direct() from Groovy.
      *
-     * @param handler The original handler to execute in thead pool.
-     * @param <T>     The type of the result value.
+     * Do note that this is intended to be used by the caller that provides the handler
+     * callback, not the callee calling the handler.
      *
-     * @return Wrapped handler.
+     * @param handler The actual handler to execute with result.
+     * @param <T>     The type of the value to handle.
+     *
+     * @return A wrapped handler that in most cases will submit the handler call
+     * to APSExecutor thread pool.
      */
-    static <T> APSHandler<T> possiblyParallel( APSHandler<T> handler ) {
-        String apsParallelHandlers = System.getProperty( "aps.parallel.handlers" );
-        boolean submit = apsParallelHandlers == null || ( apsParallelHandlers.equals( "true" ) );
-
-        return submit ? new HandlerWrapper<>( handler ) : handler;
+    static <T> InternalHandlerWrapper<T> provide( APSHandler<T> handler ) {
+        return new InternalHandlerWrapper<>( handler );
     }
 
     /**
-     * This calls the specified handler with the specified value, possibly by submitting handler
-     * to thread pool. This should preferably be be used everywhere instead of calling handler
-     * directly since then it is possible to control default behavior.
+     * This is for code having received an APSHandler to call back. This will check if
+     * the handler is already wrapped to submit callback to APSExecutor and if not wrap it
+     * and then call the handler. Note that this will not happen if the caller have said no
+     * to thread pool. This allows the caller to choose.
      *
      * @param handler The handler to call.
-     * @param value   The value to pass to the handler.
-     * @param <T>     The type of the value.
+     * @param value The value to pass to handler.
+     * @param <T> The type of the value.
      */
-    static <T> void doHandle( APSHandler<T> handler, T value ) {
-        possiblyParallel( handler ).handle( value );
+    static <T> void result( APSHandler<T> handler, T value ) {
+        InternalHandlerWrapper<T> ihw =
+                handler instanceof APSHandler.InternalHandlerWrapper ? (InternalHandlerWrapper<T>) handler : provide( handler );
+        ihw.handle( value );
     }
 
     /**
-     * Note that it is not until handler.handle(...) is called that we should submit the handler since
-     * it is first then that we get a value to the handler.
+     * This wraps an actual APSHandler implementing APSHandler API itself.
      *
-     * @param <T> The type of the value to handle.
+     * By default this will push the handler call to APSExecutor thread pool
+     * on `handle(value)` call. But doing `new HandlerMgr(handler).direct()`
+     * the passed handler will just be called directly on handle(). This is
+     * supported just to be consistent in usage, but not wrapping the handler
+     * with this is also a valid choice when you don't want it to be submitted
+     * to APSExecutor.
+     *
+     * @param <T> The type of the value for the handler call.
      */
-    class HandlerWrapper<T> implements APSHandler<T> {
+    class InternalHandlerWrapper<T> implements APSHandler<T> {
 
-        /**
-         * This is a state flag. When true this instance will be submitted to the thread pool.
-         * When false the wrapped handler will be called. APSExecutor will always pass null as
-         * value, but we cannot use that to determine if we are called by APSExecutor since
-         * it is possible for the value to be null in the first call also. Thereby we need this
-         * flag to determine our state.
-         */
-        private boolean submit = true;
+        private APSHandler<T> handler;
 
-        /** We need to save the value from the first call since the second called by APSExecutor will only pass null! */
-        private T value;
+        private boolean concurrent = true;
 
-        /** The real handler to call when being run by APSExecutor thread pool. */
-        private APSHandler<T> realHandler;
+        public InternalHandlerWrapper( APSHandler<T> handler ) {
+            this.handler = handler;
+        }
 
-        public HandlerWrapper( APSHandler<T> realHandler ) {
-            this.realHandler = realHandler;
+        @SuppressWarnings("unused")
+        public InternalHandlerWrapper<T> direct() {
+            this.concurrent = false;
+            return this;
+        }
+
+        @SuppressWarnings("unused")
+        public InternalHandlerWrapper<T> concurrent() {
+            this.concurrent = true;
+            return this;
         }
 
         /**
@@ -120,13 +130,10 @@ public interface APSHandler<T> {
          */
         @Override
         public void handle( T value ) {
-            if ( this.submit ) {
-                this.submit = false;
-                this.value = value;
-                APSExecutor.submit( this );
+            if ( this.concurrent ) {
+                APSExecutor.submit( () -> this.handler.handle( value ) );
             } else {
-                this.submit = true; // Allows for multiple calls to this handler.
-                this.realHandler.handle( this.value );
+                this.handler.handle( value );
             }
         }
     }

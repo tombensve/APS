@@ -43,8 +43,11 @@ import se.natusoft.osgi.aps.types.APSResult;
 import java.util.concurrent.*;
 
 /**
- * This creates an ExecutorService with the amount of threads as there are processor cores in the machine * 4.
+ * This creates an ExecutorService that have max processor cores * 2 threads. It will
+ * keep each thread alive for 30 seconds of inactivity and then shut it down. New will
+ * be created again if needed later.
  * <p>
+ * This provides a static API that will create one common instance on first use.
  * Submitted jobs are forwarded to the ExecutorService.
  */
 public class APSExecutor {
@@ -78,32 +81,8 @@ public class APSExecutor {
      *
      * @param job The job to submit.
      */
-    public static void submit( @NotNull APSHandler<?> job ) {
+    public static void submit( @NotNull Runnable job ) {
         get()._submit( job );
-    }
-
-    /**
-     * Alias for submit.
-     *
-     * @param job Job to run.
-     */
-    public static void parallel( @NotNull APSHandler<?> job) {
-        submit( job );
-    }
-
-    /**
-     * Submits a job for execution on a thread pool.
-     * <p>
-     * Do note that as a special feature an APSValue is created and passed to both handlers. This means that it is
-     * possible to pass a value from one to the other.
-     *
-     * @param job            The job to submit.
-     * @param jobDoneHandler The handler to call when the job have finished execution. It will supply a success or fail
-     *                       result.
-     *                       fail will only happen if the job threw an exception.
-     */
-    public static void submit( @NotNull APSHandler<?> job, @NotNull APSHandler<APSResult<?>> jobDoneHandler ) {
-        get()._submit( job, jobDoneHandler );
     }
 
     public static void shutdown() {
@@ -141,46 +120,12 @@ public class APSExecutor {
         apsExecInst = null;
     }
 
-    /**
-     * Submits a job for execution on a thread pool.
-     *
-     * @param job The job to submit.
-     */
-    private void _submit( @NotNull APSHandler<?> job ) {
-        this.executor.submit( () -> {
-            try {
-                job.handle( null );
-            } catch ( Exception e ) {
-                e.printStackTrace( System.err );
-            }
-
-        } );
+    private void _submit( @NotNull Runnable job) {
+        this.executor.submit( job );
     }
 
     /**
-     * Submits a job for execution on a thread pool.
-     * <p>
-     * Do note that as a special feature an APSValue is created and passed to both handlers. This means that it is
-     * possible to pass a value from one to the other.
-     *
-     * @param job            The job to submit.
-     * @param jobDoneHandler The handler to call when the job have finished execution. It will supply a success or fail
-     *                       result.
-     *                       fail will only happen if the job threw an exception.
-     */
-    private void _submit( @NotNull APSHandler<?> job, @NotNull APSHandler<APSResult<?>> jobDoneHandler ) {
-        this.executor.submit( () -> {
-            try {
-                job.handle( null );
-                jobDoneHandler.handle( APSResult.success( null ) );
-            } catch ( Exception e ) {
-                jobDoneHandler.handle( APSResult.failure( e ) );
-            }
-        } );
-    }
-
-    /**
-     * Use this only if you are really really stupid!
+     * For temporary internal use only!!
      */
     public static ExecutorService _internal_get_executor() {
         return get().executor;

@@ -364,7 +364,7 @@ class APSBusProvider implements APSBus {
                     concurrent { sendRequest( target, message, timeOutSec, keepSending, resultHandler ) }
                 }
                 else {
-                    APSHandler.doHandle( resultHandler, subRes )
+                    APSHandler.result( resultHandler, subRes )
                 }
 
             } { Map<String, Object> reply ->
@@ -372,7 +372,7 @@ class APSBusProvider implements APSBus {
 
                 keepSending.value = false
                 this.unsubscribe( subID )
-                APSHandler.doHandle( responseHandler, reply )
+                APSHandler.result( responseHandler, reply )
             }
 
         }

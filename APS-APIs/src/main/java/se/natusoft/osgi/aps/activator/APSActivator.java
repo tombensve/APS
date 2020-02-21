@@ -1089,7 +1089,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 //
                 // Create an inject an ExecutorService using additional @ExecutionSvc annotation.
                 //
-                // THESE ARE DEPRECATED!! Use APSExecutor instead!
+                // THESE ARE DEPRECATED!! Use APSExecutor instead! This was an incredibly stupid
+                // thing to add to begin with!!
                 //
                 else if ( field.getType().equals( ExecutorService.class ) ) {
                     //int parallelism = 10;
@@ -1105,7 +1106,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
                     // Provide APSExecutors internal executor.
                     ExecutorService es = APSExecutor._internal_get_executor();
-                    /*
+                    /* Really dumb solution, clear lack of thinking!
                     switch ( type ) {
                         case Cached:
                             this.activatorLogger.error( "Local thread pools are deprecated! Use APSExecutor. [Cached]" );
@@ -1133,6 +1134,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                         es = Executors.unconfigurableExecutorService( es );
                     }
                     namedInstance = es;
+
+                    this.activatorLogger.error( "@ExecutorSvc should never ever be used! It will go away! Use APSExecutor instead!" );
                 }
 
                 //

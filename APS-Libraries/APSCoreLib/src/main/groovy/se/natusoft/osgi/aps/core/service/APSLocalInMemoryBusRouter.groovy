@@ -122,7 +122,7 @@ class APSLocalInMemoryBusRouter implements APSBusRouter {
 
                         try {
                             //handler.handle( message )
-                            APSHandler.doHandle( handler, message )
+                            APSHandler.result( handler, message )
                         }
                         catch ( Exception e ) {
                             this.logger.error( "Message handler threw illegal exception!", e )
@@ -132,13 +132,13 @@ class APSLocalInMemoryBusRouter implements APSBusRouter {
 
                 if ( resultHandler != null ) {
                     //resultHandler.handle( APSResult.success( null ) )
-                    APSHandler.doHandle( resultHandler, APSResult.success( null ) )
+                    APSHandler.result( resultHandler, APSResult.success( null ) )
                 }
             }
             else if ( resultHandler != null ) {
 
                 //resultHandler.handle( APSResult.failure( new APSValidationException( "No subscribers!" ) ) )
-                APSHandler.doHandle( resultHandler, APSResult.failure( new APSValidationException( "No subscribers!" ) ) )
+                APSHandler.result( resultHandler, APSResult.failure( new APSValidationException( "No subscribers!" ) ) )
             }
         }
     }
