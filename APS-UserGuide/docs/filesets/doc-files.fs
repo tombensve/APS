@@ -1,4 +1,5 @@
 APS-UserGuide/docs/src/**/.*.md,
+APSDesignDecisions.md,
 APS-APIs/**/.*.fs,
 APS-Core/**/.*.fs,
 APS-Libraries/**/.*.fs,

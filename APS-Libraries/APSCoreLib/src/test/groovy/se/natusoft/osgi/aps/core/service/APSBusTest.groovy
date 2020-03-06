@@ -23,6 +23,8 @@ import se.natusoft.osgi.aps.util.APSLogger
 
 import java.util.concurrent.TimeUnit
 
+import static se.natusoft.osgi.aps.util.APSExecutor.*
+
 @CompileStatic
 @TypeChecked
 class APSBusTest extends APSRuntime {
@@ -117,7 +119,7 @@ class ShouldWork {
         }
 
         APSBusTest.testCount++
-        println "ShouldWork: testCount: ${APSBusTest.testCount}"
+        println "ShouldWork: testCount: ${ APSBusTest.testCount }"
     }
 }
 
@@ -149,7 +151,7 @@ class ShouldFail {
         this.bus.send(
                 "test",
                 [
-                        aps    : [ ],
+                        aps    : [],
                         content: [
                                 msgType: "test",
                                 value  : "qaz"
@@ -157,11 +159,11 @@ class ShouldFail {
                 ] as Map<String, Object>
         ) { APSResult<?> res ->
             APSBusTest.testResults.trAssertFalse( res.success() )
-            APSBusTest.testResults.trAssertEquals( "No routers accepted target!", res.failure().getMessage() )
+            APSBusTest.testResults.trAssertEquals( "No routers accepted target 'test'!", res.failure().getMessage() )
         }
 
         APSBusTest.testCount++
-        println "ShouldFail: testCount: ${APSBusTest.testCount}"
+        println "ShouldFail: testCount: ${ APSBusTest.testCount }"
     }
 }
 
@@ -202,9 +204,9 @@ class TestRequest {
 
         // Call service
 
-        // We submit this to run in parallel since in a real situation the called service and the calling
+        //Submit this to run in parallel since in a real situation the called service and the calling
         // client will not be on same thread, maybe even not on same machine!
-        APSExecutor.submit {
+        APSExecutor.concurrent {
 
             this.logger.info ">>>>>>>>>> ABOUT TO REQUEST!"
             this.bus.request( "local:testService", [
@@ -239,7 +241,7 @@ class TestRequest {
 
             String data = message[ 'content' ][ 'data' ]
 
-            this.logger.info "<<<<<<<<<< Received: ${data} >>>>>>>>>>"
+            this.logger.info "<<<<<<<<<< Received: ${ data } >>>>>>>>>>"
 
             Map<String, Object> respMsg = [
                     aps    : [
@@ -253,9 +255,13 @@ class TestRequest {
 
             APSBusTest.testResults.trAssertTrue( validateMessage( respMsg ) )
 
-            this.bus.reply( message, respMsg ) { APSResult result ->
+            // Out of principle this is a job that should not be down within the message handler.
+            concurrent {
+                this.logger.info "€€€€€€€€€€€ REPLYING TO RECEIVED MESSAGE €€€€€€€€€"
+                this.bus.reply( message, respMsg ) { APSResult result ->
 
-                APSBusTest.testResults.trAssertTrue( result.success() )
+                    APSBusTest.testResults.trAssertTrue( result.success() )
+                }
             }
 
         }
@@ -266,7 +272,7 @@ class TestRequest {
         Thread.sleep( 3000 )
 
         APSBusTest.testCount++
-        println "TestRequest: testCount: ${APSBusTest.testCount}"
+        println "TestRequest: testCount: ${ APSBusTest.testCount }"
 
     }
 

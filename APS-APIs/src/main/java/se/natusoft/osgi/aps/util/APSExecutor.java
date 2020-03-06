@@ -37,18 +37,15 @@
 package se.natusoft.osgi.aps.util;
 
 import se.natusoft.docutations.NotNull;
-import se.natusoft.osgi.aps.types.APSHandler;
-import se.natusoft.osgi.aps.types.APSResult;
 
 import java.util.concurrent.*;
 
 /**
- * This creates an ExecutorService that have max processor cores * 2 threads. It will
- * keep each thread alive for 30 seconds of inactivity and then shut it down. New will
- * be created again if needed later.
+ * This creates two ExecutorServices, one that have max processor cores * 2 threads called
+ * parallel and one with only one thread called sequential. "sequential" is good for calling
+ * handlers for example.
  * <p>
  * This provides a static API that will create one common instance on first use.
- * Submitted jobs are forwarded to the ExecutorService.
  */
 public class APSExecutor {
 
@@ -56,8 +53,11 @@ public class APSExecutor {
     // Private Members
     //
 
-    /** This have a thread pool matching number of cores */
-    private ExecutorService executor;
+    /** This have a thread pool taking the number of cores in consideration. */
+    private ExecutorService parallelExecutor;
+
+    /** Single thread executor for handlers. */
+    private ExecutorService sequentialExecutor;
 
     /** Holds the singleton instance. */
     private static APSExecutor apsExecInst;
@@ -77,12 +77,21 @@ public class APSExecutor {
     }
 
     /**
-     * Submits a job for execution on a thread pool.
+     * Submits a job for execution on the thread pool based on number of processor cores.
      *
      * @param job The job to submit.
      */
-    public static void submit( @NotNull Runnable job ) {
-        get()._submit( job );
+    public static void concurrent( @NotNull Runnable job ) {
+        get()._concurrent( job );
+    }
+
+    /**
+     * Submits a handler to the sequential thread.
+     *
+     * @param job The job to push to the sequential thread pool.
+     */
+    public static void sequential( @NotNull Runnable job) {
+        get()._sequential( job );
     }
 
     public static void shutdown() {
@@ -97,7 +106,7 @@ public class APSExecutor {
      * Creates a new APSPlatformServiceProvider instance.
      */
     private APSExecutor() {
-        this.executor = // Creates a cached thread pool, but with better values than Executors provides!
+        this.parallelExecutor = // Creates a cached thread pool, but with better values than Executors provides!
                 new ThreadPoolExecutor(
                         0,
                         Runtime.getRuntime().availableProcessors() * 2, // (*1)
@@ -106,8 +115,17 @@ public class APSExecutor {
                         new SynchronousQueue<Runnable>(),
                         new APSThreadFactory( "aps-executor-" )
                 );
+
+        this.sequentialExecutor = Executors.newSingleThreadExecutor( new ThreadFactory() {
+            @Override
+            public Thread newThread( Runnable r ) {
+                Thread thread = new Thread(  );
+                thread.setName( "aps-handler-thread" );
+                return thread;
+            }
+        } );
     }
-    // *1: Why "*2" ? Well, just for the heck of it! I can't really say. These are backend jobs and have no
+    // *1: Why "* 2" ? Well, just for the heck of it! I can't really say. These are backend jobs and have no
     // gain in faked parallelism since no one will see it. But still in some way I cannot explain it does
     // feel right to provide some. Possibly human emotional stupidity.
 
@@ -116,18 +134,23 @@ public class APSExecutor {
     //
 
     private void _shutdown() {
-        this.executor.shutdownNow();
+        this.parallelExecutor.shutdownNow();
+        this.sequentialExecutor.shutdown();
         apsExecInst = null;
     }
 
-    private void _submit( @NotNull Runnable job) {
-        this.executor.submit( job );
+    private void _concurrent( @NotNull Runnable job) {
+        this.parallelExecutor.submit( job );
+    }
+
+    private void _sequential( @NotNull Runnable job) {
+        this.sequentialExecutor.submit( job );
     }
 
     /**
      * For temporary internal use only!!
      */
     public static ExecutorService _internal_get_executor() {
-        return get().executor;
+        return get().parallelExecutor;
     }
 }

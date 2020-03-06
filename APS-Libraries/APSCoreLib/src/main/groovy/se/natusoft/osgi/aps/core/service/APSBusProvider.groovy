@@ -41,7 +41,6 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceRegistration
-import se.natusoft.docutations.Concurrent
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.NotUsed
 import se.natusoft.docutations.Nullable
@@ -61,9 +60,9 @@ import se.natusoft.osgi.aps.types.APSUUID
 import se.natusoft.osgi.aps.types.ID
 import se.natusoft.osgi.aps.util.APSLogger
 import se.natusoft.osgi.aps.util.SyncedValue
-
-import static se.natusoft.osgi.aps.util.APSExecutor.submit as concurrent
 import java.time.Instant
+import static se.natusoft.osgi.aps.util.APSExecutor.*
+import static se.natusoft.osgi.aps.util.APSTools.*
 
 /**
  * This is a simple bus API that is used by creating an instance and passing a BundleContext.
@@ -71,7 +70,7 @@ import java.time.Instant
  * All calls will be passed to all the APSBusRouter implementations tracked. Also see the
  * javadoc for that interface.
  */
-@SuppressWarnings( "unused" )
+@SuppressWarnings( [ "unused", "PackageAccessibility" ] )
 @CompileStatic
 @TypeChecked
 @OSGiServiceProvider(
@@ -90,7 +89,7 @@ class APSBusProvider implements APSBus {
     @Managed( loggingFor = "aps-bus-provider" )
     private APSLogger logger
 
-    private List<ServiceRegistration> svcRegs = [ ]
+    private List<ServiceRegistration> svcRegs = []
 
     @Managed
     private BundleContext context
@@ -128,32 +127,31 @@ class APSBusProvider implements APSBus {
             this.activatorInteraction.registerService( APSBusProvider.class, this.context, this.svcRegs )
         }
 
-        // Make sure this service is not made available until we have at least one bus router.
-        Thread.start {
-
+        // APSExecutor is not intended for things like this, and can have future complications if used
+        // for such.
+        concurrent {
 
             // Due to the possibility of this being published before all bus routers are
             // available, we make sure we have all of the bus routers before we make our
             // self available.
             //
-            // This is done by having each bus router implementation added one per line to
+            // This is done by having each bus router implementation added, one per line to
             //
             //     aps/bus/routers
             //
-            // file of the bundle/jar containing the implementation(s).
+            // file (without package) of the bundle/jar containing the implementation(s).
+            // "routers" is a text file without extension.
 
             List<String> busRouters = resolveBusRouters()
 
             this.logger.info( "Discovering APSBusRouter providers ..." )
 
             busRouters.each { String router ->
-                this.logger.info( "Found bus router: ${router}" )
+                this.logger.info( "Found bus router: ${ router }" )
             }
-            this.logger.info( "Total of ${busRouters.size()} bus routers found!" )
+            this.logger.info( "Total of ${ busRouters.size() } bus routers found!" )
 
-            while ( this.routerTracker.trackedServiceCount < busRouters.size() ) {
-                Thread.sleep( 1000 )
-            }
+            waitFor { this.routerTracker.trackedServiceCount >= busRouters.size() }
 
             this.activatorInteraction.state = APSActivatorInteraction.State.READY
         }
@@ -168,7 +166,7 @@ class APSBusProvider implements APSBus {
      */
     private List<String> resolveBusRouters() {
 
-        Map<String, String> busRouters = [ : ]
+        Map<String, String> busRouters = [:]
         this.getClass().getClassLoader().getResources( "aps/bus/routers" ).each { URL url ->
 
             BufferedReader reader = new BufferedReader( new InputStreamReader( url.openStream() ) )
@@ -181,7 +179,7 @@ class APSBusProvider implements APSBus {
             reader.close()
         }
 
-        List<String> routers = [ ]
+        List<String> routers = []
         busRouters.keySet().each { String router ->
             routers << router.trim()
         }
@@ -209,12 +207,14 @@ class APSBusProvider implements APSBus {
     }
 
     private static validationFail( APSHandler<APSResult<?>> resultHandler ) {
-        resultHandler.handle(
-                APSResult.failure(
-                        new APSValidationException( "Bad message structure! 'aps' and 'content' keys need to be in " +
-                                "root!" )
-                )
-        )
+        sequential {
+            resultHandler.handle(
+                    APSResult.failure(
+                            new APSValidationException( "Bad message structure! 'aps' and 'content' keys need to be in " +
+                                    "root!" )
+                    )
+            )
+        }
     }
 
     /**
@@ -231,15 +231,27 @@ class APSBusProvider implements APSBus {
 
             boolean valid = false
 
+            // It is fully possible for more than one router to act on this, but usually only one will
+            // handle the message. Do note that if multiple routers acts on this then there will be
+            // multiple calls to the resultHandler. To be clear APS by default has no bus routers that
+            // acts on same targets, but it is fully possible to create such. This code is not trying
+            // to block that in any way. If it is a good idea to do so is another discussion ...
             this.routerTracker.withAllAvailableServices() { APSBusRouter apsBusRouter, @NotUsed Object[] args ->
 
+                // Note that absBusRouter.send(...) actually returns true/false. If true it means that
+                // the router handled the message. This is actually used to determine if none of the
+                // routers handled the message so that we ca produce an error then.
                 if ( apsBusRouter.send( target.trim(), message, resultHandler ) ) {
                     valid = true
                 }
             }
 
             if ( !valid ) {
-                resultHandler.handle( APSResult.failure( new APSMessagingException( "No routers accepted target!" ) ) )
+                sequential {
+                    resultHandler.handle(
+                            APSResult.failure( new APSMessagingException( "No routers accepted target '${ target }'!" ) )
+                    )
+                }
             }
         }
         else {
@@ -268,7 +280,9 @@ class APSBusProvider implements APSBus {
         }
 
         if ( !valid ) {
-            resultHandler.handle( APSResult.failure( new APSMessagingException( "No routers accepted target!" ) ) )
+            sequential {
+                resultHandler.handle( APSResult.failure( new APSMessagingException( "No routers accepted target!" ) ) )
+            }
         }
     }
 
@@ -311,7 +325,7 @@ class APSBusProvider implements APSBus {
     void request( @NotNull String target, @NotNull Map<String, Object> message,
                   @Nullable @Optional APSHandler<APSResult<?>> resultHandler,
                   @NotNull APSHandler<Map<String, Object>> responseMessage ) {
-        request( target, message, 20, resultHandler, responseMessage )
+        request( target, message, 10, resultHandler, responseMessage )
     }
 
     /**
@@ -348,7 +362,7 @@ class APSBusProvider implements APSBus {
 
         if ( validateBaseMessageStructure( message ) ) {
 
-            String replyTarget = "${target.split( ":" )[ 0 ]}:" + new APSUUID().toString()
+            String replyTarget = "${ target.split( ":" )[ 0 ] }:" + new APSUUID().toString()
             message[ 'aps' ][ 'replyTarget' ] = replyTarget
 
             ID replySubscriptionId = new APSUUID()
@@ -359,7 +373,7 @@ class APSBusProvider implements APSBus {
             // sendRequest(...) is a requirement.
             SyncedValue<Boolean> keepSending = new SyncedValue<>( true )
 
-            this.subscribe( replySubscriptionId, replyTarget ) { APSResult subRes ->
+            subscribe( replySubscriptionId, replyTarget ) { APSResult subRes ->
 
                 if ( subRes.success() ) {
 
@@ -367,7 +381,7 @@ class APSBusProvider implements APSBus {
                     sendRequest( target, message, timeOutSec, keepSending, resultHandler )
                 }
                 else {
-                    resultHandler.handle( subRes )
+                    sequential { resultHandler.handle( subRes ) }
                 }
 
             } { Map<String, Object> reply ->
@@ -375,7 +389,7 @@ class APSBusProvider implements APSBus {
 
                 keepSending.value = false
                 this.unsubscribe( replySubscriptionId )
-                responseHandler.handle( reply )
+                sequential { responseHandler.handle( reply ) }
             }
 
         }
@@ -405,7 +419,7 @@ class APSBusProvider implements APSBus {
                 interval( 2 ).
                 exec {
                     System.err.println "################## DOING SEND! ##################"
-                    System.err.println "Target: ${target}"
+                    System.err.println "Target: ${ target }"
                     send( target, message ) { APSResult<?> sendRes ->
                         if ( sendRes.success() ) {
                             sendFail = null
@@ -419,18 +433,20 @@ class APSBusProvider implements APSBus {
 
         if ( sendFail != null ) {
             logger.error( "Failed to send message! ", sendFail )
-            resultHandler.handle( APSResult.failure( sendFail ) )
+            sequential{ resultHandler.handle( APSResult.failure( sendFail ) ) }
         }
         else {
             if ( !keepSending.value || Instant.now().isBefore( timeOut ) ) {
-                resultHandler.handle( APSResult.success( null ) )
+                sequential { resultHandler.handle( APSResult.success( null ) ) }
             }
             else {
-                resultHandler.handle(
-                        APSResult.failure(
-                                new APSMessagingException( "Timed out waiting for reply to request!" )
-                        )
-                )
+                sequential {
+                    resultHandler.handle(
+                            APSResult.failure(
+                                    new APSMessagingException( "Timed out waiting for reply to request!" )
+                            )
+                    )
+                }
             }
         }
     }
@@ -452,11 +468,13 @@ class APSBusProvider implements APSBus {
             }
             else {
                 if ( resultHandler != null ) {
-                    resultHandler.handle(
-                            APSResult.failure(
-                                    new APSValidationException( "No {aps: {replyAddress: ... }} found! in replyTo!" )
-                            )
-                    )
+                    sequential {
+                        resultHandler.handle(
+                                APSResult.failure(
+                                        new APSValidationException( "No {aps: {replyAddress: ... }} found! in replyTo!" )
+                                )
+                        )
+                    }
                 }
             }
         }

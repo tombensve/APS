@@ -78,7 +78,7 @@ class MoonWhaleService {
             this.config = config
 
             // Now, lets submit som work to a thread pool so that the callback can return.
-            APSExecutor.submit {
+            APSExecutor.concurrent {
                 Object value = this.config.lookup( "moonWhales.count" )
                 assert value instanceof Number
                 assert ( value as int ) == 22

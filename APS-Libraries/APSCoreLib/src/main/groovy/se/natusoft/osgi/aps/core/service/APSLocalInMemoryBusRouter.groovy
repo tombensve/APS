@@ -57,11 +57,21 @@ import se.natusoft.osgi.aps.util.APSLogger
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 
+import static se.natusoft.osgi.aps.util.APSExecutor.*
+
 /**
- * A very simple little bus that will call handler of any subscriber subscribing to same target
- * as sending to. No threading is done by this class, but subscription handlers that does not
- * handle the call quickly should submit their handling to an ExecutionService backed by a thread
- * pool.
+ * A very simple little bus that will call the handler of any subscriber subscribing to same
+ * target as sending to. No networking nor any threading is done by this class. Subscription
+ * handlers that does not handle the call quickly should submit their handling to an
+ * ExecutionService backed by a thread pool like APSExecutor.
+ *
+ * On the fronted I have made a very similar in memory bus. There it is used to talk between
+ * components. On the backend it does not have a clear use, other that being very useful in
+ * tests, if you don't want to start up a Vert.x cluster by deploying the aps-vertx-provider.
+ * The APSBusTest uses this bus since it wants to test the APSBusProvider functionality, not
+ * network messaging. For testing message driven services this bus works fine. APSVertxProvider
+ * will of course start Vert.x, but it has no choice! Other code sending and receiving messages
+ * do have a choice and can avoid starting a network cluster.
  */
 @CompileStatic
 @TypeChecked
