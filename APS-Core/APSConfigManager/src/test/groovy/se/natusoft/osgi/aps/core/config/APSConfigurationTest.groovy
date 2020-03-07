@@ -9,10 +9,11 @@ import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService
 import se.natusoft.osgi.aps.runtime.APSRuntime
-import se.natusoft.osgi.aps.util.APSExecutor
 import se.natusoft.osgi.aps.util.APSLogger
 
 import java.util.concurrent.TimeUnit
+
+import static se.natusoft.osgi.aps.util.APSExecutor.concurrent
 
 @CompileStatic
 @TypeChecked
@@ -78,7 +79,7 @@ class MoonWhaleService {
             this.config = config
 
             // Now, lets submit som work to a thread pool so that the callback can return.
-            APSExecutor.concurrent {
+            concurrent {
                 Object value = this.config.lookup( "moonWhales.count" )
                 assert value instanceof Number
                 assert ( value as int ) == 22

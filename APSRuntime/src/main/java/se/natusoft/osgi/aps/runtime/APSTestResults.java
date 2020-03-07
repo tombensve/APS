@@ -67,7 +67,9 @@ public class APSTestResults {
     public List<String> testMessages = new LinkedList<>();
 
     public void printMessages() {
+        System.out.println("<=============== APSTestResult Messages ===============>");
         this.testMessages.forEach( System.out::println );
+        System.out.println("<======================================================>");
     }
 
     private static String stackTrace( StackTraceElement[] stes ) {

@@ -18,12 +18,14 @@ import se.natusoft.osgi.aps.runtime.APSTestResults
 import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.types.APSUUID
 import se.natusoft.osgi.aps.types.ID
-import se.natusoft.osgi.aps.util.APSExecutor
 import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.osgi.aps.util.SyncedValue
 
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 
-import static se.natusoft.osgi.aps.util.APSExecutor.*
+import static se.natusoft.osgi.aps.util.APSExecutor.concurrent
+import static se.natusoft.osgi.aps.util.APSTools.*
 
 @CompileStatic
 @TypeChecked
@@ -59,7 +61,7 @@ class APSBusTest extends APSRuntime {
 // Instantiated and injected via reflection by APSActivator
 class ShouldWork {
 
-    private boolean receivedMessageWork = false
+    private SyncedValue<Boolean> receivedMessageWork = new SyncedValue<>(false)
 
     @OSGiService( nonBlocking = true )
     private APSBus bus
@@ -71,7 +73,7 @@ class ShouldWork {
 
         this.bus.subscribe( subId, "local:test", null ) { Map<String, Object> message ->
 
-            this.receivedMessageWork = true
+            this.receivedMessageWork.value = true
 
             System.out.println message.toString()
 
@@ -93,11 +95,11 @@ class ShouldWork {
             APSBusTest.testResults.trAssertTrue( res.success() )
         }
 
-        // Note: This only works because we only have one bus router here: APSLocalInMemoryBus,
-        // which does not thread!! THAT IS IN GENERAL NOT AN EXPECTATION THAT CAN BE MADE!!
-        // But in this case the subscribe handler will be called before send returns.
+        // Wait for receivedMessageWork to become true or timeout. The timeout is a full
+        // second, so this should work on extremely slow machines also!
+        waitFor( 5, 1000 ) { this.receivedMessageWork.value }
 
-        APSBusTest.testResults.trAssertTrue( this.receivedMessageWork )
+        APSBusTest.testResults.trAssertTrue( this.receivedMessageWork.value )
 
         // Unsubscribe and send again. send should fail!
 
@@ -204,9 +206,9 @@ class TestRequest {
 
         // Call service
 
-        //Submit this to run in parallel since in a real situation the called service and the calling
+        // Run this in parallel since in a real situation the called service and the calling
         // client will not be on same thread, maybe even not on same machine!
-        APSExecutor.concurrent {
+        concurrent {
 
             this.logger.info ">>>>>>>>>> ABOUT TO REQUEST!"
             this.bus.request( "local:testService", [

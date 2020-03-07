@@ -130,11 +130,13 @@ class APSLocalInMemoryBusRouter implements APSBusRouter {
 
                     handlers.each { APSHandler<Map<String, Object>> handler ->
 
-                        try {
-                            handler.handle( message )
-                        }
-                        catch ( Exception e ) {
-                            this.logger.error( "Message handler threw illegal exception!", e )
+                        concurrent {
+                            try {
+                                handler.handle( message )
+                            }
+                            catch ( Exception e ) {
+                                this.logger.error( "Message handler threw illegal exception!", e )
+                            }
                         }
                     }
                 }

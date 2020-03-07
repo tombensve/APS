@@ -127,8 +127,6 @@ class APSBusProvider implements APSBus {
             this.activatorInteraction.registerService( APSBusProvider.class, this.context, this.svcRegs )
         }
 
-        // APSExecutor is not intended for things like this, and can have future complications if used
-        // for such.
         concurrent {
 
             // Due to the possibility of this being published before all bus routers are
@@ -207,14 +205,12 @@ class APSBusProvider implements APSBus {
     }
 
     private static validationFail( APSHandler<APSResult<?>> resultHandler ) {
-        sequential {
-            resultHandler.handle(
-                    APSResult.failure(
-                            new APSValidationException( "Bad message structure! 'aps' and 'content' keys need to be in " +
-                                    "root!" )
-                    )
-            )
-        }
+        resultHandler.handle(
+                APSResult.failure(
+                        new APSValidationException( "Bad message structure! 'aps' and 'content' keys need to be in " +
+                                "root!" )
+                )
+        )
     }
 
     /**
@@ -247,11 +243,9 @@ class APSBusProvider implements APSBus {
             }
 
             if ( !valid ) {
-                sequential {
-                    resultHandler.handle(
-                            APSResult.failure( new APSMessagingException( "No routers accepted target '${ target }'!" ) )
-                    )
-                }
+                resultHandler.handle(
+                        APSResult.failure( new APSMessagingException( "No routers accepted target '${ target }'!" ) )
+                )
             }
         }
         else {
@@ -280,9 +274,7 @@ class APSBusProvider implements APSBus {
         }
 
         if ( !valid ) {
-            sequential {
-                resultHandler.handle( APSResult.failure( new APSMessagingException( "No routers accepted target!" ) ) )
-            }
+            resultHandler.handle( APSResult.failure( new APSMessagingException( "No routers accepted target!" ) ) )
         }
     }
 
@@ -381,7 +373,7 @@ class APSBusProvider implements APSBus {
                     sendRequest( target, message, timeOutSec, keepSending, resultHandler )
                 }
                 else {
-                    sequential { resultHandler.handle( subRes ) }
+                    resultHandler.handle( subRes )
                 }
 
             } { Map<String, Object> reply ->
@@ -389,7 +381,7 @@ class APSBusProvider implements APSBus {
 
                 keepSending.value = false
                 this.unsubscribe( replySubscriptionId )
-                sequential { responseHandler.handle( reply ) }
+                responseHandler.handle( reply )
             }
 
         }
@@ -414,6 +406,13 @@ class APSBusProvider implements APSBus {
 
         Instant timeOut = Instant.now().plusSeconds( timeOutSec )
 
+        // We keep sending every 2 seconds until a reply or timeout. The point of this is that
+        // the sender might be up and running and sending before the receiver is ready to listen.
+        // This gives the receiver time to catch up. More than one send will basically only happen
+        // on startup or if a receiver is redeployed and thus temporarily unavailable and non receiving.
+        // This is a very simple, primitive way of handling this. This worked on first try. My previous
+        // attempt at a more complex service directory did not (Somehow the "keep it simple" rule
+        // always seem to win!).
         Exception sendFail = null
         Sporadic.until { keepSending.value && Instant.now().isBefore( timeOut ) }.
                 interval( 2 ).
@@ -433,20 +432,18 @@ class APSBusProvider implements APSBus {
 
         if ( sendFail != null ) {
             logger.error( "Failed to send message! ", sendFail )
-            sequential{ resultHandler.handle( APSResult.failure( sendFail ) ) }
+            resultHandler.handle( APSResult.failure( sendFail ) )
         }
         else {
             if ( !keepSending.value || Instant.now().isBefore( timeOut ) ) {
-                sequential { resultHandler.handle( APSResult.success( null ) ) }
+                resultHandler.handle( APSResult.success( null ) )
             }
             else {
-                sequential {
-                    resultHandler.handle(
-                            APSResult.failure(
-                                    new APSMessagingException( "Timed out waiting for reply to request!" )
-                            )
-                    )
-                }
+                resultHandler.handle(
+                        APSResult.failure(
+                                new APSMessagingException( "Timed out waiting for reply to request!" )
+                        )
+                )
             }
         }
     }
@@ -468,13 +465,11 @@ class APSBusProvider implements APSBus {
             }
             else {
                 if ( resultHandler != null ) {
-                    sequential {
-                        resultHandler.handle(
-                                APSResult.failure(
-                                        new APSValidationException( "No {aps: {replyAddress: ... }} found! in replyTo!" )
-                                )
-                        )
-                    }
+                    resultHandler.handle(
+                            APSResult.failure(
+                                    new APSValidationException( "No {aps: {replyAddress: ... }} found! in replyTo!" )
+                            )
+                    )
                 }
             }
         }

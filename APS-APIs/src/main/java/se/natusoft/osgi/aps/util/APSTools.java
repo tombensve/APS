@@ -12,7 +12,7 @@ public class APSTools {
      * Waits for some condition. Will block thread.
      *
      * @param millis Number of milliseconds to wait before checking condition again.
-     * @param max Max number of milliseconds to wait for condition.
+     * @param max Will timeout at this many milliseconds.
      * @param condition This condition needs to return true for the wait to be over.
      *
      * @throws InterruptedException Due to doing thread.sleep(...)!
@@ -28,26 +28,21 @@ public class APSTools {
     }
 
     /**
-     * Waits for some condition. Will block thread. Sleeps 500 ms between each check.
+     * Waits for some condition. Will block thread. Sleeps 100 ms between each check.
      *
-     * @param max Max number of milliseconds to wait for condition.
+     * @param max Will timeout at this many milliseconds.
      * @param condition This condition needs to return true for the wait to be over.
      *
      * @throws InterruptedException Due to doing thread.sleep(...)!
      */
     public static void waitFor( long max, BooleanSupplier condition ) throws InterruptedException {
 
-        Instant start = Instant.now();
-        Instant timeout = start.plusMillis( max );
-
-        while ( !condition.getAsBoolean() && Instant.now().isBefore( timeout ) ) {
-            Thread.sleep( 500 );
-        }
+        waitFor( 100, max, condition );
     }
 
     /**
-     * Waits for some condition. Will block thread. This will wait forever until condition
-     * becomes true.
+     * Waits for some condition. Will block thread. This is meant as a no timeout, but will
+     * timeout in a day!
      *
      * @param condition This condition needs to return true for the wait to be over.
      *
@@ -55,8 +50,6 @@ public class APSTools {
      */
     public static void waitFor( BooleanSupplier condition ) throws InterruptedException {
 
-        while ( !condition.getAsBoolean() ) {
-            Thread.sleep( 500 );
-        }
+        waitFor( 100, 1000 * 60 * 60 * 24, condition );
     }
 }

@@ -69,6 +69,7 @@ import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.types.ID
 import se.natusoft.osgi.aps.util.APSLogger
+import static se.natusoft.osgi.aps.util.APSExecutor.*
 
 /**
  * Provides and APSBusRouter implementation using Vert.x EventBus for communication.
@@ -240,7 +241,8 @@ class APSVertxBusRouter implements APSBusRouter {
             MessageConsumer consumer = eventBus.consumer( realTarget ) { Message<JsonObject> msg ->
 
                 Map<String, Object> message = new RecursiveJsonObjectMap( msg.body() )
-                messageHandler.handle( message )
+                // Call message handler on APS thread rather than Vert.x thread.
+                concurrent { messageHandler.handle( message ) }
             }
 
             if ( consumer == null ) { // Not sure this can actually happen ...
