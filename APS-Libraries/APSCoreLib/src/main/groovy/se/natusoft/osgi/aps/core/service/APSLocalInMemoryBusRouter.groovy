@@ -38,7 +38,6 @@
 package se.natusoft.osgi.aps.core.service
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
 import se.natusoft.docutations.Optional
@@ -57,7 +56,7 @@ import se.natusoft.osgi.aps.util.APSLogger
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 
-import static se.natusoft.osgi.aps.util.APSExecutor.*
+import static se.natusoft.osgi.aps.util.APSExecutor.concurrent
 
 /**
  * A very simple little bus that will call the handler of any subscriber subscribing to same
@@ -74,7 +73,6 @@ import static se.natusoft.osgi.aps.util.APSExecutor.*
  * do have a choice and can avoid starting a network cluster.
  */
 @CompileStatic
-@TypeChecked
 @SuppressWarnings( [ "UnnecessaryQualifiedReference", "unused" ] )
 @OSGiServiceProvider(
         properties = [

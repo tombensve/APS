@@ -63,7 +63,6 @@ import se.natusoft.osgi.aps.util.APSLogger
 
 @SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
-@TypeChecked
 @OSGiServiceProvider(
         properties = [
                 @OSGiProperty( name = APS.Service.Provider, value = "aps-vertx-event-bus-messaging-provider:sender" ),

@@ -38,7 +38,6 @@
 package se.natusoft.osgi.aps.core.lib
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 
 /**
  * This class scans a MapJson schema as defined by MapJsonDocSchemaValidator and extracts a list
@@ -57,7 +56,6 @@ import groovy.transform.TypeChecked
  * editors to use to build a configuration GUI producing valid configurations.
  */
 @CompileStatic
-@TypeChecked
 class MapJsonSchemaMeta implements MapJsonSchemaConst {
     //
     // Constants
@@ -213,7 +211,6 @@ class MapJsonSchemaMeta implements MapJsonSchemaConst {
  * The valid types of a schema entry.
  */
 @CompileStatic
-@TypeChecked
 enum Type {
     STRING, BOOLEAN, NUMBER, ENUMERATION
 }
@@ -224,7 +221,6 @@ enum Type {
  * MapJsonSchemaMeta collects a set of these by parsing a MapJson schema.
  */
 @CompileStatic
-@TypeChecked
 class MapJsonSchemaEntry implements MapJsonSchemaConst {
 
     //

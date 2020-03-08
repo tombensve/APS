@@ -21,7 +21,6 @@ import se.natusoft.osgi.aps.types.APSUUID
 import static java.util.concurrent.TimeUnit.SECONDS
 
 @CompileStatic
-@TypeChecked
 class APSVertXEventBusMessagingTest extends APSRuntime {
 
     static final String UNIQUE_MESSAGE = UUID.randomUUID().toString()
@@ -54,7 +53,6 @@ class APSVertXEventBusMessagingTest extends APSRuntime {
 
 @SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
-@TypeChecked
 class MsgReceiver {
 
     @OSGiService( timeout = "15 sec", nonBlocking = true )
@@ -96,7 +94,6 @@ class MsgReceiver {
 
 @SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
-@TypeChecked
 class MsgSender {
 
     // This manages since on nonBlocking = true, the call to msgService is cached by the proxy until

@@ -64,7 +64,6 @@ import se.natusoft.osgi.aps.util.APSLogger
  * This uses "amqp:" as target id.
  */
 @CompileStatic
-@TypeChecked
 @SuppressWarnings( "unused" )
 class APSAmqpBridgeBusRouter implements APSBusRouter {
 

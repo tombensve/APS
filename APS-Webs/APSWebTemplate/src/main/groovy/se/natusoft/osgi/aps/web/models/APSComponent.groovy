@@ -58,7 +58,6 @@ import groovy.transform.TypeChecked
  */
 @SuppressWarnings( [ "unchecked", "WeakerAccess", "unused" ] )
 @CompileStatic
-@TypeChecked
 class APSComponent<Component> {
 
     //

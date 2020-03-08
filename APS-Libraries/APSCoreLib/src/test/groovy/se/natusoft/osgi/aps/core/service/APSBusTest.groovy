@@ -1,7 +1,6 @@
 package se.natusoft.osgi.aps.core.service
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 import org.junit.Test
 import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.activator.annotation.BundleStop
@@ -21,14 +20,12 @@ import se.natusoft.osgi.aps.types.ID
 import se.natusoft.osgi.aps.util.APSLogger
 import se.natusoft.osgi.aps.util.SyncedValue
 
-import java.time.Instant
 import java.util.concurrent.TimeUnit
 
 import static se.natusoft.osgi.aps.util.APSExecutor.concurrent
-import static se.natusoft.osgi.aps.util.APSTools.*
+import static se.natusoft.osgi.aps.util.APSTools.waitFor
 
 @CompileStatic
-@TypeChecked
 class APSBusTest extends APSRuntime {
 
     public static int testCount = 0
@@ -56,7 +53,6 @@ class APSBusTest extends APSRuntime {
 }
 
 @CompileStatic
-@TypeChecked
 @SuppressWarnings( "unused" )
 // Instantiated and injected via reflection by APSActivator
 class ShouldWork {
@@ -126,7 +122,6 @@ class ShouldWork {
 }
 
 @CompileStatic
-@TypeChecked
 @SuppressWarnings( "unused" )
 // Instantiated and injected via reflection by APSActivator
 class ShouldFail {
@@ -170,7 +165,6 @@ class ShouldFail {
 }
 
 @CompileStatic
-@TypeChecked
 @SuppressWarnings( "unused" )
 // Instantiated and injected via reflection by APSActivator
 class TestRequest {

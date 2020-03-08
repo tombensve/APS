@@ -71,7 +71,6 @@ import se.natusoft.osgi.aps.util.APSLogger
  */
 @SuppressWarnings( [ "GroovyUnusedDeclaration", "PackageAccessibility" ] )
 @CompileStatic
-@TypeChecked
 class APSVertxProvider {
 
     //

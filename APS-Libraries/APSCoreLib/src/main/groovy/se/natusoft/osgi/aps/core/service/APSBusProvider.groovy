@@ -38,7 +38,6 @@
 package se.natusoft.osgi.aps.core.service
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceRegistration
 import se.natusoft.docutations.NotNull
@@ -60,9 +59,11 @@ import se.natusoft.osgi.aps.types.APSUUID
 import se.natusoft.osgi.aps.types.ID
 import se.natusoft.osgi.aps.util.APSLogger
 import se.natusoft.osgi.aps.util.SyncedValue
+
 import java.time.Instant
-import static se.natusoft.osgi.aps.util.APSExecutor.*
-import static se.natusoft.osgi.aps.util.APSTools.*
+
+import static se.natusoft.osgi.aps.util.APSExecutor.concurrent
+import static se.natusoft.osgi.aps.util.APSTools.waitFor
 
 /**
  * This is a simple bus API that is used by creating an instance and passing a BundleContext.
@@ -72,7 +73,6 @@ import static se.natusoft.osgi.aps.util.APSTools.*
  */
 @SuppressWarnings( [ "unused", "PackageAccessibility" ] )
 @CompileStatic
-@TypeChecked
 @OSGiServiceProvider(
         properties = [
                 @OSGiProperty( name = APS.Service.Provider, value = "aps-bus-provider" ),

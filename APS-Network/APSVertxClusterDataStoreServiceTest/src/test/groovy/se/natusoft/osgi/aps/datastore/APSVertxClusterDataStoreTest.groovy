@@ -17,7 +17,6 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static java.util.concurrent.TimeUnit.SECONDS
 
 @CompileStatic
-@TypeChecked
 class APSVertxClusterDataStoreTest extends APSRuntime {
 
     // Note that since we use a clustered vertx there is a possibility of another build running
@@ -86,7 +85,6 @@ class APSVertxClusterDataStoreTest extends APSRuntime {
 
 @SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
-@TypeChecked
 class ClusterStoreTestClient {
 
     public static boolean stored = false

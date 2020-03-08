@@ -81,7 +81,6 @@ import se.natusoft.osgi.aps.web.models.APSTreeNode
 // Instantiated, injected, etc by APSActivator. IDE can't see that.
 @SuppressWarnings( "unused" )
 @CompileStatic
-@TypeChecked
 class GUIProvider {
 
     // In your web app copy of APSWebManager change this to your web app name.

@@ -61,7 +61,6 @@ import se.natusoft.osgi.aps.util.APSLogger
         ]
 )
 @CompileStatic
-@TypeChecked
 class APSVertxClusterDataStoreServiceProvider implements APSLockableDataStoreService {
 
     //
@@ -242,6 +241,7 @@ class APSVertxClusterDataStoreServiceProvider implements APSLockableDataStoreSer
 /**
  * Provides an implementation of APSLock.
  */
+@CompileStatic
 class VxLock implements APSLockable.APSLock {
 
     Lock lock

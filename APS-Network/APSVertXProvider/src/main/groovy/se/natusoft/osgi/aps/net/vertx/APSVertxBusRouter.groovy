@@ -78,7 +78,6 @@ import static se.natusoft.osgi.aps.util.APSExecutor.*
  * can be added before address to do a publish rather than send.
  */
 @CompileStatic
-@TypeChecked
 @SuppressWarnings( "unused" )
 // Managed by APSActivator IDE can't see that!
 @OSGiServiceProvider(
@@ -149,7 +148,6 @@ class APSVertxBusRouter implements APSBusRouter {
     /**
      * This is run by APSActivator when all @Managed & @OSGiService annotated fields have been injected.
      */
-    @SuppressWarnings( "DuplicatedCode" )
     @Initializer
     void init() {
         // Yes, what these handlers do could be done directly below in onActiveServiceAvailable {...} instead

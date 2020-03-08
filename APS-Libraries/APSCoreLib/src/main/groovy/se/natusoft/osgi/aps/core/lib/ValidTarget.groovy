@@ -38,7 +38,6 @@
 package se.natusoft.osgi.aps.core.lib
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 
 /**
  * Validates the id part of a target (id:address) and calls the passed closure if valid.
@@ -49,7 +48,6 @@ import groovy.transform.TypeChecked
  * a constant Map definition. You have to ask the Groovy people why!
  */
 @CompileStatic
-@TypeChecked
 class ValidTarget {
 
     // These are constants

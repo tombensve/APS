@@ -19,7 +19,6 @@ import se.natusoft.osgi.aps.util.APSLogger
 import static java.util.concurrent.TimeUnit.SECONDS
 
 @CompileStatic
-@TypeChecked
 class APSVertxProviderTest extends APSRuntime {
 
     public static Vertx vertx = null
@@ -89,7 +88,6 @@ class APSVertxProviderTest extends APSRuntime {
 
 @SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
-@TypeChecked
 class VertxClient {
 
     @Managed( loggingFor = "Test:VertxClient" )

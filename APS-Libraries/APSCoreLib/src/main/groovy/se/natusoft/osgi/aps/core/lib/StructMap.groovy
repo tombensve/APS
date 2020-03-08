@@ -38,7 +38,6 @@
 package se.natusoft.osgi.aps.core.lib
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSObject
@@ -77,7 +76,6 @@ import se.natusoft.osgi.aps.types.APSObject
  */
 @SuppressWarnings( "SpellCheckingInspection" )
 @CompileStatic
-@TypeChecked
 class StructMap extends LinkedHashMap<String, Object> implements Map<String, Object> {
 
     //

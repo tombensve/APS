@@ -1,10 +1,13 @@
 package se.natusoft.osgi.aps.core.lib
 
+import groovy.transform.CompileStatic
+
 /**
  * Executes something in specified intervals until a specified criteria.
  *
  * Usage: Sporadic.until { ... }.interval( 5 ).exec { ... }
  */
+@CompileStatic
 class Sporadic {
 
     private int sec

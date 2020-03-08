@@ -1,7 +1,6 @@
 package se.natusoft.osgi.aps.core.msg
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 import se.natusoft.osgi.aps.core.lib.MapJsonSchemaValidator
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 
@@ -22,7 +21,6 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *         ] as Map<String, Object>
  */
 @CompileStatic
-@TypeChecked
 class BaseMessage implements Map<String, Object> {
 
     static final Map<String, Object> schemaDef(String version, String type, Map<String, Object> content) {

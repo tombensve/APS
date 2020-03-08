@@ -38,7 +38,6 @@
 package se.natusoft.osgi.aps.core.lib
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 import se.natusoft.docutations.Nullable
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 
@@ -124,7 +123,6 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  * WARNING: THIS DOES NOT HOLD FOR DYNAMIC BUT SPECIFIC SUB CONTENT!!!
  */
 @CompileStatic
-@TypeChecked
 class MapJsonSchemaValidator implements MapJsonSchemaConst {
 
     /**
