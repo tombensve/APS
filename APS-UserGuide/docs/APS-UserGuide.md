@@ -2457,7 +2457,7 @@ The following third party products are using this license:
 
 *  [jackson-jr-all-2.9.6](http://wiki.fasterxml.com/JacksonHome)
 
-*  [groovy-3.0.1](https://groovy-lang.org)
+*  [groovy-3.0.2](https://groovy-lang.org)
 
 *  [vertx-core-3.8.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
