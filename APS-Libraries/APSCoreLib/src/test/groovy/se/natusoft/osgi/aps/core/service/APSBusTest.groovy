@@ -35,6 +35,9 @@ class APSBusTest extends APSRuntime {
     @Test
     void test() {
 
+        // Just to test the timeout override.
+        System.setProperty( "aps.request.timeout", "10" )
+
         deploy 'aps-core-lib' with new APSActivator() from "APS-Libraries/APSCoreLib/target/classes"
         deploy 'aps-core-lib-test' with new APSActivator() from "APS-Libraries/APSCoreLib/target/test-classes"
 
@@ -229,7 +232,6 @@ class TestRequest {
 
         // Setup service
 
-        // Let the service be slow in starting!
         this.bus.subscribe( this.subId, "local:testService", null ) { Map<String, Object> message ->
 
             //assert that message is valid.

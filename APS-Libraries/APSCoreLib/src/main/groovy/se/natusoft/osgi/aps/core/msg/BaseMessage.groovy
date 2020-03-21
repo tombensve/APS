@@ -13,13 +13,13 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *             aps_1 : [
  *                     version_1: "?#<=1.0",
  *                     type_1   : TYPE,
- *                     from_1   : "?.*\/.*"
  *             ],
  *             content_1: [
  *
  *             ]
  *         ] as Map<String, Object>
  */
+@SuppressWarnings( "unused" )
 @CompileStatic
 class BaseMessage implements Map<String, Object> {
 
@@ -27,8 +27,7 @@ class BaseMessage implements Map<String, Object> {
         [
                 aps_1: [
                         version_1: "?<=${version}",
-                        type_1: type,
-                        from_1: "?.*/.*"
+                        type_1: type
                 ],
                 content_1: content
         ] as Map<String, Object>
@@ -38,8 +37,7 @@ class BaseMessage implements Map<String, Object> {
         [
                 aps: [
                         version: version,
-                        type: type,
-                        from: from
+                        type: type
                 ],
                 content: content
         ] as Map<String, Object>
@@ -97,10 +95,6 @@ class BaseMessage implements Map<String, Object> {
 
     String getApsType() {
         aps["type"] as String
-    }
-
-    String getApsFrom() {
-        aps["from"]
     }
 
     Map<String, Object> getAps() {

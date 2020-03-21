@@ -292,6 +292,26 @@ class APSBusProvider implements APSBus {
         }
     }
 
+    /**
+     * Allow overriding default timeout with system property.
+     *
+     * @return The timeout in seconds.
+     */
+    private static apsRequestTimeout() {
+        int timeout = 60
+        String defaultTimeoutStr = System.getProperty( "aps.request.timeout" )
+        if (defaultTimeoutStr != null) {
+            try {
+                timeout = Integer.valueOf( defaultTimeoutStr )
+                println "APSBusProvider: Overriding request timeout with ${timeout} seconds!"
+            }
+            catch ( NumberFormatException nfe ) {
+                nfe.printStackTrace( System.err )
+            }
+        }
+
+        timeout
+    }
 
     /**
      * Sends a message and expects to get a response message back.
@@ -317,7 +337,7 @@ class APSBusProvider implements APSBus {
     void request( @NotNull String target, @NotNull Map<String, Object> message,
                   @Nullable @Optional APSHandler<APSResult<?>> resultHandler,
                   @NotNull APSHandler<Map<String, Object>> responseMessage ) {
-        request( target, message, 10, resultHandler, responseMessage )
+        request( target, message, apsRequestTimeout(  ) as int, resultHandler, responseMessage )
     }
 
     /**
@@ -413,6 +433,10 @@ class APSBusProvider implements APSBus {
         // This is a very simple, primitive way of handling this. This worked on first try. My previous
         // attempt at a more complex service directory did not (Somehow the "keep it simple" rule
         // always seem to win!).
+        //
+        // DO NOTE THAT ANY SERVICE TAKING MORE THAN 3 SECONDS TO EXECUTE (INCLUDING NETWORK TIME)
+        // WILL CAUSE PROBLEMS! On the other side if a service takes more than 2 seconds to respond
+        // you probably have more serious problems than this.
         Exception sendFail = null
         Sporadic.until { keepSending.value && Instant.now().isBefore( timeOut ) }.
                 interval( 2 ).
