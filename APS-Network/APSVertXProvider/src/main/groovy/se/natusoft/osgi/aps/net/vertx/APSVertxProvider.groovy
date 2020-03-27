@@ -40,7 +40,6 @@
 package se.natusoft.osgi.aps.net.vertx
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 import io.vertx.amqpbridge.AmqpBridge
 import io.vertx.amqpbridge.AmqpBridgeOptions
 import io.vertx.core.AsyncResult
@@ -57,11 +56,11 @@ import io.vertx.ext.web.handler.sockjs.SockJSHandler
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceRegistration
 import se.natusoft.osgi.aps.activator.annotation.BundleStop
-import se.natusoft.osgi.aps.activator.annotation.ConfigListener
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.api.core.config.APSConfig
 import se.natusoft.osgi.aps.api.messaging.APSBusRouter
+import se.natusoft.osgi.aps.core.lib.APSConfigLoader
+import se.natusoft.osgi.aps.exceptions.APSConfigException
 import se.natusoft.osgi.aps.exceptions.APSException
 import se.natusoft.osgi.aps.exceptions.APSStartException
 import se.natusoft.osgi.aps.util.APSLogger
@@ -91,6 +90,8 @@ class APSVertxProvider {
     @Managed( loggingFor = "aps-vertx-provider" )
     private APSLogger logger
 
+    private Map<String, Object> config
+
     private Vertx vertx
 
     private ServiceRegistration vertxSvcReg
@@ -117,31 +118,26 @@ class APSVertxProvider {
     /** */
     private List<Runnable> shutdownNotification = []
 
-    private APSConfig config
-
     /**
      * This gets called after all injections are done.
      */
     @Initializer
     void init() {
-        this.logger.connectToLogService( this.context )
-    }
 
-    @ConfigListener( apsConfigId = "apsVertxProvider" )
-    void configReceiver( APSConfig config ) {
-        this.config = config
+        try {
+            this.config = APSConfigLoader.get( "vertx-provider" )
 
-        this.logger.info( "#### Got config! : ${ config }" )
-
-        // We wait for config before doing this since it will use config.
-        startVertx()
+            startVertx()
+        }
+        catch ( APSConfigException ce ) {
+            this.logger.error( "Failed to start aps-vertx-provider!", ce )
+        }
     }
 
     @BundleStop
     void shutdown() {
-        stopVertx()
 
-        this.logger.disconnectFromLogService( this.context )
+        stopVertx()
     }
 
     //
@@ -151,14 +147,11 @@ class APSVertxProvider {
     /**
      * This starts vertx either clustered or not depending on the 'aps.vertx.clustered' system property.
      *
-     * __Do note__ that a clustered Vert.x is basically required for APS. APSConfigManager depends on it.
+     * __Do note__ that a clustered Vert.x is basically required for APS.
+     *
      * The reason for making it possible to start an unclustered Vert.x instance is for tests. You don't
      * want multiple parallel tests in a Jenkins for example to cluster with each other which by default
      * Vert.x / Hazelcast setup, they will do.
-     *
-     * So what happens with APSConfigManager when not clustered ? Well nothing for tests if they are
-     * correctly setup. Tests provide (or rather override) the default configuration values which are
-     * used by APSConfigManager when it cannot get the cluster config, nor a local filesystem config.
      *
      * @param options Vert.x options passed to Vertx on creation. can be [ : ]!
      * @param handler The handler to call with result.
@@ -351,7 +344,7 @@ class APSVertxProvider {
     /**
      * Starts a specific Http servcie and router.
      *
-     * @param name The http config name for refrerence in logs.
+     * @param name The http config name for reference in logs.
      * @param port The port the server should listen to.
      * @param eventBusBridge A JSON object containing eventbus bridge info.
      */
@@ -376,7 +369,7 @@ class APSVertxProvider {
                 this.logger.info( "Created router for config '${ name }'!" )
                 httpServerRouterByPort[ port ] = router
 
-                httpServer.requestHandler( router.&accept ).listen( port )
+                httpServer.requestHandler( router ).listen( port )
                 this.logger.info( "HTTP server for config '${ name }' now listening on port ${ port }!" )
 
                 this.routerRegByPort[ port ] = this.context.registerService( Router.class.name, router, [

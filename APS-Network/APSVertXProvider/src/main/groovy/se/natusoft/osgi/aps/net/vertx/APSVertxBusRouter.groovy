@@ -40,7 +40,6 @@
 package se.natusoft.osgi.aps.net.vertx
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 import io.vertx.core.AsyncResult
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.eventbus.Message
@@ -92,7 +91,7 @@ import static se.natusoft.osgi.aps.util.APSExecutor.*
 )
 class APSVertxBusRouter implements APSBusRouter {
 
-    private static final String SUPPORTED_TARGET_ID = "cluster"
+    private static final String SUPPORTED_TARGET_IDS = "cluster MessageService msvc MessageClient mclnt"
 
     //
     // Private members
@@ -194,7 +193,7 @@ class APSVertxBusRouter implements APSBusRouter {
 
         this.logger.debug( "§§§§ Sending to target -> '${target}'" )
 
-        return ValidTarget.onValid(SUPPORTED_TARGET_ID, true, target ) { String realTarget ->
+        return ValidTarget.onValid(SUPPORTED_TARGET_IDS, true, target ) { String realTarget ->
 
             def internalResultHandler = { AsyncResult res ->
                 if ( res.succeeded() ) {
@@ -234,7 +233,7 @@ class APSVertxBusRouter implements APSBusRouter {
     @Override
     boolean subscribe( @NotNull ID id, @NotNull String target, @Optional @Nullable APSHandler<APSResult> resultHandler, @NotNull APSHandler<Map<String, Object>> messageHandler ) {
 
-        return ValidTarget.onValid(SUPPORTED_TARGET_ID, false, target ) { String realTarget ->
+        return ValidTarget.onValid(SUPPORTED_TARGET_IDS, false, target ) { String realTarget ->
 
             MessageConsumer consumer = eventBus.consumer( realTarget ) { Message<JsonObject> msg ->
 

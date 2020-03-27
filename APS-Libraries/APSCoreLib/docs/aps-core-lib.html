@@ -7,6 +7,41 @@
   </head>
   <body>
     <H1>aps-core-lib</H1>
+    <H2>Configuration for Bundles</H2>
+    <H3>APSConfigLoader</H3>
+    <p>
+      This is a trivially easy way of getting configuration. Just do:      
+    </p>
+    <pre>
+      <code>
+    Map&lt;String, Object&gt; config = APSConfigLoader.get("config-id")
+      </code>
+    </pre>
+    <p>
+      Where there are 2 resource files under <code>apsconfig</code>:      
+    </p>
+    <pre>
+      <code>
+    apsconfig/
+        (config-id)-schema.json
+        default-(config-id)-config.json
+      </code>
+    </pre>
+    <p>
+      To provide a configuration that differs from bundle default, package:      
+    </p>
+    <pre>
+      <code>
+    apsconfig/
+        (config_id)-config.json
+      </code>
+    </pre>
+    <p>
+      in a jar file and include in APS-Runtime under <em>dependencies</em>. This will override the default config file delivered with bundle. It is possible to include multiple bundles config files in the same jar of course.      
+    </p>
+    <p>
+      Do note that if <code>(config-id)-schema.json</code> is provided then the configuration file used will be validated against it. If no schema file is provided by the bundle then no validation will be done and whatever is in the config file will be loaded without error. It must of course be a JSON file or it will fail!      
+    </p>
     <H2>MapJsonDocValidator</H2>
     <p>
       This takes a schema (made up of a <code> Map&lt;String,</code><code> Object&gt; </code>, see below) and another <code> Map&lt;String,</code><code> Object&gt; </code> representing the JSON. So the catch here is that you need a JSON parser that allows you to get the content as a Map. The Vertx JSON parser does. This uses <code>Map</code> since it is generic, does not need to hardcode dependency on a specific parser, and maps are very easy to work with in Groovy.      
@@ -87,7 +122,7 @@
     <p>
       The '?' indicates that the rest of the value is a regular expression. This regular expression will be applied to each value.      
     </p>
-    <H5>"&lt;hash&gt;&lt;range&gt;"</H5>
+    <H5>"\&lt;hash\&gt;\&lt;range\&gt;"</H5>
     <p>
       This indicates that this is a number and defines the number range allowed. The following variants are available:      
     </p>
@@ -117,6 +152,7 @@
     <pre>
       <code>
     Map&lt;String, Object&gt; myJsonObject = JSON.readJsonAsMap( myJsonStream, jsonErrorHandler)
+    
     ...
     
     Map&lt;String, object&gt; schema = JSON.readJsonAsMap(schemaStream, jsonErrorHandler)

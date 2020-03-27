@@ -1,7 +1,6 @@
 package se.natusoft.osgi.aps.net.vertx
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 import io.vertx.core.Vertx
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.shareddata.SharedData
@@ -27,7 +26,7 @@ class APSVertxProviderTest extends APSRuntime {
     public static SharedData sharedData = null
 
     @Test
-    void reactiveAPITest() throws Exception {
+    void runTest() throws Exception {
         // Most of the unfamiliar constructs here are provided by APSRuntime and groovy DSL features.
 
         try {

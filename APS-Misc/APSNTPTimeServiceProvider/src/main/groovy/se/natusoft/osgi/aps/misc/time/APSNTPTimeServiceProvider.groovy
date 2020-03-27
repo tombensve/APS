@@ -37,22 +37,16 @@
 package se.natusoft.osgi.aps.misc.time
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
+import org.apache.commons.net.ntp.NTPUDPClient
 import org.apache.commons.net.ntp.TimeInfo
-import se.natusoft.osgi.aps.activator.annotation.ConfigListener
-import se.natusoft.osgi.aps.api.core.config.APSConfig
+import se.natusoft.osgi.aps.activator.annotation.*
 import se.natusoft.osgi.aps.api.misc.time.APSTimeService
 import se.natusoft.osgi.aps.constants.APS
-
+import se.natusoft.osgi.aps.core.lib.APSConfigLoader
 import se.natusoft.osgi.aps.util.APSLogger
-import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
-import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
-import se.natusoft.osgi.aps.activator.annotation.Schedule
 
 import java.time.Instant
 import java.util.concurrent.TimeUnit
-import org.apache.commons.net.ntp.NTPUDPClient
 
 /**
  * Provides an implementation of APSTimeService.
@@ -76,7 +70,7 @@ class APSNTPTimeServiceProvider implements APSTimeService {
     @Managed
     private APSLogger logger
 
-    private APSConfig config
+    private Map<String, Object> config
 
     // Note to self: Must keep local time diff or call NTP server on every call to getTime()!
     private long remoteTimeDiff = 0
@@ -86,7 +80,7 @@ class APSNTPTimeServiceProvider implements APSTimeService {
     private NTPUDPClient client = new NTPUDPClient()
 
     @SuppressWarnings( "GroovyUnusedDeclaration" )
-    @Schedule( delay = 0L, repeat = 60L, timeUnit = TimeUnit.MINUTES )
+    @Schedule( delay = 60L, repeat = 60L, timeUnit = TimeUnit.MINUTES )
     private Runnable refreshTime = {
         this.logger.info( "Refreshing time!" )
 
@@ -121,10 +115,10 @@ class APSNTPTimeServiceProvider implements APSTimeService {
     // Methods
     //
 
-    @ConfigListener( apsConfigId = "apsNTPTimeProvider" )
-    void configReceiver( APSConfig config ) {
-        this.config = config
-        this.refreshTime.run()
+    @Initializer
+    void init() {
+        this.config = APSConfigLoader.get( "aps-ntp-time-service" )
+        refreshTime.run(  )
     }
 
     /**

@@ -121,6 +121,13 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>se.natusoft.osgi.aps</groupId>
+            <artifactId>aps-core-lib</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
                 <!--
                     aps-ntp-time-service-provider dependencies
                 -->
@@ -176,12 +183,6 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-config-manager</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-core-lib</artifactId>
             <version>1.0.0</version>
             <scope>test</scope>
         </dependency>

@@ -118,7 +118,12 @@
         <name>Natusoft AB</name>
         <url>https://github.com/tombensve/APS</url>
     </organization>
+
+    <!--
+        This is a playground that started out with Tomcat/JEE and Vaadin, and changed over time.
+    -->
     <inceptionYear>2012</inceptionYear>
+
     <licenses>
         <license>
             <name>Apache 2.0</name>

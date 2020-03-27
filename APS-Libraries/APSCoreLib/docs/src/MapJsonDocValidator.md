@@ -68,7 +68,7 @@ Note that when the key is a regexp (starts with '?') then there can be no more r
 
 The '?' indicates that the rest of the value is a regular expression. This regular expression will be applied to each value.
 
-##### "<hash><range>"
+##### "\<hash\>\<range\>"
 
 This indicates that this is a number and defines the number range allowed. The following variants are available:
 
@@ -91,6 +91,7 @@ This requires values to be exactly "bla".
 #### Example
 
     Map<String, Object> myJsonObject = JSON.readJsonAsMap( myJsonStream, jsonErrorHandler)
+    
     ...
 
     Map<String, object> schema = JSON.readJsonAsMap(schemaStream, jsonErrorHandler)

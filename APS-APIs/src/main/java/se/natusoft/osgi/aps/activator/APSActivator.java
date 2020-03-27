@@ -41,7 +41,6 @@ import org.osgi.framework.BundleListener;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceListener;
 import se.natusoft.osgi.aps.activator.annotation.*;
-import se.natusoft.osgi.aps.api.core.config.APSConfig;
 import se.natusoft.osgi.aps.util.*;
 import se.natusoft.osgi.aps.tracker.APSServiceTracker;
 import se.natusoft.osgi.aps.tracker.OnServiceAvailable;
@@ -120,11 +119,6 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
     //
     // Constants
     //
-
-    /**
-     * This property is set on instances configured from names.
-     */
-    public static final String SERVICE_INSTANCE_NAME = "aps-service-instance-name";
 
     /**
      * This means that this class will find all annotated classes in a bundle and manage those.
@@ -336,8 +330,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
             OSGiServiceProvider serviceProvider = (OSGiServiceProvider) entryClass.getAnnotation( OSGiServiceProvider.class );
             if ( serviceProvider != null && ( serviceProvider.threadStart() ||
-                    serviceProvider.serviceSetupProvider() != APSActivatorServiceSetupProvider.class ||
-                    hasConfiguredInstance( entryClass ) ) ) {
+                    serviceProvider.serviceSetupProvider() != APSActivatorServiceSetupProvider.class ) ) {
                 executorService = parallelExecutorService;
                 initMethods = parallelInitMethods;
             }
@@ -373,32 +366,6 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             waitInMinutes = Integer.parseInt( waitProp );
         }
         waitedForExecutorService.awaitTermination( waitInMinutes, TimeUnit.MINUTES );
-    }
-
-    /**
-     * Returns the field annotated with @ConfiguredInstance or null if not found.
-     *
-     * @param clazz The class to search for the annotated field.
-     */
-    private Field getConfiguredInstance( Class clazz ) {
-        Field found = null;
-        for ( Field field : clazz.getDeclaredFields() ) {
-            if ( field.getAnnotation( ConfiguredInstance.class ) != null ) {
-                found = field;
-                break;
-            }
-        }
-
-        return found;
-    }
-
-    /**
-     * Returns true if the specified class have a field annotated with @ConfiguredInstance. Otherwise false is returned.
-     *
-     * @param clazz The class to check.
-     */
-    private boolean hasConfiguredInstance( Class clazz ) {
-        return getConfiguredInstance( clazz ) != null;
     }
 
     /**
@@ -552,9 +519,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                     "does not implement any service interface!" );
         }
 
-        if ( hasConfiguredInstance( managedClass ) ) {
-            handleConfiguredServiceInstances( managedClass );
-        } else if ( serviceProvider.instances().length > 0 ) {
+        if ( serviceProvider.instances().length > 0 ) {
             handleAnnotationInstancesServiceInstances( managedClass, serviceProvider );
         } else if ( !serviceProvider.instanceFactoryClass().equals( InstanceFactory.class ) ) {
             handleAnnotationInstanceFactoryServiceInstances( managedClass, serviceProvider );
@@ -563,61 +528,6 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         } else {
             handleDefaultServiceInstance( managedClass, serviceProvider );
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    protected void handleConfiguredServiceInstances( Class managedClass ) throws Exception {
-        // We know we always will get this since we wouldn't get here if this wasn't available!
-        Field injectToField = getConfiguredInstance( managedClass );
-
-        ConfiguredInstance configuredInstance = injectToField.getAnnotation( ConfiguredInstance.class );
-        Class configClass = verifyAPSConfigClass( configuredInstance.configClass(), managedClass );
-
-        // getNamedConfigEntryNames() are part of the APSConfig base class! We call it through reflection
-        // since we don't have compile dependency on APS-APIs.
-        Method getNamedConfigEntryNamesMethod = configClass.getSuperclass().getMethod( "getNamedConfigEntryNames", Class.class, String.class );
-        List<String> names =
-                (List<String>) getNamedConfigEntryNamesMethod.invoke( null, configuredInstance.configClass(),
-                        configuredInstance.instNamePath() );
-
-        for ( String name : names ) {
-            Object instance = createInstance( managedClass );
-
-            injectObject( instance, name, injectToField );
-
-            InstanceRepresentative ir = new InstanceRepresentative( instance );
-            ir.service = true;
-            Properties props = new Properties();
-            props.setProperty( configuredInstance.instanceNamePropertyKey(), name );
-            ir.props = props;
-            ir.instance = instance;
-            OSGiServiceProvider serviceProvider = (OSGiServiceProvider) managedClass.getAnnotation( OSGiServiceProvider.class );
-            if ( serviceProvider == null ) {
-                throw new IllegalArgumentException( "A managed class containing a @ConfiguredInstance annotation on a field must " +
-                        "also have the class annotated with @OSGiServiceProvider!" );
-            }
-            for ( Class svcAPI : serviceProvider.serviceAPIs() ) {
-                ir.serviceAPIs.add( svcAPI.getName() );
-            }
-            if ( ir.serviceAPIs.isEmpty() ) {
-                if ( managedClass.getInterfaces().length == 0 ) {
-                    throw new IllegalArgumentException( "An OSGi service class must implement at least one service API interface!" );
-                }
-                ir.serviceAPIs.add( managedClass.getInterfaces()[ 0 ].getName() );
-            }
-
-            addManagedInstanceRep( managedClass, ir );
-        }
-    }
-
-    private Class verifyAPSConfigClass( Class toVerify, Class managedClass ) {
-        Class check = toVerify;
-        while ( !check.getSimpleName().equals( "APSConfig" ) ) {
-            check = check.getSuperclass();
-            if ( check == null || check.getSimpleName().equals( "Object" ) )
-                throw new IllegalArgumentException( "Bad config class in @ConfiguredInstance of " + managedClass.getName() + "!" );
-        }
-        return toVerify;
     }
 
     protected void handleAnnotationInstancesServiceInstances( Class managedClass, OSGiServiceProvider serviceProvider ) {
@@ -1380,20 +1290,6 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
 
             this.listeners.add( frameworkListenerWrapper );
         }
-
-        se.natusoft.osgi.aps.activator.annotation.ConfigListener configListener =
-                method.getAnnotation( se.natusoft.osgi.aps.activator.annotation.ConfigListener.class );
-
-        if ( configListener != null ) {
-
-            ConfigListenerWrapper configListenerWrapper =
-                    new ConfigListenerWrapper( method, getManagedInstanceRep( managedClass ).instance,
-                            configListener.apsConfigId() );
-
-            configListenerWrapper.start( context );
-
-            this.listeners.add( configListenerWrapper );
-        }
     }
 
     /**
@@ -1857,58 +1753,5 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
                 APSActivator.this.activatorLogger.error( "Failed to invoke ServiceListener method [" + method + "]!", e );
             }
         }
-    }
-
-    /**
-     * Listens on and forwards framework events.
-     */
-    protected class ConfigListenerWrapper implements ListenerWrapper {
-
-        private Method method;
-        private Object instance;
-        private String configId;
-        private APSServiceTracker<APSConfig> configTracker;
-        private ServiceReference ref;
-
-        public ConfigListenerWrapper( Method method, Object instance, String configId ) {
-
-            this.method = method;
-            this.instance = instance;
-            this.configId = configId;
-        }
-
-        public void start( BundleContext context ) {
-
-            this.configTracker = new APSServiceTracker<>( context, APSConfig.class,
-                    "(apsConfigId=" + this.configId + ")", "10 sec" );
-            this.configTracker.start();
-
-            activatorLogger.info( "Started config tracker for id: '" + this.configId + "'" );
-
-            this.configTracker.onActiveServiceAvailable( ( service, serviceReference ) -> {
-                        activatorLogger.info( "Received config: " + service );
-
-                        // We need to save the reference and allocate our own usages of the APSConfig instance.
-                        // This because as soon as this callback exits the passed 'service' is released again.
-                        // We release our allocation on stop( BundleContext ) below.
-                        this.ref = serviceReference;
-                        APSConfig config = (APSConfig) context.getService( this.ref );
-                        this.method.invoke( this.instance, config );
-                    }
-            );
-
-            this.configTracker.onActiveServiceLeaving( ( serviceRef, clazz ) -> {
-                        context.ungetService( this.ref );
-                        this.ref = null;
-                        method.invoke( null );
-                    }
-            );
-        }
-
-        public void stop( BundleContext context ) {
-            this.configTracker.stop( context );
-            if ( this.ref != null ) context.ungetService( this.ref );
-        }
-
     }
 }

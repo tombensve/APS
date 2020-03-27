@@ -50,51 +50,33 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class ValidTarget {
 
-    // These are constants
-    public static final String TARGET_ID = "targetId"
-    public static final String SUPPORTS_ALL = "supportsAll"
-
     /**
      * This checks if provided target is valid and if so proceeds with the operation.
      *
+     * @param supportedTargetIds A space separated list of supported target ids.
      * @param target Target to validate.
      * @param go Closure to call on valid target.
      */
     @SuppressWarnings( "DuplicatedCode" )
-    static boolean onValidWithConfig( Map<String, Object> config, String target, Closure go ) {
-        boolean supportsAll = false
-        if (config[SUPPORTS_ALL] != null) {
-            supportsAll = config[SUPPORTS_ALL]
-        }
-        onValid( config[TARGET_ID] as String,  supportsAll, target, go)
+    static boolean onValid( String supportedTargetIds, String target, Closure go ) {
+        onValid( supportedTargetIds, false, target, go )
     }
 
     /**
      * This checks if provided target is valid and if so proceeds with the operation.
      *
-     * @param supportedTargetId The id that is valid in this case.
-     * @param target Target to validate.
-     * @param go Closure to call on valid target.
-     */
-    @SuppressWarnings( "DuplicatedCode" )
-    static boolean onValid( String supportedTargetId, String target, Closure go ) {
-        onValid( supportedTargetId, false, target, go )
-    }
-
-    /**
-     * This checks if provided target is valid and if so proceeds with the operation.
-     *
-     * @param supportedTargetId The id that is valid in this case.
+     * @param supportedTargetIds A space separated list of supported target ids.
      * @param supportsAll If true then the "all:" target is also supported.
      * @param target Target to validate.
      * @param go Closure to call on valid target.
      */
     @SuppressWarnings( "DuplicatedCode" )
-    static boolean onValid( String supportedTargetId, boolean supportsAll, String target, Closure go ) {
+    static boolean onValid( String supportedTargetIds, boolean supportsAll, String target, Closure go ) {
         boolean valid = false
 
-        if ( target.startsWith( supportedTargetId ) ) {
-            target = target.substring( supportedTargetId.length() )
+        String targetId = target.split( ":" )[0]
+        if (supportedTargetIds.contains( targetId )) {
+            target = target.substring( targetId.length() )
             valid = true
             go.call( target )
         }

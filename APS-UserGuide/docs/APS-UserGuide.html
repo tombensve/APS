@@ -420,9 +420,6 @@
       Do note that for the <em>serviceSetupProvider()</em> another solution is to use the <em>@BundleStart</em> (see below) and just create instances of your service and register them with the BundleContext. But if you use <em>@OSGiServiceProvider</em> to instantiate and register other "one instance" services, then using <em>serviceSetupProvider()</em> would look a bit more consistent.      
     </p>
     <p>
-      <strong>@APSExternalizabe</strong>, <strong>@APSRemoteService</strong> - These 2 annotations are synonyms and have no properties. They should be used on a service implementation class. When either of these are specified the "aps-externalizable=true" property will be set when the service is registered with the OSGi container. The APSExternalProtocolExtender will react on this property and make the service externally accessible.      
-    </p>
-    <p>
       <strong>@OSGiService</strong> - This should be specified on a field having a type of a service interface to have a service of that type injected, and continuously tracked. Any call to the service will throw an APSNoServiceAvailableException (runtime) if no service has become available before the specified timeout. It is also possible to have APSServiceTracker as field type in which case the underlying configured tracker will be injected instead.      
     </p>
     <p>
@@ -507,36 +504,7 @@
       </code>
     </pre>
     <p>
-      <strong>@ExecutorSvc</strong> - This should always be used in conjunction with @Managed! This also assumes that the annotated field is of type ExecutorService or ScheduledExecutorService. This annotation provides some configuration for the ExecutorService that will be injected.      
-    </p>
-    <pre>
-      <code>
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.FIELD)
-    public @interface ExecutorSvc {
-    
-        enum ExecutorType {
-            FixedSize,
-            WorkStealing,
-            Single,
-            Cached,
-            Scheduled,
-            SingleScheduled
-        }
-    
-        /** This is loosely the number of concurrent threads. */
-        int parallelism() default 10;
-    
-        /** The type of ExecutorService wanted. */
-        ExecutorType type() default ExecutorType.FixedSize;
-    
-        /** If true the created ExecutorService will be wrapped with a delegate that disallows configuration. */
-        boolean unConfigurable() default false;
-    }
-      </code>
-    </pre>
-    <p>
-      <strong>@Schedule</strong> - Schedules a Runnable using a ScheduledExecutionService. Indifferent from @ExecutorSvc this does not require an @Managed also, but do work with @Managed if that is used to inject an instance of Runnable to be scheduled. @Schedule is handled after all injections have been done.      
+      <strong>@Schedule</strong> - Schedules a Runnable using a ScheduledExecutionService. @Schedule is handled after all injections have been done.      
     </p>
     <pre>
       <code>
@@ -623,25 +591,6 @@
     <p>
       Both of these creates and manages an APSActivator internally and catches shutdown to take it down. They also provide other utilities like providing the BundleContext. See <em>APSWebTools</em> for more information.      
     </p>
-    <H4>APSActivatorPlugin</H4>
-    <p>
-      Any implementing classes of this interface can be specified in META-INF/services/se.natusoft.osgi.aps.tools.APSActivatorPlugin file, one per line. These are loaded by java.util.ServiceLoader. The implementation can be provided by another bundle which should then export the relevant packages which can then be imported in the using bundle.      
-    </p>
-    <p>
-      The APSActivatorPlugin API looks like this:      
-    </p>
-    <pre>
-      <code>
-    public interface APSActivatorPlugin {
-    
-        interface ActivatorInteraction {
-            void addManagedInstance(Object instance, Class forClass);
-        }
-    
-        void analyseBundleClass(ActivatorInteraction activatorInteraction, Class bundleClass);
-    }
-      </code>
-    </pre>
     <p>
       <strong>Be warned</strong> that this is currently very untested! No APS code uses this yet.      
     </p>
@@ -715,108 +664,6 @@
     <H3>Javadoc</H3>
     <p>
       The javadoc for this can be found at <a href='http://apidoc.natusoft.se/APSToolsLib/' title=''>http://apidoc.natusoft.se/APSToolsLib/</a>.      
-    </p>
-    <H2>APSConfigManager</H2>
-    <p>
-      This bunlde listens for other bundles and checks for the following MANIFEST.MF entries:      
-    </p>
-    <ul>
-      <li>
-        <p>
-           <code>APS-Config-Id</code> A unique id for a configuration to manage.          
-        </p>
-      </li>
-      <li>
-        <p>
-           <code>APS-Config-Schema</code> Points to a bundle relative JSON file containing an APS JSON schema, describing the configuration file. See aps-core-lib documentation for more information on the schema format.          
-        </p>
-      </li>
-      <li>
-        <p>
-           <code>APS-Config-Default-Resource</code> Points to a bundle relative JSON file folowing the schema and containging default configuration values.          
-        </p>
-      </li>
-    </ul>
-    <p>
-      For each bundle with an <code>APS-Config-Id</code> an instance of <code>APSConfig</code> is created loaded with current config from disk or cluster, or the default config file. If the config is new and has no previous configuration stored then the contents of the default configuration will be stored.      
-    </p>
-    <p>
-      The created <code>APSConfig</code> is then published as an OSGi service and the following lookup property: <code>(apsConfigId=&lt;config id&gt;)</code>.      
-    </p>
-    <p>
-      There are 2 ways to get configuration:      
-    </p>
-    <p>
-      Since the configuration is published as an OSGi "service", a service tracker can be used to look it up. The APSServiceTracker has some special features that makes it easier and it can also be provided by APSActivator:      
-    </p>
-    <pre>
-      <code>
-    @OSGiService( additionalSearchCriteria = "(apsConfigId=my-config-id)", nonBlocking = true )
-    private APSServiceTracker&lt;APSConfig&gt; configTracker
-    
-    @Managed
-    private BundleContext context
-    
-    private APSConfig config
-    
-    @Initializer
-    void init() {
-        this.configTracker.onActiveServiceAvailable { APSConfig config, ServiceReference configRef -&gt;
-            this.config = this.context.getService(configRef);
-            ...
-        }
-    
-        this.configTracker.onActiveServiceLeaving { ServiceReference configRef, Class type -&gt;
-            this.config = null
-            ...
-        }
-        ...
-    }
-      </code>
-    </pre>
-    <p>
-      Note that the first argument which actually is the APSConfig instance you want, cannot be saved. It only exists within the callback block. Thereby we must allocate a new usage by using the OSGi BundleContext to get it. This should of course be released again when your code no longer needs the configuration object.      
-    </p>
-    <p>
-      The other and easier way to get configuration is to let APSActivator give it to you:      
-    </p>
-    <pre>
-      <code>
-    private APSConfig config
-    
-    @ConfigListener(apsConfigId = "my-config-id")
-    void config( APSConfig config ) {
-        if (config != null) {
-            this.config = config
-            ...
-        }
-        else {
-            this.config = null
-        }
-    }
-      </code>
-    </pre>
-    <p>
-      This is much easier, but actually does the same as the first example. The difference is that APSActivator does it for you. Note that the method will be called with a null value if the configuration is unpublished as an OSGi service! This will however only happen if the config is unpublished before aps-config-manager and the listening bundle shuts down. So basically your code must expect and handle a null, but cannot demand to allways get a null on shutdown.      
-    </p>
-    <p>
-      Note that in both these cases you wait for the configuration to become available. The following would also be possible and can seem simpler:      
-    </p>
-    <pre>
-      <code>
-    @OSGiService
-    private APSConfig config
-      </code>
-    </pre>
-    <p>
-      But in this case you will be blocking the thread if it is accessed before it is available. If this was done in code called from bundle activator then there would be a problem! The other two ways are completely non blocking and reactive in that you get it when it is available.      
-    </p>
-    <p>
-      Whatever the code is doing, it can start doing it when the config is available. If it needs to do something that isn't quick, then it should work in another thread since the config listener call made by APSActivator needs to return rather quickly. Here is a suggestion: <code>APSExecutor.submit { ...</code><code> }</code>. This will then be submitted to a thread pool with as many threads as there are cores in the machine. APSActivator can also inject an <code>ExecutionService</code> that is backed by a thread pool for use by the bundle only. <code>APSExecutor</code> provides one thread pool for all bundles to share and are intended for shorter jobs.      
-    </p>
-    <H3>MapJSON</H3>
-    <p>
-      Configurations are JSON documents. <code>APSConfig</code>extends <code>Map&lt;String,</code><code> Object&gt;</code> and can thus be used as a Map representation of the JSON data, but it also has <code>lookup(String key)</code> method that takes a structured key (implemented by StructMap from aps-core-lib) to lookup a value. There is also a <code>provide( String structPath,</code><code> Object value )</code> method that is intended for configuration editors to use to update config values. An update of config value will update cluster and inform other nodes of the change. See documentation for StructMap in aps-core-lib for more information.      
     </p>
     <H1>APSFilesystemService</H1>
     <p>
@@ -3559,6 +3406,41 @@
                 
     </p>
     <H1>aps-core-lib</H1>
+    <H2>Configuration for Bundles</H2>
+    <H3>APSConfigLoader</H3>
+    <p>
+      This is a trivially easy way of getting configuration. Just do:      
+    </p>
+    <pre>
+      <code>
+    Map&lt;String, Object&gt; config = APSConfigLoader.get("config-id")
+      </code>
+    </pre>
+    <p>
+      Where there are 2 resource files under <code>apsconfig</code>:      
+    </p>
+    <pre>
+      <code>
+    apsconfig/
+        (config-id)-schema.json
+        default-(config-id)-config.json
+      </code>
+    </pre>
+    <p>
+      To provide a configuration that differs from bundle default, package:      
+    </p>
+    <pre>
+      <code>
+    apsconfig/
+        (config_id)-config.json
+      </code>
+    </pre>
+    <p>
+      in a jar file and include in APS-Runtime under <em>dependencies</em>. This will override the default config file delivered with bundle. It is possible to include multiple bundles config files in the same jar of course.      
+    </p>
+    <p>
+      Do note that if <code>(config-id)-schema.json</code> is provided then the configuration file used will be validated against it. If no schema file is provided by the bundle then no validation will be done and whatever is in the config file will be loaded without error. It must of course be a JSON file or it will fail!      
+    </p>
     <H2>MapJsonDocValidator</H2>
     <p>
       This takes a schema (made up of a <code> Map&lt;String,</code><code> Object&gt; </code>, see below) and another <code> Map&lt;String,</code><code> Object&gt; </code> representing the JSON. So the catch here is that you need a JSON parser that allows you to get the content as a Map. The Vertx JSON parser does. This uses <code>Map</code> since it is generic, does not need to hardcode dependency on a specific parser, and maps are very easy to work with in Groovy.      
@@ -3639,7 +3521,7 @@
     <p>
       The '?' indicates that the rest of the value is a regular expression. This regular expression will be applied to each value.      
     </p>
-    <H5>"&lt;hash&gt;&lt;range&gt;"</H5>
+    <H5>"\&lt;hash\&gt;\&lt;range\&gt;"</H5>
     <p>
       This indicates that this is a number and defines the number range allowed. The following variants are available:      
     </p>
@@ -3669,6 +3551,7 @@
     <pre>
       <code>
     Map&lt;String, Object&gt; myJsonObject = JSON.readJsonAsMap( myJsonStream, jsonErrorHandler)
+    
     ...
     
     Map&lt;String, object&gt; schema = JSON.readJsonAsMap(schemaStream, jsonErrorHandler)
@@ -3895,17 +3778,17 @@
       </li>
       <li>
         <p>
-           <a href='https://github.com/FasterXML/jackson-core' title=''>jackson-core-2.10.3</a>          
+           <a href='http://www.apache.org/licenses/LICENSE-2.0.txt' title=''>jackson-core-2.11.0.rc1</a>          
         </p>
       </li>
       <li>
         <p>
-           <a href='http://github.com/FasterXML/jackson' title=''>jackson-annotations-2.10.3</a>          
+           <a href='http://www.apache.org/licenses/LICENSE-2.0.txt' title=''>jackson-annotations-2.11.0.rc1</a>          
         </p>
       </li>
       <li>
         <p>
-           <a href='http://github.com/FasterXML/jackson' title=''>jackson-databind-2.10.3</a>          
+           <a href='http://github.com/FasterXML/jackson' title=''>jackson-databind-2.11.0.rc1</a>          
         </p>
       </li>
       <li>

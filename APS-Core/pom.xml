@@ -60,7 +60,6 @@
     </properties>
 
     <modules>
-        <module>APSConfigManager</module>
         <module>APSFilesystemServiceProvider</module>
         <module>APSPlatformBooter</module>
     </modules>

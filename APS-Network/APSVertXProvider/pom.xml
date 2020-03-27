@@ -47,7 +47,7 @@
     </parent>
 
     <artifactId>aps-vertx-provider</artifactId>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
 
     <name>APS VertX Provider</name>
 
@@ -60,94 +60,6 @@
 
     <properties>
 
-        <!--
-            Bundle properties
-        -->
-
-        <!--
-            The symbolic name of the bundle. Defaults to the artifact id, but can be overridden.
-
-            Note that the ${buildNumber} which is probably error marked by your IDE is made available
-            at runtime by build-number-mixin triggered by the mixin-maven-plugin below.
-        -->
-        <osgi.bundle.symbolic.name>${project.artifactId}</osgi.bundle.symbolic.name>
-
-        <!-- The bundle activator class -->
-        <osgi.bundle.activator>se.natusoft.osgi.aps.activator.APSActivator</osgi.bundle.activator>
-
-        <!-- The bundle packages to export. -->
-        <osgi.export.package>
-            se.natusoft.osgi.aps.net.vertx.util;version="${project.version}"
-        </osgi.export.package>
-
-        <!-- The packages to import for the bundle. -->
-        <osgi.import.package>*</osgi.import.package>
-
-        <!-- The private packages. -->
-        <osgi.private.package>
-            se.natusoft.osgi.aps.net.vertx
-        </osgi.private.package>
-
-        <!-- The packages to export from dependent & embeded jars -->
-        <!--
-            Export the non OSGi compliant vertx-lang-groovy packages.
-        -->
-        <osgi.export.dependency.package>
-            <!--io.vertx.groovy.core;version="${vertx.version}",-->
-            <!--io.vertx.groovy.core.buffer;version="${vertx.version}",-->
-            <!--io.vertx.groovy.core.cli;version="${vertx.version}",-->
-            <!--io.vertx.groovy.core.datagram;version="${vertx.version}",-->
-            <!--io.vertx.groovy.core.dns;version="${vertx.version}",-->
-            <!--io.vertx.groovy.core.eventbus;version="${vertx.version}",-->
-            <!--io.vertx.groovy.core.file;version="${vertx.version}",-->
-            <!--io.vertx.groovy.core.http;version="${vertx.version}",-->
-            <!--io.vertx.groovy.core.metrics;version="${vertx.version}",-->
-            <!--io.vertx.groovy.core.net;version="${vertx.version}",-->
-            <!--io.vertx.groovy.core.parsetools;version="${vertx.version}",-->
-            <!--io.vertx.groovy.core.shareddata;version="${vertx.version}",-->
-            <!--io.vertx.groovy.core.streams;version="${vertx.version}",-->
-            <!--io.vertx.lang.groovy;version="${vertx.version},-->
-            io.vertx.docgen;version="${vertx.version}",
-            io.vertx.codetrans.lang.groovy;version="${vertx.version}",
-            io.vertx.codetrans;version="${vertx.version}",
-            io.vertx.codegen.type;version="${vertx.version}"
-            io.vertx.groovy.core;version="${vertx.version}",
-            io.vertx.groovy.core.buffer;version="${vertx.version}",
-            io.vertx.groovy.core.cli;version="${vertx.version}",
-            io.vertx.groovy.core.eventbus;version="${vertx.version}",
-            io.vertx.groovy.core.file;version="${vertx.version}",
-            io.vertx.groovy.core.http;version="${vertx.version}",
-            io.vertx.groovy.core.net;version="${vertx.version}",
-            io.vertx.groovy.core.shareddata;version="${vertx.version}",
-            io.vertx.groovy.corestreams;version="${vertx.version}"
-        </osgi.export.dependency.package>
-
-        <!-- The resources to include in the bundle -->
-        <osgi.include.resource>
-        </osgi.include.resource>
-
-        <!-- The default for embedding dependencies in bundle. -->
-        <osgi.embed.dependency>*;scope=compile</osgi.embed.dependency>
-
-        <!-- The directory whose content should be embeded into the bundle jar. -->
-        <osgi.embed.directory>lib</osgi.embed.directory>
-
-        <!-- We register our configuration for auto registration and management. -->
-        <aps.config.id>apsVertxProvider</aps.config.id>
-
-        <!-- This defines the configuration JSON file. -->
-        <aps.config.schema>/apsconfig/config-schema.json</aps.config.schema>
-
-        <!-- This provides a configuraton with default values for first time. -->
-        <aps.config.default.resource>/apsconfig/default-config.json</aps.config.default.resource>
-
-        <!--
-            APS properties.
-        -->
-
-        <!--
-            Other properties
-        -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <aps.clustered.vertx.for.tests>true</aps.clustered.vertx.for.tests>
@@ -270,69 +182,9 @@
             <version>${vertx.version}</version>
             <scope>compile</scope>
         </dependency>
-        <!--
-            Dependencies of dependencies or stuff that I need to pull in even though I don't use
-            it due to OSGi ...
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-cassandra-client</artifactId>
-            <version>${vertx.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        [!- Taken from https://jcenter.bintray.com/org/apache/cassandra/cassandra-all/3.9/cassandra-all-3.9.pom -]
-        <dependency>
-            <groupId>com.datastax.cassandra</groupId>
-            <artifactId>cassandra-driver-core</artifactId>
-            <version>3.0.1</version>
-            <classifier>shaded</classifier>
-            <exclusions>
-                <exclusion>
-                    <artifactId>netty-buffer</artifactId>
-                    <groupId>io.netty</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>netty-codec</artifactId>
-                    <groupId>io.netty</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>netty-handler</artifactId>
-                    <groupId>io.netty</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>netty-transport</artifactId>
-                    <groupId>io.netty</groupId>
-                </exclusion>
-            </exclusions>
-            <scope>compile</scope>
-        </dependency>
-        [!- https://mvnrepository.com/artifact/com.datastax.cassandra/cassandra-driver-mapping -]
-        <dependency>
-            <groupId>com.datastax.cassandra</groupId>
-            <artifactId>cassandra-driver-mapping</artifactId>
-            <version>3.0.1</version>
-            <scope>compile</scope>
-        </dependency>
-        [!- https://mvnrepository.com/artifact/com.codahale.metrics/metrics-core -]
-        <dependency>
-            <groupId>com.codahale.metrics</groupId>
-            <artifactId>metrics-core</artifactId>
-            <version>3.0.2</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>28.1-jre</version>
-            <type>bundle</type>
-            <scope>compile</scope>
-        </dependency>
-        [!- com.google.common.util.concurrent.internal ... and here I gave up! -]
-        -->
 
-        <!-- Clusters -->
+        <!-- Cluster -->
 
-        <!-- This has scope "compile" and thus gets included in the bundle as a library. It thereby does not need to be OSGi ready! -->
-        <!--suppress NonOsgiMavenDependency -->
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-hazelcast</artifactId>
@@ -476,14 +328,9 @@
         <dependency>
             <groupId>se.natusoft.osgi.aps</groupId>
             <artifactId>aps-runtime</artifactId>
+            <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-json-lib</artifactId>
-            <scope>test</scope>
-        </dependency>
-
 
         <!--
             These are for being able to run aps-config-manager and dependent bundles in unit tests
@@ -502,35 +349,11 @@
             <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-config-manager</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
-            <artifactId>aps-runtime</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
 
     </dependencies>
 
     <build>
         <plugins>
-
-            <!--
-                Force the jar plugin to use the maven-bundle-plugin generated manifest.
-            -->
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
-                </configuration>
-            </plugin>
 
             <!--
                 Mixins
@@ -564,53 +387,7 @@
                 </configuration>
             </plugin>
 
-            <!--
-                OSGi bundle handling.
-            -->
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <supportedProjectTypes>
-                        <supportedProjectType>jar</supportedProjectType>
-                        <supportedProjectType>bundle</supportedProjectType>
-                    </supportedProjectTypes>
-                    <archive>
-                        <manifestEntries>
-                            <APS-Config-Id>${aps.config.id}</APS-Config-Id>
-                            <APS-Config-Schema>${aps.config.schema}</APS-Config-Schema>
-                            <APS-Config-Default-Resource>${aps.config.default.resource}</APS-Config-Default-Resource>
-                            <!--Bundle-ClassPath>${osgi.bundle.classpath}</Bundle-ClassPath-->
-                        </manifestEntries>
-                    </archive>
-                    <instructions>
-                        <Export-Package>${osgi.export.package}</Export-Package>
-                        <Import-Package>${osgi.import.package}</Import-Package>
-                        <_exportcontents>${osgi.export.dependency.package}</_exportcontents>
-                        <Private-Package>${osgi.private.package}</Private-Package>
-                        <Include-Resource>${osgi.include.resource}</Include-Resource>
-                        <Bundle-SymbolicName>${osgi.bundle.symbolic.name}</Bundle-SymbolicName>
-                        <Bundle-Activator>${osgi.bundle.activator}</Bundle-Activator>
-                        <Embed-Directory>${osgi.embed.directory}</Embed-Directory>
-                        <Embed-Dependency>${osgi.embed.dependency}</Embed-Dependency>
-                        <Include-Resource>src/main/resources</Include-Resource>
-                    </instructions>
-                </configuration>
-            </plugin>
-
         </plugins>
     </build>
-    <profiles>
-    </profiles>
 
 </project>

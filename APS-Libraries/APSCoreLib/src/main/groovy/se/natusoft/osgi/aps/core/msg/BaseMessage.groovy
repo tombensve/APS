@@ -1,6 +1,7 @@
 package se.natusoft.osgi.aps.core.msg
 
 import groovy.transform.CompileStatic
+import se.natusoft.osgi.aps.api.messaging.APSBaseMessage
 import se.natusoft.osgi.aps.core.lib.MapJsonSchemaValidator
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 
@@ -19,64 +20,61 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  *             ]
  *         ] as Map<String, Object>
  */
-@SuppressWarnings( "unused" )
 @CompileStatic
-class BaseMessage implements Map<String, Object> {
+class BaseMessage implements APSBaseMessage {
 
-    static final Map<String, Object> schemaDef(String version, String type, Map<String, Object> content) {
+    static final Map<String, Object> schemaDef(float version, String type, Map<String, Object> content) {
         [
                 aps_1: [
-                        version_1: "?<=${version}",
+                        version_1: "#<=${version}",
                         type_1: type
                 ],
                 content_1: content
         ] as Map<String, Object>
     }
 
-    static final Map<String, Object> messageVal(String version, String type, String from, Map<String, Object> content) {
-        [
-                aps: [
-                        version: version,
-                        type: type
-                ],
-                content: content
-        ] as Map<String, Object>
-    }
-
+    /** Provides the Map<String, Object> implementation. */
     @Delegate
-    private LinkedHashMap<String, Object> _message
+    private LinkedHashMap<String, Object> message
 
+    /** For validating the message. */
     private MapJsonSchemaValidator validator
 
+    /**
+     * Creates a new empty (and invalid) message.
+     */
     BaseMessage() {
 
-        this._message = [ : ]
+        this.message = [ : ]
     }
 
+    /**
+     * Creates a new BaseMessage with a schema.
+     *
+     * @param schema The schema for this message.
+     */
     BaseMessage( Map<String, Object> schema ) {
+        this()
 
         if ( schema != null ) {
             this.validator = new MapJsonSchemaValidator( validStructure: schema )
         }
-
-        this._message = [ : ]
     }
 
-    BaseMessage( Map<String, Object> schema, Map<String, Object> message ) {
-
-        this( schema )
-
-        if ( !message instanceof LinkedHashMap ) {
-            this._message = [ : ]
-            this._message.putAll( message )
+    /**
+     * Constructor for services where a message has been received.
+     *
+     * @param schema The message schema.
+     * @param message The received message.
+     */
+    BaseMessage( Map<String, Object> schema, Map<String, Object> message) {
+        this(schema)
+        if ( message instanceof LinkedHashMap ) {
+            this.message = message as LinkedHashMap<String, Object>
         }
         else {
-            this._message = message as LinkedHashMap<String, Object>
+            this.message.putAll( message )
         }
-    }
-
-    Map<String, Object> getMessage() {
-        return this._message
     }
 
     /**
@@ -85,23 +83,75 @@ class BaseMessage implements Map<String, Object> {
     void validate() throws APSValidationException {
 
         if ( this.validator != null ) {
-            this.validator.validate( this._message )
+            this.validator.validate( this.message )
         }
     }
 
+    // Remember, this is Groovy, aps["..."] references are calling getAps()! In subclasses content["..."] can be used.
+
+    /**
+     * @return 'aps.version'.
+     */
     float getApsVersion() {
-        aps["version"] as float
+        aps[ "version" ] as float
     }
 
+    /**
+     * Sets the 'aps.version' value.
+     *
+     * @param version The version value to set.
+     */
+    @Override
+    void setApsVersion( float version ) {
+        aps[ "version" ] = version
+    }
+
+    /**
+     * @return The 'aps.from' value.
+     */
+    @Override
+    String getApsFrom() {
+        aps[ "from" ]
+    }
+
+    /**
+     * Sets the 'aps.from' value.
+     *
+     * @param from The from value to set.
+     */
+    @Override
+    void setApsFrom( String from ) {
+        aps[ "from" ] = from
+    }
+
+    /**
+     * @return 'aps.type'
+     */
     String getApsType() {
-        aps["type"] as String
+        aps[ "type" ] as String
     }
 
+    /**
+     * Sets the 'aps.type' id
+     *
+     * @param type The type to set.
+     */
+    @Override
+    void setApsType( String type ) {
+        aps[ "type" ] = type
+    }
+
+    /**
+     * @return The 'aps' sub object.
+     */
     Map<String, Object> getAps() {
-        this["aps"] as Map<String, Object>
+        this.message[ "aps" ] as Map<String, Object>
     }
 
+    /**
+     * @return The 'content' sub object.
+     */
     Map<String, Object> getContent() {
-        this["content"] as Map<String, Object>
+        this.message[ "content" ] as Map<String, Object>
     }
 }

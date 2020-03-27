@@ -1,5 +1,28 @@
 # aps-core-lib
 
+## Configuration for Bundles
+
+### APSConfigLoader
+
+This is a trivially easy way of getting configuration. Just do:
+
+        Map<String, Object> config = APSConfigLoader.get("config-id")
+
+Where there are 2 resource files under `apsconfig`:
+
+        apsconfig/
+            (config-id)-schema.json
+            default-(config-id)-config.json
+
+To provide a configuration that differs from bundle default, package:
+
+        apsconfig/
+            (config_id)-config.json
+
+in a jar file and include in APS-Runtime under _dependencies_. This will override the default config file delivered with bundle. It is possible to include multiple bundles config files in the same jar of course.
+
+Do note that if `(config-id)-schema.json` is provided then the configuration file used will be validated against it. If no schema file is provided by the bundle then no validation will be done and whatever is in the config file will be loaded without error. It must of course be a JSON file or it will fail!
+
 ## MapJsonDocValidator
 
 This takes a schema (made up of a `Map<String,``Object>`, see below) and another `Map<String,``Object>` representing the JSON. So the catch here is that you need a JSON parser that allows you to get the content as a Map. The Vertx JSON parser does. This uses `Map` since it is generic, does not need to hardcode dependency on a specific parser, and maps are very easy to work with in Groovy.
@@ -70,7 +93,7 @@ Note that when the key is a regexp (starts with '?') then there can be no more r
 
 The '?' indicates that the rest of the value is a regular expression. This regular expression will be applied to each value.
 
-##### "<hash><range>"
+##### "\<hash\>\<range\>"
 
 This indicates that this is a number and defines the number range allowed. The following variants are available:
 
@@ -93,6 +116,7 @@ This requires values to be exactly "bla".
 #### Example
 
         Map<String, Object> myJsonObject = JSON.readJsonAsMap( myJsonStream, jsonErrorHandler)
+        
         ...
         
         Map<String, object> schema = JSON.readJsonAsMap(schemaStream, jsonErrorHandler)
