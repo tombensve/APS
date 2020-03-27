@@ -14,10 +14,6 @@ To be very clear: **This is currently, and probably for a long time comming, a p
 
 The __original (and still active) goal__ with this is to make a very easy to use web platform.
 
-This project is now using 2 exceptional frameworks: __Vert.x & React__. These both belong to the same category: Things that just work! I have the highest respect for the people behind both of these. These both also supply outstanding documentation (which is not always the case with all frameworks and libraries!).
-
-**Note**: To be very clear, as said above "this is a playground where I'm having fun", and that status will remain even when I feel this is done! Why ? Because it really cannot have any other status! If anyone thinks what I'm doing here is interesting then clone it and do what you want with it, but you are on your own! 
-
 There is currently no real web app, only components demo. I'm working on comming up with a an idea for a more real web app to do with it as a more real test of if this is a good idea or not. 
 
 ## Building
@@ -52,17 +48,11 @@ Citations:
 
 I decided to not use a maven plugin for Docker and run Docker commands directly in bash scripts via maven-exec-plugin instead.
 
-## Runtime of the APS kind
-
-The previous version of Vert.x required a few jars that easily deployed as OSGi bundles into a Felix or Karaf along with APS code. With current Vert.x version there are more dependencies and I spent 3 days trying to make Felix happy, but every resolved dependency seemed to add 3 more required dependencies. I was upp in far more jars than what is currently required to run!! Next version of vert.x will drop OSGi Manifest. I do like the OSGi service model, and I had already implemented enough of the 4 base OSGi APIs to be able to deploy and run in unit tests. So I renamed this to APSPlatform and made a simple booter that deploys bundles in a pointed to directory. This is now the runtime used. 
-
-It does provide the OSGi service model, but does not modularise at all. This also opens up for JPMS modularisation instead. For JPMS however, as soon as there is a _ModuleInfo.java_ then **everything** must be JPMS modularised even third party libs, which is more than a little nasty! Apparently some people realized this problem and created <https://github.com/moditect/moditect>. Not an optimal solution either, but better than nothing.
-
 ---- 
 
 ## About
 
-APS is intended to be a fullstack web application platform, with microservice architecture thinking, and be very easy to use / develop with. APS is also intended to be message driven, specificly using JSON messages on both frontend and backend. Services should be message driven, that is listen to messages, act on them, produce new messages. This creates a high level of decoupling. A service for example only know about itself, the message(s) it reads, the message(s) it produces. The messages are central. APS also provides a very simple JSON schema definition and validator. This also makes it limited not allowing for 100% of structures possible with JSON. Or seen in another perspective, it forces trivial JSON message structures. Personally I don't see that as a bad thing. There is however nothing forcing this validation. It is a utility to be used if wanted.  
+APS is intended to be a fullstack web application platform, with microservice architecture thinking, and be very easy to use / develop with. APS is also intended to be message driven, specificly using JSON messages on both frontend and backend. Services should be message driven, that is listen to messages, act on them, produce new messages. This creates a high level of decoupling. A service for example only know about itself, the message(s) it reads, the message(s) it produces. The messages are central. 
 
 ## Frontend
 
@@ -72,17 +62,15 @@ APS makes use of React for frontend, but are not totally locked into React. It h
 
 ## Backend
 
-The backend and the bridge between frontend and backend is handled by [Vert.x](https://vertx.io/). APS however provides a thin abstraction layer over Vert.x and other code for some things. One central such is APSBus. This have a slighly different adressing scheme than the frontend counterpart APSEventBus, but otherwise behave very similarly by requiring APSBusRouter implementations as Services. For this level of services the OSGi service model is used to provide APSBusRouter implementations. There is one implementation that sends messages locally within JVM. There is one that uses Vert.x EventBus. There is one that sends messages over AMQP (via Vert.x). APSBus forwards calls to found implementations of APSBusRouter to handle. Deploy those implementations wanted. The backend bus has an adress scheme called _target_ in the form of "id:address" where id can be "local", "cluster", whatever there is an APSBusRouter implementation supporting. What the "address" part is depends on the implementation. For "cluster" and "local" it is just a unique name that an application service subscribes to and a client sends to.   
+The backend and the bridge between frontend and backend is handled by [Vert.x](https://vertx.io/). APS however provides a thin abstraction layer over Vert.x and other code for some things. One central such is APSBus. This have a slighly different adressing scheme than the frontend counterpart APSEventBus, but otherwise behave very similarly by requiring APSBusRouter implementations as Services. For this level of services the OSGi service model is used to provide APSBusRouter implementations. There is one implementation that sends messages locally within JVM. There is one that uses Vert.x EventBus. There is one that sends messages over AMQP (via Vert.x). APSBus forwards calls to found implementations of APSBusRouter to handle.    
 
-Backend is based on OSGi light, only parts of the 4 base OSGi APIs. APS currently runs on its own simple backend (APSRuntime) implementing the base OSGi APIs to ~85% (what is needed/used by APS), but without any modularity.  The runtime is started with:
+Backend is based on OSGi light, only parts of the 4 base OSGi APIs. APS currently runs on its own simple backend (APSRuntime) implementing the base OSGi APIs to ~85% (what is needed/used by APS), but without any modularity. The runtime forces the APSActivator which does dependency injections! It is started with:
 
     java -jar aps-platform-booter-1.0.0.jar --dependenciesDir path/to/dependenciesdir --bundlesDir path/to/bundlesdir 
 
 Where dependencies dir contains all dependency jars, and budlesdir contains all bundles to deploy.
 
-I was contacted by someone who had seen this repo and asked about APSRuntime as used in unit tests to deploy and run services. Since APSRuntime is a bit bound to APS I decided to break it out into a separate repo that has no dependencies on APS: [OSGishTestRunner](https://github.com/tombensve/OSGishTestRunner). 
-
-(TODO: Add usage examples) 
+I was contacted by someone who had seen this repo and asked about APSRuntime as used in unit tests to deploy and run services. Since APSRuntime is a bit bound to APS I decided to break it out into a separate repo that has no dependencies on APS: [OSGishTestRunner](https://github.com/tombensve/OSGishTestRunner). DO NOTE that this is very basic OSGi only!! No declarative services, etc, just basic Bundle and events. 
 
 Lots of fun ideas, too little time ...
 
