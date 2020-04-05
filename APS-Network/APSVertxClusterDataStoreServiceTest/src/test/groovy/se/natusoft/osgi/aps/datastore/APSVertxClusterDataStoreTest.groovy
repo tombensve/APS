@@ -1,7 +1,6 @@
 package se.natusoft.osgi.aps.datastore
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 import org.junit.Test
 import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.activator.annotation.Initializer
@@ -24,7 +23,7 @@ class APSVertxClusterDataStoreTest extends APSRuntime {
     // static value. If we overwrite the value for another concurrent test execution we will
     // store the same value so nothing should fail due to that.
     public static String id = "test-value"
-    public static boolean stored = false
+    public static boolean dst_stored = false
     public static String retrieved = null
 
     // For clarity, not pointless!!!
@@ -36,7 +35,7 @@ class APSVertxClusterDataStoreTest extends APSRuntime {
         // For now we have to make sure we are running Vert.x clustered. This will not work with
         // unclustered vertx instance.
         String vertxClustered = System.getProperty( "aps.vertx.clustered" )
-        if (vertxClustered != null && vertxClustered == "false") {
+        if ( vertxClustered != null && vertxClustered == "false" ) {
             return
         }
 
@@ -47,31 +46,22 @@ class APSVertxClusterDataStoreTest extends APSRuntime {
 
         deployConfigAndVertxPlusDeps(
                 dataStoreServiceDeployer( null ) {
-                    deploy 'aps-vertx-cluster-data-store-provider' with new APSActivator() from 'se.natusoft.osgi.aps', 'aps-vertx-cluster-datastore-service-provider', '1.0.0'
+                    deploy 'aps-vertx-cluster-data-store-provider' with new APSActivator() from 'se.natusoft.osgi' +
+                            '.aps', 'aps-vertx-cluster-datastore-service-provider', '1.0.0'
                 }
         )
 
-        // As of version 3.8.0 of Vert.x something have happened. When the ClusterStoreTestClient class
-        // gets deployed and run for some very, very weird reason the read lock and read of value gets
-        // done before the write lock and write of value! And a sleep between the write and read do solve
-        // the problem, but the really, really super weird thing is that this sleep also solves the problem!
-        // Note that this is before "ClusterStoreTestClient" is even deployed! The only explanation I can
-        // come up with is that Vert.x now threads off and returns before everything is upp and running.
-
         hold() maxTime 6 unit SECONDS go() // Support really slow machines.
-
-        // This do actually fail every now and then!! Should be failsafe!!
-        //hold() whilst { ClusterStoreTestClient.stored == true } maxTime 8L unit SECONDS go()
 
         deploy 'producer' with new APSActivator() using '/se/natusoft/osgi/aps/datastore/ClusterStoreTestClient.class'
 
         try {
             println ">>>>> " + new Date()
-            hold() whilst { stored == false } maxTime 3L unit SECONDS go()
-            hold() whilst { retrieved == null } maxTime 3L unit SECONDS go()
+            hold() whilst { dst_stored == false } maxTime 3L unit SECONDS go()
+            hold() whilst { retrieved == null } maxTime 6L unit SECONDS go()
             println "<<<<< " + new Date()
 
-            assert stored == true
+            assert dst_stored == true
             assert retrieved == id
 
         }
@@ -103,37 +93,54 @@ class ClusterStoreTestClient {
 
             if ( lockRes.success() ) {
 
-                this.dataStoreService.store( "test.someId", APSVertxClusterDataStoreTest.id ) { APSResult<Void> storeRes ->
+                this.dataStoreService.store( "test.someId", APSVertxClusterDataStoreTest.id ) {
+                    APSResult<Void> storeRes ->
 
-                    APSVertxClusterDataStoreTest.stored = storeRes.success()
-                    this.logger.info( "Stored value with result: ${ storeRes.success() }" )
+                        APSVertxClusterDataStoreTest.dst_stored = storeRes.success()
+                        this.logger.info( "Stored value with result: ${storeRes.success()}" )
 
-                    this.logger.info( "Current lock for writing: ${ lockRes.result().content() }" )
+                        this.logger.info( "Current lock for writing: ${lockRes.result().content()}" )
 
-                    stored = true
+                        stored = true
                 }
+            } else {
+                System.err.println "NO WRITE LOCK ON DATA STORE!"
+                assert false
             }
         }
 
+        // Sometimes the read gets done before the write, that is a read lock is acquired before the write lock!
+        // To solve this we wait for the 'stored' flag to become true before trying to read.
 
-        // Note that this retrieval directly after the store which is done in a callback on a Vertx event loop thread
-        // works due to that the service always performs a lock on the value stored or fetched.
+        APSRuntime.hold(  ) whilst { !stored } maxTime 5L unit SECONDS go()
+
+        if (!stored) {
+            System.err.println "TIMEOUT BEFORE STORE OF VALUE!!"
+            assert false
+        }
 
         this.dataStoreService.lock( "test.someId" ) { APSResult<APSLockable.APSLock> lockRes ->
 
-            this.logger.info( "Current lock for reading: ${ lockRes.result().content() }" )
+            this.logger.info( "Current lock for reading: ${lockRes.result().content()}" )
 
-            this.dataStoreService.retrieve( "test.someId" ) { APSResult<UUID> result ->
+            if (lockRes.success(  )) {
 
-                if ( result.success() ) {
+                this.dataStoreService.retrieve( "test.someId" ) { APSResult<UUID> result ->
 
-                    APSVertxClusterDataStoreTest.retrieved = result.result().content()
-                    this.logger.info( "Retrieved stored value: ${ result.result().content() }" )
+                    if ( result.success() ) {
+
+                        APSVertxClusterDataStoreTest.retrieved = result.result().content()
+                        this.logger.info( "Retrieved stored value: ${result.result().content()}" )
+                    }
+                    else {
+
+                        this.logger.error( "Retrieval failed!", result.failure() )
+                    }
                 }
-                else {
-
-                    this.logger.error( "Retrieval failed!", result.failure() )
-                }
+            }
+            else {
+                System.err.println "NO READ LOCK ON DATA STORE!"
+                assert false
             }
         }
 

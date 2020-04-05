@@ -284,12 +284,6 @@ public class APSRuntime {
 
         System.setProperty( APSFilesystemService.CONF_APS_FILESYSTEM_ROOT, "target/config" );
 
-        deploy( "aps-config-manager" ).with( new APSActivator() ).from(
-                "se.natusoft.osgi.aps",
-                "aps-config-manager",
-                "1.0.0"
-        );
-
         deploy( "aps-core-lib" ).with( new APSActivator() ).from(
                 "se.natusoft.osgi.aps",
                 "aps-core-lib",
@@ -361,7 +355,7 @@ public class APSRuntime {
      *
      * @throws InterruptedException If interrupted.
      */
-    public void delay( int milliseconds ) throws InterruptedException {
+    public static void delay( int milliseconds ) throws InterruptedException {
         Thread.sleep( milliseconds );
     }
 
@@ -372,7 +366,7 @@ public class APSRuntime {
      *
      * @throws InterruptedException if interrupted.
      */
-    public void delay( String delay ) throws InterruptedException {
+    public static void delay( String delay ) throws InterruptedException {
         int ms = 1000;
         if ( delay.startsWith( "long" ) ) {
             ms = 10000;
@@ -395,7 +389,7 @@ public class APSRuntime {
      * * hold().whilst { this.something == null } maxTime 30L unit SECONDS go()
      * * hold().until { this.something != null } macTime 10L unit SECONDS go()
      */
-    public Wait hold() {
+    public static Wait hold() {
         return new Wait();
     }
 
