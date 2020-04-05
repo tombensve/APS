@@ -60,13 +60,7 @@
     </properties>
 
     <dependencies>
-<!--
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>javax.persistence</artifactId>
-            <scope>compile</scope>
-        </dependency>
--->
+
         <!--suppress NonOsgiMavenDependency -->
         <dependency>
             <groupId>se.natusoft.annotation</groupId>
@@ -78,10 +72,6 @@
         <!--
             Jackson Jr, a very much smaller version of Jackson. I don't like fat Jackson Sr,
             but this is OK :-).
-
-            Note that this library is not OSGi compatible, so it will be included in this bundle,
-            and only exposed from local Json class providing its own APIs. This so that I
-            can replace it with something else if i want.
         -->
         <dependency>
             <groupId>com.fasterxml.jackson.jr</groupId>
@@ -149,31 +139,6 @@
                 </executions>
             </plugin>
 
-            <!--
-                Deploy plugins
-            -->
-<!--            <plugin>-->
-<!--                <groupId>se.natusoft.maven.plugin</groupId>-->
-<!--                <artifactId>ftp-maven-plugin</artifactId>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>upload</id>-->
-<!--                        <goals>-->
-<!--                            <goal>upload</goal>-->
-<!--                        </goals>-->
-<!--                        <phase>deploy</phase>-->
-<!--                        <configuration>-->
-<!--                            <files>**/.*</files>-->
-<!--                            <targetHost>${javadoc.upload}</targetHost>-->
-<!--                            <targetPort>21</targetPort>-->
-<!--                            <userName>${web.server.user}</userName>-->
-<!--                            <password>${web.server.pw}</password>-->
-<!--                            <targetPath>${javadoc.base.path}/APS</targetPath>-->
-<!--                            <baseDir>${basedir}/target/site/apidocs</baseDir>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
         </plugins>
 
     </build>

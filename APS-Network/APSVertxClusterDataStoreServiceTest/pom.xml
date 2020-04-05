@@ -172,11 +172,6 @@
                             <artifactId>groovy-mixin</artifactId>
                             <version>${project.version}</version>
                         </mixin>
-                        <mixin>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>deploy-bundle-mixin</artifactId>
-                            <version>${project.version}</version>
-                        </mixin>
                     </mixins>
                 </configuration>
             </plugin>
