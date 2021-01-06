@@ -1179,11 +1179,11 @@ The following third party products are using this license:
 
 *  [hazelcast-3.6.3](http://www.hazelcast.com/)
 
-*  [jackson-core-2.11.0.rc1](http://www.apache.org/licenses/LICENSE-2.0.txt)
+*  [jackson-core-2.12.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-*  [jackson-annotations-2.11.0.rc1](http://www.apache.org/licenses/LICENSE-2.0.txt)
+*  [jackson-annotations-2.12.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-*  [jackson-databind-2.11.0.rc1](http://github.com/FasterXML/jackson)
+*  [jackson-databind-2.12.0](http://github.com/FasterXML/jackson)
 
 *  [netty-codec-4.1.19.Final](http://netty.io/)
 

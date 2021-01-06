@@ -28,7 +28,7 @@ class RunBackendTest extends APSRuntime {
 
         hold() maxTime 2L unit SECONDS go()
 
-        deploy 'aps-web-manager' with new APSActivator() from 'APS-Webs/APSWebManager/target/classes'
+        deploy 'aps-web-template' with new APSActivator() from 'APS-Webs/APSWebTemplate/target/classes'
 
         // Unfortunately we have to wait a while here for the services to completely start up.
         // If you build on a really slow computer, this might not be enough.
