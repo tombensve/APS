@@ -39,7 +39,7 @@ package se.natusoft.osgi.aps.tools.services;
 
 import se.natusoft.osgi.aps.activator.annotation.ExecutorSvc;
 import se.natusoft.osgi.aps.activator.annotation.Managed;
-import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider;
+import se.natusoft.aps.core.annotation.APSServiceProvider;
 import se.natusoft.osgi.aps.activator.annotation.Schedule;
 
 import java.util.concurrent.ExecutorService;
@@ -47,7 +47,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("ConstantConditions")
-@OSGiServiceProvider
+@APSServiceProvider
 public class APSActivatorExecutorServiceTestSvc implements TestService {
 
     @Managed

@@ -38,8 +38,8 @@
 package se.natusoft.osgi.aps.core.service
 
 import groovy.transform.CompileStatic
-import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
-import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
+import se.natusoft.aps.core.annotation.APSProperty
+import se.natusoft.aps.core.annotation.APSServiceProvider
 import se.natusoft.osgi.aps.api.misc.json.model.APSMapJson
 import se.natusoft.osgi.aps.api.misc.json.model.APSMapJsonSchema
 import se.natusoft.osgi.aps.api.misc.json.service.APSMapJsonValidationService
@@ -54,11 +54,11 @@ import se.natusoft.osgi.aps.exceptions.APSValidationException
  * Note that the service package are not exported!
  */
 @SuppressWarnings( "unused" )
-@OSGiServiceProvider(
+@APSServiceProvider(
         properties = [
-                @OSGiProperty( name = APS.Service.Provider, value = "aps-map-json-validation-service-provider" ),
-                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Misc ),
-                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.JSON )
+                @APSProperty( name = APS.Service.Provider, value = "aps-map-json-validation-service-provider" ),
+                @APSProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Misc ),
+                @APSProperty( name = APS.Service.Function, value = APS.Value.Service.Function.JSON )
         ]
 )
 @CompileStatic

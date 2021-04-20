@@ -79,6 +79,10 @@
             <version>2.9.6</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>se.natusoft.annotation</groupId>
+            <artifactId>docutations</artifactId>
+        </dependency>
 
     </dependencies>
 

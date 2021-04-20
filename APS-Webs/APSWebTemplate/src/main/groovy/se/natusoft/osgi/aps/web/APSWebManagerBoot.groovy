@@ -52,7 +52,7 @@ import io.vertx.ext.web.handler.StaticHandler
 import org.osgi.framework.ServiceReference
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.aps.core.annotation.APSService
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.util.APSLogger
 
@@ -71,7 +71,7 @@ class APSWebManagerBoot {
     private APSLogger logger
 
     /** Tracks aps-vertx-provider provided Router instance. */
-    @OSGiService( additionalSearchCriteria = "(&(vertx-object=Router)(vertx-router=default))" )
+    @APSService( additionalSearchCriteria = "(&(vertx-object=Router)(vertx-router=default))" )
     private APSServiceTracker<Router> routerTracker
 
     /**

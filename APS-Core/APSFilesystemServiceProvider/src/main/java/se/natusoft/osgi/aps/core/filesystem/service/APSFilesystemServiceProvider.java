@@ -3,33 +3,33 @@
  * PROJECT
  *     Name
  *         APS Filesystem Service Provider
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides access to a service/application private filesystem that remains until the
  *         service/application specifically deletes it. This is independent of the OSGi server
  *         it is running in (if configured).
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     tommy ()
  *         Changes:
@@ -38,11 +38,12 @@
  */
 package se.natusoft.osgi.aps.core.filesystem.service;
 
+import com.google.auto.service.AutoService;
 import org.osgi.framework.BundleContext;
 import se.natusoft.osgi.aps.activator.annotation.Initializer;
 import se.natusoft.osgi.aps.activator.annotation.Managed;
-import se.natusoft.osgi.aps.activator.annotation.OSGiProperty;
-import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider;
+import se.natusoft.aps.core.annotation.APSProperty;
+import se.natusoft.aps.core.annotation.APSServiceProvider;
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
 import se.natusoft.osgi.aps.constants.APS;
@@ -58,15 +59,16 @@ import java.io.IOException;
 /**
  * Provides an implementation of APSFilesystemService.
  */
-@SuppressWarnings( "Duplicates" )
-@OSGiServiceProvider(
+@SuppressWarnings("Duplicates")
+@APSServiceProvider(
         properties = {
-                @OSGiProperty( name = APS.Service.Provider, value = "aps-filesystem-service-provider" ),
-                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Storage ),
-                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Storage ),
-                @OSGiProperty( name = APS.Service.PersistenceScope, value = APS.Value.Service.PersistenceScope.Permanent )
+                @APSProperty(name = APS.Service.Provider, value = "aps-filesystem-service-provider"),
+                @APSProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Storage),
+                @APSProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Storage),
+                @APSProperty(name = APS.Service.PersistenceScope, value = APS.Value.Service.PersistenceScope.Permanent)
         }
 )
+@AutoService( APSFilesystemService.class)
 public class APSFilesystemServiceProvider implements APSFilesystemService {
     //
     // Private Members
@@ -112,8 +114,7 @@ public class APSFilesystemServiceProvider implements APSFilesystemService {
                 fsRoot = userHome + File.separator + ".apsHome" + File.separator + "filesystems";
                 this.logger.info( "The system property '" + APSFilesystemService.CONF_APS_FILESYSTEM_ROOT +
                         "' was not found so we look in '" + fsRoot + "' instead!" );
-            }
-            else if ( bcontext != null ) {
+            } else if ( bcontext != null ) {
                 fsRoot = bcontext.getDataFile( "." ).getAbsolutePath();
                 this.logger.error( "The '" + APSFilesystemService.CONF_APS_FILESYSTEM_ROOT + "' system property " +
                         "was not found and system property 'user.home' was not found either so I default to " +
@@ -138,11 +139,12 @@ public class APSFilesystemServiceProvider implements APSFilesystemService {
      *
      * @param owner   The owner of the filesystem or rather a unique identifier of it.
      * @param handler Called with the filesystem.
+     *
      * @throws APSIOException on failure.
      */
     @Override
     public void getFilesystem( String owner, APSHandler<APSResult<APSFilesystem>> handler ) {
-        if (this.apsFSRoot == null) {
+        if ( this.apsFSRoot == null ) {
             this.apsFSRoot = getFSRoot( null );
         }
         try {
@@ -158,6 +160,7 @@ public class APSFilesystemServiceProvider implements APSFilesystemService {
      *
      * @param owner   The owner of the filesystem to delete.
      * @param handler
+     *
      * @throws APSIOException on any failure.
      */
     @Override
@@ -171,8 +174,7 @@ public class APSFilesystemServiceProvider implements APSFilesystemService {
                 } catch ( IOException ioe ) {
                     handler.handle( APSResult.failure( ioe ) );
                 }
-            }
-            else {
+            } else {
                 handler.handle( APSResult.failure( result.failure() ) );
             }
         } );

@@ -16,7 +16,7 @@ import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.util.APSLogger
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.aps.core.annotation.APSService
 import se.natusoft.osgi.aps.types.APSUUID
 import static java.util.concurrent.TimeUnit.SECONDS
 
@@ -55,7 +55,7 @@ class APSVertXEventBusMessagingTest extends APSRuntime {
 @CompileStatic
 class MsgReceiver {
 
-    @OSGiService( timeout = "15 sec", nonBlocking = true )
+    @APSService( timeout = "15 sec", nonBlocking = true )
     private APSMessageSubscriber msgSubscriber
 
     @Managed( loggingFor = "msg-receiver" )
@@ -98,7 +98,7 @@ class MsgSender {
 
     // This manages since on nonBlocking = true, the call to msgService is cached by the proxy until
     // the service is available, and then executed.
-    @OSGiService( timeout = "15 sec", nonBlocking = true )
+    @APSService( timeout = "15 sec", nonBlocking = true )
     private APSMessageSender msgSender
 
     @Managed( loggingFor = "msg-sender" )

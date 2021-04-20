@@ -38,13 +38,13 @@
 package se.natusoft.osgi.aps.tools.services;
 
 import se.natusoft.osgi.aps.activator.ServiceSetup;
-import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider;
+import se.natusoft.aps.core.annotation.APSServiceProvider;
 import se.natusoft.osgi.aps.activator.APSActivatorServiceSetupProvider;
 
 import java.util.LinkedList;
 import java.util.List;
 
-@OSGiServiceProvider(serviceSetupProvider = ServicesSetupProviderTestService.SetupProvider.class)
+@APSServiceProvider(serviceSetupProvider = ServicesSetupProviderTestService.SetupProvider.class)
 public class ServicesSetupProviderTestService implements TestService {
 
     private String instName;

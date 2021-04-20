@@ -40,6 +40,10 @@ import org.osgi.framework.*;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceListener;
+import se.natusoft.aps.core.annotation.APSProperty;
+import se.natusoft.aps.core.annotation.APSService;
+import se.natusoft.aps.core.annotation.APSServiceProvider;
+import se.natusoft.docutations.Old;
 import se.natusoft.osgi.aps.activator.annotation.*;
 import se.natusoft.osgi.aps.util.*;
 import se.natusoft.osgi.aps.tracker.APSServiceTracker;
@@ -113,6 +117,7 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Most methods are protected making it easy to subclass this class and expand on its functionality.
  */
+@Old("To be replaced with APSServiceLoader")
 @SuppressWarnings({ "rawtypes" }) // Does dependency injections and thus: Class<dont care>
 public class APSActivator implements BundleActivator, OnServiceAvailable, OnTimeout, APSActivatorPlugin.ActivatorInteraction {
 
@@ -328,12 +333,12 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
             executorService = waitedForExecutorService;
             initMethods = waitedForInitMethods;
 
-            OSGiServiceProvider serviceProvider = (OSGiServiceProvider) entryClass.getAnnotation( OSGiServiceProvider.class );
-            if ( serviceProvider != null && ( serviceProvider.threadStart() ||
-                    serviceProvider.serviceSetupProvider() != APSActivatorServiceSetupProvider.class ) ) {
-                executorService = parallelExecutorService;
-                initMethods = parallelInitMethods;
-            }
+//            APSServiceProvider serviceProvider = (APSServiceProvider) entryClass.getAnnotation( APSServiceProvider.class );
+//            if ( serviceProvider != null && ( serviceProvider.threadStart() ||
+//                    serviceProvider.serviceSetupProvider() != APSActivatorServiceSetupProvider.class ) ) {
+//                executorService = parallelExecutorService;
+//                initMethods = parallelInitMethods;
+//            }
 
             executorService.submit( new PerClassWorkRunnable( entryClass, context, initMethods ) );
         }
@@ -479,9 +484,9 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      *
      * @param osgiProperties The annotation properties to convert.
      */
-    protected Properties osgiPropertiesToProperties( OSGiProperty[] osgiProperties ) {
+    protected Properties osgiPropertiesToProperties( APSProperty[] osgiProperties ) {
         Properties props = new Properties();
-        for ( OSGiProperty prop : osgiProperties ) {
+        for ( APSProperty prop : osgiProperties ) {
             props.setProperty( prop.name(), prop.value() );
         }
         return props;
@@ -497,7 +502,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @throws Exception on failure.
      */
     protected void collectInjecteeAndServiceInstancesToManage( Class managedClass ) throws Exception {
-        OSGiServiceProvider serviceProvider = (OSGiServiceProvider) managedClass.getAnnotation( OSGiServiceProvider.class );
+        APSServiceProvider serviceProvider = (APSServiceProvider) managedClass.getAnnotation( APSServiceProvider.class );
         if ( serviceProvider != null ) {
             collectServiceInstancesToManage( managedClass, serviceProvider );
         } else {
@@ -513,72 +518,72 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      *
      * @throws Exception pass exceptions upward.
      */
-    protected void collectServiceInstancesToManage( Class managedClass, OSGiServiceProvider serviceProvider ) throws Exception {
+    protected void collectServiceInstancesToManage( Class managedClass, APSServiceProvider serviceProvider ) throws Exception {
         if ( managedClass.getInterfaces().length == 0 ) {
             throw new APSActivatorException( "Managed service provider class '" + managedClass.getName() + "' " +
                     "does not implement any service interface!" );
         }
 
-        if ( serviceProvider.instances().length > 0 ) {
-            handleAnnotationInstancesServiceInstances( managedClass, serviceProvider );
-        } else if ( !serviceProvider.instanceFactoryClass().equals( InstanceFactory.class ) ) {
-            handleAnnotationInstanceFactoryServiceInstances( managedClass, serviceProvider );
-        } else if ( !serviceProvider.serviceSetupProvider().equals( APSActivatorServiceSetupProvider.class ) ) {
-            handleAnnotationServiceSetupProviderServiceInstances( managedClass, serviceProvider );
-        } else {
-            handleDefaultServiceInstance( managedClass, serviceProvider );
-        }
+//        if ( serviceProvider.instances().length > 0 ) {
+//            handleAnnotationInstancesServiceInstances( managedClass, serviceProvider );
+//        } else if ( !serviceProvider.instanceFactoryClass().equals( InstanceFactory.class ) ) {
+//            handleAnnotationInstanceFactoryServiceInstances( managedClass, serviceProvider );
+//        } else if ( !serviceProvider.serviceSetupProvider().equals( APSActivatorServiceSetupProvider.class ) ) {
+//            handleAnnotationServiceSetupProviderServiceInstances( managedClass, serviceProvider );
+//        } else {
+//            handleDefaultServiceInstance( managedClass, serviceProvider );
+//        }
     }
 
-    protected void handleAnnotationInstancesServiceInstances( Class managedClass, OSGiServiceProvider serviceProvider ) {
-        for ( OSGiServiceInstance inst : serviceProvider.instances() ) {
-            InstanceRepresentative ir = new InstanceRepresentative( createInstance( managedClass ) );
-            ir.props = osgiPropertiesToProperties( inst.properties() );
-            for ( Class svcAPI : inst.serviceAPIs() ) {
-                ir.serviceAPIs.add( svcAPI.getName() );
-            }
-            addManagedInstanceRep( managedClass, ir );
-        }
+    protected void handleAnnotationInstancesServiceInstances( Class managedClass, APSServiceProvider serviceProvider ) {
+//        for ( OSGiServiceInstance inst : serviceProvider.instances() ) {
+//            InstanceRepresentative ir = new InstanceRepresentative( createInstance( managedClass ) );
+//            ir.props = osgiPropertiesToProperties( inst.properties() );
+//            for ( Class svcAPI : inst.serviceAPIs() ) {
+//                ir.serviceAPIs.add( svcAPI.getName() );
+//            }
+//            addManagedInstanceRep( managedClass, ir );
+//        }
     }
 
-    protected void handleAnnotationInstanceFactoryServiceInstances( Class managedClass, OSGiServiceProvider serviceProvider ) throws Exception {
-        InstanceFactory instanceFactory = (InstanceFactory) getManagedInstanceRep( serviceProvider.instanceFactoryClass() ).instance;
-        if ( instanceFactory == null ) {
-            instanceFactory = serviceProvider.instanceFactoryClass().getDeclaredConstructor().newInstance();
-        }
-        for ( Properties props : instanceFactory.getPropertiesPerInstance() ) {
-            InstanceRepresentative ir = new InstanceRepresentative( createInstance( managedClass ) );
-            ir.props = props;
-            String svcAPIList = props.getProperty( InstanceFactory.SERVICE_API_CLASSES_PROPERTY );
-            if ( svcAPIList != null ) {
-                Collections.addAll( ir.serviceAPIs, svcAPIList.split( ":" ) );
-            } else {
-                ir.serviceAPIs.add( managedClass.getInterfaces()[ 0 ].getName() );
-            }
-            addManagedInstanceRep( managedClass, ir );
-        }
+    protected void handleAnnotationInstanceFactoryServiceInstances( Class managedClass, APSServiceProvider serviceProvider ) throws Exception {
+//        InstanceFactory instanceFactory = (InstanceFactory) getManagedInstanceRep( serviceProvider.instanceFactoryClass() ).instance;
+//        if ( instanceFactory == null ) {
+//            instanceFactory = serviceProvider.instanceFactoryClass().getDeclaredConstructor().newInstance();
+//        }
+//        for ( Properties props : instanceFactory.getPropertiesPerInstance() ) {
+//            InstanceRepresentative ir = new InstanceRepresentative( createInstance( managedClass ) );
+//            ir.props = props;
+//            String svcAPIList = props.getProperty( InstanceFactory.SERVICE_API_CLASSES_PROPERTY );
+//            if ( svcAPIList != null ) {
+//                Collections.addAll( ir.serviceAPIs, svcAPIList.split( ":" ) );
+//            } else {
+//                ir.serviceAPIs.add( managedClass.getInterfaces()[ 0 ].getName() );
+//            }
+//            addManagedInstanceRep( managedClass, ir );
+//        }
     }
 
-    protected void handleAnnotationServiceSetupProviderServiceInstances( Class managedClass, OSGiServiceProvider serviceProvider ) throws Exception {
-        APSActivatorServiceSetupProvider setupProvider = serviceProvider.serviceSetupProvider().getDeclaredConstructor().newInstance();
-        for ( ServiceSetup setup : setupProvider.provideServiceInstancesSetup() ) {
-            InstanceRepresentative ir = new InstanceRepresentative( setup.getServiceInstance() );
-            ir.props = setup.getProps();
-            ir.serviceAPIs.addAll( setup.getServiceAPIs() );
-            addManagedInstanceRep( managedClass, ir );
-        }
+    protected void handleAnnotationServiceSetupProviderServiceInstances( Class managedClass, APSServiceProvider serviceProvider ) throws Exception {
+//        APSActivatorServiceSetupProvider setupProvider = serviceProvider.serviceSetupProvider().getDeclaredConstructor().newInstance();
+//        for ( ServiceSetup setup : setupProvider.provideServiceInstancesSetup() ) {
+//            InstanceRepresentative ir = new InstanceRepresentative( setup.getServiceInstance() );
+//            ir.props = setup.getProps();
+//            ir.serviceAPIs.addAll( setup.getServiceAPIs() );
+//            addManagedInstanceRep( managedClass, ir );
+//        }
     }
 
-    protected void handleDefaultServiceInstance( Class managedClass, OSGiServiceProvider serviceProvider ) {
+    protected void handleDefaultServiceInstance( Class managedClass, APSServiceProvider serviceProvider ) {
         InstanceRepresentative ir = new InstanceRepresentative( createInstance( managedClass ) );
         ir.props = new Properties();
-        if ( serviceProvider.serviceAPIs().length > 0 ) {
-            for ( Class svcAPI : serviceProvider.serviceAPIs() ) {
-                ir.serviceAPIs.add( svcAPI.getName() );
-            }
-        } else {
-            ir.serviceAPIs.add( managedClass.getInterfaces()[ 0 ].getName() );
-        }
+//        if ( serviceProvider.serviceAPIs().length > 0 ) {
+//            for ( Class svcAPI : serviceProvider.serviceAPIs() ) {
+//                ir.serviceAPIs.add( svcAPI.getName() );
+//            }
+//        } else {
+//            ir.serviceAPIs.add( managedClass.getInterfaces()[ 0 ].getName() );
+//        }
         addManagedInstanceRep( managedClass, ir );
     }
 
@@ -628,7 +633,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @throws Exception pass exceptions upward.
      */
     protected void doServiceRegistrationsOfManagedServiceInstances( final Class managedClass, final BundleContext context ) throws Exception {
-        OSGiServiceProvider serviceProvider = (OSGiServiceProvider) managedClass.getAnnotation( OSGiServiceProvider.class );
+        APSServiceProvider serviceProvider = (APSServiceProvider) managedClass.getAnnotation( APSServiceProvider.class );
 
         if ( serviceProvider != null ) {
             if ( this.requiredServices.isEmpty() ) {
@@ -736,7 +741,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @throws Exception pass exceptions upward.
      */
     protected void registerServiceInstances( Class managedClass, BundleContext context, List<ServiceRegistration> serviceRegs ) throws Exception {
-        OSGiServiceProvider serviceProvider = (OSGiServiceProvider) managedClass.getAnnotation( OSGiServiceProvider.class );
+        APSServiceProvider serviceProvider = (APSServiceProvider) managedClass.getAnnotation( APSServiceProvider.class );
         if ( serviceProvider != null ) {
 
             List<InstanceRepresentative> instanceReps = getManagedInstanceReps( managedClass );
@@ -838,7 +843,7 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param context      The bundle context.
      */
     protected void doServiceInjection( Field field, Class managedClass, BundleContext context ) {
-        OSGiService service = field.getAnnotation( OSGiService.class );
+        APSService service = field.getAnnotation( APSService.class );
         if ( service != null ) {
             String trackerKey = field.getType().getName() + service.additionalSearchCriteria();
             APSServiceTracker tracker = this.trackers.get( trackerKey );

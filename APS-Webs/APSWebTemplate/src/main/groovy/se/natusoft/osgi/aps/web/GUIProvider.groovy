@@ -54,7 +54,7 @@ import io.vertx.core.json.JsonObject
 import org.osgi.framework.ServiceReference
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.aps.core.annotation.APSService
 import se.natusoft.osgi.aps.api.messaging.APSBus
 import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
@@ -89,7 +89,7 @@ class GUIProvider {
     @Managed
     private APSLogger logger
 
-    @OSGiService
+    @APSService
     private APSServiceTracker<APSBus> apsBusTracker
     private APSBus apsBus
 

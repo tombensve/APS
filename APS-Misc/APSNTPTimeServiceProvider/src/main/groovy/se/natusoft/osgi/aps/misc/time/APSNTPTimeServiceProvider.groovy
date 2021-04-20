@@ -39,6 +39,8 @@ package se.natusoft.osgi.aps.misc.time
 import groovy.transform.CompileStatic
 import org.apache.commons.net.ntp.NTPUDPClient
 import org.apache.commons.net.ntp.TimeInfo
+import se.natusoft.aps.core.annotation.APSProperty
+import se.natusoft.aps.core.annotation.APSServiceProvider
 import se.natusoft.osgi.aps.activator.annotation.*
 import se.natusoft.osgi.aps.api.misc.time.APSTimeService
 import se.natusoft.osgi.aps.constants.APS
@@ -53,12 +55,12 @@ import java.util.concurrent.TimeUnit
  */
 @SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
-@OSGiServiceProvider(
+@APSServiceProvider(
         properties = [
-                @OSGiProperty( name = APS.Service.Provider, value = "aps-ntp-time-service-provider" ),
-                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Misc ),
-                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Time ),
-                @OSGiProperty( name = APS.Uses.Network, value = APS.TRUE )
+                @APSProperty( name = APS.Service.Provider, value = "aps-ntp-time-service-provider" ),
+                @APSProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Misc ),
+                @APSProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Time ),
+                @APSProperty( name = APS.Uses.Network, value = APS.TRUE )
         ]
 )
 class APSNTPTimeServiceProvider implements APSTimeService {

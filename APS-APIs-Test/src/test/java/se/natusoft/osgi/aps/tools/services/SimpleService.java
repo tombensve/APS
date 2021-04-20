@@ -39,12 +39,12 @@ package se.natusoft.osgi.aps.tools.services;
 
 import se.natusoft.osgi.aps.util.APSLogger;
 import se.natusoft.osgi.aps.activator.annotation.Managed;
-import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider;
+import se.natusoft.aps.core.annotation.APSServiceProvider;
 
 /**
 * Created by tommy on 2015-01-03.
 */
-@OSGiServiceProvider
+@APSServiceProvider
 public class SimpleService implements TestService {
 
     @Managed

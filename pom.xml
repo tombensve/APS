@@ -97,7 +97,7 @@
         <clm.version>2.2.1</clm.version>
         <ftpPlugin.version>1.0.1</ftpPlugin.version>
         <markdownDoc.version>2.1.0</markdownDoc.version>
-        <groovy.version>3.0.2</groovy.version>
+        <groovy.version>3.0.7</groovy.version>
         <!--groovy.version>2.5.7</groovy.version-->
         <vertx.version>3.8.0</vertx.version>
         <netty.version>4.1.19.Final</netty.version>
@@ -205,7 +205,7 @@
             <dependency>
                 <groupId>se.natusoft.annotation</groupId>
                 <artifactId>docutations</artifactId>
-                <version>2.7</version>
+                <version>2.10</version>
             </dependency>
             <dependency>
                 <groupId>se.natusoft.osgi.aps</groupId>
@@ -223,6 +223,12 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>com.google.auto.service</groupId>
+            <artifactId>auto-service</artifactId>
+            <version>1.0-rc7</version>
+            <scope>compile</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.osgi</groupId>
@@ -240,10 +246,6 @@
 
         <!--suppress NonOsgiMavenDependency -->
         <dependency>
-            <!--
-                This is available in http://dl.bintray.com/tommy/maven which is setup by the
-                <repository> tag below.
-            -->
             <groupId>se.natusoft.annotation</groupId>
             <artifactId>docutations</artifactId>
             <version>2.5</version>
@@ -370,13 +372,13 @@
             <!--
                 Setup for java 11.
             -->
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
-                <configuration>
-                    <release>11</release>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <artifactId>maven-compiler-plugin</artifactId>-->
+<!--                <version>3.8.0</version>-->
+<!--                <configuration>-->
+<!--                    <release>11</release>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
 
             <!--
                 Define project assemblies.

@@ -40,6 +40,9 @@ package se.natusoft.osgi.aps.core.service
 import groovy.transform.CompileStatic
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceRegistration
+import se.natusoft.aps.core.annotation.APSProperty
+import se.natusoft.aps.core.annotation.APSService
+import se.natusoft.aps.core.annotation.APSServiceProvider
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.NotUsed
 import se.natusoft.docutations.Nullable
@@ -73,11 +76,11 @@ import static se.natusoft.osgi.aps.util.APSTools.waitFor
  */
 @SuppressWarnings( [ "unused", "PackageAccessibility" ] )
 @CompileStatic
-@OSGiServiceProvider(
+@APSServiceProvider(
         properties = [
-                @OSGiProperty( name = APS.Service.Provider, value = "aps-bus-provider" ),
-                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Communication ),
-                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
+                @APSProperty( name = APS.Service.Provider, value = "aps-bus-provider" ),
+                @APSProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Communication ),
+                @APSProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
         ]
 )
 class APSBusProvider implements APSBus {
@@ -98,7 +101,7 @@ class APSBusProvider implements APSBus {
     private APSActivatorInteraction activatorInteraction
 
     /** The currently known bus routers */
-    @OSGiService( serviceAPI = APSBusRouter.class )
+    @APSService( serviceAPI = APSBusRouter.class )
     private APSServiceTracker<APSBusRouter> routerTracker
 
     //
