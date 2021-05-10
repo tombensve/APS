@@ -1,7 +1,7 @@
 package se.natusoft.aps.core.serviceloadertest.services;
 
 import com.google.auto.service.AutoService;
-import se.natusoft.aps.core.APSServiceLoader;
+import se.natusoft.aps.core.APSServiceLocator;
 import se.natusoft.aps.core.annotation.APSService;
 import se.natusoft.aps.core.serviceloadertest.api.TestServiceOne;
 import se.natusoft.aps.core.serviceloadertest.api.TestServiceTwo;
@@ -14,7 +14,7 @@ public class TestServiceTwoProvider implements TestServiceTwo {
 
 
     public TestServiceTwoProvider() {
-        APSServiceLoader.getInstance().injectServices( this );
+        APSServiceLocator.getInstance().injectServices( this );
     }
 
     @Override
