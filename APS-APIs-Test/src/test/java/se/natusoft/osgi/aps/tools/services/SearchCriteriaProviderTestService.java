@@ -37,14 +37,11 @@
  */
 package se.natusoft.osgi.aps.tools.services;
 
-import se.natusoft.aps.core.annotation.APSService;
-import se.natusoft.aps.core.annotation.APSServiceProvider;
 import se.natusoft.osgi.aps.activator.APSActivatorSearchCriteriaProvider;
 
 //@APSServiceProvider(threadStart = true)
 public class SearchCriteriaProviderTestService implements TestService {
 
-    @APSService(searchCriteriaProvider = MySearchCriteriaProvider.class)
     private TestService service;
 
     @Override

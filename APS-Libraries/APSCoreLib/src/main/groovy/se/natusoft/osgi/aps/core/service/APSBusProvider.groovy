@@ -41,7 +41,7 @@ import groovy.transform.CompileStatic
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceRegistration
 import se.natusoft.aps.core.annotation.APSProperty
-import se.natusoft.aps.core.annotation.APSService
+
 import se.natusoft.aps.core.annotation.APSServiceProvider
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.NotUsed
@@ -101,7 +101,7 @@ class APSBusProvider implements APSBus {
     private APSActivatorInteraction activatorInteraction
 
     /** The currently known bus routers */
-    @APSService( serviceAPI = APSBusRouter.class )
+
     private APSServiceTracker<APSBusRouter> routerTracker
 
     //

@@ -5,7 +5,7 @@ import org.junit.Test
 import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.aps.core.annotation.APSService
+
 import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.types.APSLockable
 import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
@@ -79,8 +79,7 @@ class ClusterStoreTestClient {
 
     public static boolean stored = false
 
-    @APSService( additionalSearchCriteria = "(service-persistence-scope=clustered)",
-            nonBlocking = true )
+
     private APSLockableDataStoreService dataStoreService
 
     @Managed( loggingFor = "ClusterStoreTestClient" )

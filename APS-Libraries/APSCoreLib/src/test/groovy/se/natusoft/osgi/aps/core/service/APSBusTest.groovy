@@ -6,7 +6,7 @@ import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.activator.annotation.BundleStop
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.aps.core.annotation.APSService
+
 import se.natusoft.osgi.aps.api.messaging.APSBus
 import se.natusoft.osgi.aps.api.messaging.APSMessagingException
 import se.natusoft.osgi.aps.core.lib.MapJsonLoader
@@ -62,7 +62,7 @@ class ShouldWork {
 
     private SyncedValue<Boolean> receivedMessageWork = new SyncedValue<>(false)
 
-    @APSService( nonBlocking = true )
+
     private APSBus bus
 
     @Initializer
@@ -129,7 +129,7 @@ class ShouldWork {
 // Instantiated and injected via reflection by APSActivator
 class ShouldFail {
 
-    @APSService( nonBlocking = true )
+
     private APSBus bus
 
     @Initializer
@@ -172,7 +172,7 @@ class ShouldFail {
 // Instantiated and injected via reflection by APSActivator
 class TestRequest {
 
-    @APSService( nonBlocking = true )
+
     private APSBus bus
 
     @Managed( loggingFor = "TestRequest" )

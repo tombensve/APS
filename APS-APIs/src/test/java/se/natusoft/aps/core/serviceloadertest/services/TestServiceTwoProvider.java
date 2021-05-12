@@ -1,26 +1,24 @@
 package se.natusoft.aps.core.serviceloadertest.services;
 
 import com.google.auto.service.AutoService;
-import se.natusoft.aps.core.APSServiceLocator;
-import se.natusoft.aps.core.annotation.APSService;
 import se.natusoft.aps.core.serviceloadertest.api.TestServiceOne;
 import se.natusoft.aps.core.serviceloadertest.api.TestServiceTwo;
+
+import static se.natusoft.aps.core.APSServiceLocator.*;
 
 @AutoService(TestServiceTwo.class)
 public class TestServiceTwoProvider implements TestServiceTwo {
 
-    @APSService
-    private TestServiceOne testServiceOne;
-
+    private final TestServiceOne tso = locateService( TestServiceOne.class );
 
     public TestServiceTwoProvider() {
-        APSServiceLocator.getInstance().injectServices( this );
+        System.out.println("---> tso: " + tso);
     }
 
     @Override
     public void showMessage() {
 
-        String message = testServiceOne.getMessage();
+        String message = this.tso.getMessage();
         System.out.println( message );
 
     }

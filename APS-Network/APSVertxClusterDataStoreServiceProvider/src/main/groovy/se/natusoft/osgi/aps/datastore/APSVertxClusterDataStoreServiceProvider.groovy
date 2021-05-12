@@ -34,14 +34,13 @@
 package se.natusoft.osgi.aps.datastore
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 import io.vertx.core.AsyncResult
 import io.vertx.core.shareddata.AsyncMap
 import io.vertx.core.shareddata.Lock
 import io.vertx.core.shareddata.SharedData
 import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.aps.core.annotation.APSProperty
-import se.natusoft.aps.core.annotation.APSService
+
 import se.natusoft.aps.core.annotation.APSServiceProvider
 import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
 import se.natusoft.osgi.aps.constants.APS
@@ -70,7 +69,7 @@ class APSVertxClusterDataStoreServiceProvider implements APSLockableDataStoreSer
     @Managed(loggingFor = "aps-vertx-cluster-datastore-service-provider")
     private APSLogger logger
 
-    @APSService(additionalSearchCriteria = "(vertx-object=SharedData)", timeout = "15 sec", nonBlocking = true)
+
     private SharedData sharedData
 
     //

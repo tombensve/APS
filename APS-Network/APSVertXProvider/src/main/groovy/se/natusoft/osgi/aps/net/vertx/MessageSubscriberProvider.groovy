@@ -40,7 +40,6 @@
 package se.natusoft.osgi.aps.net.vertx
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.eventbus.Message
 import io.vertx.core.eventbus.MessageConsumer
@@ -49,7 +48,7 @@ import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceReference
 import org.osgi.framework.ServiceRegistration
 import se.natusoft.aps.core.annotation.APSProperty
-import se.natusoft.aps.core.annotation.APSService
+
 import se.natusoft.aps.core.annotation.APSServiceProvider
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
@@ -124,7 +123,7 @@ class MessageSubscriberProvider implements APSMessageSubscriber {
      * This tracks the EventBus. init() will setup an onActiveServiceAvailable callback handler which
      * will provide the eventBus instance.
      **/
-    @APSService( additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "30 sec" )
+
     private APSServiceTracker<EventBus> eventBusTracker
     private EventBus eventBus
 

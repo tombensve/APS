@@ -36,10 +36,6 @@
  */
 package se.natusoft.aps.core.annotation;
 
-import se.natusoft.aps.core.annotation.APSProperty;
-import se.natusoft.osgi.aps.activator.APSActivator;
-import se.natusoft.osgi.aps.activator.APSActivatorServiceSetupProvider;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

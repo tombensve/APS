@@ -1,45 +1,94 @@
 package se.natusoft.aps.core;
 
+import se.natusoft.aps.exceptions.APSNoServiceAvailableException;
+
 import java.lang.annotation.Annotation;
 import java.util.*;
 
 /**
- * APS is currently using ServiceLoader as is, and that is the plan for now. That said
- * however I will not use java.util.ServiceLoader directly, but wrap it with this class,
- * which will be used and will use ServiceLoader internally.
+ * APS is currently using ServiceLoader and that is the plan for now. That said however,
+ * I will not use java.util.ServiceLoader directly, but wrap it with this class, which
+ * will be used and will use ServiceLoader internally.
+ *
+ * A Set of found services are delivered and no part of ServiceLoader itself is referenced
+ * outside of this.
+ *
+ * I'm thereby locking the acquirement of services to this API but not provider of functionality.
+ *
+ * Why "APSServiceLocator" and not "APSServiceLoader" ? Because I think the term "locator" is
+ * clearer, and more generic and does not directly associate to current implementation.
  */
-public class APSServiceLocator<Service> {
+public class APSServiceLocator {
+
+    /** Keep same instance of a ServiceLoader for a service. */
+    private final static Map<Class<?>, ServiceLoader<?>> loaders = new LinkedHashMap<>();
+
+    /**
+     * Returns a possibly cached loader.
+     *
+     * @param serviceApi Api to get services implementing.
+     * @return A ServiceLoader.
+     */
+    private static <T> ServiceLoader<T> getLoader( Class<T> serviceApi ) {
+        @SuppressWarnings( "unchecked" )
+        ServiceLoader<T> loader = ( ServiceLoader<T> ) loaders.get( serviceApi );
+        if ( loader == null ) {
+            loader = ServiceLoader.load( serviceApi );
+            loaders.put( serviceApi, loader );
+        }
+
+        return loader;
+    }
 
     /**
      * Locates a set of services by service API class.
      *
-     * @param service The class of the service interface.
+     * @param serviceApi The class of the service interface.
      * @return A Set of found services.
      */
-    public Set<Service> locate( Class<Service> service ) {
+    public static <T> List<T> locateAllServices( Class<T> serviceApi ) {
 
-        Set<Service> svc = new LinkedHashSet<>();
-        ServiceLoader.load( service ).forEach( svc::add );
+        List<T> services = new LinkedList<>();
+        getLoader( serviceApi ).forEach( services::add );
 
-        return svc;
+        if ( services.isEmpty() ) throw new APSNoServiceAvailableException( "No '" + serviceApi.getName() +
+                "' service found!" );
+
+        return services;
+    }
+
+    /**
+     * Locates just one service instance.
+     *
+     * @param serviceApi The API class of the service to locate.
+     * @return An instance of the service.
+     * @exception APSNoServiceAvailableException if not found.
+     */
+    public static <T> T locateService( Class<T> serviceApi ) {
+        List<T> services = locateAllServices( serviceApi );
+        return services.get( 0 );
     }
 
     /**
      * Locates a set of services by service API and annotation.
      *
-     * @param service The class of the service interface.
+     * @param serviceApi The class of the service interface.
      * @param annotation An annotation to require the service to have.
      * @return A Set of matching services.
+     * @exception APSNoServiceAvailableException if not found.
      */
-    public Set<Service> locate( Class<Service> service, Class<Annotation> annotation ) {
+    public static <T> List<T> locateServiceByAnnotation( Class<T> serviceApi, Class<Annotation> annotation ) {
 
-        Set<Service> svc = new LinkedHashSet<>();
-        ServiceLoader.load( service ).forEach( s -> {
+        List<T> services = new LinkedList<>();
+        getLoader( serviceApi ).forEach( s -> {
             if ( s.getClass().isAnnotationPresent( annotation ) ) {
-                svc.add( s );
+                services.add( s );
             }
         } );
 
-        return svc;
+        if ( services.isEmpty() ) throw new APSNoServiceAvailableException( "No '" + serviceApi.getName() +
+                "' service found!" );
+
+        return services;
     }
 }

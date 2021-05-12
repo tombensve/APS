@@ -56,7 +56,7 @@ import se.natusoft.osgi.aps.activator.annotation.BundleStop
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.aps.core.annotation.APSProperty
-import se.natusoft.aps.core.annotation.APSService
+
 import se.natusoft.aps.core.annotation.APSServiceProvider
 import se.natusoft.osgi.aps.api.messaging.APSBusRouter
 import se.natusoft.osgi.aps.api.messaging.APSMessagingException
@@ -68,7 +68,6 @@ import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.types.ID
 import se.natusoft.osgi.aps.util.APSLogger
-import static se.natusoft.osgi.aps.util.APSExecutor.*
 
 /**
  * Provides and APSBusRouter implementation using Vert.x EventBus for communication.
@@ -132,7 +131,7 @@ class APSVertxBusRouter implements APSBusRouter {
     /**
      * This tracks the EventBus. init() will setup an onActiveServiceAvailable callback handler which
      * will provide the eventBus instance.*/
-    @APSService( additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "30 sec" )
+
     protected APSServiceTracker<EventBus> eventBusTracker
     protected EventBus eventBus
 
