@@ -1,5 +1,7 @@
 package se.natusoft.aps.util;
 
+import se.natusoft.aps.exceptions.APSInvalidException;
+
 import java.time.Instant;
 import java.util.function.BooleanSupplier;
 
@@ -17,7 +19,8 @@ public class APSTools {
      *
      * @throws InterruptedException Due to doing thread.sleep(...)!
      */
-    public static void waitFor( long millis, long max, BooleanSupplier condition ) throws InterruptedException {
+    public static void waitFor( long millis, long max, BooleanSupplier condition )
+            throws InterruptedException {
 
         Instant start = Instant.now();
         Instant timeout = start.plusMillis( max );
@@ -35,21 +38,25 @@ public class APSTools {
      *
      * @throws InterruptedException Due to doing thread.sleep(...)!
      */
-    public static void waitFor( long max, BooleanSupplier condition ) throws InterruptedException {
+    public static void waitFor( long max, BooleanSupplier condition )
+            throws InterruptedException {
 
         waitFor( 100, max, condition );
     }
 
     /**
-     * Waits for some condition. Will block thread. This is meant as a no timeout, but will
-     * timeout in a day!
+     * Waits for some condition. Will block thread. This is meant as a no timeout, but
+     * will timeout in 10 minutes!
      *
      * @param condition This condition needs to return true for the wait to be over.
      *
      * @throws InterruptedException Due to doing thread.sleep(...)!
      */
-    public static void waitFor( BooleanSupplier condition ) throws InterruptedException {
+    public static void waitFor( BooleanSupplier condition )
+            throws InterruptedException {
 
-        waitFor( 100, 1000 * 60 * 60 * 24, condition );
+        waitFor( 100, 1000 * 60 * 10, condition );
+        if ( !condition.getAsBoolean() ) throw new APSInvalidException(
+                "10 minute timeout occurred! This is not supposed to happen ...");
     }
 }

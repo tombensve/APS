@@ -83,8 +83,8 @@ public class Failures extends RuntimeException {
     /**
      * Returns a filtered Failures instance.
      *
-     * @param allowed An array of strings matching exception messages to mark as OK. If the message contains the
-     *                string, then it is OK.
+     * @param allowed An array of strings matching exception messages to mark as OK.
+     *                If the message contains the string, then it is OK.
      */
     public Failures filter( String... allowed) {
         List<Exception> filteredFails = new LinkedList<>( this.failures );

@@ -40,9 +40,8 @@ package se.natusoft.osgi.aps.core.service
 import groovy.transform.CompileStatic
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceRegistration
-import se.natusoft.aps.core.annotation.APSProperty
 
-import se.natusoft.aps.core.annotation.APSServiceProvider
+
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.NotUsed
 import se.natusoft.docutations.Nullable
@@ -52,7 +51,6 @@ import se.natusoft.osgi.aps.activator.annotation.*
 import se.natusoft.osgi.aps.api.messaging.APSBus
 import se.natusoft.osgi.aps.api.messaging.APSBusRouter
 import se.natusoft.osgi.aps.api.messaging.APSMessagingException
-import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.Sporadic
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
@@ -76,13 +74,7 @@ import static se.natusoft.osgi.aps.util.APSTools.waitFor
  */
 @SuppressWarnings( [ "unused", "PackageAccessibility" ] )
 @CompileStatic
-@APSServiceProvider(
-        properties = [
-                @APSProperty( name = APS.Service.Provider, value = "aps-bus-provider" ),
-                @APSProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Communication ),
-                @APSProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
-        ]
-)
+
 class APSBusProvider implements APSBus {
 
     //

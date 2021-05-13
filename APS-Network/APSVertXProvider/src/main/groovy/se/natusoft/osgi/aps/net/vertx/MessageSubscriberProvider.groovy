@@ -47,16 +47,14 @@ import io.vertx.core.json.JsonObject
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceReference
 import org.osgi.framework.ServiceRegistration
-import se.natusoft.aps.core.annotation.APSProperty
 
-import se.natusoft.aps.core.annotation.APSServiceProvider
+
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
 import se.natusoft.osgi.aps.activator.APSActivatorInteraction
 import se.natusoft.osgi.aps.activator.annotation.*
 import se.natusoft.osgi.aps.api.messaging.APSMessage
 import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
-import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.exceptions.APSIOException
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
@@ -68,19 +66,7 @@ import se.natusoft.osgi.aps.util.APSLogger
 
 @SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
-@APSServiceProvider(
-        // Possible criteria for client lookups. ex: "(aps-messaging-protocol=vertx-eventbus)" In most cases clients
-        // won't care.
-        properties = [
-                @APSProperty( name = APS.Service.Provider, value =
-                        "aps-vertx-event-bus-messaging-provider:subscriber" ),
-                @APSProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Network ),
-                @APSProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
-                @APSProperty( name = APS.Messaging.Protocol.Name, value = "vertx-eventbus" ),
-                @APSProperty( name = APS.Messaging.Persistent, value = APS.FALSE ),
-                @APSProperty( name = APS.Messaging.Clustered, value = APS.TRUE )
-        ]
-)
+
 class MessageSubscriberProvider implements APSMessageSubscriber {
 
     //

@@ -47,8 +47,8 @@ public class APSNoServiceAvailableException extends APSException {
      *
      * @param message The exception message.
      */
-    public APSNoServiceAvailableException(String message) {
-        super(message);
+    public APSNoServiceAvailableException( String message ) {
+        super( message );
     }
 
     /**
@@ -57,7 +57,7 @@ public class APSNoServiceAvailableException extends APSException {
      * @param message The exception message.
      * @param cause The cause of this exception.
      */
-    public APSNoServiceAvailableException(String message, Throwable cause) {
-        super(message, cause);
+    public APSNoServiceAvailableException( String message, Throwable cause ) {
+        super( message, cause );
     }
 }

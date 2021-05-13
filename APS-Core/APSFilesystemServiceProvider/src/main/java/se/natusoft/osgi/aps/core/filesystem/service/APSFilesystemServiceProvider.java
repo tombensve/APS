@@ -42,11 +42,8 @@ import com.google.auto.service.AutoService;
 import org.osgi.framework.BundleContext;
 import se.natusoft.osgi.aps.activator.annotation.Initializer;
 import se.natusoft.osgi.aps.activator.annotation.Managed;
-import se.natusoft.aps.core.annotation.APSProperty;
-import se.natusoft.aps.core.annotation.APSServiceProvider;
 import se.natusoft.aps.api.core.filesystem.model.APSFilesystem;
 import se.natusoft.aps.api.core.filesystem.service.APSFilesystemService;
-import se.natusoft.aps.constants.APS;
 import se.natusoft.osgi.aps.core.filesystem.model.APSFilesystemImpl;
 import se.natusoft.aps.exceptions.APSIOException;
 import se.natusoft.aps.types.APSHandler;
@@ -59,14 +56,6 @@ import java.io.IOException;
  * Provides an implementation of APSFilesystemService.
  */
 @SuppressWarnings("Duplicates")
-@APSServiceProvider(
-        properties = {
-                @APSProperty(name = APS.Service.Provider, value = "aps-filesystem-service-provider"),
-                @APSProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Storage),
-                @APSProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Storage),
-                @APSProperty(name = APS.Service.PersistenceScope, value = APS.Value.Service.PersistenceScope.Permanent)
-        }
-)
 @AutoService( APSFilesystemService.class)
 public class APSFilesystemServiceProvider implements APSFilesystemService {
     //
