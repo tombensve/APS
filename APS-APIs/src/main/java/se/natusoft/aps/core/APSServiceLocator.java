@@ -46,7 +46,7 @@ public class APSServiceLocator {
      * @param serviceApi The class of the service interface.
      * @return A Set of found services.
      */
-    public static <T> List<T> locateAllServices( Class<T> serviceApi ) {
+    public static <T> List<T> apsServices( Class<T> serviceApi ) {
 
         List<T> services = new LinkedList<>();
         getLoader( serviceApi ).forEach( services::add );
@@ -64,8 +64,8 @@ public class APSServiceLocator {
      * @return An instance of the service.
      * @exception APSNoServiceAvailableException if not found.
      */
-    public static <T> T locateService( Class<T> serviceApi ) {
-        List<T> services = locateAllServices( serviceApi );
+    public static <T> T apsService( Class<T> serviceApi ) {
+        List<T> services = apsServices( serviceApi );
         return services.get( 0 );
     }
 
@@ -77,7 +77,7 @@ public class APSServiceLocator {
      * @return A Set of matching services.
      * @exception APSNoServiceAvailableException if not found.
      */
-    public static <T> List<T> locateServiceByAnnotation( Class<T> serviceApi, Class<Annotation> annotation ) {
+    public static <T> List<T> apsServiceByAnnotation( Class<T> serviceApi, Class<Annotation> annotation ) {
 
         List<T> services = new LinkedList<>();
         getLoader( serviceApi ).forEach( s -> {

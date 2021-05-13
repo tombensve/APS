@@ -44,7 +44,10 @@ public class APSThreadFactory implements ThreadFactory {
     // Private Members
     //
 
-    /** The base of the name given to threads. A unique number for each created thread is added to this. */
+    /**
+     * The base of the name given to threads. A unique number for each created thread is
+     * added to this.
+     */
     private String baseName;
 
     /** The current thread number to use. */
@@ -59,7 +62,7 @@ public class APSThreadFactory implements ThreadFactory {
      *
      * @param baseName The base name to use for naming the created threads.
      */
-    public APSThreadFactory(String baseName) {
+    public APSThreadFactory( String baseName ) {
         this.baseName = baseName;
     }
 
@@ -76,9 +79,9 @@ public class APSThreadFactory implements ThreadFactory {
      * create a thread is rejected
      */
     @Override
-    public Thread newThread(Runnable runnable) {
-        Thread thread = new Thread(runnable);
-        thread.setName(this.baseName + threadNumber++);
+    public Thread newThread( Runnable runnable ) {
+        Thread thread = new Thread( runnable );
+        thread.setName( this.baseName + threadNumber++ );
 
         return thread;
     }

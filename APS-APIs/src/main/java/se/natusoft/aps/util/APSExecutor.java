@@ -41,7 +41,7 @@ import se.natusoft.docutations.NotNull;
 import java.util.concurrent.*;
 
 /**
- * This creates two ExecutorServices, one that have max processor cores * 2 threads called
+ * This creates two ExecutorServices, one that have max processor cores threads called
  * parallel and one with only one thread called sequential.
  * <p>
  * This provides a static API that will create one common instance on first use.

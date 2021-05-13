@@ -39,11 +39,9 @@ import io.vertx.core.shareddata.AsyncMap
 import io.vertx.core.shareddata.Lock
 import io.vertx.core.shareddata.SharedData
 import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.aps.core.annotation.APSProperty
 
-import se.natusoft.aps.core.annotation.APSServiceProvider
+
 import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
-import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSLockable
@@ -51,14 +49,7 @@ import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.util.APSLogger
 
 @SuppressWarnings("GroovyUnusedDeclaration")
-@APSServiceProvider(
-        properties = [
-                @APSProperty(name = APS.Service.Provider, value = "aps-vertx-cluster-datastore-service-provider"),
-                @APSProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Network),
-                @APSProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Storage),
-                @APSProperty(name = APS.Service.PersistenceScope, value = APS.Value.Service.PersistenceScope.Clustered),
-        ]
-)
+
 @CompileStatic
 class APSVertxClusterDataStoreServiceProvider implements APSLockableDataStoreService {
 

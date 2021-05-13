@@ -55,12 +55,10 @@ import se.natusoft.osgi.aps.activator.APSActivatorInteraction
 import se.natusoft.osgi.aps.activator.annotation.BundleStop
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.aps.core.annotation.APSProperty
 
-import se.natusoft.aps.core.annotation.APSServiceProvider
+
 import se.natusoft.osgi.aps.api.messaging.APSBusRouter
 import se.natusoft.osgi.aps.api.messaging.APSMessagingException
-import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.ValidTarget
 import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
@@ -78,16 +76,7 @@ import se.natusoft.osgi.aps.util.APSLogger
 @CompileStatic
 @SuppressWarnings( "unused" )
 // Managed by APSActivator IDE can't see that!
-@APSServiceProvider(
-        properties = [
-                @APSProperty( name = APS.Service.Provider, value = "aps-vertx-bus-router" ),
-                @APSProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Network ),
-                @APSProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
-                @APSProperty( name = APS.Messaging.Protocol.Name, value = "vertx-eventbus" ),
-                @APSProperty( name = APS.Messaging.Persistent, value = APS.FALSE ),
-                @APSProperty( name = APS.Messaging.Clustered, value = APS.TRUE )
-        ]
-)
+
 class APSVertxBusRouter implements APSBusRouter {
 
     private static final String SUPPORTED_TARGET_IDS = "cluster MessageService msvc MessageClient mclnt"
