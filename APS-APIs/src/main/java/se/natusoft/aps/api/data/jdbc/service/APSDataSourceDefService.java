@@ -36,8 +36,7 @@
  */
 package se.natusoft.aps.api.data.jdbc.service;
 
-import se.natusoft.aps.api.data.jdbc.model.DataSourceDef;
-
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -50,13 +49,12 @@ public interface APSDataSourceDefService {
      * Looks up a data source definition by its configured name.
      *
      * @param name The name to lookup.
-     *
      * @return A DataSourceDef or null if name was not valid.
      */
-    DataSourceDef lookupByName(String name);
+    URL lookupByName( String name );
 
     /**
      * @return All available definitions.
      */
-    List<DataSourceDef> getAllDefinitions();
+    List<URL> getAllDefinitions();
 }
