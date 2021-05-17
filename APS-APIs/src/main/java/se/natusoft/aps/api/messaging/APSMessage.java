@@ -36,7 +36,6 @@
  */
 package se.natusoft.aps.api.messaging;
 
-import se.natusoft.docutations.NotNull;
 import se.natusoft.aps.types.APSValue;
 
 import java.util.Map;
@@ -50,16 +49,7 @@ import java.util.Map;
 public interface APSMessage extends APSValue<Map<String, Object>> {
 
     /**
-     * Replies to message.
-     *
-     * @param reply The message to reply with.
-     */
-    default void reply(@NotNull Map<String, Object> reply) {
-        throw new APSMessagingException( "This message cannot be replied to!" );
-    }
-
-    /**
-     * Provides a simple default implementation. This should probably be extended.
+     * Provides a simple default implementation. This can be extended.
      */
     class Provider extends APSValue.Provider<Map<String, Object>> implements APSMessage {
 

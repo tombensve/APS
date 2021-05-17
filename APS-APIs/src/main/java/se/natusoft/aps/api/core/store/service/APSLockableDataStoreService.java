@@ -34,11 +34,15 @@
  *         2018-05-26: Created!
  *
  */
-package se.natusoft.aps.api.core.store;
+package se.natusoft.aps.api.core.store.service;
 
 import se.natusoft.aps.types.APSLockable;
+import se.natusoft.docutations.Disclaimer;
 
+// Questionable: This to support a feature in Vert.x.
 /**
  * A convenience providing both APSDataStoreService and APSLockable in one API.
  */
+@Disclaimer("This is designed around a Vert.x specific API, and is questionable!")
+@SuppressWarnings( "rawtypes" )
 public interface APSLockableDataStoreService extends APSDataStoreService, APSLockable {}

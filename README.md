@@ -4,17 +4,17 @@ __Version:__ 1.0.0 (working up to ...)
 
 __License:__ [Apache 2.0](lics/Apache-2.0.md)
 
-__JDK Level:__ This now builds with all tests working on JDK 11. No, there is no JPMS usage! And it is also using a beta of Groovy 3.0. Have not run into any problem with Groovy being beta so far. 
+__JDK Level:__ This now builds with all tests working on JDK 11. No, there is no JPMS usage!
 
 ## This project is work in progress and currently cannot be expected to be completely stable!!
 
 Work is slow, whenever time permits.
 
-To be very clear: **This is currently, and probably for a long time comming, a playground where I'm having fun.**
+To be very clear: **This is currently, and probably for a long time coming, a playground where I'm having fun.**
 
 The __original (and still active) goal__ with this is to make a very easy to use web platform.
 
-There is currently no real web app, only components demo. I'm working on comming up with a an idea for a more real web app to do with it as a more real test of if this is a good idea or not. 
+There is currently no real web app, only components demo. I'm working on coming up with an idea for a more real web app to do with it as a more real test of if this is a good idea or not. 
 
 ## Building
 
@@ -28,7 +28,7 @@ Docker containers are built so Docker must also be available. Tested with **dock
 
 ### Docker build
 
-There is now also a [docker-build](docker-build/) folder in the root. It contains _bin/create-build-image.sh_ which creates a docker image for building. This build is much slower, but since the build by default runs tests that start web server and a vert.x cluster it is safe to run in a docker image without conflicting with anyone else on the same network. The _bin/do-build.sh_ is a convenience for running the dockerized build. It creates a volume for the ~/.m2/repository path within the container that is also made available at ~/apsbuildm2. Since this is a volume it is remembered between builds. But this volume can be deleted and recreated to test that the build is not dependent on old stuff still left in ~/.m2/repository. This without affecting enything else. I did discover that what I've previously commited did not build without old stuff left in my ~/.m2/repository! My bad! 
+There is now also a [docker-build](docker-build/) folder in the root. It contains _bin/create-build-image.sh_ which creates a docker image for building. This build is much slower, but since the build by default runs tests that start a web server, and a vert.x cluster it is safe to run in a docker image without conflicting with anyone else on the same network. The _bin/do-build.sh_ is a convenience for running the dockerized build. It creates a volume for the ~/.m2/repository path within the container that is also made available at ~/apsbuildm2. Since this is a volume it is remembered between builds. But this volume can be deleted and recreated to test that the build is not dependent on old stuff still left in ~/.m2/repository. This without affecting anything else. I did discover that what I've previously committed did not build without old stuff left in my ~/.m2/repository! My bad! 
 
 There is a file called _Dockerfile-build-local-fs-in-container_ in the root. The default Docker build actually copies the source into the container forcing the container and image to be removed and recreated to rebuild. The alternative Dockerfile builds the local checkout within the container. The reason for not using the second as default is that it takes a full hour to build, while copying the source into the container takes abut 10 minutes. 
 
@@ -72,7 +72,9 @@ Where dependencies dir contains all dependency jars, and budlesdir contains all 
 
 I was contacted by someone who had seen this repo and asked about APSRuntime as used in unit tests to deploy and run services. Since APSRuntime is a bit bound to APS I decided to break it out into a separate repo that has no dependencies on APS: [OSGishTestRunner](https://github.com/tombensve/OSGishTestRunner). DO NOTE that this is very basic OSGi only!! No declarative services, etc, just basic Bundle and events. 
 
-Lots of fun ideas, too little time ...
+Lots of fun ideas, too little time, and to be honest when there is good sunny weather I rather be out walking and then destroy it with a beer at a nice outdoor bar. 
+
+Rainy weekends with nothing better to do is what mostly drives this project forward.
 
 Tommy
 

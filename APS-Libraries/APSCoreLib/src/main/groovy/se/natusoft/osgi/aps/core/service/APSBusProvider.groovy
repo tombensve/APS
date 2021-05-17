@@ -38,33 +38,16 @@
 package se.natusoft.osgi.aps.core.service
 
 import groovy.transform.CompileStatic
-import org.osgi.framework.BundleContext
-import org.osgi.framework.ServiceRegistration
-
-
+import se.natusoft.aps.api.messaging.APSBus
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.NotUsed
 import se.natusoft.docutations.Nullable
 import se.natusoft.docutations.Optional
-import se.natusoft.osgi.aps.activator.APSActivatorInteraction
-import se.natusoft.osgi.aps.activator.annotation.*
-import se.natusoft.osgi.aps.api.messaging.APSBus
-import se.natusoft.osgi.aps.api.messaging.APSBusRouter
-import se.natusoft.osgi.aps.api.messaging.APSMessagingException
-import se.natusoft.osgi.aps.core.lib.Sporadic
-import se.natusoft.osgi.aps.exceptions.APSValidationException
-import se.natusoft.osgi.aps.tracker.APSServiceTracker
-import se.natusoft.osgi.aps.types.APSHandler
-import se.natusoft.osgi.aps.types.APSResult
-import se.natusoft.osgi.aps.types.APSUUID
-import se.natusoft.osgi.aps.types.ID
-import se.natusoft.osgi.aps.util.APSLogger
-import se.natusoft.osgi.aps.util.SyncedValue
 
 import java.time.Instant
 
-import static se.natusoft.osgi.aps.util.APSExecutor.concurrent
-import static se.natusoft.osgi.aps.util.APSTools.waitFor
+//import static se.natusoft.osgi.aps.util.APSExecutor.concurrent
+//import static se.natusoft.osgi.aps.util.APSTools.waitFor
 
 /**
  * This is a simple bus API that is used by creating an instance and passing a BundleContext.

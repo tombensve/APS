@@ -36,54 +36,41 @@
  */
 package se.natusoft.aps.api.messaging;
 
-import se.natusoft.docutations.NotNull;
-import se.natusoft.docutations.Nullable;
-import se.natusoft.docutations.Reactive;
-import se.natusoft.aps.exceptions.APSException;
 import se.natusoft.aps.types.APSHandler;
 import se.natusoft.aps.types.APSResult;
+import se.natusoft.docutations.NotNull;
+import se.natusoft.docutations.Nullable;
+import se.natusoft.docutations.Todo;
 
 import java.util.Map;
 
+@Todo(description = "Consider removing this!")
 /**
- * This is a sender that sends a message to zero or one subscribers. If there are more than one subscriber
- * to the destination then it is up to the implementation who gets the message.
+ * This is a sender that sends a message to zero or one subscribers. If there are more
+ * than one subscriber to the destination then it is up to the implementation who gets
+ * the message.
  *
- * For a Vertx eventbus based implementation it would do a round robin when there are more than one
- * subscriber for example. But this is entirely up to what is supported by the message solution used
- * by the implementation.
+ * For a Vertx eventbus based implementation it would do a round robin when there are more
+ * than one subscriber for example. But this is entirely up to what is supported by the
+ * message solution used by the implementation.
  */
 public interface APSMessageSender {
 
     /**
      * Sends a message receiving a result of success or failure. On Success there
      * _can_ be a result value and on failure there is an Exception describing the failure
-     * available. This variant never throws an Exception.
+     * available.
      *
-     * @param destination The destination of the message. Preferably this is something that the
-     *                    service looks up to get a real destination, rather than an absolute
-     *                    destination. Also note that if the implementation supports sending to
-     *                    one or many receivers, this information should be part of the destination
-     *                    value. For example: "mylistener" or "all:mylisteners". It is up to the
-     *                    implementation to define this. And if a configured name is looked up then
-     *                    that should also resolve how to send message.
+     * **Note** that depending on implementation the message might be delivered to more
+     * than one receiver!
+     *
+     * @param destination The destination of the message. Note that this is just a
+     * string! It is up to each implementation to handle/interpret this!
+     *
      * @param message The message to send.
-     * @param result  The result of the send. If null an APSMessagingException will be thrown on failure.
+     * @param result The result of the send. If null an APSMessagingException will be
+     * thrown on failure.
      */
-    @Reactive
-    void send( @NotNull String destination, @NotNull Map<String, Object> message, @Nullable APSHandler<APSResult> result);
-
-    /**
-     * This must be called before send(...). send will use the last supplied reply subscriber.
-     *
-     * Note that this uses a fluent API that returns this. This allows for just adding
-     * ".send(...)" after the call to this.
-     *
-     * @param handler the handler of the reply.
-     */
-    @SuppressWarnings("unused")
-    default APSMessageSender replyTo(APSHandler<APSMessage> handler) {
-        throw new APSException( "replyTo(...) is not supported by this implementation!" );
-    }
-
+    <T> void send( @NotNull String destination, @NotNull Map<String, Object> message,
+               @Nullable APSHandler<APSResult<T>> result );
 }
