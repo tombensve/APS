@@ -13,10 +13,11 @@ import java.util.*;
  * A Set of found services are delivered and no part of ServiceLoader itself is referenced
  * outside of this.
  *
- * I'm thereby locking the acquirement of services to this API but not provider of functionality.
+ * I'm thereby locking the acquirement of services to this API but not provider of
+ * functionality.
  *
- * Why "APSServiceLocator" and not "APSServiceLoader" ? Because I think the term "locator" is
- * clearer, and more generic and does not directly associate to current implementation.
+ * Why "APSServiceLocator" and not "APSServiceLoader" ? Because I think the term "locator"
+ * is clearer, and more generic and does not directly associate to current implementation.
  */
 public class APSServiceLocator {
 
@@ -51,8 +52,9 @@ public class APSServiceLocator {
         List<T> services = new LinkedList<>();
         getLoader( serviceApi ).forEach( services::add );
 
-        if ( services.isEmpty() ) throw new APSNoServiceAvailableException( "No '" + serviceApi.getName() +
-                "' service found!" );
+        if ( services.isEmpty() )
+            throw new APSNoServiceAvailableException( "No '" + serviceApi.getName() +
+                    "' service found!" );
 
         return services;
     }
@@ -65,8 +67,7 @@ public class APSServiceLocator {
      * @exception APSNoServiceAvailableException if not found.
      */
     public static <T> T apsService( Class<T> serviceApi ) {
-        List<T> services = apsServices( serviceApi );
-        return services.get( 0 );
+        return apsServices( serviceApi ).get( 0 );
     }
 
     /**
@@ -86,9 +87,11 @@ public class APSServiceLocator {
             }
         } );
 
-        if ( services.isEmpty() ) throw new APSNoServiceAvailableException( "No '" + serviceApi.getName() +
-                "' service found!" );
+        if ( services.isEmpty() )
+            throw new APSNoServiceAvailableException( "No '" + serviceApi.getName() +
+                    "' service found!" );
 
         return services;
     }
+
 }

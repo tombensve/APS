@@ -42,36 +42,38 @@ import se.natusoft.docutations.Reactive;
 import se.natusoft.aps.types.APSHandler;
 import se.natusoft.aps.types.APSResult;
 import se.natusoft.aps.types.ID;
+import se.natusoft.docutations.Todo;
 
 /**
  * Provides functionality for clients wanting to receive messages.
  */
+@Todo(description = "Consider removing this!")
 public interface APSMessageSubscriber {
 
     /**
      * Adds a subscriber.
      *
-     * @param destination    The destination to subscribe to.
-     *                       This is up to the implementation, but it is strongly recommended that
-     *                       this is a name that will be looked up in some configuration for the real
-     *                       destination, by the service rather than have the client pass a value from
-     *                       its configuration.
-     * @param subscriptionId A unique ID used to later cancel the subscription. Use APSUUID or some other ID
-     *                       implementation that is always unique.
-     * @param result         The result of the call. Will throw an APSMessagingException on failure if value is null.
-     * @param handler        The subscription handler.
+     * @param destination The destination to subscribe to. This is up to the
+     * implementation.
+     * @param subscriptionId A unique ID used to later cancel the subscription. Use
+     * APSUUID or some other ID implementation that is always unique.
+     * @param result The result of the call. Will throw an APSMessagingException
+     * on failure if value is null.
+     * @param handler The subscription handler.
      */
     @Reactive
-    void subscribe(@NotNull String destination, @NotNull ID subscriptionId, @Nullable APSHandler<APSResult> result,
-                   @NotNull APSHandler<APSMessage> handler);
+    void subscribe( @NotNull String destination, @NotNull ID subscriptionId,
+                    @Nullable APSHandler<APSResult<?>> result,
+                    @NotNull APSHandler<APSMessage> handler );
 
     /**
      * Cancel a subscription.
      *
      * @param subscriptionId The same id as passed to subscribe.
-     * @param result The result of the unsubscribe. Will throw an APSMessagingException on failure if value is null.
+     * @param result The result of the unsubscribe. Will throw an APSMessagingException
+     * on failure if value is null.
      */
     @Reactive
-    void unsubscribe(@NotNull ID subscriptionId, @Nullable APSHandler<APSResult> result);
+    void unsubscribe( @NotNull ID subscriptionId, @Nullable APSHandler<APSResult<?>> result );
 
 }
