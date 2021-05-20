@@ -2,7 +2,11 @@
 
 Currently a lot of what is written in README.md files are for myself since I can only work on this sporadically I need to document a lot to remind myself. When done I will cleanup a lot of these texts.
 
+----
+
 **React suck**: Building react app is of course not backwards compatbile!! Installing a fresh react on a new machine will of course fail to build this before actually trying to build anything! Will probably have to create a new react app and copy sources from the old hoping there is some validity in them yet. Should probably build this within a docker container, but then the base image might no longer exist the next time I wan't to build ...
+
+----
 
 ## TODO
 
