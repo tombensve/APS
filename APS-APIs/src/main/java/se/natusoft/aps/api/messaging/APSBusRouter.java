@@ -122,12 +122,11 @@ public interface APSBusRouter {
      *
      * @param subscriberId The ID returned by subscribe.
      */
-    @Reactive
     void unsubscribe( @NotNull ID subscriberId );
 
-    /**
-     * @return true if the implementation is a required, non optional provider.
-     */
-    boolean required();
+    ///**
+    // * @return true if the implementation is a required, non optional provider.
+    // */
+    //boolean required();
 
 }

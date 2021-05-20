@@ -26,11 +26,6 @@ import java.util.Map;
 public interface APSBaseMessage extends Map<String, Object> {
 
     /**
-     * Validates the content of the message.
-     */
-    void validate() throws APSValidationException;
-
-    /**
      * @return the 'aps.version' value.
      */
     float getApsVersion();

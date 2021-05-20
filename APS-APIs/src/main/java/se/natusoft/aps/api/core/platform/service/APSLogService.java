@@ -9,49 +9,43 @@ public interface APSLogService {
      * An informational log entry. Submit by calling log().
      *
      * @param message The message to log.
-     *
-     * @return APSLogService
      */
-    APSLogService info(String message);
+    void info(String message);
 
     /**
      * A warning log entry. Submit by calling log().
      *
      * @param message The message to log.
-     *
-     * @return APSLogService.
      */
-    APSLogService warn(String message);
+    void warn(String message);
 
     /**
      * A fail log entry. Submit by calling log().
      *
      * @param message The message to log.
-     *
-     * @return APSLogService.
      */
-    APSLogService fail(String message);
+    void fail(String message);
+
+    /**
+     * A fail log entry. Submit by calling log().
+     *
+     * @param message The fail message to log.
+     * @param cause The exception that was the cause of this.
+     *
+    void fail(String message, Exception cause);
 
     /**
      * A debug log entry. Submit by calling log().
      *
      * @param message The message to log.
-     *
-     * @return APSLogService.
      */
-    APSLogService debug(String message);
+    void debug(String message);
 
     /**
-     * Adds and exception to the log entry.
+     * A debug log entry. Submit by calling log().
      *
-     * @param exception The exception to add.
-     *
-     * @return APDSLogService.
+     * @param message The message to log.
+     * @param e A possible exception to log.
      */
-    APSLogService exception(Exception exception);
-
-    /**
-     * Submits current log data to log.
-     */
-    void log();
+    void debug(String message, Exception e);
 }

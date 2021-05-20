@@ -1,4 +1,4 @@
-﻿# Application Platform Services (APS)
+# Application Platform Services (APS)
 
 __Version:__ 1.0.0 (working up to ...)
 
@@ -16,6 +16,13 @@ The __original (and still active) goal__ with this is to make a very easy to use
 
 There is currently no real web app, only components demo. I'm working on coming up with an idea for a more real web app to do with it as a more real test of if this is a good idea or not. 
 
+## The IDEA
+
+In addition to me just having fun the idea here is a kind of service lego! There are 2 types/levels of services. The lowest level are now using `java.util.ServiceLoader`, wrapped in _APSServiceLocator_ class. These are for providing implementations of APSBus or rather APSBusRouter:s which APSBus calls. Which implementations are provided at runtime decides how messages are sent and received. There can be an implementation using Vert.x _EventBus_. There can be an implementation using RabbitMQ, or whatever. There is an in memroy implementation also. How messages are sent depends on what lowlevel services is available runtime.
+
+Higher level services are message based and use APSBus. If an application is packed into just one jar file (note that there is a main implementation available to run jar with java -jar) then an in memory implementation of _APSBusRouter_ is all that is required. But if you want to spread functionality and produce multiple executables, maybe one for each message based service, then you need a networking implementation of _APSBusRouter_. It is possible to include more than one implementation of _APSBusRouter_, different implementation will react to different targets. It is even possible to provide an _APSBusRouter_ that does REST calls, treating results as received messages. There must be JSON objects **out** and in **return** for any implementation of APSBusRouter. The API to use is **APSBus**, and it will call all _APSBusRouter_ instances found.   
+ 
+
 ## Building
 
 This code base do contain some react frontend code using javascript. Thereby __npm__
@@ -27,7 +34,7 @@ Bash scripts are run with maven-exec-plugin! If this will work with the Git bash
 Docker containers are built so Docker must also be available. Tested with **docker desktop community 2.1.0.5 (mac version)**. Have read that Docker sometimes have bad compatibility with itself. 
 
 ### Docker build
-
+ 
 There is now also a [docker-build](docker-build/) folder in the root. It contains _bin/create-build-image.sh_ which creates a docker image for building. This build is much slower, but since the build by default runs tests that start a web server, and a vert.x cluster it is safe to run in a docker image without conflicting with anyone else on the same network. The _bin/do-build.sh_ is a convenience for running the dockerized build. It creates a volume for the ~/.m2/repository path within the container that is also made available at ~/apsbuildm2. Since this is a volume it is remembered between builds. But this volume can be deleted and recreated to test that the build is not dependent on old stuff still left in ~/.m2/repository. This without affecting anything else. I did discover that what I've previously committed did not build without old stuff left in my ~/.m2/repository! My bad! 
 
 There is a file called _Dockerfile-build-local-fs-in-container_ in the root. The default Docker build actually copies the source into the container forcing the container and image to be removed and recreated to rebuild. The alternative Dockerfile builds the local checkout within the container. The reason for not using the second as default is that it takes a full hour to build, while copying the source into the container takes abut 10 minutes. 
