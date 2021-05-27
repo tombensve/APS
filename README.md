@@ -10,9 +10,9 @@ __JDK Level:__ This now builds with all tests working on JDK 11. No, there is no
 
 Work is slow, whenever time permits.
 
-To be very clear: **This is currently, and probably for a long time coming, a playground where I'm having fun.**
+To be very clear: **This is currently, and probably for a long time coming, a playground where I'm having fun, and experimenting with ideas!**
 
-The __original (and still active) goal__ with this is to make a very easy to use web platform.
+The __original (and still active) goal__ with this is to make a very easy to use and flexible web platform.
 
 There is currently no real web app, only components demo. I'm working on coming up with an idea for a more real web app to do with it as a more real test of if this is a good idea or not. 
 
@@ -21,8 +21,13 @@ There is currently no real web app, only components demo. I'm working on coming 
 In addition to me just having fun the idea here is a kind of service lego! There are 2 types/levels of services. The lowest level are now using `java.util.ServiceLoader`, wrapped in _APSServiceLocator_ class. These are for providing implementations of APSBus or rather APSBusRouter:s which APSBus calls. Which implementations are provided at runtime decides how messages are sent and received. There can be an implementation using Vert.x _EventBus_. There can be an implementation using RabbitMQ, or whatever. There is an in memroy implementation also. How messages are sent depends on what lowlevel services is available runtime.
 
 Higher level services are message based and use APSBus. If an application is packed into just one jar file (note that there is a main implementation available to run jar with java -jar) then an in memory implementation of _APSBusRouter_ is all that is required. But if you want to spread functionality and produce multiple executables, maybe one for each message based service, then you need a networking implementation of _APSBusRouter_. It is possible to include more than one implementation of _APSBusRouter_, different implementation will react to different targets. It is even possible to provide an _APSBusRouter_ that does REST calls, treating results as received messages. There must be JSON objects **out** and in **return** for any implementation of APSBusRouter. The API to use is **APSBus**, and it will call all _APSBusRouter_ instances found.   
- 
 
+I'm testing how well message driven services actually works here. At application level there will be messages sent to get anything done. Who reacts to a message and where that code resides is irellevant. I am supporting the possiblitity to provide a reply target in a sent message so that whatever responds to it can send a respons directly back to sender. But it is also possible for no reply. A message can trigger another message, which triggers another and for each message some logic is done and in the end something happens.
+
+Due to using Vert.x I decided to also use the reactive code style that Vert.x uses. Thereby to do a request and get a response you have to start with registering a message listener for the response, and then send "request" type messages. Each response gotten have to deal with it without having any local context. Depending on the implementations below there is no guarantee that replies are received in same order as "request" messages are sent! 
+
+**The potential problems I see** with this is that the code can get very hard to follow! There is no compiler support that ensures that you have spelled a message target correctly, as a method call does. You get a high level of flexibility in what you can do, but you are very much on your own. This requires a much higher level of understanding of coding in general. It probalby gets easier to test. The loosenes can both be nice and create problems. I'm also thinking that very well defined messages are needed since they become very central to all functionallity, and will help follow a flow.
+ 
 ## Building
 
 This code base do contain some react frontend code using javascript. Thereby __npm__
@@ -85,7 +90,4 @@ Rainy weekends with nothing better to do is what mostly drives this project forw
 
 Tommy
 
-Professional Code Geek, working with Java since the beginning, C & C++ before that. 
-
-
-
+_Professional Code Geek, working with Java since the beginning, C & C++ before that._ 
