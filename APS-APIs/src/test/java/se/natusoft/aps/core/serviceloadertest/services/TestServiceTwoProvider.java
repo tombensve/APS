@@ -11,8 +11,8 @@ import static se.natusoft.aps.core.APSServiceLocator.*;
 @AutoService( TestServiceTwo.class )
 public class TestServiceTwoProvider implements TestServiceTwo {
 
-    private final TestServiceOne oneService = apsService( TestServiceOne.class );
-    private final List<TestServiceOne> oneServices = apsServices( TestServiceOne.class );
+    private final TestServiceOne oneService = service( TestServiceOne.class );
+    private final List<TestServiceOne> oneServices = services( TestServiceOne.class );
     // TODO: Missing test for annotation filtering!
 
     public TestServiceTwoProvider() {

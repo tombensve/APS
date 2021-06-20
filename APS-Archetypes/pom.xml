@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>APS-Archetypes</artifactId>
-    <groupId>se.natusoft.osgi.aps</groupId>
-    <version>1.0.0</version>
+    <groupId>se.natusoft.aps</groupId>
+    <version>0.10.0</version>
 
     <packaging>pom</packaging>
 

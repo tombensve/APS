@@ -16,7 +16,6 @@ __[Apache Software License version 2.0](http://www.apache.org/licenses/LICENSE-2
 
 The following third party products are using this license:
 
-* [jackson-jr-all-2.9.6](http://wiki.fasterxml.com/JacksonHome)
 * [auto-service-1.0-rc7](https://github.com/google/auto/tree/master/service)
 
 <!-- CLM -->

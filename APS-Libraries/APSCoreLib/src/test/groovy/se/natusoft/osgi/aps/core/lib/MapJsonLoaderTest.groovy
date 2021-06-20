@@ -2,6 +2,7 @@ package se.natusoft.osgi.aps.core.lib
 
 import groovy.transform.CompileStatic
 import org.junit.Test
+import se.natusoft.aps.core.lib.MapJsonLoader
 
 @CompileStatic
 class MapJsonLoaderTest {

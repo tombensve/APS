@@ -2,6 +2,9 @@ package se.natusoft.osgi.aps.core.lib
 
 import groovy.transform.CompileStatic
 import org.junit.Test
+import se.natusoft.aps.core.lib.MapJsonSchemaEntry
+import se.natusoft.aps.core.lib.MapJsonSchemaMeta
+import se.natusoft.aps.core.lib.MapJsonSchemaValidator
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 
 @CompileStatic

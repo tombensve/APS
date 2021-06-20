@@ -2,12 +2,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <artifactId>APS-Archetypes</artifactId>
-        <groupId>se.natusoft.osgi.aps</groupId>
-        <version>1.0.0</version>
+        <groupId>se.natusoft.aps</groupId>
+        <version>0.10.0</version>
     </parent>
 	<modelVersion>4.0.0</modelVersion>
 	
-    <groupId>se.natusoft.osgi.aps.archetype</groupId>
+    <groupId>se.natusoft.aps.archetype</groupId>
     <artifactId>APSBundleArchetype</artifactId>
     <name>Archetype - APSBundleArchetype</name>
 </project>

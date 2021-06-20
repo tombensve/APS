@@ -47,7 +47,7 @@ public class APSServiceLocator {
      * @param serviceApi The class of the service interface.
      * @return A Set of found services.
      */
-    public static <T> List<T> apsServices( Class<T> serviceApi ) {
+    public static <T> List<T> services(Class<T> serviceApi ) {
 
         List<T> services = new LinkedList<>();
         getLoader( serviceApi ).forEach( services::add );
@@ -66,8 +66,8 @@ public class APSServiceLocator {
      * @return An instance of the service.
      * @exception APSNoServiceAvailableException if not found.
      */
-    public static <T> T apsService( Class<T> serviceApi ) {
-        return apsServices( serviceApi ).get( 0 );
+    public static <T> T service(Class<T> serviceApi ) {
+        return services( serviceApi ).get( 0 );
     }
 
     /**
@@ -78,8 +78,10 @@ public class APSServiceLocator {
      * @return A Set of matching services.
      * @exception APSNoServiceAvailableException if not found.
      */
-    public static <T> List<T> apsServiceByAnnotation( Class<T> serviceApi, Class<Annotation> annotation ) {
+    public static <T> List<T> serviceByAnnotation(Class<T> serviceApi, Class<Annotation> annotation ) {
 
+        // Note that this is not cached! On the other hand, if that actually matters you
+        // are probably doing something you shouldn't.
         List<T> services = new LinkedList<>();
         getLoader( serviceApi ).forEach( s -> {
             if ( s.getClass().isAnnotationPresent( annotation ) ) {

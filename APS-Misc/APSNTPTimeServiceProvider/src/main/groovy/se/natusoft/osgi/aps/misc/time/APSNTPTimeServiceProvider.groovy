@@ -42,7 +42,7 @@ import org.apache.commons.net.ntp.TimeInfo
 
 import se.natusoft.osgi.aps.activator.annotation.*
 import se.natusoft.osgi.aps.api.misc.time.APSTimeService
-import se.natusoft.osgi.aps.core.lib.APSConfigLoader
+import se.natusoft.aps.core.lib.APSConfigLoader
 import se.natusoft.osgi.aps.util.APSLogger
 
 import java.time.Instant

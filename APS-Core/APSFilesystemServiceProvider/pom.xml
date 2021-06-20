@@ -42,8 +42,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>APS-Core</artifactId>
-        <groupId>se.natusoft.osgi.aps</groupId>
-        <version>1.0.0</version>
+        <groupId>se.natusoft.aps</groupId>
+        <version>0.10.0</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -72,7 +72,7 @@
     -->
     <dependencies>
         <dependency>
-            <groupId>se.natusoft.osgi.aps</groupId>
+            <groupId>se.natusoft.aps</groupId>
             <artifactId>aps-apis</artifactId>
             <scope>provided</scope>
         </dependency>

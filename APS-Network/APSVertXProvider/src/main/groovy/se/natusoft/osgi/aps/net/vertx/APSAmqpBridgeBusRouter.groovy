@@ -40,7 +40,6 @@
 package se.natusoft.osgi.aps.net.vertx
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 import io.vertx.amqpbridge.AmqpBridge
 import io.vertx.core.AsyncResult
 import io.vertx.core.eventbus.Message
@@ -51,7 +50,7 @@ import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
 import se.natusoft.docutations.Optional
 import se.natusoft.osgi.aps.api.messaging.APSBusRouter
-import se.natusoft.osgi.aps.core.lib.ValidTarget
+import se.natusoft.aps.core.lib.ValidTarget
 import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
 import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult

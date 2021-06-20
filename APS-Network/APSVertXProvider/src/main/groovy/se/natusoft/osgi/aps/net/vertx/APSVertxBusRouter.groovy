@@ -59,7 +59,7 @@ import se.natusoft.osgi.aps.activator.annotation.Managed
 
 import se.natusoft.osgi.aps.api.messaging.APSBusRouter
 import se.natusoft.osgi.aps.api.messaging.APSMessagingException
-import se.natusoft.osgi.aps.core.lib.ValidTarget
+import se.natusoft.aps.core.lib.ValidTarget
 import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.types.APSHandler

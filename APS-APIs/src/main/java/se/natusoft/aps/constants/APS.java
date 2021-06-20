@@ -44,13 +44,13 @@ import se.natusoft.aps.types.APSResult;
  */
 public interface APS {
 
-    String TRUE = "true";
-    String FALSE = "false";
-    String UNKNOWN = "unknown";
+    String S_TRUE = "true";
+    String S_FALSE = "false";
+    String S_UNKNOWN = "unknown";
 
-    String DEFAULT = "default";
+    String S_DEFAULT = "default";
 
-    String CLUSTERED = "clustered";
+    String S_CLUSTERED = "clustered";
 
 //    APSHandler<APSResult> MSG_PREFER_EXCEPTION_RESULT = null;
 //    APSHandler<APSResult> MSG_NO_RESULT = null;

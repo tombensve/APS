@@ -1,17 +1,17 @@
 package se.natusoft.aps.api.messaging;
 
 import se.natusoft.docutations.Optional;
-import se.natusoft.aps.exceptions.APSValidationException;
 
 import java.util.Map;
 
 /**
  * This represents a common base for all messages. aps-core-lib provides an implementation
  * of this.
- *
+ * <p>
  * A message structure will as a minimum look like this:
  *
- * @formatter:off
+ * <pre>
+ *
  *     {
  *         aps: {
  *             type: "type"  // Identifies what is in the message under 'content'.
@@ -21,7 +21,7 @@ import java.util.Map;
  *             ...
  *         }
  *     }
- * @formatter:on
+ * </pre>
  */
 public interface APSBaseMessage extends Map<String, Object> {
 
@@ -35,7 +35,7 @@ public interface APSBaseMessage extends Map<String, Object> {
      *
      * @param version The version value to set.
      */
-    void setApsVersion( float version );
+    void setApsVersion(float version);
 
     /**
      * @return The 'aps.from' value.
@@ -49,7 +49,7 @@ public interface APSBaseMessage extends Map<String, Object> {
      * @param from The from value to set.
      */
     @Optional
-    void setApsFrom( String from );
+    void setApsFrom(String from);
 
     /**
      * @return the 'aps.type' id.
@@ -61,7 +61,7 @@ public interface APSBaseMessage extends Map<String, Object> {
      *
      * @param type The type to set.
      */
-    void setApsType( String type );
+    void setApsType(String type);
 
     /**
      * @return the 'aps' object.

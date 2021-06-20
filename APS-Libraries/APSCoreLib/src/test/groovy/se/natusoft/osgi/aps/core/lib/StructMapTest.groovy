@@ -2,7 +2,7 @@ package se.natusoft.osgi.aps.core.lib
 
 import groovy.transform.CompileStatic
 import org.junit.Test
-import se.natusoft.osgi.aps.core.lib.StructMap
+import se.natusoft.aps.core.lib.StructMap
 
 @CompileStatic
 class StructMapTest {

@@ -42,10 +42,10 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>se.natusoft.osgi.aps</groupId>
+    <groupId>se.natusoft.aps</groupId>
     <artifactId>APS</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0</version>
+    <version>0.10.0</version>
 
     <name>Application Platform Services</name>
 
@@ -61,7 +61,7 @@
         <!--
             The version of this project. Run the set-version profile to update all poms with this version.
         -->
-        <projectVersion>1.0.0</projectVersion>
+        <projectVersion>0.10.0</projectVersion>
 
         <!--
             This is the import package version specification for APS packages.
@@ -91,7 +91,6 @@
         -->
         <maven.surefire.version>3.0.0-M1</maven.surefire.version>
         <maven.bundle.plugin.version>3.5.0</maven.bundle.plugin.version>
-        <osgi.version>4.2.0</osgi.version>
         <mixin.plugin.version>0.1-alpha-39</mixin.plugin.version>
         <clm.version>2.2.1</clm.version>
         <ftpPlugin.version>1.0.1</ftpPlugin.version>
@@ -171,25 +170,25 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>se.natusoft.osgi.aps</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>aps-apis</artifactId>
                 <version>${project.version}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
-                <groupId>se.natusoft.osgi.aps</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>aps-core-lib</artifactId>
                 <version>${project.version}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
-                <groupId>se.natusoft.osgi.aps</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>aps-json-lib</artifactId>
                 <version>${project.version}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
-                <groupId>se.natusoft.osgi.aps</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>aps-web-tools</artifactId>
                 <version>${project.version}</version>
                 <scope>compile</scope>
@@ -219,12 +218,14 @@
                 <artifactId>docutations</artifactId>
                 <version>2.10</version>
             </dependency>
+            <!--
             <dependency>
-                <groupId>se.natusoft.osgi.aps</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>aps-runtime</artifactId>
                 <version>${project.version}</version>
                 <scope>test</scope>
             </dependency>
+            -->
 
             <!--
                 Test Dependencies.
@@ -507,6 +508,7 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-javadoc-plugin</artifactId>
+                        <!--
                         <configuration>
                             <doclet>ch.raffael.doclets.pegdown.PegdownDoclet</doclet>
                             <docletArtifact>
@@ -516,6 +518,7 @@
                             </docletArtifact>
                             <useStandardDocletOptions>true</useStandardDocletOptions>
                         </configuration>
+                        -->
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
@@ -833,12 +836,14 @@
             <id>test-config-support</id>
 
             <dependencies>
+                <!--
                 <dependency>
                     <groupId>se.natusoft.osgi.aps</groupId>
                     <artifactId>aps-runtime</artifactId>
                     <version>${project.version}</version>
                     <scope>test</scope>
                 </dependency>
+                -->
 
                 <dependency>
                     <groupId>se.natusoft.osgi.aps</groupId>

@@ -7,7 +7,7 @@ import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
 import se.natusoft.osgi.aps.api.messaging.APSMessage
 
 import se.natusoft.osgi.aps.constants.APS
-import se.natusoft.osgi.aps.core.lib.StructMap
+import se.natusoft.aps.core.lib.StructMap
 import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.types.ID

@@ -59,7 +59,7 @@ import se.natusoft.osgi.aps.activator.annotation.BundleStop
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.api.messaging.APSBusRouter
-import se.natusoft.osgi.aps.core.lib.APSConfigLoader
+import se.natusoft.aps.core.lib.APSConfigLoader
 import se.natusoft.osgi.aps.exceptions.APSConfigException
 import se.natusoft.osgi.aps.exceptions.APSException
 import se.natusoft.osgi.aps.exceptions.APSStartException

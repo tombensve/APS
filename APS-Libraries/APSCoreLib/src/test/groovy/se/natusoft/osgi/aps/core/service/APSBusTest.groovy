@@ -9,8 +9,8 @@ import se.natusoft.osgi.aps.activator.annotation.Managed
 
 import se.natusoft.osgi.aps.api.messaging.APSBus
 import se.natusoft.osgi.aps.api.messaging.APSMessagingException
-import se.natusoft.osgi.aps.core.lib.MapJsonLoader
-import se.natusoft.osgi.aps.core.lib.MapJsonSchemaValidator
+import se.natusoft.aps.core.lib.MapJsonLoader
+import se.natusoft.aps.core.lib.MapJsonSchemaValidator
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.runtime.APSTestResults
