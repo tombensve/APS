@@ -41,8 +41,8 @@ package se.natusoft.osgi.aps.core.filesystem.service;
 import org.osgi.framework.BundleContext;
 import se.natusoft.osgi.aps.activator.annotation.Initializer;
 import se.natusoft.osgi.aps.activator.annotation.Managed;
-import se.natusoft.osgi.aps.activator.annotation.OSGiProperty;
-import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider;
+import se.natusoft.osgi.aps.activator.annotation.APSPlatformServiceProperty;
+import se.natusoft.osgi.aps.activator.annotation.APSPlatformServiceProvider;
 import se.natusoft.osgi.aps.api.core.filesystem.model.APSFilesystem;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
 import se.natusoft.osgi.aps.constants.APS;
@@ -59,12 +59,12 @@ import java.io.IOException;
  * Provides an implementation of APSFilesystemService.
  */
 @SuppressWarnings( "Duplicates" )
-@OSGiServiceProvider(
+@APSPlatformServiceProvider(
         properties = {
-                @OSGiProperty( name = APS.Service.Provider, value = "aps-filesystem-service-provider" ),
-                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Storage ),
-                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Storage ),
-                @OSGiProperty( name = APS.Service.PersistenceScope, value = APS.Value.Service.PersistenceScope.Permanent )
+                @APSPlatformServiceProperty( name = APS.Service.Provider, value = "aps-filesystem-service-provider" ),
+                @APSPlatformServiceProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Storage ),
+                @APSPlatformServiceProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Storage ),
+                @APSPlatformServiceProperty( name = APS.Service.PersistenceScope, value = APS.Value.Service.PersistenceScope.Permanent )
         }
 )
 public class APSFilesystemServiceProvider implements APSFilesystemService {

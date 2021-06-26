@@ -73,11 +73,11 @@ import static se.natusoft.osgi.aps.util.APSTools.waitFor
  */
 @SuppressWarnings( [ "unused", "PackageAccessibility" ] )
 @CompileStatic
-@OSGiServiceProvider(
+@APSPlatformServiceProvider(
         properties = [
-                @OSGiProperty( name = APS.Service.Provider, value = "aps-bus-provider" ),
-                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Communication ),
-                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
+                @APSPlatformServiceProperty( name = APS.Service.Provider, value = "aps-bus-provider" ),
+                @APSPlatformServiceProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Communication ),
+                @APSPlatformServiceProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
         ]
 )
 class APSBusProvider implements APSBus {
@@ -98,7 +98,7 @@ class APSBusProvider implements APSBus {
     private APSActivatorInteraction activatorInteraction
 
     /** The currently known bus routers */
-    @OSGiService( serviceAPI = APSBusRouter.class )
+    @APSPlatformService( serviceAPI = APSBusRouter.class )
     private APSServiceTracker<APSBusRouter> routerTracker
 
     //

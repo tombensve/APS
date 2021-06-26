@@ -34,15 +34,14 @@
 package se.natusoft.osgi.aps.datastore
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 import io.vertx.core.AsyncResult
 import io.vertx.core.shareddata.AsyncMap
 import io.vertx.core.shareddata.Lock
 import io.vertx.core.shareddata.SharedData
 import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
-import se.natusoft.osgi.aps.activator.annotation.OSGiService
-import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
+import se.natusoft.osgi.aps.activator.annotation.APSPlatformServiceProperty
+import se.natusoft.osgi.aps.activator.annotation.APSPlatformService
+import se.natusoft.osgi.aps.activator.annotation.APSPlatformServiceProvider
 import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.exceptions.APSValidationException
@@ -52,12 +51,12 @@ import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.util.APSLogger
 
 @SuppressWarnings("GroovyUnusedDeclaration")
-@OSGiServiceProvider(
+@APSPlatformServiceProvider(
         properties = [
-                @OSGiProperty(name = APS.Service.Provider, value = "aps-vertx-cluster-datastore-service-provider"),
-                @OSGiProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Network),
-                @OSGiProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Storage),
-                @OSGiProperty(name = APS.Service.PersistenceScope, value = APS.Value.Service.PersistenceScope.Clustered),
+                @APSPlatformServiceProperty(name = APS.Service.Provider, value = "aps-vertx-cluster-datastore-service-provider"),
+                @APSPlatformServiceProperty(name = APS.Service.Category, value = APS.Value.Service.Category.Network),
+                @APSPlatformServiceProperty(name = APS.Service.Function, value = APS.Value.Service.Function.Storage),
+                @APSPlatformServiceProperty(name = APS.Service.PersistenceScope, value = APS.Value.Service.PersistenceScope.Clustered),
         ]
 )
 @CompileStatic
@@ -70,7 +69,7 @@ class APSVertxClusterDataStoreServiceProvider implements APSLockableDataStoreSer
     @Managed(loggingFor = "aps-vertx-cluster-datastore-service-provider")
     private APSLogger logger
 
-    @OSGiService(additionalSearchCriteria = "(vertx-object=SharedData)", timeout = "15 sec", nonBlocking = true)
+    @APSPlatformService(additionalSearchCriteria = "(vertx-object=SharedData)", timeout = "15 sec", nonBlocking = true)
     private SharedData sharedData
 
     //

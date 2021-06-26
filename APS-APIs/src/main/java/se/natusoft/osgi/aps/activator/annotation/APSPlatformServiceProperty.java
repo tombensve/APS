@@ -48,7 +48,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface OSGiProperty {
+public @interface APSPlatformServiceProperty {
     String name();
     String value();
 }

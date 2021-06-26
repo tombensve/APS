@@ -50,7 +50,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface OSGiService {
+public @interface APSPlatformService {
 
     /** The timeout for a service to become available. Defaults to 30 seconds. */
     String timeout() default "30 seconds";

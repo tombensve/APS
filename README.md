@@ -14,7 +14,17 @@ To be very clear: **This is currently, and probably for a long time comming, a p
 
 The __original (and still active) goal__ with this is to make a very easy to use web platform.
 
-There is currently no real web app, only components demo. I'm working on comming up with a an idea for a more real web app to do with it as a more real test of if this is a good idea or not. 
+There is currently no real web app, only components demo.
+
+APS is using (at least for me) a rather experimental architecture with 2 levels of services, platform and application. 
+
+The platform services are OSGi-ish. They started out as OSGi services but have moved to own OSGi-ish implementation that will be further removed from OSGi and no longer use OSGi name anywhere to avoid confusion. They currently do not support OSGi modularity and never will. Maybe in future it is possible to adapt to JPMS.  
+
+The application level of services are completely message based using JSON. They are provided and consumed using _APSBus_, which is an abstraction that allows for sending and subscribing to messages. The APSBus itself has no functionality and is dependent on _APSBusRouter_ service implementations that in turn can communicate any way they want as long as they can handle receiving and sending JSON. So what actually happens runtime depends on what is deployed. APS has a very simple runtime where general platform dependencies and other dependencies required is put in one folder and all service implementations are put in another. Both these paths are passed to a `java -jar APSRuntime.jar ...`. So whatever platform level services are deployed will determine actual communication between services. Att application level applications should not care. They should just use the _APSBus_ API, which will likely change name since this is all about messaging not how messages are sent/received. 
+
+Currently Vert.x is used as an APSBusRouter implementation, and Vert.x is a microservice framework. With APS it is a matter of deployment how it is used. It is possible to deploy a whole, complete application in one APSRunitme if you want. There you can get away with an APSBusRouter implementation that just deliver messages internally within JVM instance. But you can also deploy a single service along with its dependencies in one APSRuntime and another in another APSRuntime, and include the Vert.x providing APSBusRouter or some other network messaging implementation, put each in its own docker container and deploy somewhere, or anything there in between. This since no application level service gives a damn about how communication is done, it just expect it somehow to be done. It is just a simple abstraction between functionallity and communication, and with a very simple API. 
+
+But until I have some test application using this platform it is rather theoretical. I have _in most cases_ kept it very simple which increse the odds of theory actually working, can't really se any problems in my head now, but I will not be satisfied until its been verified or that I come to the conclusion that this wasn't as flexible and simple as I first thought.  
 
 ## Building
 
@@ -66,11 +76,10 @@ The backend and the bridge between frontend and backend is handled by [Vert.x](h
 
 Backend is based on OSGi light, only parts of the 4 base OSGi APIs. APS currently runs on its own simple backend (APSRuntime) implementing the base OSGi APIs to ~85% (what is needed/used by APS), but without any modularity. The runtime forces the APSActivator which does dependency injections! It is started with:
 
-    java -jar aps-platform-booter-1.0.0.jar --dependenciesDir path/to/dependenciesdir --bundlesDir path/to/bundlesdir 
+    java -jar aps-platform-booter-1.0.0.jar --dependenciesDir path/to/dependenciesdir 
+      --bundlesDir path/to/bundlesdir 
 
 Where dependencies dir contains all dependency jars, and budlesdir contains all bundles to deploy.
-
-I was contacted by someone who had seen this repo and asked about APSRuntime as used in unit tests to deploy and run services. Since APSRuntime is a bit bound to APS I decided to break it out into a separate repo that has no dependencies on APS: [OSGishTestRunner](https://github.com/tombensve/OSGishTestRunner). DO NOTE that this is very basic OSGi only!! No declarative services, etc, just basic Bundle and events. 
 
 Lots of fun ideas, too little time ...
 

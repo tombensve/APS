@@ -40,7 +40,6 @@
 package se.natusoft.osgi.aps.net.vertx
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 import io.vertx.core.eventbus.EventBus
 import io.vertx.core.eventbus.Message
 import io.vertx.core.eventbus.MessageConsumer
@@ -66,17 +65,17 @@ import se.natusoft.osgi.aps.util.APSLogger
 
 @SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
-@OSGiServiceProvider(
+@APSPlatformServiceProvider(
         // Possible criteria for client lookups. ex: "(aps-messaging-protocol=vertx-eventbus)" In most cases clients
         // won't care.
         properties = [
-                @OSGiProperty( name = APS.Service.Provider, value =
+                @APSPlatformServiceProperty( name = APS.Service.Provider, value =
                         "aps-vertx-event-bus-messaging-provider:subscriber" ),
-                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Network ),
-                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
-                @OSGiProperty( name = APS.Messaging.Protocol.Name, value = "vertx-eventbus" ),
-                @OSGiProperty( name = APS.Messaging.Persistent, value = APS.FALSE ),
-                @OSGiProperty( name = APS.Messaging.Clustered, value = APS.TRUE )
+                @APSPlatformServiceProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Network ),
+                @APSPlatformServiceProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
+                @APSPlatformServiceProperty( name = APS.Messaging.Protocol.Name, value = "vertx-eventbus" ),
+                @APSPlatformServiceProperty( name = APS.Messaging.Persistent, value = APS.FALSE ),
+                @APSPlatformServiceProperty( name = APS.Messaging.Clustered, value = APS.TRUE )
         ]
 )
 class MessageSubscriberProvider implements APSMessageSubscriber {
@@ -121,7 +120,7 @@ class MessageSubscriberProvider implements APSMessageSubscriber {
      * This tracks the EventBus. init() will setup an onActiveServiceAvailable callback handler which
      * will provide the eventBus instance.
      **/
-    @OSGiService( additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "30 sec" )
+    @APSPlatformService( additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "30 sec" )
     private APSServiceTracker<EventBus> eventBusTracker
     private EventBus eventBus
 

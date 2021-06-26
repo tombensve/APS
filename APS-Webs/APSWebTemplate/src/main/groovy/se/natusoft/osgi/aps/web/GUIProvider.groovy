@@ -46,19 +46,12 @@
 package se.natusoft.osgi.aps.web
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
-import io.vertx.core.eventbus.EventBus
-import io.vertx.core.eventbus.Message
-import io.vertx.core.eventbus.MessageConsumer
-import io.vertx.core.json.JsonObject
 import org.osgi.framework.ServiceReference
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.osgi.aps.activator.annotation.APSPlatformService
 import se.natusoft.osgi.aps.api.messaging.APSBus
-import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
-import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.types.APSUUID
 import se.natusoft.osgi.aps.types.ID
@@ -89,7 +82,7 @@ class GUIProvider {
     @Managed
     private APSLogger logger
 
-    @OSGiService
+    @APSPlatformService
     private APSServiceTracker<APSBus> apsBusTracker
     private APSBus apsBus
 

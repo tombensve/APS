@@ -1,7 +1,6 @@
 package se.natusoft.osgi.aps.net.vertx
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 import org.junit.Test
 import se.natusoft.osgi.aps.api.messaging.APSMessageSender
 import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
@@ -16,7 +15,7 @@ import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.util.APSLogger
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.osgi.aps.activator.annotation.APSPlatformService
 import se.natusoft.osgi.aps.types.APSUUID
 import static java.util.concurrent.TimeUnit.SECONDS
 
@@ -55,7 +54,7 @@ class APSVertXEventBusMessagingTest extends APSRuntime {
 @CompileStatic
 class MsgReceiver {
 
-    @OSGiService( timeout = "15 sec", nonBlocking = true )
+    @APSPlatformService( timeout = "15 sec", nonBlocking = true )
     private APSMessageSubscriber msgSubscriber
 
     @Managed( loggingFor = "msg-receiver" )
@@ -98,7 +97,7 @@ class MsgSender {
 
     // This manages since on nonBlocking = true, the call to msgService is cached by the proxy until
     // the service is available, and then executed.
-    @OSGiService( timeout = "15 sec", nonBlocking = true )
+    @APSPlatformService( timeout = "15 sec", nonBlocking = true )
     private APSMessageSender msgSender
 
     @Managed( loggingFor = "msg-sender" )

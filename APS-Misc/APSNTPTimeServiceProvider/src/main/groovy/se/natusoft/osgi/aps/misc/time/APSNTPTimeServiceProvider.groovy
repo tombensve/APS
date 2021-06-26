@@ -53,12 +53,12 @@ import java.util.concurrent.TimeUnit
  */
 @SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic
-@OSGiServiceProvider(
+@APSPlatformServiceProvider(
         properties = [
-                @OSGiProperty( name = APS.Service.Provider, value = "aps-ntp-time-service-provider" ),
-                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Misc ),
-                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Time ),
-                @OSGiProperty( name = APS.Uses.Network, value = APS.TRUE )
+                @APSPlatformServiceProperty( name = APS.Service.Provider, value = "aps-ntp-time-service-provider" ),
+                @APSPlatformServiceProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Misc ),
+                @APSPlatformServiceProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Time ),
+                @APSPlatformServiceProperty( name = APS.Uses.Network, value = APS.TRUE )
         ]
 )
 class APSNTPTimeServiceProvider implements APSTimeService {

@@ -52,16 +52,16 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface OSGiServiceProvider {
+public @interface APSPlatformServiceProvider {
 
     /** Extra properties to register the service with. */
-    OSGiProperty[] properties() default {};
+    APSPlatformServiceProperty[] properties() default {};
 
     /** The service API to register instance with. If not specified the first implemented interface will be used. */
     Class[] serviceAPIs() default {};
 
     /** This can be used as an alternative to properties() and also supports several instances. */
-    OSGiServiceInstance[] instances() default {};
+    APSPlatformServiceInstance[] instances() default {};
 
     /**
      * WARNING: If you use a managed configuration instance to provide the instances then you will have a chicken-egg

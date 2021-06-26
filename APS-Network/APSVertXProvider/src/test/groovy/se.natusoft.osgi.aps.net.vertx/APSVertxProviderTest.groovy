@@ -10,7 +10,7 @@ import org.osgi.framework.ServiceReference
 import se.natusoft.osgi.aps.activator.APSActivator
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.OSGiService
+import se.natusoft.osgi.aps.activator.annotation.APSPlatformService
 import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.util.APSLogger
@@ -92,16 +92,16 @@ class VertxClient {
     @Managed( loggingFor = "Test:VertxClient" )
     private APSLogger logger
 
-    @OSGiService( additionalSearchCriteria = "(vertx-object=Vertx)", timeout = "10 sec" )
+    @APSPlatformService( additionalSearchCriteria = "(vertx-object=Vertx)", timeout = "10 sec" )
     APSServiceTracker<Vertx> vertxTracker
 
-    @OSGiService( additionalSearchCriteria = "(&(vertx-object=Router)(vertx-router=default))", timeout = "10 sec" )
+    @APSPlatformService( additionalSearchCriteria = "(&(vertx-object=Router)(vertx-router=default))", timeout = "10 sec" )
     APSServiceTracker<Router> routerTracker
 
-    @OSGiService( additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "10 sec" )
+    @APSPlatformService( additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "10 sec" )
     APSServiceTracker<EventBus> eventBusTracker
 
-    @OSGiService( additionalSearchCriteria = "(vertx-object=SharedData)", timeout = "10 sec" )
+    @APSPlatformService( additionalSearchCriteria = "(vertx-object=SharedData)", timeout = "10 sec" )
     APSServiceTracker<SharedData> sharedDataTracker
 
     @Initializer

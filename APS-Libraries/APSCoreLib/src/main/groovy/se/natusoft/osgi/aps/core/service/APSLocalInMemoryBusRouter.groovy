@@ -42,8 +42,8 @@ import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
 import se.natusoft.docutations.Optional
 import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
-import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
+import se.natusoft.osgi.aps.activator.annotation.APSPlatformServiceProperty
+import se.natusoft.osgi.aps.activator.annotation.APSPlatformServiceProvider
 import se.natusoft.osgi.aps.api.messaging.APSBusRouter
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.ValidTarget
@@ -74,11 +74,11 @@ import static se.natusoft.osgi.aps.util.APSExecutor.concurrent
  */
 @CompileStatic
 @SuppressWarnings( [ "UnnecessaryQualifiedReference", "unused" ] )
-@OSGiServiceProvider(
+@APSPlatformServiceProvider(
         properties = [
-                @OSGiProperty( name = APS.Service.Provider, value = "aps-local-in-memory-bus" ),
-                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Communication ),
-                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
+                @APSPlatformServiceProperty( name = APS.Service.Provider, value = "aps-local-in-memory-bus" ),
+                @APSPlatformServiceProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Communication ),
+                @APSPlatformServiceProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
         ]
 )
 class APSLocalInMemoryBusRouter implements APSBusRouter {

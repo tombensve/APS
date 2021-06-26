@@ -55,9 +55,9 @@ import se.natusoft.osgi.aps.activator.APSActivatorInteraction
 import se.natusoft.osgi.aps.activator.annotation.BundleStop
 import se.natusoft.osgi.aps.activator.annotation.Initializer
 import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.OSGiProperty
-import se.natusoft.osgi.aps.activator.annotation.OSGiService
-import se.natusoft.osgi.aps.activator.annotation.OSGiServiceProvider
+import se.natusoft.osgi.aps.activator.annotation.APSPlatformServiceProperty
+import se.natusoft.osgi.aps.activator.annotation.APSPlatformService
+import se.natusoft.osgi.aps.activator.annotation.APSPlatformServiceProvider
 import se.natusoft.osgi.aps.api.messaging.APSBusRouter
 import se.natusoft.osgi.aps.api.messaging.APSMessagingException
 import se.natusoft.osgi.aps.constants.APS
@@ -79,14 +79,14 @@ import static se.natusoft.osgi.aps.util.APSExecutor.*
 @CompileStatic
 @SuppressWarnings( "unused" )
 // Managed by APSActivator IDE can't see that!
-@OSGiServiceProvider(
+@APSPlatformServiceProvider(
         properties = [
-                @OSGiProperty( name = APS.Service.Provider, value = "aps-vertx-bus-router" ),
-                @OSGiProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Network ),
-                @OSGiProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
-                @OSGiProperty( name = APS.Messaging.Protocol.Name, value = "vertx-eventbus" ),
-                @OSGiProperty( name = APS.Messaging.Persistent, value = APS.FALSE ),
-                @OSGiProperty( name = APS.Messaging.Clustered, value = APS.TRUE )
+                @APSPlatformServiceProperty( name = APS.Service.Provider, value = "aps-vertx-bus-router" ),
+                @APSPlatformServiceProperty( name = APS.Service.Category, value = APS.Value.Service.Category.Network ),
+                @APSPlatformServiceProperty( name = APS.Service.Function, value = APS.Value.Service.Function.Messaging ),
+                @APSPlatformServiceProperty( name = APS.Messaging.Protocol.Name, value = "vertx-eventbus" ),
+                @APSPlatformServiceProperty( name = APS.Messaging.Persistent, value = APS.FALSE ),
+                @APSPlatformServiceProperty( name = APS.Messaging.Clustered, value = APS.TRUE )
         ]
 )
 class APSVertxBusRouter implements APSBusRouter {
@@ -132,7 +132,7 @@ class APSVertxBusRouter implements APSBusRouter {
     /**
      * This tracks the EventBus. init() will setup an onActiveServiceAvailable callback handler which
      * will provide the eventBus instance.*/
-    @OSGiService( additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "30 sec" )
+    @APSPlatformService( additionalSearchCriteria = "(vertx-object=EventBus)", timeout = "30 sec" )
     protected APSServiceTracker<EventBus> eventBusTracker
     protected EventBus eventBus
 

@@ -48,10 +48,10 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface OSGiServiceInstance {
+public @interface APSPlatformServiceInstance {
 
     /** Extra properties to register the service with. */
-    OSGiProperty[] properties() default {};
+    APSPlatformServiceProperty[] properties() default {};
 
     /** The service API to register instance with. If not specified the first implemented interface will be used. */
     Class[] serviceAPIs() default {};
