@@ -44,7 +44,7 @@ import se.natusoft.osgi.aps.runtime.APSRuntime;
 import se.natusoft.osgi.aps.tools.services.TestService;
 import se.natusoft.osgi.aps.tracker.APSServiceTracker;
 
-import static org.junit.Assert.assertEquals;
+//import static org.junit.Assert.assertEquals;
 
 /**
  *
