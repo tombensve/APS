@@ -57,7 +57,7 @@ public class TestBundleAPS {
 
         apsBundle.loadEntryPathsFromMaven("se.natusoft.osgi.aps", "aps-apis", "1.0.0");
 
-        assertNotNull( apsBundle.getEntry("/se/natusoft/osgi/aps/annotations/APSServiceAPI.class"));
+        assertNotNull( apsBundle.getEntry( "/se/natusoft/aps/annotations/APSServiceAPI.class" ));
     }
 
     @Test
