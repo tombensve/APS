@@ -55,9 +55,9 @@ import io.vertx.ext.web.handler.sockjs.BridgeOptions
 import io.vertx.ext.web.handler.sockjs.SockJSHandler
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceRegistration
-import se.natusoft.osgi.aps.activator.annotation.BundleStop
-import se.natusoft.osgi.aps.activator.annotation.Initializer
-import se.natusoft.osgi.aps.activator.annotation.Managed
+import se.natusoft.aps.activator.annotation.BundleStop
+import se.natusoft.aps.activator.annotation.Initializer
+import se.natusoft.aps.activator.annotation.Managed
 import se.natusoft.osgi.aps.api.messaging.APSBusRouter
 import se.natusoft.osgi.aps.core.lib.APSConfigLoader
 import se.natusoft.osgi.aps.exceptions.APSConfigException

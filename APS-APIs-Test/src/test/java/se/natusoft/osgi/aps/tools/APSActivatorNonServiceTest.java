@@ -38,10 +38,10 @@
 package se.natusoft.osgi.aps.tools;
 
 import org.junit.Test;
-import se.natusoft.osgi.aps.activator.APSActivator;
-import se.natusoft.osgi.aps.activator.annotation.BundleStart;
-import se.natusoft.osgi.aps.activator.annotation.BundleStop;
-import se.natusoft.osgi.aps.activator.annotation.Initializer;
+import se.natusoft.aps.activator.APSActivator;
+import se.natusoft.aps.activator.annotation.BundleStart;
+import se.natusoft.aps.activator.annotation.BundleStop;
+import se.natusoft.aps.activator.annotation.Initializer;
 import se.natusoft.osgi.aps.runtime.APSBundle;
 import se.natusoft.osgi.aps.runtime.APSRuntime;
 import se.natusoft.osgi.aps.runtime.BundleEntryPath;

@@ -34,13 +34,13 @@
  *         2013-08-02: Created!
  *
  */
-package se.natusoft.osgi.aps.activator;
+package se.natusoft.aps.activator;
 
 import org.osgi.framework.*;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceListener;
-import se.natusoft.osgi.aps.activator.annotation.*;
+import se.natusoft.aps.activator.annotation.*;
 import se.natusoft.osgi.aps.util.*;
 import se.natusoft.osgi.aps.tracker.APSServiceTracker;
 import se.natusoft.osgi.aps.tracker.OnServiceAvailable;
@@ -1250,8 +1250,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
      * @param context      The bundle context.
      */
     protected void registerListenerMethodWrappers( Method method, Class managedClass, BundleContext context ) {
-        se.natusoft.osgi.aps.activator.annotation.ServiceListener serviceListener =
-                method.getAnnotation( se.natusoft.osgi.aps.activator.annotation.ServiceListener.class );
+        se.natusoft.aps.activator.annotation.ServiceListener serviceListener =
+                method.getAnnotation( se.natusoft.aps.activator.annotation.ServiceListener.class );
 
         if ( serviceListener != null ) {
 
@@ -1264,8 +1264,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         }
 
 
-        se.natusoft.osgi.aps.activator.annotation.BundleListener bundleListener =
-                method.getAnnotation( se.natusoft.osgi.aps.activator.annotation.BundleListener.class );
+        se.natusoft.aps.activator.annotation.BundleListener bundleListener =
+                method.getAnnotation( se.natusoft.aps.activator.annotation.BundleListener.class );
 
         if ( bundleListener != null ) {
 
@@ -1278,8 +1278,8 @@ public class APSActivator implements BundleActivator, OnServiceAvailable, OnTime
         }
 
 
-        se.natusoft.osgi.aps.activator.annotation.FrameworkListener frameworkListener =
-                method.getAnnotation( se.natusoft.osgi.aps.activator.annotation.FrameworkListener.class );
+        se.natusoft.aps.activator.annotation.FrameworkListener frameworkListener =
+                method.getAnnotation( se.natusoft.aps.activator.annotation.FrameworkListener.class );
 
         if ( frameworkListener != null ) {
 

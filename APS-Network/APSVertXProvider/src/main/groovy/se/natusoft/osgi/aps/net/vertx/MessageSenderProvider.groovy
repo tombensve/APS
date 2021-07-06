@@ -47,8 +47,8 @@ import io.vertx.core.json.JsonObject
 import org.osgi.framework.BundleContext
 import org.osgi.framework.ServiceReference
 import org.osgi.framework.ServiceRegistration
-import se.natusoft.osgi.aps.activator.APSActivatorInteraction
-import se.natusoft.osgi.aps.activator.annotation.*
+import se.natusoft.aps.activator.APSActivatorInteraction
+import se.natusoft.aps.activator.annotation.*
 import se.natusoft.osgi.aps.api.messaging.APSMessage
 import se.natusoft.osgi.aps.api.messaging.APSMessageSender
 

@@ -3,7 +3,7 @@ package se.natusoft.osgi.aps.web
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.junit.Test
-import se.natusoft.osgi.aps.activator.APSActivator
+import se.natusoft.aps.activator.APSActivator
 import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.util.APSLogger
 

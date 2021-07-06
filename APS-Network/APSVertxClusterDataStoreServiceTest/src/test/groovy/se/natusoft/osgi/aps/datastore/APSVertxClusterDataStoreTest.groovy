@@ -2,10 +2,10 @@ package se.natusoft.osgi.aps.datastore
 
 import groovy.transform.CompileStatic
 import org.junit.Test
-import se.natusoft.osgi.aps.activator.APSActivator
-import se.natusoft.osgi.aps.activator.annotation.Initializer
-import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.APSPlatformService
+import se.natusoft.aps.activator.APSActivator
+import se.natusoft.aps.activator.annotation.Initializer
+import se.natusoft.aps.activator.annotation.Managed
+import se.natusoft.aps.activator.annotation.APSPlatformService
 import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.types.APSLockable
 import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService

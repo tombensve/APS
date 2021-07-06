@@ -2,11 +2,11 @@ package se.natusoft.osgi.aps.core.service
 
 import groovy.transform.CompileStatic
 import org.junit.Test
-import se.natusoft.osgi.aps.activator.APSActivator
-import se.natusoft.osgi.aps.activator.annotation.BundleStop
-import se.natusoft.osgi.aps.activator.annotation.Initializer
-import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.APSPlatformService
+import se.natusoft.aps.activator.APSActivator
+import se.natusoft.aps.activator.annotation.BundleStop
+import se.natusoft.aps.activator.annotation.Initializer
+import se.natusoft.aps.activator.annotation.Managed
+import se.natusoft.aps.activator.annotation.APSPlatformService
 import se.natusoft.osgi.aps.api.messaging.APSBus
 import se.natusoft.osgi.aps.api.messaging.APSMessagingException
 import se.natusoft.osgi.aps.core.lib.MapJsonLoader
@@ -41,7 +41,7 @@ class APSBusTest extends APSRuntime {
         deploy 'aps-core-lib' with new APSActivator() from "APS-Libraries/APSCoreLib/target/classes"
         deploy 'aps-core-lib-test' with new APSActivator() from "APS-Libraries/APSCoreLib/target/test-classes"
 
-        hold() whilst { testCount < 3 } maxTime 4 unit TimeUnit.SECONDS exceptionOnTimeout true go()
+        hold() whilst { testCount < 3 } maxTime 10 unit TimeUnit.SECONDS exceptionOnTimeout true go()
 
         undeploy 'aps-core-lib-test'
         undeploy 'aps-core-lib'

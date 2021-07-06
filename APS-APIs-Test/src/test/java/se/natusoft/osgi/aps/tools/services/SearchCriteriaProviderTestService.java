@@ -37,9 +37,9 @@
  */
 package se.natusoft.osgi.aps.tools.services;
 
-import se.natusoft.osgi.aps.activator.annotation.APSPlatformService;
-import se.natusoft.osgi.aps.activator.annotation.APSPlatformServiceProvider;
-import se.natusoft.osgi.aps.activator.APSActivatorSearchCriteriaProvider;
+import se.natusoft.aps.activator.annotation.APSPlatformService;
+import se.natusoft.aps.activator.annotation.APSPlatformServiceProvider;
+import se.natusoft.aps.activator.APSActivatorSearchCriteriaProvider;
 
 @APSPlatformServiceProvider(threadStart = true)
 public class SearchCriteriaProviderTestService implements TestService {

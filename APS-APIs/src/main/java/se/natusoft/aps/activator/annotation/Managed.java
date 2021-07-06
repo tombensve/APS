@@ -34,43 +34,34 @@
  *         2012-08-19: Created!
  *
  */
-package se.natusoft.osgi.aps.activator.annotation;
+package se.natusoft.aps.activator.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.concurrent.ExecutorService;
 
 /**
- * This annotation indicates that the annotated field is an ExecutorService and the type must
- * actually be of type ExecutorService or ScheduledExecutorService. Fields annotated with this
- * must also be annotated with @Managed.
+ * This annotation indicates that the annotated field should be managed by APSActivator and
+ * injected.
+ *
+ * Using this annotation on a class not annotated with @OSGiServiceProvider will still cause
+ * the class to be instantiated by APSActivator.
  *
  * This only works when APSActivator is used as bundle activator!
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ExecutorSvc {
+public @interface Managed {
+    /**
+     * The name of the instance to manage. If the same is used in multiple classes the same instance will
+     * be injected.
+     */
+    String name() default "default";
 
-    enum ExecutorType {
-        FixedSize,
-        WorkStealing,
-        Single,
-        Cached,
-        Scheduled,
-        SingleScheduled
-    }
-
-    /** This is loosely the number of concurrent threads. IRRELEVANT, NOT USED!*/
-    int parallelism() default 10;
-
-    /** The type of ExecutorService wanted. IRRELEVANT, NOT USED! */
-    ExecutorType type() default ExecutorType.FixedSize;
-
-    /** If true the created ExecutorService will be wrapped with a delegate that disallows configuration. */
-    boolean unConfigurable() default false;
-
-    /** Provides base name for threads. */
-    String name() default "-";
+    /**
+     * A label indicating who is logging. If not specified the bundle name will be used. This is only
+     * relevant if the managed type is APSLogger.
+     */
+    String loggingFor() default "";
 }

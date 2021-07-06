@@ -38,10 +38,10 @@ import io.vertx.core.AsyncResult
 import io.vertx.core.shareddata.AsyncMap
 import io.vertx.core.shareddata.Lock
 import io.vertx.core.shareddata.SharedData
-import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.APSPlatformServiceProperty
-import se.natusoft.osgi.aps.activator.annotation.APSPlatformService
-import se.natusoft.osgi.aps.activator.annotation.APSPlatformServiceProvider
+import se.natusoft.aps.activator.annotation.Managed
+import se.natusoft.aps.activator.annotation.APSPlatformServiceProperty
+import se.natusoft.aps.activator.annotation.APSPlatformService
+import se.natusoft.aps.activator.annotation.APSPlatformServiceProvider
 import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.exceptions.APSValidationException

@@ -44,8 +44,8 @@ import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.NotUsed
 import se.natusoft.docutations.Nullable
 import se.natusoft.docutations.Optional
-import se.natusoft.osgi.aps.activator.APSActivatorInteraction
-import se.natusoft.osgi.aps.activator.annotation.*
+import se.natusoft.aps.activator.APSActivatorInteraction
+import se.natusoft.aps.activator.annotation.*
 import se.natusoft.osgi.aps.api.messaging.APSBus
 import se.natusoft.osgi.aps.api.messaging.APSBusRouter
 import se.natusoft.osgi.aps.api.messaging.APSMessagingException

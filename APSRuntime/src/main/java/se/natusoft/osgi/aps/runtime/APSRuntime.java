@@ -40,17 +40,14 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
-import se.natusoft.osgi.aps.activator.APSActivator;
+import se.natusoft.aps.activator.APSActivator;
 import se.natusoft.osgi.aps.api.core.filesystem.service.APSFilesystemService;
 import se.natusoft.osgi.aps.exceptions.APSException;
 import se.natusoft.osgi.aps.runtime.internal.ServiceRegistry;
-import se.natusoft.osgi.aps.types.APSResult;
 
 import java.io.File;
-import java.io.PrintStream;
 import java.util.*;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**

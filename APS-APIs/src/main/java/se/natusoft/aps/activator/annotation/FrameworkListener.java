@@ -34,7 +34,7 @@
  *         2012-08-19: Created!
  *
  */
-package se.natusoft.osgi.aps.activator.annotation;
+package se.natusoft.aps.activator.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -42,10 +42,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation indicates that the annotated method should be called on bundle start.
+ * This annotation indicates that the annotated method should receive framework events.
+ * The method must take one argument of FrameworkEvent type!
  *
  * This only works when APSActivator is used as bundle activator!
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface BundleStart { }
+public @interface FrameworkListener {}

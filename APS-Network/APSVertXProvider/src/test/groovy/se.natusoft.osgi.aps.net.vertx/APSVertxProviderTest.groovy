@@ -7,10 +7,10 @@ import io.vertx.core.shareddata.SharedData
 import io.vertx.ext.web.Router
 import org.junit.Test
 import org.osgi.framework.ServiceReference
-import se.natusoft.osgi.aps.activator.APSActivator
-import se.natusoft.osgi.aps.activator.annotation.Initializer
-import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.APSPlatformService
+import se.natusoft.aps.activator.APSActivator
+import se.natusoft.aps.activator.annotation.Initializer
+import se.natusoft.aps.activator.annotation.Managed
+import se.natusoft.aps.activator.annotation.APSPlatformService
 import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.util.APSLogger

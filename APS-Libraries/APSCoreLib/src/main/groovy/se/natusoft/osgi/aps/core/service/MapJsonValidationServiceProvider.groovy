@@ -38,8 +38,8 @@
 package se.natusoft.osgi.aps.core.service
 
 import groovy.transform.CompileStatic
-import se.natusoft.osgi.aps.activator.annotation.APSPlatformServiceProperty
-import se.natusoft.osgi.aps.activator.annotation.APSPlatformServiceProvider
+import se.natusoft.aps.activator.annotation.APSPlatformServiceProperty
+import se.natusoft.aps.activator.annotation.APSPlatformServiceProvider
 import se.natusoft.osgi.aps.api.misc.json.model.APSMapJson
 import se.natusoft.osgi.aps.api.misc.json.model.APSMapJsonSchema
 import se.natusoft.osgi.aps.api.misc.json.service.APSMapJsonValidationService

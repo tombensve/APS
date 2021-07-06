@@ -1,10 +1,9 @@
 package se.natusoft.osgi.aps.platform;
 
-import se.natusoft.osgi.aps.activator.APSActivator;
+import se.natusoft.aps.activator.APSActivator;
 import se.natusoft.osgi.aps.runtime.APSRuntime;
 
 import java.io.File;
-import java.util.LinkedList;
 import java.util.List;
 
 /**

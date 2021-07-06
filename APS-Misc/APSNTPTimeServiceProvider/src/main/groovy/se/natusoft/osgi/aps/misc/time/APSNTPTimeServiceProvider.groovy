@@ -39,7 +39,7 @@ package se.natusoft.osgi.aps.misc.time
 import groovy.transform.CompileStatic
 import org.apache.commons.net.ntp.NTPUDPClient
 import org.apache.commons.net.ntp.TimeInfo
-import se.natusoft.osgi.aps.activator.annotation.*
+import se.natusoft.aps.activator.annotation.*
 import se.natusoft.osgi.aps.api.misc.time.APSTimeService
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.APSConfigLoader

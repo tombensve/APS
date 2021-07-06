@@ -49,8 +49,8 @@ import org.osgi.framework.ServiceReference
 import org.osgi.framework.ServiceRegistration
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
-import se.natusoft.osgi.aps.activator.APSActivatorInteraction
-import se.natusoft.osgi.aps.activator.annotation.*
+import se.natusoft.aps.activator.APSActivatorInteraction
+import se.natusoft.aps.activator.annotation.*
 import se.natusoft.osgi.aps.api.messaging.APSMessage
 import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
 import se.natusoft.osgi.aps.constants.APS

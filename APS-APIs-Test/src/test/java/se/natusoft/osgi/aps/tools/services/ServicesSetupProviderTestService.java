@@ -37,9 +37,9 @@
  */
 package se.natusoft.osgi.aps.tools.services;
 
-import se.natusoft.osgi.aps.activator.ServiceSetup;
-import se.natusoft.osgi.aps.activator.annotation.APSPlatformServiceProvider;
-import se.natusoft.osgi.aps.activator.APSActivatorServiceSetupProvider;
+import se.natusoft.aps.activator.ServiceSetup;
+import se.natusoft.aps.activator.annotation.APSPlatformServiceProvider;
+import se.natusoft.aps.activator.APSActivatorServiceSetupProvider;
 
 import java.util.LinkedList;
 import java.util.List;

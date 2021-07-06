@@ -41,9 +41,9 @@ import groovy.transform.CompileStatic
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
 import se.natusoft.docutations.Optional
-import se.natusoft.osgi.aps.activator.annotation.Managed
-import se.natusoft.osgi.aps.activator.annotation.APSPlatformServiceProperty
-import se.natusoft.osgi.aps.activator.annotation.APSPlatformServiceProvider
+import se.natusoft.aps.activator.annotation.Managed
+import se.natusoft.aps.activator.annotation.APSPlatformServiceProperty
+import se.natusoft.aps.activator.annotation.APSPlatformServiceProvider
 import se.natusoft.osgi.aps.api.messaging.APSBusRouter
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.ValidTarget

@@ -1,4 +1,4 @@
-package se.natusoft.osgi.aps.activator;
+package se.natusoft.aps.activator;
 
 import java.util.LinkedList;
 import java.util.Properties;
