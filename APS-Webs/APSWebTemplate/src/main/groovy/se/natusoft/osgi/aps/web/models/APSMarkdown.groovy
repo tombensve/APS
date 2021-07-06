@@ -46,8 +46,6 @@
 package se.natusoft.osgi.aps.web.models
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
-import se.natusoft.osgi.aps.api.messaging.APSMessage
 
 /**
  * This component displays markdown text.

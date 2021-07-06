@@ -7,8 +7,8 @@ import se.natusoft.aps.activator.annotation.BundleStop
 import se.natusoft.aps.activator.annotation.Initializer
 import se.natusoft.aps.activator.annotation.Managed
 import se.natusoft.aps.activator.annotation.APSPlatformService
-import se.natusoft.osgi.aps.api.messaging.APSBus
-import se.natusoft.osgi.aps.api.messaging.APSMessagingException
+import se.natusoft.aps.api.messaging.APSBus
+import se.natusoft.aps.api.messaging.APSMessagingException
 import se.natusoft.osgi.aps.core.lib.MapJsonLoader
 import se.natusoft.osgi.aps.core.lib.MapJsonSchemaValidator
 import se.natusoft.osgi.aps.exceptions.APSValidationException

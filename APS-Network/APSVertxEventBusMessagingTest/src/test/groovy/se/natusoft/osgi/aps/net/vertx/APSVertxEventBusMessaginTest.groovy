@@ -2,9 +2,9 @@ package se.natusoft.osgi.aps.net.vertx
 
 import groovy.transform.CompileStatic
 import org.junit.Test
-import se.natusoft.osgi.aps.api.messaging.APSMessageSender
-import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
-import se.natusoft.osgi.aps.api.messaging.APSMessage
+import se.natusoft.aps.api.messaging.APSMessageSender
+import se.natusoft.aps.api.messaging.APSMessageSubscriber
+import se.natusoft.aps.api.messaging.APSMessage
 
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.StructMap

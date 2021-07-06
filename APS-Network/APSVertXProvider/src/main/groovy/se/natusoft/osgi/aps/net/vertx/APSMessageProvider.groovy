@@ -44,7 +44,7 @@ import groovy.transform.TypeChecked
 import io.vertx.core.eventbus.Message
 import io.vertx.core.json.JsonObject
 import se.natusoft.docutations.NotNull
-import se.natusoft.osgi.aps.api.messaging.APSMessage
+import se.natusoft.aps.api.messaging.APSMessage
 
 @CompileStatic
 class APSMessageProvider implements APSMessage {

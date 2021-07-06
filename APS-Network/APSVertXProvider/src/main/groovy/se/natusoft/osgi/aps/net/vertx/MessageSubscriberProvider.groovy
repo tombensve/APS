@@ -51,8 +51,8 @@ import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
 import se.natusoft.aps.activator.APSActivatorInteraction
 import se.natusoft.aps.activator.annotation.*
-import se.natusoft.osgi.aps.api.messaging.APSMessage
-import se.natusoft.osgi.aps.api.messaging.APSMessageSubscriber
+import se.natusoft.aps.api.messaging.APSMessage
+import se.natusoft.aps.api.messaging.APSMessageSubscriber
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.exceptions.APSIOException
 import se.natusoft.osgi.aps.exceptions.APSValidationException

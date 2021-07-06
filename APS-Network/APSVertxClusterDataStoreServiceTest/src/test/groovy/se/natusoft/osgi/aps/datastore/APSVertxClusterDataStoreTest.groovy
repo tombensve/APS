@@ -8,7 +8,7 @@ import se.natusoft.aps.activator.annotation.Managed
 import se.natusoft.aps.activator.annotation.APSPlatformService
 import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.types.APSLockable
-import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
+import se.natusoft.aps.api.core.store.APSLockableDataStoreService
 import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.util.APSLogger
 

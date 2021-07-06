@@ -50,7 +50,7 @@ import io.vertx.core.json.JsonObject
 import se.natusoft.docutations.NotNull
 import se.natusoft.docutations.Nullable
 import se.natusoft.docutations.Optional
-import se.natusoft.osgi.aps.api.messaging.APSBusRouter
+import se.natusoft.aps.api.messaging.APSBusRouter
 import se.natusoft.osgi.aps.core.lib.ValidTarget
 import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
 import se.natusoft.osgi.aps.types.APSHandler

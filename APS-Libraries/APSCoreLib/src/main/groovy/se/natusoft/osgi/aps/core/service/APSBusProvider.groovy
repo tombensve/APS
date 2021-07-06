@@ -46,9 +46,9 @@ import se.natusoft.docutations.Nullable
 import se.natusoft.docutations.Optional
 import se.natusoft.aps.activator.APSActivatorInteraction
 import se.natusoft.aps.activator.annotation.*
-import se.natusoft.osgi.aps.api.messaging.APSBus
-import se.natusoft.osgi.aps.api.messaging.APSBusRouter
-import se.natusoft.osgi.aps.api.messaging.APSMessagingException
+import se.natusoft.aps.api.messaging.APSBus
+import se.natusoft.aps.api.messaging.APSBusRouter
+import se.natusoft.aps.api.messaging.APSMessagingException
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.Sporadic
 import se.natusoft.osgi.aps.exceptions.APSValidationException

@@ -42,7 +42,7 @@ import se.natusoft.aps.activator.annotation.Managed
 import se.natusoft.aps.activator.annotation.APSPlatformServiceProperty
 import se.natusoft.aps.activator.annotation.APSPlatformService
 import se.natusoft.aps.activator.annotation.APSPlatformServiceProvider
-import se.natusoft.osgi.aps.api.core.store.APSLockableDataStoreService
+import se.natusoft.aps.api.core.store.APSLockableDataStoreService
 import se.natusoft.osgi.aps.constants.APS
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.types.APSHandler

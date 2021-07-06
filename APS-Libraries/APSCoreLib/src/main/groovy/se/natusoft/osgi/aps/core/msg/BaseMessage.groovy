@@ -1,7 +1,7 @@
 package se.natusoft.osgi.aps.core.msg
 
 import groovy.transform.CompileStatic
-import se.natusoft.osgi.aps.api.messaging.APSBaseMessage
+import se.natusoft.aps.api.messaging.APSBaseMessage
 import se.natusoft.osgi.aps.core.lib.MapJsonSchemaValidator
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 

@@ -3,7 +3,7 @@ package se.natusoft.osgi.aps.misc.time
 import org.junit.Test
 import org.osgi.framework.BundleContext
 import se.natusoft.aps.activator.APSActivator
-import se.natusoft.osgi.aps.api.misc.time.APSTimeService
+import se.natusoft.aps.api.misc.time.APSTimeService
 import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.util.APSLogger
