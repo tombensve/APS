@@ -36,7 +36,7 @@
  */
 package se.natusoft.aps.api.core.store;
 
-import se.natusoft.osgi.aps.types.APSLockable;
+import se.natusoft.aps.types.APSLockable;
 
 /**
  * A convenience providing both APSDataStoreService and APSLockable in one API.

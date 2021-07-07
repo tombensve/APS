@@ -1,4 +1,4 @@
-package se.natusoft.osgi.aps.util;
+package se.natusoft.aps.util;
 
 /**
  * Utility to make a value thread synchronized.

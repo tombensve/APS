@@ -9,14 +9,14 @@ import se.natusoft.aps.api.messaging.APSMessage
 import se.natusoft.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.StructMap
 import se.natusoft.osgi.aps.runtime.APSRuntime
-import se.natusoft.osgi.aps.types.APSResult
-import se.natusoft.osgi.aps.types.ID
+import se.natusoft.aps.types.APSResult
+import se.natusoft.aps.types.ID
 import se.natusoft.aps.activator.APSActivator
-import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.aps.util.APSLogger
 import se.natusoft.aps.activator.annotation.Initializer
 import se.natusoft.aps.activator.annotation.Managed
 import se.natusoft.aps.activator.annotation.APSPlatformService
-import se.natusoft.osgi.aps.types.APSUUID
+import se.natusoft.aps.types.APSUUID
 import static java.util.concurrent.TimeUnit.SECONDS
 
 @CompileStatic

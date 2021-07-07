@@ -6,7 +6,7 @@ import se.natusoft.aps.activator.APSActivator
 import se.natusoft.aps.api.misc.time.APSTimeService
 import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.aps.tracker.APSServiceTracker
-import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.aps.util.APSLogger
 
 import java.time.Instant
 import java.util.concurrent.TimeUnit

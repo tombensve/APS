@@ -55,10 +55,10 @@ import se.natusoft.aps.api.messaging.APSMessageSender
 import se.natusoft.aps.constants.APS
 import se.natusoft.aps.exceptions.APSException
 import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
-import se.natusoft.osgi.aps.types.APSHandler
-import se.natusoft.osgi.aps.types.APSResult
+import se.natusoft.aps.types.APSHandler
+import se.natusoft.aps.types.APSResult
 import se.natusoft.aps.tracker.APSServiceTracker
-import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.aps.util.APSLogger
 
 @SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic

@@ -43,7 +43,7 @@ import se.natusoft.aps.activator.annotation.*
 import se.natusoft.aps.api.misc.time.APSTimeService
 import se.natusoft.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.APSConfigLoader
-import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.aps.util.APSLogger
 
 import java.time.Instant
 import java.util.concurrent.TimeUnit

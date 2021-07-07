@@ -48,15 +48,15 @@ import se.natusoft.aps.api.messaging.APSBusRouter
 import se.natusoft.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.ValidTarget
 import se.natusoft.aps.exceptions.APSValidationException
-import se.natusoft.osgi.aps.types.APSHandler
-import se.natusoft.osgi.aps.types.APSResult
-import se.natusoft.osgi.aps.types.ID
-import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.aps.types.APSHandler
+import se.natusoft.aps.types.APSResult
+import se.natusoft.aps.types.ID
+import se.natusoft.aps.util.APSLogger
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 
-import static se.natusoft.osgi.aps.util.APSExecutor.concurrent
+import static se.natusoft.aps.util.APSExecutor.concurrent
 
 /**
  * A very simple little bus that will call the handler of any subscriber subscribing to same

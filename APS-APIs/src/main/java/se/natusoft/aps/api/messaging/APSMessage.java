@@ -37,7 +37,7 @@
 package se.natusoft.aps.api.messaging;
 
 import se.natusoft.docutations.NotNull;
-import se.natusoft.osgi.aps.types.APSValue;
+import se.natusoft.aps.types.APSValue;
 
 import java.util.Map;
 

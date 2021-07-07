@@ -34,7 +34,7 @@
  *         2018-05-26: Created!
  *
  */
-package se.natusoft.osgi.aps.types;
+package se.natusoft.aps.types;
 
 /**
  * This is a utility to wrap an object and easily check for what it is among String, number, boolean, or object.

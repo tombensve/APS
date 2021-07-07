@@ -37,7 +37,7 @@
  */
 package se.natusoft.osgi.aps.tools.services;
 
-import se.natusoft.osgi.aps.util.APSLogger;
+import se.natusoft.aps.util.APSLogger;
 import se.natusoft.aps.activator.annotation.Managed;
 import se.natusoft.aps.activator.annotation.APSPlatformServiceProvider;
 

@@ -7,10 +7,10 @@ import se.natusoft.aps.activator.annotation.Initializer
 import se.natusoft.aps.activator.annotation.Managed
 import se.natusoft.aps.activator.annotation.APSPlatformService
 import se.natusoft.osgi.aps.runtime.APSRuntime
-import se.natusoft.osgi.aps.types.APSLockable
+import se.natusoft.aps.types.APSLockable
 import se.natusoft.aps.api.core.store.APSLockableDataStoreService
-import se.natusoft.osgi.aps.types.APSResult
-import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.aps.types.APSResult
+import se.natusoft.aps.util.APSLogger
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS
 import static java.util.concurrent.TimeUnit.SECONDS

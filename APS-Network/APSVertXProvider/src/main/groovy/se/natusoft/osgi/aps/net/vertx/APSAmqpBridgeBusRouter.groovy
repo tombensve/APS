@@ -40,7 +40,6 @@
 package se.natusoft.osgi.aps.net.vertx
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 import io.vertx.amqpbridge.AmqpBridge
 import io.vertx.core.AsyncResult
 import io.vertx.core.eventbus.Message
@@ -53,10 +52,10 @@ import se.natusoft.docutations.Optional
 import se.natusoft.aps.api.messaging.APSBusRouter
 import se.natusoft.osgi.aps.core.lib.ValidTarget
 import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
-import se.natusoft.osgi.aps.types.APSHandler
-import se.natusoft.osgi.aps.types.APSResult
-import se.natusoft.osgi.aps.types.ID
-import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.aps.types.APSHandler
+import se.natusoft.aps.types.APSResult
+import se.natusoft.aps.types.ID
+import se.natusoft.aps.util.APSLogger
 
 /**
  * Provides and APSBusRouter implementation using Vert.x EventBus for communication.

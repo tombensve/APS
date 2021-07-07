@@ -36,8 +36,8 @@
  */
 package se.natusoft.aps.constants;
 
-import se.natusoft.osgi.aps.types.APSHandler;
-import se.natusoft.osgi.aps.types.APSResult;
+import se.natusoft.aps.types.APSHandler;
+import se.natusoft.aps.types.APSResult;
 
 /**
  * Hierarchy of constants.

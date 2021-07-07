@@ -5,7 +5,7 @@ import groovy.transform.TypeChecked
 import org.junit.Test
 import se.natusoft.aps.activator.APSActivator
 import se.natusoft.osgi.aps.runtime.APSRuntime
-import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.aps.util.APSLogger
 
 import static java.util.concurrent.TimeUnit.HOURS
 import static java.util.concurrent.TimeUnit.SECONDS

@@ -58,10 +58,10 @@ import se.natusoft.aps.exceptions.APSIOException
 import se.natusoft.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
 import se.natusoft.aps.tracker.APSServiceTracker
-import se.natusoft.osgi.aps.types.APSHandler
-import se.natusoft.osgi.aps.types.APSResult
-import se.natusoft.osgi.aps.types.ID
-import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.aps.types.APSHandler
+import se.natusoft.aps.types.APSResult
+import se.natusoft.aps.types.ID
+import se.natusoft.aps.util.APSLogger
 
 @SuppressWarnings( "GroovyUnusedDeclaration" )
 @CompileStatic

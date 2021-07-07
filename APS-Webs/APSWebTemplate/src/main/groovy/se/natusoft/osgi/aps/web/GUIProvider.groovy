@@ -52,11 +52,11 @@ import se.natusoft.aps.activator.annotation.Managed
 import se.natusoft.aps.activator.annotation.APSPlatformService
 import se.natusoft.aps.api.messaging.APSBus
 import se.natusoft.aps.tracker.APSServiceTracker
-import se.natusoft.osgi.aps.types.APSResult
-import se.natusoft.osgi.aps.types.APSUUID
-import se.natusoft.osgi.aps.types.ID
-import se.natusoft.osgi.aps.util.APSJson
-import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.aps.types.APSResult
+import se.natusoft.aps.types.APSUUID
+import se.natusoft.aps.types.ID
+import se.natusoft.aps.util.APSJson
+import se.natusoft.aps.util.APSLogger
 import se.natusoft.osgi.aps.web.models.APSAlert
 import se.natusoft.osgi.aps.web.models.APSButton
 import se.natusoft.osgi.aps.web.models.APSCheckbox

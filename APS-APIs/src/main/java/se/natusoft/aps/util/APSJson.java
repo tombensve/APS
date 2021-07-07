@@ -34,12 +34,12 @@
  *         2019-08-17: Created!
  *
  */
-package se.natusoft.osgi.aps.util;
+package se.natusoft.aps.util;
 
 import com.fasterxml.jackson.jr.ob.JSON;
 import se.natusoft.aps.exceptions.APSIOException;
-import se.natusoft.osgi.aps.types.APSHandler;
-import se.natusoft.osgi.aps.types.APSResult;
+import se.natusoft.aps.types.APSHandler;
+import se.natusoft.aps.types.APSResult;
 
 import java.io.*;
 import java.util.Arrays;

@@ -39,9 +39,9 @@ package se.natusoft.aps.api.messaging;
 import se.natusoft.docutations.NotNull;
 import se.natusoft.docutations.Nullable;
 import se.natusoft.docutations.Reactive;
-import se.natusoft.osgi.aps.types.APSHandler;
-import se.natusoft.osgi.aps.types.APSResult;
-import se.natusoft.osgi.aps.types.ID;
+import se.natusoft.aps.types.APSHandler;
+import se.natusoft.aps.types.APSResult;
+import se.natusoft.aps.types.ID;
 
 /**
  * Provides functionality for clients wanting to receive messages.

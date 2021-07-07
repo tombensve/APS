@@ -34,7 +34,7 @@
  *         2018-05-26: Created!
  *
  */
-package se.natusoft.osgi.aps.types;
+package se.natusoft.aps.types;
 
 import se.natusoft.docutations.NotNull;
 import se.natusoft.docutations.Nullable;

@@ -63,7 +63,7 @@ import se.natusoft.osgi.aps.core.lib.APSConfigLoader
 import se.natusoft.aps.exceptions.APSConfigException
 import se.natusoft.aps.exceptions.APSException
 import se.natusoft.aps.exceptions.APSStartException
-import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.aps.util.APSLogger
 
 /**
  * Provides Vertx by publishing Vertx and other Vertx related objects some by configuration as OSGi services.

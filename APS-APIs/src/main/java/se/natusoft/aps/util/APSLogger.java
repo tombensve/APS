@@ -34,7 +34,7 @@
  *         2011-08-04: Created!
  *
  */
-package se.natusoft.osgi.aps.util;
+package se.natusoft.aps.util;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -43,7 +43,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.log.LogService;
 import se.natusoft.aps.tracker.APSNoServiceAvailableException;
 import se.natusoft.aps.tracker.APSServiceTracker;
-import se.natusoft.osgi.aps.tuples.Tuple3;
+import se.natusoft.aps.tuples.Tuple3;
 
 import java.io.OutputStream;
 import java.io.PrintStream;

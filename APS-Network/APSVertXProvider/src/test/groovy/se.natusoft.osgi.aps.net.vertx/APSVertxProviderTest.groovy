@@ -13,7 +13,7 @@ import se.natusoft.aps.activator.annotation.Managed
 import se.natusoft.aps.activator.annotation.APSPlatformService
 import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.aps.tracker.APSServiceTracker
-import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.aps.util.APSLogger
 
 import static java.util.concurrent.TimeUnit.SECONDS
 

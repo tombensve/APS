@@ -36,7 +36,7 @@
  */
 package se.natusoft.aps.tracker;
 
-import se.natusoft.osgi.aps.util.APSLogger;
+import se.natusoft.aps.util.APSLogger;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;

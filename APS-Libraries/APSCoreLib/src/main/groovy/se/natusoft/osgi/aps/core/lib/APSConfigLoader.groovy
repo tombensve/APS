@@ -3,8 +3,8 @@ package se.natusoft.osgi.aps.core.lib
 import se.natusoft.aps.exceptions.APSConfigException
 import se.natusoft.aps.exceptions.APSIOException
 import se.natusoft.aps.exceptions.APSValidationException
-import se.natusoft.osgi.aps.util.APSJson
-import se.natusoft.osgi.aps.util.APSResourceLoader
+import se.natusoft.aps.util.APSJson
+import se.natusoft.aps.util.APSResourceLoader
 
 /**
  * This class contains static functionality to fetch a JSON configuration file.

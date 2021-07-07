@@ -34,9 +34,9 @@
  *         2017-01-05: Created!
  *
  */
-package se.natusoft.osgi.aps.util;
+package se.natusoft.aps.util;
 
-import se.natusoft.osgi.aps.types.APSResult;
+import se.natusoft.aps.types.APSResult;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;

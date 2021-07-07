@@ -37,7 +37,7 @@
 package se.natusoft.aps.tracker;
 
 import org.osgi.framework.*;
-import se.natusoft.osgi.aps.util.APSLogger;
+import se.natusoft.aps.util.APSLogger;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

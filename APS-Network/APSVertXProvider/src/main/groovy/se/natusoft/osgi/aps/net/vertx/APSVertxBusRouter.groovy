@@ -64,11 +64,11 @@ import se.natusoft.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.ValidTarget
 import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
 import se.natusoft.aps.tracker.APSServiceTracker
-import se.natusoft.osgi.aps.types.APSHandler
-import se.natusoft.osgi.aps.types.APSResult
-import se.natusoft.osgi.aps.types.ID
-import se.natusoft.osgi.aps.util.APSLogger
-import static se.natusoft.osgi.aps.util.APSExecutor.*
+import se.natusoft.aps.types.APSHandler
+import se.natusoft.aps.types.APSResult
+import se.natusoft.aps.types.ID
+import se.natusoft.aps.util.APSLogger
+import static se.natusoft.aps.util.APSExecutor.*
 
 /**
  * Provides and APSBusRouter implementation using Vert.x EventBus for communication.

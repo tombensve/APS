@@ -34,7 +34,7 @@
  *         2012-08-19: Created!
  *
  */
-package se.natusoft.osgi.aps.util;
+package se.natusoft.aps.util;
 
 import se.natusoft.aps.annotations.APSRunInBundlesContext;
 

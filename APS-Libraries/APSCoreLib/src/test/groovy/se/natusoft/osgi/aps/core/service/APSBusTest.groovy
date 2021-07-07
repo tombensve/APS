@@ -14,16 +14,16 @@ import se.natusoft.osgi.aps.core.lib.MapJsonSchemaValidator
 import se.natusoft.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.runtime.APSTestResults
-import se.natusoft.osgi.aps.types.APSResult
-import se.natusoft.osgi.aps.types.APSUUID
-import se.natusoft.osgi.aps.types.ID
-import se.natusoft.osgi.aps.util.APSLogger
-import se.natusoft.osgi.aps.util.SyncedValue
+import se.natusoft.aps.types.APSResult
+import se.natusoft.aps.types.APSUUID
+import se.natusoft.aps.types.ID
+import se.natusoft.aps.util.APSLogger
+import se.natusoft.aps.util.SyncedValue
 
 import java.util.concurrent.TimeUnit
 
-import static se.natusoft.osgi.aps.util.APSExecutor.concurrent
-import static se.natusoft.osgi.aps.util.APSTools.waitFor
+import static se.natusoft.aps.util.APSExecutor.concurrent
+import static se.natusoft.aps.util.APSTools.waitFor
 
 @CompileStatic
 class APSBusTest extends APSRuntime {

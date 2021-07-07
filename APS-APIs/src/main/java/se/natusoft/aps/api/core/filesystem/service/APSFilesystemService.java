@@ -38,8 +38,8 @@ package se.natusoft.aps.api.core.filesystem.service;
 
 import se.natusoft.aps.api.core.filesystem.model.APSFilesystem;
 import se.natusoft.aps.exceptions.APSIOException;
-import se.natusoft.osgi.aps.types.APSHandler;
-import se.natusoft.osgi.aps.types.APSResult;
+import se.natusoft.aps.types.APSHandler;
+import se.natusoft.aps.types.APSResult;
 
 /**
  * This provides a filesystem for use by services/applications. Each filesystem has its own root that cannot be navigated

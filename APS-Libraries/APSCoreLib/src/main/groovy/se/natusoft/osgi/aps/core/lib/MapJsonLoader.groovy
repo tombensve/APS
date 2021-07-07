@@ -38,7 +38,7 @@
 package se.natusoft.osgi.aps.core.lib
 
 import groovy.transform.CompileStatic
-import se.natusoft.osgi.aps.util.APSJson
+import se.natusoft.aps.util.APSJson
 
 /**
  * This is a utility that loads MapJson files and returns as Map<String, Object>.

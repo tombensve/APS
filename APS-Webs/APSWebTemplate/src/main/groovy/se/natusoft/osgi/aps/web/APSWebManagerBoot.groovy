@@ -53,7 +53,7 @@ import se.natusoft.aps.activator.annotation.Initializer
 import se.natusoft.aps.activator.annotation.Managed
 import se.natusoft.aps.activator.annotation.APSPlatformService
 import se.natusoft.aps.tracker.APSServiceTracker
-import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.aps.util.APSLogger
 
 /**
  * Serve our web using an HTTP Router published by aps-vertx-provider. I currently use

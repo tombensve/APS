@@ -34,7 +34,7 @@
  *         2018-05-26: Created!
  *
  */
-package se.natusoft.osgi.aps.util;
+package se.natusoft.aps.util;
 
 import se.natusoft.docutations.NotNull;
 

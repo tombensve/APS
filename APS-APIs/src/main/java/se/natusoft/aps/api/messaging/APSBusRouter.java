@@ -37,9 +37,9 @@
 package se.natusoft.aps.api.messaging;
 
 import se.natusoft.docutations.*;
-import se.natusoft.osgi.aps.types.APSHandler;
-import se.natusoft.osgi.aps.types.APSResult;
-import se.natusoft.osgi.aps.types.ID;
+import se.natusoft.aps.types.APSHandler;
+import se.natusoft.aps.types.APSResult;
+import se.natusoft.aps.types.ID;
 
 import java.util.Map;
 

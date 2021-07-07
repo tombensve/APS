@@ -53,17 +53,17 @@ import se.natusoft.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.Sporadic
 import se.natusoft.aps.exceptions.APSValidationException
 import se.natusoft.aps.tracker.APSServiceTracker
-import se.natusoft.osgi.aps.types.APSHandler
-import se.natusoft.osgi.aps.types.APSResult
-import se.natusoft.osgi.aps.types.APSUUID
-import se.natusoft.osgi.aps.types.ID
-import se.natusoft.osgi.aps.util.APSLogger
-import se.natusoft.osgi.aps.util.SyncedValue
+import se.natusoft.aps.types.APSHandler
+import se.natusoft.aps.types.APSResult
+import se.natusoft.aps.types.APSUUID
+import se.natusoft.aps.types.ID
+import se.natusoft.aps.util.APSLogger
+import se.natusoft.aps.util.SyncedValue
 
 import java.time.Instant
 
-import static se.natusoft.osgi.aps.util.APSExecutor.concurrent
-import static se.natusoft.osgi.aps.util.APSTools.waitFor
+import static se.natusoft.aps.util.APSExecutor.concurrent
+import static se.natusoft.aps.util.APSTools.waitFor
 
 /**
  * This is a simple bus API that is used by creating an instance and passing a BundleContext.

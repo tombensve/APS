@@ -41,12 +41,12 @@ import org.osgi.framework.BundleListener;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceListener;
 import se.natusoft.aps.activator.annotation.*;
-import se.natusoft.osgi.aps.util.*;
+import se.natusoft.aps.util.*;
 import se.natusoft.aps.tracker.APSServiceTracker;
 import se.natusoft.aps.tracker.OnServiceAvailable;
 import se.natusoft.aps.tracker.OnTimeout;
-import se.natusoft.osgi.aps.tuples.Tuple2;
-import se.natusoft.osgi.aps.tuples.Tuple4;
+import se.natusoft.aps.tuples.Tuple2;
+import se.natusoft.aps.tuples.Tuple4;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;

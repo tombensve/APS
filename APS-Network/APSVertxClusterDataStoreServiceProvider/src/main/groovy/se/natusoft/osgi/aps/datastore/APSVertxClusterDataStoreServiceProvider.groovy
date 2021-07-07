@@ -45,10 +45,10 @@ import se.natusoft.aps.activator.annotation.APSPlatformServiceProvider
 import se.natusoft.aps.api.core.store.APSLockableDataStoreService
 import se.natusoft.aps.constants.APS
 import se.natusoft.aps.exceptions.APSValidationException
-import se.natusoft.osgi.aps.types.APSHandler
-import se.natusoft.osgi.aps.types.APSLockable
-import se.natusoft.osgi.aps.types.APSResult
-import se.natusoft.osgi.aps.util.APSLogger
+import se.natusoft.aps.types.APSHandler
+import se.natusoft.aps.types.APSLockable
+import se.natusoft.aps.types.APSResult
+import se.natusoft.aps.util.APSLogger
 
 @SuppressWarnings("GroovyUnusedDeclaration")
 @APSPlatformServiceProvider(

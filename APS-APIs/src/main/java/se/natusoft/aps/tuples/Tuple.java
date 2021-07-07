@@ -29,27 +29,23 @@
  *     limitations under the License.
  *
  * AUTHORS
- *     tommy ()
+ *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
- *         2018-05-26: Created!
+ *         2014-03-08: Created!
  *
  */
-package se.natusoft.osgi.aps.types;
-
-import se.natusoft.docutations.Nullable;
-import se.natusoft.osgi.aps.util.APSExecutor;
+package se.natusoft.aps.tuples;
 
 /**
- * Generic handler api inspired by Vert.x.
- *
- * @param <T> The type of a potential value to handle.
+ * A tuple with one value.
  */
-public interface APSHandler<T> {
+public class Tuple<T1> {
 
-    /**
-     * Does the handling.
-     *
-     * @param value A value to handle.
-     */
-    void handle( @Nullable T value );
+    public T1 t1;
+
+    public Tuple() {}
+
+    public Tuple(T1 t1) {
+        this.t1 = t1;
+    }
 }

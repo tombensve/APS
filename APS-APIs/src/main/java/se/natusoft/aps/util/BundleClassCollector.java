@@ -34,7 +34,7 @@
  *         2017-01-05: Created!
  *
  */
-package se.natusoft.osgi.aps.util;
+package se.natusoft.aps.util;
 
 import org.osgi.framework.Bundle;
 
