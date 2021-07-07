@@ -36,7 +36,7 @@
  */
 package se.natusoft.aps.activator;
 
-import se.natusoft.osgi.aps.exceptions.APSException;
+import se.natusoft.aps.exceptions.APSException;
 
 /**
  * This is thrown by APSActivator on failure.

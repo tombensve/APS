@@ -41,7 +41,7 @@ package se.natusoft.osgi.aps.net.vertx.util
 
 import groovy.transform.CompileStatic
 import io.vertx.core.json.JsonObject
-import se.natusoft.osgi.aps.exceptions.APSValidationException
+import se.natusoft.aps.exceptions.APSValidationException
 
 /**
  * Vert.x JsonObject class is not entirely nice. It do provide a getMap() that

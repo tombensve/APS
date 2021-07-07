@@ -38,7 +38,7 @@ package se.natusoft.aps.api.misc.json.service;
 
 import se.natusoft.aps.api.misc.json.model.APSMapJson;
 import se.natusoft.aps.api.misc.json.model.APSMapJsonSchema;
-import se.natusoft.osgi.aps.exceptions.APSValidationException;
+import se.natusoft.aps.exceptions.APSValidationException;
 
 public interface APSMapJsonValidationService {
 

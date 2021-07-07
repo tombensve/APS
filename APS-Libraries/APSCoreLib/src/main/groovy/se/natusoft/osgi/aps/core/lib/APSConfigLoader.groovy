@@ -1,8 +1,8 @@
 package se.natusoft.osgi.aps.core.lib
 
-import se.natusoft.osgi.aps.exceptions.APSConfigException
-import se.natusoft.osgi.aps.exceptions.APSIOException
-import se.natusoft.osgi.aps.exceptions.APSValidationException
+import se.natusoft.aps.exceptions.APSConfigException
+import se.natusoft.aps.exceptions.APSIOException
+import se.natusoft.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.util.APSJson
 import se.natusoft.osgi.aps.util.APSResourceLoader
 

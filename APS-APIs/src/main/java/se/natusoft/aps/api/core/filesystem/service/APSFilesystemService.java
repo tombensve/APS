@@ -37,7 +37,7 @@
 package se.natusoft.aps.api.core.filesystem.service;
 
 import se.natusoft.aps.api.core.filesystem.model.APSFilesystem;
-import se.natusoft.osgi.aps.exceptions.APSIOException;
+import se.natusoft.aps.exceptions.APSIOException;
 import se.natusoft.osgi.aps.types.APSHandler;
 import se.natusoft.osgi.aps.types.APSResult;
 

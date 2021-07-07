@@ -31,39 +31,21 @@
  * AUTHORS
  *     tommy ()
  *         Changes:
- *         2017-01-01: Created!
+ *         2016-04-04: Created!
  *
  */
-package se.natusoft.osgi.aps.exceptions;
+package se.natusoft.aps.exceptions;
 
 /**
- * Can be thrown for anything that is invalid.
+ * This is a special exception that can be used to skip the rest of a round in a `.each { entry -> ... }` loop
+ * without cancelling the rest of the iterations. Just to a `try` and `catch (APSOptOutException aooe)`
+ * within the loop. Then throw this when you want to break out of the specific iteration.
  */
-public class APSInvalidException extends APSException {
-    /**
-     * Creates a new _APSInvalidException_ instance.
-     */
-    public APSInvalidException() {
-        super("Invalid!");
-    }
+public class APSOptOutException extends APSException {
 
     /**
-     * Creates a new _APSInvalidException_ instance.
-     *
-     * @param message The exception message.
+     * Creates a new APSIOException instance.
      */
-    public APSInvalidException( String message) {
-        super(message);
-    }
-
-    /**
-     * Creates a new _APSInvalidException_ instance.
-     *
-     * @param message The exception message.
-     * @param cause The cause of this exception.
-     */
-    public APSInvalidException( String message, Throwable cause) {
-        super(message, cause);
-    }
+    public APSOptOutException() {}
 
 }

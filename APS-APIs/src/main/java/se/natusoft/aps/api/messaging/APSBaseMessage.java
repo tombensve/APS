@@ -1,7 +1,7 @@
 package se.natusoft.aps.api.messaging;
 
 import se.natusoft.docutations.Optional;
-import se.natusoft.osgi.aps.exceptions.APSValidationException;
+import se.natusoft.aps.exceptions.APSValidationException;
 
 import java.util.Map;
 

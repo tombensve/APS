@@ -39,7 +39,7 @@ package se.natusoft.osgi.aps.core.lib
 
 import groovy.transform.CompileStatic
 import se.natusoft.docutations.Nullable
-import se.natusoft.osgi.aps.exceptions.APSValidationException
+import se.natusoft.aps.exceptions.APSValidationException
 
 /**
  * This class uses `Map<String, Object>` to represent JSON documents (Vertx:s JsonObject supports mapping to/from

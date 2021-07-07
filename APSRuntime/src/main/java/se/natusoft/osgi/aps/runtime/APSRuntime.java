@@ -42,7 +42,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import se.natusoft.aps.activator.APSActivator;
 import se.natusoft.aps.api.core.filesystem.service.APSFilesystemService;
-import se.natusoft.osgi.aps.exceptions.APSException;
+import se.natusoft.aps.exceptions.APSException;
 import se.natusoft.osgi.aps.runtime.internal.ServiceRegistry;
 
 import java.io.File;

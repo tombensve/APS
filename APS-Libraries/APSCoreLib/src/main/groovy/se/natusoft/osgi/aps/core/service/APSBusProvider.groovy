@@ -51,7 +51,7 @@ import se.natusoft.aps.api.messaging.APSBusRouter
 import se.natusoft.aps.api.messaging.APSMessagingException
 import se.natusoft.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.Sporadic
-import se.natusoft.osgi.aps.exceptions.APSValidationException
+import se.natusoft.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult

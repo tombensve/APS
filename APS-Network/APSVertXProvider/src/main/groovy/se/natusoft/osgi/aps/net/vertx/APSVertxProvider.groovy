@@ -60,9 +60,9 @@ import se.natusoft.aps.activator.annotation.Initializer
 import se.natusoft.aps.activator.annotation.Managed
 import se.natusoft.aps.api.messaging.APSBusRouter
 import se.natusoft.osgi.aps.core.lib.APSConfigLoader
-import se.natusoft.osgi.aps.exceptions.APSConfigException
-import se.natusoft.osgi.aps.exceptions.APSException
-import se.natusoft.osgi.aps.exceptions.APSStartException
+import se.natusoft.aps.exceptions.APSConfigException
+import se.natusoft.aps.exceptions.APSException
+import se.natusoft.aps.exceptions.APSStartException
 import se.natusoft.osgi.aps.util.APSLogger
 
 /**

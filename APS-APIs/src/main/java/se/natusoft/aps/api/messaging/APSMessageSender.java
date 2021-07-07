@@ -39,7 +39,7 @@ package se.natusoft.aps.api.messaging;
 import se.natusoft.docutations.NotNull;
 import se.natusoft.docutations.Nullable;
 import se.natusoft.docutations.Reactive;
-import se.natusoft.osgi.aps.exceptions.APSException;
+import se.natusoft.aps.exceptions.APSException;
 import se.natusoft.osgi.aps.types.APSHandler;
 import se.natusoft.osgi.aps.types.APSResult;
 

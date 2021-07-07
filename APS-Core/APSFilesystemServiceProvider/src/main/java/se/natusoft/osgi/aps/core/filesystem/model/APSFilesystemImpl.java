@@ -41,7 +41,7 @@ package se.natusoft.osgi.aps.core.filesystem.model;
 import se.natusoft.aps.api.core.filesystem.model.APSDirectory;
 import se.natusoft.aps.api.core.filesystem.model.APSFile;
 import se.natusoft.aps.api.core.filesystem.model.APSFilesystem;
-import se.natusoft.osgi.aps.exceptions.APSIOException;
+import se.natusoft.aps.exceptions.APSIOException;
 
 import java.io.File;
 import java.io.IOException;

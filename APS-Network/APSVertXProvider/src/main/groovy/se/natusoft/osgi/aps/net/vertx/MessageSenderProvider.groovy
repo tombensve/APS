@@ -53,7 +53,7 @@ import se.natusoft.aps.api.messaging.APSMessage
 import se.natusoft.aps.api.messaging.APSMessageSender
 
 import se.natusoft.aps.constants.APS
-import se.natusoft.osgi.aps.exceptions.APSException
+import se.natusoft.aps.exceptions.APSException
 import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
 import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult

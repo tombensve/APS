@@ -11,7 +11,7 @@ import se.natusoft.aps.api.messaging.APSBus
 import se.natusoft.aps.api.messaging.APSMessagingException
 import se.natusoft.osgi.aps.core.lib.MapJsonLoader
 import se.natusoft.osgi.aps.core.lib.MapJsonSchemaValidator
-import se.natusoft.osgi.aps.exceptions.APSValidationException
+import se.natusoft.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.runtime.APSTestResults
 import se.natusoft.osgi.aps.types.APSResult

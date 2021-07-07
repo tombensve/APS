@@ -38,7 +38,7 @@ package se.natusoft.osgi.aps.types;
 
 import se.natusoft.docutations.NotNull;
 import se.natusoft.docutations.Nullable;
-import se.natusoft.osgi.aps.exceptions.APSException;
+import se.natusoft.aps.exceptions.APSException;
 
 /**
  * This represents a result, and will not be made available until there is a result or a failure.
