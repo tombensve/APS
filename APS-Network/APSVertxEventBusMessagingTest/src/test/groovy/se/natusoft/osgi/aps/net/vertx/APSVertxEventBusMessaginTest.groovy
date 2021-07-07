@@ -6,7 +6,7 @@ import se.natusoft.aps.api.messaging.APSMessageSender
 import se.natusoft.aps.api.messaging.APSMessageSubscriber
 import se.natusoft.aps.api.messaging.APSMessage
 
-import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.StructMap
 import se.natusoft.osgi.aps.runtime.APSRuntime
 import se.natusoft.osgi.aps.types.APSResult

@@ -53,7 +53,7 @@ import se.natusoft.aps.activator.APSActivatorInteraction
 import se.natusoft.aps.activator.annotation.*
 import se.natusoft.aps.api.messaging.APSMessage
 import se.natusoft.aps.api.messaging.APSMessageSubscriber
-import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.aps.constants.APS
 import se.natusoft.osgi.aps.exceptions.APSIOException
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap

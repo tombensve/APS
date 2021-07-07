@@ -49,7 +49,7 @@ import se.natusoft.aps.activator.annotation.*
 import se.natusoft.aps.api.messaging.APSBus
 import se.natusoft.aps.api.messaging.APSBusRouter
 import se.natusoft.aps.api.messaging.APSMessagingException
-import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.Sporadic
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.tracker.APSServiceTracker

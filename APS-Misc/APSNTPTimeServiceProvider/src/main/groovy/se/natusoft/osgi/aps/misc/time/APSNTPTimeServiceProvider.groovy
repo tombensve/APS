@@ -41,7 +41,7 @@ import org.apache.commons.net.ntp.NTPUDPClient
 import org.apache.commons.net.ntp.TimeInfo
 import se.natusoft.aps.activator.annotation.*
 import se.natusoft.aps.api.misc.time.APSTimeService
-import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.APSConfigLoader
 import se.natusoft.osgi.aps.util.APSLogger
 

@@ -45,7 +45,7 @@ import se.natusoft.aps.activator.annotation.Managed
 import se.natusoft.aps.activator.annotation.APSPlatformServiceProperty
 import se.natusoft.aps.activator.annotation.APSPlatformServiceProvider
 import se.natusoft.aps.api.messaging.APSBusRouter
-import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.ValidTarget
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 import se.natusoft.osgi.aps.types.APSHandler

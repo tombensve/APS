@@ -43,7 +43,7 @@ import se.natusoft.aps.activator.annotation.APSPlatformServiceProvider
 import se.natusoft.aps.api.misc.json.model.APSMapJson
 import se.natusoft.aps.api.misc.json.model.APSMapJsonSchema
 import se.natusoft.aps.api.misc.json.service.APSMapJsonValidationService
-import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.MapJsonSchemaValidator
 import se.natusoft.osgi.aps.exceptions.APSValidationException
 

@@ -60,7 +60,7 @@ import se.natusoft.aps.activator.annotation.APSPlatformService
 import se.natusoft.aps.activator.annotation.APSPlatformServiceProvider
 import se.natusoft.aps.api.messaging.APSBusRouter
 import se.natusoft.aps.api.messaging.APSMessagingException
-import se.natusoft.osgi.aps.constants.APS
+import se.natusoft.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.ValidTarget
 import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
 import se.natusoft.osgi.aps.tracker.APSServiceTracker
