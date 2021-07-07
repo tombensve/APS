@@ -34,7 +34,7 @@
  *         2011-08-30: Created!
  *
  */
-package se.natusoft.osgi.aps.tracker;
+package se.natusoft.aps.tracker;
 
 import org.osgi.framework.*;
 import se.natusoft.osgi.aps.util.APSLogger;
@@ -723,7 +723,7 @@ public class APSServiceTracker<Service> implements ServiceListener {
      *
      * @param onActiveServiceAvailable The callback to set.
      *
-     * @see #onActiveServiceLeaving(se.natusoft.osgi.aps.tracker.OnServiceLeaving)
+     * @see #onActiveServiceLeaving(se.natusoft.aps.tracker.OnServiceLeaving)
      */
     public APSServiceTracker onActiveServiceAvailable( OnServiceAvailable onActiveServiceAvailable ) {
 
@@ -749,7 +749,7 @@ public class APSServiceTracker<Service> implements ServiceListener {
      *
      * @param onActiveServiceLeaving The callback to call when active service is leaving.
      *
-     * @see #onActiveServiceAvailable(se.natusoft.osgi.aps.tracker.OnServiceAvailable)
+     * @see #onActiveServiceAvailable(se.natusoft.aps.tracker.OnServiceAvailable)
      */
     public APSServiceTracker onActiveServiceLeaving( OnServiceLeaving onActiveServiceLeaving ) {
 
@@ -782,8 +782,8 @@ public class APSServiceTracker<Service> implements ServiceListener {
      * @param withService The callback to run and provide service to.
      * @param args        Optional arguments to pass to the callback.
      *
-     * @throws se.natusoft.osgi.aps.tracker.WithServiceException           Wraps any exception thrown by the callback.
-     * @throws se.natusoft.osgi.aps.tracker.APSNoServiceAvailableException thrown if there are no services available.
+     * @throws se.natusoft.aps.tracker.WithServiceException           Wraps any exception thrown by the callback.
+     * @throws se.natusoft.aps.tracker.APSNoServiceAvailableException thrown if there are no services available.
      */
     public APSServiceTracker withService( WithService<Service> withService, Object... args ) throws WithServiceException, APSNoServiceAvailableException {
 
@@ -830,7 +830,7 @@ public class APSServiceTracker<Service> implements ServiceListener {
      * @param withService The callback to run and provide service to.
      * @param args        Optional arguments to pass to the callback.
      *
-     * @throws se.natusoft.osgi.aps.tracker.WithServiceException Wraps any exception thrown by the callback.
+     * @throws se.natusoft.aps.tracker.WithServiceException Wraps any exception thrown by the callback.
      */
     @SuppressWarnings({ "unused" })
     public APSServiceTracker withServiceIfAvailable( WithService<Service> withService, Object... args ) throws WithServiceException {
@@ -865,7 +865,7 @@ public class APSServiceTracker<Service> implements ServiceListener {
      * @param withService The callback to run and provide service to.
      * @param args        Optional arguments to pass to the callback.
      *
-     * @throws se.natusoft.osgi.aps.tracker.WithServiceException Wraps any exception thrown by the callback.
+     * @throws se.natusoft.aps.tracker.WithServiceException Wraps any exception thrown by the callback.
      */
     @SuppressWarnings("unchecked")
     public APSServiceTracker withAllAvailableServices( WithService<Service> withService, Object... args ) throws WithServiceException {
@@ -900,7 +900,7 @@ public class APSServiceTracker<Service> implements ServiceListener {
      * @param withService The callback to run and provide service to.
      * @param args        Optional arguments to pass to the callback.
      *
-     * @throws se.natusoft.osgi.aps.tracker.WithServiceException Wraps any exception thrown by the callback.
+     * @throws se.natusoft.aps.tracker.WithServiceException Wraps any exception thrown by the callback.
      */
     @SuppressWarnings({ "unchecked", "unused" })
     public APSServiceTracker withAllAvailableServicesIncRef( WithServiceIncRef<Service> withService, Object... args ) throws WithServiceException {
@@ -952,7 +952,7 @@ public class APSServiceTracker<Service> implements ServiceListener {
      *
      * @return The active service.
      *
-     * @throws se.natusoft.osgi.aps.tracker.APSNoServiceAvailableException if no service is available.
+     * @throws se.natusoft.aps.tracker.APSNoServiceAvailableException if no service is available.
      */
     public Service allocateService() throws APSNoServiceAvailableException {
 

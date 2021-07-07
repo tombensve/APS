@@ -34,7 +34,7 @@
  *         2011-08-03: Created!
  *
  */
-package se.natusoft.osgi.aps.tracker;
+package se.natusoft.aps.tracker;
 
 import se.natusoft.osgi.aps.util.APSLogger;
 

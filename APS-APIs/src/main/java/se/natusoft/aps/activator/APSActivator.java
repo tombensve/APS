@@ -42,9 +42,9 @@ import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceListener;
 import se.natusoft.aps.activator.annotation.*;
 import se.natusoft.osgi.aps.util.*;
-import se.natusoft.osgi.aps.tracker.APSServiceTracker;
-import se.natusoft.osgi.aps.tracker.OnServiceAvailable;
-import se.natusoft.osgi.aps.tracker.OnTimeout;
+import se.natusoft.aps.tracker.APSServiceTracker;
+import se.natusoft.aps.tracker.OnServiceAvailable;
+import se.natusoft.aps.tracker.OnTimeout;
 import se.natusoft.osgi.aps.tuples.Tuple2;
 import se.natusoft.osgi.aps.tuples.Tuple4;
 

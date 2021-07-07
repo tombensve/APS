@@ -42,7 +42,7 @@ import org.junit.Test;
 import se.natusoft.aps.activator.APSActivator;
 import se.natusoft.osgi.aps.runtime.APSRuntime;
 import se.natusoft.osgi.aps.tools.services.TestService;
-import se.natusoft.osgi.aps.tracker.APSServiceTracker;
+import se.natusoft.aps.tracker.APSServiceTracker;
 
 //import static org.junit.Assert.assertEquals;
 

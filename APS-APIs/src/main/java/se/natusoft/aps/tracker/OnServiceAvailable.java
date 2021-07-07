@@ -29,37 +29,29 @@
  *     limitations under the License.
  *
  * AUTHORS
- *     tommy ()
+ *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
- *         2011-08-03: Created!
+ *         2011-10-17: Created!
  *
  */
-package se.natusoft.osgi.aps.tracker;
+package se.natusoft.aps.tracker;
 
-import se.natusoft.aps.exceptions.APSException;
+import org.osgi.framework.ServiceReference;
 
 /**
- * This exception is thrown by a tracker facade when no service is available and
- * the options to throw exceptions is specified.
+ * This interface is used in conjunction with _APSServiceTracker_ and provides callback code to run when a service becomes
+ * available.
  */
-public class APSNoServiceAvailableException extends APSException {
+public interface OnServiceAvailable<Service> {
 
     /**
-     * Creates a new _APSNoServiceAvailableException_.
+     * Receives a new service.
      *
-     * @param message The exception message.
-     */
-    public APSNoServiceAvailableException(String message) {
-        super(message);
-    }
-
-    /**
-     * Creates a new _APSNoServiceAvailableException_.
+     * @param service The received service.
+     * @param serviceReference The reference to the received service.
      *
-     * @param message The exception message.
-     * @param cause The cause of this exception.
+     * @throws Exception Implementation can throw any exception. How it is handled depends on the APSServiceTracker method this
+     *                   gets passed to.
      */
-    public APSNoServiceAvailableException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    void onServiceAvailable(Service service, ServiceReference serviceReference) throws Exception;
 }

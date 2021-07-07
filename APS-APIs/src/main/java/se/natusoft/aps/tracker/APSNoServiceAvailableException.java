@@ -3,55 +3,63 @@
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
- *     Tommy Svensson (tommy@natusoft.se)
+ *     tommy ()
  *         Changes:
- *         2011-10-17: Created!
+ *         2011-08-03: Created!
  *
  */
-package se.natusoft.osgi.aps.tracker;
+package se.natusoft.aps.tracker;
 
-import org.osgi.framework.ServiceReference;
+import se.natusoft.aps.exceptions.APSException;
 
 /**
- * This interface is used in conjunction with _APSServiceTracker_ and provides callback code to run with a service.
+ * This exception is thrown by a tracker facade when no service is available and
+ * the options to throw exceptions is specified.
  */
-public interface WithServiceIncRef<Service> {
+public class APSNoServiceAvailableException extends APSException {
 
     /**
-     * Receives a service to do something with.
+     * Creates a new _APSNoServiceAvailableException_.
      *
-     * @param service The received service.
-     * @param ref The service reference.
-     * @param args All arguments passed to tracker.withService(..., args)
-     *
-     * @throws Exception Implementation can throw any exception. How it is handled depends on the APSServiceTracker
-     *                   method this gets passed to.
+     * @param message The exception message.
      */
-    void withService(Service service, ServiceReference ref, Object... args) throws Exception;
+    public APSNoServiceAvailableException(String message) {
+        super(message);
+    }
+
+    /**
+     * Creates a new _APSNoServiceAvailableException_.
+     *
+     * @param message The exception message.
+     * @param cause The cause of this exception.
+     */
+    public APSNoServiceAvailableException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

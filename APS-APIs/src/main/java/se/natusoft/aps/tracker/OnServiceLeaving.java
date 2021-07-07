@@ -3,49 +3,55 @@
  * PROJECT
  *     Name
  *         APS APIs
- *     
+ *
  *     Code Version
  *         1.0.0
- *     
+ *
  *     Description
  *         Provides the APIs for the application platform services.
- *         
+ *
  * COPYRIGHTS
  *     Copyright (C) 2012 by Natusoft AB All rights reserved.
- *     
+ *
  * LICENSE
  *     Apache 2.0 (Open Source)
- *     
+ *
  *     Licensed under the Apache License, Version 2.0 (the "License");
  *     you may not use this file except in compliance with the License.
  *     You may obtain a copy of the License at
- *     
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- *     
+ *
  *     Unless required by applicable law or agreed to in writing, software
  *     distributed under the License is distributed on an "AS IS" BASIS,
  *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *     See the License for the specific language governing permissions and
  *     limitations under the License.
- *     
+ *
  * AUTHORS
  *     Tommy Svensson (tommy@natusoft.se)
  *         Changes:
- *         2011-10-22: Created!
+ *         2011-10-17: Created!
  *
  */
-package se.natusoft.osgi.aps.tracker;
+package se.natusoft.aps.tracker;
+
+import org.osgi.framework.ServiceReference;
 
 /**
- * Callback for availability of all required services.
+ * This interface is used in conjunction with _APSServiceTracker_ and provides callback code to run when a service becomes
+ * unavailable.
  */
-public interface OnRequiredServicesNonAvailability {
+public interface OnServiceLeaving<Service> {
 
     /**
-     * This gets called by _APSRequriredServicesTracker_ when all tracked services are available.
+     * A service is leaving.
      *
-     * @param requiredServices A container containing service instances of all required services.
-     * @throws Exception
+     * @param service The leaving service. Please note that this can only be used for information! Dont try to get a service with it!
+     * @param serviceAPI The service API (interface) class for this service for more easy identification.
+     *
+     * @throws Exception Implementation can throw any exception. How it is handled depends on the APSServiceTracker method this
+     *                   gets passed to.
      */
-    public void onRequiredServicesNonAvailability(RequiredServices requiredServices) throws Exception;
+    public void onServiceLeaving(ServiceReference service, Class serviceAPI) throws Exception;
 }

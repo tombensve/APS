@@ -52,7 +52,7 @@ import org.osgi.framework.ServiceReference
 import se.natusoft.aps.activator.annotation.Initializer
 import se.natusoft.aps.activator.annotation.Managed
 import se.natusoft.aps.activator.annotation.APSPlatformService
-import se.natusoft.osgi.aps.tracker.APSServiceTracker
+import se.natusoft.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.util.APSLogger
 
 /**

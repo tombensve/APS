@@ -51,7 +51,7 @@ import se.natusoft.aps.activator.annotation.Initializer
 import se.natusoft.aps.activator.annotation.Managed
 import se.natusoft.aps.activator.annotation.APSPlatformService
 import se.natusoft.aps.api.messaging.APSBus
-import se.natusoft.osgi.aps.tracker.APSServiceTracker
+import se.natusoft.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.types.APSUUID
 import se.natusoft.osgi.aps.types.ID

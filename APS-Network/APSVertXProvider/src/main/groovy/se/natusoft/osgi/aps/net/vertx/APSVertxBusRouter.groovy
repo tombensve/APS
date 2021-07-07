@@ -63,7 +63,7 @@ import se.natusoft.aps.api.messaging.APSMessagingException
 import se.natusoft.aps.constants.APS
 import se.natusoft.osgi.aps.core.lib.ValidTarget
 import se.natusoft.osgi.aps.net.vertx.util.RecursiveJsonObjectMap
-import se.natusoft.osgi.aps.tracker.APSServiceTracker
+import se.natusoft.aps.tracker.APSServiceTracker
 import se.natusoft.osgi.aps.types.APSHandler
 import se.natusoft.osgi.aps.types.APSResult
 import se.natusoft.osgi.aps.types.ID
