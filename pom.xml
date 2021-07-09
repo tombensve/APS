@@ -224,6 +224,10 @@
 
     <dependencies>
 
+        <!--
+            Still using OSGi APIs! APS is however no longer OSGi compliant!
+            It will not run in an OSGi container!
+        -->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
@@ -306,13 +310,6 @@
                     <groupId>com.github.odavid.maven.plugins</groupId>
                     <artifactId>mixin-maven-plugin</artifactId>
                     <version>${mixin.plugin.version}</version>
-                    <extensions>true</extensions>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <version>${maven.bundle.plugin.version}</version>
                     <extensions>true</extensions>
                 </plugin>
 

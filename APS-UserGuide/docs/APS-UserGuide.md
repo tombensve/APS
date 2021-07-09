@@ -16,7 +16,7 @@ APS Platform Services - A "smorgasbord" of APSPlatform services that focuses on 
 
 *  A service tracker (used OSGi before). Supports service availability wait and timeout and can be wrapped as a proxy to the service. Instead of returning null it throws an exception if no service becomes available within the timeout, and is thus much easier to handle.
 
-*  A configuration manager that extends deployed bundles by reading their configuration schema, their default configuration file, and their configuration id, and then loads and publishes an `APSConfig` instance with the bundles configuration. All active configurations are stored in a cluster (vertx/hazelcast). __NOTE: There will likely be a rethink of configuration handling!__
+*  A configuration manager that extends deployed bundles by reading their configuration schema, their default configuration file, and their configuration id, and then loads and publishes an `APSConfig` instance with the bundles configuration. All active configurations are stored in a cluster (vertx/hazelcast). __NOTE: There will be a rethink of configuration handling!__
 
 *  (A filesystem service that provides a persistent filesystem outside of the OSGi server. The configuration service makes use of this to store configurations. Each client can get its own filesystem area, and can´t access anything outside of its area.) _Bad idea,__will probably be removed!_
 
