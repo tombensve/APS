@@ -40,6 +40,7 @@ import org.osgi.framework.*;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.FrameworkListener;
 import org.osgi.framework.ServiceListener;
+import se.natusoft.aps.platform.BundleActivator;
 import se.natusoft.aps.activator.annotation.*;
 import se.natusoft.aps.util.*;
 import se.natusoft.aps.tracker.APSServiceTracker;
@@ -114,7 +115,8 @@ import java.util.concurrent.TimeUnit;
  * Most methods are protected making it easy to subclass this class and expand on its functionality.
  */
 @SuppressWarnings({ "rawtypes" }) // Does dependency injections and thus: Class<dont care>
-public class APSActivator implements BundleActivator, OnServiceAvailable, OnTimeout, APSActivatorPlugin.ActivatorInteraction {
+public class APSActivator implements BundleActivator, OnServiceAvailable, OnTimeout,
+        APSActivatorPlugin.ActivatorInteraction {
 
     //
     // Constants

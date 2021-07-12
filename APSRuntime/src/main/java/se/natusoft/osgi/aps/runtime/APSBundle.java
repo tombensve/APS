@@ -36,7 +36,7 @@
  */
 package se.natusoft.osgi.aps.runtime;
 
-import org.osgi.framework.*;
+// import org.osgi.framework.*;
 import se.natusoft.osgi.aps.runtime.internal.ServiceRegistry;
 
 import java.io.File;

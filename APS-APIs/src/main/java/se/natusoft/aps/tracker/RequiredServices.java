@@ -37,10 +37,11 @@
 package se.natusoft.aps.tracker;
 
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import se.natusoft.aps.platform.ServiceReference;
 
 /**
  * Holds a set of concurrently required serviceReferences.
@@ -51,7 +52,7 @@ public class RequiredServices {
     //
 
     /** Holds the service references. */
-    private Map<Class, ServiceReference> serviceReferences = new HashMap<Class, ServiceReference>();
+    private Map<Class, APSServiceReference> serviceReferences = new HashMap<Class, APSServiceReference>();
 
     /** A temporary map of looked up services. */
     private Map<Class, Object> services = null;
@@ -75,7 +76,7 @@ public class RequiredServices {
      * @param serviceAPI The API class of the service.
      * @param service The actual service.
      */
-    public void putService(Class serviceAPI, ServiceReference service) {
+    public void putService(Class serviceAPI, APSServiceReference service) {
         this.serviceReferences.put(serviceAPI, service);
     }
 
@@ -102,7 +103,7 @@ public class RequiredServices {
      *
      * @param serviceAPI The API class of the service to get.
      */
-    public ServiceReference getServiceReference(Class serviceAPI) {
+    public org.osgi.framework.ServiceReference getServiceReference( Class serviceAPI) {
         return this.serviceReferences.get(serviceAPI);
     }
 

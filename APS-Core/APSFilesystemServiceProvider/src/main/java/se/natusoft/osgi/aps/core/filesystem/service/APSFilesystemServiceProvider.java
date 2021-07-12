@@ -76,7 +76,7 @@ public class APSFilesystemServiceProvider implements APSFilesystemService {
      * Our logger.
      */
     @Managed
-    private APSLogger logger = null;
+    private APSLogger logger;
 
     @Managed
     private BundleContext context;

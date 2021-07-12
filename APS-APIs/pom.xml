@@ -35,13 +35,14 @@
             2013-02-03: Created!
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>APS</artifactId>
         <groupId>se.natusoft.osgi.aps</groupId>
         <version>1.0.0</version>
-        <relativePath>..</relativePath>
+<!--        <relativePath>..</relativePath>-->
     </parent>
 
     <artifactId>aps-apis</artifactId>
@@ -61,7 +62,23 @@
 
     <dependencies>
 
-        <!--suppress NonOsgiMavenDependency -->
+        <!--
+            For now the OSGi APIs is needed here, but only here!
+        -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- Log service is in this!!! -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <version>${osgi.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>se.natusoft.annotation</groupId>
             <artifactId>bean-annotation-processor</artifactId>
@@ -94,20 +111,16 @@
                 <artifactId>mixin-maven-plugin</artifactId>
                 <configuration>
                     <mixins>
-<!--
                         <mixin>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>deploy-bundle-mixin</artifactId>
                             <version>${project.version}</version>
                         </mixin>
--->
+
                     </mixins>
                 </configuration>
             </plugin>
 
-            <!--
-                OSGi bundle handling.
-            -->
 
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
