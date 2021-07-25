@@ -12,9 +12,13 @@ Work is slow, whenever time permits.
 
 To be very clear: **This is currently, and probably for a long time comming, a playground where I'm having fun.**
 
-The __original (and still active) goal__ with this is to make a very easy to use web platform.
+The __original (and still active) goal__ with this is to provide support for message driven services including both frontend and backend. APS supplies APIs for sending and receiving messages in JSON using a bus model. How that is accomplished depends on what implementations of APSBusRouter are deployed. APS includes a Vert.x based implementation but the APIs is very simple and implementation using anything should be possible. I am considering also providing an implementation that handles and can do REST calls. Application code will still receive and produce messages. Applications should never care about the were and how of messages, only the messages and their contents. 
 
-There is currently no real web app, only components demo. I'm working on comming up with a an idea for a more real web app to do with it as a more real test of if this is a good idea or not. 
+I'm doing this because I like the idea and wan't to confirm that this actually is a good idea. I might run into problem I haven't forseen, I might even end up saying "No, this was a bad idea!", but so far I still beleive in this. 
+
+Corona put a large pause on this! I haven't done much on this for a year. Just recently started looking at this again. Currently removing dependencies to OSGi since it is no longer OSGi even though it still have similarities. 
+
+There is currently no real web app, only components demo. I'm working on comming up with a an idea for a more real web app to do with it as a more real test. 
 
 ## Building
 
